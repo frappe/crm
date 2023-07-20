@@ -1,7 +1,7 @@
 <template>
   <div class="inline-flex h-full flex-col border-r w-[220px]">
     <div class="flex p-2">
-      <h1 class="text-xl px-3 py-2">Frappe CRM</h1>
+      <UserDropdown />
     </div>
     <div class="flex-1">
       <nav class="space-y-0.5 px-2">
@@ -26,6 +26,7 @@
 </template>
 
 <script setup>
+import UserDropdown from './UserDropdown.vue'
 import LeadsIcon from './Icons/LeadsIcon.vue'
 import DealsIcon from './Icons/DealsIcon.vue'
 import InboxIcon from './Icons/InboxIcon.vue'
