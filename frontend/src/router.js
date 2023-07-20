@@ -27,6 +27,11 @@ const routes = [
     component: () => import('@/pages/Dashboard.vue'),
   },
   {
+    path: '/:invalidpath',
+    name: 'Invalid Page',
+    component: () => import('@/pages/InvalidPage.vue'),
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/pages/Login.vue'),
@@ -48,6 +53,8 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'Leads' })
   } else if (to.name !== 'Login' && !session.isLoggedIn) {
     next({ name: 'Login' })
+  } else if (to.matched.length === 0) {
+    next({ name: 'Invalid Page' })
   } else {
     next()
   }

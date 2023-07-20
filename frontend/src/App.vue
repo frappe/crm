@@ -7,5 +7,5 @@
 
 <script setup>
 import DesktopLayout from '@/components/DesktopLayout.vue'
-import { sessionStore as session } from '@/stores/session';
+import { sessionStore as session } from '@/stores/session'
 </script>
