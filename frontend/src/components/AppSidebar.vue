@@ -1,27 +1,25 @@
 <template>
-  <div class="inline-flex h-full flex-col border-r w-[220px]">
-    <div class="flex p-2">
-      <UserDropdown />
-    </div>
-    <div class="flex-1">
-      <nav class="space-y-0.5 px-2">
-        <NavLinks
-          :links="navigations"
-          class="flex items-center rounded px-2 py-1 text-gray-800 transition-all duration-300 ease-in-out"
-          active="bg-gray-100 hover:bg-gray-200"
-          inactive="hover:bg-gray-50"
-        >
-          <template v-slot="{ link }">
-            <div class="flex w-full items-center space-x-2">
-              <span class="grid h-5 w-6 place-items-center">
-                <component :is="link.icon" class="h-4.5 w-4.5 text-gray-700" />
-              </span>
-              <span class="text-base">{{ link.name }}</span>
-            </div>
-          </template>
-        </NavLinks>
-      </nav>
-    </div>
+  <div class="flex p-2">
+    <UserDropdown />
+  </div>
+  <div class="flex-1">
+    <nav class="space-y-0.5 px-2">
+      <NavLinks
+        :links="navigations"
+        class="flex items-center rounded px-2 py-1 text-gray-800 transition-all duration-300 ease-in-out"
+        active="bg-gray-100 hover:bg-gray-200"
+        inactive="hover:bg-gray-50"
+      >
+        <template v-slot="{ link }">
+          <div class="flex w-full items-center space-x-2">
+            <span class="grid h-5 w-6 place-items-center">
+              <component :is="link.icon" class="h-4.5 w-4.5 text-gray-700" />
+            </span>
+            <span class="text-base">{{ link.name }}</span>
+          </div>
+        </template>
+      </NavLinks>
+    </nav>
   </div>
 </template>
 

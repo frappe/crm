@@ -37,35 +37,37 @@
       <Button icon="more-horizontal" />
     </div>
   </div>
-  <div id="content" class="">
-    <div
-      id="list-header"
-      class="flex space-x-2 items-center px-5 py-2 border-b"
-    >
-      <Checkbox class="mr-2" />
+  <div id="content" class="flex flex-col w-full overflow-x-auto flex-1">
+    <div class="flex flex-col overflow-y-hidden w-max min-w-full">
       <div
-        v-for="column in columns"
-        :key="column"
-        class="text-sm text-gray-600"
-        :class="[column.size, column.align]"
+        id="list-header"
+        class="flex space-x-4 items-center px-5 py-2 border-b"
       >
-        {{ column.label }}
-      </div>
-    </div>
-    <div id="list-rows">
-      <div
-        v-for="row in rows"
-        :key="row"
-        class="flex space-x-2 items-center mx-2 px-3 py-2 border-b"
-      >
-        <Checkbox class="mr-2" />
+        <Checkbox class="" />
         <div
           v-for="column in columns"
-          :key="column.key"
-          class="text-base text-gray-900"
+          :key="column"
+          class="text-sm text-gray-600"
           :class="[column.size, column.align]"
         >
-          {{ row[column.key] }}
+          {{ column.label }}
+        </div>
+      </div>
+      <div id="list-rows" class="h-full overflow-y-auto">
+        <div
+          v-for="row in rows"
+          :key="row"
+          class="flex space-x-4 items-center mx-2 px-3 py-2 border-b"
+        >
+          <Checkbox class="" />
+          <div
+            v-for="column in columns"
+            :key="column.key"
+            class="text-base text-gray-900"
+            :class="[column.size, column.align]"
+          >
+            {{ row[column.key] }}
+          </div>
         </div>
       </div>
     </div>
@@ -84,11 +86,11 @@ const props = defineProps({
   },
   columns: {
     type: Array,
-    default: []
+    default: [],
   },
   rows: {
     type: Array,
-    default: []
+    default: [],
   },
 })
 
