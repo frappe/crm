@@ -14,8 +14,9 @@
   "middle_name",
   "last_name",
   "column_break_izjs",
-  "full_name",
+  "lead_name",
   "gender",
+  "image",
   "column_break_lcuv",
   "lead_owner",
   "status",
@@ -66,12 +67,6 @@
   {
    "fieldname": "column_break_lcuv",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "full_name",
-   "fieldtype": "Data",
-   "label": "Full Name",
-   "search_index": 1
   },
   {
    "fieldname": "gender",
@@ -173,11 +168,25 @@
    "fieldname": "organization_logo",
    "fieldtype": "Attach Image",
    "label": "Organization Logo"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "Image",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "lead_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "search_index": 1
   }
  ],
+ "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-25 16:20:30.468169",
+ "modified": "2023-07-25 18:18:23.429029",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM Lead",
@@ -200,5 +209,6 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
+ "title_field": "lead_name",
  "track_changes": 1
 }
