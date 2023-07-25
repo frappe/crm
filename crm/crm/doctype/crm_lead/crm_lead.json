@@ -1,0 +1,198 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-07-24 12:19:39.616298",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "salutation",
+  "first_name",
+  "middle_name",
+  "last_name",
+  "column_break_izjs",
+  "full_name",
+  "gender",
+  "column_break_lcuv",
+  "lead_owner",
+  "status",
+  "source",
+  "section_break_ymew",
+  "email",
+  "website",
+  "column_break_sijm",
+  "mobile_no",
+  "column_break_sjtw",
+  "phone",
+  "section_break_uixv",
+  "organization_name",
+  "no_of_employees",
+  "column_break_dbsv",
+  "annual_revenue",
+  "industry"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "CRM-LEAD-.YYYY.-"
+  },
+  {
+   "fieldname": "salutation",
+   "fieldtype": "Link",
+   "label": "Salutation",
+   "options": "Salutation"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name"
+  },
+  {
+   "fieldname": "middle_name",
+   "fieldtype": "Data",
+   "label": "Middle Name"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "column_break_lcuv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "search_index": 1
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Link",
+   "label": "Gender",
+   "options": "Gender"
+  },
+  {
+   "fieldname": "column_break_izjs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "New\nContact made\nProposal made\nNegotiation\nConverted",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_ymew",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email",
+   "search_index": 1
+  },
+  {
+   "fieldname": "website",
+   "fieldtype": "Data",
+   "label": "Website",
+   "options": "URL"
+  },
+  {
+   "fieldname": "column_break_sijm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Phone",
+   "label": "Mobile No"
+  },
+  {
+   "fieldname": "column_break_sjtw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Phone",
+   "label": "Phone"
+  },
+  {
+   "fieldname": "section_break_uixv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_dbsv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "no_of_employees",
+   "fieldtype": "Select",
+   "label": "No. of Employees",
+   "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
+  },
+  {
+   "fieldname": "organization_name",
+   "fieldtype": "Data",
+   "label": "Organization Name"
+  },
+  {
+   "fieldname": "annual_revenue",
+   "fieldtype": "Currency",
+   "label": "Annual Revenue"
+  },
+  {
+   "fieldname": "lead_owner",
+   "fieldtype": "Link",
+   "label": "Lead Owner",
+   "options": "User"
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "label": "Source",
+   "options": "CRM Lead Source"
+  },
+  {
+   "fieldname": "industry",
+   "fieldtype": "Link",
+   "label": "Industry",
+   "options": "CRM Industry"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-07-24 19:43:16.008607",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "CRM Lead",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
