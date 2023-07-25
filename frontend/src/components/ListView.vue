@@ -84,7 +84,7 @@
               />
             </div>
             <div v-else-if="column.type === 'status'">
-              <IndicatorIcon />
+              <IndicatorIcon :color="getValue(row[column.key]).color" />
             </div>
             <div class="text-base text-gray-900 truncate">
               {{ getValue(row[column.key]).label }}

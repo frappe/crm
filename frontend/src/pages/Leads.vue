@@ -75,11 +75,22 @@ const rows = computed(() => {
     return {
       full_name: lead.first_name + ' ' + lead.last_name,
       organization_name: lead.organization_name,
-      status: lead.status,
+      status: {
+        label: lead.status,
+        color: indicatorColor[lead.status],
+      },
       email: lead.email,
       mobile_no: lead.mobile_no,
       lead_owner: getUser(lead.lead_owner),
     }
   })
 })
+
+const indicatorColor = {
+  New: 'text-gray-600',
+  'Contact made': 'text-orange-500',
+  'Proposal made': 'text-blue-600',
+  Negotiation: 'text-red-600',
+  Converted: 'text-green-600',
+}
 </script>

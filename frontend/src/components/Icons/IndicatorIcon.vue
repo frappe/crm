@@ -6,7 +6,7 @@
     viewBox="0 0 16 16"
     fill="none"
   >
-    <rect width="16" height="16" rx="4.5" :fill="color" />
+    <rect width="16" height="16" rx="4.5" :class="['fill-current', color]" />
     <circle cx="8" cy="8" r="3" fill="white" />
   </svg>
 </template>
