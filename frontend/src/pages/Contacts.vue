@@ -22,7 +22,7 @@ contacts.fetch()
 
 const columns = [
   {
-    label: 'Full Name',
+    label: 'Full name',
     key: 'full_name',
     type: 'user',
     size: 'w-44',

@@ -67,16 +67,27 @@
             :class="[column.size, column.align]"
           >
             <div v-if="column.type === 'user'">
-              <Avatar v-if="row[column.key]" :label="row[column.key]" size="md" />
+              <Avatar
+                v-if="getValue(row[column.key])"
+                class="flex items-center"
+                :image="getValue(row[column.key]).image"
+                :label="getValue(row[column.key]).label"
+                size="md"
+              />
             </div>
             <div v-else-if="column.type === 'logo'">
-              <Avatar :label="row[column.key]" size="md" shape="square" />
+              <Avatar
+                class="flex items-center"
+                :label="getValue(row[column.key]).label"
+                size="md"
+                shape="square"
+              />
             </div>
             <div v-else-if="column.type === 'status'">
               <IndicatorIcon />
             </div>
             <div class="text-base text-gray-900 truncate">
-              {{ row[column.key] }}
+              {{ getValue(row[column.key]).label }}
             </div>
           </div>
         </div>
@@ -153,4 +164,15 @@ const viewsDropdownOptions = [
     },
   },
 ]
+
+function getValue(value) {
+  if (typeof value === 'object') {
+    value.label = value.full_name
+    value.image = value.user_image
+    return value
+  }
+  return {
+    label: value,
+  }
+}
 </script>

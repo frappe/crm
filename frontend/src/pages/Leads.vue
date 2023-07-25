@@ -6,8 +6,10 @@
 import ListView from '../components/ListView.vue'
 import { computed } from 'vue'
 import { createListResource } from 'frappe-ui'
+import { usersStore } from '../stores/users'
 
 const title = 'Leads'
+const { getUser } = usersStore()
 
 const leads = createListResource({
   type: 'list',
@@ -32,9 +34,8 @@ leads.fetch()
 
 const columns = [
   {
-    label: 'Full name',
+    label: 'Name',
     key: 'full_name',
-    type: 'user',
     size: 'w-44',
   },
   {
@@ -77,7 +78,7 @@ const rows = computed(() => {
       status: lead.status,
       email: lead.email,
       mobile_no: lead.mobile_no,
-      lead_owner: lead.lead_owner,
+      lead_owner: getUser(lead.lead_owner),
     }
   })
 })
