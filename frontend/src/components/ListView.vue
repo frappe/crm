@@ -78,6 +78,7 @@
             <div v-else-if="column.type === 'logo'">
               <Avatar
                 class="flex items-center"
+                :image="getValue(row[column.key]).logo"
                 :label="getValue(row[column.key]).label"
                 size="md"
                 shape="square"
@@ -167,8 +168,8 @@ const viewsDropdownOptions = [
 
 function getValue(value) {
   if (typeof value === 'object') {
-    value.label = value.full_name
-    value.image = value.user_image
+    value.label = value.full_name || value.label
+    value.image = value.user_image || value.logo
     return value
   }
   return {

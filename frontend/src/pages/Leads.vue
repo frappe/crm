@@ -19,6 +19,7 @@ const leads = createListResource({
     'first_name',
     'last_name',
     'organization_name',
+    'organization_logo',
     'status',
     'email',
     'mobile_no',
@@ -74,7 +75,10 @@ const rows = computed(() => {
   return leads.data?.map((lead) => {
     return {
       full_name: lead.first_name + ' ' + lead.last_name,
-      organization_name: lead.organization_name,
+      organization_name: {
+        label: lead.organization_name,
+        logo: lead.organization_logo,
+      },
       status: {
         label: lead.status,
         color: indicatorColor[lead.status],

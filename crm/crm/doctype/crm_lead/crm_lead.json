@@ -30,6 +30,7 @@
   "section_break_uixv",
   "organization_name",
   "no_of_employees",
+  "organization_logo",
   "column_break_dbsv",
   "annual_revenue",
   "industry"
@@ -167,11 +168,16 @@
    "fieldtype": "Link",
    "label": "Industry",
    "options": "CRM Industry"
+  },
+  {
+   "fieldname": "organization_logo",
+   "fieldtype": "Attach Image",
+   "label": "Organization Logo"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-24 19:43:16.008607",
+ "modified": "2023-07-25 16:20:30.468169",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM Lead",
