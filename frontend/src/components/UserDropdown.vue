@@ -27,16 +27,19 @@
 <script setup>
 import { Dropdown, Avatar, FeatherIcon } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
+import { usersStore } from '../stores/users';
 import { computed } from 'vue'
 
-const session = sessionStore()
-const user = computed(() => session.user || {})
+const { logout } = sessionStore()
+const { getUser } = usersStore()
+
+const user = computed(() => getUser() || {})
 
 const userDropdownOptions = [
   {
     icon: 'log-out',
     label: 'Log out',
-    onClick: () => session.logout.submit(),
+    onClick: () => logout.submit(),
   },
 ]
 </script>
