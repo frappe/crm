@@ -43,7 +43,7 @@
         id="list-header"
         class="flex space-x-4 items-center px-5 py-2 border-b"
       >
-        <Checkbox class="" />
+        <Checkbox class="[&>input]:duration-300 [&>input]:cursor-pointer" />
         <div
           v-for="column in columns"
           :key="column"
@@ -59,7 +59,7 @@
           :key="row"
           class="flex space-x-4 items-center mx-2 px-3 py-2 border-b"
         >
-          <Checkbox class="" />
+          <Checkbox class="[&>input]:duration-300 [&>input]:cursor-pointer" />
           <div
             v-for="column in columns"
             :key="column.key"
