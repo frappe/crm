@@ -12,7 +12,7 @@ const title = 'Contacts'
 const contacts = createListResource({
   type: 'list',
   doctype: 'Contact',
-  fields: ['name', 'full_name', 'email_id', 'phone'],
+  fields: ['name', 'full_name', 'image', 'email_id', 'phone'],
   orderBy: 'full_name asc',
   cache: 'Contacts',
   pageLength: 999,
@@ -44,7 +44,11 @@ const columns = [
 const rows = computed(() => {
   return contacts.data?.map((contact) => {
     return {
-      full_name: contact.full_name,
+      full_name: {
+        label: contact.full_name,
+        image_label: contact.full_name,
+        image: contact.image,
+      },
       email: contact.email_id,
       phone: contact.phone,
     }

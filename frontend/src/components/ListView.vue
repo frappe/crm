@@ -68,18 +68,19 @@
           >
             <div v-if="column.type === 'user'">
               <Avatar
-                v-if="getValue(row[column.key])"
+                v-if="getValue(row[column.key]).label"
                 class="flex items-center"
                 :image="getValue(row[column.key]).image"
-                :label="getValue(row[column.key]).label"
+                :label="getValue(row[column.key]).image_label"
                 size="md"
               />
             </div>
             <div v-else-if="column.type === 'logo'">
               <Avatar
+                v-if="getValue(row[column.key]).label"
                 class="flex items-center"
                 :image="getValue(row[column.key]).logo"
-                :label="getValue(row[column.key]).label"
+                :label="getValue(row[column.key]).image_label"
                 size="md"
                 shape="square"
               />
@@ -167,9 +168,10 @@ const viewsDropdownOptions = [
 ]
 
 function getValue(value) {
-  if (typeof value === 'object') {
+  if (value && typeof value === 'object') {
     value.label = value.full_name || value.label
-    value.image = value.user_image || value.logo
+    value.image = value.image || value.user_image || value.logo
+    value.image_label = value.image_label || value.label
     return value
   }
   return {

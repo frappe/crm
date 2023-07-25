@@ -17,7 +17,8 @@ const leads = createListResource({
   fields: [
     'name',
     'first_name',
-    'last_name',
+    'lead_name',
+    'image',
     'organization_name',
     'organization_logo',
     'status',
@@ -26,7 +27,7 @@ const leads = createListResource({
     'lead_owner',
     'modified',
   ],
-  orderBy: 'modified asc',
+  orderBy: 'modified desc',
   cache: 'Leads',
   pageLength: 999,
   auto: true,
@@ -36,7 +37,8 @@ leads.fetch()
 const columns = [
   {
     label: 'Name',
-    key: 'full_name',
+    key: 'lead_name',
+    type: 'user',
     size: 'w-44',
   },
   {
@@ -74,7 +76,11 @@ const columns = [
 const rows = computed(() => {
   return leads.data?.map((lead) => {
     return {
-      full_name: lead.first_name + ' ' + lead.last_name,
+      lead_name: {
+        label: lead.lead_name,
+        image: lead.image,
+        image_label: lead.first_name,
+      },
       organization_name: {
         label: lead.organization_name,
         logo: lead.organization_logo,
@@ -85,7 +91,7 @@ const rows = computed(() => {
       },
       email: lead.email,
       mobile_no: lead.mobile_no,
-      lead_owner: getUser(lead.lead_owner),
+      lead_owner: lead.lead_owner && getUser(lead.lead_owner),
     }
   })
 })
