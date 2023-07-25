@@ -1,5 +1,5 @@
 <template>
-  <ListView :title="title" :columns="columns" :rows="rows" />
+  <ListView :title="title" :columns="columns" :rows="rows" row-key="name" />
 </template>
 
 <script setup>
@@ -44,6 +44,7 @@ const columns = [
 const rows = computed(() => {
   return contacts.data?.map((contact) => {
     return {
+      name: contact.name,
       full_name: {
         label: contact.full_name,
         image_label: contact.full_name,

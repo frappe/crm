@@ -43,7 +43,11 @@
         id="list-header"
         class="flex space-x-4 items-center px-5 py-2 border-b"
       >
-        <Checkbox class="[&>input]:duration-300 [&>input]:cursor-pointer" />
+        <Checkbox
+          class="[&>input]:duration-300 [&>input]:cursor-pointer"
+          :modelValue="allRowsSelected"
+          @click="toggleAllRows"
+        />
         <div
           v-for="column in columns"
           :key="column"
@@ -56,10 +60,19 @@
       <div id="list-rows" class="h-full overflow-y-auto">
         <div
           v-for="row in rows"
-          :key="row"
-          class="flex space-x-4 items-center mx-2 px-3 py-2 border-b"
+          :key="row[rowKey]"
+          class="flex space-x-4 items-center mx-2 px-3 py-2 border-b cursor-pointer transition-all duration-200 ease-in-out"
+          :class="
+            selections.has(row[rowKey])
+              ? 'bg-gray-100 hover:bg-gray-200'
+              : 'hover:bg-gray-50'
+          "
         >
-          <Checkbox class="[&>input]:duration-300 [&>input]:cursor-pointer" />
+          <Checkbox
+            :modelValue="selections.has(row[rowKey])"
+            @click="toggleRow(row[rowKey])"
+            class="[&>input]:duration-300 [&>input]:cursor-pointer"
+          />
           <div
             v-for="column in columns"
             :key="column.key"
@@ -102,7 +115,7 @@ import { FeatherIcon, Dropdown, Checkbox, Avatar } from 'frappe-ui'
 import SortIcon from './Icons/SortIcon.vue'
 import FilterIcon from './Icons/FilterIcon.vue'
 import IndicatorIcon from './Icons/IndicatorIcon.vue'
-import { ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 
 const props = defineProps({
   title: {
@@ -116,6 +129,10 @@ const props = defineProps({
   rows: {
     type: Array,
     default: [],
+  },
+  rowKey: {
+    type: String,
+    required: true,
   },
 })
 
@@ -174,8 +191,27 @@ function getValue(value) {
     value.image_label = value.image_label || value.label
     return value
   }
-  return {
-    label: value,
+  return { label: value }
+}
+
+let selections = reactive(new Set())
+
+const allRowsSelected = computed(() => {
+  if (!props.rows.length) return false
+  return selections.size === props.rows.length
+})
+
+function toggleRow(row) {
+  if (!selections.delete(row)) {
+    selections.add(row)
   }
+}
+
+function toggleAllRows() {
+  if (allRowsSelected.value) {
+    selections.clear()
+    return
+  }
+  props.rows.forEach((row) => selections.add(row[props.rowKey]))
 }
 </script>
