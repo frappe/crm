@@ -38,7 +38,7 @@ const columns = [
   {
     label: 'Name',
     key: 'lead_name',
-    type: 'user',
+    type: 'avatar',
     size: 'w-44',
   },
   {
@@ -49,7 +49,7 @@ const columns = [
   },
   {
     label: 'Status',
-    key: 'status',
+    key: 'indicator',
     type: 'status',
     size: 'w-44',
   },
@@ -68,7 +68,7 @@ const columns = [
   {
     label: 'Lead owner',
     key: 'lead_owner',
-    type: 'user',
+    type: 'avatar',
     size: 'w-44',
   },
 ]

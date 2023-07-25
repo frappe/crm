@@ -24,7 +24,7 @@ const columns = [
   {
     label: 'Full name',
     key: 'full_name',
-    type: 'user',
+    type: 'avatar',
     size: 'w-44',
   },
   {

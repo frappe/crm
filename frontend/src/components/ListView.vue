@@ -66,7 +66,7 @@
             class="flex items-center space-x-2.5"
             :class="[column.size, column.align]"
           >
-            <div v-if="column.type === 'user'">
+            <div v-if="column.type === 'avatar'">
               <Avatar
                 v-if="getValue(row[column.key]).label"
                 class="flex items-center"
@@ -85,7 +85,7 @@
                 shape="square"
               />
             </div>
-            <div v-else-if="column.type === 'status'">
+            <div v-else-if="column.type === 'indicator'">
               <IndicatorIcon :color="getValue(row[column.key]).color" />
             </div>
             <div class="text-base text-gray-900 truncate">
