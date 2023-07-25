@@ -27,6 +27,7 @@
 import UserDropdown from './UserDropdown.vue'
 import LeadsIcon from './Icons/LeadsIcon.vue'
 import DealsIcon from './Icons/DealsIcon.vue'
+import ContactsIcon from './Icons/ContactsIcon.vue'
 import InboxIcon from './Icons/InboxIcon.vue'
 import DashboardIcon from './Icons/DashboardIcon.vue'
 import NavLinks from './NavLinks.vue'
@@ -46,6 +47,11 @@ const navigations = [
     name: 'Deals',
     icon: DealsIcon,
     route: { name: 'Deals' },
+  },
+  {
+    name: 'Contacts',
+    icon: ContactsIcon,
+    route: { name: 'Contacts' },
   },
   {
     name: 'Dashboard',
