@@ -63,10 +63,21 @@
           <div
             v-for="column in columns"
             :key="column.key"
-            class="text-base text-gray-900 truncate"
+            class="flex items-center space-x-2.5"
             :class="[column.size, column.align]"
           >
-            {{ row[column.key] }}
+            <div v-if="column.type === 'user'">
+              <Avatar v-if="row[column.key]" :label="row[column.key]" size="md" />
+            </div>
+            <div v-else-if="column.type === 'logo'">
+              <Avatar :label="row[column.key]" size="md" shape="square" />
+            </div>
+            <div v-else-if="column.type === 'status'">
+              <IndicatorIcon />
+            </div>
+            <div class="text-base text-gray-900 truncate">
+              {{ row[column.key] }}
+            </div>
           </div>
         </div>
       </div>
@@ -74,9 +85,10 @@
   </div>
 </template>
 <script setup>
-import { FeatherIcon, Dropdown, Checkbox } from 'frappe-ui'
+import { FeatherIcon, Dropdown, Checkbox, Avatar } from 'frappe-ui'
 import SortIcon from './Icons/SortIcon.vue'
 import FilterIcon from './Icons/FilterIcon.vue'
+import IndicatorIcon from './Icons/IndicatorIcon.vue'
 import { ref } from 'vue'
 
 const props = defineProps({

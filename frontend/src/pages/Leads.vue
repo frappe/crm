@@ -34,31 +34,37 @@ const columns = [
   {
     label: 'Full name',
     key: 'full_name',
+    type: 'user',
     size: 'w-44',
   },
   {
     label: 'Organization',
     key: 'organization_name',
+    type: 'logo',
     size: 'w-44',
   },
   {
     label: 'Status',
     key: 'status',
+    type: 'status',
     size: 'w-44',
   },
   {
     label: 'Email',
     key: 'email',
+    type: 'email',
     size: 'w-44',
   },
   {
     label: 'Mobile no',
     key: 'mobile_no',
+    type: 'phone',
     size: 'w-44',
   },
   {
     label: 'Lead owner',
     key: 'lead_owner',
+    type: 'user',
     size: 'w-44',
   },
 ]

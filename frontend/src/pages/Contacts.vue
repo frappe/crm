@@ -24,16 +24,19 @@ const columns = [
   {
     label: 'Full Name',
     key: 'full_name',
+    type: 'user',
     size: 'w-44',
   },
   {
     label: 'Email',
     key: 'email',
+    type: 'email',
     size: 'w-44',
   },
   {
     label: 'Phone',
     key: 'phone',
+    type: 'phone',
     size: 'w-44',
   },
 ]
