@@ -7,7 +7,7 @@ import ListView from '../components/ListView.vue'
 import { computed } from 'vue'
 import { createListResource } from 'frappe-ui'
 
-const title = 'Contacts'
+const title = 'Contact'
 
 const contacts = createListResource({
   type: 'list',

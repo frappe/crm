@@ -8,7 +8,7 @@ import { computed } from 'vue'
 import { createListResource } from 'frappe-ui'
 import { usersStore } from '../stores/users'
 
-const title = 'Leads'
+const title = 'Lead'
 const { getUser } = usersStore()
 
 const leads = createListResource({
