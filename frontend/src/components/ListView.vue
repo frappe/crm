@@ -63,7 +63,7 @@
           <div
             v-for="column in columns"
             :key="column.key"
-            class="text-base text-gray-900"
+            class="text-base text-gray-900 truncate"
             :class="[column.size, column.align]"
           >
             {{ row[column.key] }}
