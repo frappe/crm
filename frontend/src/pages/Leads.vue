@@ -49,8 +49,8 @@ const columns = [
   },
   {
     label: 'Status',
-    key: 'indicator',
-    type: 'status',
+    key: 'status',
+    type: 'indicator',
     size: 'w-44',
   },
   {
