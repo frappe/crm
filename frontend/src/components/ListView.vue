@@ -16,12 +16,14 @@
     <div class="left flex space-x-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
-          <Button
-            :label="currentView.label"
-            :icon-right="open ? 'chevron-up' : 'chevron-down'"
-          >
+          <Button :label="currentView.label">
             <template #prefix
               ><FeatherIcon :name="currentView.icon" class="h-4"
+            /></template>
+            <template #suffix
+              ><FeatherIcon
+                :name="open ? 'chevron-up' : 'chevron-down'"
+                class="h-4"
             /></template>
           </Button>
         </template>
