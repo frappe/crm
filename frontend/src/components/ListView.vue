@@ -1,19 +1,14 @@
 <template>
-  <div id="header" class="flex justify-between items-center px-5 py-4">
-    <div class="left flex space-x-2">
+  <LayoutHeader>
+    <template #left-header>
       <h1 class="font-semibold text-xl">{{ list.title }}</h1>
-    </div>
-    <div class="right flex space-x-2">
+    </template>
+    <template #right-header>
       <Button variant="solid" label="Create">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
-    </div>
-  </div>
-  <div
-    id="sub-header"
-    class="flex justify-between items-center px-5 pb-3 border-b"
-  >
-    <div class="left flex space-x-2">
+    </template>
+    <template #left-subheader>
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
           <Button :label="currentView.label">
@@ -28,8 +23,8 @@
           </Button>
         </template>
       </Dropdown>
-    </div>
-    <div class="right flex space-x-2">
+    </template>
+    <template #right-subheader>
       <Button label="Sort">
         <template #prefix><SortIcon class="h-4" /></template>
       </Button>
@@ -37,8 +32,8 @@
         <template #prefix><FilterIcon class="h-4" /></template>
       </Button>
       <Button icon="more-horizontal" />
-    </div>
-  </div>
+    </template>
+  </LayoutHeader>
   <div id="content" class="flex flex-col w-full overflow-x-auto flex-1">
     <div class="flex flex-col overflow-y-hidden w-max min-w-full">
       <div
@@ -159,6 +154,7 @@ import SortIcon from './Icons/SortIcon.vue'
 import FilterIcon from './Icons/FilterIcon.vue'
 import IndicatorIcon from './Icons/IndicatorIcon.vue'
 import { reactive, ref, computed } from 'vue'
+import LayoutHeader from './LayoutHeader.vue'
 
 const props = defineProps({
   list: {
@@ -239,7 +235,8 @@ function getValue(value) {
 
 let selections = reactive(new Set())
 let selectedText = computed(() => {
-  let title = selections.size === 1 ? props.list.singular_label : props.list.plural_label
+  let title =
+    selections.size === 1 ? props.list.singular_label : props.list.plural_label
   return `${selections.size} ${title} selected`
 })
 

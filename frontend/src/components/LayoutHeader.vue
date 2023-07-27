@@ -1,0 +1,21 @@
+<template>
+  <div id="header" class="flex justify-between items-center px-5 py-4">
+    <div class="flex items-center gap-2">
+      <slot name="left-header" />
+    </div>
+    <div class="flex items-center gap-2">
+      <slot name="right-header" class="flex items-center gap-2" />
+    </div>
+  </div>
+  <div
+    id="sub-header"
+    class="flex justify-between items-center px-5 pb-3 border-b"
+  >
+    <div class="flex items-center gap-2">
+      <slot name="left-subheader" />
+    </div>
+    <div class="flex items-center gap-2">
+      <slot name="right-subheader" />
+    </div>
+  </div>
+</template>
