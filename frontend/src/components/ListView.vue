@@ -1,7 +1,7 @@
 <template>
   <div id="header" class="flex justify-between items-center px-5 py-4">
     <div class="left flex space-x-2">
-      <h1 class="font-semibold text-xl">{{ title }}s</h1>
+      <h1 class="font-semibold text-xl">{{ list.title }}</h1>
     </div>
     <div class="right flex space-x-2">
       <Button variant="solid" label="Create">
@@ -161,8 +161,8 @@ import IndicatorIcon from './Icons/IndicatorIcon.vue'
 import { reactive, ref, computed } from 'vue'
 
 const props = defineProps({
-  title: {
-    type: String,
+  list: {
+    type: Object,
     required: true,
   },
   columns: {
@@ -239,7 +239,7 @@ function getValue(value) {
 
 let selections = reactive(new Set())
 let selectedText = computed(() => {
-  let title = selections.size === 1 ? props.title : `${props.title}s`
+  let title = selections.size === 1 ? props.list.singular_label : props.list.plural_label
   return `${selections.size} ${title} selected`
 })
 

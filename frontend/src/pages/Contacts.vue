@@ -1,5 +1,5 @@
 <template>
-  <ListView :title="title" :columns="columns" :rows="rows" row-key="name" />
+  <ListView :list="list_details" :columns="columns" :rows="rows" row-key="name" />
 </template>
 
 <script setup>
@@ -7,7 +7,11 @@ import ListView from '../components/ListView.vue'
 import { computed } from 'vue'
 import { createListResource } from 'frappe-ui'
 
-const title = 'Contact'
+const list_details = {
+  title: 'Contacts',
+  plural_label: 'Contacts',
+  singular_label: 'Contact',
+}
 
 const contacts = createListResource({
   type: 'list',

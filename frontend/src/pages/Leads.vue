@@ -1,5 +1,5 @@
 <template>
-  <ListView :title="title" :columns="columns" :rows="rows" row-key="name" />
+  <ListView :list="list_details" :columns="columns" :rows="rows" row-key="name" />
 </template>
 
 <script setup>
@@ -8,7 +8,11 @@ import { computed } from 'vue'
 import { createListResource } from 'frappe-ui'
 import { usersStore } from '../stores/users'
 
-const title = 'Lead'
+const list_details = {
+  title: 'Leads',
+  plural_label: 'Leads',
+  singular_label: 'Lead',
+}
 const { getUser } = usersStore()
 
 const leads = createListResource({
