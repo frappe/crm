@@ -58,6 +58,9 @@
     <template #tab-content="{ tab }">
       <div>{{ tab.label }}</div>
     </template>
+    <template #details>
+      <div class="w-[390px] border-l px-6 py-3">{{ lead.doc.lead_name }}</div>
+    </template>
   </TabView>
 </template>
 <script setup>

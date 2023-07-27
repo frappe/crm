@@ -15,14 +15,15 @@
       {{ tab.label }}
     </div>
   </div>
-  <div id="tabs-contents" class="h-full">
-    <div class="bg-gray-50 h-full">
+  <div id="tabs-contents" class="flex h-full">
+    <div class="flex-1 bg-gray-50">
       <div v-for="tab in tabs" :key="tab.label">
         <div v-if="activeTab == tab.label" class="p-6">
           <slot name="tab-content" v-bind="{ tab }" />
         </div>
       </div>
     </div>
+    <slot name="details" />
   </div>
 </template>
 <script setup>
