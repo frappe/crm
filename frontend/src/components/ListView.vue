@@ -60,9 +60,10 @@
         </div>
       </div>
       <div id="list-rows" class="h-full overflow-y-auto">
-        <div
+        <router-link
           v-for="row in rows"
           :key="row[rowKey]"
+          :to="$router.currentRoute.value.path + '/' + row[rowKey]"
           class="flex space-x-4 items-center mx-2 px-3 py-2 border-b cursor-pointer transition-all duration-200 ease-in-out"
           :class="
             selections.has(row[rowKey])
@@ -72,7 +73,7 @@
         >
           <Checkbox
             :modelValue="selections.has(row[rowKey])"
-            @click="toggleRow(row[rowKey])"
+            @click.stop="toggleRow(row[rowKey])"
             class="[&>input]:duration-300 [&>input]:cursor-pointer"
           />
           <div
@@ -107,7 +108,7 @@
               {{ getValue(row[column.key]).label }}
             </div>
           </div>
-        </div>
+        </router-link>
       </div>
       <transition
         enter-active-class="duration-300 ease-out"
