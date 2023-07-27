@@ -13,6 +13,12 @@ const routes = [
     component: () => import('@/pages/Leads.vue'),
   },
   {
+    path: '/leads/:leadId',
+    name: 'Lead',
+    component: () => import('@/pages/Lead.vue'),
+    props: true,
+  },
+  {
     path: '/deals',
     name: 'Deals',
     component: () => import('@/pages/Deals.vue'),
