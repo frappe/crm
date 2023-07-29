@@ -54,17 +54,36 @@
       <Button icon="more-horizontal" />
     </template>
   </LayoutHeader>
-  <TabView v-if="lead.doc" :tabs="tabs">
-    <template #tab-content="{ tab }">
-      <div>{{ tab.label }}</div>
-    </template>
-    <template #details>
+  <TabGroup v-if="lead.doc">
+    <TabList class="flex items-center gap-6 border-b pl-5">
+      <Tab
+        as="template"
+        v-for="tab in tabs"
+        :key="tab.label"
+        v-slot="{ selected }"
+      >
+        <button
+          class="flex items-center gap-2 py-2 border-b hover:text-gray-900 -mb-[1px]"
+          :class="
+            selected
+              ? 'border-blue-500 text-gray-900 hover:border-blue-500'
+              : 'border-transparent text-gray-700 hover:border-gray-400'
+          "
+        >
+          <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+          {{ tab.label }}
+        </button>
+      </Tab>
+    </TabList>
+    <TabPanels class="flex h-full">
+      <TabPanel class="flex-1 bg-gray-50" v-for="tab in tabs">
+        <div class="p-6">{{ tab.label }}</div>
+      </TabPanel>
       <div class="w-[390px] border-l px-6 py-3">{{ lead.doc.lead_name }}</div>
-    </template>
-  </TabView>
+    </TabPanels>
+  </TabGroup>
 </template>
 <script setup>
-import TabView from '@/components/TabView.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -72,6 +91,7 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LayoutHeader from '../components/LayoutHeader.vue'
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import {
   createDocumentResource,
   Avatar,
