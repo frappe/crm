@@ -2,7 +2,12 @@
   <div class="flex h-screen w-screen justify-center bg-gray-100">
     <div class="mt-32 w-full px-4">
       <div class="mx-auto mt-6 w-full px-4 sm:w-96">
-        <form method="POST" action="/api/method/login" @submit.prevent="submit">
+        <form
+          v-if="showEmailLogin"
+          method="POST"
+          action="/api/method/login"
+          @submit.prevent="submit"
+        >
           <div>
             <FormControl
               variant="outline"
@@ -38,18 +43,45 @@
             Login
           </Button>
         </form>
+        <div
+          class="mx-auto space-y-2"
+          v-if="authProviders.data && !showEmailLogin"
+        >
+          <Button @click="showEmailLogin = true" variant="solid" class="w-full">
+            Login via email
+          </Button>
+          <a
+            class="flex justify-center items-center gap-2 w-full rounded border bg-gray-900 px-3 py-1 text-center text-base h-7 focus:outline-none focus:ring-2 focus:ring-gray-400 text-white transition-colors hover:bg-gray-700"
+            v-for="provider in authProviders.data"
+            :key="provider.name"
+            :href="provider.auth_url"
+          >
+            <div v-if="provider.icon" v-html="provider.icon"/>
+            Login via {{ provider.provider_name }}
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue'
-import { FormControl, ErrorMessage } from 'frappe-ui'
+import { FormControl, ErrorMessage, createResource } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 
 const session = sessionStore()
+let showEmailLogin = ref(false)
 let email = ref('')
 let password = ref('')
+
+let authProviders = createResource({
+  url: 'crm.api.auth.oauth_providers',
+  auto: true,
+  onSuccess(data) {
+    showEmailLogin.value = data.length === 0
+  },
+})
+authProviders.fetch()
 
 function submit() {
   session.login.submit({
