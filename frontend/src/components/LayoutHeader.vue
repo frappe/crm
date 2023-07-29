@@ -8,6 +8,7 @@
     </div>
   </div>
   <div
+    v-if="$slots['left-subheader'] || $slots['right-subheader']"
     id="sub-header"
     class="flex justify-between items-center px-5 pb-3 border-b"
   >
