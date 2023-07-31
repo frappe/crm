@@ -85,25 +85,28 @@
           :key="section.label"
           class="flex flex-col"
         >
-          <div
-            class="flex items-center gap-1 text-base font-semibold leading-5 cursor-pointer"
-          >
-            {{ section.label }}
-            <FeatherIcon
-              name="chevron-up"
-              class="h-4 text-gray-600"
-            />
-          </div>
-          <div class="flex flex-col gap-3">
+          <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
             <div
-              v-for="field in section.fields"
-              :key="field.label"
-              class="flex items-center gap-2 text-base leading-5 first:mt-4.5"
+              class="flex items-center gap-1 text-base font-semibold leading-5 cursor-pointer"
+              @click="toggle()"
             >
-              <div class="text-gray-600 w-[106px]">{{ field.label }}</div>
-              <div class="text-gray-900">{{ field.value }}</div>
+              {{ section.label }}
+              <FeatherIcon
+                :name="opened ? 'chevron-up' : 'chevron-down'"
+                class="h-4 text-gray-600"
+              />
             </div>
-          </div>
+              <div v-if="opened" class="flex flex-col gap-3">
+                <div
+                  v-for="field in section.fields"
+                  :key="field.label"
+                  class="flex items-center gap-2 text-base leading-5 first:mt-4.5"
+                >
+                  <div class="text-gray-600 w-[106px]">{{ field.label }}</div>
+                  <div class="text-gray-900">{{ field.value }}</div>
+                </div>
+              </div>
+          </Toggler>
         </div>
       </div>
     </TabPanels>
@@ -117,6 +120,7 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import Toggler from '@/components/Toggler.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import {
   createDocumentResource,
