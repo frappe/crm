@@ -79,7 +79,33 @@
       <TabPanel class="flex-1 bg-gray-50" v-for="tab in tabs">
         <div class="p-6">{{ tab.label }}</div>
       </TabPanel>
-      <div class="w-[390px] border-l px-6 py-3">{{ lead.doc.lead_name }}</div>
+      <div class="flex flex-col gap-6.5 border-l px-6 py-3 w-[390px]">
+        <div
+          v-for="section in detailSections"
+          :key="section.label"
+          class="flex flex-col"
+        >
+          <div
+            class="flex items-center gap-1 text-base font-semibold leading-5 cursor-pointer"
+          >
+            {{ section.label }}
+            <FeatherIcon
+              name="chevron-up"
+              class="h-4 text-gray-600"
+            />
+          </div>
+          <div class="flex flex-col gap-3">
+            <div
+              v-for="field in section.fields"
+              :key="field.label"
+              class="flex items-center gap-2 text-base leading-5 first:mt-4.5"
+            >
+              <div class="text-gray-600 w-[106px]">{{ field.label }}</div>
+              <div class="text-gray-900">{{ field.value }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </TabPanels>
   </TabGroup>
 </template>
@@ -90,7 +116,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import LayoutHeader from '../components/LayoutHeader.vue'
+import LayoutHeader from '@/components/LayoutHeader.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import {
   createDocumentResource,
@@ -99,6 +125,7 @@ import {
   Dropdown,
 } from 'frappe-ui'
 import { usersStore } from '../stores/users'
+import { computed } from 'vue'
 
 const { getUser } = usersStore()
 
@@ -182,4 +209,49 @@ const indicatorColor = {
   Negotiation: 'text-red-600',
   Converted: 'text-green-600',
 }
+
+const detailSections = computed(() => {
+  return [
+    {
+      label: 'About this lead',
+      opened: true,
+      fields: [
+        {
+          label: 'Status',
+          value: lead.doc.status,
+        },
+        {
+          label: 'Lead Owner',
+          value: getUser(lead.doc.lead_owner).full_name,
+        },
+        {
+          label: 'Organization',
+          value: lead.doc.organization_name,
+        },
+        {
+          label: 'Website',
+          value: lead.doc.organization_website,
+        },
+      ],
+    },
+    {
+      label: 'Person',
+      opened: true,
+      fields: [
+        {
+          label: 'Name',
+          value: lead.doc.lead_name,
+        },
+        {
+          label: 'Email',
+          value: lead.doc.email,
+        },
+        {
+          label: 'Mobile No.',
+          value: lead.doc.mobile_no,
+        },
+      ],
+    },
+  ]
+})
 </script>
