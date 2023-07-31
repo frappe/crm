@@ -54,26 +54,28 @@
       <Button icon="more-horizontal" />
     </template>
   </LayoutHeader>
-  <TabGroup v-if="lead.doc">
-    <TabList class="flex items-center gap-6 border-b pl-5">
+  <TabGroup v-if="lead.doc" @change="moveIndicator">
+    <TabList class="flex items-center gap-6 border-b pl-5 relative">
       <Tab
+        ref="tabRef"
         as="template"
         v-for="tab in tabs"
         :key="tab.label"
         v-slot="{ selected }"
       >
         <button
-          class="flex items-center gap-2 py-2 border-b hover:text-gray-900 -mb-[1px]"
-          :class="
-            selected
-              ? 'border-blue-500 text-gray-900 hover:border-blue-500'
-              : 'border-transparent text-gray-700 hover:border-gray-400'
-          "
+          class="flex items-center gap-2 py-2 -mb-[1px] text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
+          :class="{ 'text-gray-900': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
           {{ tab.label }}
         </button>
       </Tab>
+      <div
+        ref="indicator"
+        class="h-[1px] bg-blue-500 w-[82px] absolute -bottom-[1px]"
+        :style="{ left: `${indicatorLeftValue}px` }"
+      />
     </TabList>
     <TabPanels class="flex h-full">
       <TabPanel class="flex-1 bg-gray-50" v-for="tab in tabs">
@@ -137,8 +139,9 @@ import {
   FeatherIcon,
   Dropdown,
 } from 'frappe-ui'
+import { TransitionPresets, useTransition } from '@vueuse/core'
 import { usersStore } from '../stores/users'
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 
 const { getUser } = usersStore()
 
@@ -176,6 +179,21 @@ const tabs = [
     icon: NoteIcon,
   },
 ]
+
+const tabRef = ref([])
+const indicator = ref(null)
+
+let indicatorLeft = ref(20)
+const indicatorLeftValue = useTransition(indicatorLeft, {
+  duration: 250,
+  ease: TransitionPresets.easeOutCubic,
+})
+
+const moveIndicator = (index) => {
+  const selectedTab = tabRef.value[index].el
+  indicator.value.style.width = `${selectedTab.offsetWidth}px`
+  indicatorLeft.value = selectedTab.offsetLeft
+}
 
 const statusDropdownOptions = [
   {
