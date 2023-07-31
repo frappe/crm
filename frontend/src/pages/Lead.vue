@@ -77,11 +77,16 @@
         :style="{ left: `${indicatorLeftValue}px` }"
       />
     </TabList>
-    <TabPanels class="flex h-full">
-      <TabPanel class="flex-1 bg-gray-50" v-for="tab in tabs">
+    <TabPanels class="flex h-full bg-gray-50">
+      <TabPanel
+        as="template"
+        class="flex-1"
+        v-for="tab in tabs"
+        :key="tab.label"
+      >
         <div class="p-6">{{ tab.label }}</div>
       </TabPanel>
-      <div class="flex flex-col gap-6.5 border-l px-6 py-3 w-[390px]">
+      <div class="flex flex-col gap-6.5 border-l px-6 py-3 w-[390px] bg-white">
         <div
           v-for="section in detailSections"
           :key="section.label"
