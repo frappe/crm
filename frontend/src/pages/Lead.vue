@@ -61,7 +61,7 @@
       <TabPanel class="flex-1" v-for="tab in tabs" :key="tab.label">
         <Activities :activities="tab.content" />
       </TabPanel>
-      <div class="flex flex-col gap-6.5 border-l px-6 py-3 w-[390px]">
+      <div class="flex flex-col gap-6.5 border-l p-3 w-[390px]">
         <div
           v-for="section in detailSections"
           :key="section.label"
@@ -69,7 +69,7 @@
         >
           <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
             <div
-              class="flex items-center gap-1 text-base font-semibold leading-5 cursor-pointer"
+              class="flex items-center gap-1 text-base font-semibold leading-5 px-3 cursor-pointer"
               @click="toggle()"
             >
               {{ section.label }}
@@ -90,10 +90,55 @@
                 <div
                   v-for="field in section.fields"
                   :key="field.label"
-                  class="flex items-center gap-2 text-base leading-5 first:mt-4.5"
+                  class="flex items-center px-3 gap-2 text-base leading-5 first:mt-4.5"
                 >
                   <div class="text-gray-600 w-[106px]">{{ field.label }}</div>
-                  <div class="text-gray-900">{{ field.value }}</div>
+                  <div class="flex-1">
+                    <FormControl
+                      v-if="field.type === 'select'"
+                      type="select"
+                      :options="field.options"
+                      v-model="lead.doc[field.name]"
+                    >
+                      <template #prefix>
+                        <IndicatorIcon
+                          :class="indicatorColor[lead.doc[field.name]]"
+                        />
+                      </template>
+                    </FormControl>
+                    <FormControl
+                      v-else-if="field.type === 'data'"
+                      type="text"
+                      v-model="lead.doc[field.name]"
+                    />
+                    <FormControl
+                      v-else-if="field.type === 'email'"
+                      type="email"
+                      v-model="lead.doc[field.name]"
+                    />
+                    <Autocomplete
+                      v-else-if="field.type === 'link'"
+                      :options="activeAgents"
+                      :value="getUser(lead.doc[field.name]).full_name"
+                      @change="
+                        (option) => (lead.doc[field.name] = option.email)
+                      "
+                      placeholder="Lead owner"
+                      class="bg-white"
+                    >
+                      <template #prefix="{ option }">
+                        <Avatar
+                          class="mr-2"
+                          :image="getUser(option.email).user_image"
+                          :label="getUser(option.email).full_name"
+                          size="sm"
+                        />
+                      </template>
+                    </Autocomplete>
+                    <div v-else class="text-gray-900">
+                      {{ lead.doc[field.name] }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </transition>
@@ -118,6 +163,8 @@ import {
   createDocumentResource,
   Avatar,
   FeatherIcon,
+  Autocomplete,
+  FormControl,
   Dropdown,
 } from 'frappe-ui'
 import { TransitionPresets, useTransition } from '@vueuse/core'
@@ -125,7 +172,7 @@ import { usersStore } from '@/stores/users'
 import { ref, computed, h } from 'vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 
-const { getUser } = usersStore()
+const { getUser, users } = usersStore()
 
 const props = defineProps({
   leadId: {
@@ -271,19 +318,30 @@ const detailSections = computed(() => {
       fields: [
         {
           label: 'Status',
-          value: lead.doc.status,
+          type: 'select',
+          name: 'status',
+          options: [
+            { label: 'New', value: 'New' },
+            { label: 'Contact made', value: 'Contact made' },
+            { label: 'Proposal made', value: 'Proposal made' },
+            { label: 'Negotiation', value: 'Negotiation' },
+            { label: 'Converted', value: 'Converted' },
+          ],
         },
         {
           label: 'Lead Owner',
-          value: getUser(lead.doc.lead_owner).full_name,
+          type: 'link',
+          name: 'full_name',
         },
         {
           label: 'Organization',
-          value: lead.doc.organization_name,
+          type: 'data',
+          name: 'organization_name',
         },
         {
           label: 'Website',
-          value: lead.doc.organization_website,
+          type: 'data',
+          name: 'organization_website',
         },
       ],
     },
@@ -293,18 +351,35 @@ const detailSections = computed(() => {
       fields: [
         {
           label: 'Name',
-          value: lead.doc.lead_name,
+          type: 'data',
+          name: 'lead_name',
         },
         {
           label: 'Email',
-          value: lead.doc.email,
+          type: 'email',
+          name: 'email',
         },
         {
           label: 'Mobile No.',
-          value: lead.doc.mobile_no,
+          type: 'phone',
+          name: 'mobile_no',
         },
       ],
     },
   ]
+})
+
+const activeAgents = computed(() => {
+  const nonAgents = ['Administrator', 'Guest']
+  return users.data
+    .filter((user) => !nonAgents.includes(user.name))
+    .sort((a, b) => a.full_name - b.full_name)
+    .map((user) => {
+      return {
+        label: user.full_name,
+        value: user.email,
+        ...user,
+      }
+    })
 })
 </script>
