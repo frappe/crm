@@ -54,7 +54,7 @@
       <Button icon="more-horizontal" />
     </template>
   </LayoutHeader>
-  <TabGroup v-if="lead.doc" @change="moveIndicator">
+  <TabGroup v-if="lead.doc" @change="onTabChange">
     <TabList class="flex items-center gap-6 border-b pl-5 relative">
       <Tab
         ref="tabRef"
@@ -78,13 +78,8 @@
       />
     </TabList>
     <TabPanels class="flex h-full bg-gray-50">
-      <TabPanel
-        as="template"
-        class="flex-1"
-        v-for="tab in tabs"
-        :key="tab.label"
-      >
-        <div class="p-6">{{ tab.label }}</div>
+      <TabPanel class="flex-1" v-for="tab in tabs" :key="tab.label">
+        <Activities :activities="tab.content" />
       </TabPanel>
       <div class="flex flex-col gap-6.5 border-l px-6 py-3 w-[390px] bg-white">
         <div
@@ -137,6 +132,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
+import Activities from '@/components/Activities.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import {
   createDocumentResource,
@@ -162,18 +158,49 @@ const lead = createDocumentResource({
   auto: true,
 })
 
+const activities = [
+  {
+    type: 'change',
+    datetime: '2021-08-20 12:00:00',
+    value: 'Status changed from New to Contact made',
+  },
+  {
+    type: 'change',
+    datetime: '2021-08-20 12:00:00',
+    value: 'Status changed from Proposal made to New',
+  },
+  {
+    type: 'email',
+    datetime: '2021-08-20 12:00:00',
+    value: 'Email sent to Sharon',
+  },
+  {
+    type: 'change',
+    datetime: '2021-08-20 12:00:00',
+    value: 'Status changed from Contact made to Proposal made',
+  },
+  {
+    type: 'call',
+    datetime: '2021-08-20 12:00:00',
+    value: 'Call made to Sharon',
+  },
+]
+
 const tabs = [
   {
     label: 'Activity',
     icon: ActivityIcon,
+    content: activities,
   },
   {
     label: 'Emails',
     icon: EmailIcon,
+    content: activities.filter((activity) => activity.type === 'email'),
   },
   {
     label: 'Calls',
     icon: PhoneIcon,
+    content: activities.filter((activity) => activity.type === 'call'),
   },
   {
     label: 'Tasks',
@@ -194,7 +221,7 @@ const indicatorLeftValue = useTransition(indicatorLeft, {
   ease: TransitionPresets.easeOutCubic,
 })
 
-const moveIndicator = (index) => {
+function onTabChange(index) {
   const selectedTab = tabRef.value[index].el
   indicator.value.style.width = `${selectedTab.offsetWidth}px`
   indicatorLeft.value = selectedTab.offsetLeft
