@@ -122,7 +122,7 @@ import {
 } from 'frappe-ui'
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
-import { ref, computed } from 'vue'
+import { ref, computed, h } from 'vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 
 const { getUser } = usersStore()
@@ -220,35 +220,35 @@ function onTabChange(index) {
 const statusDropdownOptions = [
   {
     label: 'New',
-    icon: IndicatorIcon,
+    icon: () => h(IndicatorIcon, { class: '!text-gray-600' }),
     onClick: () => {
       lead.doc.status = 'New'
     },
   },
   {
     label: 'Contact made',
-    icon: IndicatorIcon,
+    icon: () => h(IndicatorIcon, { class: 'text-orange-600' }),
     onClick: () => {
       lead.doc.status = 'Contact made'
     },
   },
   {
     label: 'Proposal made',
-    icon: IndicatorIcon,
+    icon: () => h(IndicatorIcon, { class: '!text-blue-600' }),
     onClick: () => {
       lead.doc.status = 'Proposal made'
     },
   },
   {
     label: 'Negotiation',
-    icon: IndicatorIcon,
+    icon: () => h(IndicatorIcon, { class: 'text-red-600' }),
     onClick: () => {
       lead.doc.status = 'Negotiation'
     },
   },
   {
     label: 'Converted',
-    icon: IndicatorIcon,
+    icon: () => h(IndicatorIcon, { class: 'text-green-600' }),
     onClick: () => {
       lead.doc.status = 'Converted'
     },
