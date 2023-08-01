@@ -3,10 +3,10 @@
 </template>
 
 <script setup>
-import ListView from '../components/ListView.vue'
+import ListView from '@/components/ListView.vue'
 import { computed } from 'vue'
 import { createListResource } from 'frappe-ui'
-import { usersStore } from '../stores/users'
+import { usersStore } from '@/stores/users'
 
 const list_details = {
   title: 'Leads',

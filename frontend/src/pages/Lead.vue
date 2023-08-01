@@ -121,9 +121,9 @@ import {
   Dropdown,
 } from 'frappe-ui'
 import { TransitionPresets, useTransition } from '@vueuse/core'
-import { usersStore } from '../stores/users'
+import { usersStore } from '@/stores/users'
 import { ref, computed } from 'vue'
-import Breadcrumbs from '../components/Breadcrumbs.vue'
+import Breadcrumbs from '@/components/Breadcrumbs.vue'
 
 const { getUser } = usersStore()
 

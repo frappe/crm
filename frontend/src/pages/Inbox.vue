@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import ListView from '../components/ListView.vue';
+import ListView from '@/components/ListView.vue';
 
 const list_details = {
   title: 'Inbox',

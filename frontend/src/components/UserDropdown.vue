@@ -27,7 +27,7 @@
 <script setup>
 import { Dropdown, Avatar, FeatherIcon } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
-import { usersStore } from '../stores/users';
+import { usersStore } from '@/stores/users';
 import { computed } from 'vue'
 
 const { logout } = sessionStore()

@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import ListView from '../components/ListView.vue'
+import ListView from '@/components/ListView.vue'
 import { computed } from 'vue'
 import { createListResource } from 'frappe-ui'
 
