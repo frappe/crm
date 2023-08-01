@@ -59,7 +59,7 @@
           v-for="row in rows"
           :key="row[rowKey]"
           :to="$router.currentRoute.value.path + '/' + row[rowKey]"
-          class="flex space-x-4 items-center mx-2 px-3 py-2 border-b cursor-pointer transition-all duration-200 ease-in-out"
+          class="flex space-x-4 items-center mx-2 px-3 py-2 border-b cursor-pointer transition-all duration-300 ease-in-out"
           :class="
             selections.has(row[rowKey])
               ? 'bg-gray-100 hover:bg-gray-200'
