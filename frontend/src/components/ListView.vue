@@ -43,7 +43,7 @@
         <Checkbox
           class="[&>input]:duration-300 [&>input]:cursor-pointer"
           :modelValue="allRowsSelected"
-          @click="toggleAllRows"
+          @click.stop="toggleAllRows"
         />
         <div
           v-for="column in columns"
