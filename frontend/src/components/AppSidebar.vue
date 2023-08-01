@@ -7,8 +7,8 @@
       <NavLinks
         :links="navigations"
         class="flex items-center rounded px-2 py-1 text-gray-800 transition-all duration-300 ease-in-out"
-        active="bg-gray-100 hover:bg-gray-200"
-        inactive="hover:bg-gray-50"
+        active="bg-white shadow-sm"
+        inactive="hover:bg-gray-100"
       >
         <template v-slot="{ link }">
           <div class="flex w-full items-center space-x-2">

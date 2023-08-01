@@ -73,15 +73,15 @@
       </Tab>
       <div
         ref="indicator"
-        class="h-[1px] bg-blue-500 w-[82px] absolute -bottom-[1px]"
+        class="h-[1px] bg-gray-900 w-[82px] absolute -bottom-[1px]"
         :style="{ left: `${indicatorLeftValue}px` }"
       />
     </TabList>
-    <TabPanels class="flex h-full bg-gray-50">
+    <TabPanels class="flex h-full">
       <TabPanel class="flex-1" v-for="tab in tabs" :key="tab.label">
         <Activities :activities="tab.content" />
       </TabPanel>
-      <div class="flex flex-col gap-6.5 border-l px-6 py-3 w-[390px] bg-white">
+      <div class="flex flex-col gap-6.5 border-l px-6 py-3 w-[390px]">
         <div
           v-for="section in detailSections"
           :key="section.label"
