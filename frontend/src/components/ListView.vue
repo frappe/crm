@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <h1 class="font-semibold text-xl">{{ list.title }}</h1>
+      <Breadcrumbs :items="[{ label: list.title }]" />
     </template>
     <template #right-header>
       <Button variant="solid" label="Create">
@@ -155,6 +155,7 @@ import FilterIcon from './Icons/FilterIcon.vue'
 import IndicatorIcon from './Icons/IndicatorIcon.vue'
 import { reactive, ref, computed } from 'vue'
 import LayoutHeader from './LayoutHeader.vue'
+import Breadcrumbs from './Breadcrumbs.vue'
 
 const props = defineProps({
   list: {

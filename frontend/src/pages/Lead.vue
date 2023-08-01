@@ -1,27 +1,7 @@
 <template>
   <LayoutHeader v-if="lead.doc">
     <template #left-header>
-      <FeatherIcon
-        name="chevron-left"
-        class="h-5 cursor-pointer"
-        @click="$router.back()"
-      />
-      <h1 class="font-semibold text-xl">{{ lead.doc.lead_name }}</h1>
-      <div
-        v-if="lead.doc.organization_name"
-        class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 p-1 pr-2 rounded ml-2 cursor-pointer"
-      >
-        <Avatar
-          class="flex items-center"
-          :image="lead.doc.organization_logo"
-          :label="lead.doc.organization_name"
-          size="sm"
-          shape="square"
-        />
-        <div class="text-base text-gray-700 truncate">
-          {{ lead.doc.organization_name }}
-        </div>
-      </div>
+      <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
       <div
@@ -64,7 +44,7 @@
         v-slot="{ selected }"
       >
         <button
-          class="flex items-center gap-2 py-[7px] -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
+          class="flex items-center gap-2 py-[9px] -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
           :class="{ 'text-gray-900': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
@@ -143,6 +123,7 @@ import {
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import { usersStore } from '../stores/users'
 import { ref, computed } from 'vue'
+import Breadcrumbs from '../components/Breadcrumbs.vue'
 
 const { getUser } = usersStore()
 
@@ -156,6 +137,15 @@ const lead = createDocumentResource({
   doctype: 'CRM Lead',
   name: props.leadId,
   auto: true,
+})
+
+const breadcrumbs = computed(() => {
+  let items = [{ label: 'Leads', route: { name: 'Leads' } }]
+  items.push({
+    label: lead.doc.lead_name,
+    route: { name: 'Lead', params: { leadId: lead.doc.name } },
+  })
+  return items
 })
 
 const activities = [
