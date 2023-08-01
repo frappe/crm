@@ -4,6 +4,10 @@ app_publisher = "Frappe Technologies Pvt. Ltd."
 app_description = "Kick-ass Open Source CRM"
 app_email = "shariq@frappe.io"
 app_license = "AGPLv3"
+app_icon_url = ""
+app_icon_title = "CRM"
+app_icon_route = "/crm"
+
 # required_apps = []
 
 # Includes in <head>
@@ -43,6 +47,10 @@ app_license = "AGPLv3"
 # role_home_page = {
 #	"Role": "home_page"
 # }
+
+website_route_rules = [
+	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
+]
 
 # Generators
 # ----------

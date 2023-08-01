@@ -4,12 +4,13 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build --base=/assets/crm/frontend/ && yarn copy-html-entry",
+    "copy-html-entry": "cp ../crm/public/frontend/index.html ../crm/www/crm.html",
+    "serve": "vite preview"
   },
   "dependencies": {
     "feather-icons": "^4.28.0",
-    "frappe-ui": "^0.1.0-alpha.9",
+    "frappe-ui": "^0.1.0-alpha.11",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2",
     "pinia": "^2.0.33"

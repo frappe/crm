@@ -2,5 +2,9 @@
 *.pyc
 *.egg-info
 *.swp
+__pycache__
 tags
 node_modules
+crm/public/frontend
+crm/www/crm.html
+build
