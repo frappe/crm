@@ -7,10 +7,6 @@
 </template>
 <script setup>
 const props = defineProps({
-  tab: {
-    type: String,
-    required: true,
-  },
   activities: {
     type: Array,
     default: [],

@@ -36,7 +36,6 @@ const leads = createListResource({
   pageLength: 999,
   auto: true,
 })
-leads.fetch()
 
 const columns = [
   {
