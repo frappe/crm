@@ -4,19 +4,29 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <div
-        v-if="lead.doc.lead_owner"
-        class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 pl-1.5 py-1 pr-2 rounded ml-2 cursor-pointer"
+      <Autocomplete
+        :options="activeAgents"
+        :value="getUser(lead.doc.lead_owner).full_name"
+        @change="(option) => (lead.doc.lead_owner = option.email)"
+        placeholder="Lead owner"
       >
-        <Avatar
-          :image="getUser(lead.doc.lead_owner).user_image"
-          :label="getUser(lead.doc.lead_owner).full_name"
-          size="sm"
-        />
-        <div class="text-base text-gray-700">
-          {{ getUser(lead.doc.lead_owner).full_name }}
-        </div>
-      </div>
+        <template #prefix>
+          <Avatar
+            class="mr-2"
+            :image="getUser(lead.doc.lead_owner).user_image"
+            :label="getUser(lead.doc.lead_owner).full_name"
+            size="sm"
+          />
+        </template>
+        <template #item-prefix="{ option }">
+          <Avatar
+            class="mr-2"
+            :image="getUser(option.email).user_image"
+            :label="getUser(option.email).full_name"
+            size="sm"
+          />
+        </template>
+      </Autocomplete>
       <Dropdown :options="statusDropdownOptions">
         <template #default="{ open }">
           <Button :label="lead.doc.status">
@@ -93,7 +103,7 @@
                   class="flex items-center px-3 gap-2 text-base leading-5 first:mt-4.5"
                 >
                   <div class="text-gray-600 w-[106px]">{{ field.label }}</div>
-                  <div class="flex-1">
+                  <div class="flex-1 w-full">
                     <FormControl
                       v-if="field.type === 'select'"
                       type="select"
@@ -107,11 +117,6 @@
                       </template>
                     </FormControl>
                     <FormControl
-                      v-else-if="field.type === 'data'"
-                      type="text"
-                      v-model="lead.doc[field.name]"
-                    />
-                    <FormControl
                       v-else-if="field.type === 'email'"
                       type="email"
                       v-model="lead.doc[field.name]"
@@ -124,9 +129,16 @@
                         (option) => (lead.doc[field.name] = option.email)
                       "
                       placeholder="Lead owner"
-                      class="bg-white"
                     >
-                      <template #prefix="{ option }">
+                      <template #prefix>
+                        <Avatar
+                          class="mr-2"
+                          :image="getUser(lead.doc[field.name]).user_image"
+                          :label="getUser(lead.doc[field.name]).full_name"
+                          size="sm"
+                        />
+                      </template>
+                      <template #item-prefix="{ option }">
                         <Avatar
                           class="mr-2"
                           :image="getUser(option.email).user_image"
@@ -135,9 +147,37 @@
                         />
                       </template>
                     </Autocomplete>
-                    <div v-else class="text-gray-900">
-                      {{ lead.doc[field.name] }}
-                    </div>
+                    <Dropdown
+                      v-else-if="field.type === 'dropdown'"
+                      :options="statusDropdownOptions"
+                      class="w-full flex-1"
+                    >
+                      <template #default="{ open }">
+                        <Button
+                          :label="lead.doc[field.name]"
+                          class="justify-between w-full"
+                        >
+                          <template #prefix>
+                            <IndicatorIcon
+                              :class="indicatorColor[lead.doc[field.name]]"
+                            />
+                          </template>
+                          <template #default>{{
+                            lead.doc[field.name]
+                          }}</template>
+                          <template #suffix
+                            ><FeatherIcon
+                              :name="open ? 'chevron-up' : 'chevron-down'"
+                              class="h-4"
+                          /></template>
+                        </Button>
+                      </template>
+                    </Dropdown>
+                    <FormControl
+                      v-else
+                      type="text"
+                      v-model="lead.doc[field.name]"
+                    />
                   </div>
                 </div>
               </div>
@@ -320,18 +360,12 @@ const detailSections = computed(() => {
           label: 'Status',
           type: 'select',
           name: 'status',
-          options: [
-            { label: 'New', value: 'New' },
-            { label: 'Contact made', value: 'Contact made' },
-            { label: 'Proposal made', value: 'Proposal made' },
-            { label: 'Negotiation', value: 'Negotiation' },
-            { label: 'Converted', value: 'Converted' },
-          ],
+          options: statusDropdownOptions,
         },
         {
           label: 'Lead Owner',
           type: 'link',
-          name: 'full_name',
+          name: 'lead_owner',
         },
         {
           label: 'Organization',
