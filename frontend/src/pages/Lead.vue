@@ -192,16 +192,18 @@
             </Toggler>
           </div>
         </div>
-        <div class="text-sm px-6 p-3 leading-5 cursor-pointer">
+        <div
+          class="flex items-center gap-1 text-sm px-6 p-3 leading-5 cursor-pointer"
+        >
           <span class="text-gray-600">Created </span>
-          <span :title="dateFormat(lead.doc.creation)">
+          <Tooltip :text="dateFormat(lead.doc.creation, dateTooltipFormat)">
             {{ timeAgo(lead.doc.creation) }}
-          </span>
+          </Tooltip>
           <span>&nbsp;&middot;&nbsp;</span>
           <span class="text-gray-600">Updated </span>
-          <span :title="dateFormat(lead.doc.modified)">
+          <Tooltip :text="dateFormat(lead.doc.modified, dateTooltipFormat)">
             {{ timeAgo(lead.doc.modified) }}
-          </span>
+          </Tooltip>
         </div>
       </div>
     </TabPanels>
@@ -225,6 +227,7 @@ import {
   Autocomplete,
   FormControl,
   Dropdown,
+  Tooltip,
 } from 'frappe-ui'
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
@@ -436,4 +439,6 @@ const activeAgents = computed(() => {
       }
     })
 })
+
+const dateTooltipFormat = 'dddd, MMMM D, YYYY h:mm A'
 </script>
