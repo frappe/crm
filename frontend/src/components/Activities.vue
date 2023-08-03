@@ -16,7 +16,7 @@
             class="flex items-center justify-center rounded-full outline outline-4 outline-white w-6 h-6 bg-gray-200 z-10"
           >
             <FeatherIcon
-              :name="timelineIcon(activity.activity_type)"
+              :name="activity.icon"
               class="w-3.5 h-3.5 text-gray-600"
             />
           </div>
@@ -25,63 +25,31 @@
           <div
             class="flex items-start justify-stretch gap-2 text-base leading-6"
           >
-            <Avatar
-              :image="getUser(activity.owner).user_image"
-              :label="getUser(activity.owner).full_name"
-              size="md"
-            />
+            <UserAvatar :user="activity.owner" size="md" />
 
-            <div class="flex items-center gap-1">
-              <div>{{ getUser(activity.owner).full_name }}</div>
-              <div
-                v-if="activity.activity_type == 'creation'"
-                class="text-gray-600"
+            <div class="inline-flex flex-wrap gap-1 text-gray-600">
+              <span class="text-gray-900">{{ activity.owner_name }}</span>
+              <span v-if="activity.type">{{ activity.type }}</span>
+              <span
+                v-if="activity.data.field"
+                class="text-gray-900 truncate max-w-xs"
               >
-                {{ activity.data }}
-              </div>
-              <div
-                v-else-if="activity.activity_type == 'added'"
-                class="inline-flex gap-1 text-gray-600"
+                {{ activity.data.field }}
+              </span>
+              <span v-if="activity.value">{{ activity.value }}</span>
+              <span
+                v-if="activity.data.old_value"
+                class="text-gray-900 truncate max-w-xs"
               >
-                <span>added</span>
-                <span class="text-gray-900 truncate max-w-xs">
-                  {{ activity.data.field }}
-                </span>
-                <span>value as</span>
-                <span class="text-gray-900 truncate max-w-xs">
-                  {{ activity.data.value }}
-                </span>
-              </div>
-              <div
-                v-else-if="activity.activity_type == 'removed'"
-                class="inline-flex gap-1 text-gray-600"
+                {{ activity.data.old_value }}
+              </span>
+              <span v-if="activity.to">to</span>
+              <span
+                v-if="activity.data.value"
+                class="text-gray-900 truncate max-w-xs"
               >
-                <span>removed</span>
-                <span class="text-gray-900 truncate max-w-xs">
-                  {{ activity.data.field }}
-                </span>
-                <span>value</span>
-                <span class="text-gray-900 truncate max-w-xs">
-                  {{ activity.data.value }}
-                </span>
-              </div>
-              <div
-                v-else-if="activity.activity_type == 'changed'"
-                class="inline-flex gap-1 text-gray-600"
-              >
-                <span>changed</span>
-                <span class="text-gray-900 truncate max-w-xs">
-                  {{ activity.data.field }}
-                </span>
-                <span>value from</span>
-                <span class="text-gray-900 truncate max-w-xs">
-                  {{ activity.data.old_value }}
-                </span>
-                <span>to</span>
-                <span class="text-gray-900 truncate max-w-xs">
-                  {{ activity.data.value }}
-                </span>
-              </div>
+                {{ activity.data.value }}
+              </span>
             </div>
 
             <div class="ml-auto whitespace-nowrap">
@@ -99,9 +67,11 @@
   </div>
 </template>
 <script setup>
-import { Avatar, FeatherIcon, Tooltip, Button } from 'frappe-ui'
+import { FeatherIcon, Tooltip } from 'frappe-ui'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
+import { computed } from 'vue'
+import UserAvatar from './UserAvatar.vue'
 
 const { getUser } = usersStore()
 
@@ -114,6 +84,27 @@ const props = defineProps({
     type: Array,
     default: [],
   },
+})
+
+const activities = computed(() => {
+  props.activities.forEach((activity) => {
+    activity.owner_name = getUser(activity.owner).full_name
+    activity.icon = timelineIcon(activity.activity_type)
+    if (activity.activity_type == 'creation') {
+      activity.type = activity.data
+    } else if (activity.activity_type == 'added') {
+      activity.type = 'added'
+      activity.value = 'value as'
+    } else if (activity.activity_type == 'removed') {
+      activity.type = 'removed'
+      activity.value = 'value'
+    } else {
+      activity.type = 'changed'
+      activity.value = 'value from'
+      activity.to = 'to'
+    }
+  })
+  return props.activities
 })
 
 function timelineIcon(activity_type) {

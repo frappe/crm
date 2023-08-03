@@ -249,9 +249,6 @@ const lead = createResource({
   url: 'crm.crm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
   auto: true,
-  onSuccess: (response) => {
-    console.log(response)
-  },
 })
 
 const breadcrumbs = computed(() => {
