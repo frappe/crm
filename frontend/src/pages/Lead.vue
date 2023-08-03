@@ -1,20 +1,20 @@
 <template>
-  <LayoutHeader v-if="lead.doc">
+  <LayoutHeader v-if="lead.data">
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
       <Autocomplete
         :options="activeAgents"
-        :value="getUser(lead.doc.lead_owner).full_name"
-        @change="(option) => (lead.doc.lead_owner = option.email)"
+        :value="getUser(lead.data.lead_owner).full_name"
+        @change="(option) => (lead.data.lead_owner = option.email)"
         placeholder="Lead owner"
       >
         <template #prefix>
           <Avatar
             class="mr-2"
-            :image="getUser(lead.doc.lead_owner).user_image"
-            :label="getUser(lead.doc.lead_owner).full_name"
+            :image="getUser(lead.data.lead_owner).user_image"
+            :label="getUser(lead.data.lead_owner).full_name"
             size="sm"
           />
         </template>
@@ -29,9 +29,9 @@
       </Autocomplete>
       <Dropdown :options="statusDropdownOptions">
         <template #default="{ open }">
-          <Button :label="lead.doc.status">
+          <Button :label="lead.data.status">
             <template #prefix>
-              <IndicatorIcon :class="indicatorColor[lead.doc.status]" />
+              <IndicatorIcon :class="indicatorColor[lead.data.status]" />
             </template>
             <template #suffix
               ><FeatherIcon
@@ -44,7 +44,7 @@
       <Button icon="more-horizontal" />
     </template>
   </LayoutHeader>
-  <TabGroup v-if="lead.doc" @change="onTabChange">
+  <TabGroup v-if="lead.data" @change="onTabChange">
     <TabList class="flex items-center gap-6 border-b pl-5 relative">
       <Tab
         ref="tabRef"
@@ -73,7 +73,7 @@
         v-for="tab in tabs"
         :key="tab.label"
       >
-        <Activities :activities="tab.content" />
+        <Activities :title="tab.activityTitle" :activities="tab.content" />
       </TabPanel>
       <div
         class="flex flex-col justify-between border-l w-[390px] overflow-hidden"
@@ -115,33 +115,33 @@
                         v-if="field.type === 'select'"
                         type="select"
                         :options="field.options"
-                        v-model="lead.doc[field.name]"
+                        v-model="lead.data[field.name]"
                       >
                         <template #prefix>
                           <IndicatorIcon
-                            :class="indicatorColor[lead.doc[field.name]]"
+                            :class="indicatorColor[lead.data[field.name]]"
                           />
                         </template>
                       </FormControl>
                       <FormControl
                         v-else-if="field.type === 'email'"
                         type="email"
-                        v-model="lead.doc[field.name]"
+                        v-model="lead.data[field.name]"
                       />
                       <Autocomplete
                         v-else-if="field.type === 'link'"
                         :options="activeAgents"
-                        :value="getUser(lead.doc[field.name]).full_name"
+                        :value="getUser(lead.data[field.name]).full_name"
                         @change="
-                          (option) => (lead.doc[field.name] = option.email)
+                          (option) => (lead.data[field.name] = option.email)
                         "
                         placeholder="Lead owner"
                       >
                         <template #prefix>
                           <Avatar
                             class="mr-2"
-                            :image="getUser(lead.doc[field.name]).user_image"
-                            :label="getUser(lead.doc[field.name]).full_name"
+                            :image="getUser(lead.data[field.name]).user_image"
+                            :label="getUser(lead.data[field.name]).full_name"
                             size="sm"
                           />
                         </template>
@@ -161,16 +161,16 @@
                       >
                         <template #default="{ open }">
                           <Button
-                            :label="lead.doc[field.name]"
+                            :label="lead.data[field.name]"
                             class="justify-between w-full"
                           >
                             <template #prefix>
                               <IndicatorIcon
-                                :class="indicatorColor[lead.doc[field.name]]"
+                                :class="indicatorColor[lead.data[field.name]]"
                               />
                             </template>
                             <template #default>{{
-                              lead.doc[field.name]
+                              lead.data[field.name]
                             }}</template>
                             <template #suffix
                               ><FeatherIcon
@@ -183,7 +183,7 @@
                       <FormControl
                         v-else
                         type="text"
-                        v-model="lead.doc[field.name]"
+                        v-model="lead.data[field.name]"
                       />
                     </div>
                   </div>
@@ -196,13 +196,13 @@
           class="flex items-center gap-1 text-sm px-6 p-3 leading-5 cursor-pointer"
         >
           <span class="text-gray-600">Created </span>
-          <Tooltip :text="dateFormat(lead.doc.creation, dateTooltipFormat)">
-            {{ timeAgo(lead.doc.creation) }}
+          <Tooltip :text="dateFormat(lead.data.creation, dateTooltipFormat)">
+            {{ timeAgo(lead.data.creation) }}
           </Tooltip>
           <span>&nbsp;&middot;&nbsp;</span>
           <span class="text-gray-600">Updated </span>
-          <Tooltip :text="dateFormat(lead.doc.modified, dateTooltipFormat)">
-            {{ timeAgo(lead.doc.modified) }}
+          <Tooltip :text="dateFormat(lead.data.modified, dateTooltipFormat)">
+            {{ timeAgo(lead.data.modified) }}
           </Tooltip>
         </div>
       </div>
@@ -221,7 +221,7 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import {
-  createDocumentResource,
+  createResource,
   Avatar,
   FeatherIcon,
   Autocomplete,
@@ -231,7 +231,7 @@ import {
 } from 'frappe-ui'
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
-import { dateFormat, timeAgo } from '@/utils'
+import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
 import { ref, computed, h } from 'vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 
@@ -243,74 +243,61 @@ const props = defineProps({
     required: true,
   },
 })
-const lead = createDocumentResource({
-  doctype: 'CRM Lead',
-  name: props.leadId,
+
+const lead = createResource({
+  url: 'crm.crm.doctype.crm_lead.api.get_lead',
+  params: { name: props.leadId },
   auto: true,
+  onSuccess: (response) => {
+    console.log(response)
+  },
 })
 
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Leads', route: { name: 'Leads' } }]
   items.push({
-    label: lead.doc.lead_name,
-    route: { name: 'Lead', params: { leadId: lead.doc.name } },
+    label: lead.data.lead_name,
+    route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
 })
 
-const activities = [
-  {
-    type: 'change',
-    datetime: '2021-08-20 12:00:00',
-    value: 'Status changed from New to Contact made',
-  },
-  {
-    type: 'change',
-    datetime: '2021-08-20 12:00:00',
-    value: 'Status changed from Proposal made to New',
-  },
-  {
-    type: 'email',
-    datetime: '2021-08-20 12:00:00',
-    value: 'Email sent to Sharon',
-  },
-  {
-    type: 'change',
-    datetime: '2021-08-20 12:00:00',
-    value: 'Status changed from Contact made to Proposal made',
-  },
-  {
-    type: 'call',
-    datetime: '2021-08-20 12:00:00',
-    value: 'Call made to Sharon',
-  },
-]
-
-const tabs = [
-  {
-    label: 'Activity',
-    icon: ActivityIcon,
-    content: activities,
-  },
-  {
-    label: 'Emails',
-    icon: EmailIcon,
-    content: activities.filter((activity) => activity.type === 'email'),
-  },
-  {
-    label: 'Calls',
-    icon: PhoneIcon,
-    content: activities.filter((activity) => activity.type === 'call'),
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-  },
-]
+const tabs = computed(() => {
+  return [
+    {
+      label: 'Activity',
+      icon: ActivityIcon,
+      content: lead.data.activities,
+      activityTitle: 'Activity log'
+    },
+    {
+      label: 'Emails',
+      icon: EmailIcon,
+      content: lead.data.activities.filter(
+        (activity) => activity.activity_type === 'communication'
+      ),
+      activityTitle: 'Emails'
+    },
+    {
+      label: 'Calls',
+      icon: PhoneIcon,
+      content: lead.data.activities.filter(
+        (activity) => activity.activity_type === 'call'
+      ),
+      activityTitle: 'Calls'
+    },
+    {
+      label: 'Tasks',
+      icon: TaskIcon,
+      activityTitle: 'Tasks',
+    },
+    {
+      label: 'Notes',
+      icon: NoteIcon,
+      activityTitle: 'Notes',
+    },
+  ]
+})
 
 const tabRef = ref([])
 const indicator = ref(null)
@@ -332,35 +319,35 @@ const statusDropdownOptions = [
     label: 'New',
     icon: () => h(IndicatorIcon, { class: '!text-gray-600' }),
     onClick: () => {
-      lead.doc.status = 'New'
+      lead.data.status = 'New'
     },
   },
   {
     label: 'Contact made',
     icon: () => h(IndicatorIcon, { class: 'text-orange-600' }),
     onClick: () => {
-      lead.doc.status = 'Contact made'
+      lead.data.status = 'Contact made'
     },
   },
   {
     label: 'Proposal made',
     icon: () => h(IndicatorIcon, { class: '!text-blue-600' }),
     onClick: () => {
-      lead.doc.status = 'Proposal made'
+      lead.data.status = 'Proposal made'
     },
   },
   {
     label: 'Negotiation',
     icon: () => h(IndicatorIcon, { class: 'text-red-600' }),
     onClick: () => {
-      lead.doc.status = 'Negotiation'
+      lead.data.status = 'Negotiation'
     },
   },
   {
     label: 'Converted',
     icon: () => h(IndicatorIcon, { class: 'text-green-600' }),
     onClick: () => {
-      lead.doc.status = 'Converted'
+      lead.data.status = 'Converted'
     },
   },
 ]
@@ -398,7 +385,7 @@ const detailSections = computed(() => {
         {
           label: 'Website',
           type: 'data',
-          name: 'organization_website',
+          name: 'website',
         },
       ],
     },
@@ -439,6 +426,4 @@ const activeAgents = computed(() => {
       }
     })
 })
-
-const dateTooltipFormat = 'dddd, MMMM D, YYYY h:mm A'
 </script>
