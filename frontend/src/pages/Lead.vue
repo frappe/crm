@@ -86,14 +86,14 @@
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
               <div
-                class="flex items-center gap-1 text-base font-semibold leading-5 px-3 cursor-pointer"
+                class="flex items-center gap-1 text-base font-semibold leading-5 pr-3 cursor-pointer max-w-fit"
                 @click="toggle()"
               >
-                {{ section.label }}
                 <FeatherIcon
                   :name="opened ? 'chevron-up' : 'chevron-down'"
                   class="h-4 text-gray-600"
                 />
+                {{ section.label }}
               </div>
               <transition
                 enter-active-class="duration-300 ease-in"
@@ -268,7 +268,7 @@ const tabs = computed(() => {
       label: 'Activity',
       icon: ActivityIcon,
       content: lead.data.activities,
-      activityTitle: 'Activity log'
+      activityTitle: 'Activity log',
     },
     {
       label: 'Emails',
@@ -276,7 +276,7 @@ const tabs = computed(() => {
       content: lead.data.activities.filter(
         (activity) => activity.activity_type === 'communication'
       ),
-      activityTitle: 'Emails'
+      activityTitle: 'Emails',
     },
     {
       label: 'Calls',
@@ -284,7 +284,7 @@ const tabs = computed(() => {
       content: lead.data.activities.filter(
         (activity) => activity.activity_type === 'call'
       ),
-      activityTitle: 'Calls'
+      activityTitle: 'Calls',
     },
     {
       label: 'Tasks',
