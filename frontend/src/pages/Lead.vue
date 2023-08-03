@@ -90,8 +90,9 @@
                 @click="toggle()"
               >
                 <FeatherIcon
-                  :name="opened ? 'chevron-up' : 'chevron-down'"
-                  class="h-4 text-gray-600"
+                  name="chevron-right"
+                  class="h-4 text-gray-600 transition-all duration-200 ease-in-out"
+                  :class="{ 'rotate-90': opened }"
                 />
                 {{ section.label }}
               </div>
