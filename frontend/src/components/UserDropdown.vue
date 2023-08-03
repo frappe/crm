@@ -6,11 +6,7 @@
         :class="open ? 'bg-gray-300' : 'hover:bg-gray-200'"
         v-if="user"
       >
-        <Avatar
-          :label="user.full_name"
-          :image="user.user_image"
-          size="md"
-        />
+        <UserAvatar :user="user.name" size="md" />
         <span class="hidden text-base font-medium text-gray-900 sm:inline">
           {{ user.full_name }}
         </span>
@@ -25,9 +21,10 @@
 </template>
 
 <script setup>
-import { Dropdown, Avatar, FeatherIcon } from 'frappe-ui'
+import { Dropdown, FeatherIcon } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
-import { usersStore } from '@/stores/users';
+import { usersStore } from '@/stores/users'
+import UserAvatar from '@/components/UserAvatar.vue'
 import { computed } from 'vue'
 
 const { logout } = sessionStore()

@@ -11,20 +11,10 @@
         placeholder="Lead owner"
       >
         <template #prefix>
-          <Avatar
-            class="mr-2"
-            :image="getUser(lead.data.lead_owner).user_image"
-            :label="getUser(lead.data.lead_owner).full_name"
-            size="sm"
-          />
+          <UserAvatar class="mr-2" :user="lead.data.lead_owner" size="sm" />
         </template>
         <template #item-prefix="{ option }">
-          <Avatar
-            class="mr-2"
-            :image="getUser(option.email).user_image"
-            :label="getUser(option.email).full_name"
-            size="sm"
-          />
+          <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </Autocomplete>
       <Dropdown :options="statusDropdownOptions">
@@ -139,18 +129,16 @@
                         placeholder="Lead owner"
                       >
                         <template #prefix>
-                          <Avatar
+                          <UserAvatar
                             class="mr-2"
-                            :image="getUser(lead.data[field.name]).user_image"
-                            :label="getUser(lead.data[field.name]).full_name"
+                            :user="lead.data[field.name]"
                             size="sm"
                           />
                         </template>
                         <template #item-prefix="{ option }">
-                          <Avatar
+                          <UserAvatar
                             class="mr-2"
-                            :image="getUser(option.email).user_image"
-                            :label="getUser(option.email).full_name"
+                            :user="option.email"
                             size="sm"
                           />
                         </template>
@@ -235,6 +223,7 @@ import { usersStore } from '@/stores/users'
 import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
 import { ref, computed, h } from 'vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
+import UserAvatar from '../components/UserAvatar.vue'
 
 const { getUser, users } = usersStore()
 
