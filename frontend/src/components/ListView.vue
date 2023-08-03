@@ -77,31 +77,32 @@
             class="flex items-center space-x-2.5"
             :class="[column.size, column.align]"
           >
-            <div v-if="column.type === 'avatar'">
-              <Avatar
-                v-if="getValue(row[column.key]).label"
-                class="flex items-center"
-                :image="getValue(row[column.key]).image"
-                :label="getValue(row[column.key]).image_label"
-                size="md"
-              />
-            </div>
-            <div v-else-if="column.type === 'logo'">
-              <Avatar
-                v-if="getValue(row[column.key]).label"
-                class="flex items-center"
-                :image="getValue(row[column.key]).logo"
-                :label="getValue(row[column.key]).image_label"
-                size="md"
-                shape="square"
-              />
-            </div>
-            <div v-else-if="column.type === 'indicator'">
-              <IndicatorIcon :class="getValue(row[column.key]).color" />
-            </div>
-            <div class="text-base text-gray-900 truncate">
-              {{ getValue(row[column.key]).label }}
-            </div>
+            <ListRowItem :value="getValue(row[column.key]).label">
+              <template #prefix>
+                <div v-if="column.type === 'indicator'">
+                  <IndicatorIcon :class="getValue(row[column.key]).color" />
+                </div>
+                <div v-else-if="column.type === 'avatar'">
+                  <Avatar
+                    v-if="getValue(row[column.key]).label"
+                    class="flex items-center"
+                    :image="getValue(row[column.key]).image"
+                    :label="getValue(row[column.key]).image_label"
+                    size="md"
+                  />
+                </div>
+                <div v-else-if="column.type === 'logo'">
+                  <Avatar
+                    v-if="getValue(row[column.key]).label"
+                    class="flex items-center"
+                    :image="getValue(row[column.key]).logo"
+                    :label="getValue(row[column.key]).image_label"
+                    size="md"
+                    shape="square"
+                  />
+                </div>
+              </template>
+            </ListRowItem>
           </div>
         </router-link>
       </div>
@@ -156,6 +157,7 @@ import IndicatorIcon from './Icons/IndicatorIcon.vue'
 import { reactive, ref, computed } from 'vue'
 import LayoutHeader from './LayoutHeader.vue'
 import Breadcrumbs from './Breadcrumbs.vue'
+import ListRowItem from './ListRowItem.vue'
 
 const props = defineProps({
   list: {
