@@ -31,10 +31,10 @@
               <span class="text-gray-900">{{ activity.owner_name }}</span>
               <span v-if="activity.type">{{ activity.type }}</span>
               <span
-                v-if="activity.data.field"
+                v-if="activity.data.field_label"
                 class="text-gray-900 truncate max-w-xs"
               >
-                {{ activity.data.field }}
+                {{ activity.data.field_label }}
               </span>
               <span v-if="activity.value">{{ activity.value }}</span>
               <span

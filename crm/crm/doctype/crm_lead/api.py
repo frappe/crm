@@ -28,6 +28,8 @@ def get_lead(name):
 	return { **lead, 'activities': activities }
 
 def get_activities(doc, docinfo):
+	lead_fields_meta = frappe.get_meta("CRM Lead").fields
+
 	activities = [{
 		"activity_type": "creation",
 		"creation": doc.creation,
@@ -39,8 +41,10 @@ def get_activities(doc, docinfo):
 		data = json.loads(version.data)
 		if change := data.get("changed")[0]:
 			activity_type = "changed"
+			field_label = next((f.label for f in lead_fields_meta if f.fieldname == change[0]), None)
 			data = {
 				"field": change[0],
+				"field_label": field_label,
 				"old_value": change[1],
 				"value": change[2],
 			}
@@ -50,12 +54,14 @@ def get_activities(doc, docinfo):
 				activity_type = "added"
 				data = {
 					"field": change[0],
+					"field_label": field_label,
 					"value": change[2],
 				}
 			elif change[1] and not change[2]:
 				activity_type = "removed"
 				data = {
 					"field": change[0],
+					"field_label": field_label,
 					"value": change[1],
 				}
 
