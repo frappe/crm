@@ -61,6 +61,11 @@
               </Tooltip>
             </div>
           </div>
+          <div
+            v-if="activity.activity_type == 'comment'"
+            class="py-3 px-4 border border-gray-200 rounded text-base cursor-pointer hover:bg-gray-50 leading-6 transition-all duration-300 ease-in-out"
+            v-html="activity.data"
+          />
         </div>
       </div>
     </div>
@@ -90,15 +95,21 @@ const activities = computed(() => {
   props.activities.forEach((activity) => {
     activity.owner_name = getUser(activity.owner).full_name
     activity.icon = timelineIcon(activity.activity_type)
+    activity.type = ''
+    activity.value = ''
+    activity.to = ''
+
     if (activity.activity_type == 'creation') {
       activity.type = activity.data
+    } else if (activity.activity_type == 'comment') {
+      activity.type = 'commented'
     } else if (activity.activity_type == 'added') {
       activity.type = 'added'
       activity.value = 'value as'
     } else if (activity.activity_type == 'removed') {
       activity.type = 'removed'
       activity.value = 'value'
-    } else {
+    } else if (activity.activity_type == 'changed') {
       activity.type = 'changed'
       activity.value = 'value from'
       activity.to = 'to'
