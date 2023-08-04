@@ -81,7 +81,7 @@
               >
                 <FeatherIcon
                   name="chevron-right"
-                  class="h-4 text-gray-600 transition-all duration-200 ease-in-out"
+                  class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
                   :class="{ 'rotate-90': opened }"
                 />
                 {{ section.label }}
@@ -161,11 +161,12 @@
                             <template #default>{{
                               lead.data[field.name]
                             }}</template>
-                            <template #suffix
-                              ><FeatherIcon
+                            <template #suffix>
+                              <FeatherIcon
                                 :name="open ? 'chevron-up' : 'chevron-down'"
                                 class="h-4"
-                            /></template>
+                              />
+                            </template>
                           </Button>
                         </template>
                       </Dropdown>
@@ -211,7 +212,6 @@ import Activities from '@/components/Activities.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import {
   createResource,
-  Avatar,
   FeatherIcon,
   Autocomplete,
   FormControl,
@@ -223,7 +223,7 @@ import { usersStore } from '@/stores/users'
 import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
 import { ref, computed, h } from 'vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
-import UserAvatar from '../components/UserAvatar.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 
 const { getUser, users } = usersStore()
 
