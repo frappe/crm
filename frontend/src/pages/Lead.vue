@@ -76,7 +76,7 @@
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
               <div
-                class="flex items-center gap-1 text-base font-semibold leading-5 pr-3 cursor-pointer max-w-fit"
+                class="flex items-center gap-2 text-base font-semibold leading-5 pl-2 pr-3 cursor-pointer max-w-fit"
                 @click="toggle()"
               >
                 <FeatherIcon
@@ -237,6 +237,7 @@ const props = defineProps({
 const lead = createResource({
   url: 'crm.crm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
+  cache: ['lead', props.leadId],
   auto: true,
 })
 
