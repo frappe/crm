@@ -14,6 +14,7 @@
         >
           <div
             class="flex items-center justify-center rounded-full outline outline-4 outline-white w-6 h-6 bg-gray-200 z-10"
+            :class="{ 'mt-[15px]': activity.activity_type == 'communication' }"
           >
             <FeatherIcon
               :name="activity.icon"
@@ -21,7 +22,30 @@
             />
           </div>
         </div>
-        <div class="flex flex-col gap-3 pb-6">
+        <div v-if="activity.activity_type == 'communication'" class="pb-6">
+          <div
+            class="shadow-sm border max-w-[80%] rounded-xl p-3 text-base cursor-pointer leading-6 transition-all duration-300 ease-in-out"
+          >
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <UserAvatar :user="activity.data.sender" size="md" />
+                <span>{{ activity.data.sender_full_name }}</span>
+                <span>&middot;</span>
+                <Tooltip
+                  class="text-gray-600 text-sm"
+                  :text="dateFormat(activity.creation, dateTooltipFormat)"
+                >
+                  {{ timeAgo(activity.creation) }}
+                </Tooltip>
+              </div>
+              <div>
+                <Button variant="ghost" icon="more-horizontal" class="text-gray-600" />
+              </div>
+            </div>
+            <div class="px-1" v-html="activity.data.content" />
+          </div>
+        </div>
+        <div v-else class="flex flex-col gap-3 pb-6">
           <div
             class="flex items-start justify-stretch gap-2 text-base leading-6"
           >
@@ -63,7 +87,7 @@
           </div>
           <div
             v-if="activity.activity_type == 'comment'"
-            class="py-3 px-4 border border-gray-200 rounded text-base cursor-pointer hover:bg-gray-50 leading-6 transition-all duration-300 ease-in-out"
+            class="py-3 px-4 rounded-xl shadow-sm border max-w-[80%] text-base cursor-pointer leading-6 transition-all duration-300 ease-in-out"
             v-html="activity.data"
           />
         </div>
@@ -72,7 +96,7 @@
   </div>
 </template>
 <script setup>
-import { FeatherIcon, Tooltip } from 'frappe-ui'
+import { Button, FeatherIcon, Tooltip } from 'frappe-ui'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { computed } from 'vue'
@@ -102,7 +126,7 @@ const activities = computed(() => {
     if (activity.activity_type == 'creation') {
       activity.type = activity.data
     } else if (activity.activity_type == 'comment') {
-      activity.type = 'commented'
+      activity.type = 'added a comment'
     } else if (activity.activity_type == 'added') {
       activity.type = 'added'
       activity.value = 'value as'
@@ -123,6 +147,10 @@ function timelineIcon(activity_type) {
     return 'plus'
   } else if (activity_type == 'removed') {
     return 'trash-2'
+  } else if (activity_type == 'communication') {
+    return 'at-sign'
+  } else if (activity_type == 'comment') {
+    return 'file-text'
   }
   return 'edit'
 }
