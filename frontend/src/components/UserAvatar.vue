@@ -7,8 +7,8 @@
   />
 </template>
 <script setup>
-import { Avatar } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
+import { Avatar } from 'frappe-ui'
 
 const props = defineProps({
   user: {

@@ -11,7 +11,7 @@
   </NavLink>
 </template>
 <script setup>
-import NavLink from './NavLink.vue'
+import NavLink from '@/components/NavLink.vue'
 
 const props = defineProps(['links', 'active', 'inactive'])
 </script>

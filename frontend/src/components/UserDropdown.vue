@@ -21,10 +21,10 @@
 </template>
 
 <script setup>
-import { Dropdown, FeatherIcon } from 'frappe-ui'
+import UserAvatar from '@/components/UserAvatar.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
-import UserAvatar from '@/components/UserAvatar.vue'
+import { Dropdown, FeatherIcon } from 'frappe-ui'
 import { computed } from 'vue'
 
 const { logout } = sessionStore()

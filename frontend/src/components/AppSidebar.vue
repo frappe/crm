@@ -24,13 +24,13 @@
 </template>
 
 <script setup>
-import UserDropdown from './UserDropdown.vue'
-import LeadsIcon from './Icons/LeadsIcon.vue'
-import DealsIcon from './Icons/DealsIcon.vue'
-import ContactsIcon from './Icons/ContactsIcon.vue'
-import InboxIcon from './Icons/InboxIcon.vue'
-import DashboardIcon from './Icons/DashboardIcon.vue'
-import NavLinks from './NavLinks.vue'
+import UserDropdown from '@/components/UserDropdown.vue'
+import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
+import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import InboxIcon from '@/components/Icons/InboxIcon.vue'
+import DashboardIcon from '@/components/Icons/DashboardIcon.vue'
+import NavLinks from '@/components/NavLinks.vue'
 
 const navigations = [
   {

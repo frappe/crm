@@ -96,11 +96,11 @@
   </div>
 </template>
 <script setup>
-import { Button, FeatherIcon, Tooltip } from 'frappe-ui'
+import UserAvatar from '@/components/UserAvatar.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
+import { Button, FeatherIcon, Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
-import UserAvatar from './UserAvatar.vue'
 
 const { getUser } = usersStore()
 

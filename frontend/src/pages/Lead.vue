@@ -209,7 +209,12 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
+import Breadcrumbs from '@/components/Breadcrumbs.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import { TransitionPresets, useTransition } from '@vueuse/core'
+import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
+import { usersStore } from '@/stores/users'
 import {
   createResource,
   FeatherIcon,
@@ -218,12 +223,7 @@ import {
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
-import { TransitionPresets, useTransition } from '@vueuse/core'
-import { usersStore } from '@/stores/users'
-import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
 import { ref, computed, h } from 'vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 
 const { getUser, users } = usersStore()
 
