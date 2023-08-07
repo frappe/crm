@@ -1,39 +1,4 @@
 <template>
-  <LayoutHeader>
-    <template #left-header>
-      <Breadcrumbs :items="[{ label: list.title }]" />
-    </template>
-    <template #right-header>
-      <Button variant="solid" label="Create">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
-    </template>
-    <template #left-subheader>
-      <Dropdown :options="viewsDropdownOptions">
-        <template #default="{ open }">
-          <Button :label="currentView.label">
-            <template #prefix
-              ><FeatherIcon :name="currentView.icon" class="h-4"
-            /></template>
-            <template #suffix
-              ><FeatherIcon
-                :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4"
-            /></template>
-          </Button>
-        </template>
-      </Dropdown>
-    </template>
-    <template #right-subheader>
-      <Button label="Sort">
-        <template #prefix><SortIcon class="h-4" /></template>
-      </Button>
-      <Button label="Filter">
-        <template #prefix><FilterIcon class="h-4" /></template>
-      </Button>
-      <Button icon="more-horizontal" />
-    </template>
-  </LayoutHeader>
   <div id="content" class="flex flex-col w-full overflow-x-auto flex-1">
     <div class="flex flex-col overflow-y-hidden w-max min-w-full">
       <div
@@ -41,7 +6,7 @@
         class="flex space-x-4 items-center px-5 py-2 border-b"
       >
         <Checkbox
-          class="[&>input]:duration-300 [&>input]:cursor-pointer"
+          class="duration-300 cursor-pointer"
           :modelValue="allRowsSelected"
           @click.stop="toggleAllRows"
         />
@@ -69,7 +34,7 @@
           <Checkbox
             :modelValue="selections.has(row[rowKey])"
             @click.stop="toggleRow(row[rowKey])"
-            class="[&>input]:duration-300 [&>input]:cursor-pointer"
+            class="duration-300 cursor-pointer"
           />
           <div
             v-for="column in columns"
@@ -127,7 +92,7 @@
               <Checkbox
                 :modelValue="true"
                 :disabled="true"
-                class="[&>input]:text-gray-900"
+                class="text-gray-900"
               />
               <div>{{ selectedText }}</div>
             </div>
@@ -150,14 +115,10 @@
   </div>
 </template>
 <script setup>
-import { FeatherIcon, Dropdown, Checkbox, Avatar } from 'frappe-ui'
-import SortIcon from './Icons/SortIcon.vue'
-import FilterIcon from './Icons/FilterIcon.vue'
-import IndicatorIcon from './Icons/IndicatorIcon.vue'
-import { reactive, ref, computed } from 'vue'
-import LayoutHeader from './LayoutHeader.vue'
-import Breadcrumbs from './Breadcrumbs.vue'
-import ListRowItem from './ListRowItem.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import ListRowItem from '@/components/ListRowItem.vue'
+import { Checkbox, Avatar } from 'frappe-ui'
+import { reactive, computed } from 'vue'
 
 const props = defineProps({
   list: {
@@ -177,54 +138,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-const currentView = ref({
-  label: 'List',
-  icon: 'list',
-})
-
-const viewsDropdownOptions = [
-  {
-    label: 'List',
-    icon: 'list',
-    onClick() {
-      currentView.value = {
-        label: 'List',
-        icon: 'list',
-      }
-    },
-  },
-  {
-    label: 'Table',
-    icon: 'grid',
-    onClick() {
-      currentView.value = {
-        label: 'Table',
-        icon: 'grid',
-      }
-    },
-  },
-  {
-    label: 'Calender',
-    icon: 'calendar',
-    onClick() {
-      currentView.value = {
-        label: 'Calender',
-        icon: 'calendar',
-      }
-    },
-  },
-  {
-    label: 'Board',
-    icon: 'columns',
-    onClick() {
-      currentView.value = {
-        label: 'Board',
-        icon: 'columns',
-      }
-    },
-  },
-]
 
 function getValue(value) {
   if (value && typeof value === 'object') {

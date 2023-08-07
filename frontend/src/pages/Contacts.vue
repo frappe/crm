@@ -1,13 +1,52 @@
 <template>
-  <ListView :list="list_details" :columns="columns" :rows="rows" row-key="name" />
+  <LayoutHeader>
+    <template #left-header>
+      <Breadcrumbs :items="[{ label: list.title }]" />
+    </template>
+    <template #right-header>
+      <Button variant="solid" label="Create">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
+    </template>
+    <template #left-subheader>
+      <Dropdown :options="viewsDropdownOptions">
+        <template #default="{ open }">
+          <Button :label="currentView.label">
+            <template #prefix
+              ><FeatherIcon :name="currentView.icon" class="h-4"
+            /></template>
+            <template #suffix
+              ><FeatherIcon
+                :name="open ? 'chevron-up' : 'chevron-down'"
+                class="h-4"
+            /></template>
+          </Button>
+        </template>
+      </Dropdown>
+    </template>
+    <template #right-subheader>
+      <Button label="Sort">
+        <template #prefix><SortIcon class="h-4" /></template>
+      </Button>
+      <Button label="Filter">
+        <template #prefix><FilterIcon class="h-4" /></template>
+      </Button>
+      <Button icon="more-horizontal" />
+    </template>
+  </LayoutHeader>
+  <ListView :list="list" :columns="columns" :rows="rows" row-key="name" />
 </template>
 
 <script setup>
 import ListView from '@/components/ListView.vue'
-import { computed } from 'vue'
-import { createListResource } from 'frappe-ui'
+import LayoutHeader from '@/components/LayoutHeader.vue'
+import Breadcrumbs from '@/components/Breadcrumbs.vue'
+import SortIcon from '@/components/Icons/SortIcon.vue'
+import FilterIcon from '@/components/Icons/FilterIcon.vue'
+import { FeatherIcon, Button, Dropdown, createListResource } from 'frappe-ui'
+import { ref, computed } from 'vue'
 
-const list_details = {
+const list = {
   title: 'Contacts',
   plural_label: 'Contacts',
   singular_label: 'Contact',
@@ -22,7 +61,6 @@ const contacts = createListResource({
   pageLength: 999,
   auto: true,
 })
-contacts.fetch()
 
 const columns = [
   {
@@ -59,4 +97,52 @@ const rows = computed(() => {
     }
   })
 })
+
+const currentView = ref({
+  label: 'List',
+  icon: 'list',
+})
+
+const viewsDropdownOptions = [
+  {
+    label: 'List',
+    icon: 'list',
+    onClick() {
+      currentView.value = {
+        label: 'List',
+        icon: 'list',
+      }
+    },
+  },
+  {
+    label: 'Table',
+    icon: 'grid',
+    onClick() {
+      currentView.value = {
+        label: 'Table',
+        icon: 'grid',
+      }
+    },
+  },
+  {
+    label: 'Calender',
+    icon: 'calendar',
+    onClick() {
+      currentView.value = {
+        label: 'Calender',
+        icon: 'calendar',
+      }
+    },
+  },
+  {
+    label: 'Board',
+    icon: 'columns',
+    onClick() {
+      currentView.value = {
+        label: 'Board',
+        icon: 'columns',
+      }
+    },
+  },
+]
 </script>
