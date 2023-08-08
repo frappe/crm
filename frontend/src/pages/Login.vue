@@ -1,6 +1,10 @@
 <template>
   <div class="flex h-screen w-screen justify-center bg-gray-100">
     <div class="mt-32 w-full px-4">
+      <CRMLogo class="mx-auto h-6" />
+      <div class="mt-6 flex items-center justify-center space-x-1.5">
+        <span class="text-3xl font-semibold text-gray-900">Login</span>
+      </div>
       <div class="mx-auto mt-6 w-full px-4 sm:w-96">
         <form
           v-if="showEmailLogin"
@@ -42,6 +46,13 @@
           >
             Login
           </Button>
+          <button
+            v-if="authProviders.data.length"
+            class="mt-2 w-full py-2 text-base text-gray-600"
+            @click="showEmailLogin = false"
+          >
+            Login using other methods
+          </button>
         </form>
         <div
           class="mx-auto space-y-2"
@@ -56,7 +67,7 @@
             :key="provider.name"
             :href="provider.auth_url"
           >
-            <div v-if="provider.icon" v-html="provider.icon"/>
+            <div v-if="provider.icon" v-html="provider.icon" />
             Login via {{ provider.provider_name }}
           </a>
         </div>
@@ -65,9 +76,10 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
-import { FormControl, ErrorMessage, createResource } from 'frappe-ui'
+import CRMLogo from '@/components/Icons/CRMLogo.vue';
 import { sessionStore } from '@/stores/session'
+import { FormControl, ErrorMessage, createResource } from 'frappe-ui'
+import { ref } from 'vue'
 
 const session = sessionStore()
 let showEmailLogin = ref(false)
