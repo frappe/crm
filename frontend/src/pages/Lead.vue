@@ -32,6 +32,7 @@
         </template>
       </Dropdown>
       <Button icon="more-horizontal" />
+      <Button label="Save" variant="solid" @click="() => updateLead()" />
     </template>
   </LayoutHeader>
   <TabGroup v-if="lead.data" @change="onTabChange">
@@ -217,6 +218,7 @@ import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
 import {
   createResource,
+  createDocumentResource,
   FeatherIcon,
   Autocomplete,
   FormControl,
@@ -240,6 +242,22 @@ const lead = createResource({
   cache: ['lead', props.leadId],
   auto: true,
 })
+
+const uLead = createDocumentResource({
+  doctype: 'CRM Lead',
+  name: props.leadId,
+  setValue: {
+    onSuccess: () => {
+      lead.reload()
+    },
+  },
+})
+
+function updateLead() {
+  let leadCopy = { ...lead.data }
+  delete leadCopy.activities
+  uLead.setValue.submit({ ...leadCopy })
+}
 
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Leads', route: { name: 'Leads' } }]
