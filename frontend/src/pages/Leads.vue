@@ -4,7 +4,7 @@
       <Breadcrumbs :items="[{ label: list.title }]" />
     </template>
     <template #right-header>
-      <Button variant="solid" label="Create">
+      <Button variant="solid" label="Create" @click="showNewDialog = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -35,6 +35,23 @@
     </template>
   </LayoutHeader>
   <ListView :list="list" :columns="columns" :rows="rows" row-key="name" />
+  <Dialog
+    v-model="showNewDialog"
+    :options="{
+      size: '3xl',
+      title: 'New Lead',
+      actions: [{ label: 'Save', variant: 'solid' }],
+    }"
+  >
+    <template #body-content>
+      <NewLead :newLead="newLead" />
+    </template>
+    <template #actions="{ close }">
+      <div class="flex flex-row-reverse gap-2">
+        <Button variant="solid" label="Save" @click="createNewLead(close)" />
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
@@ -43,9 +60,18 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
+import NewLead from '@/components/NewLead.vue'
 import { usersStore } from '@/stores/users'
-import { FeatherIcon, Button, Dropdown, createListResource } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import {
+  FeatherIcon,
+  Dialog,
+  Button,
+  Dropdown,
+  createListResource,
+  createResource,
+} from 'frappe-ui'
+import { useRouter } from 'vue-router'
+import { ref, computed, reactive } from 'vue'
 
 const list = {
   title: 'Leads',
@@ -193,5 +219,53 @@ const indicatorColor = {
   'Proposal made': 'text-blue-600',
   Negotiation: 'text-red-600',
   Converted: 'text-green-600',
+}
+
+const showNewDialog = ref(false)
+
+let newLead = reactive({
+  salutation: '',
+  first_name: '',
+  last_name: '',
+  lead_name: '',
+  organization_name: '',
+  status: 'New',
+  email: '',
+  mobile_no: '',
+  lead_owner: getUser().email,
+})
+
+const createLead = createResource({
+  url: 'frappe.client.insert',
+  makeParams(values) {
+    return {
+      doc: {
+        doctype: 'CRM Lead',
+        ...values,
+      },
+    }
+  },
+})
+
+const router = useRouter();
+
+function createNewLead(close) {
+  createLead
+    .submit(newLead, {
+      validate() {
+        if (!newLead.first_name) {
+          return 'First name is required'
+        }
+      },
+      onSuccess(data) {
+        router.push({
+          name: 'Lead',
+          params: {
+            leadId: data.name,
+          },
+        })
+      },
+    })
+    .then(close)
 }
 </script>
