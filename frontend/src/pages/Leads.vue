@@ -70,7 +70,7 @@ import {
   createResource,
 } from 'frappe-ui'
 import { useRouter } from 'vue-router'
-import { ref, computed, reactive, onBeforeUpdate } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 
 const list = {
   title: 'Leads',
@@ -101,11 +101,19 @@ const leads = createListResource({
     'lead_owner',
     'modified',
   ],
-  orderBy: getOrderBy() || 'modified desc',
+  orderBy: 'modified desc',
   cache: 'Leads',
   pageLength: 20,
   auto: true,
 })
+
+watch(
+  () => getOrderBy(),
+  (value) => {
+    leads.orderBy = value || 'modified desc'
+    leads.reload()
+  }
+)
 
 const columns = [
   {
@@ -268,9 +276,4 @@ function createNewLead(close) {
     })
     .then(close)
 }
-
-onBeforeUpdate(() => {
-  leads.orderBy = getOrderBy() || 'modified desc'
-  leads.reload()
-})
 </script>

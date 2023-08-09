@@ -144,6 +144,15 @@ watch(
   }
 )
 
+watch(
+  () => getOrderBy(),
+  (value) => {
+    if (!value) {
+      sortValues.value = []
+    }
+  }
+)
+
 function setSort(data) {
   sortValues.value = [
     ...sortValues.value,
