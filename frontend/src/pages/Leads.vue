@@ -25,9 +25,7 @@
       </Dropdown>
     </template>
     <template #right-subheader>
-      <Button label="Sort">
-        <template #prefix><SortIcon class="h-4" /></template>
-      </Button>
+      <SortBy doctype="CRM Lead" />
       <Button label="Filter">
         <template #prefix><FilterIcon class="h-4" /></template>
       </Button>
@@ -58,10 +56,11 @@
 import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
-import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import NewLead from '@/components/NewLead.vue'
+import SortBy from '@/components/SortBy.vue'
 import { usersStore } from '@/stores/users'
+import { useOrderBy } from '@/composables/orderby'
 import {
   FeatherIcon,
   Dialog,
@@ -71,7 +70,7 @@ import {
   createResource,
 } from 'frappe-ui'
 import { useRouter } from 'vue-router'
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, onBeforeUpdate } from 'vue'
 
 const list = {
   title: 'Leads',
@@ -79,6 +78,7 @@ const list = {
   singular_label: 'Lead',
 }
 const { getUser } = usersStore()
+const { get: getOrderBy } = useOrderBy()
 
 const currentView = ref({
   label: 'List',
@@ -101,9 +101,9 @@ const leads = createListResource({
     'lead_owner',
     'modified',
   ],
-  orderBy: 'modified desc',
+  orderBy: getOrderBy() || 'modified desc',
   cache: 'Leads',
-  pageLength: 999,
+  pageLength: 20,
   auto: true,
 })
 
@@ -247,7 +247,7 @@ const createLead = createResource({
   },
 })
 
-const router = useRouter();
+const router = useRouter()
 
 function createNewLead(close) {
   createLead
@@ -268,4 +268,9 @@ function createNewLead(close) {
     })
     .then(close)
 }
+
+onBeforeUpdate(() => {
+  leads.orderBy = getOrderBy() || 'modified desc'
+  leads.reload()
+})
 </script>
