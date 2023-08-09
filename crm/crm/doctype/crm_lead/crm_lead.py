@@ -44,3 +44,18 @@ class CRMLead(Document):
 
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
+
+	@staticmethod
+	def sort_options():
+		return [
+			{ "label": 'Created', "value": 'creation' },
+			{ "label": 'Modified', "value": 'modified' },
+			{ "label": 'Status', "value": 'status' },
+			{ "label": 'Lead owner', "value": 'lead_owner' },
+			{ "label": 'Organization', "value": 'organization_name' },
+			{ "label": 'Name', "value": 'lead_name' },
+			{ "label": 'First Name', "value": 'first_name' },
+			{ "label": 'Last Name', "value": 'last_name' },
+			{ "label": 'Email', "value": 'email' },
+			{ "label": 'Mobile no', "value": 'mobile_no' },
+		]
