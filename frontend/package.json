@@ -17,13 +17,11 @@
     "frappe-ui": "^0.1.0-alpha.11",
     "pinia": "^2.0.33",
     "postcss": "^8.4.5",
+    "sortablejs": "^1.15.0",
     "socket.io-client": "^4.7.2",
     "tailwindcss": "^3.3.3",
-    "vite": "^4.4.9"
-  },
-  "peerDependencies": {
-    "sortablejs": "^1.15.0",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.2"
+    "vue-router": "^4.2.2",
+    "vite": "^4.4.9"
   }
 }
