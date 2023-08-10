@@ -116,7 +116,7 @@ const sortButtonRef = ref(null)
 const sortValues = ref(initialOrderBy())
 
 const sortOptions = createResource({
-  url: 'crm.extends.doc.sort_options',
+  url: 'crm.api.doc.sort_options',
   auto: true,
   params: {
     doctype: props.doctype,

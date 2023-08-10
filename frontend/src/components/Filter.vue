@@ -14,7 +14,7 @@
     </template>
     <template #body="{ close }">
       <div class="rounded-lg border border-gray-100 bg-white shadow-xl my-2">
-        <div class="p-2 min-w-[537px]">
+        <div class="p-2 min-w-[500px]">
           <div
             v-if="filterValues.length"
             v-for="(filter, i) in filterValues"
@@ -26,18 +26,16 @@
                 {{ i == 0 ? 'Where' : 'And' }}
               </div>
               <Autocomplete
-                class="!w-32"
-                v-model="filter.field"
-                :options="[
-                  { label: 'Name', value: 'lead_name' },
-                  { label: 'Status', value: 'status' },
-                ]"
+                class="!min-w-[140px]"
+                :value="filter.field"
+                :options="filterableFields.data"
+                @change="(e) => updateFilter(e, i)"
                 placeholder="Filter by..."
               />
               <FormControl
                 type="select"
                 v-model="filter.operator"
-                :options="operators"
+                :options="getOperators(filter.fieldtype)"
                 placeholder="Operator"
               />
               <FormControl
@@ -57,10 +55,7 @@
           </div>
           <div class="flex items-center justify-between gap-2">
             <Autocomplete
-              :options="[
-                { label: 'Name', value: 'lead_name' },
-                { label: 'Status', value: 'status' },
-              ]"
+              :options="filterableFields.data"
               value=""
               placeholder="filter by"
               @change="(e) => setfilter(e)"
@@ -103,34 +98,99 @@ import {
 } from 'frappe-ui'
 import { ref } from 'vue'
 
+const props = defineProps({
+  doctype: {
+    type: String,
+    required: true,
+  },
+})
+
 const filterValues = ref([])
 
-const operators = ref([
-  { label: 'Contains', value: 'contains' },
-  { label: 'Equals', value: 'equals' },
-  { label: 'Not Equals', value: 'not equals' },
-  { label: 'Starts With', value: 'starts with' },
-  { label: 'Ends With', value: 'ends with' },
-  { label: 'Less Than', value: 'less than' },
-  { label: 'Greater Than', value: 'greater than' },
-  { label: 'Between', value: 'between' },
-  { label: 'In', value: 'in' },
-  { label: 'Not In', value: 'not in' },
-  { label: 'Is', value: 'is' },
-  { label: 'Is Not', value: 'is not' },
-  { label: 'Is Set', value: 'is set' },
-  { label: 'Is Not Set', value: 'is not set' },
-])
+const filterableFields = createResource({
+  url: 'crm.api.doc.get_filterable_fields',
+  auto: true,
+  params: {
+    doctype: props.doctype,
+  },
+  transform(fields) {
+    fields = fields.map((field) => {
+      return {
+        label: field.label,
+        value: field.fieldname,
+        ...field,
+      }
+    })
+    return fields
+  },
+})
+
+const typeCheck = ['Check']
+const typeLink = ['Link']
+const typeNumber = ['Float', 'Int']
+const typeSelect = ['Select']
+const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
+
+function getOperators(fieldtype) {
+  let options = []
+  if (typeString.includes(fieldtype) || typeNumber.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: 'Equals', value: 'equals' },
+        { label: 'Not Equals', value: 'not equals' },
+        { label: 'Like', value: 'like' },
+        { label: 'Not Like', value: 'not like' },
+      ]
+    )
+  }
+  if (typeNumber.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: '<', value: '<' },
+        { label: '>', value: '>' },
+        { label: '<=', value: '<=' },
+        { label: '>=', value: '>=' },
+        { label: 'Equals', value: 'equals' },
+        { label: 'Not Equals', value: 'not equals' },
+      ]
+    )
+  }
+  if (typeSelect.includes(fieldtype) || typeLink.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: 'Is', value: 'is' },
+        { label: 'Is Not', value: 'is not' },
+      ]
+    )
+  }
+  return options
+}
 
 function setfilter(data) {
+  let operator = getOperators(data.fieldtype)[0].value
   filterValues.value = [
     ...filterValues.value,
     {
       field: data.value,
-      operator: 'contains',
+      operator: operator,
       value: '',
+      label: data.label,
+      fieldtype: data.fieldtype,
+      options: data.options,
     },
   ]
+}
+
+function updateFilter(data, index) {
+  let operator = getOperators(data.fieldtype)[0].value
+  filterValues.value[index] = {
+    field: data.value,
+    operator: operator,
+    value: '',
+    label: data.label,
+    fieldtype: data.fieldtype,
+    options: data.options,
+  }
 }
 
 function removeFilter(index) {
