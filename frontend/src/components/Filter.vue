@@ -14,7 +14,7 @@
     </template>
     <template #body="{ close }">
       <div class="rounded-lg border border-gray-100 bg-white shadow-xl my-2">
-        <div class="p-2 min-w-[500px]">
+        <div class="p-2 min-w-[400px]">
           <div
             v-if="filterValues.length"
             v-for="(filter, i) in filterValues"
@@ -38,11 +38,11 @@
                 :options="getOperators(filter.fieldtype)"
                 placeholder="Operator"
               />
-              <FormControl
-                class="!w-36"
+              <component
+                :is="getValSelect(filter.fieldtype, filter.options)"
                 v-model="filter.value"
-                type="text"
                 placeholder="Value"
+                class="!min-w-[140px]"
               />
               <Button variant="ghost" icon="x" @click="removeFilter(i)" />
             </div>
@@ -89,6 +89,7 @@
 <script setup>
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
+import SearchComplete from '@/components/SearchComplete.vue'
 import {
   FeatherIcon,
   Button,
@@ -96,7 +97,7 @@ import {
   FormControl,
   createResource,
 } from 'frappe-ui'
-import { ref } from 'vue'
+import { ref, h } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -133,7 +134,7 @@ const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 
 function getOperators(fieldtype) {
   let options = []
-  if (typeString.includes(fieldtype) || typeNumber.includes(fieldtype)) {
+  if (typeString.includes(fieldtype)) {
     options.push(
       ...[
         { label: 'Equals', value: 'equals' },
@@ -163,17 +164,61 @@ function getOperators(fieldtype) {
       ]
     )
   }
+  if (typeCheck.includes(fieldtype)) {
+    options.push(...[{ label: 'Equals', value: 'equals' }])
+  }
   return options
 }
 
+function getValSelect(fieldtype, options) {
+  if (typeLink.includes(fieldtype)) {
+    return h(SearchComplete, { doctype: options })
+  } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
+    const _options =
+      fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
+    return h(FormControl, {
+      type: 'select',
+      options: _options.map((o) => ({
+        label: o,
+        value: o,
+      })),
+    })
+  } else {
+    return h(FormControl, { type: 'text' })
+  }
+}
+
+function getDefaultValue(field) {
+  if (typeSelect.includes(field.fieldtype)) {
+    return getSelectOptions(field.options)[0]
+  }
+  if (typeCheck.includes(field.fieldtype)) {
+    return 'Yes'
+  }
+  return ''
+}
+
+function getDefaultOperator(fieldtype) {
+  if (typeSelect.includes(fieldtype) || typeLink.includes(fieldtype)) {
+    return 'is'
+  }
+  if (typeCheck.includes(fieldtype) || typeNumber.includes(fieldtype)) {
+    return 'equals'
+  }
+  return 'like'
+}
+
+function getSelectOptions(options) {
+  return options.split('\n')
+}
+
 function setfilter(data) {
-  let operator = getOperators(data.fieldtype)[0].value
   filterValues.value = [
     ...filterValues.value,
     {
       field: data.value,
-      operator: operator,
-      value: '',
+      operator: getDefaultOperator(data.fieldtype),
+      value: getDefaultValue(data),
       label: data.label,
       fieldtype: data.fieldtype,
       options: data.options,
@@ -182,11 +227,10 @@ function setfilter(data) {
 }
 
 function updateFilter(data, index) {
-  let operator = getOperators(data.fieldtype)[0].value
   filterValues.value[index] = {
     field: data.value,
-    operator: operator,
-    value: '',
+    operator: getDefaultOperator(data.fieldtype),
+    value: getDefaultValue(data),
     label: data.label,
     fieldtype: data.fieldtype,
     options: data.options,
