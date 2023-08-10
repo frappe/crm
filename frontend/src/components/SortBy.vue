@@ -30,8 +30,9 @@
               </div>
               <Autocomplete
                 class="!w-32"
-                v-model="sort.fieldname"
+                :value="sort.fieldname"
                 :options="sortOptions.data"
+                @change="(e) => updateSort(e, i)"
                 placeholder="Sort by"
               />
               <FormControl
@@ -150,9 +151,6 @@ watch(
   (value) => {
     const updatedSort = value
       .map((sort) => {
-        if (typeof sort.fieldname == 'object') {
-          sort.fieldname = sort.fieldname.value
-        }
         const option = sortOptions.data.find((o) => o.value === sort.fieldname)
         return `${option.value} ${sort.direction}`
       })
@@ -179,6 +177,13 @@ function setSort(data) {
     { fieldname: data.value, direction: 'asc' },
   ]
   sortSortable.start()
+}
+
+function updateSort(data, index) {
+  sortValues.value[index] = {
+    fieldname: data.value,
+    direction: sortValues.value[index].direction,
+  }
 }
 
 function removeSort(index) {
