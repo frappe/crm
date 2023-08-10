@@ -1,8 +1,15 @@
 <template>
-  <NestedPopover v-if="sortOptions.data">
+  <NestedPopover v-if="options">
     <template #target>
       <Button label="Sort" ref="sortButtonRef">
         <template #prefix><SortIcon class="h-4" /></template>
+        <template v-if="sortValues.length" #suffix>
+          <div
+            class="flex justify-center items-center w-5 h-5 text-2xs font-medium pt-[1px] bg-gray-900 text-white rounded"
+          >
+            {{ sortValues.length }}
+          </div>
+        </template>
       </Button>
     </template>
     <template #body="{ close }">
@@ -45,7 +52,7 @@
           </div>
           <div class="flex items-center justify-between gap-2">
             <Autocomplete
-              :options="sortOptions.data"
+              :options="options"
               value=""
               placeholder="Sort by"
               @change="(e) => setSort(e)"
@@ -88,7 +95,7 @@ import {
   FormControl,
   createResource,
 } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -108,6 +115,14 @@ const sortOptions = createResource({
   params: {
     doctype: props.doctype,
   },
+})
+
+const options = computed(() => {
+  if (!sortOptions.data) return []
+  const selectedOptions = sortValues.value.map((sort) => sort.fieldname)
+  return sortOptions.data.filter((option) => {
+    return !selectedOptions.includes(option.value)
+  })
 })
 
 function initialOrderBy() {
