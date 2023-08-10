@@ -25,10 +25,8 @@
       </Dropdown>
     </template>
     <template #right-subheader>
+      <Filter doctype="CRM Lead"/>
       <SortBy doctype="CRM Lead" />
-      <Button label="Filter">
-        <template #prefix><FilterIcon class="h-4" /></template>
-      </Button>
       <Button icon="more-horizontal" />
     </template>
   </LayoutHeader>
@@ -56,9 +54,9 @@
 import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
-import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import NewLead from '@/components/NewLead.vue'
 import SortBy from '@/components/SortBy.vue'
+import Filter from '@/components/Filter.vue'
 import { usersStore } from '@/stores/users'
 import { useOrderBy } from '@/composables/orderby'
 import {
