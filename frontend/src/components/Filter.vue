@@ -3,11 +3,11 @@
     <template #target>
       <Button label="Filter">
         <template #prefix><FilterIcon class="h-4" /></template>
-        <template v-if="filterValues.length" #suffix>
+        <template v-if="storage.size" #suffix>
           <div
             class="flex justify-center items-center w-5 h-5 text-2xs font-medium pt-[1px] bg-gray-900 text-white rounded"
           >
-            {{ filterValues.length }}
+            {{ storage.size }}
           </div>
         </template>
       </Button>
@@ -16,8 +16,9 @@
       <div class="rounded-lg border border-gray-100 bg-white shadow-xl my-2">
         <div class="p-2 min-w-[400px]">
           <div
-            v-if="filterValues.length"
-            v-for="(filter, i) in filterValues"
+            v-if="storage.size"
+            v-for="(f, i) in storage"
+            :key="f.field.fieldname"
             id="filter-list"
             class="flex flex-col gap-2 mb-3"
           >
@@ -27,20 +28,29 @@
               </div>
               <Autocomplete
                 class="!min-w-[140px]"
-                :value="filter.field"
+                :value="f.field.fieldname"
                 :options="filterableFields.data"
                 @change="(e) => updateFilter(e, i)"
                 placeholder="Filter by..."
               />
               <FormControl
                 type="select"
-                v-model="filter.operator"
-                :options="getOperators(filter.fieldtype)"
+                v-model="f.operator"
+                :options="getOperators(f.field.fieldtype)"
                 placeholder="Operator"
               />
+              <SearchComplete
+                v-if="typeLink.includes(f.field.fieldtype)"
+                :doctype="f.field.options"
+                :value="f.value"
+                @change="(v) => (f.value = v.value)"
+                placeholder="Value"
+                class="!min-w-[140px]"
+              />
               <component
-                :is="getValSelect(filter.fieldtype, filter.options)"
-                v-model="filter.value"
+                v-else
+                :is="getValSelect(f.field.fieldtype, f.field.options)"
+                v-model="f.value"
                 placeholder="Value"
                 class="!min-w-[140px]"
               />
@@ -55,10 +65,10 @@
           </div>
           <div class="flex items-center justify-between gap-2">
             <Autocomplete
-              :options="filterableFields.data"
               value=""
-              placeholder="filter by"
+              :options="filterableFields.data"
               @change="(e) => setfilter(e)"
+              placeholder="Filter by..."
             >
               <template #target="{ togglePopover }">
                 <Button
@@ -74,7 +84,7 @@
               </template>
             </Autocomplete>
             <Button
-              v-if="filterValues.length"
+              v-if="storage.size"
               class="!text-gray-600"
               variant="ghost"
               label="Clear all filter"
@@ -90,14 +100,15 @@
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import SearchComplete from '@/components/SearchComplete.vue'
+import { useDebounceFn } from '@vueuse/core'
+import { useFilter } from '@/composables/filter'
 import {
   FeatherIcon,
-  Button,
   Autocomplete,
   FormControl,
   createResource,
 } from 'frappe-ui'
-import { ref, h } from 'vue'
+import { h, watch } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -106,11 +117,10 @@ const props = defineProps({
   },
 })
 
-const filterValues = ref([])
-
 const filterableFields = createResource({
   url: 'crm.api.doc.get_filterable_fields',
   auto: true,
+  cache: ['filterableFields', props.doctype],
   params: {
     doctype: props.doctype,
   },
@@ -126,11 +136,18 @@ const filterableFields = createResource({
   },
 })
 
+const { apply, storage } = useFilter(() => filterableFields.data)
 const typeCheck = ['Check']
 const typeLink = ['Link']
 const typeNumber = ['Float', 'Int']
 const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
+
+watch(
+  storage,
+  useDebounceFn(() => apply(), 300),
+  { deep: true }
+)
 
 function getOperators(fieldtype) {
   let options = []
@@ -171,9 +188,7 @@ function getOperators(fieldtype) {
 }
 
 function getValSelect(fieldtype, options) {
-  if (typeLink.includes(fieldtype)) {
-    return h(SearchComplete, { doctype: options })
-  } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
+  if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
     return h(FormControl, {
@@ -213,36 +228,40 @@ function getSelectOptions(options) {
 }
 
 function setfilter(data) {
-  filterValues.value = [
-    ...filterValues.value,
-    {
-      field: data.value,
-      operator: getDefaultOperator(data.fieldtype),
-      value: getDefaultValue(data),
+  storage.value.add({
+    field: {
       label: data.label,
+      fieldname: data.value,
       fieldtype: data.fieldtype,
       options: data.options,
     },
-  ]
+    fieldname: data.value,
+    operator: getDefaultOperator(data.fieldtype),
+    value: getDefaultValue(data),
+  })
 }
 
 function updateFilter(data, index) {
-  filterValues.value[index] = {
-    field: data.value,
+  storage.value.delete(Array.from(storage.value)[index])
+  storage.value.add({
+    fieldname: data.value,
     operator: getDefaultOperator(data.fieldtype),
     value: getDefaultValue(data),
-    label: data.label,
-    fieldtype: data.fieldtype,
-    options: data.options,
-  }
+    field: {
+      label: data.label,
+      fieldname: data.value,
+      fieldtype: data.fieldtype,
+      options: data.options,
+    },
+  })
 }
 
 function removeFilter(index) {
-  filterValues.value.splice(index, 1)
+  storage.value.delete(Array.from(storage.value)[index])
 }
 
 function clearfilter(close) {
-  filterValues.value = []
+  storage.value.clear()
   close()
 }
 </script>

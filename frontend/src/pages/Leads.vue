@@ -25,7 +25,7 @@
       </Dropdown>
     </template>
     <template #right-subheader>
-      <Filter doctype="CRM Lead"/>
+      <Filter doctype="CRM Lead" />
       <SortBy doctype="CRM Lead" />
       <Button icon="more-horizontal" />
     </template>
@@ -59,6 +59,8 @@ import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import { usersStore } from '@/stores/users'
 import { useOrderBy } from '@/composables/orderby'
+import { useFilter } from '@/composables/filter'
+import { useDebounceFn } from '@vueuse/core'
 import {
   FeatherIcon,
   Dialog,
@@ -77,6 +79,7 @@ const list = {
 }
 const { getUser } = usersStore()
 const { get: getOrderBy } = useOrderBy()
+const { getArgs, storage } = useFilter()
 
 const currentView = ref({
   label: 'List',
@@ -99,6 +102,7 @@ const leads = createListResource({
     'lead_owner',
     'modified',
   ],
+  filters: getArgs() || {},
   orderBy: 'modified desc',
   cache: 'Leads',
   pageLength: 20,
@@ -107,10 +111,22 @@ const leads = createListResource({
 
 watch(
   () => getOrderBy(),
-  (value) => {
-    leads.orderBy = value || 'modified desc'
+  (value, old_value) => {
+    if (!value && !old_value) return
+    leads.orderBy = getOrderBy() || 'modified desc'
     leads.reload()
-  }
+  },
+  { immediate: true }
+)
+
+watch(
+  storage,
+  useDebounceFn((value, old_value) => {
+    if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
+    leads.filters = getArgs() || {}
+    leads.reload()
+  }, 300),
+  { deep: true }
 )
 
 const columns = [
