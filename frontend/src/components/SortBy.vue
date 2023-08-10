@@ -14,7 +14,7 @@
     </template>
     <template #body="{ close }">
       <div class="rounded-lg border border-gray-100 bg-white shadow-xl my-2">
-        <div class="p-2">
+        <div class="p-2 min-w-[352px]">
           <div
             v-if="sortValues.length"
             id="sort-list"
@@ -47,7 +47,10 @@
               <Button variant="ghost" icon="x" @click="removeSort(i)" />
             </div>
           </div>
-          <div v-else class="text-gray-600 text-sm px-3 py-2">
+          <div
+            v-else
+            class="text-gray-600 flex items-center text-sm px-3 h-7 mb-3"
+          >
             Empty - Choose a field to sort by
           </div>
           <div class="flex items-center justify-between gap-2">
@@ -59,6 +62,7 @@
             >
               <template #target="{ togglePopover }">
                 <Button
+                  class="!text-gray-600"
                   variant="ghost"
                   @click="togglePopover()"
                   label="Add sort"
@@ -71,6 +75,7 @@
             </Autocomplete>
             <Button
               v-if="sortValues.length"
+              class="!text-gray-600"
               variant="ghost"
               label="Clear sort"
               @click="clearSort(close)"
