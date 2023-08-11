@@ -18,44 +18,47 @@
           <div
             v-if="storage.size"
             v-for="(f, i) in storage"
-            :key="f.field.fieldname"
+            :key="i"
             id="filter-list"
-            class="flex flex-col gap-2 mb-3"
+            class="flex items-center justify-between gap-2 mb-3"
           >
             <div class="flex items-center gap-2">
               <div class="text-gray-600 text-base pl-2 w-13 text-end">
                 {{ i == 0 ? 'Where' : 'And' }}
               </div>
-              <Autocomplete
-                class="!min-w-[140px]"
-                :value="f.field.fieldname"
-                :options="filterableFields.data"
-                @change="(e) => updateFilter(e, i)"
-                placeholder="Filter by..."
-              />
-              <FormControl
-                type="select"
-                v-model="f.operator"
-                :options="getOperators(f.field.fieldtype)"
-                placeholder="Operator"
-              />
-              <SearchComplete
-                v-if="typeLink.includes(f.field.fieldtype)"
-                :doctype="f.field.options"
-                :value="f.value"
-                @change="(v) => (f.value = v.value)"
-                placeholder="Value"
-                class="!min-w-[140px]"
-              />
-              <component
-                v-else
-                :is="getValSelect(f.field.fieldtype, f.field.options)"
-                v-model="f.value"
-                placeholder="Value"
-                class="!min-w-[140px]"
-              />
-              <Button variant="ghost" icon="x" @click="removeFilter(i)" />
+              <div id="fieldname" class="!min-w-[140px]">
+                <Autocomplete
+                  :value="f.field.fieldname"
+                  :options="filterableFields.data"
+                  @change="(e) => updateFilter(e, i)"
+                  placeholder="Filter by..."
+                />
+              </div>
+              <div id="operator">
+                <FormControl
+                  type="select"
+                  v-model="f.operator"
+                  :options="getOperators(f.field.fieldtype)"
+                  placeholder="Operator"
+                />
+              </div>
+              <div id="value" class="!min-w-[140px]">
+                <SearchComplete
+                  v-if="typeLink.includes(f.field.fieldtype)"
+                  :doctype="f.field.options"
+                  :value="f.value"
+                  @change="(v) => (f.value = v.value)"
+                  placeholder="Value"
+                />
+                <component
+                  v-else
+                  :is="getValSelect(f.field.fieldtype, f.field.options)"
+                  v-model="f.value"
+                  placeholder="Value"
+                />
+              </div>
             </div>
+            <Button variant="ghost" icon="x" @click="removeFilter(i)" />
           </div>
           <div
             v-else
