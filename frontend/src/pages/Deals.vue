@@ -34,7 +34,7 @@
       <Button icon="more-horizontal" />
     </template>
   </LayoutHeader>
-  <ListView :list="list" />
+  <ListView :list="list" row-key="name" />
 </template>
 
 <script setup>

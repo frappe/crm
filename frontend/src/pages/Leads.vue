@@ -104,7 +104,6 @@ const leads = createListResource({
   ],
   filters: getArgs() || {},
   orderBy: 'modified desc',
-  cache: 'Leads',
   pageLength: 20,
   auto: true,
 })

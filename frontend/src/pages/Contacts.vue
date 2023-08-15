@@ -58,7 +58,7 @@ const contacts = createListResource({
   fields: ['name', 'full_name', 'image', 'email_id', 'phone'],
   orderBy: 'full_name asc',
   cache: 'Contacts',
-  pageLength: 999,
+  pageLength: 20,
   auto: true,
 })
 
