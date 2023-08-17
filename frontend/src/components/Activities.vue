@@ -6,11 +6,8 @@
     <div v-for="(activity, i) in activities">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-5">
         <div
-          class="relative flex justify-center"
-          :class="{
-            'after:absolute after:border-l after:border-gray-300 after:top-0 after:left-[50%] after:h-full after:-z-10':
-              i != activities.length - 1,
-          }"
+          class="relative flex justify-center after:absolute after:border-l after:border-gray-300 after:top-0 after:left-[50%] after:-z-10"
+          :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
         >
           <div
             class="flex items-center justify-center rounded-full outline outline-4 outline-white w-6 h-6 bg-gray-200 z-10"
@@ -39,7 +36,11 @@
                 </Tooltip>
               </div>
               <div>
-                <Button variant="ghost" icon="more-horizontal" class="text-gray-600" />
+                <Button
+                  variant="ghost"
+                  icon="more-horizontal"
+                  class="text-gray-600"
+                />
               </div>
             </div>
             <div class="px-1" v-html="activity.data.content" />
