@@ -5,7 +5,12 @@ import frappeui from 'frappe-ui/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [frappeui(), vue()],
+  plugins: [frappeui(), vue({
+    script: {
+      defineModel: true,
+      propsDestructure: true
+    }
+  })],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

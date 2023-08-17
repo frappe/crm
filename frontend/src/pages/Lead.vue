@@ -35,7 +35,7 @@
       <Button label="Save" variant="solid" @click="() => updateLead()" />
     </template>
   </LayoutHeader>
-  <TabGroup v-if="lead.data" @change="onTabChange">
+  <TabGroup v-slot="{ selectedIndex }" v-if="lead.data" @change="onTabChange">
     <TabList class="flex items-center gap-6 border-b pl-5 relative">
       <Tab
         ref="tabRef"
@@ -58,14 +58,19 @@
         :style="{ left: `${indicatorLeftValue}px` }"
       />
     </TabList>
-    <TabPanels class="flex h-full overflow-hidden">
-      <TabPanel
-        class="flex-1 overflow-y-auto"
-        v-for="tab in tabs"
-        :key="tab.label"
-      >
-        <Activities :title="tab.activityTitle" :activities="tab.content" />
-      </TabPanel>
+    <div class="flex h-full overflow-hidden">
+      <div class="flex-1 flex flex-col">
+        <TabPanels class="flex flex-1 overflow-hidden">
+          <TabPanel
+            class="flex-1 overflow-y-auto"
+            v-for="tab in tabs"
+            :key="tab.label"
+          >
+            <Activities :title="tab.activityTitle" :activities="tab.content" />
+          </TabPanel>
+        </TabPanels>
+        <CommunicationArea v-if="[0, 1].includes(selectedIndex)" v-model="lead" />
+      </div>
       <div
         class="flex flex-col justify-between border-l w-[390px] overflow-hidden"
       >
@@ -197,7 +202,7 @@
           </Tooltip>
         </div>
       </div>
-    </TabPanels>
+    </div>
   </TabGroup>
 </template>
 <script setup>
@@ -212,6 +217,7 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import CommunicationArea from '../components/CommunicationArea.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'

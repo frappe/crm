@@ -2752,7 +2752,7 @@
   resolved "https://registry.yarnpkg.com/@tiptap/suggestion/-/suggestion-2.0.4.tgz#08e6c47a723200d02238d845cb09684c481f0066"
   integrity sha512-C5LGGjH8VFET34V7vKkqlwpSzrPl+7oAcj9h+P3jvJQ076iYpmpnMtz6dNLSFGKpHp5mtyl4RoJzh7lTvlfyiA==
 
-"@tiptap/vue-3@^2.0.3":
+"@tiptap/vue-3@^2.0.3", "@tiptap/vue-3@^2.0.4":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@tiptap/vue-3/-/vue-3-2.0.4.tgz#f04116a42aa60285026541a9c8db459dfa92e1a9"
   integrity sha512-XfoFl1RKCElYIoloGoqMC2iG4RalEtaGvwSAmqqNGdITCdwnuDhLlCvGAjnVbIR4d3Y0NRPyXZzGWfWSi4bbHg==
