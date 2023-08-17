@@ -1,12 +1,18 @@
 <template>
   <div class="max-w-[81.7%] bg-white pl-16 p-4 pt-2 z-20">
     <button
-      class="flex w-full items-center rounded-lg bg-gray-100 px-2 py-2 text-left text-base text-gray-600 hover:bg-gray-200"
+      class="flex gap-2 w-full items-center rounded-lg p-1 bg-gray-100 hover:bg-gray-200"
       @click="showCommunicationBox = true"
       v-show="!showCommunicationBox"
     >
-      <UserAvatar class="mr-3" :user="getUser().name" size="sm" />
-      Add a reply...
+      <UserAvatar class="m-1" :user="getUser().name" size="sm" />
+      <div class="flex-1 text-left text-base text-gray-600">Add a reply...</div>
+      <Tooltip text="Make a call..." class="m-1">
+        <PhoneIcon
+          class="bg-gray-900 rounded-full text-white fill-white p-[3px]"
+          @click.stop="makeOutgoingCall"
+        />
+      </Tooltip>
     </button>
     <div
       v-show="showCommunicationBox"
@@ -46,16 +52,18 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import EmailEditor from '@/components/EmailEditor.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import { usersStore } from '@/stores/users'
-import { call } from 'frappe-ui'
-import { ref, watch, computed, defineModel } from 'vue'
+import { Tooltip, call } from 'frappe-ui'
+import { ref, watch, computed, defineModel, onMounted } from 'vue'
+import { Device } from '@twilio/voice-sdk'
 
 const modelValue = defineModel()
 
 const { getUser } = usersStore()
 
 const showCommunicationBox = ref(false)
-const newEmail = ref('<p>Hi,<br><br>Gentle reminder!<br>We have a call at 3 - 5 PM today.<br><br>Thanks &amp; Regards<br>Shariq Ansari</p>')
+const newEmail = ref('')
 const newEmailEditor = ref(null)
 
 watch(
@@ -97,4 +105,85 @@ async function submitComment() {
   newEmail.value = ''
   modelValue.value.reload()
 }
+
+const countryCode = '91'
+let device = ref('')
+let currentNumber = ref('7666980887')
+let muted = ref(false)
+let onPhone = ref(false)
+let log = ref('Connecting...')
+let connection = ref(null)
+
+onMounted(() => startupClient())
+
+async function startupClient() {
+  log.value = 'Requesting Access Token...'
+
+  try {
+    const data = await call('crm.twilio.api.generate_access_token')
+    log.value = 'Got a token.'
+    intitializeDevice(data.token)
+  } catch (err) {
+    log.value = 'An error occurred. ' + err.message
+  }
+}
+
+function intitializeDevice(token) {
+  device.value = new Device(token, {
+    codecPreferences: ['opus', 'pcmu'],
+    fakeLocalDTMF: true,
+    enableRingingState: true,
+  })
+
+  addDeviceListeners()
+
+  device.value.register()
+}
+
+function addDeviceListeners() {
+  device.value.on('registered', () => {
+    log.value = 'Ready to make and receive calls!'
+  })
+
+  device.value.on('unregistered', (device) => {
+    onPhone.value = false
+    connection.value = null
+    log.value = 'Logged out'
+  })
+
+  device.value.on('error', (error) => {
+    log.value = 'Twilio.Device Error: ' + error.message
+  })
+
+  device.value.on('connect', (conn) => {
+    connection.value = conn
+    log.value = 'Successfully established call!'
+  })
+}
+
+async function makeOutgoingCall() {
+  if (device.value) {
+    log.value = `Attempting to call +917666980887 ...`
+
+    try {
+      const call = await device.value.connect({
+        params: {
+          To: '+917666980887',
+        },
+      })
+    } catch (error) {
+      log.value = `Could not connect call: ${error.message}`
+    }
+  } else {
+    log.value = 'Unable to make call.'
+  }
+}
+
+watch(
+  () => log.value,
+  (value) => {
+    console.log(value)
+  },
+  { immediate: true }
+)
 </script>

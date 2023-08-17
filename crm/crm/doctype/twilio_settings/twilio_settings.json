@@ -1,0 +1,76 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-08-17 18:38:02.655918",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "account_sid",
+  "api_key",
+  "api_secret",
+  "column_break_idds",
+  "auth_token",
+  "twiml_sid"
+ ],
+ "fields": [
+  {
+   "fieldname": "account_sid",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account SID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "API Key"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Password",
+   "label": "API Secret"
+  },
+  {
+   "fieldname": "column_break_idds",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "auth_token",
+   "fieldtype": "Password",
+   "in_list_view": 1,
+   "label": "Auth Token",
+   "reqd": 1
+  },
+  {
+   "fieldname": "twiml_sid",
+   "fieldtype": "Data",
+   "label": "TwiML SID"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-08-17 18:38:02.655918",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "Twilio Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
