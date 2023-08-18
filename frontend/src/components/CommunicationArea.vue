@@ -106,9 +106,7 @@ async function submitComment() {
   modelValue.value.reload()
 }
 
-const countryCode = '91'
-let device = ref('')
-let currentNumber = ref('7666980887')
+let device = ''
 let muted = ref(false)
 let onPhone = ref(false)
 let log = ref('Connecting...')
@@ -129,7 +127,7 @@ async function startupClient() {
 }
 
 function intitializeDevice(token) {
-  device.value = new Device(token, {
+  device = new Device(token, {
     codecPreferences: ['opus', 'pcmu'],
     fakeLocalDTMF: true,
     enableRingingState: true,
@@ -137,36 +135,36 @@ function intitializeDevice(token) {
 
   addDeviceListeners()
 
-  device.value.register()
+  device.register()
 }
 
 function addDeviceListeners() {
-  device.value.on('registered', () => {
+  device.on('registered', () => {
     log.value = 'Ready to make and receive calls!'
   })
 
-  device.value.on('unregistered', (device) => {
+  device.on('unregistered', (device) => {
     onPhone.value = false
     connection.value = null
     log.value = 'Logged out'
   })
 
-  device.value.on('error', (error) => {
+  device.on('error', (error) => {
     log.value = 'Twilio.Device Error: ' + error.message
   })
 
-  device.value.on('connect', (conn) => {
+  device.on('connect', (conn) => {
     connection.value = conn
     log.value = 'Successfully established call!'
   })
 }
 
 async function makeOutgoingCall() {
-  if (device.value) {
+  if (device) {
     log.value = `Attempting to call +917666980887 ...`
 
     try {
-      const call = await device.value.connect({
+      const call = await device.connect({
         params: {
           To: '+917666980887',
         },
