@@ -80,9 +80,9 @@ class Twilio:
 		resp = VoiceResponse()
 		dial = Dial(
 			caller_id=from_number,
-			record=self.settings.record_calls,
-			recording_status_callback=self.get_recording_status_callback_url(),
-			recording_status_callback_event='completed'
+			# record=self.settings.record_calls,
+			# recording_status_callback=self.get_recording_status_callback_url(),
+			# recording_status_callback_event='completed'
 		)
 		dial.number(to_number)
 		resp.append(dial)
@@ -97,9 +97,9 @@ class Twilio:
 		resp = VoiceResponse()
 		dial = Dial(
 			ring_tone=ring_tone,
-			record=self.settings.record_calls,
-			recording_status_callback=self.get_recording_status_callback_url(),
-			recording_status_callback_event='completed'
+			# record=self.settings.record_calls,
+			# recording_status_callback=self.get_recording_status_callback_url(),
+			# recording_status_callback_event='completed'
 		)
 		dial.client(client)
 		resp.append(dial)
