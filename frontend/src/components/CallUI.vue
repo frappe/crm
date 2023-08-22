@@ -21,7 +21,7 @@
     </template>
   </Dialog>
   <div
-    v-if="showCallPopup"
+    v-show="showCallPopup"
     ref="callPopup"
     class="fixed select-none z-10 bg-gray-900 rounded-lg shadow-lg p-4 flex flex-col w-60"
     :style="style"
@@ -43,11 +43,14 @@
         {{ getUser().full_name }}
       </div>
       <div class="text-sm text-gray-500">+917666980887</div>
-      <div class="text-white text-base my-1">
+      <CountUpTimer ref="counterUp">
+        <div v-if="onCall" class="text-white text-base my-1">
+          {{ counterUp?.updatedTime }}
+        </div>
+      </CountUpTimer>
+      <div v-if="!onCall" class="text-white text-base my-1">
         {{
-          onCall
-            ? '0:38'
-            : callStatus == 'ringing'
+          callStatus == 'ringing'
             ? 'Ringing...'
             : callStatus == 'initiated' || callStatus == 'calling'
             ? 'Calling...'
@@ -115,7 +118,7 @@
   </div>
   <Teleport to="#call-area">
     <div
-      v-if="showSmallCallWindow"
+      v-show="showSmallCallWindow"
       class="flex items-center justify-between p-1.5 gap-2 bg-gray-900 rounded m-2 cursor-pointer select-none"
       @click="toggleCallWindow"
     >
@@ -129,7 +132,9 @@
         </div>
       </div>
       <div v-if="onCall" class="flex items-center gap-1.5">
-        <div class="text-white text-base my-1">0:38</div>
+        <div class="text-white text-base my-1">
+          {{ counterUp?.updatedTime }}
+        </div>
         <Button variant="solid" theme="red" class="rounded-full !h-6 !w-6">
           <template #icon>
             <PhoneIcon
@@ -191,6 +196,7 @@ import { useDraggable, useWindowSize } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { onMounted, provide, ref, watch } from 'vue'
+import CountUpTimer from './CountUpTimer.vue'
 
 const { getUser } = usersStore()
 
@@ -206,6 +212,7 @@ let muted = ref(false)
 let callPopup = ref(null)
 let callPopupHandle = ref(null)
 let calling = ref(false)
+let counterUp = ref(null)
 
 const { width, height } = useWindowSize()
 
@@ -281,11 +288,11 @@ function handleIncomingCall(call) {
   call.on('reject', handleDisconnectedIncomingCall)
 }
 
-function acceptIncomingCall() {
-  _call.value.accept()
-
+async function acceptIncomingCall() {
   log.value = 'Accepted incoming call.'
   onCall.value = true
+  await _call.value.accept()
+  counterUp.value.start()
 }
 
 function rejectIncomingCall() {
@@ -307,6 +314,7 @@ function hangUpCall() {
   onCall.value = false
   callStatus.value = ''
   muted.value = false
+  counterUp.value.stop()
 }
 
 function handleDisconnectedIncomingCall() {
@@ -319,6 +327,7 @@ function handleDisconnectedIncomingCall() {
   }
   _call.value = null
   muted.value = false
+  counterUp.value.stop()
 }
 
 let callStatus = ref('')
@@ -346,6 +355,7 @@ async function makeOutgoingCall(close) {
           showCallPopup.value = true
           calling.value = false
           onCall.value = true
+          counterUp.value.start()
         }
       })
 
@@ -365,6 +375,7 @@ async function makeOutgoingCall(close) {
         _call.value = null
         callStatus.value = ''
         muted.value = false
+        counterUp.value.stop()
       })
       _call.value.on('cancel', () => {
         log.value = `Call ended.`
@@ -375,6 +386,7 @@ async function makeOutgoingCall(close) {
         _call.value = null
         callStatus.value = ''
         muted.value = false
+        counterUp.value.stop()
       })
     } catch (error) {
       log.value = `Could not connect call: ${error.message}`
