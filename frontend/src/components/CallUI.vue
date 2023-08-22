@@ -293,6 +293,7 @@ function rejectIncomingCall() {
   _call.value.reject()
   log.value = 'Rejected incoming call'
   showCallPopup.value = false
+  showSmallCallWindow.value = false
   callStatus.value = ''
 }
 
@@ -306,6 +307,7 @@ function hangUpCall() {
 function handleDisconnectedIncomingCall() {
   log.value = `Call ended.`
   showCallPopup.value = false
+  showSmallCallWindow.value = false
   _call.value = null
 }
 
@@ -349,6 +351,7 @@ async function makeOutgoingCall(close) {
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
+        showSmallCallWindow = false
         _call.value = null
         callStatus.value = ''
       })
@@ -357,6 +360,7 @@ async function makeOutgoingCall(close) {
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
+        showSmallCallWindow = false
         _call.value = null
         callStatus.value = ''
       })
@@ -370,6 +374,7 @@ async function makeOutgoingCall(close) {
 
 function cancelCall() {
   showCallPopup.value = false
+  showSmallCallWindow.value = false
   calling.value = false
   onCall.value = false
   callStatus.value = ''
