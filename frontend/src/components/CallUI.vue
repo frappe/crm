@@ -352,7 +352,6 @@ async function makeOutgoingCall(close) {
 
         if (info.CallStatus == 'in-progress') {
           log.value = `Call in progress.`
-          showCallPopup.value = true
           calling.value = false
           onCall.value = true
           counterUp.value.start()
