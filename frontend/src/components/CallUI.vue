@@ -373,17 +373,23 @@ async function makeOutgoingCall(close) {
 }
 
 function cancelCall() {
+  _call.value.disconnect()
   showCallPopup.value = false
-  showSmallCallWindow.value = false
+  if (showSmallCallWindow.value) {
+    showSmallCallWindow.value = false
+  }
   calling.value = false
   onCall.value = false
   callStatus.value = ''
-  _call.value.disconnect()
 }
 
 function toggleCallWindow() {
   showCallPopup.value = !showCallPopup.value
-  showSmallCallWindow.value = !showSmallCallWindow.value
+  if (showCallPopup.value) {
+    showSmallCallWindow.value = false
+  } else {
+    showSmallCallWindow.value = true
+  }
 }
 
 onMounted(() => startupClient())
