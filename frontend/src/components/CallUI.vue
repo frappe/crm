@@ -385,7 +385,7 @@ function cancelCall() {
 
 function toggleCallWindow() {
   showCallPopup.value = !showCallPopup.value
-  if (showCallPopup.value) {
+  if (showSmallCallWindow.value) {
     showSmallCallWindow.value = false
   } else {
     showSmallCallWindow.value = true
