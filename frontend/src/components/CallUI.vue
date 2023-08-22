@@ -27,7 +27,7 @@
     :style="style"
   >
     <div class="flex items-center flex-row-reverse gap-1">
-      <DragIcon1 ref="callPopopHandle" class="w-4 h-4 cursor-move text-white" />
+      <DragIcon1 ref="callPopupHandle" class="w-4 h-4 cursor-move text-white" />
       <MinimizeIcon
         class="w-4 h-4 text-white cursor-pointer"
         @click="toggleCallWindow"
@@ -113,8 +113,9 @@
       </div>
     </div>
   </div>
-  <Teleport v-if="showSmallCallWindow" to="#call-area">
+  <Teleport to="#call-area">
     <div
+      v-if="showSmallCallWindow"
       class="flex items-center justify-between p-1.5 gap-2 bg-gray-900 rounded m-2 cursor-pointer select-none"
       @click="toggleCallWindow"
     >
@@ -203,14 +204,14 @@ let showSmallCallWindow = ref(false)
 let onCall = ref(false)
 let muted = ref(false)
 let callPopup = ref(null)
-let callPopopHandle = ref(null)
+let callPopupHandle = ref(null)
 let calling = ref(false)
 
 const { width, height } = useWindowSize()
 
 let { style } = useDraggable(callPopup, {
   initialValue: { x: width.value - 280, y: height.value - 310 },
-  handle: callPopopHandle,
+  handle: callPopupHandle,
   preventDefault: true,
 })
 
@@ -254,8 +255,6 @@ function addDeviceListeners() {
   device.on('incoming', handleIncomingCall)
 
   device.on('connect', (conn) => {
-    conn
-    debugger
     log.value = 'Successfully established call!'
   })
 }
@@ -293,8 +292,13 @@ function rejectIncomingCall() {
   _call.value.reject()
   log.value = 'Rejected incoming call'
   showCallPopup.value = false
-  showSmallCallWindow.value = false
+  if (showSmallCallWindow.value == undefined) {
+    showSmallCallWindow = false
+  } else {
+    showSmallCallWindow.value = false
+  }
   callStatus.value = ''
+  muted.value = false
 }
 
 function hangUpCall() {
@@ -302,13 +306,19 @@ function hangUpCall() {
   log.value = 'Hanging up incoming call'
   onCall.value = false
   callStatus.value = ''
+  muted.value = false
 }
 
 function handleDisconnectedIncomingCall() {
   log.value = `Call ended.`
   showCallPopup.value = false
-  showSmallCallWindow.value = false
+  if (showSmallCallWindow.value == undefined) {
+    showSmallCallWindow = false
+  } else {
+    showSmallCallWindow.value = false
+  }
   _call.value = null
+  muted.value = false
 }
 
 let callStatus = ref('')
@@ -354,6 +364,7 @@ async function makeOutgoingCall(close) {
         showSmallCallWindow = false
         _call.value = null
         callStatus.value = ''
+        muted.value = false
       })
       _call.value.on('cancel', () => {
         log.value = `Call ended.`
@@ -363,6 +374,7 @@ async function makeOutgoingCall(close) {
         showSmallCallWindow = false
         _call.value = null
         callStatus.value = ''
+        muted.value = false
       })
     } catch (error) {
       log.value = `Could not connect call: ${error.message}`
@@ -375,20 +387,23 @@ async function makeOutgoingCall(close) {
 function cancelCall() {
   _call.value.disconnect()
   showCallPopup.value = false
-  if (showSmallCallWindow.value) {
+  if (showSmallCallWindow.value == undefined) {
+    showSmallCallWindow = false
+  } else {
     showSmallCallWindow.value = false
   }
   calling.value = false
   onCall.value = false
   callStatus.value = ''
+  muted.value = false
 }
 
 function toggleCallWindow() {
   showCallPopup.value = !showCallPopup.value
-  if (showSmallCallWindow.value) {
-    showSmallCallWindow.value = false
+  if (showSmallCallWindow.value == undefined) {
+    showSmallCallWindow = !showSmallCallWindow
   } else {
-    showSmallCallWindow.value = true
+    showSmallCallWindow.value = !showSmallCallWindow.value
   }
 }
 
