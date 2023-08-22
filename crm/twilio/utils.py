@@ -2,7 +2,7 @@ from frappe.utils import get_url
 
 
 def get_public_url(path: str=None):
-	return get_url(path)
+	return get_url().split(":8", 1)[0] + path
 
 
 def merge_dicts(d1: dict, d2: dict):

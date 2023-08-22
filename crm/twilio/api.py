@@ -1,7 +1,7 @@
 from werkzeug.wrappers import Response
+import json
 
 import frappe
-from twilio.rest import Client
 from .twilio_handler import Twilio, IncomingCall
 
 @frappe.whitelist()
@@ -58,3 +58,24 @@ def twilio_incoming_call_handler(**kwargs):
 
 	resp = IncomingCall(args.From, args.To).process()
 	return Response(resp.to_xml(), mimetype='text/xml')
+
+
+@frappe.whitelist(allow_guest=True)
+def get_call_info(**kwargs):
+	"""This is a webhook called when the outgoing call status changes.
+		E.g. 'initiated' 'ringing', 'in-progress', 'completed' etc.
+	"""
+	args = frappe._dict(kwargs)
+	call_info = {
+		'ParentCallSid': args.ParentCallSid,
+		'CallSid': args.CallSid,
+		'CallStatus': args.CallStatus,
+		'CallDuration': args.CallDuration,
+		'From': args.From,
+		'To': args.To,
+	}
+
+	client = Twilio.get_twilio_client()
+	client.calls(args.ParentCallSid).user_defined_messages.create(
+		content=json.dumps(call_info)
+	)

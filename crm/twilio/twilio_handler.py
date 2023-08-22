@@ -70,8 +70,8 @@ class Twilio:
 		"""
 		return identity.replace('(at)', '@')
 
-	def get_recording_status_callback_url(self):
-		url_path = "/api/method/twilio_integration.twilio_integration.api.update_recording_info"
+	def get_call_status_callback_url(self):
+		url_path = "/api/method/crm.twilio.api.get_call_info"
 		return get_public_url(url_path)
 
 	def generate_twilio_dial_response(self, from_number: str, to_number: str):
@@ -84,7 +84,12 @@ class Twilio:
 			# recording_status_callback=self.get_recording_status_callback_url(),
 			# recording_status_callback_event='completed'
 		)
-		dial.number(to_number)
+		dial.number(
+			to_number,
+			status_callback_event='initiated ringing answered completed',
+			status_callback=self.get_call_status_callback_url(),
+			status_callback_method='POST'
+		)
 		resp.append(dial)
 		return resp
 
