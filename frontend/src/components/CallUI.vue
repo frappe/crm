@@ -1,25 +1,5 @@
 <template>
   <slot />
-  <Dialog
-    v-model="showPhoneCall"
-    :options="{
-      title: 'Make a call...',
-      actions: [{ label: 'Make a call...', variant: 'solid' }],
-    }"
-  >
-    <template #body-content>
-      <div>Make a call to +917666980887</div>
-    </template>
-    <template #actions="{ close }">
-      <div class="flex flex-row-reverse gap-2">
-        <Button
-          variant="solid"
-          label="Make a call..."
-          @click="makeOutgoingCall(close)"
-        />
-      </div>
-    </template>
-  </Dialog>
   <div
     v-show="showCallPopup"
     ref="callPopup"
@@ -40,7 +20,7 @@
         <div class="text-xl font-medium">
           {{ getUser().full_name }}
         </div>
-        <div class="text-sm text-gray-600">+917666980887</div>
+        <div class="text-sm text-gray-600">{{ phoneNumber }}</div>
       </div>
       <CountUpTimer ref="counterUp">
         <div v-if="onCall" class="text-base my-1">
@@ -205,7 +185,7 @@ const { getUser } = usersStore()
 let device = ''
 let log = ref('Connecting...')
 let _call = ref(null)
-let showPhoneCall = ref(false)
+let phoneNumber = ref('')
 
 let showCallPopup = ref(false)
 let showSmallCallWindow = ref(false)
@@ -282,6 +262,8 @@ function toggleMute() {
 function handleIncomingCall(call) {
   log.value = `Incoming call from ${call.parameters.From}`
 
+  phoneNumber.value = call.parameters.From
+
   showCallPopup.value = true
   _call.value = call
 
@@ -333,15 +315,15 @@ function handleDisconnectedIncomingCall() {
   counterUp.value.stop()
 }
 
-async function makeOutgoingCall() {
+async function makeOutgoingCall(number) {
+  // remove this hard coded number later
+  phoneNumber.value = '+917666980887' || number
   if (device) {
-    log.value = `Attempting to call +917666980887 ...`
+    log.value = `Attempting to call ${phoneNumber.value} ...`
 
     try {
       _call.value = await device.connect({
-        params: {
-          To: '+917666980887',
-        },
+        params: { To: phoneNumber.value },
       })
 
       _call.value.on('messageReceived', (message) => {

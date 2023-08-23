@@ -85,9 +85,14 @@
           />
           <div class="font-medium text-2xl">{{ lead.data.lead_name }}</div>
           <div class="flex gap-3">
-            <Button class="rounded-full h-8 w-8" @click="makeCall">
-              <PhoneIcon class="h-4 w-4" />
-            </Button>
+            <Tooltip text="Make a call...">
+              <Button
+                class="rounded-full h-8 w-8"
+                @click="() => makeCall(lead.data.mobile_no)"
+              >
+                <PhoneIcon class="h-4 w-4" />
+              </Button>
+            </Tooltip>
             <Button class="rounded-full h-8 w-8">
               <EmailIcon class="h-4 w-4" />
             </Button>
