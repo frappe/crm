@@ -119,16 +119,16 @@
   <Teleport to="#call-area">
     <div
       v-show="showSmallCallWindow"
-      class="flex items-center justify-between p-1.5 gap-2 bg-gray-900 rounded m-2 cursor-pointer select-none"
+      class="flex items-center justify-between -ml-3 mr-2 p-1.5 gap-2 bg-gray-900 rounded cursor-pointer select-none"
       @click="toggleCallWindow"
     >
-      <div class="inline-flex items-center gap-1.5 truncate">
+      <div class="inline-flex items-center gap-1.5">
         <UserAvatar
           :user="getUser().name"
           class="flex items-center justify-center"
         />
-        <div class="text-base font-medium text-white truncate">
-          Shariq Ansari
+        <div class="text-base font-medium text-white truncate max-w-[120px]">
+          {{ getUser().full_name }}
         </div>
       </div>
       <div v-if="onCall" class="flex items-center gap-1.5">
@@ -191,12 +191,12 @@ import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import DialpadIcon from '@/components/Icons/DialpadIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import CountUpTimer from '@/components/CountUpTimer.vue'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { onMounted, provide, ref, watch } from 'vue'
-import CountUpTimer from './CountUpTimer.vue'
 
 const { getUser } = usersStore()
 

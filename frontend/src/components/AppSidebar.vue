@@ -27,7 +27,6 @@
         </nav>
       </div>
     </div>
-    <div id="call-area"></div>
   </div>
 </template>
 

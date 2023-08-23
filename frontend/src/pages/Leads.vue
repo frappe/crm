@@ -8,7 +8,9 @@
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
-    <template #left-subheader>
+  </LayoutHeader>
+  <div class="flex justify-between items-center px-5 pb-2.5 border-b">
+    <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
           <Button :label="currentView.label">
@@ -23,13 +25,13 @@
           </Button>
         </template>
       </Dropdown>
-    </template>
-    <template #right-subheader>
+    </div>
+    <div class="flex items-center gap-2">
       <Filter doctype="CRM Lead" />
       <SortBy doctype="CRM Lead" />
       <Button icon="more-horizontal" />
-    </template>
-  </LayoutHeader>
+    </div>
+  </div>
   <ListView :list="list" :columns="columns" :rows="rows" row-key="name" />
   <Dialog
     v-model="showNewDialog"

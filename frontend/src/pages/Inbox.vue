@@ -8,7 +8,9 @@
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
-    <template #left-subheader>
+  </LayoutHeader>
+  <div class="flex justify-between items-center px-5 pb-2.5 border-b">
+    <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
           <Button :label="currentView.label">
@@ -23,8 +25,8 @@
           </Button>
         </template>
       </Dropdown>
-    </template>
-    <template #right-subheader>
+    </div>
+    <div class="flex items-center gap-2">
       <Button label="Sort">
         <template #prefix><SortIcon class="h-4" /></template>
       </Button>
@@ -32,8 +34,8 @@
         <template #prefix><FilterIcon class="h-4" /></template>
       </Button>
       <Button icon="more-horizontal" />
-    </template>
-  </LayoutHeader>
+    </div>
+  </div>
   <ListView :list="list" />
 </template>
 

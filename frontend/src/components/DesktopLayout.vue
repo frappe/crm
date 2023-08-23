@@ -4,6 +4,10 @@
       <AppSidebar />
     </div>
     <div class="flex-1 flex flex-col h-full overflow-auto">
+      <div id="app-header" class="flex">
+        <div id="header-area" class="flex-1"></div>
+        <div id="call-area" class="flex items-center justify-center"></div>
+      </div>
       <slot />
     </div>
   </div>
