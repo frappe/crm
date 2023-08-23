@@ -1,18 +1,12 @@
 <template>
   <div class="max-w-[81.7%] pl-16 p-4 pt-2">
     <button
-      class="flex gap-2 w-full items-center rounded-lg p-1 bg-gray-100 hover:bg-gray-200"
+      class="flex gap-2 w-full items-center rounded-lg p-2 bg-gray-100 hover:bg-gray-200"
       @click="showCommunicationBox = true"
       v-show="!showCommunicationBox"
     >
-      <UserAvatar class="m-1" :user="getUser().name" size="sm" />
-      <div class="flex-1 text-left text-base text-gray-600">Add a reply...</div>
-      <Tooltip text="Make a call..." class="m-1">
-        <PhoneIcon
-          class="bg-gray-900 rounded-full text-white fill-white p-[3px]"
-          @click.stop="showPhoneCall = true"
-        />
-      </Tooltip>
+      <UserAvatar :user="getUser().name" size="sm" />
+      <div class="text-base text-gray-600">Add a reply...</div>
     </button>
     <div
       v-show="showCommunicationBox"
@@ -55,13 +49,11 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import { usersStore } from '@/stores/users'
 import { Tooltip, call, Button } from 'frappe-ui'
-import { ref, watch, computed, defineModel, inject } from 'vue'
+import { ref, watch, computed, defineModel } from 'vue'
 
 const modelValue = defineModel()
 
 const { getUser } = usersStore()
-
-let showPhoneCall = inject('showPhoneCall')
 
 const showCommunicationBox = ref(false)
 const newEmail = ref('')

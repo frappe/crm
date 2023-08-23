@@ -69,123 +69,148 @@
             <Activities :title="tab.activityTitle" :activities="tab.content" />
           </TabPanel>
         </TabPanels>
-        <CommunicationArea v-if="[0, 1].includes(selectedIndex)" v-model="lead" />
+        <CommunicationArea
+          v-if="[0, 1].includes(selectedIndex)"
+          v-model="lead"
+        />
       </div>
-      <div
-        class="flex flex-col justify-between border-l w-[390px] overflow-hidden"
-      >
-        <div class="flex flex-col gap-6.5 p-3 overflow-y-auto">
-          <div
-            v-for="section in detailSections"
-            :key="section.label"
-            class="flex flex-col"
-          >
-            <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
-              <div
-                class="flex items-center gap-2 text-base font-semibold leading-5 pl-2 pr-3 cursor-pointer max-w-fit"
-                @click="toggle()"
-              >
-                <FeatherIcon
-                  name="chevron-right"
-                  class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
-                  :class="{ 'rotate-90': opened }"
-                />
-                {{ section.label }}
-              </div>
-              <transition
-                enter-active-class="duration-300 ease-in"
-                leave-active-class="duration-300 ease-[cubic-bezier(0, 1, 0.5, 1)]"
-                enter-to-class="max-h-[200px] overflow-hidden"
-                leave-from-class="max-h-[200px] overflow-hidden"
-                enter-from-class="max-h-0 overflow-hidden"
-                leave-to-class="max-h-0 overflow-hidden"
-              >
-                <div v-if="opened" class="flex flex-col gap-3">
-                  <div
-                    v-for="field in section.fields"
-                    :key="field.label"
-                    class="flex items-center px-3 gap-2 text-base leading-5 first:mt-4.5"
-                  >
-                    <div class="text-gray-600 w-[106px]">{{ field.label }}</div>
-                    <div class="flex-1 w-full">
-                      <FormControl
-                        v-if="field.type === 'select'"
-                        type="select"
-                        :options="field.options"
-                        v-model="lead.data[field.name]"
-                      >
-                        <template #prefix>
-                          <IndicatorIcon
-                            :class="indicatorColor[lead.data[field.name]]"
-                          />
-                        </template>
-                      </FormControl>
-                      <FormControl
-                        v-else-if="field.type === 'email'"
-                        type="email"
-                        v-model="lead.data[field.name]"
-                      />
-                      <Autocomplete
-                        v-else-if="field.type === 'link'"
-                        :options="activeAgents"
-                        :value="getUser(lead.data[field.name]).full_name"
-                        @change="
-                          (option) => (lead.data[field.name] = option.email)
-                        "
-                        placeholder="Lead owner"
-                      >
-                        <template #prefix>
-                          <UserAvatar
-                            class="mr-2"
-                            :user="lead.data[field.name]"
-                            size="sm"
-                          />
-                        </template>
-                        <template #item-prefix="{ option }">
-                          <UserAvatar
-                            class="mr-2"
-                            :user="option.email"
-                            size="sm"
-                          />
-                        </template>
-                      </Autocomplete>
-                      <Dropdown
-                        v-else-if="field.type === 'dropdown'"
-                        :options="statusDropdownOptions"
-                        class="w-full flex-1"
-                      >
-                        <template #default="{ open }">
-                          <Button
-                            :label="lead.data[field.name]"
-                            class="justify-between w-full"
-                          >
-                            <template #prefix>
-                              <IndicatorIcon
-                                :class="indicatorColor[lead.data[field.name]]"
-                              />
-                            </template>
-                            <template #default>{{
-                              lead.data[field.name]
-                            }}</template>
-                            <template #suffix>
-                              <FeatherIcon
-                                :name="open ? 'chevron-up' : 'chevron-down'"
-                                class="h-4"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                      </Dropdown>
-                      <FormControl
-                        v-else
-                        type="text"
-                        v-model="lead.data[field.name]"
-                      />
+      <div class="flex flex-col justify-between border-l w-[360px]">
+        <div
+          class="flex flex-col gap-3 pb-4 p-5 items-center justify-center border-b"
+        >
+          <Avatar
+            size="3xl"
+            :label="lead.data.first_name"
+            :image="lead.data.image"
+          />
+          <div class="font-medium text-2xl">{{ lead.data.lead_name }}</div>
+          <div class="flex gap-3">
+            <Button class="rounded-full h-8 w-8" @click="makeCall">
+              <PhoneIcon class="h-4 w-4" />
+            </Button>
+            <Button class="rounded-full h-8 w-8">
+              <EmailIcon class="h-4 w-4" />
+            </Button>
+            <Button icon="message-square" class="rounded-full h-8 w-8" />
+            <Button icon="more-horizontal" class="rounded-full h-8 w-8" />
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col justify-between overflow-hidden">
+          <div class="flex flex-col gap-6.5 p-3 overflow-y-auto">
+            <div
+              v-for="section in detailSections"
+              :key="section.label"
+              class="flex flex-col"
+            >
+              <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
+                <div
+                  class="flex items-center gap-2 text-base font-semibold leading-5 pl-2 pr-3 cursor-pointer max-w-fit"
+                  @click="toggle()"
+                >
+                  <FeatherIcon
+                    name="chevron-right"
+                    class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
+                    :class="{ 'rotate-90': opened }"
+                  />
+                  {{ section.label }}
+                </div>
+                <transition
+                  enter-active-class="duration-300 ease-in"
+                  leave-active-class="duration-300 ease-[cubic-bezier(0, 1, 0.5, 1)]"
+                  enter-to-class="max-h-[200px] overflow-hidden"
+                  leave-from-class="max-h-[200px] overflow-hidden"
+                  enter-from-class="max-h-0 overflow-hidden"
+                  leave-to-class="max-h-0 overflow-hidden"
+                >
+                  <div v-if="opened" class="flex flex-col gap-3">
+                    <div
+                      v-for="field in section.fields"
+                      :key="field.label"
+                      class="flex items-center px-3 gap-2 text-base leading-5 first:mt-4.5"
+                    >
+                      <div class="text-gray-600 w-[106px]">
+                        {{ field.label }}
+                      </div>
+                      <div class="flex-1 w-full">
+                        <FormControl
+                          v-if="field.type === 'select'"
+                          type="select"
+                          :options="field.options"
+                          v-model="lead.data[field.name]"
+                        >
+                          <template #prefix>
+                            <IndicatorIcon
+                              :class="indicatorColor[lead.data[field.name]]"
+                            />
+                          </template>
+                        </FormControl>
+                        <FormControl
+                          v-else-if="field.type === 'email'"
+                          type="email"
+                          v-model="lead.data[field.name]"
+                        />
+                        <Autocomplete
+                          v-else-if="field.type === 'link'"
+                          :options="activeAgents"
+                          :value="getUser(lead.data[field.name]).full_name"
+                          @change="
+                            (option) => (lead.data[field.name] = option.email)
+                          "
+                          placeholder="Lead owner"
+                        >
+                          <template #prefix>
+                            <UserAvatar
+                              class="mr-2"
+                              :user="lead.data[field.name]"
+                              size="sm"
+                            />
+                          </template>
+                          <template #item-prefix="{ option }">
+                            <UserAvatar
+                              class="mr-2"
+                              :user="option.email"
+                              size="sm"
+                            />
+                          </template>
+                        </Autocomplete>
+                        <Dropdown
+                          v-else-if="field.type === 'dropdown'"
+                          :options="statusDropdownOptions"
+                          class="w-full flex-1"
+                        >
+                          <template #default="{ open }">
+                            <Button
+                              :label="lead.data[field.name]"
+                              class="justify-between w-full"
+                            >
+                              <template #prefix>
+                                <IndicatorIcon
+                                  :class="indicatorColor[lead.data[field.name]]"
+                                />
+                              </template>
+                              <template #default>{{
+                                lead.data[field.name]
+                              }}</template>
+                              <template #suffix>
+                                <FeatherIcon
+                                  :name="open ? 'chevron-up' : 'chevron-down'"
+                                  class="h-4"
+                                />
+                              </template>
+                            </Button>
+                          </template>
+                        </Dropdown>
+                        <FormControl
+                          v-else
+                          type="text"
+                          v-model="lead.data[field.name]"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </transition>
-            </Toggler>
+                </transition>
+              </Toggler>
+            </div>
           </div>
         </div>
         <div
@@ -217,7 +242,7 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import CommunicationArea from '../components/CommunicationArea.vue'
+import CommunicationArea from '@/components/CommunicationArea.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
@@ -230,10 +255,13 @@ import {
   FormControl,
   Dropdown,
   Tooltip,
+  Avatar,
 } from 'frappe-ui'
-import { ref, computed, h } from 'vue'
+import { ref, computed, h, inject } from 'vue'
 
 const { getUser, users } = usersStore()
+
+const makeCall = inject('makeOutgoingCall')
 
 const props = defineProps({
   leadId: {
@@ -406,9 +434,14 @@ const detailSections = computed(() => {
       opened: true,
       fields: [
         {
-          label: 'Name',
+          label: 'First Name',
           type: 'data',
-          name: 'lead_name',
+          name: 'first_name',
+        },
+        {
+          label: 'Last Name',
+          type: 'data',
+          name: 'last_name',
         },
         {
           label: 'Email',

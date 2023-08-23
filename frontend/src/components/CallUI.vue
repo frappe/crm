@@ -333,8 +333,7 @@ function handleDisconnectedIncomingCall() {
   counterUp.value.stop()
 }
 
-async function makeOutgoingCall(close) {
-  close()
+async function makeOutgoingCall() {
   if (device) {
     log.value = `Attempting to call +917666980887 ...`
 
@@ -428,7 +427,7 @@ watch(
   { immediate: true }
 )
 
-provide('showPhoneCall', showPhoneCall)
+provide('makeOutgoingCall', makeOutgoingCall)
 </script>
 
 <style scoped>
