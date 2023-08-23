@@ -133,8 +133,8 @@
           {{ getUser().full_name }}
         </div>
       </div>
-      <div v-if="onCall" class="flex items-center gap-3">
-        <div class="my-1">
+      <div v-if="onCall" class="flex items-center gap-2">
+        <div class="my-1 min-w-[40px] text-center">
           {{ counterUp?.updatedTime }}
         </div>
         <Button variant="solid" theme="red" class="rounded-full !h-6 !w-6">
