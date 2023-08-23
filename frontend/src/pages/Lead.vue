@@ -101,7 +101,7 @@
           </div>
         </div>
         <div class="flex-1 flex flex-col justify-between overflow-hidden">
-          <div class="flex flex-col gap-6.5 p-3 overflow-y-auto">
+          <div class="flex flex-col gap-6 p-3 overflow-y-auto">
             <div
               v-for="section in detailSections"
               :key="section.label"
@@ -127,21 +127,22 @@
                   enter-from-class="max-h-0 overflow-hidden"
                   leave-to-class="max-h-0 overflow-hidden"
                 >
-                  <div v-if="opened" class="flex flex-col gap-3">
+                  <div v-if="opened" class="flex flex-col gap-1.5">
                     <div
                       v-for="field in section.fields"
                       :key="field.label"
-                      class="flex items-center px-3 gap-2 text-base leading-5 first:mt-4.5"
+                      class="flex items-center px-3 gap-2 text-base leading-5 first:mt-3"
                     >
                       <div class="text-gray-600 w-[106px]">
                         {{ field.label }}
                       </div>
-                      <div class="flex-1 w-full">
+                      <div class="flex-1">
                         <FormControl
                           v-if="field.type === 'select'"
                           type="select"
                           :options="field.options"
                           v-model="lead.data[field.name]"
+                          class="form-control cursor-pointer [&_select]:cursor-pointer"
                         >
                           <template #prefix>
                             <IndicatorIcon
@@ -152,6 +153,7 @@
                         <FormControl
                           v-else-if="field.type === 'email'"
                           type="email"
+                          class="form-control"
                           v-model="lead.data[field.name]"
                         />
                         <Autocomplete
@@ -161,14 +163,23 @@
                           @change="
                             (option) => (lead.data[field.name] = option.email)
                           "
+                          class="form-control"
                           placeholder="Lead owner"
                         >
-                          <template #prefix>
-                            <UserAvatar
-                              class="mr-2"
-                              :user="lead.data[field.name]"
-                              size="sm"
-                            />
+                          <template #target="{ togglePopover }">
+                            <Button
+                              variant="ghost"
+                              @click="togglePopover()"
+                              :label="getUser(lead.data[field.name]).full_name"
+                              class="!justify-start w-full"
+                            >
+                              <template #prefix>
+                                <UserAvatar
+                                  :user="lead.data[field.name]"
+                                  size="sm"
+                                />
+                              </template>
+                            </Button>
                           </template>
                           <template #item-prefix="{ option }">
                             <UserAvatar
@@ -209,6 +220,7 @@
                           v-else
                           type="text"
                           v-model="lead.data[field.name]"
+                          class="form-control"
                         />
                       </div>
                     </div>
@@ -418,7 +430,7 @@ const detailSections = computed(() => {
           options: statusDropdownOptions,
         },
         {
-          label: 'Lead Owner',
+          label: 'Lead owner',
           type: 'link',
           name: 'lead_owner',
         },
@@ -439,12 +451,12 @@ const detailSections = computed(() => {
       opened: true,
       fields: [
         {
-          label: 'First Name',
+          label: 'First name',
           type: 'data',
           name: 'first_name',
         },
         {
-          label: 'Last Name',
+          label: 'Last name',
           type: 'data',
           name: 'last_name',
         },
@@ -454,7 +466,7 @@ const detailSections = computed(() => {
           name: 'email',
         },
         {
-          label: 'Mobile No.',
+          label: 'Mobile no.',
           type: 'phone',
           name: 'mobile_no',
         },
@@ -477,3 +489,12 @@ const activeAgents = computed(() => {
     })
 })
 </script>
+
+<style scoped>
+:deep(.form-control input),
+:deep(.form-control select),
+:deep(.form-control button) {
+  border-color: transparent;
+  background: white;
+}
+</style>
