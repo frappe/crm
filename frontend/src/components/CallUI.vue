@@ -23,36 +23,35 @@
   <div
     v-show="showCallPopup"
     ref="callPopup"
-    class="fixed select-none z-10 bg-gray-900 rounded-lg shadow-lg p-4 flex flex-col w-60"
+    class="fixed select-none z-10 bg-gray-900 text-gray-300 rounded-lg shadow-lg p-4 flex flex-col w-60"
     :style="style"
   >
     <div class="flex items-center flex-row-reverse gap-1">
-      <DragIcon1 ref="callPopupHandle" class="w-4 h-4 cursor-move text-white" />
-      <MinimizeIcon
-        class="w-4 h-4 text-white cursor-pointer"
-        @click="toggleCallWindow"
-      />
+      <DragIcon1 ref="callPopupHandle" class="w-4 h-4 cursor-move" />
+      <MinimizeIcon class="w-4 h-4 cursor-pointer" @click="toggleCallWindow" />
     </div>
-    <div class="flex flex-col justify-center items-center gap-2">
+    <div class="flex flex-col justify-center items-center gap-3">
       <UserAvatar
         :user="getUser().name"
         class="flex items-center justify-center !h-24 !w-24 relative"
         :class="onCall || calling ? '' : 'pulse'"
       />
-      <div class="text-xl font-medium text-white">
-        {{ getUser().full_name }}
+      <div class="flex flex-col gap-1">
+        <div class="text-xl font-medium">
+          {{ getUser().full_name }}
+        </div>
+        <div class="text-sm text-gray-600">+917666980887</div>
       </div>
-      <div class="text-sm text-gray-500">+917666980887</div>
       <CountUpTimer ref="counterUp">
-        <div v-if="onCall" class="text-white text-base my-1">
+        <div v-if="onCall" class="text-base my-1">
           {{ counterUp?.updatedTime }}
         </div>
       </CountUpTimer>
-      <div v-if="!onCall" class="text-white text-base my-1">
+      <div v-if="!onCall" class="text-base my-1">
         {{
           callStatus == 'ringing'
             ? 'Ringing...'
-            : callStatus == 'initiated' || callStatus == 'calling'
+            : calling
             ? 'Calling...'
             : 'Incoming call...'
         }}
@@ -84,22 +83,24 @@
           theme="red"
           label="Cancel"
           @click="cancelCall"
+          class="rounded-lg"
         >
           <template #prefix>
-            <PhoneIcon class="text-white fill-white h-4 w-4 rotate-[135deg]" />
+            <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
           </template>
         </Button>
       </div>
-      <div v-else class="flex gap-2 text-sm mt-2">
+      <div v-else class="flex gap-2">
         <Button
           size="md"
           variant="solid"
           theme="green"
           label="Accept"
+          class="rounded-lg"
           @click="acceptIncomingCall"
         >
           <template #prefix>
-            <PhoneIcon class="text-white fill-white h-4 w-4" />
+            <PhoneIcon class="fill-white h-4 w-4" />
           </template>
         </Button>
         <Button
@@ -107,10 +108,11 @@
           variant="solid"
           theme="red"
           label="Reject"
+          class="rounded-lg"
           @click="rejectIncomingCall"
         >
           <template #prefix>
-            <PhoneIcon class="text-white fill-white h-4 w-4 rotate-[135deg]" />
+            <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
           </template>
         </Button>
       </div>
@@ -119,33 +121,33 @@
   <Teleport to="#call-area">
     <div
       v-show="showSmallCallWindow"
-      class="flex items-center justify-between -ml-3 mr-2 p-1.5 gap-2 bg-gray-900 rounded cursor-pointer select-none"
+      class="flex items-center justify-between gap-3 bg-gray-900 text-base text-gray-300 -ml-3 mr-2 px-2 py-[7px] rounded-lg cursor-pointer select-none"
       @click="toggleCallWindow"
     >
-      <div class="inline-flex items-center gap-1.5">
+      <div class="flex items-center gap-2">
         <UserAvatar
           :user="getUser().name"
-          class="flex items-center justify-center"
+          class="flex items-center justify-center !h-5 !w-5"
         />
-        <div class="text-base font-medium text-white truncate max-w-[120px]">
+        <div class="truncate max-w-[120px]">
           {{ getUser().full_name }}
         </div>
       </div>
-      <div v-if="onCall" class="flex items-center gap-1.5">
-        <div class="text-white text-base my-1">
+      <div v-if="onCall" class="flex items-center gap-3">
+        <div class="my-1">
           {{ counterUp?.updatedTime }}
         </div>
         <Button variant="solid" theme="red" class="rounded-full !h-6 !w-6">
           <template #icon>
             <PhoneIcon
-              class="text-white fill-white h-3 w-3 rotate-[135deg]"
+              class="fill-white h-4 w-4 rotate-[135deg]"
               @click.stop="hangUpCall"
             />
           </template>
         </Button>
       </div>
-      <div v-else-if="calling" class="flex items-center gap-1.5">
-        <div class="text-white text-base my-1">
+      <div v-else-if="calling" class="flex items-center gap-3">
+        <div class="my-1">
           {{ callStatus == 'ringing' ? 'Ringing...' : 'Calling...' }}
         </div>
         <Button
@@ -155,11 +157,11 @@
           @click.stop="cancelCall"
         >
           <template #icon>
-            <PhoneIcon class="text-white fill-white h-3 w-3 rotate-[135deg]" />
+            <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
           </template>
         </Button>
       </div>
-      <div v-else class="flex gap-1.5 text-sm">
+      <div v-else class="flex items-center gap-2">
         <Button
           variant="solid"
           theme="green"
@@ -167,7 +169,7 @@
           @click.stop="acceptIncomingCall"
         >
           <template #icon>
-            <PhoneIcon class="text-white fill-white h-3 w-3 animate-pulse" />
+            <PhoneIcon class="fill-white h-4 w-4 animate-pulse" />
           </template>
         </Button>
         <Button
@@ -177,7 +179,7 @@
           @click.stop="rejectIncomingCall"
         >
           <template #icon>
-            <PhoneIcon class="text-white fill-white h-3 w-3 rotate-[135deg]" />
+            <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
           </template>
         </Button>
       </div>
@@ -208,11 +210,12 @@ let showPhoneCall = ref(false)
 let showCallPopup = ref(false)
 let showSmallCallWindow = ref(false)
 let onCall = ref(false)
+let calling = ref(false)
 let muted = ref(false)
 let callPopup = ref(null)
 let callPopupHandle = ref(null)
-let calling = ref(false)
 let counterUp = ref(null)
+let callStatus = ref('')
 
 const { width, height } = useWindowSize()
 
@@ -330,8 +333,6 @@ function handleDisconnectedIncomingCall() {
   counterUp.value.stop()
 }
 
-let callStatus = ref('')
-
 async function makeOutgoingCall(close) {
   close()
   if (device) {
@@ -363,7 +364,6 @@ async function makeOutgoingCall(close) {
         showCallPopup.value = true
         calling.value = true
         onCall.value = false
-        callStatus.value = 'calling'
       })
       _call.value.on('disconnect', () => {
         log.value = `Call ended.`

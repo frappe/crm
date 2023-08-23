@@ -6,7 +6,6 @@
       </div>
       <div class="flex items-center gap-2">
         <slot name="right-header" class="flex items-center gap-2" />
-        <slot name="call-area"></slot>
       </div>
     </header>
   </Teleport>
