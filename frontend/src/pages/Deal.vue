@@ -1,27 +1,27 @@
 <template>
-  <LayoutHeader v-if="lead.data">
+  <LayoutHeader v-if="deal.data">
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
       <Autocomplete
         :options="activeAgents"
-        :value="getUser(lead.data.lead_owner).full_name"
-        @change="(option) => (lead.data.lead_owner = option.email)"
-        placeholder="Lead owner"
+        :value="getUser(deal.data.lead_owner).full_name"
+        @change="(option) => (deal.data.lead_owner = option.email)"
+        placeholder="Deal owner"
       >
         <template #prefix>
-          <UserAvatar class="mr-2" :user="lead.data.lead_owner" size="sm" />
+          <UserAvatar class="mr-2" :user="deal.data.lead_owner" size="sm" />
         </template>
         <template #item-prefix="{ option }">
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </Autocomplete>
-      <Dropdown :options="statusDropdownOptions(lead.data)">
+      <Dropdown :options="statusDropdownOptions(deal.data, 'deal')">
         <template #default="{ open }">
-          <Button :label="lead.data.status">
+          <Button :label="deal.data.deal_status">
             <template #prefix>
-              <IndicatorIcon :class="leadStatuses[lead.data.status].color" />
+              <IndicatorIcon :class="dealStatuses[deal.data.deal_status].color" />
             </template>
             <template #suffix
               ><FeatherIcon
@@ -32,10 +32,10 @@
         </template>
       </Dropdown>
       <Button icon="more-horizontal" />
-      <Button label="Save" variant="solid" @click="() => updateLead()" />
+      <Button label="Save" variant="solid" @click="() => updateDeal()" />
     </template>
   </LayoutHeader>
-  <TabGroup v-slot="{ selectedIndex }" v-if="lead.data" @change="onTabChange">
+  <TabGroup v-slot="{ selectedIndex }" v-if="deal.data" @change="onTabChange">
     <TabList class="flex items-center gap-6 border-b pl-5 relative">
       <Tab
         ref="tabRef"
@@ -71,7 +71,7 @@
         </TabPanels>
         <CommunicationArea
           v-if="[0, 1].includes(selectedIndex)"
-          v-model="lead"
+          v-model="deal"
         />
       </div>
       <div class="flex flex-col justify-between border-l w-[360px]">
@@ -80,15 +80,15 @@
         >
           <Avatar
             size="3xl"
-            :label="lead.data.first_name"
-            :image="lead.data.image"
+            :label="deal.data.first_name"
+            :image="deal.data.image"
           />
-          <div class="font-medium text-2xl">{{ lead.data.lead_name }}</div>
+          <div class="font-medium text-2xl">{{ deal.data.lead_name }}</div>
           <div class="flex gap-3">
             <Tooltip text="Make a call...">
               <Button
                 class="rounded-full h-8 w-8"
-                @click="() => makeCall(lead.data.mobile_no)"
+                @click="() => makeCall(deal.data.mobile_no)"
               >
                 <PhoneIcon class="h-4 w-4" />
               </Button>
@@ -141,12 +141,12 @@
                           v-if="field.type === 'select'"
                           type="select"
                           :options="field.options"
-                          v-model="lead.data[field.name]"
+                          v-model="deal.data[field.name]"
                           class="form-control cursor-pointer [&_select]:cursor-pointer"
                         >
                           <template #prefix>
                             <IndicatorIcon
-                              :class="leadStatuses[lead.data[field.name]].color"
+                              :class="dealStatuses[deal.data[field.name]].color"
                             />
                           </template>
                         </FormControl>
@@ -154,28 +154,28 @@
                           v-else-if="field.type === 'email'"
                           type="email"
                           class="form-control"
-                          v-model="lead.data[field.name]"
+                          v-model="deal.data[field.name]"
                         />
                         <Autocomplete
                           v-else-if="field.type === 'link'"
                           :options="activeAgents"
-                          :value="getUser(lead.data[field.name]).full_name"
+                          :value="getUser(deal.data[field.name]).full_name"
                           @change="
-                            (option) => (lead.data[field.name] = option.email)
+                            (option) => (deal.data[field.name] = option.email)
                           "
                           class="form-control"
-                          placeholder="Lead owner"
+                          placeholder="Deal owner"
                         >
                           <template #target="{ togglePopover }">
                             <Button
                               variant="ghost"
                               @click="togglePopover()"
-                              :label="getUser(lead.data[field.name]).full_name"
+                              :label="getUser(deal.data[field.name]).full_name"
                               class="!justify-start w-full"
                             >
                               <template #prefix>
                                 <UserAvatar
-                                  :user="lead.data[field.name]"
+                                  :user="deal.data[field.name]"
                                   size="sm"
                                 />
                               </template>
@@ -191,23 +191,23 @@
                         </Autocomplete>
                         <Dropdown
                           v-else-if="field.type === 'dropdown'"
-                          :options="statusDropdownOptions(lead.data)"
+                          :options="statusDropdownOptions(deal.data, 'deal')"
                           class="w-full flex-1"
                         >
                           <template #default="{ open }">
                             <Button
-                              :label="lead.data[field.name]"
+                              :label="deal.data[field.name]"
                               class="justify-between w-full"
                             >
                               <template #prefix>
                                 <IndicatorIcon
                                   :class="
-                                    leadStatuses[lead.data[field.name]].color
+                                    dealStatuses[deal.data[field.name]].color
                                   "
                                 />
                               </template>
                               <template #default>{{
-                                lead.data[field.name]
+                                deal.data[field.name]
                               }}</template>
                               <template #suffix>
                                 <FeatherIcon
@@ -221,7 +221,7 @@
                         <FormControl
                           v-else
                           type="text"
-                          v-model="lead.data[field.name]"
+                          v-model="deal.data[field.name]"
                           class="form-control"
                         />
                       </div>
@@ -236,13 +236,13 @@
           class="flex items-center gap-1 text-sm px-6 p-3 leading-5 cursor-pointer"
         >
           <span class="text-gray-600">Created </span>
-          <Tooltip :text="dateFormat(lead.data.creation, dateTooltipFormat)">
-            {{ timeAgo(lead.data.creation) }}
+          <Tooltip :text="dateFormat(deal.data.creation, dateTooltipFormat)">
+            {{ timeAgo(deal.data.creation) }}
           </Tooltip>
           <span>&nbsp;&middot;&nbsp;</span>
           <span class="text-gray-600">Updated </span>
-          <Tooltip :text="dateFormat(lead.data.modified, dateTooltipFormat)">
-            {{ timeAgo(lead.data.modified) }}
+          <Tooltip :text="dateFormat(deal.data.modified, dateTooltipFormat)">
+            {{ timeAgo(deal.data.modified) }}
           </Tooltip>
         </div>
       </div>
@@ -264,7 +264,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
-import { dateFormat, timeAgo, dateTooltipFormat, leadStatuses, statusDropdownOptions } from '@/utils'
+import { dateFormat, timeAgo, dateTooltipFormat, dealStatuses, statusDropdownOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import {
   createResource,
@@ -283,40 +283,40 @@ const { getUser, users } = usersStore()
 const makeCall = inject('makeOutgoingCall')
 
 const props = defineProps({
-  leadId: {
+  dealId: {
     type: String,
     required: true,
   },
 })
 
-const lead = createResource({
+const deal = createResource({
   url: 'crm.crm.doctype.crm_lead.api.get_lead',
-  params: { name: props.leadId },
-  cache: ['lead', props.leadId],
+  params: { name: props.dealId },
+  cache: ['deal', props.dealId],
   auto: true,
 })
 
-const uLead = createDocumentResource({
+const uDeal = createDocumentResource({
   doctype: 'CRM Lead',
-  name: props.leadId,
+  name: props.dealId,
   setValue: {
     onSuccess: () => {
-      lead.reload()
+      deal.reload()
     },
   },
 })
 
-function updateLead() {
-  let leadCopy = { ...lead.data }
-  delete leadCopy.activities
-  uLead.setValue.submit({ ...leadCopy })
+function updateDeal() {
+  let dealCopy = { ...deal.data }
+  delete dealCopy.activities
+  uDeal.setValue.submit({ ...dealCopy })
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Leads', route: { name: 'Leads' } }]
+  let items = [{ label: 'Deals', route: { name: 'Deals' } }]
   items.push({
-    label: lead.data.lead_name,
-    route: { name: 'Lead', params: { leadId: lead.data.name } },
+    label: deal.data.lead_name,
+    route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
 })
@@ -326,13 +326,13 @@ const tabs = computed(() => {
     {
       label: 'Activity',
       icon: ActivityIcon,
-      content: lead.data.activities,
+      content: deal.data.activities,
       activityTitle: 'Activity log',
     },
     {
       label: 'Emails',
       icon: EmailIcon,
-      content: lead.data.activities.filter(
+      content: deal.data.activities.filter(
         (activity) => activity.activity_type === 'communication'
       ),
       activityTitle: 'Emails',
@@ -340,7 +340,7 @@ const tabs = computed(() => {
     {
       label: 'Calls',
       icon: PhoneIcon,
-      content: lead.data.activities.filter(
+      content: deal.data.activities.filter(
         (activity) => activity.activity_type === 'call'
       ),
       activityTitle: 'Calls',
@@ -376,17 +376,17 @@ function onTabChange(index) {
 const detailSections = computed(() => {
   return [
     {
-      label: 'About this lead',
+      label: 'About this deal',
       opened: true,
       fields: [
         {
           label: 'Status',
           type: 'select',
-          name: 'status',
-          options: statusDropdownOptions(lead.data),
+          name: 'deal_status',
+          options: statusDropdownOptions(deal.data, 'deal'),
         },
         {
-          label: 'Lead owner',
+          label: 'Deal owner',
           type: 'link',
           name: 'lead_owner',
         },

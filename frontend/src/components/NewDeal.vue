@@ -8,26 +8,26 @@
             v-if="field.type === 'select'"
             type="select"
             :options="field.options"
-            v-model="newLead[field.name]"
+            v-model="newDeal[field.name]"
           >
-            <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon :class="leadStatuses[newLead[field.name]].color" />
+            <template v-if="field.name == 'deal_status'" #prefix>
+              <IndicatorIcon :class="dealStatuses[newDeal[field.name]].color" />
             </template>
           </FormControl>
           <FormControl
             v-else-if="field.type === 'email'"
             type="email"
-            v-model="newLead[field.name]"
+            v-model="newDeal[field.name]"
           />
           <Autocomplete
             v-else-if="field.type === 'link'"
             :options="activeAgents"
-            :value="getUser(newLead[field.name]).full_name"
-            @change="(option) => (newLead[field.name] = option.email)"
+            :value="getUser(newDeal[field.name]).full_name"
+            @change="(option) => (newDeal[field.name] = option.email)"
             :placeholder="field.placeholder"
           >
             <template #prefix>
-              <UserAvatar class="mr-2" :user="newLead[field.name]" size="sm" />
+              <UserAvatar class="mr-2" :user="newDeal[field.name]" size="sm" />
             </template>
             <template #item-prefix="{ option }">
               <UserAvatar class="mr-2" :user="option.email" size="sm" />
@@ -35,18 +35,18 @@
           </Autocomplete>
           <Dropdown
             v-else-if="field.type === 'dropdown'"
-            :options="statusDropdownOptions(newLead)"
+            :options="statusDropdownOptions(newDeal, 'deal')"
             class="w-full flex-1"
           >
             <template #default="{ open }">
               <Button
-                :label="newLead[field.name]"
+                :label="newDeal[field.name]"
                 class="justify-between w-full"
               >
                 <template #prefix>
-                  <IndicatorIcon :class="leadStatuses[newLead[field.name]].color" />
+                  <IndicatorIcon :class="dealStatuses[newDeal[field.name]].color" />
                 </template>
-                <template #default>{{ newLead[field.name] }}</template>
+                <template #default>{{ newDeal[field.name] }}</template>
                 <template #suffix>
                   <FeatherIcon
                     :name="open ? 'chevron-up' : 'chevron-down'"
@@ -56,7 +56,7 @@
               </Button>
             </template>
           </Dropdown>
-          <FormControl v-else type="text" v-model="newLead[field.name]" />
+          <FormControl v-else type="text" v-model="newDeal[field.name]" />
         </div>
       </div>
     </div>
@@ -67,7 +67,7 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
-import { leadStatuses, statusDropdownOptions } from '@/utils'
+import { dealStatuses, statusDropdownOptions } from '@/utils'
 import {
   FormControl,
   Button,
@@ -79,7 +79,7 @@ import { computed } from 'vue'
 
 const { getUser, users } = usersStore()
 const props = defineProps({
-  newLead: {
+  newDeal: {
     type: Object,
     required: true,
   },
@@ -87,7 +87,7 @@ const props = defineProps({
 
 const allFields = [
   {
-    section: 'Lead Details',
+    section: 'Deal Details',
     fields: [
       {
         label: 'Salutation',
@@ -140,15 +140,15 @@ const allFields = [
       },
       {
         label: 'Status',
-        name: 'status',
+        name: 'deal_status',
         type: 'select',
-        options: statusDropdownOptions(props.newLead),
+        options: statusDropdownOptions(props.newDeal, 'deal'),
       },
       {
-        label: 'Lead owner',
+        label: 'Deal owner',
         name: 'lead_owner',
         type: 'link',
-        placeholder: 'Lead owner',
+        placeholder: 'Deal owner',
       },
     ],
   },
@@ -167,5 +167,4 @@ const activeAgents = computed(() => {
       }
     })
 })
-
 </script>

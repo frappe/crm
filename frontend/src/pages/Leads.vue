@@ -63,6 +63,7 @@ import { usersStore } from '@/stores/users'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
+import { leadStatuses } from '@/utils'
 import {
   FeatherIcon,
   Dialog,
@@ -88,6 +89,13 @@ const currentView = ref({
   icon: 'list',
 })
 
+function getFilter() {
+  return {
+    ...(getArgs() || {}),
+    is_deal: 0,
+  }
+}
+
 const leads = createListResource({
   type: 'list',
   doctype: 'CRM Lead',
@@ -104,7 +112,7 @@ const leads = createListResource({
     'lead_owner',
     'modified',
   ],
-  filters: getArgs() || {},
+  filters: getFilter(),
   orderBy: 'modified desc',
   pageLength: 20,
   auto: true,
@@ -124,7 +132,7 @@ watch(
   storage,
   useDebounceFn((value, old_value) => {
     if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    leads.filters = getArgs() || {}
+    leads.filters = getFilter()
     leads.reload()
   }, 300),
   { deep: true }
@@ -184,7 +192,7 @@ const rows = computed(() => {
       },
       status: {
         label: lead.status,
-        color: indicatorColor[lead.status],
+        color: leadStatuses[lead.status]?.color,
       },
       email: lead.email,
       mobile_no: lead.mobile_no,
@@ -236,14 +244,6 @@ const viewsDropdownOptions = [
   },
 ]
 
-const indicatorColor = {
-  New: 'text-gray-600',
-  'Contact made': 'text-orange-500',
-  'Proposal made': 'text-blue-600',
-  Negotiation: 'text-red-600',
-  Converted: 'text-green-600',
-}
-
 const showNewDialog = ref(false)
 
 let newLead = reactive({
@@ -252,7 +252,7 @@ let newLead = reactive({
   last_name: '',
   lead_name: '',
   organization_name: '',
-  status: 'New',
+  status: 'Open',
   email: '',
   mobile_no: '',
   lead_owner: getUser().email,

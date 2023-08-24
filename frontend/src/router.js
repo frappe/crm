@@ -24,6 +24,12 @@ const routes = [
     component: () => import('@/pages/Deals.vue'),
   },
   {
+    path: '/deals/:dealId',
+    name: 'Deal',
+    component: () => import('@/pages/Deal.vue'),
+    props: true,
+  },
+  {
     path: '/inbox',
     name: 'Inbox',
     component: () => import('@/pages/Inbox.vue'),
