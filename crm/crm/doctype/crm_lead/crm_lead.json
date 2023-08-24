@@ -17,9 +17,11 @@
   "lead_name",
   "gender",
   "image",
+  "is_deal",
   "column_break_lcuv",
   "lead_owner",
   "status",
+  "deal_status",
   "source",
   "section_break_ymew",
   "email",
@@ -79,11 +81,12 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Status",
-   "options": "New\nContact made\nProposal made\nNegotiation\nConverted",
+   "label": "Lead Status",
+   "options": "Open\nContacted\nNurture\nQualified\nUnqualified\nJunk",
    "reqd": 1,
    "search_index": 1
   },
@@ -181,12 +184,31 @@
    "fieldtype": "Data",
    "label": "Full Name",
    "search_index": 1
+  },
+  {
+   "default": "Qualification",
+   "fieldname": "deal_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Deal Status",
+   "options": "Qualification\nDemo/Making\nProposal/Quotation\nNegotiation\nReady to Close\nWon\nLost",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_deal",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Is Deal",
+   "search_index": 1
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-25 18:18:23.429029",
+ "modified": "2023-08-24 15:32:21.577653",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM Lead",
