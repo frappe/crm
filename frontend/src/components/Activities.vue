@@ -1,18 +1,16 @@
 <template>
   <div class="p-5 flex items-center justify-between font-medium text-lg">
     <div>{{ title }}</div>
-    <Button
-      v-if="title == 'Calls'"
-      variant="solid"
-      label="Make a call"
-      @click="emit('makeCall')"
-    />
+    <Button v-if="title == 'Calls'" variant="solid" @click="emit('makeCall')">
+      <PhoneIcon class="w-4 h-4" />
+    </Button>
     <Button
       v-else-if="title == 'Notes'"
       variant="solid"
-      label="Create note"
       @click="emit('makeNote')"
-    />
+    >
+      <FeatherIcon name="plus" class="w-4 h-4" />
+    </Button>
   </div>
   <div v-if="activities.length">
     <div v-if="title == 'Notes'" class="grid grid-cols-2 gap-4 p-5 pt-0">
@@ -42,9 +40,12 @@
             />
           </Dropdown>
         </div>
-        <div
-          class="flex-1 text-base leading-5 text-gray-700 overflow-hidden"
-          v-html="note.content"
+        <TextEditor
+          v-if="note.content"
+          :content="note.content"
+          :options="{ readOnly: true }"
+          editor-class="!prose-sm max-w-none !text-sm focus:outline-none"
+          class="flex-1 overflow-hidden"
         />
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
@@ -178,7 +179,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { Button, FeatherIcon, Tooltip, Dropdown } from 'frappe-ui'
+import { Button, FeatherIcon, Tooltip, Dropdown, TextEditor } from 'frappe-ui'
 import { computed, h } from 'vue'
 
 const { getUser } = usersStore()

@@ -14,7 +14,7 @@
         />
         <TextEditor
           ref="content"
-          editor-class="!prose-sm max-w-none p-2 overflow-auto focus:outline-none"
+          editor-class="!prose-sm !leading-5 max-w-none p-2 overflow-auto focus:outline-none"
           :bubbleMenu="true"
           :content="updatedNote.content"
           @change="(val) => (updatedNote.content = val)"

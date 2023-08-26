@@ -37,9 +37,12 @@
           />
         </Dropdown>
       </div>
-      <div
-        class="flex-1 text-base leading-5 text-gray-700 overflow-hidden"
-        v-html="note.content"
+      <TextEditor
+        v-if="note.content"
+        :content="note.content"
+        :options="{ readOnly: true }"
+        editor-class="!prose-sm max-w-none !text-sm focus:outline-none"
+        class="flex-1 overflow-hidden"
       />
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2">
