@@ -13,30 +13,38 @@
   "first_name",
   "middle_name",
   "last_name",
+  "is_deal",
   "column_break_izjs",
   "lead_name",
   "gender",
-  "image",
-  "is_deal",
-  "column_break_lcuv",
   "lead_owner",
   "status",
-  "deal_status",
+  "image",
+  "column_break_lcuv",
   "source",
-  "section_break_ymew",
-  "email",
-  "website",
-  "column_break_sijm",
-  "mobile_no",
-  "column_break_sjtw",
-  "phone",
+  "deal_status",
+  "close_date",
+  "probability",
+  "next_step",
+  "organization_tab",
   "section_break_uixv",
   "organization_name",
   "no_of_employees",
   "organization_logo",
   "column_break_dbsv",
+  "website",
+  "job_title",
   "annual_revenue",
-  "industry"
+  "industry",
+  "contact_tab",
+  "section_break_ymew",
+  "email",
+  "column_break_sijm",
+  "mobile_no",
+  "column_break_sjtw",
+  "phone",
+  "section_break_jyxr",
+  "contacts"
  ],
  "fields": [
   {
@@ -203,12 +211,52 @@
    "in_standard_filter": 1,
    "label": "Is Deal",
    "search_index": 1
+  },
+  {
+   "fieldname": "job_title",
+   "fieldtype": "Data",
+   "label": "Job Title"
+  },
+  {
+   "fieldname": "organization_tab",
+   "fieldtype": "Tab Break",
+   "label": "Organization"
+  },
+  {
+   "fieldname": "contact_tab",
+   "fieldtype": "Tab Break",
+   "label": "Contact"
+  },
+  {
+   "fieldname": "close_date",
+   "fieldtype": "Date",
+   "label": "Close Date"
+  },
+  {
+   "fieldname": "probability",
+   "fieldtype": "Data",
+   "label": "Probability"
+  },
+  {
+   "fieldname": "next_step",
+   "fieldtype": "Data",
+   "label": "Next Step"
+  },
+  {
+   "fieldname": "contacts",
+   "fieldtype": "Table",
+   "label": "Contacts",
+   "options": "CRM Contacts"
+  },
+  {
+   "fieldname": "section_break_jyxr",
+   "fieldtype": "Section Break"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-24 15:32:21.577653",
+ "modified": "2023-08-25 19:21:22.778067",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM Lead",
