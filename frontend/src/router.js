@@ -35,6 +35,11 @@ const routes = [
     component: () => import('@/pages/Inbox.vue'),
   },
   {
+    path: '/notes',
+    name: 'Notes',
+    component: () => import('@/pages/Notes.vue'),
+  },
+  {
     path: '/contacts',
     name: 'Contacts',
     component: () => import('@/pages/Contacts.vue'),

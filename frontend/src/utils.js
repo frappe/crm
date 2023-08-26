@@ -93,3 +93,9 @@ export function statusDropdownOptions(data, doctype) {
 export function openWebsite(url) {
   window.open(url, '_blank')
 }
+
+export function htmlToText(html) {
+  const div = document.createElement('div')
+  div.innerHTML = html
+  return div.textContent || div.innerText || ''
+}
