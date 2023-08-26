@@ -40,7 +40,7 @@
       <TextEditor
         v-if="note.content"
         :content="note.content"
-        :options="{ readOnly: true }"
+        :editable="false"
         editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
         class="flex-1 overflow-hidden"
       />
