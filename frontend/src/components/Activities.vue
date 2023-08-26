@@ -16,7 +16,7 @@
     <div v-if="title == 'Notes'" class="grid grid-cols-2 gap-4 p-5 pt-0">
       <div
         v-for="note in activities"
-        class="group flex flex-col justify-between gap-2 px-4 py-3 border rounded-lg h-40 shadow-sm hover:bg-gray-50 cursor-pointer"
+        class="group flex flex-col justify-between gap-2 px-4 py-3 border rounded-lg h-48 shadow-sm hover:bg-gray-50 cursor-pointer"
         @click="emit('makeNote', note)"
       >
         <div class="flex items-center justify-between">
@@ -32,11 +32,12 @@
               },
             ]"
             @click.stop
+            class="h-6 w-6"
           >
             <Button
               icon="more-horizontal"
               variant="ghosted"
-              class="hover:bg-white"
+              class="hover:bg-white !h-6 !w-6"
             />
           </Dropdown>
         </div>
@@ -44,10 +45,10 @@
           v-if="note.content"
           :content="note.content"
           :options="{ readOnly: true }"
-          editor-class="!prose-sm max-w-none !text-sm focus:outline-none"
+          editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
           class="flex-1 overflow-hidden"
         />
-        <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center justify-between mt-1 gap-2">
           <div class="flex items-center gap-2">
             <UserAvatar :user="note.owner" size="xs" />
             <div class="text-sm text-gray-800">
