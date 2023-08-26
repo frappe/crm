@@ -9,40 +9,74 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div class="flex justify-between items-center px-5 pb-2.5 border-b">
-    <div class="flex items-center gap-2">
-      <TabButtons
-        v-model="currentView"
-        :buttons="[{ label: 'List' }, { label: 'Grid' }]"
-        class="w-max"
+  <div class="border-b"></div>
+  <div v-if="notes.data" class="grid grid-cols-4 gap-4 p-5">
+    <div
+      v-for="note in notes.data"
+      class="flex flex-col justify-between gap-2 px-5 py-4 border rounded-lg h-52 shadow-sm hover:bg-gray-50 cursor-pointer"
+      @click="openNoteModal(note)"
+    >
+      <div class="text-lg font-medium truncate">
+        {{ note.title }}
+      </div>
+      <div
+        class="flex-1 text-base leading-5 text-gray-700 overflow-hidden"
+        v-html="note.content"
       />
-    </div>
-    <div class="flex items-center gap-2">
-      <Button label="Sort">
-        <template #prefix><SortIcon class="h-4" /></template>
-      </Button>
-      <Button label="Filter">
-        <template #prefix><FilterIcon class="h-4" /></template>
-      </Button>
-      <Button icon="more-horizontal" />
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <UserAvatar :user="note.owner" size="xs" />
+          <div class="text-sm text-gray-800">
+            {{ note.owner }}
+          </div>
+        </div>
+        <div class="text-sm text-gray-700">
+          {{ timeAgo(note.modified) }}
+        </div>
+      </div>
     </div>
   </div>
-  <ListView :list="list" :columns="columns" :rows="rows" row-key="name" />
+  <Dialog
+    v-model="showNoteModal"
+    :options="{ size: '4xl' }"
+    @close="updateNote"
+  >
+    <template #body-title><div></div></template>
+    <template #body-content>
+      <div
+        class="flex flex-col gap-2 px-20 mt-5 mb-10 min-h-[400px] max-h-[500px] overflow-auto"
+      >
+        <TextInput
+          type="text"
+          class="!text-[30px] !h-10 !font-semibold bg-white border-none hover:bg-white focus-visible:ring-0 focus:shadow-none"
+          v-model="currentNote.title"
+        />
+        <TextEditor
+          editor-class="!prose-sm max-w-none p-2 overflow-auto focus:outline-none"
+          :bubbleMenu="true"
+          :content="currentNote.content"
+          @change="(val) => (currentNote.content = val)"
+          placeholder="Type something and press enter"
+        />
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
-import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
-import SortIcon from '@/components/Icons/SortIcon.vue'
-import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import { usersStore } from '@/stores/users'
-import { FeatherIcon, Button, createListResource, TabButtons } from 'frappe-ui'
-import { computed, ref } from 'vue'
-
-const { getUser } = usersStore()
-
-const currentView = ref('List')
+import UserAvatar from '@/components/UserAvatar.vue'
+import { timeAgo } from '@/utils'
+import {
+  FeatherIcon,
+  Button,
+  createListResource,
+  TextEditor,
+  TextInput,
+  call,
+} from 'frappe-ui'
+import { ref } from 'vue'
 
 const list = {
   title: 'Notes',
@@ -50,9 +84,14 @@ const list = {
   singular_label: 'Note',
 }
 
+const showNoteModal = ref(false)
+const currentNote = ref(null)
+const oldNote = ref(null)
+
 const notes = createListResource({
   type: 'list',
   doctype: 'CRM Note',
+  cache: 'Notes',
   fields: ['name', 'title', 'content', 'owner', 'modified'],
   filters: {},
   orderBy: 'modified desc',
@@ -60,42 +99,27 @@ const notes = createListResource({
   auto: true,
 })
 
-const columns = [
-  {
-    label: 'Title',
-    key: 'title',
-    type: 'data',
-    size: 'w-48',
-  },
-  {
-    label: 'Content',
-    key: 'content',
-    type: 'html',
-    size: 'w-96',
-  },
-  {
-    label: 'Created by',
-    key: 'owner',
-    type: 'avatar',
-    size: 'w-36',
-  },
-  {
-    label: 'Last modified',
-    key: 'modified',
-    type: 'pretty_date',
-    size: 'w-28',
-  },
-]
+const openNoteModal = (note) => {
+  let noteCopy = { ...note }
+  oldNote.value = note
+  currentNote.value = noteCopy
+  showNoteModal.value = true
+}
 
-const rows = computed(() => {
-  return notes.data?.map((note) => {
-    return {
-      name: note.name,
-      title: note.title,
-      content: note.content,
-      owner: note.owner && getUser(note.owner),
-      modified: note.modified,
-    }
+async function updateNote() {
+  if (
+    currentNote.value.title === oldNote.value.title &&
+    currentNote.value.content === oldNote.value.content
+  ) {
+    return
+  }
+  let d = await call('frappe.client.set_value', {
+    doctype: 'CRM Note',
+    name: currentNote.value.name,
+    fieldname: currentNote.value,
   })
-})
+  if (d.name) {
+    notes.reload()
+  }
+}
 </script>
