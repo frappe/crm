@@ -19,9 +19,14 @@
       </Autocomplete>
       <Dropdown :options="statusDropdownOptions(deal.data, 'deal')">
         <template #default="{ open }">
-          <Button :label="deal.data.deal_status">
+          <Button
+            :label="deal.data.deal_status"
+            :class="dealStatuses[deal.data.deal_status].bgColor"
+          >
             <template #prefix>
-              <IndicatorIcon :class="dealStatuses[deal.data.deal_status].color" />
+              <IndicatorIcon
+                :class="dealStatuses[deal.data.deal_status].color"
+              />
             </template>
             <template #suffix
               ><FeatherIcon
@@ -31,7 +36,6 @@
           </Button>
         </template>
       </Dropdown>
-      <Button icon="more-horizontal" />
       <Button label="Save" variant="solid" @click="() => updateDeal()" />
     </template>
   </LayoutHeader>
@@ -80,10 +84,11 @@
         >
           <Avatar
             size="3xl"
-            :label="deal.data.first_name"
-            :image="deal.data.image"
+            shape="square"
+            :label="deal.data.organization_name"
+            :image="deal.data.organization_logo"
           />
-          <div class="font-medium text-2xl">{{ deal.data.lead_name }}</div>
+          <div class="font-medium text-2xl">{{ deal.data.organization_name }}</div>
           <div class="flex gap-3">
             <Tooltip text="Make a call...">
               <Button
@@ -96,7 +101,13 @@
             <Button class="rounded-full h-8 w-8">
               <EmailIcon class="h-4 w-4" />
             </Button>
-            <Button icon="message-square" class="rounded-full h-8 w-8" />
+            <Tooltip text="Go to website...">
+              <Button
+                icon="link"
+                @click="openWebsite(deal.data.website)"
+                class="rounded-full h-8 w-8"
+              />
+            </Tooltip>
             <Button icon="more-horizontal" class="rounded-full h-8 w-8" />
           </div>
         </div>
@@ -219,6 +230,24 @@
                           </template>
                         </Dropdown>
                         <FormControl
+                          v-else-if="field.type === 'date'"
+                          type="date"
+                          v-model="deal.data[field.name]"
+                          class="form-control"
+                        />
+                        <FormControl
+                          v-else-if="field.type === 'number'"
+                          type="number"
+                          v-model="deal.data[field.name]"
+                          class="form-control"
+                        />
+                        <FormControl
+                          v-else-if="field.type === 'tel'"
+                          type="tel"
+                          v-model="deal.data[field.name]"
+                          class="form-control"
+                        />
+                        <FormControl
                           v-else
                           type="text"
                           v-model="deal.data[field.name]"
@@ -264,7 +293,14 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
-import { dateFormat, timeAgo, dateTooltipFormat, dealStatuses, statusDropdownOptions } from '@/utils'
+import {
+  dateFormat,
+  timeAgo,
+  dateTooltipFormat,
+  dealStatuses,
+  statusDropdownOptions,
+  openWebsite,
+} from '@/utils'
 import { usersStore } from '@/stores/users'
 import {
   createResource,
@@ -315,7 +351,7 @@ function updateDeal() {
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Deals', route: { name: 'Deals' } }]
   items.push({
-    label: deal.data.lead_name,
+    label: deal.data.organization_name,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -345,11 +381,11 @@ const tabs = computed(() => {
       ),
       activityTitle: 'Calls',
     },
-    {
-      label: 'Tasks',
-      icon: TaskIcon,
-      activityTitle: 'Tasks',
-    },
+    // {
+    //   label: 'Tasks',
+    //   icon: TaskIcon,
+    //   activityTitle: 'Tasks',
+    // },
     {
       label: 'Notes',
       icon: NoteIcon,
@@ -376,20 +412,9 @@ function onTabChange(index) {
 const detailSections = computed(() => {
   return [
     {
-      label: 'About this deal',
+      label: 'Organization',
       opened: true,
       fields: [
-        {
-          label: 'Status',
-          type: 'select',
-          name: 'deal_status',
-          options: statusDropdownOptions(deal.data, 'deal'),
-        },
-        {
-          label: 'Deal owner',
-          type: 'link',
-          name: 'lead_owner',
-        },
         {
           label: 'Organization',
           type: 'data',
@@ -400,10 +425,30 @@ const detailSections = computed(() => {
           type: 'data',
           name: 'website',
         },
+        {
+          label: 'Amount',
+          type: 'number',
+          name: 'annual_revenue',
+        },
+        {
+          label: 'Close date',
+          type: 'date',
+          name: 'close_date',
+        },
+        {
+          label: 'Probability',
+          type: 'data',
+          name: 'probability',
+        },
+        {
+          label: 'Next step',
+          type: 'data',
+          name: 'next_step',
+        }
       ],
     },
     {
-      label: 'Person',
+      label: 'Contacts',
       opened: true,
       fields: [
         {
@@ -423,7 +468,7 @@ const detailSections = computed(() => {
         },
         {
           label: 'Mobile no.',
-          type: 'phone',
+          type: 'tel',
           name: 'mobile_no',
         },
       ],

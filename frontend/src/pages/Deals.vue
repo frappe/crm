@@ -102,11 +102,9 @@ const leads = createListResource({
   doctype: 'CRM Lead',
   fields: [
     'name',
-    'first_name',
-    'lead_name',
-    'image',
     'organization_name',
     'organization_logo',
+    'annual_revenue',
     'deal_status',
     'email',
     'mobile_no',
@@ -141,22 +139,22 @@ watch(
 
 const columns = [
   {
-    label: 'Name',
-    key: 'lead_name',
-    type: 'avatar',
-    size: 'w-44',
-  },
-  {
     label: 'Organization',
     key: 'organization_name',
     type: 'logo',
-    size: 'w-44',
+    size: 'w-48',
+  },
+  {
+    label: 'Amount',
+    key: 'annual_revenue',
+    type: 'data',
+    size: 'w-24',
   },
   {
     label: 'Status',
     key: 'deal_status',
     type: 'indicator',
-    size: 'w-44',
+    size: 'w-36',
   },
   {
     label: 'Email',
@@ -168,13 +166,19 @@ const columns = [
     label: 'Mobile no',
     key: 'mobile_no',
     type: 'phone',
-    size: 'w-44',
+    size: 'w-32',
   },
   {
     label: 'Lead owner',
     key: 'lead_owner',
     type: 'avatar',
-    size: 'w-44',
+    size: 'w-36',
+  },
+  {
+    label: 'Last modified',
+    key: 'modified',
+    type: 'pretty_date',
+    size: 'w-28',
   },
 ]
 
@@ -182,15 +186,11 @@ const rows = computed(() => {
   return leads.data?.map((lead) => {
     return {
       name: lead.name,
-      lead_name: {
-        label: lead.lead_name,
-        image: lead.image,
-        image_label: lead.first_name,
-      },
       organization_name: {
         label: lead.organization_name,
         logo: lead.organization_logo,
       },
+      annual_revenue: lead.annual_revenue,
       deal_status: {
         label: lead.deal_status,
         color: dealStatuses[lead.deal_status]?.color,
@@ -198,6 +198,7 @@ const rows = computed(() => {
       email: lead.email,
       mobile_no: lead.mobile_no,
       lead_owner: lead.lead_owner && getUser(lead.lead_owner),
+      modified: lead.modified,
     }
   })
 })

@@ -96,6 +96,10 @@ function getFilter() {
   }
 }
 
+function getSortBy() {
+  return getOrderBy() || 'modified desc'
+}
+
 const leads = createListResource({
   type: 'list',
   doctype: 'CRM Lead',
@@ -113,7 +117,7 @@ const leads = createListResource({
     'modified',
   ],
   filters: getFilter(),
-  orderBy: 'modified desc',
+  orderBy: getSortBy(),
   pageLength: 20,
   auto: true,
 })
@@ -122,7 +126,7 @@ watch(
   () => getOrderBy(),
   (value, old_value) => {
     if (!value && !old_value) return
-    leads.orderBy = getOrderBy() || 'modified desc'
+    leads.orderBy = getSortBy()
     leads.reload()
   },
   { immediate: true }
@@ -143,37 +147,43 @@ const columns = [
     label: 'Name',
     key: 'lead_name',
     type: 'avatar',
-    size: 'w-44',
+    size: 'w-48',
   },
   {
     label: 'Organization',
     key: 'organization_name',
     type: 'logo',
-    size: 'w-44',
+    size: 'w-40',
   },
   {
     label: 'Status',
     key: 'status',
     type: 'indicator',
-    size: 'w-44',
+    size: 'w-36',
   },
   {
     label: 'Email',
     key: 'email',
     type: 'email',
-    size: 'w-44',
+    size: 'w-40',
   },
   {
     label: 'Mobile no',
     key: 'mobile_no',
     type: 'phone',
-    size: 'w-44',
+    size: 'w-32',
   },
   {
     label: 'Lead owner',
     key: 'lead_owner',
     type: 'avatar',
-    size: 'w-44',
+    size: 'w-36',
+  },
+  {
+    label: 'Last modified',
+    key: 'modified',
+    type: 'pretty_date',
+    size: 'w-28',
   },
 ]
 
@@ -197,6 +207,7 @@ const rows = computed(() => {
       email: lead.email,
       mobile_no: lead.mobile_no,
       lead_owner: lead.lead_owner && getUser(lead.lead_owner),
+      modified: lead.modified,
     }
   })
 })

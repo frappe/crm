@@ -39,6 +39,8 @@ def get_activities(doc, docinfo):
 
 	for version in docinfo.versions:
 		data = json.loads(version.data)
+		if not data.get("changed"):
+			continue
 		if change := data.get("changed")[0]:
 			activity_type = "changed"
 			field_label = next((f.label for f in lead_fields_meta if f.fieldname == change[0]), None)

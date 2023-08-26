@@ -19,7 +19,10 @@
       </Autocomplete>
       <Dropdown :options="statusDropdownOptions(lead.data)">
         <template #default="{ open }">
-          <Button :label="lead.data.status">
+          <Button
+            :label="lead.data.status"
+            :class="leadStatuses[lead.data.status].bgColor"
+          >
             <template #prefix>
               <IndicatorIcon :class="leadStatuses[lead.data.status].color" />
             </template>
@@ -31,8 +34,8 @@
           </Button>
         </template>
       </Dropdown>
-      <Button icon="more-horizontal" />
-      <Button label="Save" variant="solid" @click="() => updateLead()" />
+      <Button label="Save" variant="solid" @click="updateLead()" />
+      <Button label="Convert to deal" variant="solid" @click="convertToDeal()" />
     </template>
   </LayoutHeader>
   <TabGroup v-slot="{ selectedIndex }" v-if="lead.data" @change="onTabChange">
@@ -96,7 +99,13 @@
             <Button class="rounded-full h-8 w-8">
               <EmailIcon class="h-4 w-4" />
             </Button>
-            <Button icon="message-square" class="rounded-full h-8 w-8" />
+            <Tooltip text="Go to website...">
+              <Button
+                icon="link"
+                @click="openWebsite(lead.data.website)"
+                class="rounded-full h-8 w-8"
+              />
+            </Tooltip>
             <Button icon="more-horizontal" class="rounded-full h-8 w-8" />
           </div>
         </div>
@@ -158,6 +167,14 @@
                         />
                         <Autocomplete
                           v-else-if="field.type === 'link'"
+                          :value="lead.data[field.name]"
+                          :options="field.options"
+                          @change="(e) => field.change(e)"
+                          :placeholder="field.placeholder"
+                          class="form-control"
+                        />
+                        <Autocomplete
+                          v-else-if="field.type === 'user'"
                           :options="activeAgents"
                           :value="getUser(lead.data[field.name]).full_name"
                           @change="
@@ -264,7 +281,14 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
-import { dateFormat, timeAgo, dateTooltipFormat, leadStatuses, statusDropdownOptions } from '@/utils'
+import {
+  dateFormat,
+  timeAgo,
+  dateTooltipFormat,
+  leadStatuses,
+  statusDropdownOptions,
+  openWebsite,
+} from '@/utils'
 import { usersStore } from '@/stores/users'
 import {
   createResource,
@@ -277,8 +301,10 @@ import {
   Avatar,
 } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { getUser, users } = usersStore()
+const router = useRouter()
 
 const makeCall = inject('makeOutgoingCall')
 
@@ -345,11 +371,11 @@ const tabs = computed(() => {
       ),
       activityTitle: 'Calls',
     },
-    {
-      label: 'Tasks',
-      icon: TaskIcon,
-      activityTitle: 'Tasks',
-    },
+    // {
+    //   label: 'Tasks',
+    //   icon: TaskIcon,
+    //   activityTitle: 'Tasks',
+    // },
     {
       label: 'Notes',
       icon: NoteIcon,
@@ -380,17 +406,6 @@ const detailSections = computed(() => {
       opened: true,
       fields: [
         {
-          label: 'Status',
-          type: 'select',
-          name: 'status',
-          options: statusDropdownOptions(lead.data),
-        },
-        {
-          label: 'Lead owner',
-          type: 'link',
-          name: 'lead_owner',
-        },
-        {
           label: 'Organization',
           type: 'data',
           name: 'organization_name',
@@ -400,12 +415,66 @@ const detailSections = computed(() => {
           type: 'data',
           name: 'website',
         },
+        {
+          label: 'Job title',
+          type: 'data',
+          name: 'job_title',
+        },
+        {
+          label: 'Source',
+          type: 'link',
+          name: 'source',
+          placeholder: 'Select source...',
+          options: [
+            { label: 'Advertisement', value: 'Advertisement' },
+            { label: 'Web', value: 'Web' },
+            { label: 'Others', value: 'Others' },
+          ],
+          change: (data) => {
+            lead.data.source = data.value
+          },
+        },
+        {
+          label: 'Industry',
+          type: 'link',
+          name: 'industry',
+          placeholder: 'Select industry...',
+          options: [
+            { label: 'Advertising', value: 'Advertising' },
+            { label: 'Agriculture', value: 'Agriculture' },
+            { label: 'Banking', value: 'Banking' },
+            { label: 'Others', value: 'Others' },
+          ],
+          change: (data) => {
+            lead.data.industry = data.value
+          },
+        },
       ],
     },
     {
       label: 'Person',
       opened: true,
       fields: [
+        {
+          label: 'Salutation',
+          type: 'link',
+          name: 'salutation',
+          placeholder: 'Mr./Mrs./Ms.',
+          options: [
+            { label: 'Dr', value: 'Dr' },
+            { label: 'Mr', value: 'Mr' },
+            { label: 'Mrs', value: 'Mrs' },
+            { label: 'Ms', value: 'Ms' },
+            { label: 'Mx', value: 'Mx' },
+            { label: 'Prof', value: 'Prof' },
+            { label: 'Master', value: 'Master' },
+            { label: 'Madam', value: 'Madam' },
+            { label: 'Miss', value: 'Miss' },
+          ],
+          change: (data) => {
+            lead.data.salutation = data.value
+          },
+        },
         {
           label: 'First name',
           type: 'data',
@@ -444,6 +513,13 @@ const activeAgents = computed(() => {
       }
     })
 })
+
+function convertToDeal() {
+  lead.data.status = 'Qualified'
+  lead.data.is_deal = 1
+  updateLead()
+  router.push({ name: 'Deal', params: { dealId: lead.data.name } })
+}
 </script>
 
 <style scoped>
@@ -452,5 +528,9 @@ const activeAgents = computed(() => {
 :deep(.form-control button) {
   border-color: transparent;
   background: white;
+}
+
+:deep(.form-control button svg) {
+  color: white;
 }
 </style>
