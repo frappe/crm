@@ -4,7 +4,7 @@
       <Breadcrumbs :items="[{ label: list.title }]" />
     </template>
     <template #right-header>
-      <Button variant="solid" label="Create">
+      <Button variant="solid" label="Create" @click="openNoteModal">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -47,9 +47,11 @@
         class="flex flex-col gap-2 px-20 mt-5 mb-10 min-h-[400px] max-h-[500px] overflow-auto"
       >
         <TextInput
+          ref="title"
           type="text"
-          class="!text-[30px] !h-10 !font-semibold bg-white border-none hover:bg-white focus-visible:ring-0 focus:shadow-none"
+          class="!text-[30px] !h-10 !font-semibold bg-white border-none hover:bg-white focus:!shadow-none focus-visible:!ring-0"
           v-model="currentNote.title"
+          placeholder="Untitled note"
         />
         <TextEditor
           ref="content"
@@ -77,7 +79,7 @@ import {
   TextInput,
   call,
 } from 'frappe-ui'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 const list = {
   title: 'Notes',
@@ -88,6 +90,7 @@ const list = {
 const showNoteModal = ref(false)
 const currentNote = ref(null)
 const oldNote = ref(null)
+const title = ref(null)
 const content = ref(null)
 
 const notes = createListResource({
@@ -106,6 +109,8 @@ const openNoteModal = (note) => {
   oldNote.value = note
   currentNote.value = noteCopy
   showNoteModal.value = true
+
+  nextTick(() => title.value.el.focus())
 }
 
 async function updateNote() {
@@ -116,13 +121,27 @@ async function updateNote() {
     return
   }
   currentNote.value.content = content.value?.editor.getHTML()
-  let d = await call('frappe.client.set_value', {
-    doctype: 'CRM Note',
-    name: currentNote.value.name,
-    fieldname: currentNote.value,
-  })
-  if (d.name) {
-    notes.reload()
+
+  if (currentNote.value.name) {
+    let d = await call('frappe.client.set_value', {
+      doctype: 'CRM Note',
+      name: currentNote.value.name,
+      fieldname: currentNote.value,
+    })
+    if (d.name) {
+      notes.reload()
+    }
+  } else {
+    let d = await call('frappe.client.insert', {
+      doc: {
+        doctype: 'CRM Note',
+        title: currentNote.value.title,
+        content: currentNote.value.content,
+      },
+    })
+    if (d.name) {
+      notes.reload()
+    }
   }
 }
 </script>
