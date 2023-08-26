@@ -52,6 +52,7 @@
           v-model="currentNote.title"
         />
         <TextEditor
+          ref="content"
           editor-class="!prose-sm max-w-none p-2 overflow-auto focus:outline-none"
           :bubbleMenu="true"
           :content="currentNote.content"
@@ -87,6 +88,7 @@ const list = {
 const showNoteModal = ref(false)
 const currentNote = ref(null)
 const oldNote = ref(null)
+const content = ref(null)
 
 const notes = createListResource({
   type: 'list',
@@ -113,6 +115,7 @@ async function updateNote() {
   ) {
     return
   }
+  currentNote.value.content = content.value?.editor.getHTML()
   let d = await call('frappe.client.set_value', {
     doctype: 'CRM Note',
     name: currentNote.value.name,
