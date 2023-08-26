@@ -35,17 +35,11 @@ import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
-import InboxIcon from '@/components/Icons/InboxIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DashboardIcon from '@/components/Icons/DashboardIcon.vue'
 import NavLinks from '@/components/NavLinks.vue'
 
 const navigations = [
-  {
-    name: 'Inbox',
-    icon: InboxIcon,
-    route: { name: 'Inbox' },
-  },
   {
     name: 'Leads',
     icon: LeadsIcon,
