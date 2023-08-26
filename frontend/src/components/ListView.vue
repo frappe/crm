@@ -39,10 +39,9 @@
           <div
             v-for="column in columns"
             :key="column.key"
-            class="flex items-center space-x-2.5"
             :class="[column.size, column.align]"
           >
-            <ListRowItem :value="getValue(row[column.key]).label">
+            <ListRowItem :value="getValue(row[column.key]).label" :type="column.type">
               <template #prefix>
                 <div v-if="column.type === 'indicator'">
                   <IndicatorIcon :class="getValue(row[column.key]).color" />

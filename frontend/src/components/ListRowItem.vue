@@ -1,15 +1,38 @@
 <template>
-  <slot name="prefix"></slot>
-  <slot v-if="$slots.default" />
-  <div v-else class="text-base text-gray-900 truncate">
-    {{ value }}
-  </div>
+  <Tooltip :text="tooltipText" class="flex items-center space-x-2.5">
+    <slot name="prefix"></slot>
+    <div class="text-base truncate">
+      {{ label }}
+    </div>
+  </Tooltip>
 </template>
 <script setup>
+import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
+import { Tooltip } from 'frappe-ui'
+import { computed } from 'vue'
+
 const props = defineProps({
-  value: {
+  type: {
     type: String,
-    default: null,
+    default: 'text',
   },
+  value: {
+    type: [String, Number, Object],
+    default: '',
+  },
+})
+
+const tooltipText = computed(() => {
+  if (props.type === 'pretty_date') {
+    return dateFormat(props.value, dateTooltipFormat)
+  }
+  return props.value?.toString()
+})
+
+const label = computed(() => {
+  if (props.type === 'pretty_date') {
+    return timeAgo(props.value)
+  }
+  return props.value?.toString()
 })
 </script>
