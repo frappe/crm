@@ -66,11 +66,17 @@
       <div class="flex-1 flex flex-col">
         <TabPanels class="flex flex-1 overflow-hidden">
           <TabPanel
-            class="flex-1 overflow-y-auto"
+            class="flex-1 flex flex-col overflow-y-auto"
             v-for="tab in tabs"
             :key="tab.label"
           >
-            <Activities :title="tab.activityTitle" :activities="tab.content" />
+            <Activities
+              :title="tab.activityTitle"
+              :activities="tab.content"
+              @makeCall="makeCall(deal.data.mobile_no)"
+              @makeNote="(e) => showNote(e)"
+              @deleteNote="(e) => deleteNote(e)"
+            />
           </TabPanel>
         </TabPanels>
         <CommunicationArea
@@ -88,7 +94,9 @@
             :label="deal.data.organization_name"
             :image="deal.data.organization_logo"
           />
-          <div class="font-medium text-2xl">{{ deal.data.organization_name }}</div>
+          <div class="font-medium text-2xl">
+            {{ deal.data.organization_name }}
+          </div>
           <div class="flex gap-3">
             <Tooltip text="Make a call...">
               <Button
@@ -277,6 +285,7 @@
       </div>
     </div>
   </TabGroup>
+  <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
 </template>
 <script setup>
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -291,6 +300,7 @@ import Activities from '@/components/Activities.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
+import NoteModal from '@/components/NoteModal.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import {
@@ -305,12 +315,14 @@ import { usersStore } from '@/stores/users'
 import {
   createResource,
   createDocumentResource,
+  createListResource,
   FeatherIcon,
   Autocomplete,
   FormControl,
   Dropdown,
   Tooltip,
   Avatar,
+  call,
 } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 
@@ -390,6 +402,7 @@ const tabs = computed(() => {
       label: 'Notes',
       icon: NoteIcon,
       activityTitle: 'Notes',
+      content: notes.data,
     },
   ]
 })
@@ -444,7 +457,7 @@ const detailSections = computed(() => {
           label: 'Next step',
           type: 'data',
           name: 'next_step',
-        }
+        },
       ],
     },
     {
@@ -489,6 +502,64 @@ const activeAgents = computed(() => {
       }
     })
 })
+
+const showNoteModal = ref(false)
+const note = ref({
+  title: '',
+  content: '',
+})
+
+const notes = createListResource({
+  type: 'list',
+  doctype: 'CRM Note',
+  cache: ['Notes', props.dealId],
+  fields: ['name', 'title', 'content', 'owner', 'modified'],
+  filters: { lead: props.dealId },
+  orderBy: 'modified desc',
+  pageLength: 20,
+  auto: true,
+})
+
+function showNote(n) {
+  note.value = n || {
+    title: '',
+    content: '',
+  }
+  showNoteModal.value = true
+}
+
+async function deleteNote(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Note',
+    name,
+  })
+  notes.reload()
+}
+
+async function updateNote(note) {
+  if (note.name) {
+    let d = await call('frappe.client.set_value', {
+      doctype: 'CRM Note',
+      name: note.name,
+      fieldname: note,
+    })
+    if (d.name) {
+      notes.reload()
+    }
+  } else {
+    let d = await call('frappe.client.insert', {
+      doc: {
+        doctype: 'CRM Note',
+        title: note.title,
+        content: note.content,
+        lead: props.dealId,
+      },
+    })
+    if (d.name) {
+      notes.reload()
+    }
+  }
+}
 </script>
 
 <style scoped>

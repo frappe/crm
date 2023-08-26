@@ -4,17 +4,17 @@
       <Breadcrumbs :items="[{ label: list.title }]" />
     </template>
     <template #right-header>
-      <Button variant="solid" label="Create" @click="openNoteModal">
+      <Button variant="solid" label="Create" @click="createNote">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
   </LayoutHeader>
   <div class="border-b"></div>
-  <div v-if="notes.data" class="grid grid-cols-4 gap-4 p-5">
+  <div v-if="notes.data?.length" class="grid grid-cols-3 gap-4 p-5">
     <div
       v-for="note in notes.data"
       class="group flex flex-col justify-between gap-2 px-5 py-4 border rounded-lg h-52 shadow-sm hover:bg-gray-50 cursor-pointer"
-      @click="openNoteModal(note)"
+      @click="editNote(note)"
     >
       <div class="flex items-center justify-between">
         <div class="text-lg font-medium truncate">
@@ -54,40 +54,28 @@
       </div>
     </div>
   </div>
-  <Dialog
-    v-model="showNoteModal"
-    :options="{ size: '4xl' }"
-    @close="updateNote"
+  <div
+    v-else
+    class="flex-1 p-5 flex items-center justify-center font-medium text-xl text-gray-500"
   >
-    <template #body-title><div></div></template>
-    <template #body-content>
-      <div
-        class="flex flex-col gap-2 px-20 mt-5 mb-10 min-h-[400px] max-h-[500px] overflow-auto"
-      >
-        <TextInput
-          ref="title"
-          type="text"
-          class="!text-[30px] !h-10 !font-semibold bg-white border-none hover:bg-white focus:!shadow-none focus-visible:!ring-0"
-          v-model="currentNote.title"
-          placeholder="Untitled note"
-        />
-        <TextEditor
-          ref="content"
-          editor-class="!prose-sm max-w-none p-2 overflow-auto focus:outline-none"
-          :bubbleMenu="true"
-          :content="currentNote.content"
-          @change="(val) => (currentNote.content = val)"
-          placeholder="Type something and press enter"
-        />
-      </div>
-    </template>
-  </Dialog>
+    <div class="flex flex-col items-center gap-2">
+      <NoteIcon class="w-10 h-10 text-gray-500" />
+      <span>No notes</span>
+    </div>
+  </div>
+  <NoteModal
+    v-model="showNoteModal"
+    :note="currentNote"
+    @updateNote="updateNote"
+  />
 </template>
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import NoteModal from '@/components/NoteModal.vue'
 import { timeAgo } from '@/utils'
 import {
   FeatherIcon,
@@ -98,7 +86,7 @@ import {
   call,
   Dropdown,
 } from 'frappe-ui'
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 
 const list = {
   title: 'Notes',
@@ -108,9 +96,6 @@ const list = {
 
 const showNoteModal = ref(false)
 const currentNote = ref(null)
-const oldNote = ref(null)
-const title = ref(null)
-const content = ref(null)
 
 const notes = createListResource({
   type: 'list',
@@ -123,29 +108,25 @@ const notes = createListResource({
   auto: true,
 })
 
-const openNoteModal = (note) => {
-  let noteCopy = { ...note }
-  oldNote.value = note
-  currentNote.value = noteCopy
+function createNote() {
+  currentNote.value = {
+    title: '',
+    content: '',
+  }
   showNoteModal.value = true
-
-  nextTick(() => title.value.el.focus())
 }
 
-async function updateNote() {
-  if (
-    currentNote.value.title === oldNote.value.title &&
-    currentNote.value.content === oldNote.value.content
-  ) {
-    return
-  }
-  currentNote.value.content = content.value?.editor.getHTML()
+function editNote(note) {
+  currentNote.value = note
+  showNoteModal.value = true
+}
 
-  if (currentNote.value.name) {
+async function updateNote(note) {
+  if (note.name) {
     let d = await call('frappe.client.set_value', {
       doctype: 'CRM Note',
-      name: currentNote.value.name,
-      fieldname: currentNote.value,
+      name: note.name,
+      fieldname: note,
     })
     if (d.name) {
       notes.reload()
@@ -154,8 +135,8 @@ async function updateNote() {
     let d = await call('frappe.client.insert', {
       doc: {
         doctype: 'CRM Note',
-        title: currentNote.value.title,
-        content: currentNote.value.content,
+        title: note.title,
+        content: note.content,
       },
     })
     if (d.name) {

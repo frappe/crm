@@ -1,9 +1,65 @@
 <template>
   <div class="p-5 flex items-center justify-between font-medium text-lg">
     <div>{{ title }}</div>
+    <Button
+      v-if="title == 'Calls'"
+      variant="solid"
+      label="Make a call"
+      @click="emit('makeCall')"
+    />
+    <Button
+      v-else-if="title == 'Notes'"
+      variant="solid"
+      label="Create note"
+      @click="emit('makeNote')"
+    />
   </div>
-  <div>
-    <div v-for="(activity, i) in activities">
+  <div v-if="activities.length">
+    <div v-if="title == 'Notes'" class="grid grid-cols-2 gap-4 p-5 pt-0">
+      <div
+        v-for="note in activities"
+        class="group flex flex-col justify-between gap-2 px-4 py-3 border rounded-lg h-40 shadow-sm hover:bg-gray-50 cursor-pointer"
+        @click="emit('makeNote', note)"
+      >
+        <div class="flex items-center justify-between">
+          <div class="text-lg font-medium truncate">
+            {{ note.title }}
+          </div>
+          <Dropdown
+            :options="[
+              {
+                icon: 'trash-2',
+                label: 'Delete',
+                onClick: () => emit('deleteNote', note.name),
+              },
+            ]"
+            @click.stop
+          >
+            <Button
+              icon="more-horizontal"
+              variant="ghosted"
+              class="hover:bg-white"
+            />
+          </Dropdown>
+        </div>
+        <div
+          class="flex-1 text-base leading-5 text-gray-700 overflow-hidden"
+          v-html="note.content"
+        />
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <UserAvatar :user="note.owner" size="xs" />
+            <div class="text-sm text-gray-800">
+              {{ note.owner }}
+            </div>
+          </div>
+          <div class="text-sm text-gray-700">
+            {{ timeAgo(note.modified) }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else v-for="(activity, i) in activities">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-5">
         <div
           class="relative flex justify-center after:absolute after:border-l after:border-gray-300 after:top-0 after:left-[50%] after:-z-10"
@@ -95,13 +151,35 @@
       </div>
     </div>
   </div>
+  <div
+    v-else
+    class="flex-1 flex flex-col gap-3 items-center justify-center font-medium text-xl text-gray-500"
+  >
+    <component :is="emptyTextIcon" class="w-10 h-10" />
+    <span>{{ emptyText }}</span>
+    <Button
+      v-if="title == 'Calls'"
+      variant="solid"
+      label="Make a call"
+      @click="emit('makeCall')"
+    />
+    <Button
+      v-else-if="title == 'Notes'"
+      variant="solid"
+      label="Create note"
+      @click="emit('makeNote')"
+    />
+  </div>
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { Button, FeatherIcon, Tooltip } from 'frappe-ui'
-import { computed } from 'vue'
+import { Button, FeatherIcon, Tooltip, Dropdown } from 'frappe-ui'
+import { computed, h } from 'vue'
 
 const { getUser } = usersStore()
 
@@ -115,6 +193,8 @@ const props = defineProps({
     default: [],
   },
 })
+
+const emit = defineEmits(['makeCall', 'makeNote', 'deleteNote'])
 
 const activities = computed(() => {
   props.activities.forEach((activity) => {
@@ -141,6 +221,26 @@ const activities = computed(() => {
     }
   })
   return props.activities
+})
+
+const emptyText = computed(() => {
+  let text = 'No emails communications'
+  if (props.title == 'Calls') {
+    text = 'No call logs'
+  } else if (props.title == 'Notes') {
+    text = 'No notes'
+  }
+  return text
+})
+
+const emptyTextIcon = computed(() => {
+  let icon = EmailIcon
+  if (props.title == 'Calls') {
+    icon = PhoneIcon
+  } else if (props.title == 'Notes') {
+    icon = NoteIcon
+  }
+  return h(icon, { class: 'text-gray-500' })
 })
 
 function timelineIcon(activity_type) {
