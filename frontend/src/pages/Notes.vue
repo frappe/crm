@@ -13,11 +13,29 @@
   <div v-if="notes.data" class="grid grid-cols-4 gap-4 p-5">
     <div
       v-for="note in notes.data"
-      class="flex flex-col justify-between gap-2 px-5 py-4 border rounded-lg h-52 shadow-sm hover:bg-gray-50 cursor-pointer"
+      class="group flex flex-col justify-between gap-2 px-5 py-4 border rounded-lg h-52 shadow-sm hover:bg-gray-50 cursor-pointer"
       @click="openNoteModal(note)"
     >
-      <div class="text-lg font-medium truncate">
-        {{ note.title }}
+      <div class="flex items-center justify-between">
+        <div class="text-lg font-medium truncate">
+          {{ note.title }}
+        </div>
+        <Dropdown
+          :options="[
+            {
+              icon: 'trash-2',
+              label: 'Delete',
+              onClick: () => deleteNote(note.name),
+            },
+          ]"
+          @click.stop
+        >
+          <Button
+            icon="more-horizontal"
+            variant="ghosted"
+            class="hover:bg-white"
+          />
+        </Dropdown>
       </div>
       <div
         class="flex-1 text-base leading-5 text-gray-700 overflow-hidden"
@@ -78,6 +96,7 @@ import {
   TextEditor,
   TextInput,
   call,
+  Dropdown,
 } from 'frappe-ui'
 import { nextTick, ref } from 'vue'
 
@@ -143,5 +162,13 @@ async function updateNote() {
       notes.reload()
     }
   }
+}
+
+async function deleteNote(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Note',
+    name,
+  })
+  notes.reload()
 }
 </script>
