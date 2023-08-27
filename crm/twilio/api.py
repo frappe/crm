@@ -2,7 +2,8 @@ from werkzeug.wrappers import Response
 import json
 
 import frappe
-from .twilio_handler import Twilio, IncomingCall
+from frappe import _
+from .twilio_handler import Twilio, IncomingCall, TwilioCallDetails
 
 @frappe.whitelist()
 def generate_access_token():
@@ -46,19 +47,57 @@ def voice(**kwargs):
 	from_number = _get_caller_number(args.Caller)
 	resp = twilio.generate_twilio_dial_response(from_number, args.To)
 
-	# call_details = TwilioCallDetails(args, call_from=from_number)
-	# create_call_log(call_details)
+	call_details = TwilioCallDetails(args, call_from=from_number)
+	create_call_log(call_details)
 	return Response(resp.to_xml(), mimetype='text/xml')
 
 @frappe.whitelist(allow_guest=True)
 def twilio_incoming_call_handler(**kwargs):
 	args = frappe._dict(kwargs)
-	# call_details = TwilioCallDetails(args)
-	# create_call_log(call_details)
+	call_details = TwilioCallDetails(args)
+	create_call_log(call_details)
 
 	resp = IncomingCall(args.From, args.To).process()
 	return Response(resp.to_xml(), mimetype='text/xml')
 
+@frappe.whitelist()
+def create_call_log(call_details: TwilioCallDetails):
+	call_log = frappe.get_doc({**call_details.to_dict(),
+		'doctype': 'CRM Call Log',
+		'medium': 'Twilio'
+	})
+
+	call_log.flags.ignore_permissions = True
+	call_log.save()
+	frappe.db.commit()
+
+@frappe.whitelist()
+def update_call_log(call_sid, status=None):
+	"""Update call log status.
+	"""
+	twilio = Twilio.connect()
+	if not (twilio and frappe.db.exists("CRM Call Log", call_sid)): return
+
+	call_details = twilio.get_call_info(call_sid)
+	call_log = frappe.get_doc("CRM Call Log", call_sid)
+	call_log.status = status or TwilioCallDetails.get_call_status(call_details.status)
+	call_log.duration = call_details.duration
+	call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
+	call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
+	call_log.flags.ignore_permissions = True
+	call_log.save()
+	frappe.db.commit()
+
+@frappe.whitelist(allow_guest=True)
+def update_recording_info(**kwargs):
+	try:
+		args = frappe._dict(kwargs)
+		recording_url = args.RecordingUrl
+		call_sid = args.CallSid
+		update_call_log(call_sid)
+		frappe.db.set_value("CRM Call Log", call_sid, "recording_url", recording_url)
+	except:
+		frappe.log_error(title=_("Failed to capture Twilio recording"))
 
 @frappe.whitelist(allow_guest=True)
 def get_call_info(**kwargs):
@@ -79,3 +118,13 @@ def get_call_info(**kwargs):
 	client.calls(args.ParentCallSid).user_defined_messages.create(
 		content=json.dumps(call_info)
 	)
+
+def get_datetime_from_timestamp(timestamp):
+	from datetime import datetime
+	from pytz import timezone
+
+	datetime_utc_tz_str = timestamp.strftime('%Y-%m-%d %H:%M:%S%z')
+	datetime_utc_tz = datetime.strptime(datetime_utc_tz_str, '%Y-%m-%d %H:%M:%S%z')
+	system_timezone = frappe.utils.get_system_timezone()
+	converted_datetime = datetime_utc_tz.astimezone(timezone(system_timezone))
+	return frappe.utils.format_datetime(converted_datetime, 'yyyy-MM-dd HH:mm:ss')

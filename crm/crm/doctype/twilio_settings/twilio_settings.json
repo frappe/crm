@@ -12,7 +12,10 @@
   "api_secret",
   "column_break_idds",
   "auth_token",
-  "twiml_sid"
+  "twiml_sid",
+  "section_break_ssqj",
+  "record_calls",
+  "column_break_avmt"
  ],
  "fields": [
   {
@@ -47,12 +50,26 @@
    "fieldname": "twiml_sid",
    "fieldtype": "Data",
    "label": "TwiML SID"
+  },
+  {
+   "fieldname": "section_break_ssqj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "record_calls",
+   "fieldtype": "Check",
+   "label": "Record Calls"
+  },
+  {
+   "fieldname": "column_break_avmt",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-08-17 18:38:02.655918",
+ "modified": "2023-08-28 00:44:24.942914",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Twilio Settings",

@@ -1,5 +1,3 @@
-import re
-import json
 from twilio.rest import Client as TwilioClient
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VoiceGrant
@@ -69,6 +67,10 @@ class Twilio:
 		"""Convert safe identity string into emailID.
 		"""
 		return identity.replace('(at)', '@')
+	
+	def get_recording_status_callback_url(self):
+		url_path = "/api/method/crm.twilio.api.update_recording_info"
+		return get_public_url(url_path)
 
 	def get_call_status_callback_url(self):
 		url_path = "/api/method/crm.twilio.api.get_call_info"
@@ -80,9 +82,9 @@ class Twilio:
 		resp = VoiceResponse()
 		dial = Dial(
 			caller_id=from_number,
-			# record=self.settings.record_calls,
-			# recording_status_callback=self.get_recording_status_callback_url(),
-			# recording_status_callback_event='completed'
+			record=self.settings.record_calls,
+			recording_status_callback=self.get_recording_status_callback_url(),
+			recording_status_callback_event='completed'
 		)
 		dial.number(
 			to_number,
@@ -102,9 +104,9 @@ class Twilio:
 		resp = VoiceResponse()
 		dial = Dial(
 			ring_tone=ring_tone,
-			# record=self.settings.record_calls,
-			# recording_status_callback=self.get_recording_status_callback_url(),
-			# recording_status_callback_event='completed'
+			record=self.settings.record_calls,
+			recording_status_callback=self.get_recording_status_callback_url(),
+			recording_status_callback_event='completed'
 		)
 		dial.client(client)
 		resp.append(dial)
@@ -187,3 +189,41 @@ def get_the_call_attender(owners):
 		if ((details['call_receiving_device'] == 'Phone' and details['mobile_no']) or
 			(details['call_receiving_device'] == 'Computer' and name in current_loggedin_users)):
 			return details
+
+
+class TwilioCallDetails:
+	def __init__(self, call_info, call_from = None, call_to = None):
+		self.call_info = call_info
+		self.account_sid = call_info.get('AccountSid')
+		self.application_sid = call_info.get('ApplicationSid')
+		self.call_sid = call_info.get('CallSid')
+		self.call_status = self.get_call_status(call_info.get('CallStatus'))
+		self._call_from = call_from
+		self._call_to = call_to
+
+	def get_direction(self):
+		if self.call_info.get('Caller').lower().startswith('client'):
+			return 'Outgoing'
+		return 'Incoming'
+
+	def get_from_number(self):
+		return self._call_from or self.call_info.get('From')
+
+	def get_to_number(self):
+		return self._call_to or self.call_info.get('To')
+
+	@classmethod
+	def get_call_status(cls, twilio_status):
+		"""Convert Twilio given status into system status.
+		"""
+		twilio_status = twilio_status or ''
+		return ' '.join(twilio_status.split('-')).title()
+
+	def to_dict(self):
+		return {
+			'type': self.get_direction(),
+			'status': self.call_status,
+			'id': self.call_sid,
+			'from': self.get_from_number(),
+			'to': self.get_to_number()
+		}

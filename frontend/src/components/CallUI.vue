@@ -247,6 +247,20 @@ function addDeviceListeners() {
   device.on('connect', (conn) => {
     log.value = 'Successfully established call!'
   })
+
+  device.on('disconnect', (conn) => {
+    log.value = 'Call ended disconnect.'
+    update_call_log(conn)
+  })
+}
+
+function update_call_log(conn, status = 'Completed') {
+  console.log('connection', conn)
+  if (!conn.parameters.CallSid) return
+  call('crm.twilio.api.update_call_log', {
+    call_sid: conn.parameters.CallSid,
+    status: status,
+  })
 }
 
 function toggleMute() {
@@ -303,7 +317,7 @@ function hangUpCall() {
 }
 
 function handleDisconnectedIncomingCall() {
-  log.value = `Call ended.`
+  log.value = `Call ended from handle disconnected Incoming call.`
   showCallPopup.value = false
   if (showSmallCallWindow.value == undefined) {
     showSmallCallWindow = false
@@ -346,8 +360,8 @@ async function makeOutgoingCall(number) {
         calling.value = true
         onCall.value = false
       })
-      _call.value.on('disconnect', () => {
-        log.value = `Call ended.`
+      _call.value.on('disconnect', (conn) => {
+        log.value = `Call ended from makeOutgoing call disconnect.`
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
@@ -356,9 +370,10 @@ async function makeOutgoingCall(number) {
         callStatus.value = ''
         muted.value = false
         counterUp.value.stop()
+        update_call_log(conn)
       })
       _call.value.on('cancel', () => {
-        log.value = `Call ended.`
+        log.value = `Call ended from makeOutgoing call cancel.`
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
