@@ -12,8 +12,8 @@
       <FeatherIcon name="plus" class="w-4 h-4" />
     </Button>
   </div>
-  <div v-if="activities.length">
-    <div v-if="title == 'Notes'" class="grid grid-cols-2 gap-4 p-5 pt-0">
+  <div v-if="activities.length" class="overflow-y-auto">
+    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 p-5 pt-0">
       <div
         v-for="note in activities"
         class="group flex flex-col justify-between gap-2 px-4 py-3 border rounded-lg h-48 shadow-sm hover:bg-gray-50 cursor-pointer"
@@ -55,9 +55,11 @@
               {{ note.owner }}
             </div>
           </div>
-          <div class="text-sm text-gray-700">
-            {{ timeAgo(note.modified) }}
-          </div>
+          <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
+            <div class="text-sm text-gray-700">
+              {{ timeAgo(note.modified) }}
+            </div>
+          </Tooltip>
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@
     </template>
   </LayoutHeader>
   <div class="border-b"></div>
-  <div v-if="notes.data?.length" class="grid grid-cols-3 gap-4 p-5">
+  <div v-if="notes.data?.length" class="grid grid-cols-4 gap-4 p-5 overflow-y-auto">
     <div
       v-for="note in notes.data"
       class="group flex flex-col justify-between gap-2 px-5 py-4 border rounded-lg h-56 shadow-sm hover:bg-gray-50 cursor-pointer"
@@ -51,9 +51,11 @@
             {{ note.owner }}
           </div>
         </div>
-        <div class="text-sm text-gray-700">
-          {{ timeAgo(note.modified) }}
-        </div>
+        <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
+          <div class="text-sm text-gray-700">
+            {{ timeAgo(note.modified) }}
+          </div>
+        </Tooltip>
       </div>
     </div>
   </div>
@@ -79,7 +81,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import NoteModal from '@/components/NoteModal.vue'
-import { timeAgo } from '@/utils'
+import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import {
   FeatherIcon,
   Button,
@@ -88,6 +90,7 @@ import {
   TextInput,
   call,
   Dropdown,
+Tooltip,
 } from 'frappe-ui'
 import { ref } from 'vue'
 
