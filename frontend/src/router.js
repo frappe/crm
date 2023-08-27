@@ -40,6 +40,11 @@ const routes = [
     component: () => import('@/pages/Contacts.vue'),
   },
   {
+    path: '/call-logs',
+    name: 'Call Logs',
+    component: () => import('@/pages/CallLogs.vue'),
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/pages/Dashboard.vue'),

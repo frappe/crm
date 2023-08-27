@@ -250,18 +250,18 @@ function addDeviceListeners() {
 
   device.on('disconnect', (conn) => {
     log.value = 'Call ended disconnect.'
-    update_call_log(conn)
+    // update_call_log(conn)
   })
 }
 
-function update_call_log(conn, status = 'Completed') {
-  console.log('connection', conn)
-  if (!conn.parameters.CallSid) return
-  call('crm.twilio.api.update_call_log', {
-    call_sid: conn.parameters.CallSid,
-    status: status,
-  })
-}
+// function update_call_log(conn, status = 'Completed') {
+//   console.log('connection', conn)
+//   if (!conn.parameters.CallSid) return
+//   call('crm.twilio.api.update_call_log', {
+//     call_sid: conn.parameters.CallSid,
+//     status: status,
+//   })
+// }
 
 function toggleMute() {
   if (_call.value.isMuted()) {
@@ -370,7 +370,7 @@ async function makeOutgoingCall(number) {
         callStatus.value = ''
         muted.value = false
         counterUp.value.stop()
-        update_call_log(conn)
+        // update_call_log(conn)
       })
       _call.value.on('cancel', () => {
         log.value = `Call ended from makeOutgoing call cancel.`

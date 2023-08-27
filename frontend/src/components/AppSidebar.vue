@@ -37,6 +37,7 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DashboardIcon from '@/components/Icons/DashboardIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NavLinks from '@/components/NavLinks.vue'
 
 const navigations = [
@@ -59,6 +60,11 @@ const navigations = [
     name: 'Notes',
     icon: NoteIcon,
     route: { name: 'Notes' },
+  },
+  {
+    name: 'Call Logs',
+    icon: PhoneIcon,
+    route: { name: 'Call Logs' },
   },
   {
     name: 'Dashboard',
