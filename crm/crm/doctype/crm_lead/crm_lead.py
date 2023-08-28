@@ -14,6 +14,7 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+		self.validate_contact()
 	
 	def set_full_name(self):
 		if self.first_name:
@@ -44,6 +45,82 @@ class CRMLead(Document):
 
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
+	
+	def validate_contact(self):
+		link = frappe.db.exists("Dynamic Link", {"link_doctype": "CRM Lead", "link_name": self.name})
+
+		if link:
+			for field in ["first_name", "last_name", "email", "mobile_no", "phone", "salutation"]:
+				if self.has_value_changed(field):
+					contact = frappe.db.get_value("Dynamic Link", link, "parent")
+					contact_doc = frappe.get_doc("Contact", contact)
+					contact_doc.update({
+						"first_name": self.first_name or self.lead_name,
+						"last_name": self.last_name,
+						"salutation": self.salutation,
+					})
+					if self.has_value_changed("email"):
+						contact_doc.email_ids = []
+						contact_doc.append("email_ids", {"email_id": self.email, "is_primary": 1})
+
+					if self.has_value_changed("phone"):
+						contact_doc.append("phone_nos", {"phone": self.phone, "is_primary_phone": 1})
+
+					if self.has_value_changed("mobile_no"):
+						contact_doc.phone_nos = []
+						contact_doc.append("phone_nos", {"phone": self.mobile_no, "is_primary_mobile_no": 1})
+
+					contact_doc.save()
+					break
+		else:
+			self.contact_doc = self.create_contact()
+			self.link_to_contact()
+
+	def before_insert(self):
+		self.contact_doc = None
+		self.contact_doc = self.create_contact()
+	
+	def after_insert(self):
+		self.link_to_contact()
+	
+	def link_to_contact(self):
+		# update contact links
+		if self.contact_doc:
+			self.contact_doc.append(
+				"links", {"link_doctype": "CRM Lead", "link_name": self.name, "link_title": self.lead_name}
+			)
+			self.contact_doc.save()
+	
+	def create_contact(self):
+		if not self.lead_name:
+			self.set_full_name()
+			self.set_lead_name()
+
+		contact = frappe.new_doc("Contact")
+		contact.update(
+			{
+				"first_name": self.first_name or self.lead_name,
+				"last_name": self.last_name,
+				"salutation": self.salutation,
+				"gender": self.gender,
+				"designation": self.job_title,
+				"company_name": self.organization_name,
+			}
+		)
+
+		if self.email:
+			contact.append("email_ids", {"email_id": self.email, "is_primary": 1})
+
+		if self.phone:
+			contact.append("phone_nos", {"phone": self.phone, "is_primary_phone": 1})
+
+		if self.mobile_no:
+			contact.append("phone_nos", {"phone": self.mobile_no, "is_primary_mobile_no": 1})
+
+		contact.insert(ignore_permissions=True)
+		contact.reload()  # load changes by hooks on contact
+
+		return contact
 
 	@staticmethod
 	def sort_options():

@@ -10,16 +10,16 @@
       <MinimizeIcon class="w-4 h-4 cursor-pointer" @click="toggleCallWindow" />
     </div>
     <div class="flex flex-col justify-center items-center gap-3">
-      <UserAvatar
-        :user="getUser().name"
-        class="flex items-center justify-center !h-24 !w-24 relative"
+      <Avatar
+        :label="contact.full_name"
+        class="flex items-center justify-center [&>div]:text-[30px] !h-24 !w-24 relative"
         :class="onCall || calling ? '' : 'pulse'"
       />
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col items-center justify-center gap-1">
         <div class="text-xl font-medium">
-          {{ getUser().full_name }}
+          {{ contact.full_name }}
         </div>
-        <div class="text-sm text-gray-600">{{ phoneNumber }}</div>
+        <div class="text-sm text-gray-600">{{ contact.mobile_no }}</div>
       </div>
       <CountUpTimer ref="counterUp">
         <div v-if="onCall" class="text-base my-1">
@@ -112,12 +112,12 @@
       @click="toggleCallWindow"
     >
       <div class="flex items-center gap-2">
-        <UserAvatar
-          :user="getUser().name"
-          class="flex items-center justify-center !h-5 !w-5"
+        <Avatar
+          :label="contact.full_name"
+          class="flex items-center justify-center !h-5 !w-5 relative"
         />
         <div class="truncate max-w-[120px]">
-          {{ getUser().full_name }}
+          {{ contact.full_name }}
         </div>
       </div>
       <div v-if="onCall" class="flex items-center gap-2">
@@ -180,21 +180,23 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import DialpadIcon from '@/components/Icons/DialpadIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { usersStore } from '@/stores/users'
-import { call } from 'frappe-ui'
+import { contactsStore } from '@/stores/contacts'
+import { Avatar, call } from 'frappe-ui'
 import { onMounted, provide, ref, watch } from 'vue'
 import NoteModal from './NoteModal.vue'
 
-const { getUser } = usersStore()
+const { getContact } = contactsStore()
 
 let device = ''
 let log = ref('Connecting...')
 let _call = ref(null)
-let phoneNumber = ref('')
+const contact = ref({
+  full_name: '',
+  mobile_no: '',
+})
 
 let showCallPopup = ref(false)
 let showSmallCallWindow = ref(false)
@@ -202,7 +204,6 @@ let onCall = ref(false)
 let calling = ref(false)
 let muted = ref(false)
 let callPopup = ref(null)
-let callPopupHandle = ref(null)
 let counterUp = ref(null)
 let callStatus = ref('')
 const showNoteModal = ref(false)
@@ -311,13 +312,20 @@ function toggleMute() {
 function handleIncomingCall(call) {
   log.value = `Incoming call from ${call.parameters.From}`
 
-  phoneNumber.value = call.parameters.From
+  // get name of the caller from the phone number
+
+  contact.value = getContact(call.parameters.From)
+
+  if (!contact.value) {
+    contact.value = {
+      full_name: 'Unknown',
+      mobile_no: call.parameters.From,
+    }
+  }
 
   showCallPopup.value = true
   _call.value = call
 
-  console.log('call', call)
-  console.log('device: ', device)
   _call.value.on('accept', (conn) => {
     console.log('conn', conn)
   })
@@ -370,15 +378,15 @@ function handleDisconnectedIncomingCall() {
   counterUp.value.stop()
 }
 
-async function makeOutgoingCall(number, documentName) {
-  // remove this hard coded number later
-  phoneNumber.value = '+917666980887' || number
+async function makeOutgoingCall(number) {
+  contact.value = getContact(number)
+
   if (device) {
-    log.value = `Attempting to call ${phoneNumber.value} ...`
+    log.value = `Attempting to call ${contact.value.mobile_no} ...`
 
     try {
       _call.value = await device.connect({
-        params: { To: phoneNumber.value },
+        params: { To: contact.value.mobile_no },
       })
 
       _call.value.on('messageReceived', (message) => {

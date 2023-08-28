@@ -47,22 +47,15 @@ import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import { FeatherIcon, Button, Dropdown, createListResource } from 'frappe-ui'
 import { ref, computed } from 'vue'
+import { contactsStore } from '@/stores/contacts.js'
+
+const { contacts } = contactsStore()
 
 const list = {
   title: 'Contacts',
   plural_label: 'Contacts',
   singular_label: 'Contact',
 }
-
-const contacts = createListResource({
-  type: 'list',
-  doctype: 'Contact',
-  fields: ['name', 'full_name', 'image', 'email_id', 'phone'],
-  orderBy: 'full_name asc',
-  cache: 'Contacts',
-  pageLength: 20,
-  auto: true,
-})
 
 const columns = [
   {
@@ -79,7 +72,7 @@ const columns = [
   },
   {
     label: 'Phone',
-    key: 'phone',
+    key: 'mobile_no',
     type: 'phone',
     size: 'w-44',
   },
@@ -95,7 +88,7 @@ const rows = computed(() => {
         image: contact.image,
       },
       email: contact.email_id,
-      phone: contact.phone,
+      mobile_no: contact.mobile_no,
     }
   })
 })
