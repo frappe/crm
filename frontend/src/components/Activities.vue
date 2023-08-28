@@ -52,7 +52,7 @@
           <div class="flex items-center gap-2">
             <UserAvatar :user="note.owner" size="xs" />
             <div class="text-sm text-gray-800">
-              {{ note.owner }}
+              {{ getUser(note.owner).full_name }}
             </div>
           </div>
           <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
