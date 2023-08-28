@@ -14,7 +14,8 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
-		self.validate_contact()
+		if not self.is_new():
+			self.validate_contact()
 	
 	def set_full_name(self):
 		if self.first_name:

@@ -362,6 +362,10 @@ function hangUpCall() {
   onCall.value = false
   callStatus.value = ''
   muted.value = false
+  note.value = {
+    title: '',
+    content: '',
+  }
   counterUp.value.stop()
 }
 
@@ -375,6 +379,7 @@ function handleDisconnectedIncomingCall() {
   }
   _call.value = null
   muted.value = false
+  onCall.value = false
   counterUp.value.stop()
 }
 
@@ -419,6 +424,10 @@ async function makeOutgoingCall(number) {
         callStatus.value = ''
         muted.value = false
         counterUp.value.stop()
+        note.value = {
+          title: '',
+          content: '',
+        }
         // update_call_log(conn)
       })
       _call.value.on('cancel', () => {
@@ -430,6 +439,10 @@ async function makeOutgoingCall(number) {
         _call.value = null
         callStatus.value = ''
         muted.value = false
+        note.value = {
+          title: '',
+          content: '',
+        }
         counterUp.value.stop()
       })
     } catch (error) {
@@ -452,6 +465,10 @@ function cancelCall() {
   onCall.value = false
   callStatus.value = ''
   muted.value = false
+  note.value = {
+    title: '',
+    content: '',
+  }
 }
 
 function toggleCallWindow() {

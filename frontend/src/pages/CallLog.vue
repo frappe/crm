@@ -22,7 +22,7 @@
         <div class="text-sm text-gray-900">{{ callLog.doc[field.key] }}</div>
       </div>
     </div>
-    <div class="px-3 pb-1 text-base font-medium mt-3">Call note</div>
+    <!-- <div class="px-3 pb-1 text-base font-medium mt-3">Call note</div>
     <div v-if="callNote?.doc" class="flex flex-col p-3">
       <TextInput
         type="text"
@@ -38,7 +38,7 @@
         @change="(val) => (callNote.doc.content = val)"
         placeholder="Type something and press enter"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -116,20 +116,21 @@ const details = {
   ],
 }
 
-const callNote = computed(() => {
-  return createDocumentResource({
-    doctype: 'CRM Note',
-    name: callLog.doc?.note,
-    auto: true,
-    setValue: {},
-  })
-})
+// const callNote = computed(() => {
+//   return createDocumentResource({
+//     doctype: 'CRM Note',
+//     name: callLog.doc?.note,
+//     auto: true,
+//     setValue: {},
+//   })
+// })
 
 async function createLead() {
   let d = await call('frappe.client.insert', {
     doc: {
       doctype: 'CRM Lead',
-      lead_name: 'Lead from call',
+      first_name: "Lead from " + callLog.doc.from,
+      mobile_no: callLog.doc.from,
     },
   })
   if (d.name) {
@@ -140,7 +141,12 @@ async function createLead() {
 }
 
 async function update_note(lead) {
-  callNote.value.setValue.submit({ lead: lead })
+  await call('frappe.client.set_value', {
+    doctype: 'CRM Note',
+    name: callLog.doc?.note,
+    fieldname: 'lead',
+    value: lead,
+  })
 }
 
 async function update_call_log(lead) {
