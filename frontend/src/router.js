@@ -45,6 +45,12 @@ const routes = [
     component: () => import('@/pages/CallLogs.vue'),
   },
   {
+    path: '/call-logs/:callLogId',
+    name: 'Call Log',
+    component: () => import('@/pages/CallLog.vue'),
+    props: true,
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/pages/Dashboard.vue'),

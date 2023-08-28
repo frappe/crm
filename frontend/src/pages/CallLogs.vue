@@ -39,6 +39,7 @@ const callLogs = createListResource({
   type: 'list',
   doctype: 'CRM Call Log',
   fields: [
+    'name',
     'from',
     'to',
     'duration',
