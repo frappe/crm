@@ -128,3 +128,13 @@ def get_datetime_from_timestamp(timestamp):
 	system_timezone = frappe.utils.get_system_timezone()
 	converted_datetime = datetime_utc_tz.astimezone(timezone(system_timezone))
 	return frappe.utils.format_datetime(converted_datetime, 'yyyy-MM-dd HH:mm:ss')
+
+@frappe.whitelist()
+def add_note_to_call_log(call_sid, note):
+	"""Add note to call log. based on child call sid.
+	"""
+	twilio = Twilio.connect()
+	if not twilio: return
+
+	call_details = twilio.get_call_info(call_sid)
+	frappe.db.set_value("CRM Call Log", call_details.parent_call_sid, "note", note)

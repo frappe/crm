@@ -3,11 +3,10 @@
   <div
     v-show="showCallPopup"
     ref="callPopup"
-    class="fixed select-none z-10 bg-gray-900 text-gray-300 rounded-lg shadow-lg p-4 flex flex-col w-60"
+    class="fixed select-none z-10 bg-gray-900 text-gray-300 rounded-lg shadow-2xl p-4 flex flex-col w-60 cursor-move"
     :style="style"
   >
     <div class="flex items-center flex-row-reverse gap-1">
-      <DragIcon1 ref="callPopupHandle" class="w-4 h-4 cursor-move" />
       <MinimizeIcon class="w-4 h-4 cursor-pointer" @click="toggleCallWindow" />
     </div>
     <div class="flex flex-col justify-center items-center gap-3">
@@ -45,6 +44,14 @@
         <Button class="rounded-full">
           <template #icon>
             <DialpadIcon class="rounded-full cursor-pointer" />
+          </template>
+        </Button>
+        <Button class="rounded-full">
+          <template #icon>
+            <NoteIcon
+              class="text-gray-900 rounded-full cursor-pointer h-4 w-4"
+              @click="showNoteModal = true"
+            />
           </template>
         </Button>
         <Button class="rounded-full bg-red-600 hover:bg-red-700">
@@ -165,10 +172,11 @@
       </div>
     </div>
   </Teleport>
+  <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
 </template>
 
 <script setup>
-import DragIcon1 from '@/components/Icons/DragIcon1.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import DialpadIcon from '@/components/Icons/DialpadIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -179,6 +187,7 @@ import { useDraggable, useWindowSize } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { onMounted, provide, ref, watch } from 'vue'
+import NoteModal from './NoteModal.vue'
 
 const { getUser } = usersStore()
 
@@ -196,12 +205,42 @@ let callPopup = ref(null)
 let callPopupHandle = ref(null)
 let counterUp = ref(null)
 let callStatus = ref('')
+const showNoteModal = ref(false)
+const note = ref({
+  title: '',
+  content: '',
+})
+
+async function updateNote(_note) {
+  if (_note.name) {
+    await call('frappe.client.set_value', {
+      doctype: 'CRM Note',
+      name: _note.name,
+      fieldname: _note,
+    })
+    note.value = _note
+  } else {
+    let d = await call('frappe.client.insert', {
+      doc: {
+        doctype: 'CRM Note',
+        title: _note.title,
+        content: _note.content,
+      },
+    })
+    if (d.name) {
+      note.value = d
+      await call('crm.twilio.api.add_note_to_call_log', {
+        call_sid: _call.value.parameters.CallSid,
+        note: d.name,
+      })
+    }
+  }
+}
 
 const { width, height } = useWindowSize()
 
 let { style } = useDraggable(callPopup, {
   initialValue: { x: width.value - 280, y: height.value - 310 },
-  handle: callPopupHandle,
   preventDefault: true,
 })
 
@@ -244,13 +283,9 @@ function addDeviceListeners() {
 
   device.on('incoming', handleIncomingCall)
 
-  device.on('connect', (conn) => {
-    log.value = 'Successfully established call!'
-  })
-
-  device.on('disconnect', (conn) => {
-    log.value = 'Call ended disconnect.'
-    // update_call_log(conn)
+  device.on('tokenWillExpire', async () => {
+    const data = await call('crm.twilio.api.generate_access_token')
+    device.updateToken(data.token)
   })
 }
 
@@ -280,6 +315,12 @@ function handleIncomingCall(call) {
 
   showCallPopup.value = true
   _call.value = call
+
+  console.log('call', call)
+  console.log('device: ', device)
+  _call.value.on('accept', (conn) => {
+    console.log('conn', conn)
+  })
 
   // add event listener to call object
   call.on('cancel', handleDisconnectedIncomingCall)
@@ -329,7 +370,7 @@ function handleDisconnectedIncomingCall() {
   counterUp.value.stop()
 }
 
-async function makeOutgoingCall(number) {
+async function makeOutgoingCall(number, documentName) {
   // remove this hard coded number later
   phoneNumber.value = '+917666980887' || number
   if (device) {
