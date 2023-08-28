@@ -63,6 +63,77 @@
         </div>
       </div>
     </div>
+    <div v-else-if="title == 'Calls'">
+      <div v-for="(call, i) in activities">
+        <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-5">
+          <div
+            class="relative flex justify-center after:absolute after:border-l after:border-gray-300 after:top-0 after:left-[50%] after:-z-10"
+            :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
+          >
+            <div
+              class="flex items-center justify-center rounded-full outline outline-4 outline-white w-6 h-6 bg-gray-200 mt-[15px] z-10"
+            >
+              <FeatherIcon
+                :name="
+                  call.type == 'Incoming' ? 'phone-incoming' : 'phone-outgoing'
+                "
+                class="w-3.5 h-3.5 text-gray-600"
+              />
+            </div>
+          </div>
+          <div class="flex flex-col gap-3 border rounded-lg p-4 mb-3 shadow-sm max-w-[60%]">
+            <div class="flex items-center justify-between">
+              <div>
+                {{ call.type == 'Incoming' ? 'Inbound' : 'Outbound' }} call
+              </div>
+              <div>
+                <Tooltip
+                  class="text-gray-600 text-sm"
+                  :text="dateFormat(call.modified, dateTooltipFormat)"
+                >
+                  {{ timeAgo(call.modified) }}
+                </Tooltip>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <DurationIcon class="w-4 h-4 text-gray-600" />
+                <div class="text-sm text-gray-600">Duration</div>
+                <div class="text-sm">{{ call.duration }}s</div>
+              </div>
+              <div
+                class="flex items-center gap-1 cursor-pointer select-none"
+                @click="call.show_recording = !call.show_recording"
+              >
+                <PlayIcon class="w-4 h-4 text-gray-600" />
+                <div class="text-sm text-gray-600">
+                  {{
+                    call.show_recording ? 'Hide recording' : 'Listen to call'
+                  }}
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="call.show_recording"
+              class="flex items-center justify-between border rounded"
+            >
+              <audio
+                class="audio-control"
+                controls
+                :src="call.recording_url"
+              ></audio>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <div class="text-sm">{{ call.from }}</div>
+                <FeatherIcon name="arrow-right" class="w-4 h-4 text-gray-600" />
+                <div class="text-sm">{{ call.to }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div v-else v-for="(activity, i) in activities">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-5">
         <div
@@ -180,6 +251,8 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import DurationIcon from '@/components/Icons/DurationIcon.vue'
+import PlayIcon from '@/components/Icons/PlayIcon.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { Button, FeatherIcon, Tooltip, Dropdown, TextEditor } from 'frappe-ui'
@@ -201,6 +274,12 @@ const props = defineProps({
 const emit = defineEmits(['makeCall', 'makeNote', 'deleteNote'])
 
 const activities = computed(() => {
+  if (props.title == 'Calls') {
+    props.activities.forEach((activity) => {
+      activity.show_recording = false
+    })
+    return props.activities
+  }
   props.activities.forEach((activity) => {
     activity.owner_name = getUser(activity.owner).full_name
     activity.icon = timelineIcon(activity.activity_type)
@@ -260,3 +339,18 @@ function timelineIcon(activity_type) {
   return 'edit'
 }
 </script>
+
+<style scoped>
+.audio-control {
+  width: 100%;
+  height: 40px;
+  outline: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.audio-control::-webkit-media-controls-panel {
+  background-color: white;
+}
+</style>

@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="px-3 pb-1 text-base font-medium mt-3">Call note</div>
-    <div v-if="callNote.doc" class="flex flex-col p-3">
+    <div v-if="callNote?.doc" class="flex flex-col p-3">
       <TextInput
         type="text"
         class="text-base bg-white border-none !pl-0 hover:bg-white focus:!shadow-none focus-visible:!ring-0"
@@ -67,6 +67,7 @@ const props = defineProps({
 const callLog = createDocumentResource({
   doctype: 'CRM Call Log',
   name: props.callLogId,
+  setValue: {},
 })
 
 const breadcrumbs = computed(() => [
@@ -120,6 +121,7 @@ const callNote = computed(() => {
     doctype: 'CRM Note',
     name: callLog.doc?.note,
     auto: true,
+    setValue: {},
   })
 })
 

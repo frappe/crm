@@ -87,7 +87,7 @@
           v-model="lead"
         />
       </div>
-      <div class="flex flex-col justify-between border-l w-[360px]">
+      <div class="flex flex-col justify-between border-l w-[370px]">
         <div
           class="flex flex-col gap-3 pb-4 p-5 items-center justify-center border-b"
         >
@@ -380,9 +380,7 @@ const tabs = computed(() => {
     {
       label: 'Calls',
       icon: PhoneIcon,
-      content: lead.data.activities.filter(
-        (activity) => activity.activity_type === 'call'
-      ),
+      content: calls.data,
       activityTitle: 'Calls',
     },
     // {
@@ -549,7 +547,7 @@ const notes = createListResource({
   fields: ['name', 'title', 'content', 'owner', 'modified'],
   filters: { lead: props.leadId },
   orderBy: 'modified desc',
-  pageLength: 20,
+  pageLength: 999,
   auto: true,
 })
 
@@ -593,6 +591,29 @@ async function updateNote(note) {
     }
   }
 }
+
+const calls = createListResource({
+  type: 'list',
+  doctype: 'CRM Call Log',
+  cache: ['Call Logs', props.leadId],
+  fields: [
+    'name',
+    'from',
+    'to',
+    'duration',
+    'start_time',
+    'end_time',
+    'status',
+    'type',
+    'recording_url',
+    'modified',
+    'note',
+  ],
+  filters: { lead: props.leadId },
+  orderBy: 'modified desc',
+  pageLength: 999,
+  auto: true,
+})
 </script>
 
 <style scoped>
