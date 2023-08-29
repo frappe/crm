@@ -302,6 +302,7 @@ import {
   openWebsite,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
+import { contactsStore } from '@/stores/contacts'
 import {
   createResource,
   createDocumentResource,
@@ -318,6 +319,7 @@ import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getUser, users } = usersStore()
+const { contacts } = contactsStore()
 const router = useRouter()
 
 const makeCall = inject('makeOutgoingCall')
@@ -342,6 +344,7 @@ const uLead = createDocumentResource({
   setValue: {
     onSuccess: () => {
       lead.reload()
+      contacts.reload()
     },
   },
 })

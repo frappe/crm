@@ -45,7 +45,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import { FeatherIcon, Button, Dropdown, createListResource } from 'frappe-ui'
+import { FeatherIcon, Button, Dropdown } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { contactsStore } from '@/stores/contacts.js'
 

@@ -53,11 +53,13 @@ import {
   call,
 } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
+import { contactsStore } from '@/stores/contacts'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { getUser } = usersStore()
+const { contacts } = contactsStore()
 
 const props = defineProps({
   callLogId: {
@@ -139,6 +141,7 @@ async function createLead() {
   if (d.name) {
     await update_call_log(d.name)
     await update_note(d.name)
+    contacts.reload()
     router.push({ name: 'Lead', params: { leadId: d.name } })
   }
 }

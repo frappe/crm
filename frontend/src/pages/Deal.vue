@@ -312,6 +312,7 @@ import {
   openWebsite,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
+import { contactsStore } from '@/stores/contacts'
 import {
   createResource,
   createDocumentResource,
@@ -327,6 +328,7 @@ import {
 import { ref, computed, inject } from 'vue'
 
 const { getUser, users } = usersStore()
+const { contacts } = contactsStore()
 
 const makeCall = inject('makeOutgoingCall')
 
@@ -350,6 +352,7 @@ const uDeal = createDocumentResource({
   setValue: {
     onSuccess: () => {
       deal.reload()
+      contacts.reload()
     },
   },
 })
