@@ -4,7 +4,7 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <Button variant="solid" label="Create lead" @click="createLead">
+      <Button v-if="!callLog.doc.lead" variant="solid" label="Create lead" @click="createLead">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -52,10 +52,12 @@ import {
   FeatherIcon,
   call,
 } from 'frappe-ui'
+import { usersStore } from '@/stores/users'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const { getUser } = usersStore()
 
 const props = defineProps({
   callLogId: {
@@ -131,6 +133,7 @@ async function createLead() {
       doctype: 'CRM Lead',
       first_name: "Lead from " + callLog.doc.from,
       mobile_no: callLog.doc.from,
+      lead_owner: getUser().name,
     },
   })
   if (d.name) {

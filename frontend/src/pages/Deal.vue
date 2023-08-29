@@ -562,7 +562,7 @@ async function updateNote(note) {
 const calls = createListResource({
   type: 'list',
   doctype: 'CRM Call Log',
-  cache: ['Call Logs', props.leadId],
+  cache: ['Call Logs', props.dealId],
   fields: [
     'name',
     'from',
@@ -576,7 +576,7 @@ const calls = createListResource({
     'modified',
     'note',
   ],
-  filters: { lead: props.leadId },
+  filters: { lead: props.dealId },
   orderBy: 'modified desc',
   pageLength: 999,
   auto: true,
