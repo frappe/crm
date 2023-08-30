@@ -76,10 +76,12 @@
               @makeCall="makeCall(deal.data.mobile_no)"
               @makeNote="(e) => showNote(e)"
               @deleteNote="(e) => deleteNote(e)"
+              @setFocusOnEmail="() => $refs.sendEmailRef.el.click()"
             />
           </TabPanel>
         </TabPanels>
         <CommunicationArea
+          ref="sendEmailRef"
           v-if="[0, 1].includes(selectedIndex)"
           v-model="deal"
         />

@@ -244,6 +244,12 @@
       label="Create note"
       @click="emit('makeNote')"
     />
+    <Button
+      v-else-if="title == 'Emails'"
+      variant="solid"
+      label="Send email"
+      @click="emit('setFocusOnEmail')"
+    />
   </div>
 </template>
 <script setup>
@@ -271,7 +277,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['makeCall', 'makeNote', 'deleteNote'])
+const emit = defineEmits(['makeCall', 'makeNote', 'deleteNote', 'setFocusOnEmail'])
 
 const activities = computed(() => {
   if (props.title == 'Calls') {

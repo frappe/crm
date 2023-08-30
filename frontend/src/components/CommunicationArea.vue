@@ -1,6 +1,7 @@
 <template>
   <div class="max-w-[81.7%] pl-16 p-4 pt-2">
     <button
+      ref="sendEmailRef"
       class="flex gap-2 w-full items-center rounded-lg p-2 bg-gray-100 hover:bg-gray-200"
       @click="showCommunicationBox = true"
       v-show="!showCommunicationBox"
@@ -58,6 +59,7 @@ const { getUser } = usersStore()
 const showCommunicationBox = ref(false)
 const newEmail = ref('')
 const newEmailEditor = ref(null)
+const sendEmailRef = ref(null)
 
 watch(
   () => showCommunicationBox.value,
@@ -99,7 +101,5 @@ async function submitComment() {
   modelValue.value.reload()
 }
 
-function openPhoneCallDialog() {
-  //
-}
+defineExpose({ el: sendEmailRef })
 </script>
