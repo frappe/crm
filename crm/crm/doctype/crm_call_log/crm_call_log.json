@@ -11,17 +11,18 @@
   "id",
   "from",
   "status",
-  "call_received_by",
+  "duration",
   "medium",
   "start_time",
-  "note",
-  "column_break_ufnp",
-  "type",
-  "to",
   "lead",
-  "duration",
+  "column_break_ufnp",
+  "to",
+  "type",
+  "receiver",
+  "caller",
   "recording_url",
-  "end_time"
+  "end_time",
+  "note"
  ],
  "fields": [
   {
@@ -42,13 +43,6 @@
    "label": "Status",
    "options": "Ringing\nIn Progress\nCompleted\nFailed\nBusy\nNo Answer\nQueued\nCanceled",
    "read_only": 1
-  },
-  {
-   "depends_on": "to",
-   "fieldname": "call_received_by",
-   "fieldtype": "Link",
-   "label": "Call Received By",
-   "options": "User"
   },
   {
    "fieldname": "start_time",
@@ -106,11 +100,25 @@
    "fieldtype": "Link",
    "label": "Note",
    "options": "CRM Note"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Incoming'",
+   "fieldname": "receiver",
+   "fieldtype": "Link",
+   "label": "Call Received By",
+   "options": "User"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Outgoing'",
+   "fieldname": "caller",
+   "fieldtype": "Link",
+   "label": "Caller",
+   "options": "User"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-28 11:42:33.487807",
+ "modified": "2023-08-30 15:39:46.613734",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM Call Log",

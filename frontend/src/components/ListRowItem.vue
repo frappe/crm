@@ -2,6 +2,7 @@
   <Tooltip
     :text="tooltipText"
     class="flex items-center space-x-2.5"
+    :class="align == 'text-right' ? 'justify-end' : ''"
   >
     <slot name="prefix"></slot>
     <slot>
@@ -20,6 +21,10 @@ const props = defineProps({
   type: {
     type: String,
     default: 'text',
+  },
+  align: {
+    type: String,
+    default: 'left',
   },
   value: {
     type: [String, Number, Object],

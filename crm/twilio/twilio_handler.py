@@ -220,10 +220,17 @@ class TwilioCallDetails:
 		return ' '.join(twilio_status.split('-')).title()
 
 	def to_dict(self):
+		"""Convert call details into dict.
+		"""
+		direction = self.get_direction()
+		caller = frappe.session.user if direction == 'Outgoing' else ''
+		receiver = frappe.session.user if direction == 'Incoming' else ''
 		return {
-			'type': self.get_direction(),
+			'type': direction,
 			'status': self.call_status,
 			'id': self.call_sid,
 			'from': self.get_from_number(),
-			'to': self.get_to_number()
+			'to': self.get_to_number(),
+			'reciever': receiver,
+			'caller': caller,
 		}

@@ -27,8 +27,13 @@ import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import { secondsToDuration } from '@/utils'
+import { usersStore } from '@/stores/users'
+import { contactsStore } from '@/stores/contacts'
 import { Button, createListResource } from 'frappe-ui'
 import { computed } from 'vue'
+
+const { getUser } = usersStore()
+const { getContact } = contactsStore()
 
 const list = {
   title: 'Call Logs',
@@ -41,6 +46,8 @@ const callLogs = createListResource({
   doctype: 'CRM Call Log',
   fields: [
     'name',
+    'caller',
+    'receiver',
     'from',
     'to',
     'duration',
@@ -60,21 +67,15 @@ const callLogs = createListResource({
 const columns = [
   {
     label: 'From',
-    key: 'from',
-    type: 'data',
+    key: 'caller',
+    type: 'avatar',
     size: 'w-32',
   },
   {
     label: 'To',
-    key: 'to',
-    type: 'data',
+    key: 'receiver',
+    type: 'avatar',
     size: 'w-32',
-  },
-  {
-    label: 'Duration',
-    key: 'duration',
-    type: 'icon',
-    size: 'w-20',
   },
   {
     label: 'Type',
@@ -89,6 +90,25 @@ const columns = [
     size: 'w-32',
   },
   {
+    label: 'Duration',
+    key: 'duration',
+    type: 'icon',
+    size: 'w-20',
+    align: 'text-right'
+  },
+  {
+    label: 'From (number)',
+    key: 'from',
+    type: 'data',
+    size: 'w-32',
+  },
+  {
+    label: 'To (number)',
+    key: 'to',
+    type: 'data',
+    size: 'w-32',
+  },
+  {
     label: 'Created on',
     key: 'creation',
     type: 'pretty_date',
@@ -98,8 +118,33 @@ const columns = [
 
 const rows = computed(() => {
   return callLogs.data?.map((callLog) => {
+    let caller = callLog.caller
+    let receiver = callLog.receiver
+
+    if (callLog.type === 'Incoming') {
+      caller = {
+        label: getContact(callLog.from)?.full_name || 'Unknown',
+        image: getContact(callLog.from)?.image,
+      }
+      receiver = {
+        label: getUser(receiver).full_name,
+        image: getUser(receiver).user_image,
+      }
+    } else {
+      caller = {
+        label: getUser(caller).full_name,
+        image: getUser(caller).user_image,
+      }
+      receiver = {
+        label: getContact(callLog.to)?.full_name || 'Unknown',
+        image: getContact(callLog.from)?.image,
+      }
+    }
+
     return {
       name: callLog.name,
+      caller: caller,
+      receiver: receiver,
       from: callLog.from,
       to: callLog.to,
       duration: {

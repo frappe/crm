@@ -44,6 +44,7 @@
             <ListRowItem
               :value="getValue(row[column.key]).label"
               :type="column.type"
+              :align="column.align"
             >
               <template #prefix>
                 <div v-if="column.type === 'indicator'">
