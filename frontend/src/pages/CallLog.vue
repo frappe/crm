@@ -5,7 +5,7 @@
     </template>
     <template #right-header>
       <Button
-        v-if="!callLog.data.lead"
+        v-if="callLog.data.type == 'Incoming' && !callLog.data.lead"
         variant="solid"
         label="Create lead"
         @click="createLead"
