@@ -99,7 +99,7 @@
               <div class="flex items-center gap-1">
                 <DurationIcon class="w-4 h-4 text-gray-600" />
                 <div class="text-sm text-gray-600">Duration</div>
-                <div class="text-sm">{{ call.duration }}s</div>
+                <div class="text-sm">{{ secondsToDuration(call.duration) }}</div>
               </div>
               <div
                 class="flex items-center gap-1 cursor-pointer select-none"
@@ -259,7 +259,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
-import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { timeAgo, dateFormat, dateTooltipFormat, secondsToDuration } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { Button, FeatherIcon, Tooltip, Dropdown, TextEditor } from 'frappe-ui'
 import { computed, h } from 'vue'

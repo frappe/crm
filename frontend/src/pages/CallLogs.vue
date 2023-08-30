@@ -94,7 +94,6 @@ const columns = [
     key: 'duration',
     type: 'icon',
     size: 'w-20',
-    align: 'text-right'
   },
   {
     label: 'From (number)',
@@ -137,7 +136,7 @@ const rows = computed(() => {
       }
       receiver = {
         label: getContact(callLog.to)?.full_name || 'Unknown',
-        image: getContact(callLog.from)?.image,
+        image: getContact(callLog.to)?.image,
       }
     }
 
