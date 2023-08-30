@@ -223,14 +223,26 @@ class TwilioCallDetails:
 		"""Convert call details into dict.
 		"""
 		direction = self.get_direction()
-		caller = frappe.session.user if direction == 'Outgoing' else ''
-		receiver = frappe.session.user if direction == 'Incoming' else ''
+		from_number = self.get_from_number()
+		to_number = self.get_to_number()
+		caller = ''
+		receiver = ''
+
+		if direction == 'Outgoing':
+			caller = self.call_info.get('Caller')
+			identity = caller.replace('client:', '').strip()
+			caller = Twilio.emailid_from_identity(identity) if identity else ''
+		else:
+			owners = get_twilio_number_owners(to_number)
+			attender = get_the_call_attender(owners)
+			receiver = attender['name'] if attender else ''
+
 		return {
 			'type': direction,
 			'status': self.call_status,
 			'id': self.call_sid,
-			'from': self.get_from_number(),
-			'to': self.get_to_number(),
+			'from': from_number,
+			'to': to_number,
 			'reciever': receiver,
 			'caller': caller,
 		}
