@@ -1,13 +1,14 @@
 <template>
   <Tooltip
     :text="tooltipText"
-    :html="tooltipHTML"
     class="flex items-center space-x-2.5"
   >
     <slot name="prefix"></slot>
-    <div class="text-base truncate">
-      {{ label }}
-    </div>
+    <slot>
+      <div class="text-base truncate">
+        {{ label }}
+      </div>
+    </slot>
   </Tooltip>
 </template>
 <script setup>
@@ -24,13 +25,6 @@ const props = defineProps({
     type: [String, Number, Object],
     default: '',
   },
-})
-
-const tooltipHTML = computed(() => {
-  if (props.type === 'html') {
-    return props.value?.toString()
-  }
-  return ''
 })
 
 const tooltipText = computed(() => {

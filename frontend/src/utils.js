@@ -99,3 +99,16 @@ export function htmlToText(html) {
   div.innerHTML = html
   return div.textContent || div.innerText || ''
 }
+
+export function secondsToDuration(seconds) {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const _seconds = Math.floor((seconds % 3600) % 60)
+
+  if (hours == 0 && minutes == 0) {
+    return `${_seconds}s`
+  } else if (hours == 0) {
+    return `${minutes}m ${_seconds}s`
+  }
+  return `${hours}h ${minutes}m ${_seconds}s`
+}

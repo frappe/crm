@@ -26,6 +26,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
+import { secondsToDuration } from '@/utils'
 import { Button, createListResource } from 'frappe-ui'
 import { computed } from 'vue'
 
@@ -48,9 +49,9 @@ const callLogs = createListResource({
     'status',
     'type',
     'recording_url',
-    'modified',
+    'creation',
   ],
-  orderBy: 'modified desc',
+  orderBy: 'creation desc',
   cache: 'Call Logs',
   pageLength: 999,
   auto: true,
@@ -72,36 +73,24 @@ const columns = [
   {
     label: 'Duration',
     key: 'duration',
-    type: 'data',
+    type: 'icon',
     size: 'w-20',
   },
   {
     label: 'Type',
     key: 'type',
-    type: 'data',
+    type: 'icon',
     size: 'w-32',
   },
   {
     label: 'Status',
     key: 'status',
-    type: 'data',
+    type: 'badge',
     size: 'w-32',
   },
   {
-    label: 'Start Time',
-    key: 'start_time',
-    type: 'data',
-    size: 'w-32',
-  },
-  {
-    label: 'End Time',
-    key: 'end_time',
-    type: 'data',
-    size: 'w-32',
-  },
-  {
-    label: 'Last modified',
-    key: 'modified',
+    label: 'Created on',
+    key: 'creation',
     type: 'pretty_date',
     size: 'w-28',
   },
@@ -113,12 +102,19 @@ const rows = computed(() => {
       name: callLog.name,
       from: callLog.from,
       to: callLog.to,
-      duration: callLog.duration,
-      type: callLog.type,
-      status: callLog.status,
-      start_time: callLog.start_time,
-      end_time: callLog.end_time,
-      modified: callLog.modified,
+      duration: {
+        label: secondsToDuration(callLog.duration),
+        icon: 'clock',
+      },
+      type: {
+        label: callLog.type,
+        icon: callLog.type === 'Incoming' ? 'phone-incoming' : 'phone-outgoing',
+      },
+      status: {
+        label: callLog.status,
+        color: callLog.status === 'Completed' ? 'green' : 'gray',
+      },
+      creation: callLog.creation,
     }
   })
 })

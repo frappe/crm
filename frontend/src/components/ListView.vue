@@ -41,7 +41,10 @@
             :key="column.key"
             :class="[column.size, column.align]"
           >
-            <ListRowItem :value="getValue(row[column.key]).label" :type="column.type">
+            <ListRowItem
+              :value="getValue(row[column.key]).label"
+              :type="column.type"
+            >
               <template #prefix>
                 <div v-if="column.type === 'indicator'">
                   <IndicatorIcon :class="getValue(row[column.key]).color" />
@@ -65,7 +68,21 @@
                     shape="square"
                   />
                 </div>
+                <div v-else-if="column.type === 'icon'">
+                  <FeatherIcon
+                    :name="getValue(row[column.key]).icon"
+                    class="h-3 w-3"
+                  />
+                </div>
               </template>
+              <div v-if="column.type === 'badge'">
+                <Badge
+                  :variant="'subtle'"
+                  :theme="row[column.key].color"
+                  size="md"
+                  :label="row[column.key].label"
+                />
+              </div>
             </ListRowItem>
           </div>
         </router-link>
@@ -116,7 +133,7 @@
 <script setup>
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import ListRowItem from '@/components/ListRowItem.vue'
-import { Checkbox, Avatar } from 'frappe-ui'
+import { Checkbox, Avatar, Badge, FeatherIcon } from 'frappe-ui'
 import { reactive, computed } from 'vue'
 
 const props = defineProps({
