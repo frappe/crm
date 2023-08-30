@@ -81,7 +81,9 @@
               />
             </div>
           </div>
-          <div class="flex flex-col gap-3 border rounded-lg p-4 mb-3 shadow-sm max-w-[60%]">
+          <div
+            class="flex flex-col gap-3 border rounded-lg p-4 mb-3 shadow-sm max-w-[60%]"
+          >
             <div class="flex items-center justify-between">
               <div>
                 {{ call.type == 'Incoming' ? 'Inbound' : 'Outbound' }} call
@@ -99,7 +101,9 @@
               <div class="flex items-center gap-1">
                 <DurationIcon class="w-4 h-4 text-gray-600" />
                 <div class="text-sm text-gray-600">Duration</div>
-                <div class="text-sm">{{ secondsToDuration(call.duration) }}</div>
+                <div class="text-sm">
+                  {{ call.duration }}
+                </div>
               </div>
               <div
                 class="flex items-center gap-1 cursor-pointer select-none"
@@ -125,9 +129,36 @@
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
-                <div class="text-sm">{{ call.from }}</div>
-                <FeatherIcon name="arrow-right" class="w-4 h-4 text-gray-600" />
-                <div class="text-sm">{{ call.to }}</div>
+                <Avatar
+                  :image="call.caller.image"
+                  :label="call.caller.label"
+                  size="xl"
+                />
+                <div class="flex flex-col gap-1 ml-1">
+                  <div class="text-base font-medium">
+                    {{ call.caller.label }}
+                  </div>
+                  <div class="text-xs text-gray-600">
+                    {{ call.from }}
+                  </div>
+                </div>
+                <FeatherIcon
+                  name="arrow-right"
+                  class="w-5 h-5 text-gray-600 mx-2"
+                />
+                <Avatar
+                  :image="call.receiver.image"
+                  :label="call.receiver.label"
+                  size="xl"
+                />
+                <div class="flex flex-col gap-1 ml-1">
+                  <div class="text-base font-medium">
+                    {{ call.receiver.label }}
+                  </div>
+                  <div class="text-xs text-gray-600">
+                    {{ call.to }}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -259,9 +290,16 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
-import { timeAgo, dateFormat, dateTooltipFormat, secondsToDuration } from '@/utils'
+import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { Button, FeatherIcon, Tooltip, Dropdown, TextEditor } from 'frappe-ui'
+import {
+  Button,
+  FeatherIcon,
+  Tooltip,
+  Dropdown,
+  TextEditor,
+  Avatar,
+} from 'frappe-ui'
 import { computed, h } from 'vue'
 
 const { getUser } = usersStore()
@@ -277,7 +315,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['makeCall', 'makeNote', 'deleteNote', 'setFocusOnEmail'])
+const emit = defineEmits([
+  'makeCall',
+  'makeNote',
+  'deleteNote',
+  'setFocusOnEmail',
+])
 
 const activities = computed(() => {
   if (props.title == 'Calls') {

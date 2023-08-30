@@ -302,6 +302,7 @@ import {
   leadStatuses,
   statusDropdownOptions,
   openWebsite,
+  secondsToDuration,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -321,7 +322,7 @@ import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getUser, users } = usersStore()
-const { contacts } = contactsStore()
+const { getContact, contacts } = contactsStore()
 const router = useRouter()
 
 const makeCall = inject('makeOutgoingCall')
@@ -603,6 +604,8 @@ const calls = createListResource({
   cache: ['Call Logs', props.leadId],
   fields: [
     'name',
+    'caller',
+    'receiver',
     'from',
     'to',
     'duration',
@@ -618,6 +621,31 @@ const calls = createListResource({
   orderBy: 'modified desc',
   pageLength: 999,
   auto: true,
+  transform: (docs) => {
+    docs.forEach((doc) => {
+      doc.duration = secondsToDuration(doc.duration)
+      if (doc.type === 'Incoming') {
+        doc.caller = {
+          label: getContact(doc.from)?.full_name || 'Unknown',
+          image: getContact(doc.from)?.image,
+        }
+        doc.receiver = {
+          label: getUser(doc.receiver).full_name,
+          image: getUser(doc.receiver).user_image,
+        }
+      } else {
+        doc.caller = {
+          label: getUser(doc.caller).full_name,
+          image: getUser(doc.caller).user_image,
+        }
+        doc.receiver = {
+          label: getContact(doc.to)?.full_name || 'Unknown',
+          image: getContact(doc.to)?.image,
+        }
+      }
+    })
+    return docs
+  },
 })
 </script>
 

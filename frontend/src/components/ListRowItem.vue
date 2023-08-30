@@ -1,7 +1,7 @@
 <template>
   <Tooltip
     :text="tooltipText"
-    class="flex items-center space-x-2.5"
+    class="flex items-center space-x-2"
     :class="align == 'text-right' ? 'justify-end' : ''"
   >
     <slot name="prefix"></slot>
