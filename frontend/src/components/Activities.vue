@@ -173,7 +173,13 @@
         >
           <div
             class="flex items-center justify-center rounded-full outline outline-4 outline-white w-6 h-6 bg-gray-200 z-10"
-            :class="{ 'mt-[15px]': activity.activity_type == 'communication' }"
+            :class="{
+              'mt-[15px]': [
+                'communication',
+                'incoming_call',
+                'outgoing_call',
+              ].includes(activity.activity_type),
+            }"
           >
             <FeatherIcon
               :name="activity.icon"
@@ -242,7 +248,9 @@
             >
               <PlayIcon class="w-4 h-4 text-gray-600" />
               <div class="text-sm text-gray-600">
-                {{ activity.show_recording ? 'Hide recording' : 'Listen to call' }}
+                {{
+                  activity.show_recording ? 'Hide recording' : 'Listen to call'
+                }}
               </div>
             </div>
           </div>
