@@ -91,9 +91,9 @@
               <div>
                 <Tooltip
                   class="text-gray-600 text-sm"
-                  :text="dateFormat(call.modified, dateTooltipFormat)"
+                  :text="dateFormat(call.creation, dateTooltipFormat)"
                 >
-                  {{ timeAgo(call.modified) }}
+                  {{ timeAgo(call.creation) }}
                 </Tooltip>
               </div>
             </div>
@@ -206,6 +206,89 @@
               </div>
             </div>
             <div class="px-1" v-html="activity.data.content" />
+          </div>
+        </div>
+        <div
+          v-else-if="
+            activity.activity_type == 'incoming_call' ||
+            activity.activity_type == 'outgoing_call'
+          "
+          class="flex flex-col gap-3 border rounded-lg p-4 mb-3 shadow-sm max-w-[60%]"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              {{ activity.type == 'Incoming' ? 'Inbound' : 'Outbound' }} call
+            </div>
+            <div>
+              <Tooltip
+                class="text-gray-600 text-sm"
+                :text="dateFormat(activity.creation, dateTooltipFormat)"
+              >
+                {{ timeAgo(activity.creation) }}
+              </Tooltip>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1">
+              <DurationIcon class="w-4 h-4 text-gray-600" />
+              <div class="text-sm text-gray-600">Duration</div>
+              <div class="text-sm">
+                {{ activity.duration }}
+              </div>
+            </div>
+            <div
+              class="flex items-center gap-1 cursor-pointer select-none"
+              @click="activity.show_recording = !activity.show_recording"
+            >
+              <PlayIcon class="w-4 h-4 text-gray-600" />
+              <div class="text-sm text-gray-600">
+                {{ activity.show_recording ? 'Hide recording' : 'Listen to call' }}
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="activity.show_recording"
+            class="flex items-center justify-between border rounded"
+          >
+            <audio
+              class="audio-control"
+              controls
+              :src="activity.recording_url"
+            ></audio>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1">
+              <Avatar
+                :image="activity.caller.image"
+                :label="activity.caller.label"
+                size="xl"
+              />
+              <div class="flex flex-col gap-1 ml-1">
+                <div class="text-base font-medium">
+                  {{ activity.caller.label }}
+                </div>
+                <div class="text-xs text-gray-600">
+                  {{ activity.from }}
+                </div>
+              </div>
+              <FeatherIcon
+                name="arrow-right"
+                class="w-5 h-5 text-gray-600 mx-2"
+              />
+              <Avatar
+                :image="activity.receiver.image"
+                :label="activity.receiver.label"
+                size="xl"
+              />
+              <div class="flex flex-col gap-1 ml-1">
+                <div class="text-base font-medium">
+                  {{ activity.receiver.label }}
+                </div>
+                <div class="text-xs text-gray-600">
+                  {{ activity.to }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div v-else class="flex flex-col gap-3 pb-6">
@@ -384,6 +467,10 @@ function timelineIcon(activity_type) {
     return 'at-sign'
   } else if (activity_type == 'comment') {
     return 'file-text'
+  } else if (activity_type == 'incoming_call') {
+    return 'phone-incoming'
+  } else if (activity_type == 'outgoing_call') {
+    return 'phone-outgoing'
   }
   return 'edit'
 }

@@ -380,7 +380,7 @@ const tabs = computed(() => {
     {
       label: 'Activity',
       icon: ActivityIcon,
-      content: deal.data.activities,
+      content: all_activities(),
       activityTitle: 'Activity log',
     },
     {
@@ -410,6 +410,17 @@ const tabs = computed(() => {
     },
   ]
 })
+
+function all_activities() {
+  if (!lead.data) return []
+  if (!calls.data) return lead.data.activities
+  console.log(lead.data.activities[0].creation)
+  console.log(calls.data[0].creation)
+  return [
+    ...lead.data.activities,
+    ...calls.data,
+  ].sort((a, b) => new Date(b.creation) - new Date(a.creation))
+}
 
 const tabRef = ref([])
 const indicator = ref(null)
@@ -581,15 +592,16 @@ const calls = createListResource({
     'status',
     'type',
     'recording_url',
-    'modified',
+    'creation',
     'note',
   ],
   filters: { lead: props.dealId },
-  orderBy: 'modified desc',
+  orderBy: 'creation desc',
   pageLength: 999,
   auto: true,
   transform: (docs) => {
     docs.forEach((doc) => {
+      doc.activity_type = doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
       doc.duration = secondsToDuration(doc.duration)
       if (doc.type === 'Incoming') {
         doc.caller = {

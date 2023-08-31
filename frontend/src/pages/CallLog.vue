@@ -81,9 +81,9 @@
         <div>
           <Tooltip
             class="text-gray-600 text-sm"
-            :text="dateFormat(callLog.data.modified, dateTooltipFormat)"
+            :text="dateFormat(callLog.data.creation, dateTooltipFormat)"
           >
-            {{ timeAgo(callLog.data.modified) }}
+            {{ timeAgo(callLog.data.creation) }}
           </Tooltip>
         </div>
       </div>
