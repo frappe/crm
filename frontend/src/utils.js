@@ -1,6 +1,14 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { useDateFormat, useTimeAgo } from '@vueuse/core'
+import { toast } from 'frappe-ui'
 import { h } from 'vue'
+
+export function createToast(options) {
+  toast({
+    position: 'bottom-right',
+    ...options,
+  })
+}
 
 export function dateFormat(date, format) {
   const _format = format || 'DD-MM-YYYY HH:mm:ss'
@@ -68,7 +76,7 @@ export const dealStatuses = {
   Lost: { label: 'Lost', color: '!text-red-600', bgColor: '!bg-red-200' },
 }
 
-export function statusDropdownOptions(data, doctype) {
+export function statusDropdownOptions(data, doctype, action) {
   let statuses = leadStatuses
   if (doctype == 'deal') {
     statuses = dealStatuses
@@ -84,6 +92,8 @@ export function statusDropdownOptions(data, doctype) {
         } else {
           data.status = statuses[status].label
         }
+        let field = doctype == 'deal' ? 'deal_status' : 'status'
+        action && action(field, statuses[status].label)
       },
     })
   }

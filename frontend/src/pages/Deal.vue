@@ -7,7 +7,7 @@
       <Autocomplete
         :options="activeAgents"
         :value="getUser(deal.data.lead_owner).full_name"
-        @change="(option) => (deal.data.lead_owner = option.email)"
+        @change="(option) => updateAssignedAgent(option.email)"
         placeholder="Deal owner"
       >
         <template #prefix>
@@ -17,7 +17,7 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </Autocomplete>
-      <Dropdown :options="statusDropdownOptions(deal.data, 'deal')">
+      <Dropdown :options="statusDropdownOptions(deal.data, 'deal', updateDeal)">
         <template #default="{ open }">
           <Button
             :label="deal.data.deal_status"
@@ -36,7 +36,6 @@
           </Button>
         </template>
       </Dropdown>
-      <Button label="Save" variant="solid" @click="() => updateDeal()" />
     </template>
   </LayoutHeader>
   <TabGroup v-slot="{ selectedIndex }" v-if="deal.data" @change="onTabChange">
@@ -179,7 +178,11 @@
                           v-if="field.type === 'select'"
                           type="select"
                           :options="field.options"
-                          v-model="deal.data[field.name]"
+                          :value="deal.data[field.name]"
+                          @change.stop="
+                            updateDeal(field.name, $event.target.value)
+                          "
+                          :debounce="500"
                           class="form-control cursor-pointer [&_select]:cursor-pointer"
                         >
                           <template #prefix>
@@ -192,17 +195,29 @@
                           v-else-if="field.type === 'email'"
                           type="email"
                           class="form-control"
-                          v-model="deal.data[field.name]"
+                          :value="deal.data[field.name]"
+                          @change.stop="
+                            updateDeal(field.name, $event.target.value)
+                          "
+                          :debounce="500"
                         />
                         <Autocomplete
                           v-else-if="field.type === 'link'"
+                          :value="deal.data[field.name]"
+                          :options="field.options"
+                          @change="(e) => field.change(e)"
+                          :placeholder="field.placeholder"
+                          class="form-control"
+                        />
+                        <Autocomplete
+                          v-else-if="field.type === 'user'"
                           :options="activeAgents"
                           :value="getUser(deal.data[field.name]).full_name"
                           @change="
-                            (option) => (deal.data[field.name] = option.email)
+                            (option) => updateAssignedAgent(option.email)
                           "
                           class="form-control"
-                          placeholder="Deal owner"
+                          :placeholder="deal.placeholder"
                         >
                           <template #target="{ togglePopover }">
                             <Button
@@ -229,7 +244,9 @@
                         </Autocomplete>
                         <Dropdown
                           v-else-if="field.type === 'dropdown'"
-                          :options="statusDropdownOptions(deal.data, 'deal')"
+                          :options="
+                            statusDropdownOptions(deal.data, 'deal', updateDeal)
+                          "
                           class="w-full flex-1"
                         >
                           <template #default="{ open }">
@@ -259,25 +276,41 @@
                         <FormControl
                           v-else-if="field.type === 'date'"
                           type="date"
-                          v-model="deal.data[field.name]"
+                          :value="deal.data[field.name]"
+                          @change.stop="
+                            updateDeal(field.name, $event.target.value)
+                          "
+                          :debounce="500"
                           class="form-control"
                         />
                         <FormControl
                           v-else-if="field.type === 'number'"
                           type="number"
-                          v-model="deal.data[field.name]"
+                          :value="deal.data[field.name]"
+                          @change.stop="
+                            updateDeal(field.name, $event.target.value)
+                          "
+                          :debounce="500"
                           class="form-control"
                         />
                         <FormControl
                           v-else-if="field.type === 'tel'"
                           type="tel"
-                          v-model="deal.data[field.name]"
+                          :value="deal.data[field.name]"
+                          @change.stop="
+                            updateDeal(field.name, $event.target.value)
+                          "
+                          :debounce="500"
                           class="form-control"
                         />
                         <FormControl
                           v-else
                           type="text"
-                          v-model="deal.data[field.name]"
+                          :value="deal.data[field.name]"
+                          @change.stop="
+                            updateDeal(field.name, $event.target.value)
+                          "
+                          :debounce="500"
                           class="form-control"
                         />
                       </div>
@@ -330,6 +363,7 @@ import {
   statusDropdownOptions,
   openWebsite,
   secondsToDuration,
+  createToast,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -379,10 +413,34 @@ const uDeal = createDocumentResource({
   },
 })
 
-function updateDeal() {
-  let dealCopy = { ...deal.data }
-  delete dealCopy.activities
-  uDeal.setValue.submit({ ...dealCopy })
+function updateDeal(fieldname, value) {
+  createResource({
+    url: 'frappe.client.set_value',
+    params: {
+      doctype: 'CRM Lead',
+      name: props.dealId,
+      fieldname,
+      value,
+    },
+    auto: true,
+    onSuccess: () => {
+      deal.reload()
+      contacts.reload()
+      createToast({
+        title: 'Deal updated',
+        icon: 'check',
+        iconClasses: 'text-green-600',
+      })
+    },
+    onError: (err) => {
+      createToast({
+        title: 'Error updating deal',
+        text: err.messages?.[0],
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
+    },
+  })
 }
 
 const breadcrumbs = computed(() => {
@@ -439,7 +497,8 @@ function all_activities() {
 }
 
 function changeDealImage(file) {
-  uDeal.setValue.submit({ organization_logo: file.file_url })
+  deal.data.organization_logo = file.file_url
+  updateDeal('organization_logo', file.file_url)
 }
 
 function validateFile(file) {
@@ -506,6 +565,27 @@ const detailSections = computed(() => {
       label: 'Contacts',
       opened: true,
       fields: [
+      {
+          label: 'Salutation',
+          type: 'link',
+          name: 'salutation',
+          placeholder: 'Mr./Mrs./Ms.',
+          options: [
+            { label: 'Dr', value: 'Dr' },
+            { label: 'Mr', value: 'Mr' },
+            { label: 'Mrs', value: 'Mrs' },
+            { label: 'Ms', value: 'Ms' },
+            { label: 'Mx', value: 'Mx' },
+            { label: 'Prof', value: 'Prof' },
+            { label: 'Master', value: 'Master' },
+            { label: 'Madam', value: 'Madam' },
+            { label: 'Miss', value: 'Miss' },
+          ],
+          change: (data) => {
+            deal.data.salutation = data.value
+            updateDeal('salutation', data.value)
+          },
+        },
         {
           label: 'First name',
           type: 'data',
@@ -654,6 +734,11 @@ const calls = createListResource({
     return docs
   },
 })
+
+function updateAssignedAgent(email) {
+  deal.data.lead_owner = email
+  updateDeal('lead_owner', email)
+}
 </script>
 
 <style scoped>
@@ -662,5 +747,9 @@ const calls = createListResource({
 :deep(.form-control button) {
   border-color: transparent;
   background: white;
+}
+
+:deep(.form-control button svg) {
+  color: white;
 }
 </style>

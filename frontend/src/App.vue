@@ -5,10 +5,12 @@
       <router-view />
     </DesktopLayout>
   </CallUI>
+  <Toasts />
 </template>
 
 <script setup>
 import DesktopLayout from '@/components/DesktopLayout.vue'
 import { sessionStore as session } from '@/stores/session'
 import CallUI from './components/CallUI.vue'
+import { Toasts } from 'frappe-ui'
 </script>

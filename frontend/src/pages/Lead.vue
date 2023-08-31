@@ -7,7 +7,7 @@
       <Autocomplete
         :options="activeAgents"
         :value="getUser(lead.data.lead_owner).full_name"
-        @change="(option) => (lead.data.lead_owner = option.email)"
+        @change="(option) => updateAssignedAgent(option.email)"
         placeholder="Lead owner"
       >
         <template #prefix>
@@ -17,7 +17,7 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </Autocomplete>
-      <Dropdown :options="statusDropdownOptions(lead.data)">
+      <Dropdown :options="statusDropdownOptions(lead.data, 'lead', updateLead)">
         <template #default="{ open }">
           <Button
             :label="lead.data.status"
@@ -34,7 +34,6 @@
           </Button>
         </template>
       </Dropdown>
-      <Button label="Save" variant="solid" @click="updateLead()" />
       <Button
         label="Convert to deal"
         variant="solid"
@@ -166,7 +165,7 @@
                   <div v-if="opened" class="flex flex-col gap-1.5">
                     <div
                       v-for="field in section.fields"
-                      :key="field.label"
+                      :key="field.name"
                       class="flex items-center px-3 gap-2 text-base leading-5 first:mt-3"
                     >
                       <div class="text-gray-600 w-[106px]">
@@ -177,7 +176,11 @@
                           v-if="field.type === 'select'"
                           type="select"
                           :options="field.options"
-                          v-model="lead.data[field.name]"
+                          :value="lead.data[field.name]"
+                          @change.stop="
+                            updateLead(field.name, $event.target.value)
+                          "
+                          :debounce="500"
                           class="form-control cursor-pointer [&_select]:cursor-pointer"
                         >
                           <template #prefix>
@@ -190,7 +193,11 @@
                           v-else-if="field.type === 'email'"
                           type="email"
                           class="form-control"
-                          v-model="lead.data[field.name]"
+                          :value="lead.data[field.name]"
+                          @change.stop="
+                            updateLead(field.name, $event.target.value)
+                          "
+                          :debounce="500"
                         />
                         <Autocomplete
                           v-else-if="field.type === 'link'"
@@ -205,10 +212,10 @@
                           :options="activeAgents"
                           :value="getUser(lead.data[field.name]).full_name"
                           @change="
-                            (option) => (lead.data[field.name] = option.email)
+                            (option) => updateAssignedAgent(option.email)
                           "
                           class="form-control"
-                          placeholder="Lead owner"
+                          :placeholder="field.placeholder"
                         >
                           <template #target="{ togglePopover }">
                             <Button
@@ -235,7 +242,9 @@
                         </Autocomplete>
                         <Dropdown
                           v-else-if="field.type === 'dropdown'"
-                          :options="statusDropdownOptions(lead.data)"
+                          :options="
+                            statusDropdownOptions(lead.data, 'lead', updateLead)
+                          "
                           class="w-full flex-1"
                         >
                           <template #default="{ open }">
@@ -265,8 +274,12 @@
                         <FormControl
                           v-else
                           type="text"
-                          v-model="lead.data[field.name]"
+                          :value="lead.data[field.name]"
+                          @change.stop="
+                            updateLead(field.name, $event.target.value)
+                          "
                           class="form-control"
+                          :debounce="500"
                         />
                       </div>
                     </div>
@@ -318,6 +331,7 @@ import {
   statusDropdownOptions,
   openWebsite,
   secondsToDuration,
+  createToast,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -358,21 +372,34 @@ const lead = createResource({
   auto: true,
 })
 
-const uLead = createDocumentResource({
-  doctype: 'CRM Lead',
-  name: props.leadId,
-  setValue: {
+function updateLead(fieldname, value) {
+  createResource({
+    url: 'frappe.client.set_value',
+    params: {
+      doctype: 'CRM Lead',
+      name: props.leadId,
+      fieldname,
+      value,
+    },
+    auto: true,
     onSuccess: () => {
       lead.reload()
       contacts.reload()
+      createToast({
+        title: 'Lead updated',
+        icon: 'check',
+        iconClasses: 'text-green-600',
+      })
     },
-  },
-})
-
-function updateLead() {
-  let leadCopy = { ...lead.data }
-  delete leadCopy.activities
-  uLead.setValue.submit({ ...leadCopy })
+    onError: (err) => {
+      createToast({
+        title: 'Error updating lead',
+        text: err.messages?.[0],
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
+    },
+  })
 }
 
 const breadcrumbs = computed(() => {
@@ -429,7 +456,8 @@ function all_activities() {
 }
 
 function changeLeadImage(file) {
-  uLead.setValue.submit({ image: file.file_url })
+  lead.data.image = file.file_url
+  updateLead('image', file.file_url)
 }
 
 function validateFile(file) {
@@ -487,6 +515,7 @@ const detailSections = computed(() => {
           ],
           change: (data) => {
             lead.data.source = data.value
+            updateLead('source', data.value)
           },
         },
         {
@@ -502,6 +531,7 @@ const detailSections = computed(() => {
           ],
           change: (data) => {
             lead.data.industry = data.value
+            updateLead('industry', data.value)
           },
         },
       ],
@@ -528,6 +558,7 @@ const detailSections = computed(() => {
           ],
           change: (data) => {
             lead.data.salutation = data.value
+            updateLead('salutation', data.value)
           },
         },
         {
@@ -572,7 +603,7 @@ const activeAgents = computed(() => {
 function convertToDeal() {
   lead.data.status = 'Qualified'
   lead.data.is_deal = 1
-  updateLead()
+  updateLead('is_deal', 1)
   router.push({ name: 'Deal', params: { dealId: lead.data.name } })
 }
 
@@ -685,6 +716,11 @@ const calls = createListResource({
     return docs
   },
 })
+
+function updateAssignedAgent(email) {
+  lead.data.lead_owner = email
+  updateLead('lead_owner', email)
+}
 </script>
 
 <style scoped>
