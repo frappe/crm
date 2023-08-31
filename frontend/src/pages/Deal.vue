@@ -87,40 +87,57 @@
         />
       </div>
       <div class="flex flex-col justify-between border-l w-[370px]">
-        <div
-          class="flex flex-col gap-3 pb-4 p-5 items-center justify-center border-b"
-        >
-          <Avatar
-            size="3xl"
-            shape="square"
-            :label="deal.data.organization_name"
-            :image="deal.data.organization_logo"
-          />
-          <div class="font-medium text-2xl">
-            {{ deal.data.organization_name }}
-          </div>
-          <div class="flex gap-3">
-            <Tooltip text="Make a call...">
-              <Button
-                class="rounded-full h-8 w-8"
-                @click="() => makeCall(deal.data.mobile_no)"
-              >
-                <PhoneIcon class="h-4 w-4" />
-              </Button>
-            </Tooltip>
-            <Button class="rounded-full h-8 w-8">
-              <EmailIcon class="h-4 w-4" />
-            </Button>
-            <Tooltip text="Go to website...">
-              <Button
-                icon="link"
-                @click="openWebsite(deal.data.website)"
-                class="rounded-full h-8 w-8"
+        <FileUploader @success="changeDealImage" :validateFile="validateFile">
+          <template #default="{ openFileSelector, error }">
+            <div
+              class="flex flex-col gap-3 pb-4 p-5 items-center justify-center border-b"
+            >
+              <Avatar
+                size="3xl"
+                shape="square"
+                :label="deal.data.organization_name"
+                :image="deal.data.organization_logo"
               />
-            </Tooltip>
-            <Button icon="more-horizontal" class="rounded-full h-8 w-8" />
-          </div>
-        </div>
+              <ErrorMessage :message="error" />
+              <div class="font-medium text-2xl">
+                {{ deal.data.organization_name }}
+              </div>
+              <div class="flex gap-3">
+                <Tooltip text="Make a call...">
+                  <Button
+                    class="rounded-full h-8 w-8"
+                    @click="() => makeCall(deal.data.mobile_no)"
+                  >
+                    <PhoneIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Button class="rounded-full h-8 w-8">
+                  <EmailIcon class="h-4 w-4" />
+                </Button>
+                <Tooltip text="Go to website...">
+                  <Button
+                    icon="link"
+                    @click="openWebsite(deal.data.website)"
+                    class="rounded-full h-8 w-8"
+                  />
+                </Tooltip>
+                <Dropdown
+                  :options="[
+                    {
+                      icon: 'upload',
+                      label: deal.data.organization_logo
+                        ? 'Change image'
+                        : 'Upload image',
+                      onClick: openFileSelector,
+                    },
+                  ]"
+                >
+                  <Button icon="more-horizontal" class="rounded-full h-8 w-8" />
+                </Dropdown>
+              </div>
+            </div>
+          </template>
+        </FileUploader>
         <div class="flex-1 flex flex-col justify-between overflow-hidden">
           <div class="flex flex-col gap-6 p-3 overflow-y-auto">
             <div
@@ -321,6 +338,8 @@ import {
   createDocumentResource,
   createListResource,
   FeatherIcon,
+  FileUploader,
+  ErrorMessage,
   Autocomplete,
   FormControl,
   Dropdown,
@@ -412,14 +431,22 @@ const tabs = computed(() => {
 })
 
 function all_activities() {
-  if (!lead.data) return []
-  if (!calls.data) return lead.data.activities
-  console.log(lead.data.activities[0].creation)
-  console.log(calls.data[0].creation)
-  return [
-    ...lead.data.activities,
-    ...calls.data,
-  ].sort((a, b) => new Date(b.creation) - new Date(a.creation))
+  if (!deal.data) return []
+  if (!calls.data) return deal.data.activities
+  return [...deal.data.activities, ...calls.data].sort(
+    (a, b) => new Date(b.creation) - new Date(a.creation)
+  )
+}
+
+function changeDealImage(file) {
+  uDeal.setValue.submit({ organization_logo: file.file_url })
+}
+
+function validateFile(file) {
+  let extn = file.name.split('.').pop().toLowerCase()
+  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
+    return 'Only PNG and JPG images are allowed'
+  }
 }
 
 const tabRef = ref([])
@@ -601,7 +628,8 @@ const calls = createListResource({
   auto: true,
   transform: (docs) => {
     docs.forEach((doc) => {
-      doc.activity_type = doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
+      doc.activity_type =
+        doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
       doc.duration = secondsToDuration(doc.duration)
       if (doc.type === 'Incoming') {
         doc.caller = {
