@@ -423,8 +423,6 @@ const tabs = computed(() => {
 function all_activities() {
   if (!lead.data) return []
   if (!calls.data) return lead.data.activities
-  console.log(lead.data.activities[0].creation)
-  console.log(calls.data[0].creation)
   return [...lead.data.activities, ...calls.data].sort(
     (a, b) => new Date(b.creation) - new Date(a.creation)
   )

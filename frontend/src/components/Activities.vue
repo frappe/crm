@@ -421,8 +421,14 @@ const activities = computed(() => {
     return props.activities
   }
   props.activities.forEach((activity) => {
-    activity.owner_name = getUser(activity.owner).full_name
     activity.icon = timelineIcon(activity.activity_type)
+    if (
+      activity.activity_type == 'incoming_call' ||
+      activity.activity_type == 'outgoing_call'
+    )
+      return
+
+    activity.owner_name = getUser(activity.owner).full_name
     activity.type = ''
     activity.value = ''
     activity.to = ''
