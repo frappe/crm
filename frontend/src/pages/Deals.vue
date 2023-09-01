@@ -142,13 +142,13 @@ const columns = [
     label: 'Organization',
     key: 'organization_name',
     type: 'logo',
-    size: 'w-48',
+    size: 'w-40',
   },
   {
     label: 'Amount',
     key: 'annual_revenue',
     type: 'currency',
-    size: 'w-24',
+    size: 'w-32',
   },
   {
     label: 'Status',
@@ -166,7 +166,7 @@ const columns = [
     label: 'Mobile no',
     key: 'mobile_no',
     type: 'phone',
-    size: 'w-36',
+    size: 'w-40',
   },
   {
     label: 'Lead owner',

@@ -147,7 +147,7 @@ const columns = [
     label: 'Name',
     key: 'lead_name',
     type: 'avatar',
-    size: 'w-48',
+    size: 'w-44',
   },
   {
     label: 'Organization',
@@ -171,7 +171,7 @@ const columns = [
     label: 'Mobile no',
     key: 'mobile_no',
     type: 'phone',
-    size: 'w-36',
+    size: 'w-40',
   },
   {
     label: 'Lead owner',
