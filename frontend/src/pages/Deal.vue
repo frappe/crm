@@ -129,6 +129,14 @@
                         : 'Upload image',
                       onClick: openFileSelector,
                     },
+                    {
+                      icon: 'trash-2',
+                      label: 'Remove image',
+                      onClick: () => {
+                        deal.data.organization_logo = ''
+                        updateDeal('organization_logo', '')
+                      },
+                    },
                   ]"
                 >
                   <Button icon="more-horizontal" class="rounded-full h-8 w-8" />
@@ -565,7 +573,7 @@ const detailSections = computed(() => {
       label: 'Contacts',
       opened: true,
       fields: [
-      {
+        {
           label: 'Salutation',
           type: 'link',
           name: 'salutation',

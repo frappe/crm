@@ -127,6 +127,14 @@
                       label: lead.data.image ? 'Change photo' : 'Upload photo',
                       onClick: openFileSelector,
                     },
+                    {
+                      icon: 'trash-2',
+                      label: 'Remove photo',
+                      onClick: () => {
+                        lead.data.image = ''
+                        updateLead('image', '')
+                      },
+                    },
                   ]"
                 >
                   <Button icon="more-horizontal" class="rounded-full h-8 w-8" />
