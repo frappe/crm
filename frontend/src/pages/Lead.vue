@@ -595,7 +595,7 @@ const detailSections = computed(() => {
 })
 
 const activeAgents = computed(() => {
-  const nonAgents = ['Administrator', 'Guest']
+  const nonAgents = ['Administrator', 'admin@example.com', 'Guest']
   return users.data
     .filter((user) => !nonAgents.includes(user.name))
     .sort((a, b) => a.full_name - b.full_name)
