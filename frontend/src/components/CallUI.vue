@@ -11,6 +11,7 @@
     </div>
     <div class="flex flex-col justify-center items-center gap-3">
       <Avatar
+        :image="contact.image"
         :label="contact.full_name"
         class="flex items-center justify-center [&>div]:text-[30px] !h-24 !w-24 relative"
         :class="onCall || calling ? '' : 'pulse'"
@@ -113,6 +114,7 @@
     >
       <div class="flex items-center gap-2">
         <Avatar
+          :image="contact.image"
           :label="contact.full_name"
           class="flex items-center justify-center !h-5 !w-5 relative"
         />
