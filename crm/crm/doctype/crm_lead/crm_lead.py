@@ -51,7 +51,7 @@ class CRMLead(Document):
 		link = frappe.db.exists("Dynamic Link", {"link_doctype": "CRM Lead", "link_name": self.name})
 
 		if link:
-			for field in ["first_name", "last_name", "email", "mobile_no", "phone", "salutation"]:
+			for field in ["first_name", "last_name", "email", "mobile_no", "phone", "salutation", "image"]:
 				if self.has_value_changed(field):
 					contact = frappe.db.get_value("Dynamic Link", link, "parent")
 					contact_doc = frappe.get_doc("Contact", contact)
@@ -59,6 +59,7 @@ class CRMLead(Document):
 						"first_name": self.first_name or self.lead_name,
 						"last_name": self.last_name,
 						"salutation": self.salutation,
+						"image": self.image or "",
 					})
 					if self.has_value_changed("email"):
 						contact_doc.email_ids = []
@@ -106,6 +107,7 @@ class CRMLead(Document):
 				"gender": self.gender,
 				"designation": self.job_title,
 				"company_name": self.organization_name,
+				"image": self.image or "",
 			}
 		)
 
