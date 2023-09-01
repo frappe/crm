@@ -66,10 +66,10 @@ const navigations = [
     icon: PhoneIcon,
     route: { name: 'Call Logs' },
   },
-  {
-    name: 'Dashboard',
-    icon: DashboardIcon,
-    route: { name: 'Dashboard' },
-  },
+  // {
+  //   name: 'Dashboard',
+  //   icon: DashboardIcon,
+  //   route: { name: 'Dashboard' },
+  // },
 ]
 </script>
