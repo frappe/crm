@@ -122,3 +122,14 @@ export function secondsToDuration(seconds) {
   }
   return `${hours}h ${minutes}m ${_seconds}s`
 }
+
+export function formatNumberIntoCurrency(value) {
+  if (value) {
+    return value.toLocaleString('en-IN', {
+      maximumFractionDigits: 2,
+      style: 'currency',
+      currency: 'INR',
+    })
+  }
+  return ''
+}

@@ -75,6 +75,12 @@
                     class="h-3 w-3"
                   />
                 </div>
+                <div v-else-if="column.type === 'email'">
+                  <FeatherIcon name="mail" class="h-3 w-3" />
+                </div>
+                <div v-else-if="column.type === 'phone'">
+                  <FeatherIcon name="phone" class="h-3 w-3" />
+                </div>
               </template>
               <div v-if="column.type === 'badge'">
                 <Badge

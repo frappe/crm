@@ -13,7 +13,13 @@
   </Tooltip>
 </template>
 <script setup>
-import { dateFormat, timeAgo, dateTooltipFormat, htmlToText } from '@/utils'
+import {
+  dateFormat,
+  timeAgo,
+  dateTooltipFormat,
+  htmlToText,
+  formatNumberIntoCurrency,
+} from '@/utils'
 import { Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 
@@ -46,6 +52,9 @@ const label = computed(() => {
   }
   if (props.type === 'html') {
     return htmlToText(props.value?.toString())
+  }
+  if (props.type === 'currency') {
+    return formatNumberIntoCurrency(props.value)
   }
   return props.value?.toString()
 })

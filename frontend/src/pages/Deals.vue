@@ -147,7 +147,7 @@ const columns = [
   {
     label: 'Amount',
     key: 'annual_revenue',
-    type: 'data',
+    type: 'currency',
     size: 'w-24',
   },
   {
@@ -166,7 +166,7 @@ const columns = [
     label: 'Mobile no',
     key: 'mobile_no',
     type: 'phone',
-    size: 'w-32',
+    size: 'w-36',
   },
   {
     label: 'Lead owner',
