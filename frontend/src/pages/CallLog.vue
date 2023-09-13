@@ -174,7 +174,7 @@ const props = defineProps({
 const showNoteModal = ref(false)
 
 const callLog = createResource({
-  url: 'crm.crm.doctype.crm_call_log.crm_call_log.get_call_log',
+  url: 'crm.fcrm.doctype.crm_call_log.crm_call_log.get_call_log',
   auto: true,
   cache: ['callLog', props.callLogId],
   params: {
@@ -219,7 +219,7 @@ async function updateNote(_note) {
 }
 
 function createLead() {
-  call('crm.crm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
+  call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
     call_log: callLog.data,
   }).then((d) => {
     if (d) {

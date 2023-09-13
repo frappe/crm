@@ -374,7 +374,7 @@ const props = defineProps({
 })
 
 const lead = createResource({
-  url: 'crm.crm.doctype.crm_lead.api.get_lead',
+  url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   auto: true,

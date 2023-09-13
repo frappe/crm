@@ -1,37 +1,30 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:source_name",
- "creation": "2023-07-24 19:47:01.063203",
+ "autoname": "field:industry",
+ "creation": "2023-07-24 19:40:31.980882",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "source_name",
-  "details"
+  "industry"
  ],
  "fields": [
   {
-   "fieldname": "source_name",
+   "fieldname": "industry",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Source Name",
-   "reqd": 1,
+   "label": "Industry",
    "unique": 1
-  },
-  {
-   "fieldname": "details",
-   "fieldtype": "Text Editor",
-   "label": "Details"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-24 19:48:09.371379",
+ "modified": "2023-07-24 19:40:31.980882",
  "modified_by": "Administrator",
- "module": "CRM",
- "name": "CRM Lead Source",
+ "module": "FCRM",
+ "name": "CRM Industry",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

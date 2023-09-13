@@ -120,7 +120,7 @@
  "links": [],
  "modified": "2023-08-30 15:39:46.613734",
  "modified_by": "Administrator",
- "module": "CRM",
+ "module": "FCRM",
  "name": "CRM Call Log",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
