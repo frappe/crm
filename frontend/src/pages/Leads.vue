@@ -59,6 +59,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import NewLead from '@/components/NewLead.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import { usersStore } from '@/stores/users'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
@@ -79,6 +80,7 @@ const list = {
   plural_label: 'Leads',
   singular_label: 'Lead',
 }
+const { getUser } = usersStore()
 const { get: getOrderBy } = useOrderBy()
 const { getArgs, storage } = useFilter()
 
@@ -204,7 +206,7 @@ const rows = computed(() => {
       },
       email: lead.email,
       mobile_no: lead.mobile_no,
-      lead_owner: lead.lead_owner && $user(lead.lead_owner),
+      lead_owner: lead.lead_owner && getUser(lead.lead_owner),
       modified: lead.modified,
     }
   })
@@ -264,7 +266,7 @@ let newLead = reactive({
   status: 'Open',
   email: '',
   mobile_no: '',
-  lead_owner: $user().email,
+  lead_owner: getUser().email,
 })
 
 const createLead = createResource({

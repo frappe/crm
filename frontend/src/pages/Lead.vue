@@ -6,7 +6,7 @@
     <template #right-header>
       <Autocomplete
         :options="activeAgents"
-        :value="$user(lead.data.lead_owner).full_name"
+        :value="getUser(lead.data.lead_owner).full_name"
         @change="(option) => updateAssignedAgent(option.email)"
         placeholder="Lead owner"
       >
@@ -218,7 +218,7 @@
                         <Autocomplete
                           v-else-if="field.type === 'user'"
                           :options="activeAgents"
-                          :value="$user(lead.data[field.name]).full_name"
+                          :value="getUser(lead.data[field.name]).full_name"
                           @change="
                             (option) => updateAssignedAgent(option.email)
                           "
@@ -229,7 +229,7 @@
                             <Button
                               variant="ghost"
                               @click="togglePopover()"
-                              :label="$user(lead.data[field.name]).full_name"
+                              :label="getUser(lead.data[field.name]).full_name"
                               class="!justify-start w-full"
                             >
                               <template #prefix>
@@ -341,9 +341,11 @@ import {
   secondsToDuration,
   createToast,
 } from '@/utils'
+import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import {
   createResource,
+  createDocumentResource,
   createListResource,
   FileUploader,
   ErrorMessage,
@@ -358,6 +360,7 @@ import {
 import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
+const { getUser, users } = usersStore()
 const { getContact, contacts } = contactsStore()
 const router = useRouter()
 
@@ -593,7 +596,7 @@ const detailSections = computed(() => {
 
 const activeAgents = computed(() => {
   const nonAgents = ['Administrator', 'admin@example.com', 'Guest']
-  return $users.data
+  return users.data
     .filter((user) => !nonAgents.includes(user.name))
     .sort((a, b) => a.full_name - b.full_name)
     .map((user) => {
@@ -704,13 +707,13 @@ const calls = createListResource({
           image: getContact(doc.from)?.image,
         }
         doc.receiver = {
-          label: $user(doc.receiver).full_name,
-          image: $user(doc.receiver).user_image,
+          label: getUser(doc.receiver).full_name,
+          image: getUser(doc.receiver).user_image,
         }
       } else {
         doc.caller = {
-          label: $user(doc.caller).full_name,
-          image: $user(doc.caller).user_image,
+          label: getUser(doc.caller).full_name,
+          image: getUser(doc.caller).user_image,
         }
         doc.receiver = {
           label: getContact(doc.to)?.full_name || 'Unknown',

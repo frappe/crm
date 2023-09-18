@@ -1,6 +1,7 @@
 import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toValue } from '@vueuse/core'
+import { usersStore } from '@/stores/users'
 
 const operatorMap = {
   is: '=',
@@ -20,6 +21,7 @@ const operatorMap = {
 export function useFilter(fields) {
   const route = useRoute()
   const router = useRouter()
+  const { getUser } = usersStore()
   const storage = ref(new Set())
 
   watchEffect(() => {
@@ -93,7 +95,7 @@ export function useFilter(fields) {
    */
   function transformOut(f) {
     if (f.value === '@me') {
-      f.value = $user()
+      f.value = getUser()
     }
     return f
   }
