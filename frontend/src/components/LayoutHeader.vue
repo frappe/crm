@@ -1,5 +1,5 @@
 <template>
-  <Teleport to="#header-area">
+  <Teleport to="#header-area" v-if="showHeader">
     <header class="flex justify-between items-center px-5 py-3">
       <div class="flex items-center gap-2">
         <slot name="left-header" />
@@ -10,3 +10,12 @@
     </header>
   </Teleport>
 </template>
+<script setup>
+import { ref, nextTick } from 'vue'
+
+const showHeader = ref(false)
+
+nextTick(() => {
+  showHeader.value = true
+})
+</script>
