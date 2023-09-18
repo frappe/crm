@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { usersStore } from '@/stores/users'
+import { sessionStore } from '@/stores/session'
 
 const routes = [
   {
@@ -71,11 +73,14 @@ let router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  await $users.promise
+  const { users } = usersStore()
+  const { isLoggedIn } = sessionStore()
 
-  if (to.name === 'Login' && $session.isLoggedIn) {
+  await users.promise
+
+  if (to.name === 'Login' && isLoggedIn) {
     next({ name: 'Leads' })
-  } else if (to.name !== 'Login' && !$session.isLoggedIn) {
+  } else if (to.name !== 'Login' && !isLoggedIn) {
     next({ name: 'Login' })
   } else if (to.matched.length === 0) {
     next({ name: 'Invalid Page' })

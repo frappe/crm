@@ -52,7 +52,7 @@
           <div class="flex items-center gap-2">
             <UserAvatar :user="note.owner" size="xs" />
             <div class="text-sm text-gray-800">
-              {{ $user(note.owner).full_name }}
+              {{ getUser(note.owner).full_name }}
             </div>
           </div>
           <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
@@ -382,6 +382,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { usersStore } from '@/stores/users'
 import {
   Button,
   FeatherIcon,
@@ -391,6 +392,8 @@ import {
   Avatar,
 } from 'frappe-ui'
 import { computed, h } from 'vue'
+
+const { getUser } = usersStore()
 
 const props = defineProps({
   title: {
@@ -425,7 +428,7 @@ const activities = computed(() => {
     )
       return
 
-    activity.owner_name = $user(activity.owner).full_name
+    activity.owner_name = getUser(activity.owner).full_name
     activity.type = ''
     activity.value = ''
     activity.to = ''

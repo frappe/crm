@@ -19,8 +19,6 @@ import {
   frappeRequest,
 } from 'frappe-ui'
 import socket from './socket'
-import { sessionStore as session } from './stores/session'
-import { usersStore } from './stores/users'
 import { getCachedListResource } from 'frappe-ui/src/resources/listResource'
 import { getCachedResource } from 'frappe-ui/src/resources/resources'
 
@@ -48,12 +46,6 @@ for (let key in globalComponents) {
   app.component(key, globalComponents[key])
 }
 
-let { getUser, users } = usersStore()
-
-app.config.globalProperties.$user = getUser
-app.config.globalProperties.$users = users
-app.config.globalProperties.$session = session()
-
 app.mount('#app')
 
 socket.on('refetch_resource', (data) => {
@@ -65,9 +57,3 @@ socket.on('refetch_resource', (data) => {
     }
   }
 })
-
-if (import.meta.env.DEV) {
-  window.$user = getUser
-  window.$users = users
-  window.$session = session()
-}
