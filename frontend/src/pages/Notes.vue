@@ -48,7 +48,7 @@
         <div class="flex items-center gap-2">
           <UserAvatar :user="note.owner" size="xs" />
           <div class="text-sm text-gray-800">
-            {{ getUser(note.owner).full_name }}
+            {{ $user(note.owner).full_name }}
           </div>
         </div>
         <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
@@ -93,9 +93,6 @@ import {
 Tooltip,
 } from 'frappe-ui'
 import { ref } from 'vue'
-import { usersStore } from '@/stores/users'
-
-const { getUser } = usersStore()
 
 const list = {
   title: 'Notes',

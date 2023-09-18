@@ -22,7 +22,7 @@
           <Autocomplete
             v-else-if="field.type === 'link'"
             :options="activeAgents"
-            :value="getUser(newDeal[field.name]).full_name"
+            :value="$user(newDeal[field.name]).full_name"
             @change="(option) => (newDeal[field.name] = option.email)"
             :placeholder="field.placeholder"
           >
@@ -66,7 +66,6 @@
 <script setup>
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { usersStore } from '@/stores/users'
 import { dealStatuses, statusDropdownOptions } from '@/utils'
 import {
   FormControl,
@@ -77,7 +76,6 @@ import {
 } from 'frappe-ui'
 import { computed } from 'vue'
 
-const { getUser, users } = usersStore()
 const props = defineProps({
   newDeal: {
     type: Object,
@@ -156,7 +154,7 @@ const allFields = [
 
 const activeAgents = computed(() => {
   const nonAgents = ['Administrator', 'Guest']
-  return users.data
+  return $users.data
     .filter((user) => !nonAgents.includes(user.name))
     .sort((a, b) => a.full_name - b.full_name)
     .map((user) => {
