@@ -6,7 +6,7 @@
       @click="showCommunicationBox = true"
       v-show="!showCommunicationBox"
     >
-      <UserAvatar :user="getUser().name" size="sm" />
+      <UserAvatar :user="$user().name" size="sm" />
       <div class="text-base text-gray-600">Add a reply...</div>
     </button>
     <div
@@ -16,9 +16,9 @@
       @keydown.meta.enter.capture.stop="submitComment"
     >
       <div class="mb-4 flex items-center">
-        <UserAvatar :user="getUser().name" size="sm" />
+        <UserAvatar :user="$user().name" size="sm" />
         <span class="ml-2 text-base font-medium text-gray-900">
-          {{ getUser().full_name }}
+          {{ $user().full_name }}
         </span>
       </div>
       <EmailEditor
@@ -47,14 +47,10 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import EmailEditor from '@/components/EmailEditor.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import { usersStore } from '@/stores/users'
-import { Tooltip, call, Button } from 'frappe-ui'
+import { call, Button } from 'frappe-ui'
 import { ref, watch, computed, defineModel } from 'vue'
 
 const modelValue = defineModel()
-
-const { getUser } = usersStore()
 
 const showCommunicationBox = ref(false)
 const newEmail = ref('')
@@ -88,8 +84,8 @@ async function sendMail() {
     doctype: 'CRM Lead',
     name: modelValue.value.data.name,
     send_email: 1,
-    sender: getUser().name,
-    sender_full_name: getUser()?.full_name || undefined,
+    sender: $user().name,
+    sender_full_name: $user()?.full_name || undefined,
   })
 }
 

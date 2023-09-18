@@ -154,14 +154,12 @@ import {
   Badge,
   createResource,
 } from 'frappe-ui'
-import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { secondsToDuration } from '@/utils'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const { getUser } = usersStore()
 const { contacts, getContact } = contactsStore()
 
 const props = defineProps({
@@ -188,13 +186,13 @@ const callLog = createResource({
         image: getContact(doc.from)?.image,
       }
       doc.receiver = {
-        label: getUser(doc.receiver).full_name,
-        image: getUser(doc.receiver).user_image,
+        label: $user(doc.receiver).full_name,
+        image: $user(doc.receiver).user_image,
       }
     } else {
       doc.caller = {
-        label: getUser(doc.caller).full_name,
-        image: getUser(doc.caller).user_image,
+        label: $user(doc.caller).full_name,
+        image: $user(doc.caller).user_image,
       }
       doc.receiver = {
         label: getContact(doc.to)?.full_name || 'Unknown',

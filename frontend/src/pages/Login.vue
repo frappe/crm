@@ -24,7 +24,7 @@
               label="Email"
               v-model="email"
               placeholder="jane@example.com"
-              :disabled="session.login.loading"
+              :disabled="login.loading"
             />
           </div>
           <div class="mt-4">
@@ -34,15 +34,15 @@
               label="Password"
               v-model="password"
               placeholder="••••••"
-              :disabled="session.login.loading"
+              :disabled="login.loading"
               type="password"
             />
           </div>
-          <ErrorMessage class="mt-2" :message="session.login.error" />
+          <ErrorMessage class="mt-2" :message="login.error" />
           <Button
             variant="solid"
             class="mt-6 w-full"
-            :loading="session.login.loading"
+            :loading="login.loading"
           >
             Login
           </Button>
@@ -81,7 +81,7 @@ import { sessionStore } from '@/stores/session'
 import { FormControl, ErrorMessage, createResource } from 'frappe-ui'
 import { ref } from 'vue'
 
-const session = sessionStore()
+const { login } = sessionStore()
 let showEmailLogin = ref(false)
 let email = ref('')
 let password = ref('')
@@ -96,7 +96,7 @@ let authProviders = createResource({
 authProviders.fetch()
 
 function submit() {
-  session.login.submit({
+  login.submit({
     usr: email.value,
     pwd: password.value,
   })

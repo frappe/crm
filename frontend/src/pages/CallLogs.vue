@@ -27,12 +27,10 @@ import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import { secondsToDuration } from '@/utils'
-import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { Button, createListResource } from 'frappe-ui'
 import { computed } from 'vue'
 
-const { getUser } = usersStore()
 const { getContact } = contactsStore()
 
 const list = {
@@ -126,13 +124,13 @@ const rows = computed(() => {
         image: getContact(callLog.from)?.image,
       }
       receiver = {
-        label: getUser(receiver).full_name,
-        image: getUser(receiver).user_image,
+        label: $user(receiver).full_name,
+        image: $user(receiver).user_image,
       }
     } else {
       caller = {
-        label: getUser(caller).full_name,
-        image: getUser(caller).user_image,
+        label: $user(caller).full_name,
+        image: $user(caller).user_image,
       }
       receiver = {
         label: getContact(callLog.to)?.full_name || 'Unknown',
