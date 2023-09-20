@@ -1,5 +1,5 @@
 <template>
-  <Teleport to="#header-area" v-if="showHeader">
+  <Teleport to="#app-header" v-if="showHeader">
     <header class="flex justify-between items-center px-5 py-3">
       <div class="flex items-center gap-2">
         <slot name="left-header" />

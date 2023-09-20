@@ -357,7 +357,7 @@ import {
   Avatar,
   call,
 } from 'frappe-ui'
-import { ref, computed, inject } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getUser, users } = usersStore()
