@@ -107,7 +107,7 @@
   </div>
   <div
     v-show="showSmallCallWindow"
-    class="flex items-center justify-between gap-3 bg-gray-900 text-base text-gray-300 -ml-3 mr-2 px-2 py-[7px] rounded-lg cursor-pointer select-none"
+    class="flex items-center justify-between gap-3 bg-gray-900 text-base text-gray-300 ml-2 px-2 py-[7px] rounded-lg cursor-pointer select-none"
     @click="toggleCallWindow"
   >
     <div class="flex items-center gap-2">
