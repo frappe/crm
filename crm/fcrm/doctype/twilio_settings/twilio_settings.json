@@ -28,12 +28,14 @@
   {
    "fieldname": "api_key",
    "fieldtype": "Data",
-   "label": "API Key"
+   "label": "API Key",
+   "permlevel": 1
   },
   {
    "fieldname": "api_secret",
    "fieldtype": "Password",
-   "label": "API Secret"
+   "label": "API Secret",
+   "permlevel": 1
   },
   {
    "fieldname": "column_break_idds",
@@ -49,7 +51,8 @@
   {
    "fieldname": "twiml_sid",
    "fieldtype": "Data",
-   "label": "TwiML SID"
+   "label": "TwiML SID",
+   "permlevel": 1
   },
   {
    "fieldname": "section_break_ssqj",
@@ -69,7 +72,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-08-28 00:44:24.942914",
+ "modified": "2023-09-20 16:42:17.025651",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Twilio Settings",
