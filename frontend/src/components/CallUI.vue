@@ -418,7 +418,6 @@ async function makeOutgoingCall(number) {
           title: '',
           content: '',
         }
-        // update_call_log(conn)
       })
       _call.value.on('cancel', () => {
         log.value = `Call ended from makeOutgoing call cancel.`

@@ -60,7 +60,6 @@ def twilio_incoming_call_handler(**kwargs):
 	resp = IncomingCall(args.From, args.To).process()
 	return Response(resp.to_xml(), mimetype='text/xml')
 
-@frappe.whitelist()
 def create_call_log(call_details: TwilioCallDetails):
 	call_log = frappe.get_doc({**call_details.to_dict(),
 		'doctype': 'CRM Call Log',
@@ -71,7 +70,6 @@ def create_call_log(call_details: TwilioCallDetails):
 	call_log.save()
 	frappe.db.commit()
 
-@frappe.whitelist()
 def update_call_log(call_sid, status=None):
 	"""Update call log status.
 	"""
