@@ -2,21 +2,39 @@
   <Dropdown :options="userDropdownOptions">
     <template v-slot="{ open }">
       <button
-        class="flex w-full items-center rounded-md px-1 py-2 text-left"
-        :class="open ? 'bg-gray-300' : 'hover:bg-gray-200'"
-        v-if="user"
+        class="flex h-12 py-2 items-center rounded-md duration-300 ease-in-out"
+        :class="
+          isCollapsed
+            ? 'px-0 w-auto'
+            : open
+            ? 'bg-white shadow-sm px-2 w-52'
+            : 'hover:bg-gray-200 px-2 w-52'
+        "
       >
-        <UserAvatar class="flex-shrink-0" :user="user.name" size="md" />
-        <span
-          class="hidden text-base font-medium text-gray-900 sm:inline duration-300 ease-in-out"
-          :class="isCollapsed ? 'opacity-0 ml-0' : 'opacity-100 ml-2'"
+        <CRMLogo class="w-8 h-8 rounded flex-shrink-0" />
+        <div
+          class="flex flex-1 flex-col text-left duration-300 ease-in-out"
+          :class="
+            isCollapsed
+              ? 'opacity-0 ml-0 w-0 overflow-hidden'
+              : 'opacity-100 ml-2 w-auto'
+          "
         >
-          {{ user.full_name }}
-        </span>
+          <div class="text-base font-medium text-gray-900 leading-none">
+            CRM
+          </div>
+          <div class="mt-1 text-sm text-gray-700 leading-none">
+            {{ user.full_name }}
+          </div>
+        </div>
         <FeatherIcon
           name="chevron-down"
-          class="h-4 w-4 sm:inline duration-300 ease-in-out"
-          :class="isCollapsed ? 'opacity-0 ml-0' : 'opacity-100 ml-2'"
+          class="h-4 w-4 duration-300 ease-in-out"
+          :class="
+            isCollapsed
+              ? 'opacity-0 ml-0 w-0 overflow-hidden'
+              : 'opacity-100 ml-2 w-auto'
+          "
           aria-hidden="true"
         />
       </button>
@@ -25,7 +43,7 @@
 </template>
 
 <script setup>
-import UserAvatar from '@/components/UserAvatar.vue'
+import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { Dropdown, FeatherIcon } from 'frappe-ui'

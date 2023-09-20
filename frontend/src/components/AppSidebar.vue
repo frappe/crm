@@ -4,9 +4,7 @@
     :class="isSidebarCollapsed ? 'w-12' : 'w-56'"
   >
     <div>
-      <div class="flex p-2">
-        <UserDropdown :isCollapsed="isSidebarCollapsed" />
-      </div>
+      <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
       <div v-for="link in links">
         <SidebarLink
           :icon="link.icon"
@@ -25,8 +23,7 @@
     >
       <template #icon>
         <span class="grid h-5 w-6 place-items-center flex-shrink-0">
-          <component
-            :is="CollapseSidebar"
+          <CollapseSidebar
             class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
             :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
           />
