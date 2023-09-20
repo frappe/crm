@@ -159,7 +159,7 @@ const columns = [
     label: 'Status',
     key: 'status',
     type: 'indicator',
-    size: 'w-32',
+    size: 'w-28',
   },
   {
     label: 'Email',

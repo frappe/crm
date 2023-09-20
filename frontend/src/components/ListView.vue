@@ -21,7 +21,7 @@
       </div>
       <div id="list-rows" class="h-full overflow-y-auto">
         <router-link
-          v-for="row in rows"
+          v-for="(row, i) in rows"
           :key="row[rowKey]"
           :to="$router.currentRoute.value.path + '/' + row[rowKey]"
           class="flex flex-col mx-5 cursor-pointer transition-all duration-300 ease-in-out"
@@ -59,7 +59,7 @@
                       class="flex items-center"
                       :image="getValue(row[column.key]).image"
                       :label="getValue(row[column.key]).image_label"
-                      size="md"
+                      size="sm"
                     />
                   </div>
                   <div v-else-if="column.type === 'logo'">
@@ -68,8 +68,7 @@
                       class="flex items-center"
                       :image="getValue(row[column.key]).logo"
                       :label="getValue(row[column.key]).image_label"
-                      size="md"
-                      shape="square"
+                      size="sm"
                     />
                   </div>
                   <div v-else-if="column.type === 'icon'">
@@ -78,11 +77,8 @@
                       class="h-3 w-3"
                     />
                   </div>
-                  <div v-else-if="column.type === 'email'">
-                    <FeatherIcon name="mail" class="h-3 w-3" />
-                  </div>
                   <div v-else-if="column.type === 'phone'">
-                    <FeatherIcon name="phone" class="h-3 w-3" />
+                    <PhoneIcon class="h-4 w-4" />
                   </div>
                 </template>
                 <div v-if="column.type === 'badge'">
@@ -96,7 +92,10 @@
               </ListRowItem>
             </div>
           </div>
-          <div class="mx-2 h-px border-t border-gray-200"></div>
+          <div
+            v-if="i < rows.length - 1"
+            class="mx-2 h-px border-t border-gray-200"
+          />
         </router-link>
       </div>
       <transition
@@ -144,6 +143,7 @@
 </template>
 <script setup>
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import ListRowItem from '@/components/ListRowItem.vue'
 import { Checkbox, Avatar, Badge, FeatherIcon } from 'frappe-ui'
 import { reactive, computed } from 'vue'
