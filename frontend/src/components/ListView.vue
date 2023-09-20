@@ -3,7 +3,7 @@
     <div class="flex flex-col overflow-y-hidden w-max min-w-full">
       <div
         id="list-header"
-        class="flex space-x-4 items-center px-5 py-2 border-b"
+        class="flex space-x-4 items-center mx-5 mb-2 p-2 rounded bg-gray-100"
       >
         <Checkbox
           class="duration-300 cursor-pointer"
@@ -13,7 +13,7 @@
         <div
           v-for="column in columns"
           :key="column"
-          class="text-sm text-gray-600"
+          class="text-base text-gray-600"
           :class="[column.size, column.align]"
         >
           {{ column.label }}
@@ -24,74 +24,79 @@
           v-for="row in rows"
           :key="row[rowKey]"
           :to="$router.currentRoute.value.path + '/' + row[rowKey]"
-          class="flex space-x-4 items-center mx-2 px-3 py-2 border-b cursor-pointer transition-all duration-300 ease-in-out"
-          :class="
-            selections.has(row[rowKey])
-              ? 'bg-gray-100 hover:bg-gray-200'
-              : 'hover:bg-gray-50'
-          "
+          class="flex flex-col mx-5 cursor-pointer transition-all duration-300 ease-in-out"
         >
-          <Checkbox
-            :modelValue="selections.has(row[rowKey])"
-            @click.stop="toggleRow(row[rowKey])"
-            class="duration-300 cursor-pointer"
-          />
           <div
-            v-for="column in columns"
-            :key="column.key"
-            :class="[column.size, column.align]"
+            class="flex space-x-4 items-center px-2 py-2.5 rounded"
+            :class="
+              selections.has(row[rowKey])
+                ? 'bg-gray-100 hover:bg-gray-200'
+                : 'hover:bg-gray-50'
+            "
           >
-            <ListRowItem
-              :value="getValue(row[column.key]).label"
-              :type="column.type"
-              :align="column.align"
+            <Checkbox
+              :modelValue="selections.has(row[rowKey])"
+              @click.stop="toggleRow(row[rowKey])"
+              class="duration-300 cursor-pointer"
+            />
+            <div
+              v-for="column in columns"
+              :key="column.key"
+              :class="[column.size, column.align]"
             >
-              <template #prefix>
-                <div v-if="column.type === 'indicator'">
-                  <IndicatorIcon :class="getValue(row[column.key]).color" />
-                </div>
-                <div v-else-if="column.type === 'avatar'">
-                  <Avatar
-                    v-if="getValue(row[column.key]).label"
-                    class="flex items-center"
-                    :image="getValue(row[column.key]).image"
-                    :label="getValue(row[column.key]).image_label"
+              <ListRowItem
+                :value="getValue(row[column.key]).label"
+                :type="column.type"
+                :align="column.align"
+              >
+                <template #prefix>
+                  <div v-if="column.type === 'indicator'">
+                    <IndicatorIcon :class="getValue(row[column.key]).color" />
+                  </div>
+                  <div v-else-if="column.type === 'avatar'">
+                    <Avatar
+                      v-if="getValue(row[column.key]).label"
+                      class="flex items-center"
+                      :image="getValue(row[column.key]).image"
+                      :label="getValue(row[column.key]).image_label"
+                      size="md"
+                    />
+                  </div>
+                  <div v-else-if="column.type === 'logo'">
+                    <Avatar
+                      v-if="getValue(row[column.key]).label"
+                      class="flex items-center"
+                      :image="getValue(row[column.key]).logo"
+                      :label="getValue(row[column.key]).image_label"
+                      size="md"
+                      shape="square"
+                    />
+                  </div>
+                  <div v-else-if="column.type === 'icon'">
+                    <FeatherIcon
+                      :name="getValue(row[column.key]).icon"
+                      class="h-3 w-3"
+                    />
+                  </div>
+                  <div v-else-if="column.type === 'email'">
+                    <FeatherIcon name="mail" class="h-3 w-3" />
+                  </div>
+                  <div v-else-if="column.type === 'phone'">
+                    <FeatherIcon name="phone" class="h-3 w-3" />
+                  </div>
+                </template>
+                <div v-if="column.type === 'badge'">
+                  <Badge
+                    :variant="'subtle'"
+                    :theme="row[column.key].color"
                     size="md"
+                    :label="row[column.key].label"
                   />
                 </div>
-                <div v-else-if="column.type === 'logo'">
-                  <Avatar
-                    v-if="getValue(row[column.key]).label"
-                    class="flex items-center"
-                    :image="getValue(row[column.key]).logo"
-                    :label="getValue(row[column.key]).image_label"
-                    size="md"
-                    shape="square"
-                  />
-                </div>
-                <div v-else-if="column.type === 'icon'">
-                  <FeatherIcon
-                    :name="getValue(row[column.key]).icon"
-                    class="h-3 w-3"
-                  />
-                </div>
-                <div v-else-if="column.type === 'email'">
-                  <FeatherIcon name="mail" class="h-3 w-3" />
-                </div>
-                <div v-else-if="column.type === 'phone'">
-                  <FeatherIcon name="phone" class="h-3 w-3" />
-                </div>
-              </template>
-              <div v-if="column.type === 'badge'">
-                <Badge
-                  :variant="'subtle'"
-                  :theme="row[column.key].color"
-                  size="md"
-                  :label="row[column.key].label"
-                />
-              </div>
-            </ListRowItem>
+              </ListRowItem>
+            </div>
           </div>
+          <div class="mx-2 h-px border-t border-gray-200"></div>
         </router-link>
       </div>
       <transition

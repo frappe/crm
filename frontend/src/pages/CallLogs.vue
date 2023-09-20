@@ -4,7 +4,7 @@
       <Breadcrumbs :items="[{ label: list.title }]" />
     </template>
   </LayoutHeader>
-  <div class="flex justify-between items-center px-5 pb-2.5 border-b">
+  <div class="flex justify-between items-center px-5 pt-3 pb-4">
     <div class="flex items-center gap-2">
       <Button label="Sort">
         <template #prefix><SortIcon class="h-4" /></template>

@@ -9,7 +9,7 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div class="flex justify-between items-center px-5 pb-2.5">
+  <div class="flex justify-between items-center px-5 pt-3 pb-4">
     <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
