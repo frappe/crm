@@ -27,16 +27,16 @@
             {{ user.full_name }}
           </div>
         </div>
-        <FeatherIcon
-          name="chevron-down"
-          class="h-4 w-4 duration-300 ease-in-out"
+        <div
+          class="duration-300 ease-in-out"
           :class="
             isCollapsed
               ? 'opacity-0 ml-0 w-0 overflow-hidden'
               : 'opacity-100 ml-2 w-auto'
           "
-          aria-hidden="true"
-        />
+        >
+          <FeatherIcon name="chevron-down" class="h-4 w-4" aria-hidden="true" />
+        </div>
       </button>
     </template>
   </Dropdown>

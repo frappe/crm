@@ -42,7 +42,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
-import { ref } from 'vue'
+import { useStorage } from "@vueuse/core";
 
 const links = [
   {
@@ -72,5 +72,5 @@ const links = [
   },
 ]
 
-const isSidebarCollapsed = ref(false)
+const isSidebarCollapsed = useStorage("sidebar_is_collapsed", false);
 </script>
