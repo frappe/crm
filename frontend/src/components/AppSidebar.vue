@@ -42,7 +42,6 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import DashboardIcon from '@/components/Icons/DashboardIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
@@ -74,44 +73,6 @@ const links = [
     icon: PhoneIcon,
     to: 'Call Logs',
   },
-  // {
-  //   label: 'Dashboard',
-  //   icon: DashboardIcon,
-  //   to: 'Dashboard',
-  // },
-]
-
-const navigations = [
-  {
-    name: 'Leads',
-    icon: LeadsIcon,
-    route: { name: 'Leads' },
-  },
-  {
-    name: 'Deals',
-    icon: DealsIcon,
-    route: { name: 'Deals' },
-  },
-  {
-    name: 'Contacts',
-    icon: ContactsIcon,
-    route: { name: 'Contacts' },
-  },
-  {
-    name: 'Notes',
-    icon: NoteIcon,
-    route: { name: 'Notes' },
-  },
-  {
-    name: 'Call Logs',
-    icon: PhoneIcon,
-    route: { name: 'Call Logs' },
-  },
-  // {
-  //   name: 'Dashboard',
-  //   icon: DashboardIcon,
-  //   route: { name: 'Dashboard' },
-  // },
 ]
 
 const isSidebarCollapsed = ref(false)
