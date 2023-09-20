@@ -1,5 +1,4 @@
 <template>
-  <slot />
   <div
     v-show="showCallPopup"
     ref="callPopup"
@@ -106,74 +105,72 @@
       </div>
     </div>
   </div>
-  <Teleport to="#call-area">
-    <div
-      v-show="showSmallCallWindow"
-      class="flex items-center justify-between gap-3 bg-gray-900 text-base text-gray-300 -ml-3 mr-2 px-2 py-[7px] rounded-lg cursor-pointer select-none"
-      @click="toggleCallWindow"
-    >
-      <div class="flex items-center gap-2">
-        <Avatar
-          :image="contact.image"
-          :label="contact.full_name"
-          class="flex items-center justify-center !h-5 !w-5 relative"
-        />
-        <div class="truncate max-w-[120px]">
-          {{ contact.full_name }}
-        </div>
-      </div>
-      <div v-if="onCall" class="flex items-center gap-2">
-        <div class="my-1 min-w-[40px] text-center">
-          {{ counterUp?.updatedTime }}
-        </div>
-        <Button variant="solid" theme="red" class="rounded-full !h-6 !w-6">
-          <template #icon>
-            <PhoneIcon
-              class="fill-white h-4 w-4 rotate-[135deg]"
-              @click.stop="hangUpCall"
-            />
-          </template>
-        </Button>
-      </div>
-      <div v-else-if="calling" class="flex items-center gap-3">
-        <div class="my-1">
-          {{ callStatus == 'ringing' ? 'Ringing...' : 'Calling...' }}
-        </div>
-        <Button
-          variant="solid"
-          theme="red"
-          class="rounded-full !h-6 !w-6"
-          @click.stop="cancelCall"
-        >
-          <template #icon>
-            <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
-          </template>
-        </Button>
-      </div>
-      <div v-else class="flex items-center gap-2">
-        <Button
-          variant="solid"
-          theme="green"
-          class="rounded-full !h-6 !w-6 pulse relative"
-          @click.stop="acceptIncomingCall"
-        >
-          <template #icon>
-            <PhoneIcon class="fill-white h-4 w-4 animate-pulse" />
-          </template>
-        </Button>
-        <Button
-          variant="solid"
-          theme="red"
-          class="rounded-full !h-6 !w-6"
-          @click.stop="rejectIncomingCall"
-        >
-          <template #icon>
-            <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
-          </template>
-        </Button>
+  <div
+    v-show="showSmallCallWindow"
+    class="flex items-center justify-between gap-3 bg-gray-900 text-base text-gray-300 -ml-3 mr-2 px-2 py-[7px] rounded-lg cursor-pointer select-none"
+    @click="toggleCallWindow"
+  >
+    <div class="flex items-center gap-2">
+      <Avatar
+        :image="contact.image"
+        :label="contact.full_name"
+        class="flex items-center justify-center !h-5 !w-5 relative"
+      />
+      <div class="truncate max-w-[120px]">
+        {{ contact.full_name }}
       </div>
     </div>
-  </Teleport>
+    <div v-if="onCall" class="flex items-center gap-2">
+      <div class="my-1 min-w-[40px] text-center">
+        {{ counterUp?.updatedTime }}
+      </div>
+      <Button variant="solid" theme="red" class="rounded-full !h-6 !w-6">
+        <template #icon>
+          <PhoneIcon
+            class="fill-white h-4 w-4 rotate-[135deg]"
+            @click.stop="hangUpCall"
+          />
+        </template>
+      </Button>
+    </div>
+    <div v-else-if="calling" class="flex items-center gap-3">
+      <div class="my-1">
+        {{ callStatus == 'ringing' ? 'Ringing...' : 'Calling...' }}
+      </div>
+      <Button
+        variant="solid"
+        theme="red"
+        class="rounded-full !h-6 !w-6"
+        @click.stop="cancelCall"
+      >
+        <template #icon>
+          <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
+        </template>
+      </Button>
+    </div>
+    <div v-else class="flex items-center gap-2">
+      <Button
+        variant="solid"
+        theme="green"
+        class="rounded-full !h-6 !w-6 pulse relative"
+        @click.stop="acceptIncomingCall"
+      >
+        <template #icon>
+          <PhoneIcon class="fill-white h-4 w-4 animate-pulse" />
+        </template>
+      </Button>
+      <Button
+        variant="solid"
+        theme="red"
+        class="rounded-full !h-6 !w-6"
+        @click.stop="rejectIncomingCall"
+      >
+        <template #icon>
+          <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
+        </template>
+      </Button>
+    </div>
+  </div>
   <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
 </template>
 
@@ -187,7 +184,7 @@ import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { contactsStore } from '@/stores/contacts'
 import { Avatar, call } from 'frappe-ui'
-import { onMounted, provide, ref, watch } from 'vue'
+import { onMounted, ref, watch, getCurrentInstance } from 'vue'
 import NoteModal from './NoteModal.vue'
 
 const { getContact } = contactsStore()
@@ -291,15 +288,6 @@ function addDeviceListeners() {
     device.updateToken(data.token)
   })
 }
-
-// function update_call_log(conn, status = 'Completed') {
-//   console.log('connection', conn)
-//   if (!conn.parameters.CallSid) return
-//   call('crm.twilio.api.update_call_log', {
-//     call_sid: conn.parameters.CallSid,
-//     status: status,
-//   })
-// }
 
 function toggleMute() {
   if (_call.value.isMuted()) {
@@ -492,7 +480,8 @@ watch(
   { immediate: true }
 )
 
-provide('makeOutgoingCall', makeOutgoingCall)
+const app = getCurrentInstance()
+app.appContext.config.globalProperties.makeCall = makeOutgoingCall
 </script>
 
 <style scoped>

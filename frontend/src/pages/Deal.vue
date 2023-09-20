@@ -389,12 +389,10 @@ import {
   Avatar,
   call,
 } from 'frappe-ui'
-import { ref, computed, inject } from 'vue'
+import { ref, computed } from 'vue'
 
 const { getUser, users } = usersStore()
 const { getContact, contacts } = contactsStore()
-
-const makeCall = inject('makeOutgoingCall')
 
 const props = defineProps({
   dealId: {
