@@ -364,8 +364,6 @@ const { getUser, users } = usersStore()
 const { getContact, contacts } = contactsStore()
 const router = useRouter()
 
-const makeCall = inject('makeOutgoingCall')
-
 const props = defineProps({
   leadId: {
     type: String,

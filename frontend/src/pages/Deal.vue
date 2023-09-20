@@ -394,8 +394,6 @@ import { ref, computed, inject } from 'vue'
 const { getUser, users } = usersStore()
 const { getContact, contacts } = contactsStore()
 
-const makeCall = inject('makeOutgoingCall')
-
 const props = defineProps({
   dealId: {
     type: String,

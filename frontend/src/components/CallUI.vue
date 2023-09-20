@@ -187,7 +187,7 @@ import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { contactsStore } from '@/stores/contacts'
 import { Avatar, call } from 'frappe-ui'
-import { onMounted, provide, ref, watch } from 'vue'
+import { onMounted, ref, watch, getCurrentInstance } from 'vue'
 import NoteModal from './NoteModal.vue'
 
 const { getContact } = contactsStore()
@@ -291,15 +291,6 @@ function addDeviceListeners() {
     device.updateToken(data.token)
   })
 }
-
-// function update_call_log(conn, status = 'Completed') {
-//   console.log('connection', conn)
-//   if (!conn.parameters.CallSid) return
-//   call('crm.twilio.api.update_call_log', {
-//     call_sid: conn.parameters.CallSid,
-//     status: status,
-//   })
-// }
 
 function toggleMute() {
   if (_call.value.isMuted()) {
@@ -492,7 +483,8 @@ watch(
   { immediate: true }
 )
 
-provide('makeOutgoingCall', makeOutgoingCall)
+const app = getCurrentInstance()
+app.appContext.config.globalProperties.makeCall = makeOutgoingCall
 </script>
 
 <style scoped>
