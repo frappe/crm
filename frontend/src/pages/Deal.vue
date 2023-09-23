@@ -19,10 +19,7 @@
       </Autocomplete>
       <Dropdown :options="statusDropdownOptions(deal.data, 'deal', updateDeal)">
         <template #default="{ open }">
-          <Button
-            :label="deal.data.deal_status"
-            :class="dealStatuses[deal.data.deal_status].bgColor"
-          >
+          <Button :label="deal.data.deal_status">
             <template #prefix>
               <IndicatorIcon
                 :class="dealStatuses[deal.data.deal_status].color"

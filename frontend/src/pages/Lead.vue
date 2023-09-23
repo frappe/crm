@@ -19,10 +19,7 @@
       </Autocomplete>
       <Dropdown :options="statusDropdownOptions(lead.data, 'lead', updateLead)">
         <template #default="{ open }">
-          <Button
-            :label="lead.data.status"
-            :class="leadStatuses[lead.data.status].bgColor"
-          >
+          <Button :label="lead.data.status">
             <template #prefix>
               <IndicatorIcon :class="leadStatuses[lead.data.status].color" />
             </template>
