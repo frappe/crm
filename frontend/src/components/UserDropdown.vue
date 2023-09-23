@@ -35,7 +35,7 @@
               : 'opacity-100 ml-2 w-auto'
           "
         >
-          <FeatherIcon name="chevron-down" class="h-4 w-4" aria-hidden="true" />
+          <FeatherIcon name="chevron-down" class="h-4 w-4 text-gray-600" aria-hidden="true" />
         </div>
       </button>
     </template>
