@@ -89,7 +89,9 @@
       </div>
     </TabGroup>
     <div class="flex flex-col justify-between border-l w-[352px]">
-      <div class="flex items-center border-b px-5 py-2.5 h-[41px] font-semibold text-lg">
+      <div
+        class="flex items-center border-b px-5 py-2.5 h-[41px] font-semibold text-lg"
+      >
         About this lead
       </div>
       <FileUploader @success="changeLeadImage" :validateFile="validateFile">
@@ -336,9 +338,6 @@ import NoteModal from '@/components/NoteModal.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import {
-  dateFormat,
-  timeAgo,
-  dateTooltipFormat,
   leadStatuses,
   statusDropdownOptions,
   openWebsite,
@@ -349,7 +348,6 @@ import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import {
   createResource,
-  createDocumentResource,
   createListResource,
   FileUploader,
   ErrorMessage,
