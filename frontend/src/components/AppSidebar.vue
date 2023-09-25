@@ -1,19 +1,18 @@
 <template>
   <div
-    class="flex flex-col h-full justify-between transition-all duration-300 ease-in-out"
+    class="flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-56'"
   >
-    <div>
+    <div class="flex flex-col">
       <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
-      <div v-for="link in links">
-        <SidebarLink
-          :icon="link.icon"
-          :label="link.label"
-          :to="link.to"
-          :isCollapsed="isSidebarCollapsed"
-          class="my-0.5 mx-2"
-        />
-      </div>
+      <SidebarLink
+        v-for="link in links"
+        :icon="link.icon"
+        :label="link.label"
+        :to="link.to"
+        :isCollapsed="isSidebarCollapsed"
+        class="mx-2 my-0.5"
+      />
     </div>
     <SidebarLink
       :label="isSidebarCollapsed ? 'Expand' : 'Collapse'"
@@ -22,7 +21,7 @@
       class="m-2"
     >
       <template #icon>
-        <span class="grid h-5 w-6 place-items-center flex-shrink-0">
+        <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
           <CollapseSidebar
             class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
             :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
@@ -42,7 +41,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
-import { useStorage } from "@vueuse/core";
+import { useStorage } from '@vueuse/core'
 
 const links = [
   {
@@ -72,5 +71,5 @@ const links = [
   },
 ]
 
-const isSidebarCollapsed = useStorage("sidebar_is_collapsed", false);
+const isSidebarCollapsed = useStorage('sidebar_is_collapsed', false)
 </script>
