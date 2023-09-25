@@ -38,8 +38,8 @@
       />
     </template>
   </LayoutHeader>
-  <div class="flex h-full overflow-hidden">
-    <TabGroup v-slot="{ selectedIndex }" v-if="lead.data" @change="onTabChange">
+  <div v-if="lead.data" class="flex h-full overflow-hidden">
+    <TabGroup v-slot="{ selectedIndex }" @change="onTabChange">
       <div class="flex flex-col flex-1">
         <TabList class="flex items-center gap-6 border-b pl-5 relative">
           <Tab
@@ -133,10 +133,12 @@
                 </div>
               </Dropdown>
             </div>
-            <div class="flex flex-col gap-2.5">
-              <div class="font-medium text-2xl">
-                {{ lead.data.lead_name }}
-              </div>
+            <div class="flex flex-col gap-2.5 truncate">
+              <Tooltip :text="lead.data.lead_name">
+                <div class="font-medium text-2xl truncate">
+                  {{ lead.data.lead_name }}
+                </div>
+              </Tooltip>
               <div class="flex gap-1.5">
                 <Tooltip text="Make a call...">
                   <Button
@@ -426,7 +428,7 @@ const tabs = computed(() => {
       label: 'Activity',
       icon: ActivityIcon,
       content: all_activities(),
-      activityTitle: 'Activity log',
+      activityTitle: 'Activity',
     },
     {
       label: 'Emails',
