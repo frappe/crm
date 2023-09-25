@@ -1,14 +1,21 @@
 <template>
-  <div class="max-w-[81.7%] pl-16 p-4 pt-2">
-    <button
+  <div class="flex gap-3 pt-2 pb-6 px-10">
+    <UserAvatar :user="getUser().name" size="xl" />
+    <Button
       ref="sendEmailRef"
-      class="flex gap-2 w-full items-center rounded-lg p-2 bg-gray-100 hover:bg-gray-200"
+      variant="outline"
+      size="md"
+      class="h-8.5 w-full inline-flex justify-between"
       @click="showCommunicationBox = true"
       v-show="!showCommunicationBox"
     >
-      <UserAvatar :user="getUser().name" size="sm" />
       <div class="text-base text-gray-600">Add a reply...</div>
-    </button>
+      <template #suffix>
+        <div class="flex gap-3">
+          <!-- <FeatherIcon name="paperclip" class="h-4" /> -->
+        </div>
+      </template>
+    </Button>
     <div
       v-show="showCommunicationBox"
       class="w-full rounded-lg border bg-white p-4 focus-within:border-gray-400"
@@ -47,9 +54,8 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import EmailEditor from '@/components/EmailEditor.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import { usersStore } from '@/stores/users'
-import { Tooltip, call, Button } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import { ref, watch, computed, defineModel } from 'vue'
 
 const modelValue = defineModel()
@@ -101,5 +107,5 @@ async function submitComment() {
   modelValue.value.reload()
 }
 
-defineExpose({ el: sendEmailRef })
+defineExpose({ show: showCommunicationBox })
 </script>

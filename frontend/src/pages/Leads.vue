@@ -20,7 +20,7 @@
             <template #suffix
               ><FeatherIcon
                 :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4"
+                class="h-4 text-gray-600"
             /></template>
           </Button>
         </template>
