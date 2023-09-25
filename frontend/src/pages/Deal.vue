@@ -36,54 +36,45 @@
     </template>
   </LayoutHeader>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
-    <TabGroup v-slot="{ selectedIndex }" @change="onTabChange">
-      <div class="flex flex-col flex-1">
-        <TabList class="flex items-center gap-6 border-b pl-5 relative">
-          <Tab
-            ref="tabRef"
-            as="template"
-            v-for="tab in tabs"
-            :key="tab.label"
-            v-slot="{ selected }"
+    <TabGroup as="div" class="flex flex-col flex-1" @change="onTabChange">
+      <TabList class="flex items-center gap-6 border-b pl-5 relative">
+        <Tab
+          ref="tabRef"
+          as="template"
+          v-for="tab in tabs"
+          :key="tab.label"
+          v-slot="{ selected }"
+        >
+          <button
+            class="flex items-center gap-2 py-2.5 -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
+            :class="{ 'text-gray-900': selected }"
           >
-            <button
-              class="flex items-center gap-2 py-2.5 -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
-              :class="{ 'text-gray-900': selected }"
-            >
-              <component v-if="tab.icon" :is="tab.icon" class="h-5" />
-              {{ tab.label }}
-            </button>
-          </Tab>
-          <div
-            ref="indicator"
-            class="h-[1px] bg-gray-900 w-[82px] absolute -bottom-[1px]"
-            :style="{ left: `${indicatorLeftValue}px` }"
-          />
-        </TabList>
-        <div class="flex flex-col h-full overflow-auto">
-          <TabPanels class="flex flex-1 overflow-hidden">
-            <TabPanel
-              class="flex-1 flex flex-col overflow-y-auto"
-              v-for="tab in tabs"
-              :key="tab.label"
-            >
-              <Activities
-                :title="tab.activityTitle"
-                :activities="tab.content"
-                @makeCall="makeCall(deal.data.mobile_no)"
-                @makeNote="(e) => showNote(e)"
-                @deleteNote="(e) => deleteNote(e)"
-                @setFocusOnEmail="() => $refs.sendEmailRef.el.click()"
-              />
-            </TabPanel>
-          </TabPanels>
-          <CommunicationArea
-            ref="sendEmailRef"
-            v-if="[0, 1].includes(selectedIndex)"
+            <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+            {{ tab.label }}
+          </button>
+        </Tab>
+        <div
+          ref="indicator"
+          class="h-[1px] bg-gray-900 w-[82px] absolute -bottom-[1px]"
+          :style="{ left: `${indicatorLeftValue}px` }"
+        />
+      </TabList>
+      <TabPanels class="flex flex-1 overflow-hidden">
+        <TabPanel
+          class="flex-1 flex flex-col overflow-y-auto"
+          v-for="tab in tabs"
+          :key="tab.label"
+        >
+          <Activities
+            :title="tab.activityTitle"
+            :activities="tab.content"
             v-model="deal"
+            @makeCall="makeCall(deal.data.mobile_no)"
+            @makeNote="(e) => showNote(e)"
+            @deleteNote="(e) => deleteNote(e)"
           />
-        </div>
-      </div>
+        </TabPanel>
+      </TabPanels>
     </TabGroup>
     <div class="flex flex-col justify-between border-l w-[352px]">
       <div
@@ -365,7 +356,6 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/NoteModal.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
@@ -380,7 +370,6 @@ import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import {
   createResource,
-  createDocumentResource,
   createListResource,
   FeatherIcon,
   FileUploader,
@@ -409,17 +398,6 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   auto: true,
-})
-
-const uDeal = createDocumentResource({
-  doctype: 'CRM Lead',
-  name: props.dealId,
-  setValue: {
-    onSuccess: () => {
-      deal.reload()
-      contacts.reload()
-    },
-  },
 })
 
 function updateDeal(fieldname, value) {

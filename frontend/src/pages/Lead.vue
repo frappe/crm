@@ -39,54 +39,45 @@
     </template>
   </LayoutHeader>
   <div v-if="lead.data" class="flex h-full overflow-hidden">
-    <TabGroup v-slot="{ selectedIndex }" @change="onTabChange">
-      <div class="flex flex-col flex-1">
-        <TabList class="flex items-center gap-6 border-b pl-5 relative">
-          <Tab
-            ref="tabRef"
-            as="template"
-            v-for="tab in tabs"
-            :key="tab.label"
-            v-slot="{ selected }"
+    <TabGroup as="div" class="flex flex-col flex-1" @change="onTabChange">
+      <TabList class="flex items-center gap-6 border-b pl-5 relative">
+        <Tab
+          ref="tabRef"
+          as="template"
+          v-for="tab in tabs"
+          :key="tab.label"
+          v-slot="{ selected }"
+        >
+          <button
+            class="flex items-center gap-2 py-2.5 -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
+            :class="{ 'text-gray-900': selected }"
           >
-            <button
-              class="flex items-center gap-2 py-2.5 -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
-              :class="{ 'text-gray-900': selected }"
-            >
-              <component v-if="tab.icon" :is="tab.icon" class="h-5" />
-              {{ tab.label }}
-            </button>
-          </Tab>
-          <div
-            ref="indicator"
-            class="h-[1px] bg-gray-900 w-[82px] absolute -bottom-[1px]"
-            :style="{ left: `${indicatorLeftValue}px` }"
-          />
-        </TabList>
-        <div class="flex flex-col h-full overflow-auto">
-          <TabPanels class="flex flex-1 overflow-hidden">
-            <TabPanel
-              class="flex-1 flex flex-col overflow-y-auto"
-              v-for="tab in tabs"
-              :key="tab.label"
-            >
-              <Activities
-                :title="tab.activityTitle"
-                :activities="tab.content"
-                @makeCall="makeCall(lead.data.mobile_no)"
-                @makeNote="(e) => showNote(e)"
-                @deleteNote="(e) => deleteNote(e)"
-                @setFocusOnEmail="() => $refs.sendEmailRef.el.click()"
-              />
-            </TabPanel>
-          </TabPanels>
-          <CommunicationArea
-            ref="sendEmailRef"
-            v-if="[0, 1].includes(selectedIndex)"
+            <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+            {{ tab.label }}
+          </button>
+        </Tab>
+        <div
+          ref="indicator"
+          class="h-[1px] bg-gray-900 w-[82px] absolute -bottom-[1px]"
+          :style="{ left: `${indicatorLeftValue}px` }"
+        />
+      </TabList>
+      <TabPanels class="flex flex-1 overflow-hidden">
+        <TabPanel
+          class="flex-1 flex flex-col overflow-y-auto"
+          v-for="tab in tabs"
+          :key="tab.label"
+        >
+          <Activities
+            :title="tab.activityTitle"
+            :activities="tab.content"
             v-model="lead"
+            @makeCall="makeCall(lead.data.mobile_no)"
+            @makeNote="(e) => showNote(e)"
+            @deleteNote="(e) => deleteNote(e)"
           />
-        </div>
-      </div>
+        </TabPanel>
+      </TabPanels>
     </TabGroup>
     <div class="flex flex-col justify-between border-l w-[352px]">
       <div
@@ -96,7 +87,7 @@
       </div>
       <FileUploader @success="changeLeadImage" :validateFile="validateFile">
         <template #default="{ openFileSelector, error }">
-          <div class="flex gap-5 items-center justify-start p-5 border-b">
+          <div class="flex gap-5 items-center justify-start p-5">
             <div class="relative w-[88px] h-[88px] group">
               <Avatar
                 size="3xl"
@@ -170,20 +161,21 @@
           <div
             v-for="(section, i) in detailSections"
             :key="section.label"
-            class="flex flex-col p-3"
-            :class="{ 'border-b': i !== detailSections.length - 1 }"
+            class="flex flex-col"
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
-              <div
-                class="flex items-center gap-2 text-base font-semibold leading-5 px-2 cursor-pointer max-w-fit"
-                @click="toggle()"
-              >
-                <FeatherIcon
-                  name="chevron-right"
-                  class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
-                  :class="{ 'rotate-90': opened }"
-                />
-                {{ section.label }}
+              <div class="sticky bg-white top-0 p-3 border-t z-10">
+                <div
+                  class="flex items-center gap-2 text-base font-semibold leading-5 px-2 cursor-pointer max-w-fit"
+                  @click="toggle()"
+                >
+                  <FeatherIcon
+                    name="chevron-right"
+                    class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
+                    :class="{ 'rotate-90': opened }"
+                  />
+                  {{ section.label }}
+                </div>
               </div>
               <transition
                 enter-active-class="duration-300 ease-in"
@@ -193,11 +185,11 @@
                 enter-from-class="max-h-0 overflow-hidden"
                 leave-to-class="max-h-0 overflow-hidden"
               >
-                <div v-if="opened" class="flex flex-col gap-1.5">
+                <div v-if="opened" class="flex flex-col gap-1.5 p-3 pt-0">
                   <div
                     v-for="field in section.fields"
                     :key="field.name"
-                    class="flex items-center px-3 gap-2 text-base leading-5 first:mt-3"
+                    class="flex items-center px-3 gap-2 text-base leading-5"
                   >
                     <div class="text-gray-600 w-[106px]">
                       {{ field.label }}
@@ -335,7 +327,6 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/NoteModal.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'

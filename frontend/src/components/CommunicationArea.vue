@@ -54,9 +54,8 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import EmailEditor from '@/components/EmailEditor.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import { usersStore } from '@/stores/users'
-import { Tooltip, call, FeatherIcon } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import { ref, watch, computed, defineModel } from 'vue'
 
 const modelValue = defineModel()
@@ -108,5 +107,5 @@ async function submitComment() {
   modelValue.value.reload()
 }
 
-defineExpose({ el: sendEmailRef })
+defineExpose({ show: showCommunicationBox })
 </script>

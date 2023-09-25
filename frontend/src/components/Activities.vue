@@ -12,7 +12,7 @@
       <FeatherIcon name="plus" class="w-4 h-4" />
     </Button>
   </div>
-  <div v-if="activities.length" class="overflow-y-auto">
+  <div v-if="activities.length" class="flex-1 overflow-y-auto">
     <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 p-5 pt-0">
       <div
         v-for="note in activities"
@@ -370,9 +370,14 @@
       v-else-if="title == 'Emails'"
       variant="solid"
       label="Send email"
-      @click="emit('setFocusOnEmail')"
+      @click="$refs.emailBox.show = true"
     />
   </div>
+  <CommunicationArea
+    ref="emailBox"
+    v-if="['Emails', 'Activity'].includes(title) && lead"
+    v-model="lead"
+  />
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -381,6 +386,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
+import CommunicationArea from '@/components/CommunicationArea.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
 import {
@@ -391,7 +397,7 @@ import {
   TextEditor,
   Avatar,
 } from 'frappe-ui'
-import { computed, h } from 'vue'
+import { computed, h, defineModel } from 'vue'
 
 const { getUser } = usersStore()
 
@@ -405,6 +411,8 @@ const props = defineProps({
     default: [],
   },
 })
+
+const lead = defineModel()
 
 const emit = defineEmits([
   'makeCall',
