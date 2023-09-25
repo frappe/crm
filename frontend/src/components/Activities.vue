@@ -1,6 +1,6 @@
 <template>
-  <div class="p-5 flex items-center justify-between font-medium text-lg">
-    <div>{{ title }}</div>
+  <div class="px-10 py-5 flex items-center justify-between font-medium text-lg">
+    <div class="flex items-center h-7 text-xl font-semibold">{{ title }}</div>
     <Button v-if="title == 'Calls'" variant="solid" @click="emit('makeCall')">
       <PhoneIcon class="w-4 h-4" />
     </Button>
@@ -13,7 +13,7 @@
     </Button>
   </div>
   <div v-if="activities.length" class="flex-1 overflow-y-auto">
-    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 p-5 pt-0">
+    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 py-5 pt-0">
       <div
         v-for="note in activities"
         class="group flex flex-col justify-between gap-2 px-4 py-3 border rounded-lg h-48 shadow-sm hover:bg-gray-50 cursor-pointer"
@@ -82,7 +82,7 @@
             </div>
           </div>
           <div
-            class="flex flex-col gap-3 border rounded-lg p-4 mb-3 shadow-sm max-w-[60%]"
+            class="flex flex-col gap-3 bg-gray-50 rounded-md p-4 mb-3 max-w-[70%]"
           >
             <div class="flex items-center justify-between">
               <div>
@@ -166,13 +166,13 @@
       </div>
     </div>
     <div v-else v-for="(activity, i) in activities">
-      <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-5">
+      <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
         <div
-          class="relative flex justify-center after:absolute after:border-l after:border-gray-300 after:top-0 after:left-[50%] after:-z-10"
+          class="relative flex justify-center after:absolute after:border-l after:border-gray-200 after:top-0 after:left-[50%] after:-z-10"
           :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
         >
           <div
-            class="flex items-center justify-center rounded-full outline outline-4 outline-white w-6 h-6 bg-gray-200 z-10"
+            class="flex items-center justify-center rounded-full w-7 h-7 bg-gray-100 z-10"
             :class="{
               'mt-[15px]': [
                 'communication',
@@ -181,15 +181,12 @@
               ].includes(activity.activity_type),
             }"
           >
-            <FeatherIcon
-              :name="activity.icon"
-              class="w-3.5 h-3.5 text-gray-600"
-            />
+            <FeatherIcon :name="activity.icon" class="w-4 h-4 text-gray-800" />
           </div>
         </div>
         <div v-if="activity.activity_type == 'communication'" class="pb-6">
           <div
-            class="shadow-sm border max-w-[80%] rounded-xl p-3 text-base cursor-pointer leading-6 transition-all duration-300 ease-in-out"
+            class="rounded-md p-3 text-base cursor-pointer bg-gray-50 leading-6 transition-all duration-300 ease-in-out"
           >
             <div class="flex items-center justify-between gap-2 mb-3">
               <div class="flex items-center gap-2">
@@ -219,7 +216,7 @@
             activity.activity_type == 'incoming_call' ||
             activity.activity_type == 'outgoing_call'
           "
-          class="flex flex-col gap-3 border rounded-lg p-4 mb-3 shadow-sm max-w-[60%]"
+          class="flex flex-col gap-3 bg-gray-50 rounded-md p-4 mb-3 max-w-[70%]"
         >
           <div class="flex items-center justify-between">
             <div>
@@ -303,8 +300,6 @@
           <div
             class="flex items-start justify-stretch gap-2 text-base leading-6"
           >
-            <UserAvatar :user="activity.owner" size="md" />
-
             <div class="inline-flex flex-wrap gap-1 text-gray-600">
               <span class="text-gray-900">{{ activity.owner_name }}</span>
               <span v-if="activity.type">{{ activity.type }}</span>
@@ -414,12 +409,7 @@ const props = defineProps({
 
 const lead = defineModel()
 
-const emit = defineEmits([
-  'makeCall',
-  'makeNote',
-  'deleteNote',
-  'setFocusOnEmail',
-])
+const emit = defineEmits(['makeCall', 'makeNote', 'deleteNote'])
 
 const activities = computed(() => {
   if (props.title == 'Calls') {
