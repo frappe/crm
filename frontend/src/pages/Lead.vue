@@ -50,7 +50,7 @@
             v-slot="{ selected }"
           >
             <button
-              class="flex items-center gap-2 py-[9px] -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
+              class="flex items-center gap-2 py-2.5 -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
               :class="{ 'text-gray-900': selected }"
             >
               <component v-if="tab.icon" :is="tab.icon" class="h-5" />
@@ -89,6 +89,9 @@
       </div>
     </TabGroup>
     <div class="flex flex-col justify-between border-l w-[352px]">
+      <div class="flex items-center border-b px-5 py-2.5 h-[41px] font-semibold text-lg">
+        About this lead
+      </div>
       <FileUploader @success="changeLeadImage" :validateFile="validateFile">
         <template #default="{ openFileSelector, error }">
           <div class="flex gap-5 items-center justify-start p-5 border-b">
@@ -159,15 +162,16 @@
         </template>
       </FileUploader>
       <div class="flex-1 flex flex-col justify-between overflow-hidden">
-        <div class="flex flex-col gap-6 p-3 overflow-y-auto">
+        <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="section in detailSections"
+            v-for="(section, i) in detailSections"
             :key="section.label"
-            class="flex flex-col"
+            class="flex flex-col p-3"
+            :class="{ 'border-b': i !== detailSections.length - 1 }"
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
               <div
-                class="flex items-center gap-2 text-base font-semibold leading-5 pl-2 pr-3 cursor-pointer max-w-fit"
+                class="flex items-center gap-2 text-base font-semibold leading-5 px-2 cursor-pointer max-w-fit"
                 @click="toggle()"
               >
                 <FeatherIcon
@@ -309,19 +313,6 @@
             </Toggler>
           </div>
         </div>
-      </div>
-      <div
-        class="flex items-center gap-1 text-sm px-6 p-3 leading-5 cursor-pointer"
-      >
-        <span class="text-gray-600">Created </span>
-        <Tooltip :text="dateFormat(lead.data.creation, dateTooltipFormat)">
-          {{ timeAgo(lead.data.creation) }}
-        </Tooltip>
-        <span>&nbsp;&middot;&nbsp;</span>
-        <span class="text-gray-600">Updated </span>
-        <Tooltip :text="dateFormat(lead.data.modified, dateTooltipFormat)">
-          {{ timeAgo(lead.data.modified) }}
-        </Tooltip>
       </div>
     </div>
   </div>
@@ -505,7 +496,7 @@ function onTabChange(index) {
 const detailSections = computed(() => {
   return [
     {
-      label: 'About this lead',
+      label: 'Details',
       opened: true,
       fields: [
         {
