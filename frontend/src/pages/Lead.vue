@@ -91,35 +91,14 @@
     <div class="flex flex-col justify-between border-l w-[352px]">
       <FileUploader @success="changeLeadImage" :validateFile="validateFile">
         <template #default="{ openFileSelector, error }">
-          <div
-            class="flex flex-col gap-3 pb-4 p-5 items-center justify-center border-b"
-          >
-            <Avatar
-              size="3xl"
-              :label="lead.data.first_name"
-              :image="lead.data.image"
-            />
-            <ErrorMessage :message="error" />
-            <div class="font-medium text-2xl">{{ lead.data.lead_name }}</div>
-            <div class="flex gap-3">
-              <Tooltip text="Make a call...">
-                <Button
-                  class="rounded-full h-8 w-8"
-                  @click="() => makeCall(lead.data.mobile_no)"
-                >
-                  <PhoneIcon class="h-4 w-4" />
-                </Button>
-              </Tooltip>
-              <Button class="rounded-full h-8 w-8">
-                <EmailIcon class="h-4 w-4" />
-              </Button>
-              <Tooltip text="Go to website...">
-                <Button
-                  icon="link"
-                  @click="openWebsite(lead.data.website)"
-                  class="rounded-full h-8 w-8"
-                />
-              </Tooltip>
+          <div class="flex gap-5 items-center justify-start p-5 border-b">
+            <div class="relative w-[88px] h-[88px] group">
+              <Avatar
+                size="3xl"
+                class="w-[88px] h-[88px]"
+                :label="lead.data.first_name"
+                :image="lead.data.image"
+              />
               <Dropdown
                 :options="[
                   {
@@ -136,9 +115,45 @@
                     },
                   },
                 ]"
+                class="!absolute bottom-0 left-0 right-0"
               >
-                <Button icon="more-horizontal" class="rounded-full h-8 w-8" />
+                <div
+                  class="absolute bottom-0 left-0 right-0 rounded-b-full z-1 h-11 flex items-center justify-center pt-3 bg-black bg-opacity-40 cursor-pointer opacity-0 group-hover:opacity-100 duration-300 ease-in-out"
+                  style="
+                    -webkit-clip-path: inset(12px 0 0 0);
+                    clip-path: inset(12px 0 0 0);
+                  "
+                >
+                  <CameraIcon class="h-6 w-6 text-white cursor-pointer" />
+                </div>
               </Dropdown>
+            </div>
+            <div class="flex flex-col gap-2.5">
+              <div class="font-medium text-2xl">
+                {{ lead.data.lead_name }}
+              </div>
+              <div class="flex gap-1.5">
+                <Tooltip text="Make a call...">
+                  <Button
+                    class="h-7 w-7"
+                    @click="() => makeCall(lead.data.mobile_no)"
+                  >
+                    <PhoneIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Button class="h-7 w-7">
+                  <EmailIcon class="h-4 w-4" />
+                </Button>
+                <Tooltip text="Go to website...">
+                  <Button class="h-7 w-7">
+                    <LinkIcon
+                      class="h-4 w-4"
+                      @click="openWebsite(lead.data.website)"
+                    />
+                  </Button>
+                </Tooltip>
+              </div>
+              <ErrorMessage :message="error" />
             </div>
           </div>
         </template>
@@ -319,6 +334,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
@@ -356,6 +372,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import CameraIcon from '../components/Icons/CameraIcon.vue'
 
 const { getUser, users } = usersStore()
 const { getContact, contacts } = contactsStore()
