@@ -72,7 +72,6 @@
             :title="tab.activityTitle"
             :activities="tab.content"
             v-model="lead"
-            @makeCall="makeCall(lead.data.mobile_no)"
             @makeNote="(e) => showNote(e)"
             @deleteNote="(e) => deleteNote(e)"
           />

@@ -3,7 +3,7 @@
     <div class="flex h-7 items-center text-xl font-semibold text-gray-800">
       {{ title }}
     </div>
-    <Button v-if="title == 'Calls'" variant="solid" @click="emit('makeCall')">
+    <Button v-if="title == 'Calls'" variant="solid" @click="makeCall(lead.data.mobile_no)">
       <PhoneIcon class="h-4 w-4" />
     </Button>
     <Button
@@ -365,7 +365,7 @@
       v-if="title == 'Calls'"
       variant="solid"
       label="Make a call"
-      @click="emit('makeCall')"
+      @click="makeCall(lead.data.mobile_no)"
     />
     <Button
       v-else-if="title == 'Notes'"
@@ -426,7 +426,7 @@ const props = defineProps({
 
 const lead = defineModel()
 
-const emit = defineEmits(['makeCall', 'makeNote', 'deleteNote'])
+const emit = defineEmits(['makeNote', 'deleteNote'])
 
 const activities = computed(() => {
   if (props.title == 'Calls') {
