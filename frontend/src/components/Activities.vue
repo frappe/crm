@@ -18,7 +18,7 @@
     <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 py-5 pt-0">
       <div
         v-for="note in activities"
-        class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md px-4 py-3 bg-gray-50 hover:bg-gray-100"
+        class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
         @click="emit('makeNote', note)"
       >
         <div class="flex items-center justify-between">
@@ -75,11 +75,11 @@
             <div
               class="z-10 mt-[15px] flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
             >
-              <FeatherIcon
-                :name="
-                  call.type == 'Incoming' ? 'phone-incoming' : 'phone-outgoing'
+              <component
+                :is="
+                  call.type == 'Incoming' ? InboundCallIcon : OutboundCallIcon
                 "
-                class="h-4 w-4 text-gray-800"
+                class="text-gray-800"
               />
             </div>
           </div>
@@ -176,14 +176,24 @@
           <div
             class="z-10 flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
             :class="{
-              'mt-[15px]': [
+              'mt-3': [
                 'communication',
                 'incoming_call',
                 'outgoing_call',
               ].includes(activity.activity_type),
+              'bg-white': ['added', 'removed', 'changed'].includes(
+                activity.activity_type
+              ),
             }"
           >
-            <FeatherIcon :name="activity.icon" class="h-4 w-4 text-gray-800" />
+            <component
+              :is="activity.icon"
+              :class="
+                ['added', 'removed', 'changed'].includes(activity.activity_type)
+                  ? 'text-gray-600'
+                  : 'text-gray-800'
+              "
+            />
           </div>
         </div>
         <div v-if="activity.activity_type == 'communication'" class="pb-6">
@@ -298,30 +308,30 @@
             </div>
           </div>
         </div>
-        <div v-else class="flex flex-col gap-3 pb-6">
-          <div
-            class="flex items-start justify-stretch gap-2 text-base leading-6"
-          >
+        <div v-else class="mb-4 flex flex-col gap-3 py-1.5">
+          <div class="flex items-start justify-stretch gap-2 text-base">
             <div class="inline-flex flex-wrap gap-1 text-gray-600">
-              <span class="text-gray-900">{{ activity.owner_name }}</span>
+              <span class="font-medium text-gray-800">{{
+                activity.owner_name
+              }}</span>
               <span v-if="activity.type">{{ activity.type }}</span>
               <span
                 v-if="activity.data.field_label"
-                class="max-w-xs truncate text-gray-900"
+                class="max-w-xs truncate font-medium text-gray-800"
               >
                 {{ activity.data.field_label }}
               </span>
               <span v-if="activity.value">{{ activity.value }}</span>
               <span
                 v-if="activity.data.old_value"
-                class="max-w-xs truncate text-gray-900"
+                class="max-w-xs truncate font-medium text-gray-800"
               >
                 {{ activity.data.old_value }}
               </span>
               <span v-if="activity.to">to</span>
               <span
                 v-if="activity.data.value"
-                class="max-w-xs truncate text-gray-900"
+                class="max-w-xs truncate font-medium text-gray-800"
               >
                 {{ activity.data.value }}
               </span>
@@ -330,7 +340,7 @@
             <div class="ml-auto whitespace-nowrap">
               <Tooltip
                 :text="dateFormat(activity.creation, dateTooltipFormat)"
-                class="text-sm leading-6 text-gray-600"
+                class="text-gray-600"
               >
                 {{ timeAgo(activity.creation) }}
               </Tooltip>
@@ -383,6 +393,11 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
+import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import DotIcon from '@/components/Icons/DotIcon.vue'
+import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
+import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
+import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
@@ -394,7 +409,7 @@ import {
   TextEditor,
   Avatar,
 } from 'frappe-ui'
-import { computed, h, defineModel } from 'vue'
+import { computed, h, defineModel, markRaw } from 'vue'
 
 const { getUser } = usersStore()
 
@@ -473,20 +488,25 @@ const emptyTextIcon = computed(() => {
 })
 
 function timelineIcon(activity_type) {
-  if (activity_type == 'creation') {
-    return 'plus'
-  } else if (activity_type == 'removed') {
-    return 'trash-2'
-  } else if (activity_type == 'communication') {
-    return 'at-sign'
-  } else if (activity_type == 'comment') {
-    return 'file-text'
-  } else if (activity_type == 'incoming_call') {
-    return 'phone-incoming'
-  } else if (activity_type == 'outgoing_call') {
-    return 'phone-outgoing'
+  let icon
+  switch (activity_type) {
+    case 'creation':
+      icon = DealsIcon
+      break
+    case 'communication':
+      icon = EmailAtIcon
+      break
+    case 'incoming_call':
+      icon = InboundCallIcon
+      break
+    case 'outgoing_call':
+      icon = OutboundCallIcon
+      break
+    default:
+      icon = DotIcon
   }
-  return 'edit'
+
+  return markRaw(icon)
 }
 </script>
 
