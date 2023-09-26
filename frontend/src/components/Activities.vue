@@ -1,26 +1,28 @@
 <template>
-  <div class="px-10 py-5 flex items-center justify-between font-medium text-lg">
-    <div class="flex items-center h-7 text-xl font-semibold">{{ title }}</div>
+  <div class="flex items-center justify-between px-10 py-5 text-lg font-medium">
+    <div class="flex h-7 items-center text-xl font-semibold text-gray-800">
+      {{ title }}
+    </div>
     <Button v-if="title == 'Calls'" variant="solid" @click="emit('makeCall')">
-      <PhoneIcon class="w-4 h-4" />
+      <PhoneIcon class="h-4 w-4" />
     </Button>
     <Button
       v-else-if="title == 'Notes'"
       variant="solid"
       @click="emit('makeNote')"
     >
-      <FeatherIcon name="plus" class="w-4 h-4" />
+      <FeatherIcon name="plus" class="h-4 w-4" />
     </Button>
   </div>
   <div v-if="activities.length" class="flex-1 overflow-y-auto">
     <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 py-5 pt-0">
       <div
         v-for="note in activities"
-        class="group flex flex-col justify-between gap-2 px-4 py-3 border rounded-lg h-48 shadow-sm hover:bg-gray-50 cursor-pointer"
+        class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md px-4 py-3 bg-gray-50 hover:bg-gray-100"
         @click="emit('makeNote', note)"
       >
         <div class="flex items-center justify-between">
-          <div class="text-lg font-medium truncate">
+          <div class="truncate text-lg font-medium">
             {{ note.title }}
           </div>
           <Dropdown
@@ -37,7 +39,7 @@
             <Button
               icon="more-horizontal"
               variant="ghosted"
-              class="hover:bg-white !h-6 !w-6"
+              class="!h-6 !w-6 hover:bg-gray-100"
             />
           </Dropdown>
         </div>
@@ -48,7 +50,7 @@
           editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
           class="flex-1 overflow-hidden"
         />
-        <div class="flex items-center justify-between mt-1 gap-2">
+        <div class="mt-1 flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <UserAvatar :user="note.owner" size="xs" />
             <div class="text-sm text-gray-800">
@@ -65,24 +67,24 @@
     </div>
     <div v-else-if="title == 'Calls'">
       <div v-for="(call, i) in activities">
-        <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-5">
+        <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
           <div
-            class="relative flex justify-center after:absolute after:border-l after:border-gray-300 after:top-0 after:left-[50%] after:-z-10"
+            class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
             :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
           >
             <div
-              class="flex items-center justify-center rounded-full outline outline-4 outline-white w-6 h-6 bg-gray-200 mt-[15px] z-10"
+              class="z-10 mt-[15px] flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
             >
               <FeatherIcon
                 :name="
                   call.type == 'Incoming' ? 'phone-incoming' : 'phone-outgoing'
                 "
-                class="w-3.5 h-3.5 text-gray-600"
+                class="h-4 w-4 text-gray-800"
               />
             </div>
           </div>
           <div
-            class="flex flex-col gap-3 bg-gray-50 rounded-md p-4 mb-3 max-w-[70%]"
+            class="mb-3 flex max-w-[70%] flex-col gap-3 rounded-md bg-gray-50 p-4"
           >
             <div class="flex items-center justify-between">
               <div>
@@ -90,7 +92,7 @@
               </div>
               <div>
                 <Tooltip
-                  class="text-gray-600 text-sm"
+                  class="text-sm text-gray-600"
                   :text="dateFormat(call.creation, dateTooltipFormat)"
                 >
                   {{ timeAgo(call.creation) }}
@@ -99,17 +101,17 @@
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
-                <DurationIcon class="w-4 h-4 text-gray-600" />
+                <DurationIcon class="h-4 w-4 text-gray-600" />
                 <div class="text-sm text-gray-600">Duration</div>
                 <div class="text-sm">
                   {{ call.duration }}
                 </div>
               </div>
               <div
-                class="flex items-center gap-1 cursor-pointer select-none"
+                class="flex cursor-pointer select-none items-center gap-1"
                 @click="call.show_recording = !call.show_recording"
               >
-                <PlayIcon class="w-4 h-4 text-gray-600" />
+                <PlayIcon class="h-4 w-4 text-gray-600" />
                 <div class="text-sm text-gray-600">
                   {{
                     call.show_recording ? 'Hide recording' : 'Listen to call'
@@ -119,7 +121,7 @@
             </div>
             <div
               v-if="call.show_recording"
-              class="flex items-center justify-between border rounded"
+              class="flex items-center justify-between rounded border"
             >
               <audio
                 class="audio-control"
@@ -134,7 +136,7 @@
                   :label="call.caller.label"
                   size="xl"
                 />
-                <div class="flex flex-col gap-1 ml-1">
+                <div class="ml-1 flex flex-col gap-1">
                   <div class="text-base font-medium">
                     {{ call.caller.label }}
                   </div>
@@ -144,14 +146,14 @@
                 </div>
                 <FeatherIcon
                   name="arrow-right"
-                  class="w-5 h-5 text-gray-600 mx-2"
+                  class="mx-2 h-5 w-5 text-gray-600"
                 />
                 <Avatar
                   :image="call.receiver.image"
                   :label="call.receiver.label"
                   size="xl"
                 />
-                <div class="flex flex-col gap-1 ml-1">
+                <div class="ml-1 flex flex-col gap-1">
                   <div class="text-base font-medium">
                     {{ call.receiver.label }}
                   </div>
@@ -168,11 +170,11 @@
     <div v-else v-for="(activity, i) in activities">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
         <div
-          class="relative flex justify-center after:absolute after:border-l after:border-gray-200 after:top-0 after:left-[50%] after:-z-10"
+          class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
           :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
         >
           <div
-            class="flex items-center justify-center rounded-full w-7 h-7 bg-gray-100 z-10"
+            class="z-10 flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
             :class="{
               'mt-[15px]': [
                 'communication',
@@ -181,20 +183,20 @@
               ].includes(activity.activity_type),
             }"
           >
-            <FeatherIcon :name="activity.icon" class="w-4 h-4 text-gray-800" />
+            <FeatherIcon :name="activity.icon" class="h-4 w-4 text-gray-800" />
           </div>
         </div>
         <div v-if="activity.activity_type == 'communication'" class="pb-6">
           <div
-            class="rounded-md p-3 text-base cursor-pointer bg-gray-50 leading-6 transition-all duration-300 ease-in-out"
+            class="cursor-pointer rounded-md bg-gray-50 p-3 text-base leading-6 transition-all duration-300 ease-in-out"
           >
-            <div class="flex items-center justify-between gap-2 mb-3">
+            <div class="mb-3 flex items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <UserAvatar :user="activity.data.sender" size="md" />
                 <span>{{ activity.data.sender_full_name }}</span>
                 <span>&middot;</span>
                 <Tooltip
-                  class="text-gray-600 text-sm"
+                  class="text-sm text-gray-600"
                   :text="dateFormat(activity.creation, dateTooltipFormat)"
                 >
                   {{ timeAgo(activity.creation) }}
@@ -216,7 +218,7 @@
             activity.activity_type == 'incoming_call' ||
             activity.activity_type == 'outgoing_call'
           "
-          class="flex flex-col gap-3 bg-gray-50 rounded-md p-4 mb-3 max-w-[70%]"
+          class="mb-3 flex max-w-[70%] flex-col gap-3 rounded-md bg-gray-50 p-4"
         >
           <div class="flex items-center justify-between">
             <div>
@@ -224,7 +226,7 @@
             </div>
             <div>
               <Tooltip
-                class="text-gray-600 text-sm"
+                class="text-sm text-gray-600"
                 :text="dateFormat(activity.creation, dateTooltipFormat)"
               >
                 {{ timeAgo(activity.creation) }}
@@ -233,17 +235,17 @@
           </div>
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1">
-              <DurationIcon class="w-4 h-4 text-gray-600" />
+              <DurationIcon class="h-4 w-4 text-gray-600" />
               <div class="text-sm text-gray-600">Duration</div>
               <div class="text-sm">
                 {{ activity.duration }}
               </div>
             </div>
             <div
-              class="flex items-center gap-1 cursor-pointer select-none"
+              class="flex cursor-pointer select-none items-center gap-1"
               @click="activity.show_recording = !activity.show_recording"
             >
-              <PlayIcon class="w-4 h-4 text-gray-600" />
+              <PlayIcon class="h-4 w-4 text-gray-600" />
               <div class="text-sm text-gray-600">
                 {{
                   activity.show_recording ? 'Hide recording' : 'Listen to call'
@@ -253,7 +255,7 @@
           </div>
           <div
             v-if="activity.show_recording"
-            class="flex items-center justify-between border rounded"
+            class="flex items-center justify-between rounded border"
           >
             <audio
               class="audio-control"
@@ -268,7 +270,7 @@
                 :label="activity.caller.label"
                 size="xl"
               />
-              <div class="flex flex-col gap-1 ml-1">
+              <div class="ml-1 flex flex-col gap-1">
                 <div class="text-base font-medium">
                   {{ activity.caller.label }}
                 </div>
@@ -278,14 +280,14 @@
               </div>
               <FeatherIcon
                 name="arrow-right"
-                class="w-5 h-5 text-gray-600 mx-2"
+                class="mx-2 h-5 w-5 text-gray-600"
               />
               <Avatar
                 :image="activity.receiver.image"
                 :label="activity.receiver.label"
                 size="xl"
               />
-              <div class="flex flex-col gap-1 ml-1">
+              <div class="ml-1 flex flex-col gap-1">
                 <div class="text-base font-medium">
                   {{ activity.receiver.label }}
                 </div>
@@ -305,21 +307,21 @@
               <span v-if="activity.type">{{ activity.type }}</span>
               <span
                 v-if="activity.data.field_label"
-                class="text-gray-900 truncate max-w-xs"
+                class="max-w-xs truncate text-gray-900"
               >
                 {{ activity.data.field_label }}
               </span>
               <span v-if="activity.value">{{ activity.value }}</span>
               <span
                 v-if="activity.data.old_value"
-                class="text-gray-900 truncate max-w-xs"
+                class="max-w-xs truncate text-gray-900"
               >
                 {{ activity.data.old_value }}
               </span>
               <span v-if="activity.to">to</span>
               <span
                 v-if="activity.data.value"
-                class="text-gray-900 truncate max-w-xs"
+                class="max-w-xs truncate text-gray-900"
               >
                 {{ activity.data.value }}
               </span>
@@ -328,7 +330,7 @@
             <div class="ml-auto whitespace-nowrap">
               <Tooltip
                 :text="dateFormat(activity.creation, dateTooltipFormat)"
-                class="text-sm text-gray-600 leading-6"
+                class="text-sm leading-6 text-gray-600"
               >
                 {{ timeAgo(activity.creation) }}
               </Tooltip>
@@ -336,7 +338,7 @@
           </div>
           <div
             v-if="activity.activity_type == 'comment'"
-            class="py-3 px-4 rounded-xl shadow-sm border max-w-[80%] text-base cursor-pointer leading-6 transition-all duration-300 ease-in-out"
+            class="max-w-[80%] cursor-pointer rounded-xl border px-4 py-3 text-base leading-6 shadow-sm transition-all duration-300 ease-in-out"
             v-html="activity.data"
           />
         </div>
@@ -345,9 +347,9 @@
   </div>
   <div
     v-else
-    class="flex-1 flex flex-col gap-3 items-center justify-center font-medium text-xl text-gray-500"
+    class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
   >
-    <component :is="emptyTextIcon" class="w-10 h-10" />
+    <component :is="emptyTextIcon" class="h-10 w-10" />
     <span>{{ emptyText }}</span>
     <Button
       v-if="title == 'Calls'"
