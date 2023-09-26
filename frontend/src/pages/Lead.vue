@@ -185,11 +185,11 @@
                 enter-from-class="max-h-0 overflow-hidden"
                 leave-to-class="max-h-0 overflow-hidden"
               >
-                <div v-if="opened" class="flex flex-col gap-1.5 p-3 pt-0">
+                <div v-if="opened" class="flex flex-col gap-1.5 px-3">
                   <div
                     v-for="field in section.fields"
                     :key="field.name"
-                    class="flex items-center px-3 gap-2 text-base leading-5"
+                    class="flex items-center px-3 gap-2 text-base leading-5 last:mb-3"
                   >
                     <div class="text-gray-600 w-[106px]">
                       {{ field.label }}
