@@ -1,11 +1,15 @@
 <template>
-  <div class="flex gap-3 pt-2 pb-6 px-10">
-    <UserAvatar :user="getUser().name" size="xl" />
+  <div class="flex gap-3 px-10 pb-6 pt-2">
+    <UserAvatar
+      :user="getUser().name"
+      size="xl"
+      :class="showCommunicationBox ? 'mt-3' : ''"
+    />
     <Button
       ref="sendEmailRef"
       variant="outline"
       size="md"
-      class="h-8.5 w-full inline-flex justify-between"
+      class="inline-flex h-8.5 w-full justify-between"
       @click="showCommunicationBox = true"
       v-show="!showCommunicationBox"
     >
@@ -22,12 +26,6 @@
       @keydown.ctrl.enter.capture.stop="submitComment"
       @keydown.meta.enter.capture.stop="submitComment"
     >
-      <div class="mb-4 flex items-center">
-        <UserAvatar :user="getUser().name" size="sm" />
-        <span class="ml-2 text-base font-medium text-gray-900">
-          {{ getUser().full_name }}
-        </span>
-      </div>
       <EmailEditor
         ref="newEmailEditor"
         :value="newEmail"
