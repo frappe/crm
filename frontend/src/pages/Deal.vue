@@ -65,7 +65,11 @@
           v-for="tab in tabs"
           :key="tab.label"
         >
-          <Activities :title="tab.label" v-model="deal" />
+          <Activities
+            :title="tab.label"
+            v-model:reload="reload"
+            v-model="deal"
+          />
         </TabPanel>
       </TabPanels>
     </TabGroup>
@@ -387,6 +391,8 @@ const deal = createResource({
   auto: true,
 })
 
+const reload = ref(false)
+
 function updateDeal(fieldname, value) {
   createResource({
     url: 'frappe.client.set_value',
@@ -400,6 +406,7 @@ function updateDeal(fieldname, value) {
     onSuccess: () => {
       deal.reload()
       contacts.reload()
+      reload.value = true
       createToast({
         title: 'Deal updated',
         icon: 'check',

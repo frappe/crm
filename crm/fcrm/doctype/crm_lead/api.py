@@ -93,5 +93,39 @@ def get_activities(name):
 		activities.append(activity)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
+	activities = handle_multiple_versions(activities)
 
 	return activities
+
+def handle_multiple_versions(versions):
+	activities = []
+	grouped_versions = []
+	old_version = None
+	for version in versions:
+		is_version = version["activity_type"] in ["changed", "added", "removed"]
+		if not is_version:
+			activities.append(version)
+		if not old_version:
+			old_version = version
+			if is_version: grouped_versions.append(version)
+			continue
+		if is_version and old_version.get("owner") and version["owner"] == old_version["owner"]:
+			grouped_versions.append(version)
+		else:
+			if grouped_versions:
+				activities.append(parse_grouped_versions(grouped_versions))
+			grouped_versions = []
+			if is_version: grouped_versions.append(version)
+		old_version = version
+		if version == versions[-1] and grouped_versions:
+			activities.append(parse_grouped_versions(grouped_versions))
+
+	return activities
+
+def parse_grouped_versions(versions):
+	version = versions[0]
+	if len(versions) == 1:
+		return version
+	other_versions = versions[1:]
+	version["other_versions"] = other_versions
+	return version

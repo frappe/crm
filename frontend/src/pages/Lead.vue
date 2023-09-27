@@ -68,7 +68,11 @@
           v-for="tab in tabs"
           :key="tab.label"
         >
-          <Activities :title="tab.label" v-model="lead" />
+          <Activities
+            :title="tab.label"
+            v-model:reload="reload"
+            v-model="lead"
+          />
         </TabPanel>
       </TabPanels>
     </TabGroup>
@@ -361,6 +365,8 @@ const lead = createResource({
   auto: true,
 })
 
+const reload = ref(false)
+
 function updateLead(fieldname, value) {
   createResource({
     url: 'frappe.client.set_value',
@@ -374,6 +380,7 @@ function updateLead(fieldname, value) {
     onSuccess: () => {
       lead.reload()
       contacts.reload()
+      reload.value = true
       createToast({
         title: 'Lead updated',
         icon: 'check',

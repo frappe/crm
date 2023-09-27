@@ -170,8 +170,13 @@
     <div v-else v-for="(activity, i) in activities">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
         <div
-          class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
-          :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
+          class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
+          :class="[
+            i != activities.length - 1 ? 'before:h-full' : 'before:h-4',
+            activity.other_versions
+              ? 'after:translate-y-[calc(-50% - 4px)] after:absolute after:bottom-9 after:left-[50%] after:top-0 after:-z-10 after:w-8 after:rounded-bl-xl after:border-b after:border-l after:border-gray-200'
+              : '',
+          ]"
         >
           <div
             class="z-10 flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
@@ -308,7 +313,7 @@
             </div>
           </div>
         </div>
-        <div v-else class="mb-4 flex flex-col gap-3 py-1.5">
+        <div v-else class="mb-4 flex flex-col gap-5 py-1.5">
           <div class="flex items-start justify-stretch gap-2 text-base">
             <div class="inline-flex flex-wrap gap-1 text-gray-600">
               <span class="font-medium text-gray-800">{{
@@ -345,6 +350,60 @@
                 {{ timeAgo(activity.creation) }}
               </Tooltip>
             </div>
+          </div>
+          <div
+            v-if="activity.other_versions && activity.show_others"
+            v-for="activity in activity.other_versions"
+            class="flex items-start justify-stretch gap-2 text-base"
+          >
+            <div class="inline-flex flex-wrap gap-1 text-gray-600">
+              <span v-if="activity.type">{{ activity.type }}</span>
+              <span
+                v-if="activity.data.field_label"
+                class="max-w-xs truncate font-medium text-gray-800"
+              >
+                {{ activity.data.field_label }}
+              </span>
+              <span v-if="activity.value">{{ activity.value }}</span>
+              <span
+                v-if="activity.data.old_value"
+                class="max-w-xs truncate font-medium text-gray-800"
+              >
+                {{ activity.data.old_value }}
+              </span>
+              <span v-if="activity.to">to</span>
+              <span
+                v-if="activity.data.value"
+                class="max-w-xs truncate font-medium text-gray-800"
+              >
+                {{ activity.data.value }}
+              </span>
+            </div>
+
+            <div class="ml-auto whitespace-nowrap">
+              <Tooltip
+                :text="dateFormat(activity.creation, dateTooltipFormat)"
+                class="text-gray-600"
+              >
+                {{ timeAgo(activity.creation) }}
+              </Tooltip>
+            </div>
+          </div>
+          <div v-if="activity.other_versions">
+            <Button
+              :label="
+                activity.show_others ? 'Hide all changes' : 'Show all changes'
+              "
+              variant="outline"
+              @click="activity.show_others = !activity.show_others"
+            >
+              <template #suffix>
+                <FeatherIcon
+                  :name="activity.show_others ? 'chevron-up' : 'chevron-down'"
+                  class="h-4 text-gray-600"
+                />
+              </template>
+            </Button>
           </div>
         </div>
       </div>
@@ -415,7 +474,7 @@ import {
   createListResource,
   call,
 } from 'frappe-ui'
-import { ref, computed, h, defineModel, markRaw } from 'vue'
+import { ref, computed, h, defineModel, markRaw, watch } from 'vue'
 
 const { getUser } = usersStore()
 const { getContact } = contactsStore()
@@ -425,13 +484,10 @@ const props = defineProps({
     type: String,
     default: 'Activity',
   },
-  activities: {
-    type: Array,
-    default: [],
-  },
 })
 
 const lead = defineModel()
+const reload = defineModel('reload')
 
 const versions = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_activities',
@@ -535,27 +591,38 @@ const activities = computed(() => {
     )
       return
 
-    activity.owner_name = getUser(activity.owner).full_name
-    activity.type = ''
-    activity.value = ''
-    activity.to = ''
+    update_activities_details(activity)
 
-    if (activity.activity_type == 'creation') {
-      activity.type = activity.data
-    } else if (activity.activity_type == 'added') {
-      activity.type = 'added'
-      activity.value = 'value as'
-    } else if (activity.activity_type == 'removed') {
-      activity.type = 'removed'
-      activity.value = 'value'
-    } else if (activity.activity_type == 'changed') {
-      activity.type = 'changed'
-      activity.value = 'value from'
-      activity.to = 'to'
+    if (activity.other_versions) {
+      activity.show_others = false
+      activity.other_versions.forEach((other_version) => {
+        update_activities_details(other_version)
+      })
     }
   })
   return activities
 })
+
+function update_activities_details(activity) {
+  activity.owner_name = getUser(activity.owner).full_name
+  activity.type = ''
+  activity.value = ''
+  activity.to = ''
+
+  if (activity.activity_type == 'creation') {
+    activity.type = activity.data
+  } else if (activity.activity_type == 'added') {
+    activity.type = 'added'
+    activity.value = 'as'
+  } else if (activity.activity_type == 'removed') {
+    activity.type = 'removed'
+    activity.value = 'value'
+  } else if (activity.activity_type == 'changed') {
+    activity.type = 'changed'
+    activity.value = 'from'
+    activity.to = 'to'
+  }
+}
 
 const emptyText = computed(() => {
   let text = 'No emails communications'
@@ -645,6 +712,13 @@ async function updateNote(note) {
     }
   }
 }
+
+watch(reload, (value) => {
+  if (value) {
+    versions.reload()
+    reload.value = false
+  }
+})
 </script>
 
 <style scoped>
