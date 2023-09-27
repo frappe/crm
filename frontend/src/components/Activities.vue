@@ -454,8 +454,9 @@
   </div>
   <CommunicationArea
     ref="emailBox"
-    v-if="['Emails', 'Activity'].includes(title) && lead"
+    v-if="['Emails', 'Activity'].includes(title)"
     v-model="lead"
+    v-model:reload="reload_email"
   />
   <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
 </template>
@@ -507,6 +508,8 @@ const props = defineProps({
 
 const lead = defineModel()
 const reload = defineModel('reload')
+
+const reload_email = ref(false)
 
 const versions = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_activities',
@@ -739,10 +742,11 @@ async function updateNote(note) {
   }
 }
 
-watch(reload, (value) => {
-  if (value) {
+watch([reload, reload_email], ([reload_value, reload_email_value]) => {
+  if (reload_value || reload_email_value) {
     versions.reload()
     reload.value = false
+    reload_email.value = false
   }
 })
 </script>
