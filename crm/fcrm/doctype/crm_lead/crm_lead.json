@@ -14,6 +14,7 @@
   "middle_name",
   "last_name",
   "is_deal",
+  "created_as_deal",
   "column_break_izjs",
   "lead_name",
   "gender",
@@ -251,12 +252,19 @@
   {
    "fieldname": "section_break_jyxr",
    "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "created_as_deal",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Created as Deal"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-25 19:21:22.778067",
+ "modified": "2023-09-27 18:54:18.196159",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

@@ -448,6 +448,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
+import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
@@ -582,7 +583,7 @@ const activities = computed(() => {
     return notes.data
   }
   activities.forEach((activity) => {
-    activity.icon = timelineIcon(activity.activity_type)
+    activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
 
     if (
       activity.activity_type == 'incoming_call' ||
@@ -611,6 +612,10 @@ function update_activities_details(activity) {
 
   if (activity.activity_type == 'creation') {
     activity.type = activity.data
+  } else if (activity.activity_type == 'deal') {
+    activity.type = 'converted the lead to this deal'
+    activity.data.field_label = ''
+    activity.data.value = ''
   } else if (activity.activity_type == 'added') {
     activity.type = 'added'
     activity.value = 'as'
@@ -644,10 +649,13 @@ const emptyTextIcon = computed(() => {
   return h(icon, { class: 'text-gray-500' })
 })
 
-function timelineIcon(activity_type) {
+function timelineIcon(activity_type, is_lead) {
   let icon
   switch (activity_type) {
     case 'creation':
+      icon = is_lead ? LeadsIcon : DealsIcon
+      break
+    case 'deal':
       icon = DealsIcon
       break
     case 'communication':

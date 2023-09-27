@@ -378,6 +378,9 @@ function updateLead(fieldname, value) {
     },
     auto: true,
     onSuccess: () => {
+      if (fieldname == 'is_deal') {
+        router.push({ name: 'Deal', params: { dealId: lead.data.name } })
+      }
       lead.reload()
       contacts.reload()
       reload.value = true
@@ -575,7 +578,6 @@ function convertToDeal() {
   lead.data.status = 'Qualified'
   lead.data.is_deal = 1
   updateLead('is_deal', 1)
-  router.push({ name: 'Deal', params: { dealId: lead.data.name } })
 }
 
 function updateAssignedAgent(email) {

@@ -258,6 +258,8 @@ let newDeal = reactive({
   email: '',
   mobile_no: '',
   lead_owner: getUser().email,
+  is_deal: 1,
+  created_as_deal: 1,
 })
 
 const createLead = createResource({
@@ -284,9 +286,9 @@ function createNewDeal(close) {
       },
       onSuccess(data) {
         router.push({
-          name: 'Lead',
+          name: 'Deal',
           params: {
-            leadId: data.name,
+            dealId: data.name,
           },
         })
       },

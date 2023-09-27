@@ -29,21 +29,28 @@ def get_activities(name):
 	docinfo = frappe.response["docinfo"]
 	lead_fields_meta = frappe.get_meta("CRM Lead").fields
 
-	doc = frappe.get_doc("CRM Lead", name, fields=["creation", "owner"])
+	doc = frappe.db.get_values("CRM Lead", name, ["creation", "owner", "created_as_deal"])[0]
+	created_as_deal = doc[2]
+	is_lead = False if created_as_deal else True
 	activities = [{
 		"activity_type": "creation",
-		"creation": doc.creation,
-		"owner": doc.owner,
-		"data": "created this lead",
+		"creation": doc[0],
+		"owner": doc[1],
+		"data": "created this " + ("deal" if created_as_deal else "lead"),
+		"is_lead": is_lead,
 	}]
+
+	docinfo.versions.reverse()
 
 	for version in docinfo.versions:
 		data = json.loads(version.data)
 		if not data.get("changed"):
 			continue
 		if change := data.get("changed")[0]:
-			activity_type = "changed"
 			field_label = next((f.label for f in lead_fields_meta if f.fieldname == change[0]), None)
+			activity_type = "changed"
+			if field_label == "Lead Owner" and (created_as_deal or not is_lead):
+				field_label = "Deal Owner"
 			data = {
 				"field": change[0],
 				"field_label": field_label,
@@ -59,6 +66,9 @@ def get_activities(name):
 					"field_label": field_label,
 					"value": change[2],
 				}
+				if field_label == "Is Deal" and change[2] and is_lead:
+					activity_type = "deal"
+					is_lead = False
 			elif change[1] and not change[2]:
 				activity_type = "removed"
 				data = {
@@ -72,6 +82,7 @@ def get_activities(name):
 			"creation": version.creation,
 			"owner": version.owner,
 			"data": data,
+			"is_lead": is_lead,
 		}
 		activities.append(activity)
 
@@ -89,6 +100,7 @@ def get_activities(name):
 				"bcc": communication.bcc,
 				"read_by_recipient": communication.read_by_recipient,
 			},
+			"is_lead": is_lead,
 		}
 		activities.append(activity)
 
