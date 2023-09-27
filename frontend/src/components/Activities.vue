@@ -3,23 +3,23 @@
     <div class="flex h-7 items-center text-xl font-semibold text-gray-800">
       {{ title }}
     </div>
-    <Button v-if="title == 'Calls'" variant="solid" @click="makeCall(lead.data.mobile_no)">
+    <Button
+      v-if="title == 'Calls'"
+      variant="solid"
+      @click="makeCall(lead.data.mobile_no)"
+    >
       <PhoneIcon class="h-4 w-4" />
     </Button>
-    <Button
-      v-else-if="title == 'Notes'"
-      variant="solid"
-      @click="emit('makeNote')"
-    >
+    <Button v-else-if="title == 'Notes'" variant="solid" @click="showNote">
       <FeatherIcon name="plus" class="h-4 w-4" />
     </Button>
   </div>
-  <div v-if="activities.length" class="flex-1 overflow-y-auto">
+  <div v-if="activities?.length" class="flex-1 overflow-y-auto">
     <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 py-5 pt-0">
       <div
         v-for="note in activities"
         class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
-        @click="emit('makeNote', note)"
+        @click="showNote(note)"
       >
         <div class="flex items-center justify-between">
           <div class="truncate text-lg font-medium">
@@ -30,7 +30,7 @@
               {
                 icon: 'trash-2',
                 label: 'Delete',
-                onClick: () => emit('deleteNote', note.name),
+                onClick: () => deleteNote(note.name),
               },
             ]"
             @click.stop
@@ -346,11 +346,6 @@
               </Tooltip>
             </div>
           </div>
-          <div
-            v-if="activity.activity_type == 'comment'"
-            class="max-w-[80%] cursor-pointer rounded-xl border px-4 py-3 text-base leading-6 shadow-sm transition-all duration-300 ease-in-out"
-            v-html="activity.data"
-          />
         </div>
       </div>
     </div>
@@ -371,7 +366,7 @@
       v-else-if="title == 'Notes'"
       variant="solid"
       label="Create note"
-      @click="emit('makeNote')"
+      @click="showNote"
     />
     <Button
       v-else-if="title == 'Emails'"
@@ -385,6 +380,7 @@
     v-if="['Emails', 'Activity'].includes(title) && lead"
     v-model="lead"
   />
+  <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -399,8 +395,15 @@ import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
-import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import NoteModal from '@/components/NoteModal.vue'
+import {
+  timeAgo,
+  dateFormat,
+  dateTooltipFormat,
+  secondsToDuration,
+} from '@/utils'
 import { usersStore } from '@/stores/users'
+import { contactsStore } from '@/stores/contacts'
 import {
   Button,
   FeatherIcon,
@@ -408,10 +411,14 @@ import {
   Dropdown,
   TextEditor,
   Avatar,
+  createResource,
+  createListResource,
+  call,
 } from 'frappe-ui'
-import { computed, h, defineModel, markRaw } from 'vue'
+import { ref, computed, h, defineModel, markRaw } from 'vue'
 
 const { getUser } = usersStore()
+const { getContact } = contactsStore()
 
 const props = defineProps({
   title: {
@@ -426,20 +433,105 @@ const props = defineProps({
 
 const lead = defineModel()
 
-const emit = defineEmits(['makeNote', 'deleteNote'])
+const versions = createResource({
+  url: 'crm.fcrm.doctype.crm_lead.api.get_activities',
+  params: { name: lead.value.data.name },
+  cache: ['activity', lead.value.data.name],
+  auto: true,
+})
+
+const calls = createListResource({
+  type: 'list',
+  doctype: 'CRM Call Log',
+  cache: ['Call Logs', lead.value.data.name],
+  fields: [
+    'name',
+    'caller',
+    'receiver',
+    'from',
+    'to',
+    'duration',
+    'start_time',
+    'end_time',
+    'status',
+    'type',
+    'recording_url',
+    'creation',
+    'note',
+  ],
+  filters: { lead: lead.value.data.name },
+  orderBy: 'creation desc',
+  pageLength: 999,
+  auto: true,
+  transform: (docs) => {
+    docs.forEach((doc) => {
+      doc.show_recording = false
+      doc.activity_type =
+        doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
+      doc.duration = secondsToDuration(doc.duration)
+      if (doc.type === 'Incoming') {
+        doc.caller = {
+          label: getContact(doc.from)?.full_name || 'Unknown',
+          image: getContact(doc.from)?.image,
+        }
+        doc.receiver = {
+          label: getUser(doc.receiver).full_name,
+          image: getUser(doc.receiver).user_image,
+        }
+      } else {
+        doc.caller = {
+          label: getUser(doc.caller).full_name,
+          image: getUser(doc.caller).user_image,
+        }
+        doc.receiver = {
+          label: getContact(doc.to)?.full_name || 'Unknown',
+          image: getContact(doc.to)?.image,
+        }
+      }
+    })
+    return docs
+  },
+})
+
+const notes = createListResource({
+  type: 'list',
+  doctype: 'CRM Note',
+  cache: ['Notes', lead.value.data.name],
+  fields: ['name', 'title', 'content', 'owner', 'modified'],
+  filters: { lead: lead.value.data.name },
+  orderBy: 'modified desc',
+  pageLength: 999,
+  auto: true,
+})
+
+function all_activities() {
+  if (!versions.data) return []
+  if (!calls.data) return versions.data
+  return [...versions.data, ...calls.data].sort(
+    (a, b) => new Date(b.creation) - new Date(a.creation)
+  )
+}
 
 const activities = computed(() => {
-  if (props.title == 'Calls') {
-    props.activities.forEach((activity) => {
-      activity.show_recording = false
-    })
-    return props.activities
+  let activities = []
+  if (props.title == 'Activity') {
+    activities = all_activities()
+  } else if (props.title == 'Emails') {
+    activities = versions.data.filter(
+      (activity) => activity.activity_type === 'communication'
+    )
+  } else if (props.title == 'Calls') {
+    return calls.data
+  } else if (props.title == 'Notes') {
+    return notes.data
   }
-  props.activities.forEach((activity) => {
+  activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type)
+
     if (
       activity.activity_type == 'incoming_call' ||
-      activity.activity_type == 'outgoing_call'
+      activity.activity_type == 'outgoing_call' ||
+      activity.activity_type == 'communication'
     )
       return
 
@@ -450,8 +542,6 @@ const activities = computed(() => {
 
     if (activity.activity_type == 'creation') {
       activity.type = activity.data
-    } else if (activity.activity_type == 'comment') {
-      activity.type = 'added a comment'
     } else if (activity.activity_type == 'added') {
       activity.type = 'added'
       activity.value = 'value as'
@@ -464,7 +554,7 @@ const activities = computed(() => {
       activity.to = 'to'
     }
   })
-  return props.activities
+  return activities
 })
 
 const emptyText = computed(() => {
@@ -507,6 +597,53 @@ function timelineIcon(activity_type) {
   }
 
   return markRaw(icon)
+}
+
+const showNoteModal = ref(false)
+const note = ref({
+  title: '',
+  content: '',
+})
+
+function showNote(n) {
+  note.value = n || {
+    title: '',
+    content: '',
+  }
+  showNoteModal.value = true
+}
+
+async function deleteNote(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Note',
+    name,
+  })
+  notes.reload()
+}
+
+async function updateNote(note) {
+  if (note.name) {
+    let d = await call('frappe.client.set_value', {
+      doctype: 'CRM Note',
+      name: note.name,
+      fieldname: note,
+    })
+    if (d.name) {
+      notes.reload()
+    }
+  } else {
+    let d = await call('frappe.client.insert', {
+      doc: {
+        doctype: 'CRM Note',
+        title: note.title,
+        content: note.content,
+        lead: props.leadId,
+      },
+    })
+    if (d.name) {
+      notes.reload()
+    }
+  }
 }
 </script>
 

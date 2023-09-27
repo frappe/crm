@@ -21,15 +21,15 @@ def get_lead(name):
 		frappe.throw(_("Lead not found"), frappe.DoesNotExistError)
 	lead = lead.pop()
 
+	return lead
+
+@frappe.whitelist()
+def get_activities(name):
 	get_docinfo('', "CRM Lead", name)
 	docinfo = frappe.response["docinfo"]
-	activities = get_activities(lead, docinfo)
-
-	return { **lead, 'activities': activities }
-
-def get_activities(doc, docinfo):
 	lead_fields_meta = frappe.get_meta("CRM Lead").fields
 
+	doc = frappe.get_doc("CRM Lead", name, fields=["creation", "owner"])
 	activities = [{
 		"activity_type": "creation",
 		"creation": doc.creation,
@@ -72,15 +72,6 @@ def get_activities(doc, docinfo):
 			"creation": version.creation,
 			"owner": version.owner,
 			"data": data,
-		}
-		activities.append(activity)
-
-	for comment in docinfo.comments:
-		activity = {
-			"activity_type": "comment",
-			"creation": comment.creation,
-			"owner": comment.owner,
-			"data": comment.content,
 		}
 		activities.append(activity)
 
