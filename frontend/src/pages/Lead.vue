@@ -38,9 +38,9 @@
       />
     </template>
   </LayoutHeader>
-  <div v-if="lead.data" class="flex h-full overflow-hidden">
-    <TabGroup as="div" class="flex flex-col flex-1" @change="onTabChange">
-      <TabList class="flex items-center gap-6 border-b pl-5 relative">
+  <div v-if="lead?.data" class="flex h-full overflow-hidden">
+    <TabGroup as="div" class="flex flex-1 flex-col" @change="onTabChange">
+      <TabList class="relative flex items-center gap-6 border-b pl-5">
         <Tab
           ref="tabRef"
           as="template"
@@ -49,7 +49,7 @@
           v-slot="{ selected }"
         >
           <button
-            class="flex items-center gap-2 py-2.5 -mb-[1px] text-base text-gray-600 border-b border-transparent hover:text-gray-900 hover:border-gray-400 transition-all duration-300 ease-in-out"
+            class="-mb-[1px] flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 transition-all duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
             :class="{ 'text-gray-900': selected }"
           >
             <component v-if="tab.icon" :is="tab.icon" class="h-5" />
@@ -58,40 +58,37 @@
         </Tab>
         <div
           ref="indicator"
-          class="h-[1px] bg-gray-900 w-[82px] absolute -bottom-[1px]"
+          class="absolute -bottom-[1px] h-[1px] w-[82px] bg-gray-900"
           :style="{ left: `${indicatorLeftValue}px` }"
         />
       </TabList>
       <TabPanels class="flex flex-1 overflow-hidden">
         <TabPanel
-          class="flex-1 flex flex-col overflow-y-auto"
+          class="flex flex-1 flex-col overflow-y-auto"
           v-for="tab in tabs"
           :key="tab.label"
         >
           <Activities
-            :title="tab.activityTitle"
-            :activities="tab.content"
+            :title="tab.label"
+            v-model:reload="reload"
             v-model="lead"
-            @makeCall="makeCall(lead.data.mobile_no)"
-            @makeNote="(e) => showNote(e)"
-            @deleteNote="(e) => deleteNote(e)"
           />
         </TabPanel>
       </TabPanels>
     </TabGroup>
-    <div class="flex flex-col justify-between border-l w-[352px]">
+    <div class="flex w-[352px] flex-col justify-between border-l">
       <div
-        class="flex items-center border-b px-5 py-2.5 h-[41px] font-semibold text-lg"
+        class="flex h-[41px] items-center border-b px-5 py-2.5 text-lg font-semibold"
       >
         About this lead
       </div>
       <FileUploader @success="changeLeadImage" :validateFile="validateFile">
         <template #default="{ openFileSelector, error }">
-          <div class="flex gap-5 items-center justify-start p-5">
-            <div class="relative w-[88px] h-[88px] group">
+          <div class="flex items-center justify-start gap-5 p-5">
+            <div class="group relative h-[88px] w-[88px]">
               <Avatar
                 size="3xl"
-                class="w-[88px] h-[88px]"
+                class="h-[88px] w-[88px]"
                 :label="lead.data.first_name"
                 :image="lead.data.image"
               />
@@ -114,19 +111,19 @@
                 class="!absolute bottom-0 left-0 right-0"
               >
                 <div
-                  class="absolute bottom-0 left-0 right-0 rounded-b-full z-1 h-11 flex items-center justify-center pt-3 bg-black bg-opacity-40 cursor-pointer opacity-0 group-hover:opacity-100 duration-300 ease-in-out"
+                  class="z-1 absolute bottom-0 left-0 right-0 flex h-11 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
                   style="
                     -webkit-clip-path: inset(12px 0 0 0);
                     clip-path: inset(12px 0 0 0);
                   "
                 >
-                  <CameraIcon class="h-6 w-6 text-white cursor-pointer" />
+                  <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
                 </div>
               </Dropdown>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="lead.data.lead_name">
-                <div class="font-medium text-2xl truncate">
+                <div class="truncate text-2xl font-medium">
                   {{ lead.data.lead_name }}
                 </div>
               </Tooltip>
@@ -156,7 +153,7 @@
           </div>
         </template>
       </FileUploader>
-      <div class="flex-1 flex flex-col justify-between overflow-hidden">
+      <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
             v-for="(section, i) in detailSections"
@@ -164,9 +161,9 @@
             class="flex flex-col"
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
-              <div class="sticky bg-white top-0 p-3 border-t z-10">
+              <div class="sticky top-0 z-10 border-t bg-white p-3">
                 <div
-                  class="flex items-center gap-2 text-base font-semibold leading-5 px-2 cursor-pointer max-w-fit"
+                  class="flex max-w-fit cursor-pointer items-center gap-2 px-2 text-base font-semibold leading-5"
                   @click="toggle()"
                 >
                   <FeatherIcon
@@ -185,13 +182,13 @@
                 enter-from-class="max-h-0 overflow-hidden"
                 leave-to-class="max-h-0 overflow-hidden"
               >
-                <div v-if="opened" class="flex flex-col gap-1.5 p-3 pt-0">
+                <div v-if="opened" class="flex flex-col gap-1.5 px-3">
                   <div
                     v-for="field in section.fields"
                     :key="field.name"
-                    class="flex items-center px-3 gap-2 text-base leading-5"
+                    class="flex items-center gap-2 px-3 text-base leading-5 last:mb-3"
                   >
-                    <div class="text-gray-600 w-[106px]">
+                    <div class="w-[106px] text-gray-600">
                       {{ field.label }}
                     </div>
                     <div class="flex-1">
@@ -243,7 +240,7 @@
                             variant="ghost"
                             @click="togglePopover()"
                             :label="getUser(lead.data[field.name]).full_name"
-                            class="!justify-start w-full"
+                            class="w-full !justify-start"
                           >
                             <template #prefix>
                               <UserAvatar
@@ -271,7 +268,7 @@
                         <template #default="{ open }">
                           <Button
                             :label="lead.data[field.name]"
-                            class="justify-between w-full"
+                            class="w-full justify-between"
                           >
                             <template #prefix>
                               <IndicatorIcon
@@ -312,7 +309,6 @@
       </div>
     </div>
   </div>
-  <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
 </template>
 <script setup>
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -326,21 +322,18 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import NoteModal from '@/components/NoteModal.vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { TransitionPresets, useTransition } from '@vueuse/core'
 import {
   leadStatuses,
   statusDropdownOptions,
   openWebsite,
-  secondsToDuration,
   createToast,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import {
   createResource,
-  createListResource,
   FileUploader,
   ErrorMessage,
   FeatherIcon,
@@ -349,14 +342,13 @@ import {
   Dropdown,
   Tooltip,
   Avatar,
-  call,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import CameraIcon from '../components/Icons/CameraIcon.vue'
 
 const { getUser, users } = usersStore()
-const { getContact, contacts } = contactsStore()
+const { contacts } = contactsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -373,6 +365,8 @@ const lead = createResource({
   auto: true,
 })
 
+const reload = ref(false)
+
 function updateLead(fieldname, value) {
   createResource({
     url: 'frappe.client.set_value',
@@ -384,8 +378,12 @@ function updateLead(fieldname, value) {
     },
     auto: true,
     onSuccess: () => {
+      if (fieldname == 'is_deal') {
+        router.push({ name: 'Deal', params: { dealId: lead.data.name } })
+      }
       lead.reload()
       contacts.reload()
+      reload.value = true
       createToast({
         title: 'Lead updated',
         icon: 'check',
@@ -412,49 +410,24 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-const tabs = computed(() => {
-  return [
-    {
-      label: 'Activity',
-      icon: ActivityIcon,
-      content: all_activities(),
-      activityTitle: 'Activity',
-    },
-    {
-      label: 'Emails',
-      icon: EmailIcon,
-      content: lead.data.activities.filter(
-        (activity) => activity.activity_type === 'communication'
-      ),
-      activityTitle: 'Emails',
-    },
-    {
-      label: 'Calls',
-      icon: PhoneIcon,
-      content: calls.data,
-      activityTitle: 'Calls',
-    },
-    // {
-    //   label: 'Tasks',
-    //   icon: TaskIcon,
-    //   activityTitle: 'Tasks',
-    // },
-    {
-      label: 'Notes',
-      icon: NoteIcon,
-      activityTitle: 'Notes',
-      content: notes.data,
-    },
-  ]
-})
-
-function all_activities() {
-  if (!lead.data) return []
-  if (!calls.data) return lead.data.activities
-  return [...lead.data.activities, ...calls.data].sort(
-    (a, b) => new Date(b.creation) - new Date(a.creation)
-  )
-}
+const tabs = [
+  {
+    label: 'Activity',
+    icon: ActivityIcon,
+  },
+  {
+    label: 'Emails',
+    icon: EmailIcon,
+  },
+  {
+    label: 'Calls',
+    icon: PhoneIcon,
+  },
+  {
+    label: 'Notes',
+    icon: NoteIcon,
+  },
+]
 
 function changeLeadImage(file) {
   lead.data.image = file.file_url
@@ -605,118 +578,7 @@ function convertToDeal() {
   lead.data.status = 'Qualified'
   lead.data.is_deal = 1
   updateLead('is_deal', 1)
-  router.push({ name: 'Deal', params: { dealId: lead.data.name } })
 }
-
-const showNoteModal = ref(false)
-const note = ref({
-  title: '',
-  content: '',
-})
-
-const notes = createListResource({
-  type: 'list',
-  doctype: 'CRM Note',
-  cache: ['Notes', props.leadId],
-  fields: ['name', 'title', 'content', 'owner', 'modified'],
-  filters: { lead: props.leadId },
-  orderBy: 'modified desc',
-  pageLength: 999,
-  auto: true,
-})
-
-function showNote(n) {
-  note.value = n || {
-    title: '',
-    content: '',
-  }
-  showNoteModal.value = true
-}
-
-async function deleteNote(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Note',
-    name,
-  })
-  notes.reload()
-}
-
-async function updateNote(note) {
-  if (note.name) {
-    let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Note',
-      name: note.name,
-      fieldname: note,
-    })
-    if (d.name) {
-      notes.reload()
-    }
-  } else {
-    let d = await call('frappe.client.insert', {
-      doc: {
-        doctype: 'CRM Note',
-        title: note.title,
-        content: note.content,
-        lead: props.leadId,
-      },
-    })
-    if (d.name) {
-      notes.reload()
-    }
-  }
-}
-
-const calls = createListResource({
-  type: 'list',
-  doctype: 'CRM Call Log',
-  cache: ['Call Logs', props.leadId],
-  fields: [
-    'name',
-    'caller',
-    'receiver',
-    'from',
-    'to',
-    'duration',
-    'start_time',
-    'end_time',
-    'status',
-    'type',
-    'recording_url',
-    'creation',
-    'note',
-  ],
-  filters: { lead: props.leadId },
-  orderBy: 'creation desc',
-  pageLength: 999,
-  auto: true,
-  transform: (docs) => {
-    docs.forEach((doc) => {
-      doc.activity_type =
-        doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
-      doc.duration = secondsToDuration(doc.duration)
-      if (doc.type === 'Incoming') {
-        doc.caller = {
-          label: getContact(doc.from)?.full_name || 'Unknown',
-          image: getContact(doc.from)?.image,
-        }
-        doc.receiver = {
-          label: getUser(doc.receiver).full_name,
-          image: getUser(doc.receiver).user_image,
-        }
-      } else {
-        doc.caller = {
-          label: getUser(doc.caller).full_name,
-          image: getUser(doc.caller).user_image,
-        }
-        doc.receiver = {
-          label: getContact(doc.to)?.full_name || 'Unknown',
-          image: getContact(doc.to)?.image,
-        }
-      }
-    })
-    return docs
-  },
-})
 
 function updateAssignedAgent(email) {
   lead.data.lead_owner = email

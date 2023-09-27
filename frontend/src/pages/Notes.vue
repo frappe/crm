@@ -9,7 +9,6 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div class="border-b"></div>
   <div v-if="notes.data?.length" class="grid grid-cols-4 gap-4 p-5 overflow-y-auto">
     <div
       v-for="note in notes.data"

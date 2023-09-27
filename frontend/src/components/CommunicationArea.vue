@@ -1,11 +1,15 @@
 <template>
-  <div class="flex gap-3 pt-2 pb-6 px-10">
-    <UserAvatar :user="getUser().name" size="xl" />
+  <div class="flex gap-3 px-10 pb-6 pt-2">
+    <UserAvatar
+      :user="getUser().name"
+      size="xl"
+      :class="showCommunicationBox ? 'mt-3' : ''"
+    />
     <Button
       ref="sendEmailRef"
       variant="outline"
       size="md"
-      class="h-8.5 w-full inline-flex justify-between"
+      class="inline-flex h-8.5 w-full justify-between"
       @click="showCommunicationBox = true"
       v-show="!showCommunicationBox"
     >
@@ -22,12 +26,6 @@
       @keydown.ctrl.enter.capture.stop="submitComment"
       @keydown.meta.enter.capture.stop="submitComment"
     >
-      <div class="mb-4 flex items-center">
-        <UserAvatar :user="getUser().name" size="sm" />
-        <span class="ml-2 text-base font-medium text-gray-900">
-          {{ getUser().full_name }}
-        </span>
-      </div>
       <EmailEditor
         ref="newEmailEditor"
         :value="newEmail"
@@ -44,7 +42,7 @@
           },
         }"
         :editable="showCommunicationBox"
-        v-model="modelValue.data"
+        v-model="lead.data"
         placeholder="Add a reply..."
       />
     </div>
@@ -58,7 +56,8 @@ import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { ref, watch, computed, defineModel } from 'vue'
 
-const modelValue = defineModel()
+const lead = defineModel()
+const reload = defineModel('reload')
 
 const { getUser } = usersStore()
 
@@ -86,13 +85,13 @@ const onNewEmailChange = (value) => {
 
 async function sendMail() {
   await call('frappe.core.doctype.communication.email.make', {
-    recipients: modelValue.value.data.email,
+    recipients: lead.value.data.email,
     cc: '',
     bcc: '',
     subject: 'Email from Agent',
     content: newEmail.value,
     doctype: 'CRM Lead',
-    name: modelValue.value.data.name,
+    name: lead.value.data.name,
     send_email: 1,
     sender: getUser().name,
     sender_full_name: getUser()?.full_name || undefined,
@@ -104,7 +103,7 @@ async function submitComment() {
   showCommunicationBox.value = false
   await sendMail()
   newEmail.value = ''
-  modelValue.value.reload()
+  reload.value = true
 }
 
 defineExpose({ show: showCommunicationBox })
