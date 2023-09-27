@@ -329,7 +329,7 @@
               <span v-if="activity.value">{{ activity.value }}</span>
               <span
                 v-if="activity.data.old_value"
-                class="max-w-xs truncate font-medium text-gray-800"
+                class="max-w-xs font-medium text-gray-800"
               >
                 <div
                   class="flex items-center gap-1"
@@ -338,14 +338,14 @@
                   <UserAvatar :user="activity.data.old_value" size="xs" />
                   {{ getUser(activity.data.old_value).full_name }}
                 </div>
-                <div v-else>
+                <div class="truncate" v-else>
                   {{ activity.data.old_value }}
                 </div>
               </span>
               <span v-if="activity.to">to</span>
               <span
                 v-if="activity.data.value"
-                class="max-w-xs truncate font-medium text-gray-800"
+                class="max-w-xs font-medium text-gray-800"
               >
                 <div
                   class="flex items-center gap-1"
@@ -354,7 +354,7 @@
                   <UserAvatar :user="activity.data.value" size="xs" />
                   {{ getUser(activity.data.value).full_name }}
                 </div>
-                <div v-else>
+                <div class="truncate" v-else>
                   {{ activity.data.value }}
                 </div>
               </span>
@@ -374,28 +374,53 @@
             v-for="activity in activity.other_versions"
             class="flex items-start justify-stretch gap-2 text-base"
           >
-            <div class="inline-flex flex-wrap gap-1 text-gray-600">
-              <span v-if="activity.type">{{ activity.type }}</span>
-              <span
-                v-if="activity.data.field_label"
-                class="max-w-xs truncate font-medium text-gray-800"
-              >
-                {{ activity.data.field_label }}
-              </span>
-              <span v-if="activity.value">{{ activity.value }}</span>
-              <span
-                v-if="activity.data.old_value"
-                class="max-w-xs truncate font-medium text-gray-800"
-              >
-                {{ activity.data.old_value }}
-              </span>
-              <span v-if="activity.to">to</span>
-              <span
-                v-if="activity.data.value"
-                class="max-w-xs truncate font-medium text-gray-800"
-              >
-                {{ activity.data.value }}
-              </span>
+            <div class="flex items-start gap-1 text-gray-600">
+              <div class="flex flex-1 items-center gap-1">
+                <span
+                  v-if="activity.data.field_label"
+                  class="max-w-xs truncate text-gray-600"
+                >
+                  {{ activity.data.field_label }}
+                </span>
+                <FeatherIcon
+                  name="arrow-right"
+                  class="mx-1 h-4 w-4 text-gray-600"
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-1">
+                <span v-if="activity.type">{{ startCase(activity.type) }}</span>
+                <span
+                  v-if="activity.data.old_value"
+                  class="max-w-xs font-medium text-gray-800"
+                >
+                  <div
+                    class="flex items-center gap-1"
+                    v-if="activity.options == 'User'"
+                  >
+                    <UserAvatar :user="activity.data.old_value" size="xs" />
+                    {{ getUser(activity.data.old_value).full_name }}
+                  </div>
+                  <div class="truncate" v-else>
+                    {{ activity.data.old_value }}
+                  </div>
+                </span>
+                <span v-if="activity.to">to</span>
+                <span
+                  v-if="activity.data.value"
+                  class="max-w-xs font-medium text-gray-800"
+                >
+                  <div
+                    class="flex items-center gap-1"
+                    v-if="activity.options == 'User'"
+                  >
+                    <UserAvatar :user="activity.data.value" size="xs" />
+                    {{ getUser(activity.data.value).full_name }}
+                  </div>
+                  <div class="truncate" v-else>
+                    {{ activity.data.value }}
+                  </div>
+                </span>
+              </div>
             </div>
 
             <div class="ml-auto whitespace-nowrap">
@@ -480,6 +505,7 @@ import {
   dateFormat,
   dateTooltipFormat,
   secondsToDuration,
+  startCase,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'

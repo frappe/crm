@@ -124,3 +124,7 @@ export function formatNumberIntoCurrency(value) {
   }
   return ''
 }
+
+export function startCase(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
