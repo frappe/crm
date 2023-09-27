@@ -331,14 +331,32 @@
                 v-if="activity.data.old_value"
                 class="max-w-xs truncate font-medium text-gray-800"
               >
-                {{ activity.data.old_value }}
+                <div
+                  class="flex items-center gap-1"
+                  v-if="activity.options == 'User'"
+                >
+                  <UserAvatar :user="activity.data.old_value" size="xs" />
+                  {{ getUser(activity.data.old_value).full_name }}
+                </div>
+                <div v-else>
+                  {{ activity.data.old_value }}
+                </div>
               </span>
               <span v-if="activity.to">to</span>
               <span
                 v-if="activity.data.value"
                 class="max-w-xs truncate font-medium text-gray-800"
               >
-                {{ activity.data.value }}
+                <div
+                  class="flex items-center gap-1"
+                  v-if="activity.options == 'User'"
+                >
+                  <UserAvatar :user="activity.data.value" size="xs" />
+                  {{ getUser(activity.data.value).full_name }}
+                </div>
+                <div v-else>
+                  {{ activity.data.value }}
+                </div>
               </span>
             </div>
 

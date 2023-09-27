@@ -46,8 +46,11 @@ def get_activities(name):
 		data = json.loads(version.data)
 		if not data.get("changed"):
 			continue
+
+		field_option = None
+
 		if change := data.get("changed")[0]:
-			field_label = next((f.label for f in lead_fields_meta if f.fieldname == change[0]), None)
+			field_label, field_option = next(((f.label, f.options) for f in lead_fields_meta if f.fieldname == change[0]), None)
 			activity_type = "changed"
 			if field_label == "Lead Owner" and (created_as_deal or not is_lead):
 				field_label = "Deal Owner"
@@ -83,6 +86,7 @@ def get_activities(name):
 			"owner": version.owner,
 			"data": data,
 			"is_lead": is_lead,
+			"options": field_option,
 		}
 		activities.append(activity)
 
