@@ -8,10 +8,22 @@
       variant="solid"
       @click="makeCall(lead.data.mobile_no)"
     >
-      <PhoneIcon class="h-4 w-4" />
+      <template #prefix>
+        <PhoneIcon class="h-4 w-4" />
+      </template>
+      <span>Make a call</span>
     </Button>
-    <Button v-else-if="title == 'Notes'" variant="solid" @click="showNote">
-      <FeatherIcon name="plus" class="h-4 w-4" />
+    <Button v-else-if="title == 'Notes'" variant="solid" @click="showNote()">
+      <template #prefix>
+        <FeatherIcon name="plus" class="h-4 w-4" />
+      </template>
+      <span>New note</span>
+    </Button>
+    <Button v-else-if="title == 'Tasks'" variant="solid" @click="showTask()">
+      <template #prefix>
+        <FeatherIcon name="plus" class="h-4 w-4" />
+      </template>
+      <span>New task</span>
     </Button>
   </div>
   <div v-if="activities?.length" class="flex-1 overflow-y-auto">
@@ -62,6 +74,28 @@
               {{ timeAgo(note.modified) }}
             </div>
           </Tooltip>
+        </div>
+      </div>
+    </div>
+    <div v-else-if="title == 'Tasks'">
+      <div v-for="(task, i) in activities">
+        <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
+          <div
+            class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
+            :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
+          >
+            <div
+              class="z-10 mt-[15px] flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
+            >
+              <TaskIcon class="text-gray-800" />
+            </div>
+          </div>
+          <div
+            class="mb-3 flex max-w-[70%] flex-col gap-3 rounded-md bg-gray-50 p-4"
+            @click="showTask(task)"
+          >
+            {{ task.title }}
+          </div>
         </div>
       </div>
     </div>
@@ -468,7 +502,7 @@
       v-else-if="title == 'Notes'"
       variant="solid"
       label="Create note"
-      @click="showNote"
+      @click="showNote()"
     />
     <Button
       v-else-if="title == 'Emails'"
@@ -476,7 +510,12 @@
       label="Send email"
       @click="$refs.emailBox.show = true"
     />
-    <Button v-else-if="title == 'Tasks'" variant="solid" label="Create task" />
+    <Button
+      v-else-if="title == 'Tasks'"
+      variant="solid"
+      label="Create task"
+      @click="showTask()"
+    />
   </div>
   <CommunicationArea
     ref="emailBox"
@@ -485,6 +524,12 @@
     v-model:reload="reload_email"
   />
   <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
+  <TaskModal
+    v-model="showTaskModal"
+    v-model:reloadTasks="tasks"
+    :task="task"
+    :lead="lead.data?.name"
+  />
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -502,6 +547,7 @@ import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/NoteModal.vue'
+import TaskModal from '@/components/TaskModal.vue'
 import {
   timeAgo,
   dateFormat,
@@ -610,6 +656,27 @@ const notes = createListResource({
   auto: true,
 })
 
+const tasks = createListResource({
+  type: 'list',
+  doctype: 'CRM Task',
+  cache: ['Tasks', lead.value.data.name],
+  fields: [
+    'name',
+    'title',
+    'description',
+    'assigned_to',
+    'assigned_to',
+    'due_date',
+    'priority',
+    'status',
+    'modified',
+  ],
+  filters: { lead: lead.value.data.name },
+  orderBy: 'modified desc',
+  pageLength: 999,
+  auto: true,
+})
+
 function all_activities() {
   if (!versions.data) return []
   if (!calls.data) return versions.data
@@ -628,6 +695,8 @@ const activities = computed(() => {
     )
   } else if (props.title == 'Calls') {
     return calls.data
+  } else if (props.title == 'Tasks') {
+    return tasks.data
   } else if (props.title == 'Notes') {
     return notes.data
   }
@@ -727,6 +796,7 @@ function timelineIcon(activity_type, is_lead) {
   return markRaw(icon)
 }
 
+// Notes
 const showNoteModal = ref(false)
 const note = ref({
   title: '',
@@ -765,13 +835,29 @@ async function updateNote(note) {
         doctype: 'CRM Note',
         title: note.title,
         content: note.content,
-        lead: props.leadId,
+        lead: lead.value.data.name,
       },
     })
     if (d.name) {
       notes.reload()
     }
   }
+}
+
+// Tasks
+const showTaskModal = ref(false)
+const task = ref({})
+
+function showTask(t) {
+  task.value = t || {
+    title: '',
+    description: '',
+    assigned_to: '',
+    due_date: '',
+    priority: 'Low',
+    status: 'Backlog',
+  }
+  showTaskModal.value = true
 }
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {

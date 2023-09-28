@@ -1,7 +1,8 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import { usersStore } from '@/stores/users'
 import { useDateFormat, useTimeAgo } from '@vueuse/core'
 import { toast } from 'frappe-ui'
-import { h } from 'vue'
+import { h, computed } from 'vue'
 
 export function createToast(options) {
   toast({
@@ -128,3 +129,19 @@ export function formatNumberIntoCurrency(value) {
 export function startCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+const { users } = usersStore()
+
+export const activeAgents = computed(() => {
+  const nonAgents = ['Administrator', 'Guest']
+  return users.data
+    .filter((user) => !nonAgents.includes(user.name))
+    .sort((a, b) => a.full_name - b.full_name)
+    .map((user) => {
+      return {
+        label: user.full_name,
+        value: user.email,
+        ...user,
+      }
+    })
+})
