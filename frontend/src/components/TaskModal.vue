@@ -37,7 +37,7 @@
           />
         </div>
         <div class="flex items-center gap-2">
-          <Dropdown :options="statusOptions()">
+          <Dropdown :options="taskStatusOptions(updateTaskStatus)">
             <Button :label="_task.status" class="w-full justify-between">
               <template #prefix>
                 <TaskStatusIcon :status="_task.status" />
@@ -64,7 +64,7 @@
             input-class="border-none"
             :formatValue="(val) => val.split('-').reverse().join('-')"
           />
-          <Dropdown :options="priorityOptions()">
+          <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
             <Button :label="_task.priority" class="w-full justify-between">
               <template #prefix>
                 <TaskPriorityIcon :priority="_task.priority" />
@@ -81,7 +81,7 @@
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { activeAgents } from '@/utils'
+import { activeAgents, taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import {
   TextInput,
@@ -112,34 +112,23 @@ const emit = defineEmits(['updateTask'])
 
 const title = ref(null)
 const editMode = ref(false)
-const _task = ref({})
+const _task = ref({
+  title: '',
+  description: '',
+  assigned_to: '',
+  due_date: '',
+  status: 'Backlog',
+  priority: 'Low',
+})
 
 const { getUser } = usersStore()
 
-function statusOptions() {
-  return ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled'].map(
-    (status) => {
-      return {
-        icon: () => h(TaskStatusIcon, { status }),
-        label: status,
-        onClick: () => {
-          _task.value.status = status
-        },
-      }
-    }
-  )
+function updateTaskStatus(status) {
+  _task.value.status = status
 }
 
-function priorityOptions() {
-  return ['Low', 'Medium', 'High'].map((priority) => {
-    return {
-      label: priority,
-      icon: () => h(TaskPriorityIcon, { priority }),
-      onClick: () => {
-        _task.value.priority = priority
-      },
-    }
-  })
+function updateTaskPriority(priority) {
+  _task.value.priority = priority
 }
 
 async function updateTask(close) {

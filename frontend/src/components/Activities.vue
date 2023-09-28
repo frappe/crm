@@ -27,7 +27,7 @@
     </Button>
   </div>
   <div v-if="activities?.length" class="flex-1 overflow-y-auto">
-    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 py-5 pt-0">
+    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 pb-5">
       <div
         v-for="note in activities"
         class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
@@ -77,26 +77,64 @@
         </div>
       </div>
     </div>
-    <div v-else-if="title == 'Tasks'">
+    <div v-else-if="title == 'Tasks'" class="px-10 pb-5">
       <div v-for="(task, i) in activities">
-        <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
-          <div
-            class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
-            :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
-          >
-            <div
-              class="z-10 mt-[15px] flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
-            >
-              <TaskIcon class="text-gray-800" />
+        <div
+          class="flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
+          @click="showTask(task)"
+        >
+          <div class="flex flex-1 flex-col gap-1.5 text-base">
+            <div class="font-medium text-gray-900">
+              {{ task.title }}
+            </div>
+            <div class="flex gap-1.5 text-gray-800">
+              <div class="flex items-center gap-1.5">
+                <UserAvatar :user="task.assigned_to" size="xs" />
+                {{ getUser(task.assigned_to).full_name }}
+              </div>
+              <div class="flex items-center justify-center">
+                <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
+              </div>
+              <div class="flex gap-2">
+                <CalendarIcon />
+                <Tooltip :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')">
+                  {{ dateFormat(task.due_date, 'D MMM') }}
+                </Tooltip>
+              </div>
+              <div class="flex items-center justify-center">
+                <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
+              </div>
+              <div>
+                <Badge
+                  variant="solid"
+                  :class="
+                    task.priority == 'High'
+                      ? '!bg-red-200 text-red-800'
+                      : task.priority == 'Medium'
+                      ? '!bg-yellow-200 text-yellow-700'
+                      : '!bg-gray-200 !text-gray-600'
+                  "
+                  size="sm"
+                  :label="task.priority"
+                />
+              </div>
             </div>
           </div>
-          <div
-            class="mb-3 flex max-w-[70%] flex-col gap-3 rounded-md bg-gray-50 p-4"
-            @click="showTask(task)"
-          >
-            {{ task.title }}
+          <div class="flex items-center">
+            <Dropdown
+              :options="taskStatusOptions(updateTaskStatus, task)"
+              @click.stop
+            >
+              <Button variant="ghosted" class="hover:bg-gray-300">
+                <TaskStatusIcon :status="task.status" />
+              </Button>
+            </Dropdown>
           </div>
         </div>
+        <div
+          v-if="i < activities.length - 1"
+          class="mx-2 h-px border-t border-gray-200"
+        />
       </div>
     </div>
     <div v-else-if="title == 'Calls'">
@@ -543,6 +581,8 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -559,6 +599,7 @@ import {
   dateTooltipFormat,
   secondsToDuration,
   startCase,
+  taskStatusOptions,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -572,6 +613,7 @@ import {
   createResource,
   createListResource,
   call,
+  Badge,
 } from 'frappe-ui'
 import { ref, computed, h, defineModel, markRaw, watch } from 'vue'
 
@@ -835,6 +877,17 @@ function showTask(t) {
     status: 'Backlog',
   }
   showTaskModal.value = true
+}
+
+function updateTaskStatus(status, task) {
+  call('frappe.client.set_value', {
+    doctype: 'CRM Task',
+    name: task.name,
+    fieldname: 'status',
+    value: status,
+  }).then(() => {
+    tasks.reload()
+  })
 }
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
