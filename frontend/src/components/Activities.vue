@@ -476,6 +476,7 @@
       label="Send email"
       @click="$refs.emailBox.show = true"
     />
+    <Button v-else-if="title == 'Tasks'" variant="solid" label="Create task" />
   </div>
   <CommunicationArea
     ref="emailBox"
@@ -490,6 +491,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -682,6 +684,8 @@ const emptyText = computed(() => {
     text = 'No call logs'
   } else if (props.title == 'Notes') {
     text = 'No notes'
+  } else if (props.title == 'Tasks') {
+    text = 'No tasks'
   }
   return text
 })
@@ -692,6 +696,8 @@ const emptyTextIcon = computed(() => {
     icon = PhoneIcon
   } else if (props.title == 'Notes') {
     icon = NoteIcon
+  } else if (props.title == 'Tasks') {
+    icon = TaskIcon
   }
   return h(icon, { class: 'text-gray-500' })
 })
