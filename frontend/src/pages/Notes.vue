@@ -9,14 +9,17 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div v-if="notes.data?.length" class="grid grid-cols-4 gap-4 p-5 overflow-y-auto">
+  <div
+    v-if="notes.data?.length"
+    class="grid grid-cols-4 gap-4 overflow-y-auto p-5"
+  >
     <div
       v-for="note in notes.data"
-      class="group flex flex-col justify-between gap-2 px-5 py-4 border rounded-lg h-56 shadow-sm hover:bg-gray-50 cursor-pointer"
+      class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-gray-50"
       @click="editNote(note)"
     >
       <div class="flex items-center justify-between">
-        <div class="text-lg font-medium truncate">
+        <div class="truncate text-lg font-medium">
           {{ note.title }}
         </div>
         <Dropdown
@@ -43,7 +46,7 @@
         editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
         class="flex-1 overflow-hidden"
       />
-      <div class="flex items-center justify-between gap-2 mt-2">
+      <div class="mt-2 flex items-center justify-between gap-2">
         <div class="flex items-center gap-2">
           <UserAvatar :user="note.owner" size="xs" />
           <div class="text-sm text-gray-800">
@@ -60,17 +63,17 @@
   </div>
   <div
     v-else
-    class="flex-1 p-5 flex items-center justify-center font-medium text-xl text-gray-500"
+    class="flex flex-1 items-center justify-center p-5 text-xl font-medium text-gray-500"
   >
     <div class="flex flex-col items-center gap-2">
-      <NoteIcon class="w-10 h-10 text-gray-500" />
+      <NoteIcon class="h-10 w-10 text-gray-500" />
       <span>No notes</span>
     </div>
   </div>
   <NoteModal
     v-model="showNoteModal"
+    v-model:reloadNotes="notes"
     :note="currentNote"
-    @updateNote="updateNote"
   />
 </template>
 
@@ -86,10 +89,9 @@ import {
   Button,
   createListResource,
   TextEditor,
-  TextInput,
   call,
   Dropdown,
-Tooltip,
+  Tooltip,
 } from 'frappe-ui'
 import { ref } from 'vue'
 import { usersStore } from '@/stores/users'
@@ -127,30 +129,6 @@ function createNote() {
 function editNote(note) {
   currentNote.value = note
   showNoteModal.value = true
-}
-
-async function updateNote(note) {
-  if (note.name) {
-    let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Note',
-      name: note.name,
-      fieldname: note,
-    })
-    if (d.name) {
-      notes.reload()
-    }
-  } else {
-    let d = await call('frappe.client.insert', {
-      doc: {
-        doctype: 'CRM Note',
-        title: note.title,
-        content: note.content,
-      },
-    })
-    if (d.name) {
-      notes.reload()
-    }
-  }
 }
 
 async function deleteNote(name) {

@@ -523,7 +523,12 @@
     v-model="lead"
     v-model:reload="reload_email"
   />
-  <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
+  <NoteModal
+    v-model="showNoteModal"
+    v-model:reloadNotes="notes"
+    :note="note"
+    :lead="lead.data?.name"
+  />
   <TaskModal
     v-model="showTaskModal"
     v-model:reloadTasks="tasks"
@@ -798,10 +803,7 @@ function timelineIcon(activity_type, is_lead) {
 
 // Notes
 const showNoteModal = ref(false)
-const note = ref({
-  title: '',
-  content: '',
-})
+const note = ref({})
 
 function showNote(n) {
   note.value = n || {
@@ -817,31 +819,6 @@ async function deleteNote(name) {
     name,
   })
   notes.reload()
-}
-
-async function updateNote(note) {
-  if (note.name) {
-    let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Note',
-      name: note.name,
-      fieldname: note,
-    })
-    if (d.name) {
-      notes.reload()
-    }
-  } else {
-    let d = await call('frappe.client.insert', {
-      doc: {
-        doctype: 'CRM Note',
-        title: note.title,
-        content: note.content,
-        lead: lead.value.data.name,
-      },
-    })
-    if (d.name) {
-      notes.reload()
-    }
-  }
 }
 
 // Tasks
