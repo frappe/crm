@@ -97,9 +97,12 @@
               </div>
               <div class="flex gap-2">
                 <CalendarIcon />
-                <Tooltip :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')">
+                <Tooltip v-if="task.due_date" :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')">
                   {{ dateFormat(task.due_date, 'D MMM') }}
                 </Tooltip>
+                <div v-else class="text-gray-600">
+                  No due date
+                </div>
               </div>
               <div class="flex items-center justify-center">
                 <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
