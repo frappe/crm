@@ -97,29 +97,20 @@
               </div>
               <div class="flex gap-2">
                 <CalendarIcon />
-                <Tooltip v-if="task.due_date" :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')">
+                <Tooltip
+                  v-if="task.due_date"
+                  :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')"
+                >
                   {{ dateFormat(task.due_date, 'D MMM') }}
                 </Tooltip>
-                <div v-else class="text-gray-600">
-                  No due date
-                </div>
+                <div v-else class="text-gray-600">No due date</div>
               </div>
               <div class="flex items-center justify-center">
                 <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
               </div>
-              <div>
-                <Badge
-                  variant="solid"
-                  :class="
-                    task.priority == 'High'
-                      ? '!bg-red-200 text-red-800'
-                      : task.priority == 'Medium'
-                      ? '!bg-yellow-200 text-yellow-700'
-                      : '!bg-gray-200 !text-gray-600'
-                  "
-                  size="sm"
-                  :label="task.priority"
-                />
+              <div class="flex gap-2">
+                <TaskPriorityIcon :priority="task.priority" />
+                {{ task.priority }}
               </div>
             </div>
           </div>
@@ -586,6 +577,7 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
+import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -616,7 +608,6 @@ import {
   createResource,
   createListResource,
   call,
-  Badge,
 } from 'frappe-ui'
 import { ref, computed, h, defineModel, markRaw, watch } from 'vue'
 
