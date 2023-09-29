@@ -93,6 +93,7 @@ import {
   call,
 } from 'frappe-ui'
 import { ref, defineModel, h, watch, nextTick } from 'vue'
+import { get } from '@vueuse/core'
 
 const props = defineProps({
   task: {
@@ -110,6 +111,8 @@ const tasks = defineModel('reloadTasks')
 
 const emit = defineEmits(['updateTask'])
 
+const { getUser } = usersStore()
+
 const title = ref(null)
 const editMode = ref(false)
 const _task = ref({
@@ -121,8 +124,6 @@ const _task = ref({
   priority: 'Low',
 })
 
-const { getUser } = usersStore()
-
 function updateTaskStatus(status) {
   _task.value.status = status
 }
@@ -132,6 +133,9 @@ function updateTaskPriority(priority) {
 }
 
 async function updateTask(close) {
+  if (!_task.value.assigned_to) {
+    _task.value.assigned_to = getUser().email
+  }
   if (_task.value.name) {
     let d = await call('frappe.client.set_value', {
       doctype: 'CRM Task',
