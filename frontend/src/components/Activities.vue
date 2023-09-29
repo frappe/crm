@@ -8,14 +8,26 @@
       variant="solid"
       @click="makeCall(lead.data.mobile_no)"
     >
-      <PhoneIcon class="h-4 w-4" />
+      <template #prefix>
+        <PhoneIcon class="h-4 w-4" />
+      </template>
+      <span>Make a call</span>
     </Button>
-    <Button v-else-if="title == 'Notes'" variant="solid" @click="showNote">
-      <FeatherIcon name="plus" class="h-4 w-4" />
+    <Button v-else-if="title == 'Notes'" variant="solid" @click="showNote()">
+      <template #prefix>
+        <FeatherIcon name="plus" class="h-4 w-4" />
+      </template>
+      <span>New note</span>
+    </Button>
+    <Button v-else-if="title == 'Tasks'" variant="solid" @click="showTask()">
+      <template #prefix>
+        <FeatherIcon name="plus" class="h-4 w-4" />
+      </template>
+      <span>New task</span>
     </Button>
   </div>
   <div v-if="activities?.length" class="flex-1 overflow-y-auto">
-    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 py-5 pt-0">
+    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 pb-5">
       <div
         v-for="note in activities"
         class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
@@ -63,6 +75,93 @@
             </div>
           </Tooltip>
         </div>
+      </div>
+    </div>
+    <div v-else-if="title == 'Tasks'" class="px-10 pb-5">
+      <div v-for="(task, i) in activities">
+        <div
+          class="flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
+          @click="showTask(task)"
+        >
+          <div class="flex flex-1 flex-col gap-1.5 text-base">
+            <div class="font-medium text-gray-900">
+              {{ task.title }}
+            </div>
+            <div class="flex gap-1.5 text-gray-800">
+              <div class="flex items-center gap-1.5">
+                <UserAvatar :user="task.assigned_to" size="xs" />
+                {{ getUser(task.assigned_to).full_name }}
+              </div>
+              <div
+                v-if="task.due_date"
+                class="flex items-center justify-center"
+              >
+                <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
+              </div>
+              <div v-if="task.due_date" class="flex gap-2">
+                <CalendarIcon />
+                <Tooltip :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')">
+                  {{ dateFormat(task.due_date, 'D MMM') }}
+                </Tooltip>
+              </div>
+              <div class="flex items-center justify-center">
+                <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
+              </div>
+              <div class="flex gap-2">
+                <TaskPriorityIcon class="!w-2 !h-2" :priority="task.priority" />
+                {{ task.priority }}
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1">
+            <Dropdown
+              :options="taskStatusOptions(updateTaskStatus, task)"
+              @click.stop
+            >
+              <Tooltip text="Change status">
+                <Button variant="ghosted" class="hover:bg-gray-300">
+                  <TaskStatusIcon :status="task.status" />
+                </Button>
+              </Tooltip>
+            </Dropdown>
+            <Dropdown
+              :options="[
+                {
+                  icon: 'trash-2',
+                  label: 'Delete',
+                  onClick: () => {
+                    $dialog({
+                      title: 'Delete task',
+                      message: 'Are you sure you want to delete this task?',
+                      actions: [
+                        {
+                          label: 'Delete',
+                          theme: 'red',
+                          variant: 'solid',
+                          onClick({ close }) {
+                            deleteTask(task.name)
+                            close()
+                          },
+                        },
+                      ],
+                    })
+                  },
+                },
+              ]"
+              @click.stop
+            >
+              <Button
+                icon="more-horizontal"
+                variant="ghosted"
+                class="hover:bg-gray-300"
+              />
+            </Dropdown>
+          </div>
+        </div>
+        <div
+          v-if="i < activities.length - 1"
+          class="mx-2 h-px border-t border-gray-200"
+        />
       </div>
     </div>
     <div v-else-if="title == 'Calls'">
@@ -468,13 +567,19 @@
       v-else-if="title == 'Notes'"
       variant="solid"
       label="Create note"
-      @click="showNote"
+      @click="showNote()"
     />
     <Button
       v-else-if="title == 'Emails'"
       variant="solid"
       label="Send email"
       @click="$refs.emailBox.show = true"
+    />
+    <Button
+      v-else-if="title == 'Tasks'"
+      variant="solid"
+      label="Create task"
+      @click="showTask()"
     />
   </div>
   <CommunicationArea
@@ -483,14 +588,29 @@
     v-model="lead"
     v-model:reload="reload_email"
   />
-  <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
+  <NoteModal
+    v-model="showNoteModal"
+    v-model:reloadNotes="notes"
+    :note="note"
+    :lead="lead.data?.name"
+  />
+  <TaskModal
+    v-model="showTaskModal"
+    v-model:reloadTasks="tasks"
+    :task="task"
+    :lead="lead.data?.name"
+  />
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
+import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import PlayIcon from '@/components/Icons/PlayIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -500,12 +620,14 @@ import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/NoteModal.vue'
+import TaskModal from '@/components/TaskModal.vue'
 import {
   timeAgo,
   dateFormat,
   dateTooltipFormat,
   secondsToDuration,
   startCase,
+  taskStatusOptions,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -608,6 +730,27 @@ const notes = createListResource({
   auto: true,
 })
 
+const tasks = createListResource({
+  type: 'list',
+  doctype: 'CRM Task',
+  cache: ['Tasks', lead.value.data.name],
+  fields: [
+    'name',
+    'title',
+    'description',
+    'assigned_to',
+    'assigned_to',
+    'due_date',
+    'priority',
+    'status',
+    'modified',
+  ],
+  filters: { lead: lead.value.data.name },
+  orderBy: 'modified desc',
+  pageLength: 999,
+  auto: true,
+})
+
 function all_activities() {
   if (!versions.data) return []
   if (!calls.data) return versions.data
@@ -626,6 +769,8 @@ const activities = computed(() => {
     )
   } else if (props.title == 'Calls') {
     return calls.data
+  } else if (props.title == 'Tasks') {
+    return tasks.data
   } else if (props.title == 'Notes') {
     return notes.data
   }
@@ -682,6 +827,8 @@ const emptyText = computed(() => {
     text = 'No call logs'
   } else if (props.title == 'Notes') {
     text = 'No notes'
+  } else if (props.title == 'Tasks') {
+    text = 'No tasks'
   }
   return text
 })
@@ -692,6 +839,8 @@ const emptyTextIcon = computed(() => {
     icon = PhoneIcon
   } else if (props.title == 'Notes') {
     icon = NoteIcon
+  } else if (props.title == 'Tasks') {
+    icon = TaskIcon
   }
   return h(icon, { class: 'text-gray-500' })
 })
@@ -721,11 +870,9 @@ function timelineIcon(activity_type, is_lead) {
   return markRaw(icon)
 }
 
+// Notes
 const showNoteModal = ref(false)
-const note = ref({
-  title: '',
-  content: '',
-})
+const note = ref({})
 
 function showNote(n) {
   note.value = n || {
@@ -743,29 +890,39 @@ async function deleteNote(name) {
   notes.reload()
 }
 
-async function updateNote(note) {
-  if (note.name) {
-    let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Note',
-      name: note.name,
-      fieldname: note,
-    })
-    if (d.name) {
-      notes.reload()
-    }
-  } else {
-    let d = await call('frappe.client.insert', {
-      doc: {
-        doctype: 'CRM Note',
-        title: note.title,
-        content: note.content,
-        lead: props.leadId,
-      },
-    })
-    if (d.name) {
-      notes.reload()
-    }
+// Tasks
+const showTaskModal = ref(false)
+const task = ref({})
+
+function showTask(t) {
+  task.value = t || {
+    title: '',
+    description: '',
+    assigned_to: '',
+    due_date: '',
+    priority: 'Low',
+    status: 'Backlog',
   }
+  showTaskModal.value = true
+}
+
+async function deleteTask(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Task',
+    name,
+  })
+  tasks.reload()
+}
+
+function updateTaskStatus(status, task) {
+  call('frappe.client.set_value', {
+    doctype: 'CRM Task',
+    name: task.name,
+    fieldname: 'status',
+    value: status,
+  }).then(() => {
+    tasks.reload()
+  })
 }
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {

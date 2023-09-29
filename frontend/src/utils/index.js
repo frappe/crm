@@ -1,7 +1,10 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
+import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
+import { usersStore } from '@/stores/users'
 import { useDateFormat, useTimeAgo } from '@vueuse/core'
 import { toast } from 'frappe-ui'
-import { h } from 'vue'
+import { h, computed } from 'vue'
 
 export function createToast(options) {
   toast({
@@ -91,6 +94,28 @@ export function statusDropdownOptions(data, doctype, action) {
   return options
 }
 
+export function taskStatusOptions(action, data) {
+  return ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled'].map(
+    (status) => {
+      return {
+        icon: () => h(TaskStatusIcon, { status }),
+        label: status,
+        onClick: () => action && action(status, data),
+      }
+    }
+  )
+}
+
+export function taskPriorityOptions(action, data) {
+  return ['Low', 'Medium', 'High'].map((priority) => {
+    return {
+      label: priority,
+      icon: () => h(TaskPriorityIcon, { priority }),
+      onClick: () => action && action(priority, data),
+    }
+  })
+}
+
 export function openWebsite(url) {
   window.open(url, '_blank')
 }
@@ -128,3 +153,19 @@ export function formatNumberIntoCurrency(value) {
 export function startCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+const { users } = usersStore()
+
+export const activeAgents = computed(() => {
+  const nonAgents = ['Administrator', 'Guest']
+  return users.data
+    .filter((user) => !nonAgents.includes(user.name))
+    .sort((a, b) => a.full_name - b.full_name)
+    .map((user) => {
+      return {
+        label: user.full_name,
+        value: user.email,
+        ...user,
+      }
+    })
+})

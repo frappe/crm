@@ -6,6 +6,14 @@
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <circle cx="8" cy="8" r="3.5" fill="currentColor" />
+    <circle cx="8" cy="8" :r="radius" fill="currentColor" />
   </svg>
 </template>
+<script setup>
+const props = defineProps({
+  radius: {
+    type: Number,
+    default: 3.5,
+  },
+})
+</script>

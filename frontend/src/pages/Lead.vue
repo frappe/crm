@@ -314,6 +314,7 @@
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
@@ -346,6 +347,7 @@ import {
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import CameraIcon from '../components/Icons/CameraIcon.vue'
+
 
 const { getUser, users } = usersStore()
 const { contacts } = contactsStore()
@@ -422,6 +424,10 @@ const tabs = [
   {
     label: 'Calls',
     icon: PhoneIcon,
+  },
+  {
+    label: 'Tasks',
+    icon: TaskIcon,
   },
   {
     label: 'Notes',

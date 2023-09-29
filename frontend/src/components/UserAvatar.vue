@@ -1,6 +1,5 @@
 <template>
   <Avatar
-    v-if="user"
     :label="getUser(user).full_name"
     :image="getUser(user).user_image"
     v-bind="$attrs"
