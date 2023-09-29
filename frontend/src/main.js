@@ -18,6 +18,7 @@ import {
   setConfig,
   frappeRequest,
 } from 'frappe-ui'
+import { createDialog } from './utils/dialogs'
 import socket from './socket'
 import { getCachedListResource } from 'frappe-ui/src/resources/listResource'
 import { getCachedResource } from 'frappe-ui/src/resources/resources'
@@ -46,6 +47,8 @@ for (let key in globalComponents) {
   app.component(key, globalComponents[key])
 }
 
+app.config.globalProperties.$dialog = createDialog
+
 app.mount('#app')
 
 socket.on('refetch_resource', (data) => {
@@ -57,3 +60,7 @@ socket.on('refetch_resource', (data) => {
     }
   }
 })
+
+if (import.meta.env.DEV) {
+  window.$dialog = createDialog
+}

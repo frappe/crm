@@ -114,7 +114,7 @@
               </div>
             </div>
           </div>
-          <div class="flex items-center">
+          <div class="flex items-center gap-1">
             <Dropdown
               :options="taskStatusOptions(updateTaskStatus, task)"
               @click.stop
@@ -122,6 +122,38 @@
               <Button variant="ghosted" class="hover:bg-gray-300">
                 <TaskStatusIcon :status="task.status" />
               </Button>
+            </Dropdown>
+            <Dropdown
+              :options="[
+                {
+                  icon: 'trash-2',
+                  label: 'Delete',
+                  onClick: () => {
+                    $dialog({
+                      title: 'Delete task',
+                      message: 'Are you sure you want to delete this task?',
+                      actions: [
+                        {
+                          label: 'Delete',
+                          theme: 'red',
+                          variant: 'solid',
+                          onClick({ close }) {
+                            deleteTask(task.name)
+                            close()
+                          },
+                        },
+                      ],
+                    })
+                  },
+                },
+              ]"
+              @click.stop
+            >
+              <Button
+                icon="more-horizontal"
+                variant="ghosted"
+                class="hover:bg-gray-300"
+              />
             </Dropdown>
           </div>
         </div>
@@ -871,6 +903,14 @@ function showTask(t) {
     status: 'Backlog',
   }
   showTaskModal.value = true
+}
+
+async function deleteTask(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Task',
+    name,
+  })
+  tasks.reload()
 }
 
 function updateTaskStatus(status, task) {
