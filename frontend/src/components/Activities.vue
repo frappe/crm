@@ -92,24 +92,23 @@
                 <UserAvatar :user="task.assigned_to" size="xs" />
                 {{ getUser(task.assigned_to).full_name }}
               </div>
-              <div class="flex items-center justify-center">
+              <div
+                v-if="task.due_date"
+                class="flex items-center justify-center"
+              >
                 <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
               </div>
-              <div class="flex gap-2">
+              <div v-if="task.due_date" class="flex gap-2">
                 <CalendarIcon />
-                <Tooltip
-                  v-if="task.due_date"
-                  :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')"
-                >
+                <Tooltip :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')">
                   {{ dateFormat(task.due_date, 'D MMM') }}
                 </Tooltip>
-                <div v-else class="text-gray-600">No due date</div>
               </div>
               <div class="flex items-center justify-center">
                 <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
               </div>
               <div class="flex gap-2">
-                <TaskPriorityIcon :priority="task.priority" />
+                <TaskPriorityIcon class="!w-2 !h-2" :priority="task.priority" />
                 {{ task.priority }}
               </div>
             </div>
@@ -119,9 +118,11 @@
               :options="taskStatusOptions(updateTaskStatus, task)"
               @click.stop
             >
-              <Button variant="ghosted" class="hover:bg-gray-300">
-                <TaskStatusIcon :status="task.status" />
-              </Button>
+              <Tooltip text="Change status">
+                <Button variant="ghosted" class="hover:bg-gray-300">
+                  <TaskStatusIcon :status="task.status" />
+                </Button>
+              </Tooltip>
             </Dropdown>
             <Dropdown
               :options="[

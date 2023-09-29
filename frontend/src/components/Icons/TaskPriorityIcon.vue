@@ -6,11 +6,14 @@
         'bg-red-500': priority === 'High',
         'bg-yellow-500': priority === 'Medium',
         'bg-gray-300': priority === 'Low',
-      }"
+      }, $attrs.class"
     ></div>
   </div>
 </template>
 <script setup>
+defineOptions({
+  inheritAttrs: false
+})
 const props = defineProps({
   priority: {
     type: String,
