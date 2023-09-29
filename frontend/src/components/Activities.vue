@@ -108,7 +108,7 @@
                 <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
               </div>
               <div class="flex gap-2">
-                <TaskPriorityIcon class="!w-2 !h-2" :priority="task.priority" />
+                <TaskPriorityIcon class="!h-2 !w-2" :priority="task.priority" />
                 {{ task.priority }}
               </div>
             </div>
@@ -764,6 +764,7 @@ const activities = computed(() => {
   if (props.title == 'Activity') {
     activities = all_activities()
   } else if (props.title == 'Emails') {
+    if (!versions.data) return []
     activities = versions.data.filter(
       (activity) => activity.activity_type === 'communication'
     )
