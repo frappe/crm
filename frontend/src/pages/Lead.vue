@@ -39,43 +39,9 @@
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
-    <TabGroup as="div" class="flex flex-1 flex-col" @change="onTabChange">
-      <TabList class="relative flex items-center gap-6 border-b pl-5">
-        <Tab
-          ref="tabRef"
-          as="template"
-          v-for="tab in tabs"
-          :key="tab.label"
-          v-slot="{ selected }"
-        >
-          <button
-            class="-mb-[1px] flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 transition-all duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
-            :class="{ 'text-gray-900': selected }"
-          >
-            <component v-if="tab.icon" :is="tab.icon" class="h-5" />
-            {{ tab.label }}
-          </button>
-        </Tab>
-        <div
-          ref="indicator"
-          class="absolute -bottom-[1px] h-[1px] w-[82px] bg-gray-900"
-          :style="{ left: `${indicatorLeftValue}px` }"
-        />
-      </TabList>
-      <TabPanels class="flex flex-1 overflow-hidden">
-        <TabPanel
-          class="flex flex-1 flex-col overflow-y-auto"
-          v-for="tab in tabs"
-          :key="tab.label"
-        >
-          <Activities
-            :title="tab.label"
-            v-model:reload="reload"
-            v-model="lead"
-          />
-        </TabPanel>
-      </TabPanels>
-    </TabGroup>
+    <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
+      <Activities :title="tab.label" v-model:reload="reload" v-model="lead" />
+    </Tabs>
     <div class="flex w-[352px] flex-col justify-between border-l">
       <div
         class="flex h-[41px] items-center border-b px-5 py-2.5 text-lg font-semibold"
@@ -323,8 +289,6 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
-import { TransitionPresets, useTransition } from '@vueuse/core'
 import {
   leadStatuses,
   statusDropdownOptions,
@@ -343,11 +307,11 @@ import {
   Dropdown,
   Tooltip,
   Avatar,
+  Tabs,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import CameraIcon from '../components/Icons/CameraIcon.vue'
-
 
 const { getUser, users } = usersStore()
 const { contacts } = contactsStore()
@@ -412,6 +376,7 @@ const breadcrumbs = computed(() => {
   return items
 })
 
+const tabIndex = ref(0)
 const tabs = [
   {
     label: 'Activity',
@@ -445,21 +410,6 @@ function validateFile(file) {
   if (!['png', 'jpg', 'jpeg'].includes(extn)) {
     return 'Only PNG and JPG images are allowed'
   }
-}
-
-const tabRef = ref([])
-const indicator = ref(null)
-
-let indicatorLeft = ref(20)
-const indicatorLeftValue = useTransition(indicatorLeft, {
-  duration: 250,
-  ease: TransitionPresets.easeOutCubic,
-})
-
-function onTabChange(index) {
-  const selectedTab = tabRef.value[index].el
-  indicator.value.style.width = `${selectedTab.offsetWidth}px`
-  indicatorLeft.value = selectedTab.offsetLeft
 }
 
 const detailSections = computed(() => {
