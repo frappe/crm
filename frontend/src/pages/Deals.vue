@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="[{ label: list.title }]" />
+      <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
       <Button variant="solid" label="Create" @click="showNewDialog = true">
@@ -9,7 +9,7 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div class="flex justify-between items-center px-5 pt-3 pb-4">
+  <div class="flex items-center justify-between px-5 pb-4 pt-3">
     <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
@@ -56,7 +56,6 @@
 <script setup>
 import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import NewDeal from '@/components/NewDeal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
@@ -72,6 +71,7 @@ import {
   Dropdown,
   createListResource,
   createResource,
+  Breadcrumbs,
 } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive, watch } from 'vue'
@@ -81,6 +81,9 @@ const list = {
   plural_label: 'Deals',
   singular_label: 'Deal',
 }
+
+const breadcrumbs = [{ label: list.title, route: { name: 'Deals' } }]
+
 const { getUser } = usersStore()
 const { get: getOrderBy } = useOrderBy()
 const { getArgs, storage } = useFilter()

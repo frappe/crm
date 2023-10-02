@@ -1,10 +1,10 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="[{ label: list.title }]" />
+      <Breadcrumbs :items="breadcrumbs" />
     </template>
   </LayoutHeader>
-  <div class="flex justify-between items-center px-5 pt-3 pb-4">
+  <div class="flex items-center justify-between px-5 pb-4 pt-3">
     <div class="flex items-center gap-2">
       <Button label="Sort">
         <template #prefix><SortIcon class="h-4" /></template>
@@ -23,13 +23,12 @@
 <script setup>
 import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import { secondsToDuration } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import { Button, createListResource } from 'frappe-ui'
+import { Button, createListResource, Breadcrumbs } from 'frappe-ui'
 import { computed } from 'vue'
 
 const { getUser } = usersStore()
@@ -40,6 +39,8 @@ const list = {
   plural_label: 'Call Logs',
   singular_label: 'Call Log',
 }
+
+const breadcrumbs = [{ label: list.title, route: { name: 'Call Logs' } }]
 
 const callLogs = createListResource({
   type: 'list',

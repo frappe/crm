@@ -3,9 +3,3 @@ node_modules
 dist
 dist-ssr
 *.local
-*.pyc
-*.egg-info
-*.swp
-tags
-crm/public/frontend
-__pycache__
