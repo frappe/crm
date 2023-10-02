@@ -67,7 +67,7 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
-import { dealStatuses, statusDropdownOptions } from '@/utils'
+import { dealStatuses, statusDropdownOptions, activeAgents } from '@/utils'
 import {
   FormControl,
   Button,
@@ -153,18 +153,4 @@ const allFields = [
     ],
   },
 ]
-
-const activeAgents = computed(() => {
-  const nonAgents = ['Administrator', 'Guest']
-  return users.data
-    .filter((user) => !nonAgents.includes(user.name))
-    .sort((a, b) => a.full_name - b.full_name)
-    .map((user) => {
-      return {
-        label: user.full_name,
-        value: user.email,
-        ...user,
-      }
-    })
-})
 </script>

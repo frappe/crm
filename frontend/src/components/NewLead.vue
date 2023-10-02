@@ -3,7 +3,7 @@
     <div v-for="section in allFields" :key="section.section">
       <div class="grid grid-cols-3 gap-4">
         <div v-for="field in section.fields" :key="field.name">
-          <div class="text-gray-600 text-sm mb-2">{{ field.label }}</div>
+          <div class="mb-2 text-sm text-gray-600">{{ field.label }}</div>
           <FormControl
             v-if="field.type === 'select'"
             type="select"
@@ -41,10 +41,12 @@
             <template #default="{ open }">
               <Button
                 :label="newLead[field.name]"
-                class="justify-between w-full"
+                class="w-full justify-between"
               >
                 <template #prefix>
-                  <IndicatorIcon :class="leadStatuses[newLead[field.name]].color" />
+                  <IndicatorIcon
+                    :class="leadStatuses[newLead[field.name]].color"
+                  />
                 </template>
                 <template #default>{{ newLead[field.name] }}</template>
                 <template #suffix>
@@ -67,7 +69,7 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
-import { leadStatuses, statusDropdownOptions } from '@/utils'
+import { leadStatuses, statusDropdownOptions, activeAgents } from '@/utils'
 import {
   FormControl,
   Button,
@@ -153,19 +155,4 @@ const allFields = [
     ],
   },
 ]
-
-const activeAgents = computed(() => {
-  const nonAgents = ['Administrator', 'Guest']
-  return users.data
-    .filter((user) => !nonAgents.includes(user.name))
-    .sort((a, b) => a.full_name - b.full_name)
-    .map((user) => {
-      return {
-        label: user.full_name,
-        value: user.email,
-        ...user,
-      }
-    })
-})
-
 </script>

@@ -322,6 +322,7 @@ import {
   statusDropdownOptions,
   openWebsite,
   createToast,
+  activeAgents,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -521,20 +522,6 @@ const detailSections = computed(() => {
       ],
     },
   ]
-})
-
-const activeAgents = computed(() => {
-  const nonAgents = ['Administrator', 'Guest']
-  return users.data
-    .filter((user) => !nonAgents.includes(user.name))
-    .sort((a, b) => a.full_name - b.full_name)
-    .map((user) => {
-      return {
-        label: user.full_name,
-        value: user.email,
-        ...user,
-      }
-    })
 })
 
 function updateAssignedAgent(email) {
