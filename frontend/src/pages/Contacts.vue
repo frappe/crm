@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="[{ label: list.title }]" />
+      <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
       <Button variant="solid" label="Create">
@@ -9,7 +9,7 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div class="flex justify-between items-center px-5 pt-3 pb-4">
+  <div class="flex items-center justify-between px-5 pb-4 pt-3">
     <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
@@ -42,10 +42,9 @@
 <script setup>
 import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import { FeatherIcon, Button, Dropdown } from 'frappe-ui'
+import { FeatherIcon, Button, Dropdown, Breadcrumbs } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { contactsStore } from '@/stores/contacts.js'
 
@@ -56,6 +55,8 @@ const list = {
   plural_label: 'Contacts',
   singular_label: 'Contact',
 }
+
+const breadcrumbs = [{ label: list.title, route: { name: 'Contacts' } }]
 
 const columns = [
   {

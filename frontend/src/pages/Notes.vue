@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="[{ label: list.title }]" />
+      <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
       <Button variant="solid" label="Create" @click="createNote">
@@ -79,7 +79,6 @@
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import NoteModal from '@/components/NoteModal.vue'
@@ -92,6 +91,7 @@ import {
   call,
   Dropdown,
   Tooltip,
+  Breadcrumbs,
 } from 'frappe-ui'
 import { ref } from 'vue'
 import { usersStore } from '@/stores/users'
@@ -103,6 +103,8 @@ const list = {
   plural_label: 'Notes',
   singular_label: 'Note',
 }
+
+const breadcrumbs = [{ label: list.title, route: { name: 'Notes' } }]
 
 const showNoteModal = ref(false)
 const currentNote = ref(null)

@@ -15,9 +15,9 @@
     </template>
   </LayoutHeader>
   <div class="border-b"></div>
-  <div v-if="callLog.data" class="p-6 max-w-lg">
+  <div v-if="callLog.data" class="max-w-lg p-6">
     <div class="pb-3 text-base font-medium">Call details</div>
-    <div class="flex flex-col gap-4 border rounded-lg p-4 mb-3 shadow-sm">
+    <div class="mb-3 flex flex-col gap-4 rounded-lg border p-4 shadow-sm">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <FeatherIcon
@@ -26,7 +26,7 @@
                 ? 'phone-incoming'
                 : 'phone-outgoing'
             "
-            class="w-4 h-4 text-gray-600"
+            class="h-4 w-4 text-gray-600"
           />
           <div class="font-medium">
             {{ callLog.data.type == 'Incoming' ? 'Inbound' : 'Outbound' }} call
@@ -48,7 +48,7 @@
             :label="callLog.data.caller.label"
             size="xl"
           />
-          <div class="flex flex-col gap-1 ml-1">
+          <div class="ml-1 flex flex-col gap-1">
             <div class="text-base font-medium">
               {{ callLog.data.caller.label }}
             </div>
@@ -56,13 +56,13 @@
               {{ callLog.data.from }}
             </div>
           </div>
-          <FeatherIcon name="arrow-right" class="w-5 h-5 text-gray-600 mx-2" />
+          <FeatherIcon name="arrow-right" class="mx-2 h-5 w-5 text-gray-600" />
           <Avatar
             :image="callLog.data.receiver.image"
             :label="callLog.data.receiver.label"
             size="xl"
           />
-          <div class="flex flex-col gap-1 ml-1">
+          <div class="ml-1 flex flex-col gap-1">
             <div class="text-base font-medium">
               {{ callLog.data.receiver.label }}
             </div>
@@ -74,13 +74,13 @@
       </div>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1">
-          <DurationIcon class="w-4 h-4 text-gray-600" />
+          <DurationIcon class="h-4 w-4 text-gray-600" />
           <div class="text-sm text-gray-600">Duration</div>
           <div class="text-sm">{{ callLog.data.duration }}</div>
         </div>
         <div>
           <Tooltip
-            class="text-gray-600 text-sm"
+            class="text-sm text-gray-600"
             :text="dateFormat(callLog.data.creation, dateTooltipFormat)"
           >
             {{ timeAgo(callLog.data.creation) }}
@@ -91,7 +91,7 @@
 
     <div v-if="callLog.data.recording_url" class="mt-6">
       <div class="mb-3 text-base font-medium">Call recording</div>
-      <div class="flex items-center justify-between border rounded shadow-sm">
+      <div class="flex items-center justify-between rounded border shadow-sm">
         <audio
           class="audio-control"
           controls
@@ -103,10 +103,10 @@
     <div v-if="callLog.data.note" class="mt-6">
       <div class="mb-3 text-base font-medium">Call note</div>
       <div
-        class="flex flex-col gap-3 border rounded p-4 shadow-sm cursor-pointer h-56"
+        class="flex h-56 cursor-pointer flex-col gap-3 rounded border p-4 shadow-sm"
         @click="showNoteModal = true"
       >
-        <div class="text-lg font-medium truncate">
+        <div class="truncate text-lg font-medium">
           {{ callLog.data.note_doc.title }}
         </div>
         <TextEditor
@@ -141,7 +141,6 @@
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import NoteModal from '@/components/NoteModal.vue'
 import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
@@ -153,6 +152,7 @@ import {
   Tooltip,
   Badge,
   createResource,
+  Breadcrumbs,
 } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -232,7 +232,10 @@ function createLead() {
 
 const breadcrumbs = computed(() => [
   { label: 'Call Logs', route: { name: 'Call Logs' } },
-  { label: callLog.data?.caller.label },
+  {
+    label: callLog.data?.caller.label,
+    route: { name: 'Call Log', params: { callLogId: props.callLogId } },
+  },
 ])
 </script>
 

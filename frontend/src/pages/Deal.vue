@@ -316,7 +316,6 @@ import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import {
   dealStatuses,
@@ -337,6 +336,7 @@ import {
   Tooltip,
   Avatar,
   Tabs,
+  Breadcrumbs,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
