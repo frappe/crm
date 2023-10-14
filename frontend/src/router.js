@@ -38,6 +38,14 @@ const routes = [
     path: '/contacts',
     name: 'Contacts',
     component: () => import('@/pages/Contacts.vue'),
+    children: [
+      {
+        path: '/contacts/:contactId?',
+        name: 'Contact',
+        component: () => import('@/pages/Contact.vue'),
+        props: true,
+      },
+    ],
   },
   {
     path: '/call-logs',
