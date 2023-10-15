@@ -79,7 +79,12 @@
             <EditIcon class="h-4 w-4" />
           </template>
         </Button>
-        <Button label="Add lead" size="sm">
+        <Button label="Delete" theme="red" size="sm" @click="deleteContact">
+          <template #prefix>
+            <FeatherIcon name="trash-2" class="h-4 w-4" />
+          </template>
+        </Button>
+        <!-- <Button label="Add lead" size="sm">
           <template #prefix>
             <FeatherIcon name="plus" class="h-4 w-4" />
           </template>
@@ -88,7 +93,7 @@
           <template #prefix>
             <FeatherIcon name="plus" class="h-4 w-4" />
           </template>
-        </Button>
+        </Button> -->
       </div>
     </div>
     <ContactModal
@@ -104,9 +109,9 @@ import {
   FeatherIcon,
   Avatar,
   FileUploader,
-  createResource,
   ErrorMessage,
   Dropdown,
+  call,
 } from 'frappe-ui'
 import ContactModal from '@/components/ContactModal.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
@@ -134,19 +139,35 @@ function validateFile(file) {
   }
 }
 
-function changeContactImage(file) {
-  createResource({
-    url: 'frappe.client.set_value',
-    params: {
-      doctype: 'Contact',
-      name: props.contact.name,
-      fieldname: 'image',
-      value: file?.file_url || '',
-    },
-    auto: true,
-    onSuccess: () => {
-      contacts.reload()
-    },
+async function changeContactImage(file) {
+  await call('frappe.client.set_value', {
+    doctype: 'Contact',
+    name: props.contact.name,
+    fieldname: 'image',
+    value: file?.file_url || '',
+  })
+  contacts.reload()
+}
+
+async function deleteContact() {
+  $dialog({
+    title: 'Delete contact',
+    message: 'Are you sure you want to delete this contact?',
+    actions: [
+      {
+        label: 'Delete',
+        theme: 'red',
+        variant: 'solid',
+        async onClick({ close }) {
+          await call('frappe.client.delete', {
+            doctype: 'Contact',
+            name: props.contact.name,
+          })
+          contacts.reload()
+          close()
+        },
+      },
+    ],
   })
 }
 </script>
