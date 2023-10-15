@@ -1,11 +1,50 @@
 <template>
   <div class="flex gap-6 p-5">
-    <Avatar
-      size="3xl"
-      :image="contact.image"
-      :label="contact.full_name"
-      class="!h-24 !w-24"
-    />
+    <FileUploader @success="changeContactImage" :validateFile="validateFile">
+      <template #default="{ openFileSelector, error }">
+        <div class="group relative h-24 w-24">
+          <Avatar
+            size="3xl"
+            :image="contact.image"
+            :label="contact.full_name"
+            class="!h-24 !w-24"
+          />
+          <component
+            :is="contact.image ? Dropdown : 'div'"
+            v-bind="
+              contact.image
+                ? {
+                    options: [
+                      {
+                        icon: 'upload',
+                        label: contact.image ? 'Change image' : 'Upload image',
+                        onClick: openFileSelector,
+                      },
+                      {
+                        icon: 'trash-2',
+                        label: 'Remove image',
+                        onClick: () => changeContactImage(''),
+                      },
+                    ],
+                  }
+                : { onClick: openFileSelector }
+            "
+            class="!absolute bottom-0 left-0 right-0"
+          >
+            <div
+              class="z-1 absolute bottom-0 left-0 right-0 flex h-13 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+              style="
+                -webkit-clip-path: inset(12px 0 0 0);
+                clip-path: inset(12px 0 0 0);
+              "
+            >
+              <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
+            </div>
+          </component>
+          <ErrorMessage class="mt-2" :message="error" />
+        </div>
+      </template>
+    </FileUploader>
     <div class="flex flex-col justify-center gap-2">
       <div class="text-3xl font-semibold text-gray-900">
         {{ contact.salutation + ' ' + contact.full_name }}
@@ -61,11 +100,19 @@
 </template>
 
 <script setup>
-import { FeatherIcon, Avatar } from 'frappe-ui'
+import {
+  FeatherIcon,
+  Avatar,
+  FileUploader,
+  createResource,
+  ErrorMessage,
+  Dropdown,
+} from 'frappe-ui'
 import ContactModal from '@/components/ContactModal.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import { contactsStore } from '@/stores/contacts.js'
 import { ref } from 'vue'
 
@@ -79,4 +126,27 @@ const props = defineProps({
 const { contacts } = contactsStore()
 
 const showContactModal = ref(false)
+
+function validateFile(file) {
+  let extn = file.name.split('.').pop().toLowerCase()
+  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
+    return 'Only PNG and JPG images are allowed'
+  }
+}
+
+function changeContactImage(file) {
+  createResource({
+    url: 'frappe.client.set_value',
+    params: {
+      doctype: 'Contact',
+      name: props.contact.name,
+      fieldname: 'image',
+      value: file?.file_url || '',
+    },
+    auto: true,
+    onSuccess: () => {
+      contacts.reload()
+    },
+  })
+}
 </script>
