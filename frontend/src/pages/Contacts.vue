@@ -4,7 +4,7 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <Button variant="solid" label="Create">
+      <Button variant="solid" label="Create" @click="showContactModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -16,7 +16,7 @@
         v-for="(contact, i) in contacts.data"
         :key="i"
         :class="[
-          current_contact?.name === contact.name
+          currentContact?.name === contact.name
             ? 'bg-gray-50 hover:bg-gray-100'
             : 'hover:bg-gray-50',
         ]"
@@ -33,7 +33,7 @@
       </router-link>
     </div>
     <div class="flex-1">
-      <router-view v-if="current_contact" :contact="current_contact" />
+      <router-view v-if="currentContact" :contact="currentContact" />
       <div
         v-else
         class="grid h-full place-items-center text-xl font-medium text-gray-500"
@@ -45,20 +45,28 @@
       </div>
     </div>
   </div>
+  <ContactModal
+    v-model="showContactModal"
+    v-model:reloadContacts="contacts"
+    :contact="{}"
+  />
 </template>
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import ContactModal from '@/components/ContactModal.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import { FeatherIcon, Breadcrumbs, Avatar } from 'frappe-ui'
 import { contactsStore } from '@/stores/contacts.js'
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const { contacts } = contactsStore()
 const route = useRoute()
 
-const current_contact = computed(() => {
+const showContactModal = ref(false)
+
+const currentContact = computed(() => {
   return contacts.data.find(
     (contact) => contact.name === route.params.contactId
   )
@@ -66,12 +74,12 @@ const current_contact = computed(() => {
 
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Contacts', route: { name: 'Contacts' } }]
-  if (!current_contact.value) return items
+  if (!currentContact.value) return items
   items.push({
-    label: current_contact.value.full_name,
+    label: currentContact.value.full_name,
     route: {
       name: 'Contact',
-      params: { contactId: current_contact.value.name },
+      params: { contactId: currentContact.value.name },
     },
   })
   return items

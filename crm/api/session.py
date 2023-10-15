@@ -25,7 +25,7 @@ def get_contacts():
 
 	contacts = frappe.qb.get_query(
 		"Contact",
-		fields=['name', 'full_name', 'image', 'email_id', 'mobile_no', 'phone', 'salutation'],
+		fields=['name', 'first_name', 'last_name', 'full_name', 'image', 'email_id', 'mobile_no', 'phone', 'salutation', 'company_name'],
 		order_by="first_name asc",
 		distinct=True,
 	).run(as_dict=1)
