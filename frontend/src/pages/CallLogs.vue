@@ -17,30 +17,86 @@
       <Button icon="more-horizontal" />
     </div>
   </div>
-  <ListView :list="list" :columns="columns" :rows="rows" row-key="name" />
+  <ListView
+    v-if="rows"
+    class="mt-0"
+    :columns="columns"
+    :rows="rows"
+    row-key="name"
+  >
+    <ListHeader />
+    <ListRows>
+      <ListRow
+        v-for="(row, i) in rows"
+        :key="row.name"
+        v-slot="{ column, item }"
+        :row="row"
+        :idx="i"
+      >
+        <ListRowItem :item="item">
+          <template #prefix>
+            <div v-if="['caller', 'receiver'].includes(column.key)">
+              <Avatar
+                v-if="item.label"
+                class="flex items-center"
+                :image="item.image"
+                :label="item.label"
+                size="sm"
+              />
+            </div>
+            <div v-else-if="['type', 'duration'].includes(column.key)">
+              <FeatherIcon :name="item.icon" class="h-3 w-3" />
+            </div>
+          </template>
+          <div v-if="column.key === 'creation'" class="truncate text-base">
+            {{ item.timeAgo }}
+          </div>
+          <div v-else-if="column.key === 'status'" class="truncate text-base">
+            <Badge
+              :variant="'subtle'"
+              :theme="item.color"
+              size="md"
+              :label="item.label"
+            />
+          </div>
+        </ListRowItem>
+      </ListRow>
+    </ListRows>
+    <ListSelectBanner />
+  </ListView>
 </template>
 
 <script setup>
-import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import { secondsToDuration } from '@/utils'
+import {
+  secondsToDuration,
+  dateFormat,
+  dateTooltipFormat,
+  timeAgo,
+} from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import { Button, createListResource, Breadcrumbs } from 'frappe-ui'
+import {
+  Avatar,
+  Badge,
+  createListResource,
+  Breadcrumbs,
+  ListView,
+  ListHeader,
+  ListRows,
+  ListRow,
+  ListRowItem,
+  ListSelectBanner,
+  FeatherIcon,
+} from 'frappe-ui'
 import { computed } from 'vue'
 
 const { getUser } = usersStore()
 const { getContact } = contactsStore()
 
-const list = {
-  title: 'Call Logs',
-  plural_label: 'Call Logs',
-  singular_label: 'Call Log',
-}
-
-const breadcrumbs = [{ label: list.title, route: { name: 'Call Logs' } }]
+const breadcrumbs = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
 
 const callLogs = createListResource({
   type: 'list',
@@ -69,50 +125,42 @@ const columns = [
   {
     label: 'From',
     key: 'caller',
-    type: 'avatar',
-    size: 'w-32',
+    width: '9rem',
   },
   {
     label: 'To',
     key: 'receiver',
-    type: 'avatar',
-    size: 'w-32',
+    width: '9rem',
   },
   {
     label: 'Type',
     key: 'type',
-    type: 'icon',
-    size: 'w-32',
+    width: '9rem',
   },
   {
     label: 'Status',
     key: 'status',
-    type: 'badge',
-    size: 'w-32',
+    width: '9rem',
   },
   {
     label: 'Duration',
     key: 'duration',
-    type: 'icon',
-    size: 'w-20',
+    width: '6rem',
   },
   {
     label: 'From (number)',
     key: 'from',
-    type: 'data',
-    size: 'w-32',
+    width: '9rem',
   },
   {
     label: 'To (number)',
     key: 'to',
-    type: 'data',
-    size: 'w-32',
+    width: '9rem',
   },
   {
     label: 'Created on',
     key: 'creation',
-    type: 'pretty_date',
-    size: 'w-28',
+    width: '8rem',
   },
 ]
 
@@ -159,7 +207,11 @@ const rows = computed(() => {
         label: callLog.status,
         color: callLog.status === 'Completed' ? 'green' : 'gray',
       },
-      creation: callLog.creation,
+      creation: {
+        label: dateFormat(callLog.creation, dateTooltipFormat),
+        timeAgo: timeAgo(callLog.creation),
+      },
+      route: { name: 'Call Log', params: { callLogId: callLog.name } },
     }
   })
 })
