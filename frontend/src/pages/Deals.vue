@@ -35,19 +35,21 @@
   </div>
   <ListView
     v-if="rows"
-    class="mt-0"
     :columns="columns"
     :rows="rows"
+    :options="{
+      getRowRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
+    }"
     row-key="name"
   >
-    <ListHeader />
+    <ListHeader class="mx-5" />
     <ListRows>
       <ListRow
-        v-for="(row, i) in rows"
+        class="mx-5"
+        v-for="row in rows"
         :key="row.name"
         v-slot="{ column, item }"
         :row="row"
-        :idx="i"
       >
         <ListRowItem :item="item">
           <template #prefix>
@@ -259,7 +261,6 @@ const rows = computed(() => {
         label: dateFormat(lead.modified, dateTooltipFormat),
         timeAgo: timeAgo(lead.modified),
       },
-      route: { name: 'Deal', params: { dealId: lead.name } },
     }
   })
 })

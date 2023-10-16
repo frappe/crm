@@ -36,13 +36,7 @@
       <Button icon="more-horizontal" />
     </div>
   </div>
-  <ListView
-    v-if="rows"
-    class="mt-0"
-    :columns="columns"
-    :rows="rows"
-    row-key="name"
-  />
+  <ListView class="mx-5" v-if="rows" :columns="columns" :rows="rows" row-key="name" />
 </template>
 
 <script setup>
