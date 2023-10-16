@@ -36,46 +36,42 @@
       <Button icon="more-horizontal" />
     </div>
   </div>
-  <ListView :list="list" :columns="columns" :rows="rows" row-key="name" />
+  <ListView
+    v-if="rows"
+    class="mt-0"
+    :columns="columns"
+    :rows="rows"
+    row-key="name"
+  />
 </template>
 
 <script setup>
-import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import { FeatherIcon, Button, Dropdown, Breadcrumbs } from 'frappe-ui'
+import { FeatherIcon, Button, Dropdown, Breadcrumbs, ListView } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { contactsStore } from '@/stores/contacts.js'
 
 const { contacts } = contactsStore()
 
-const list = {
-  title: 'Contacts',
-  plural_label: 'Contacts',
-  singular_label: 'Contact',
-}
-
-const breadcrumbs = [{ label: list.title, route: { name: 'Contacts' } }]
+const breadcrumbs = [{ label: 'Contacts', route: { name: 'Contacts' } }]
 
 const columns = [
   {
     label: 'Full name',
     key: 'full_name',
-    type: 'avatar',
-    size: 'w-44',
+    width: '12rem',
   },
   {
     label: 'Email',
     key: 'email',
-    type: 'email',
-    size: 'w-44',
+    width: '12rem',
   },
   {
     label: 'Phone',
     key: 'mobile_no',
-    type: 'phone',
-    size: 'w-44',
+    width: '12rem',
   },
 ]
 
