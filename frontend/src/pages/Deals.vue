@@ -34,7 +34,6 @@
     </div>
   </div>
   <ListView
-    v-if="rows"
     :columns="columns"
     :rows="rows"
     :options="{
