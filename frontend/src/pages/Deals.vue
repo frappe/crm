@@ -33,11 +33,62 @@
       <Button icon="more-horizontal" />
     </div>
   </div>
-  <ListView :list="list" :columns="columns" :rows="rows" row-key="name" />
+  <ListView
+    :columns="columns"
+    :rows="rows"
+    :options="{
+      getRowRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
+    }"
+    row-key="name"
+  >
+    <ListHeader class="mx-5" />
+    <ListRows>
+      <ListRow
+        class="mx-5"
+        v-for="row in rows"
+        :key="row.name"
+        v-slot="{ column, item }"
+        :row="row"
+      >
+        <ListRowItem :item="item">
+          <template #prefix>
+            <div v-if="column.key === 'deal_status'">
+              <IndicatorIcon :class="item.color" />
+            </div>
+            <div v-else-if="column.key === 'organization_name'">
+              <Avatar
+                v-if="item.label"
+                class="flex items-center"
+                :image="item.logo"
+                :label="item.label"
+                size="sm"
+              />
+            </div>
+            <div v-else-if="column.key === 'lead_owner'">
+              <Avatar
+                v-if="item.full_name"
+                class="flex items-center"
+                :image="item.user_image"
+                :label="item.full_name"
+                size="sm"
+              />
+            </div>
+            <div v-else-if="column.key === 'mobile_no'">
+              <PhoneIcon class="h-4 w-4" />
+            </div>
+          </template>
+          <div v-if="column.key === 'modified'" class="truncate text-base">
+            {{ item.timeAgo }}
+          </div>
+        </ListRowItem>
+      </ListRow>
+    </ListRows>
+    <ListSelectBanner />
+  </ListView>
   <Dialog
     v-model="showNewDialog"
     :options="{
-      size: '3xl',
+      width: '3xl',
       title: 'New Deal',
       actions: [{ label: 'Save', variant: 'solid' }],
     }"
@@ -54,17 +105,25 @@
 </template>
 
 <script setup>
-import ListView from '@/components/ListView.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import NewDeal from '@/components/NewDeal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import { usersStore } from '@/stores/users'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
-import { dealStatuses } from '@/utils'
 import {
+  dealStatuses,
+  dateFormat,
+  dateTooltipFormat,
+  timeAgo,
+  formatNumberIntoCurrency,
+} from '@/utils'
+import {
+  Avatar,
   FeatherIcon,
   Dialog,
   Button,
@@ -72,17 +131,17 @@ import {
   createListResource,
   createResource,
   Breadcrumbs,
+  ListView,
+  ListHeader,
+  ListRows,
+  ListRow,
+  ListRowItem,
+  ListSelectBanner,
 } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive, watch } from 'vue'
 
-const list = {
-  title: 'Deals',
-  plural_label: 'Deals',
-  singular_label: 'Deal',
-}
-
-const breadcrumbs = [{ label: list.title, route: { name: 'Deals' } }]
+const breadcrumbs = [{ label: 'Deals', route: { name: 'Deals' } }]
 
 const { getUser } = usersStore()
 const { get: getOrderBy } = useOrderBy()
@@ -144,44 +203,37 @@ const columns = [
   {
     label: 'Organization',
     key: 'organization_name',
-    type: 'logo',
-    size: 'w-40',
+    width: '11rem',
   },
   {
     label: 'Amount',
     key: 'annual_revenue',
-    type: 'currency',
-    size: 'w-32',
+    width: '9rem',
   },
   {
     label: 'Status',
     key: 'deal_status',
-    type: 'indicator',
-    size: 'w-36',
+    width: '10rem',
   },
   {
     label: 'Email',
     key: 'email',
-    type: 'email',
-    size: 'w-44',
+    width: '12rem',
   },
   {
     label: 'Mobile no',
     key: 'mobile_no',
-    type: 'phone',
-    size: 'w-40',
+    width: '11rem',
   },
   {
     label: 'Lead owner',
     key: 'lead_owner',
-    type: 'avatar',
-    size: 'w-36',
+    width: '10rem',
   },
   {
     label: 'Last modified',
     key: 'modified',
-    type: 'pretty_date',
-    size: 'w-28',
+    width: '8rem',
   },
 ]
 
@@ -193,15 +245,21 @@ const rows = computed(() => {
         label: lead.organization_name,
         logo: lead.organization_logo,
       },
-      annual_revenue: lead.annual_revenue,
+      annual_revenue: formatNumberIntoCurrency(lead.annual_revenue),
       deal_status: {
         label: lead.deal_status,
         color: dealStatuses[lead.deal_status]?.color,
       },
       email: lead.email,
       mobile_no: lead.mobile_no,
-      lead_owner: lead.lead_owner && getUser(lead.lead_owner),
-      modified: lead.modified,
+      lead_owner: {
+        label: lead.lead_owner && getUser(lead.lead_owner).full_name,
+        ...(lead.lead_owner && getUser(lead.lead_owner)),
+      },
+      modified: {
+        label: dateFormat(lead.modified, dateTooltipFormat),
+        timeAgo: timeAgo(lead.modified),
+      },
     }
   })
 })
