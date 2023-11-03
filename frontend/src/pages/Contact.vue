@@ -1,4 +1,9 @@
 <template>
+  <LayoutHeader v-if="contact">
+    <template #left-header>
+      <Breadcrumbs :items="breadcrumbs" />
+    </template>
+  </LayoutHeader>
   <div class="flex gap-6 p-5">
     <FileUploader @success="changeContactImage" :validateFile="validateFile">
       <template #default="{ openFileSelector, error }">
@@ -107,30 +112,43 @@
 <script setup>
 import {
   FeatherIcon,
+  Breadcrumbs,
   Avatar,
   FileUploader,
   ErrorMessage,
   Dropdown,
   call,
 } from 'frappe-ui'
+import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/ContactModal.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import { contactsStore } from '@/stores/contacts.js'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+
+const { getContactByName, contacts } = contactsStore()
+
+const showContactModal = ref(false)
 
 const props = defineProps({
-  contact: {
-    type: Object,
+  contactId: {
+    type: String,
     required: true,
   },
 })
 
-const { contacts } = contactsStore()
+const contact = computed(() => getContactByName(props.contactId))
 
-const showContactModal = ref(false)
+const breadcrumbs = computed(() => {
+  let items = [{ label: 'Contacts', route: { name: 'Contacts' } }]
+  items.push({
+    label: contact.value.full_name,
+    route: { name: 'Contact', params: { contactId: contact.value.name } },
+  })
+  return items
+})
 
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
@@ -142,7 +160,7 @@ function validateFile(file) {
 async function changeContactImage(file) {
   await call('frappe.client.set_value', {
     doctype: 'Contact',
-    name: props.contact.name,
+    name: props.contactId,
     fieldname: 'image',
     value: file?.file_url || '',
   })
@@ -161,7 +179,7 @@ async function deleteContact() {
         async onClick({ close }) {
           await call('frappe.client.delete', {
             doctype: 'Contact',
-            name: props.contact.name,
+            name: props.contactId,
           })
           contacts.reload()
           close()
