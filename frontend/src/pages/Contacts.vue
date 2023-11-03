@@ -9,42 +9,31 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div class="flex h-full overflow-hidden">
-    <div class="flex flex-col overflow-y-auto border-r">
-      <router-link
-        :to="{ name: 'Contact', params: { contactId: contact.name } }"
-        v-for="(contact, i) in contacts.data"
-        :key="i"
-        :class="[
-          currentContact?.name === contact.name
-            ? 'bg-gray-50 hover:bg-gray-100'
-            : 'hover:bg-gray-50',
-        ]"
-      >
-        <div class="flex w-[352px] items-center gap-3 border-b px-5 py-4">
-          <Avatar :image="contact.image" :label="contact.full_name" size="xl" />
-          <div class="flex flex-col items-start gap-1">
-            <span class="text-base font-medium text-gray-900">
-              {{ contact.full_name }}
-            </span>
-            <span class="text-sm text-gray-700">{{ contact.email_id }}</span>
-          </div>
-        </div>
-      </router-link>
+  <div class="flex items-center justify-between px-5 pb-4 pt-3">
+    <div class="flex items-center gap-2">
+      <Dropdown :options="viewsDropdownOptions">
+        <template #default="{ open }">
+          <Button :label="currentView.label">
+            <template #prefix>
+              <FeatherIcon :name="currentView.icon" class="h-4" />
+            </template>
+            <template #suffix>
+              <FeatherIcon
+                :name="open ? 'chevron-up' : 'chevron-down'"
+                class="h-4 text-gray-600"
+              />
+            </template>
+          </Button>
+        </template>
+      </Dropdown>
     </div>
-    <div class="flex-1">
-      <router-view v-if="currentContact" :contact="currentContact" />
-      <div
-        v-else
-        class="grid h-full place-items-center text-xl font-medium text-gray-500"
-      >
-        <div class="flex flex-col items-center justify-center space-y-2">
-          <ContactsIcon class="h-10 w-10" />
-          <div>No contact selected</div>
-        </div>
-      </div>
+    <div class="flex items-center gap-2">
+      <Filter doctype="Contact" />
+      <SortBy doctype="Contact" />
+      <Button icon="more-horizontal" />
     </div>
   </div>
+  <ContactsListView :rows="rows" :columns="columns" />
   <ContactModal
     v-model="showContactModal"
     v-model:reloadContacts="contacts"
@@ -55,13 +44,18 @@
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/ContactModal.vue'
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
-import { FeatherIcon, Breadcrumbs, Avatar } from 'frappe-ui'
+import ContactsListView from '@/components/ListViews/ContactsListView.vue'
+import SortBy from '@/components/SortBy.vue'
+import Filter from '@/components/Filter.vue'
+import { FeatherIcon, Breadcrumbs, Dropdown } from 'frappe-ui'
 import { contactsStore } from '@/stores/contacts.js'
+import { organizationsStore } from '@/stores/organizations.js'
+import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const { contacts } = contactsStore()
+const { getOrganization } = organizationsStore()
 const route = useRoute()
 
 const showContactModal = ref(false)
@@ -84,6 +78,105 @@ const breadcrumbs = computed(() => {
   })
   return items
 })
+
+const currentView = ref({
+  label: 'List',
+  icon: 'list',
+})
+
+const viewsDropdownOptions = [
+  {
+    label: 'List',
+    icon: 'list',
+    onClick() {
+      currentView.value = {
+        label: 'List',
+        icon: 'list',
+      }
+    },
+  },
+  {
+    label: 'Table',
+    icon: 'grid',
+    onClick() {
+      currentView.value = {
+        label: 'Table',
+        icon: 'grid',
+      }
+    },
+  },
+  {
+    label: 'Calender',
+    icon: 'calendar',
+    onClick() {
+      currentView.value = {
+        label: 'Calender',
+        icon: 'calendar',
+      }
+    },
+  },
+  {
+    label: 'Board',
+    icon: 'columns',
+    onClick() {
+      currentView.value = {
+        label: 'Board',
+        icon: 'columns',
+      }
+    },
+  },
+]
+
+const rows = computed(() => {
+  return contacts.data.map((contact) => {
+    return {
+      name: contact.name,
+      full_name: {
+        label: contact.full_name,
+        image_label: contact.full_name,
+        image: contact.image,
+      },
+      email: contact.email_id,
+      mobile_no: contact.mobile_no,
+      company_name: {
+        label: contact.company_name,
+        logo: getOrganization(contact.company_name)?.organization_logo,
+      },
+      modified: {
+        label: dateFormat(contact.modified, dateTooltipFormat),
+        timeAgo: timeAgo(contact.modified),
+      },
+    }
+  })
+})
+
+const columns = [
+  {
+    label: 'Name',
+    key: 'full_name',
+    width: '17rem',
+  },
+  {
+    label: 'Email',
+    key: 'email',
+    width: '12rem',
+  },
+  {
+    label: 'Phone',
+    key: 'mobile_no',
+    width: '12rem',
+  },
+  {
+    label: 'Organization',
+    key: 'company_name',
+    width: '12rem',
+  },
+  {
+    label: 'Last modified',
+    key: 'modified',
+    width: '8rem',
+  },
+]
 
 onMounted(() => {
   const el = document.querySelector('.router-link-active')

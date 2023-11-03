@@ -430,7 +430,14 @@ function getContactRowObject(contact) {
     },
     email: contact.email_id,
     mobile_no: contact.mobile_no,
-    company_name: contact.company_name,
+    company_name: {
+      label: contact.company_name,
+      logo: props.organization?.organization_logo,
+    },
+    modified: {
+      label: dateFormat(contact.modified, dateTooltipFormat),
+      timeAgo: timeAgo(contact.modified),
+    },
   }
 }
 
@@ -512,9 +519,9 @@ const dealColumns = [
 
 const contactColumns = [
   {
-    label: 'Full name',
+    label: 'Name',
     key: 'full_name',
-    width: '12rem',
+    width: '17rem',
   },
   {
     label: 'Email',
@@ -530,6 +537,11 @@ const contactColumns = [
     label: 'Organization',
     key: 'company_name',
     width: '12rem',
+  },
+  {
+    label: 'Last modified',
+    key: 'modified',
+    width: '8rem',
   },
 ]
 
