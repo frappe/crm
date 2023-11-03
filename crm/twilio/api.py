@@ -6,6 +6,10 @@ from frappe import _
 from .twilio_handler import Twilio, IncomingCall, TwilioCallDetails
 
 @frappe.whitelist()
+def is_enabled():
+	return frappe.db.get_single_value("Twilio Settings", "enabled")
+
+@frappe.whitelist()
 def generate_access_token():
 	"""Returns access token that is required to authenticate Twilio Client SDK.
 	"""

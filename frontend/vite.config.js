@@ -5,23 +5,34 @@ import frappeui from 'frappe-ui/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [frappeui(), vue({
-    script: {
-      defineModel: true,
-      propsDestructure: true
-    }
-  })],
+  plugins: [
+    frappeui(),
+    vue({
+      script: {
+        defineModel: true,
+        propsDestructure: true,
+      },
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
   },
   build: {
-    outDir: `../${path.basename(path.resolve('..'))}/public/frontend`,
+    outDir: '../crm/public/frontend',
     emptyOutDir: true,
+    commonjsOptions: {
+      include: [/tailwind.config.js/, /node_modules/],
+    },
     sourcemap: true,
   },
   optimizeDeps: {
-    include: ['frappe-ui > feather-icons', 'showdown', 'engine.io-client'],
+    include: [
+      'feather-icons',
+      'showdown',
+      'tailwind.config.js',
+      'engine.io-client',
+    ],
   },
 })
