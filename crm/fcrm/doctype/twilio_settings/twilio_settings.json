@@ -7,6 +7,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "section_break_malx",
   "account_sid",
   "api_key",
   "api_secret",
@@ -14,8 +15,9 @@
   "auth_token",
   "twiml_sid",
   "section_break_ssqj",
-  "record_calls",
-  "column_break_avmt"
+  "enabled",
+  "column_break_avmt",
+  "record_calls"
  ],
  "fields": [
   {
@@ -23,7 +25,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Account SID",
-   "reqd": 1
+   "mandatory_depends_on": "eval: doc.enabled"
   },
   {
    "fieldname": "api_key",
@@ -46,7 +48,7 @@
    "fieldtype": "Password",
    "in_list_view": 1,
    "label": "Auth Token",
-   "reqd": 1
+   "mandatory_depends_on": "eval: doc.enabled"
   },
   {
    "fieldname": "twiml_sid",
@@ -67,12 +69,22 @@
   {
    "fieldname": "column_break_avmt",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_malx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-09-20 16:42:17.025651",
+ "modified": "2023-11-03 15:13:09.155818",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Twilio Settings",

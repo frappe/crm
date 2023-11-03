@@ -2,17 +2,17 @@
   <div
     v-show="showCallPopup"
     ref="callPopup"
-    class="fixed select-none z-10 bg-gray-900 text-gray-300 rounded-lg shadow-2xl p-4 flex flex-col w-60 cursor-move"
+    class="fixed z-10 flex w-60 cursor-move select-none flex-col rounded-lg bg-gray-900 p-4 text-gray-300 shadow-2xl"
     :style="style"
   >
-    <div class="flex items-center flex-row-reverse gap-1">
-      <MinimizeIcon class="w-4 h-4 cursor-pointer" @click="toggleCallWindow" />
+    <div class="flex flex-row-reverse items-center gap-1">
+      <MinimizeIcon class="h-4 w-4 cursor-pointer" @click="toggleCallWindow" />
     </div>
-    <div class="flex flex-col justify-center items-center gap-3">
+    <div class="flex flex-col items-center justify-center gap-3">
       <Avatar
         :image="contact.image"
         :label="contact.full_name"
-        class="flex items-center justify-center [&>div]:text-[30px] !h-24 !w-24 relative"
+        class="relative flex !h-24 !w-24 items-center justify-center [&>div]:text-[30px]"
         :class="onCall || calling ? '' : 'pulse'"
       />
       <div class="flex flex-col items-center justify-center gap-1">
@@ -22,11 +22,11 @@
         <div class="text-sm text-gray-600">{{ contact.mobile_no }}</div>
       </div>
       <CountUpTimer ref="counterUp">
-        <div v-if="onCall" class="text-base my-1">
+        <div v-if="onCall" class="my-1 text-base">
           {{ counterUp?.updatedTime }}
         </div>
       </CountUpTimer>
-      <div v-if="!onCall" class="text-base my-1">
+      <div v-if="!onCall" class="my-1 text-base">
         {{
           callStatus == 'ringing'
             ? 'Ringing...'
@@ -43,13 +43,13 @@
         />
         <Button class="rounded-full">
           <template #icon>
-            <DialpadIcon class="rounded-full cursor-pointer" />
+            <DialpadIcon class="cursor-pointer rounded-full" />
           </template>
         </Button>
         <Button class="rounded-full">
           <template #icon>
             <NoteIcon
-              class="text-gray-900 rounded-full cursor-pointer h-4 w-4"
+              class="h-4 w-4 cursor-pointer rounded-full text-gray-900"
               @click="showNoteModal = true"
             />
           </template>
@@ -57,7 +57,7 @@
         <Button class="rounded-full bg-red-600 hover:bg-red-700">
           <template #icon>
             <PhoneIcon
-              class="text-white fill-white h-4 w-4 rotate-[135deg]"
+              class="h-4 w-4 rotate-[135deg] fill-white text-white"
               @click="hangUpCall"
             />
           </template>
@@ -73,7 +73,7 @@
           class="rounded-lg"
         >
           <template #prefix>
-            <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
+            <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
           </template>
         </Button>
       </div>
@@ -87,7 +87,7 @@
           @click="acceptIncomingCall"
         >
           <template #prefix>
-            <PhoneIcon class="fill-white h-4 w-4" />
+            <PhoneIcon class="h-4 w-4 fill-white" />
           </template>
         </Button>
         <Button
@@ -99,7 +99,7 @@
           @click="rejectIncomingCall"
         >
           <template #prefix>
-            <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
+            <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
           </template>
         </Button>
       </div>
@@ -107,16 +107,16 @@
   </div>
   <div
     v-show="showSmallCallWindow"
-    class="flex items-center justify-between gap-3 bg-gray-900 text-base text-gray-300 ml-2 px-2 py-[7px] rounded-lg cursor-pointer select-none"
+    class="ml-2 flex cursor-pointer select-none items-center justify-between gap-3 rounded-lg bg-gray-900 px-2 py-[7px] text-base text-gray-300"
     @click="toggleCallWindow"
   >
     <div class="flex items-center gap-2">
       <Avatar
         :image="contact.image"
         :label="contact.full_name"
-        class="flex items-center justify-center !h-5 !w-5 relative"
+        class="relative flex !h-5 !w-5 items-center justify-center"
       />
-      <div class="truncate max-w-[120px]">
+      <div class="max-w-[120px] truncate">
         {{ contact.full_name }}
       </div>
     </div>
@@ -124,10 +124,10 @@
       <div class="my-1 min-w-[40px] text-center">
         {{ counterUp?.updatedTime }}
       </div>
-      <Button variant="solid" theme="red" class="rounded-full !h-6 !w-6">
+      <Button variant="solid" theme="red" class="!h-6 !w-6 rounded-full">
         <template #icon>
           <PhoneIcon
-            class="fill-white h-4 w-4 rotate-[135deg]"
+            class="h-4 w-4 rotate-[135deg] fill-white"
             @click.stop="hangUpCall"
           />
         </template>
@@ -140,11 +140,11 @@
       <Button
         variant="solid"
         theme="red"
-        class="rounded-full !h-6 !w-6"
+        class="!h-6 !w-6 rounded-full"
         @click.stop="cancelCall"
       >
         <template #icon>
-          <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
+          <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
         </template>
       </Button>
     </div>
@@ -152,21 +152,21 @@
       <Button
         variant="solid"
         theme="green"
-        class="rounded-full !h-6 !w-6 pulse relative"
+        class="pulse relative !h-6 !w-6 rounded-full"
         @click.stop="acceptIncomingCall"
       >
         <template #icon>
-          <PhoneIcon class="fill-white h-4 w-4 animate-pulse" />
+          <PhoneIcon class="h-4 w-4 animate-pulse fill-white" />
         </template>
       </Button>
       <Button
         variant="solid"
         theme="red"
-        class="rounded-full !h-6 !w-6"
+        class="!h-6 !w-6 rounded-full"
         @click.stop="rejectIncomingCall"
       >
         <template #icon>
-          <PhoneIcon class="fill-white h-4 w-4 rotate-[135deg]" />
+          <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
         </template>
       </Button>
     </div>
@@ -197,6 +197,7 @@ const contact = ref({
   mobile_no: '',
 })
 
+let enabled = ref(false)
 let showCallPopup = ref(false)
 let showSmallCallWindow = ref(false)
 let onCall = ref(false)
@@ -243,6 +244,10 @@ let { style } = useDraggable(callPopup, {
   initialValue: { x: width.value - 280, y: height.value - 310 },
   preventDefault: true,
 })
+
+async function is_twilio_enabled() {
+  return await call('crm.twilio.api.is_enabled')
+}
 
 async function startupClient() {
   log.value = 'Requesting Access Token...'
@@ -469,7 +474,10 @@ function toggleCallWindow() {
   }
 }
 
-onMounted(() => startupClient())
+onMounted(async () => {
+  enabled.value = await is_twilio_enabled()
+  enabled.value && startupClient()
+})
 
 watch(
   () => log.value,
@@ -481,6 +489,7 @@ watch(
 
 const app = getCurrentInstance()
 app.appContext.config.globalProperties.makeCall = makeOutgoingCall
+app.appContext.config.globalProperties.is_twilio_enabled = enabled.value
 </script>
 
 <style scoped>

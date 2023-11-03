@@ -27,8 +27,8 @@ class Twilio:
 		"""Make a twilio connection.
 		"""
 		settings = frappe.get_doc("Twilio Settings")
-		# if not (settings and settings.enabled):
-		# 	return
+		if not (settings and settings.enabled):
+			return
 		return Twilio(settings=settings)
 
 	def get_phone_numbers(self):
@@ -115,6 +115,8 @@ class Twilio:
 	@classmethod
 	def get_twilio_client(self):
 		twilio_settings = frappe.get_doc("Twilio Settings")
+		if not twilio_settings.enabled:
+			frappe.throw(_("Please enable twilio settings before making a call."))
 		
 		auth_token = get_decrypted_password("Twilio Settings", "Twilio Settings", 'auth_token')
 		client = TwilioClient(twilio_settings.account_sid, auth_token)
