@@ -3,16 +3,18 @@
     class="flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-56'"
   >
-    <div class="flex flex-col">
+    <div class="flex flex-col overflow-hidden">
       <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
-      <SidebarLink
-        v-for="link in links"
-        :icon="link.icon"
-        :label="link.label"
-        :to="link.to"
-        :isCollapsed="isSidebarCollapsed"
-        class="mx-2 my-0.5"
-      />
+      <div class="flex flex-col overflow-y-auto">
+        <SidebarLink
+          v-for="link in links"
+          :icon="link.icon"
+          :label="link.label"
+          :to="link.to"
+          :isCollapsed="isSidebarCollapsed"
+          class="mx-2 my-0.5"
+        />
+      </div>
     </div>
     <SidebarLink
       :label="isSidebarCollapsed ? 'Expand' : 'Collapse'"
