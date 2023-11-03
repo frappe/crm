@@ -183,7 +183,7 @@ import {
   formatNumberIntoCurrency,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { h, computed, ref, watch } from 'vue'
+import { h, computed, ref, watch, onMounted } from 'vue'
 
 const props = defineProps({
   organization: {
@@ -509,17 +509,19 @@ const contactColumns = [
   },
 ]
 
+function reload(val) {
+  leads.filters.organization_name = val
+  deals.filters.organization_name = val
+  contacts.filters.company_name = val
+  leads.reload()
+  deals.reload()
+  contacts.reload()
+}
+
 watch(
   () => props.organization.name,
-  (val) => {
-    leads.filters.organization_name = val
-    leads.reload()
-
-    deals.filters.organization_name = val
-    deals.reload()
-
-    contacts.filters.company_name = val
-    contacts.reload()
-  }
+  (val) => val && reload(val)
 )
+
+onMounted(() => reload(props.organization.name))
 </script>
