@@ -15,7 +15,7 @@
     </template>
   </LayoutHeader>
   <div class="flex h-full overflow-hidden">
-    <div class="flex flex-col overflow-y-auto border-r">
+    <div class="flex shrink-0 flex-col overflow-y-auto border-r">
       <router-link
         :to="{
           name: 'Organization',
@@ -46,19 +46,17 @@
         </div>
       </router-link>
     </div>
-    <div class="flex-1">
-      <router-view
-        v-if="currentOrganization"
-        :organization="currentOrganization"
-      />
-      <div
-        v-else
-        class="grid h-full place-items-center text-xl font-medium text-gray-500"
-      >
-        <div class="flex flex-col items-center justify-center space-y-2">
-          <OrganizationsIcon class="h-10 w-10" />
-          <div>No organization selected</div>
-        </div>
+    <router-view
+      v-if="currentOrganization"
+      :organization="currentOrganization"
+    />
+    <div
+      v-else
+      class="grid h-full flex-1 place-items-center text-xl font-medium text-gray-500"
+    >
+      <div class="flex flex-col items-center justify-center space-y-2">
+        <OrganizationsIcon class="h-10 w-10" />
+        <div>No organization selected</div>
       </div>
     </div>
   </div>

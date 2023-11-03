@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-1 flex-col overflow-hidden">
     <div class="flex gap-6 p-5">
       <FileUploader
         @success="changeOrganizationImage"
@@ -112,7 +112,35 @@
       </div>
     </div>
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
-      {{ tab.label }}
+      <div class="flex h-full">
+        <LeadsListView
+          class="mt-4"
+          v-if="tab.label === 'Leads' && rows.length"
+          :rows="rows"
+          :columns="columns"
+        />
+        <DealsListView
+          class="mt-4"
+          v-if="tab.label === 'Deals' && rows.length"
+          :rows="rows"
+          :columns="columns"
+        />
+        <ContactsListView
+          class="mt-4"
+          v-if="tab.label === 'Contacts' && rows.length"
+          :rows="rows"
+          :columns="columns"
+        />
+        <div
+          v-if="!rows.length"
+          class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
+        >
+          <div class="flex flex-col items-center justify-center space-y-2">
+            <component :is="tab.icon" class="!h-10 !w-10" />
+            <div>No {{ tab.label.toLowerCase() }} found</div>
+          </div>
+        </div>
+      </div>
     </Tabs>
     <!-- <OrganizationModal
       v-model="showOrganizationModal"
@@ -129,10 +157,14 @@ import {
   FileUploader,
   ErrorMessage,
   Dropdown,
-  call,
   Tabs,
+  call,
+  createListResource,
 } from 'frappe-ui'
 // import OrganizationModal from '@/components/OrganizationModal.vue'
+import LeadsListView from '@/components/ListViews/LeadsListView.vue'
+import DealsListView from '@/components/ListViews/DealsListView.vue'
+import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -142,21 +174,34 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import { organizationsStore } from '@/stores/organizations.js'
-import { h, ref } from 'vue'
+import {
+  dateFormat,
+  dateTooltipFormat,
+  timeAgo,
+  leadStatuses,
+  dealStatuses,
+  formatNumberIntoCurrency,
+} from '@/utils'
+import { usersStore } from '@/stores/users'
+import { h, computed, ref, watch } from 'vue'
+
 const props = defineProps({
   organization: {
     type: Object,
     required: true,
   },
 })
+
 const { organizations } = organizationsStore()
 const showOrganizationModal = ref(false)
+
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
   if (!['png', 'jpg', 'jpeg'].includes(extn)) {
     return 'Only PNG and JPG images are allowed'
   }
 }
+
 async function changeOrganizationImage(file) {
   await call('frappe.client.set_value', {
     doctype: 'Organization',
@@ -166,6 +211,7 @@ async function changeOrganizationImage(file) {
   })
   organizations.reload()
 }
+
 async function deleteOrganization() {
   $dialog({
     title: 'Delete organization',
@@ -187,9 +233,11 @@ async function deleteOrganization() {
     ],
   })
 }
+
 function website(url) {
   return url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
 }
+
 const tabIndex = ref(0)
 const tabs = [
   {
@@ -205,4 +253,273 @@ const tabs = [
     icon: h(ContactsIcon, { class: 'h-4 w-4' }),
   },
 ]
+
+const { getUser } = usersStore()
+
+const leads = createListResource({
+  type: 'list',
+  doctype: 'CRM Lead',
+  cache: ['leads', props.organization.name],
+  fields: [
+    'name',
+    'first_name',
+    'lead_name',
+    'image',
+    'organization_name',
+    'organization_logo',
+    'status',
+    'email',
+    'mobile_no',
+    'lead_owner',
+    'modified',
+  ],
+  filters: {
+    organization_name: props.organization.name,
+    is_deal: 0,
+  },
+  orderBy: 'modified desc',
+  pageLength: 20,
+  auto: true,
+})
+
+const deals = createListResource({
+  type: 'list',
+  doctype: 'CRM Lead',
+  cache: ['deals', props.organization.name],
+  fields: [
+    'name',
+    'organization_name',
+    'organization_logo',
+    'annual_revenue',
+    'deal_status',
+    'email',
+    'mobile_no',
+    'lead_owner',
+    'modified',
+  ],
+  filters: {
+    organization_name: props.organization.name,
+    is_deal: 1,
+  },
+  orderBy: 'modified desc',
+  pageLength: 20,
+  auto: true,
+})
+
+const contacts = createListResource({
+  type: 'list',
+  doctype: 'Contact',
+  cache: ['contacts', props.organization.name],
+  fields: ['name', 'email_id', 'mobile_no', 'company_name', 'modified'],
+  filters: {
+    company_name: props.organization.name,
+  },
+  orderBy: 'modified desc',
+  pageLength: 20,
+  auto: true,
+})
+
+const rows = computed(() => {
+  let list = []
+  list = !tabIndex.value ? leads : tabIndex.value == 1 ? deals : contacts
+
+  if (!list.data) return []
+
+  return list.data.map((row) => {
+    return !tabIndex.value
+      ? getLeadRowObject(row)
+      : tabIndex.value == 1
+      ? getDealRowObject(row)
+      : getContactRowObject(row)
+  })
+})
+
+const columns = computed(() => {
+  return tabIndex.value === 0
+    ? leadColumns
+    : tabIndex.value === 1
+    ? dealColumns
+    : contactColumns
+})
+
+function getLeadRowObject(lead) {
+  return {
+    name: lead.name,
+    lead_name: {
+      label: lead.lead_name,
+      image: lead.image,
+      image_label: lead.first_name,
+    },
+    organization_name: {
+      label: lead.organization_name,
+      logo: lead.organization_logo,
+    },
+    status: {
+      label: lead.status,
+      color: leadStatuses[lead.status]?.color,
+    },
+    email: lead.email,
+    mobile_no: lead.mobile_no,
+    lead_owner: {
+      label: lead.lead_owner && getUser(lead.lead_owner).full_name,
+      ...(lead.lead_owner && getUser(lead.lead_owner)),
+    },
+    modified: {
+      label: dateFormat(lead.modified, dateTooltipFormat),
+      timeAgo: timeAgo(lead.modified),
+    },
+  }
+}
+
+function getDealRowObject(deal) {
+  return {
+    name: deal.name,
+    organization_name: {
+      label: deal.organization_name,
+      logo: deal.organization_logo,
+    },
+    annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
+    deal_status: {
+      label: deal.deal_status,
+      color: dealStatuses[deal.deal_status]?.color,
+    },
+    email: deal.email,
+    mobile_no: deal.mobile_no,
+    lead_owner: {
+      label: deal.lead_owner && getUser(deal.lead_owner).full_name,
+      ...(deal.lead_owner && getUser(deal.lead_owner)),
+    },
+    modified: {
+      label: dateFormat(deal.modified, dateTooltipFormat),
+      timeAgo: timeAgo(deal.modified),
+    },
+  }
+}
+
+function getContactRowObject(contact) {
+  return {
+    name: contact.name,
+    full_name: {
+      label: contact.full_name,
+      image_label: contact.full_name,
+      image: contact.image,
+    },
+    email: contact.email_id,
+    mobile_no: contact.mobile_no,
+    company_name: contact.company_name,
+  }
+}
+
+const leadColumns = [
+  {
+    label: 'Name',
+    key: 'lead_name',
+    width: '12rem',
+  },
+  {
+    label: 'Organization',
+    key: 'organization_name',
+    width: '10rem',
+  },
+  {
+    label: 'Status',
+    key: 'status',
+    width: '8rem',
+  },
+  {
+    label: 'Email',
+    key: 'email',
+    width: '12rem',
+  },
+  {
+    label: 'Mobile no',
+    key: 'mobile_no',
+    width: '11rem',
+  },
+  {
+    label: 'Lead owner',
+    key: 'lead_owner',
+    width: '10rem',
+  },
+  {
+    label: 'Last modified',
+    key: 'modified',
+    width: '8rem',
+  },
+]
+
+const dealColumns = [
+  {
+    label: 'Organization',
+    key: 'organization_name',
+    width: '11rem',
+  },
+  {
+    label: 'Amount',
+    key: 'annual_revenue',
+    width: '9rem',
+  },
+  {
+    label: 'Status',
+    key: 'deal_status',
+    width: '10rem',
+  },
+  {
+    label: 'Email',
+    key: 'email',
+    width: '12rem',
+  },
+  {
+    label: 'Mobile no',
+    key: 'mobile_no',
+    width: '11rem',
+  },
+  {
+    label: 'Lead owner',
+    key: 'lead_owner',
+    width: '10rem',
+  },
+  {
+    label: 'Last modified',
+    key: 'modified',
+    width: '8rem',
+  },
+]
+
+const contactColumns = [
+  {
+    label: 'Full name',
+    key: 'full_name',
+    width: '12rem',
+  },
+  {
+    label: 'Email',
+    key: 'email',
+    width: '12rem',
+  },
+  {
+    label: 'Phone',
+    key: 'mobile_no',
+    width: '12rem',
+  },
+  {
+    label: 'Organization',
+    key: 'company_name',
+    width: '12rem',
+  },
+]
+
+watch(
+  () => props.organization.name,
+  (val) => {
+    leads.filters.organization_name = val
+    leads.reload()
+
+    deals.filters.organization_name = val
+    deals.reload()
+
+    contacts.filters.company_name = val
+    contacts.reload()
+  }
+)
 </script>
