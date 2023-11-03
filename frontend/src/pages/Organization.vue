@@ -111,36 +111,56 @@
         </div>
       </div>
     </div>
-    <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
-      <div class="flex h-full">
-        <LeadsListView
-          class="mt-4"
-          v-if="tab.label === 'Leads' && rows.length"
-          :rows="rows"
-          :columns="columns"
-        />
-        <DealsListView
-          class="mt-4"
-          v-if="tab.label === 'Deals' && rows.length"
-          :rows="rows"
-          :columns="columns"
-        />
-        <ContactsListView
-          class="mt-4"
-          v-if="tab.label === 'Contacts' && rows.length"
-          :rows="rows"
-          :columns="columns"
-        />
-        <div
-          v-if="!rows.length"
-          class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
+    <Tabs v-model="tabIndex" :tabs="tabs">
+      <template #tab="{ tab, selected }">
+        <button
+          class="group -mb-px flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
+          :class="{ 'text-gray-900': selected }"
         >
-          <div class="flex flex-col items-center justify-center space-y-2">
-            <component :is="tab.icon" class="!h-10 !w-10" />
-            <div>No {{ tab.label.toLowerCase() }} found</div>
+          <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+          {{ tab.label }}
+          <Badge
+            class="group-hover:bg-gray-900"
+            :class="[selected ? 'bg-gray-900' : 'bg-gray-600']"
+            variant="solid"
+            theme="gray"
+            size="sm"
+          >
+            {{ tab.count }}
+          </Badge>
+        </button>
+      </template>
+      <template #default="{ tab }">
+        <div class="flex h-full">
+          <LeadsListView
+            class="mt-4"
+            v-if="tab.label === 'Leads' && rows.length"
+            :rows="rows"
+            :columns="columns"
+          />
+          <DealsListView
+            class="mt-4"
+            v-if="tab.label === 'Deals' && rows.length"
+            :rows="rows"
+            :columns="columns"
+          />
+          <ContactsListView
+            class="mt-4"
+            v-if="tab.label === 'Contacts' && rows.length"
+            :rows="rows"
+            :columns="columns"
+          />
+          <div
+            v-if="!rows.length"
+            class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
+          >
+            <div class="flex flex-col items-center justify-center space-y-2">
+              <component :is="tab.icon" class="!h-10 !w-10" />
+              <div>No {{ tab.label.toLowerCase() }} found</div>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </Tabs>
     <OrganizationModal
       v-model="showOrganizationModal"
@@ -158,6 +178,7 @@ import {
   ErrorMessage,
   Dropdown,
   Tabs,
+  Badge,
   call,
   createListResource,
 } from 'frappe-ui'
@@ -243,14 +264,17 @@ const tabs = [
   {
     label: 'Leads',
     icon: h(LeadsIcon, { class: 'h-4 w-4' }),
+    count: computed(() => leads.data?.length),
   },
   {
     label: 'Deals',
     icon: h(DealsIcon, { class: 'h-4 w-4' }),
+    count: computed(() => deals.data?.length),
   },
   {
     label: 'Contacts',
     icon: h(ContactsIcon, { class: 'h-4 w-4' }),
+    count: computed(() => contacts.data?.length),
   },
 ]
 
