@@ -33,58 +33,7 @@
       <Button icon="more-horizontal" />
     </div>
   </div>
-  <ListView
-    :columns="columns"
-    :rows="rows"
-    :options="{
-      getRowRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
-    }"
-    row-key="name"
-  >
-    <ListHeader class="mx-5" />
-    <ListRows>
-      <ListRow
-        class="mx-5"
-        v-for="row in rows"
-        :key="row.name"
-        v-slot="{ column, item }"
-        :row="row"
-      >
-        <ListRowItem :item="item">
-          <template #prefix>
-            <div v-if="column.key === 'deal_status'">
-              <IndicatorIcon :class="item.color" />
-            </div>
-            <div v-else-if="column.key === 'organization_name'">
-              <Avatar
-                v-if="item.label"
-                class="flex items-center"
-                :image="item.logo"
-                :label="item.label"
-                size="sm"
-              />
-            </div>
-            <div v-else-if="column.key === 'lead_owner'">
-              <Avatar
-                v-if="item.full_name"
-                class="flex items-center"
-                :image="item.user_image"
-                :label="item.full_name"
-                size="sm"
-              />
-            </div>
-            <div v-else-if="column.key === 'mobile_no'">
-              <PhoneIcon class="h-4 w-4" />
-            </div>
-          </template>
-          <div v-if="column.key === 'modified'" class="truncate text-base">
-            {{ item.timeAgo }}
-          </div>
-        </ListRowItem>
-      </ListRow>
-    </ListRows>
-    <ListSelectBanner />
-  </ListView>
+  <DealsListView :rows="rows" :columns="columns" />
   <Dialog
     v-model="showNewDialog"
     :options="{
@@ -106,11 +55,10 @@
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import DealsListView from '@/components/ListViews/DealsListView.vue'
 import NewDeal from '@/components/NewDeal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import { usersStore } from '@/stores/users'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
@@ -123,7 +71,6 @@ import {
   formatNumberIntoCurrency,
 } from '@/utils'
 import {
-  Avatar,
   FeatherIcon,
   Dialog,
   Button,
@@ -131,12 +78,6 @@ import {
   createListResource,
   createResource,
   Breadcrumbs,
-  ListView,
-  ListHeader,
-  ListRows,
-  ListRow,
-  ListRowItem,
-  ListSelectBanner,
 } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive, watch } from 'vue'
@@ -238,7 +179,8 @@ const columns = [
 ]
 
 const rows = computed(() => {
-  return leads.data?.map((lead) => {
+  if (!leads.data) return []
+  return leads.data.map((lead) => {
     return {
       name: lead.name,
       organization_name: {

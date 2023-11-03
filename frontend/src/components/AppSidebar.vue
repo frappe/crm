@@ -37,6 +37,7 @@ import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
@@ -58,6 +59,11 @@ const links = [
     label: 'Contacts',
     icon: ContactsIcon,
     to: 'Contacts',
+  },
+  {
+    label: 'Organizations',
+    icon: OrganizationsIcon,
+    to: 'Organizations',
   },
   {
     label: 'Notes',

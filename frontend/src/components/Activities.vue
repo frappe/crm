@@ -619,8 +619,8 @@ import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
-import NoteModal from '@/components/NoteModal.vue'
-import TaskModal from '@/components/TaskModal.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
+import TaskModal from '@/components/Modals/TaskModal.vue'
 import {
   timeAgo,
   dateFormat,

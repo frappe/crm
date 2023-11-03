@@ -31,3 +31,17 @@ def get_contacts():
 	).run(as_dict=1)
 
 	return contacts
+
+@frappe.whitelist()
+def get_organizations():
+	if frappe.session.user == "Guest":
+		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
+
+	organizations = frappe.qb.get_query(
+		"CRM Organization",
+		fields=['name', 'organization_logo', 'website'],
+		order_by="name asc",
+		distinct=True,
+	).run(as_dict=1)
+
+	return organizations
