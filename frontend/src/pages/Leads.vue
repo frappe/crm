@@ -32,67 +32,7 @@
       <Button icon="more-horizontal" />
     </div>
   </div>
-  <ListView
-    :columns="columns"
-    :rows="rows"
-    :options="{
-      getRowRoute: (row) => ({ name: 'Lead', params: { leadId: row.name } }),
-    }"
-    row-key="name"
-  >
-    <ListHeader class="mx-5" />
-    <ListRows>
-      <ListRow
-        class="mx-5"
-        v-for="row in rows"
-        :key="row.name"
-        v-slot="{ column, item }"
-        :row="row"
-      >
-        <ListRowItem :item="item">
-          <template #prefix>
-            <div v-if="column.key === 'status'">
-              <IndicatorIcon :class="item.color" />
-            </div>
-            <div v-else-if="column.key === 'lead_name'">
-              <Avatar
-                v-if="item.label"
-                class="flex items-center"
-                :image="item.image"
-                :label="item.image_label"
-                size="sm"
-              />
-            </div>
-            <div v-else-if="column.key === 'organization_name'">
-              <Avatar
-                v-if="item.label"
-                class="flex items-center"
-                :image="item.logo"
-                :label="item.label"
-                size="sm"
-              />
-            </div>
-            <div v-else-if="column.key === 'lead_owner'">
-              <Avatar
-                v-if="item.full_name"
-                class="flex items-center"
-                :image="item.user_image"
-                :label="item.full_name"
-                size="sm"
-              />
-            </div>
-            <div v-else-if="column.key === 'mobile_no'">
-              <PhoneIcon class="h-4 w-4" />
-            </div>
-          </template>
-          <div v-if="column.key === 'modified'" class="truncate text-base">
-            {{ item.timeAgo }}
-          </div>
-        </ListRowItem>
-      </ListRow>
-    </ListRows>
-    <ListSelectBanner />
-  </ListView>
+  <LeadsListView :rows="rows" :columns="columns" />
   <Dialog
     v-model="showNewDialog"
     :options="{
@@ -114,18 +54,16 @@
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import NewLead from '@/components/NewLead.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import { usersStore } from '@/stores/users'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
 import { leadStatuses, dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import {
-  Avatar,
   FeatherIcon,
   Dialog,
   Button,
@@ -133,12 +71,6 @@ import {
   createListResource,
   createResource,
   Breadcrumbs,
-  ListView,
-  ListHeader,
-  ListRows,
-  ListRow,
-  ListSelectBanner,
-  ListRowItem,
 } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive, watch } from 'vue'
@@ -246,7 +178,8 @@ const columns = [
 ]
 
 const rows = computed(() => {
-  return leads.data?.map((lead) => {
+  if (!leads.data) return []
+  return leads.data.map((lead) => {
     return {
       name: lead.name,
       lead_name: {
