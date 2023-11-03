@@ -60,15 +60,15 @@
       </div>
     </div>
   </div>
-  <!-- <OrganizationModal
-      v-model="showOrganizationModal"
-      v-model:reloadOrganizations="organizations"
-      :organization="{}"
-    /> -->
+  <OrganizationModal
+    v-model="showOrganizationModal"
+    v-model:reloadOrganizations="organizations"
+    :organization="{}"
+  />
 </template>
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
-// import OrganizationModal from '@/components/OrganizationModal.vue'
+import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import { FeatherIcon, Breadcrumbs, Avatar } from 'frappe-ui'
 import { organizationsStore } from '@/stores/organizations.js'
@@ -102,6 +102,6 @@ onMounted(() => {
     })
 })
 function website(url) {
-  return url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
+  return url && url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
 }
 </script>

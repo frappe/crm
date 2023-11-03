@@ -180,12 +180,12 @@ import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import DialpadIcon from '@/components/Icons/DialpadIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { contactsStore } from '@/stores/contacts'
 import { Avatar, call } from 'frappe-ui'
 import { onMounted, ref, watch, getCurrentInstance } from 'vue'
-import NoteModal from './NoteModal.vue'
 
 const { getContact } = contactsStore()
 

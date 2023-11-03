@@ -142,11 +142,11 @@
         </div>
       </div>
     </Tabs>
-    <!-- <OrganizationModal
+    <OrganizationModal
       v-model="showOrganizationModal"
       v-model:reloadOrganizations="organizations"
       :organization="organization"
-      /> -->
+    />
   </div>
 </template>
 
@@ -161,7 +161,7 @@ import {
   call,
   createListResource,
 } from 'frappe-ui'
-// import OrganizationModal from '@/components/OrganizationModal.vue'
+import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
@@ -204,9 +204,9 @@ function validateFile(file) {
 
 async function changeOrganizationImage(file) {
   await call('frappe.client.set_value', {
-    doctype: 'Organization',
+    doctype: 'CRM Organization',
     name: props.organization.name,
-    fieldname: 'image',
+    fieldname: 'organization_logo',
     value: file?.file_url || '',
   })
   organizations.reload()
@@ -223,7 +223,7 @@ async function deleteOrganization() {
         variant: 'solid',
         async onClick({ close }) {
           await call('frappe.client.delete', {
-            doctype: 'Organization',
+            doctype: 'CRM Organization',
             name: props.organization.name,
           })
           organizations.reload()
@@ -235,7 +235,7 @@ async function deleteOrganization() {
 }
 
 function website(url) {
-  return url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
+  return url && url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
 }
 
 const tabIndex = ref(0)

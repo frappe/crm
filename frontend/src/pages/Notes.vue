@@ -81,7 +81,7 @@
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import NoteModal from '@/components/NoteModal.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import {
   FeatherIcon,
