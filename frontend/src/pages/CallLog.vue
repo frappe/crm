@@ -142,7 +142,7 @@
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
-import NoteModal from '@/components/NoteModal.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
 import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
 import {
   TextEditor,

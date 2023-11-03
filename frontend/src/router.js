@@ -48,6 +48,19 @@ const routes = [
     ],
   },
   {
+    path: '/organizations',
+    name: 'Organizations',
+    component: () => import('@/pages/Organizations.vue'),
+    children: [
+      {
+        path: '/organizations/:organizationId?',
+        name: 'Organization',
+        component: () => import('@/pages/Organization.vue'),
+        props: true,
+      },
+    ],
+  },
+  {
     path: '/call-logs',
     name: 'Call Logs',
     component: () => import('@/pages/CallLogs.vue'),

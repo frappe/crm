@@ -1,6 +1,6 @@
 {
     "private": true,
-    "aworkspaces": ["frappe-ui", "frontend"],
+    "workspaces": ["frontend", "frappe-ui"],
     "scripts": {
         "postinstall": "cd frontend && yarn install",
         "dev": "cd frontend && yarn dev",
