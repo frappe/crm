@@ -83,8 +83,46 @@
           </div>
         </template>
       </FileUploader>
-      <div class="overflow-y-auto">
-        <!-- details -->
+      <div class="flex flex-col overflow-y-auto">
+        <div class="px-5 py-3 text-base font-semibold leading-5">Details</div>
+        <div class="flex flex-col gap-1.5 px-2">
+          <div
+            v-for="field in details"
+            :key="field.name"
+            class="flex items-center gap-2 px-3 text-base leading-5 last:mb-3"
+          >
+            <div class="w-[106px] text-gray-600">
+              {{ field.label }}
+            </div>
+            <div class="flex-1">
+              <FormControl
+                v-if="field.type === 'email'"
+                type="email"
+                class="form-control"
+                :value="contact[field.name]"
+                @change.stop="updateContact(field.name, $event.target.value)"
+                :debounce="500"
+              />
+              <FormControl
+                v-else-if="field.type === 'link'"
+                type="autocomplete"
+                :value="contact[field.name]"
+                :options="field.options"
+                @change="(e) => field.change(e)"
+                :placeholder="field.placeholder"
+                class="form-control"
+              />
+              <FormControl
+                v-else
+                type="text"
+                :value="contact[field.name]"
+                @change.stop="updateContact(field.name, $event.target.value)"
+                class="form-control"
+                :debounce="500"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
@@ -140,6 +178,7 @@
 
 <script setup>
 import {
+  FormControl,
   FeatherIcon,
   Breadcrumbs,
   Avatar,
@@ -149,6 +188,7 @@ import {
   Tooltip,
   Tabs,
   call,
+  createResource,
   createListResource,
 } from 'frappe-ui'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -166,6 +206,7 @@ import {
   formatNumberIntoCurrency,
   dealStatuses,
   leadStatuses,
+  createToast,
 } from '@/utils'
 import { usersStore } from '@/stores/users.js'
 import { contactsStore } from '@/stores/contacts.js'
@@ -441,4 +482,95 @@ const dealColumns = [
     width: '8rem',
   },
 ]
+
+const details = [
+  {
+    label: 'Salutation',
+    type: 'link',
+    name: 'salutation',
+    placeholder: 'Mr./Mrs./Ms.',
+    options: [
+      { label: 'Dr', value: 'Dr' },
+      { label: 'Mr', value: 'Mr' },
+      { label: 'Mrs', value: 'Mrs' },
+      { label: 'Ms', value: 'Ms' },
+      { label: 'Mx', value: 'Mx' },
+      { label: 'Prof', value: 'Prof' },
+      { label: 'Master', value: 'Master' },
+      { label: 'Madam', value: 'Madam' },
+      { label: 'Miss', value: 'Miss' },
+    ],
+    change: (data) => {
+      contact.value.salutation = data.value
+      updateContact('salutation', data.value)
+    },
+  },
+  {
+    label: 'First name',
+    type: 'data',
+    name: 'first_name',
+  },
+  {
+    label: 'Last name',
+    type: 'data',
+    name: 'last_name',
+  },
+  {
+    label: 'Email',
+    type: 'email',
+    name: 'email',
+  },
+  {
+    label: 'Mobile no.',
+    type: 'phone',
+    name: 'mobile_no',
+  },
+  {
+    label: 'Organization',
+    type: 'data',
+    name: 'company_name',
+  },
+]
+
+function updateContact(fieldname, value) {
+  createResource({
+    url: 'frappe.client.set_value',
+    params: {
+      doctype: 'Contact',
+      name: props.contactId,
+      fieldname,
+      value,
+    },
+    auto: true,
+    onSuccess: () => {
+      contacts.reload()
+      createToast({
+        title: 'Contact updated',
+        icon: 'check',
+        iconClasses: 'text-green-600',
+      })
+    },
+    onError: (err) => {
+      createToast({
+        title: 'Error updating contact',
+        text: err.messages?.[0],
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
+    },
+  })
+}
 </script>
+
+<style scoped>
+:deep(.form-control input),
+:deep(.form-control select),
+:deep(.form-control button) {
+  border-color: transparent;
+  background: white;
+}
+
+:deep(.form-control button svg) {
+  color: white;
+}
+</style>
