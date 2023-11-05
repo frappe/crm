@@ -4,7 +4,7 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <Button variant="solid" label="Create">
+      <Button variant="solid" label="Create" @click="showContactModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -14,74 +14,69 @@
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
           <Button :label="currentView.label">
-            <template #prefix
-              ><FeatherIcon :name="currentView.icon" class="h-4"
-            /></template>
-            <template #suffix
-              ><FeatherIcon
+            <template #prefix>
+              <FeatherIcon :name="currentView.icon" class="h-4" />
+            </template>
+            <template #suffix>
+              <FeatherIcon
                 :name="open ? 'chevron-up' : 'chevron-down'"
                 class="h-4 text-gray-600"
-            /></template>
+              />
+            </template>
           </Button>
         </template>
       </Dropdown>
     </div>
     <div class="flex items-center gap-2">
-      <Button label="Sort">
-        <template #prefix><SortIcon class="h-4" /></template>
-      </Button>
-      <Button label="Filter">
-        <template #prefix><FilterIcon class="h-4" /></template>
-      </Button>
+      <Filter doctype="Contact" />
+      <SortBy doctype="Contact" />
       <Button icon="more-horizontal" />
     </div>
   </div>
-  <ListView class="px-5" v-if="rows" :columns="columns" :rows="rows" row-key="name" />
+  <ContactsListView :rows="rows" :columns="columns" />
+  <ContactModal
+    v-model="showContactModal"
+    v-model:reloadContacts="contacts"
+    :contact="{}"
+  />
 </template>
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import SortIcon from '@/components/Icons/SortIcon.vue'
-import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import { FeatherIcon, Button, Dropdown, Breadcrumbs, ListView } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import ContactModal from '@/components/ContactModal.vue'
+import ContactsListView from '@/components/ListViews/ContactsListView.vue'
+import SortBy from '@/components/SortBy.vue'
+import Filter from '@/components/Filter.vue'
+import { FeatherIcon, Breadcrumbs, Dropdown } from 'frappe-ui'
 import { contactsStore } from '@/stores/contacts.js'
+import { organizationsStore } from '@/stores/organizations.js'
+import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { contacts } = contactsStore()
+const { getOrganization } = organizationsStore()
+const route = useRoute()
 
-const breadcrumbs = [{ label: 'Contacts', route: { name: 'Contacts' } }]
+const showContactModal = ref(false)
 
-const columns = [
-  {
-    label: 'Full name',
-    key: 'full_name',
-    width: '12rem',
-  },
-  {
-    label: 'Email',
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: 'Phone',
-    key: 'mobile_no',
-    width: '12rem',
-  },
-]
+const currentContact = computed(() => {
+  return contacts.data.find(
+    (contact) => contact.name === route.params.contactId
+  )
+})
 
-const rows = computed(() => {
-  return contacts.data?.map((contact) => {
-    return {
-      name: contact.name,
-      full_name: {
-        label: contact.full_name,
-        image_label: contact.full_name,
-        image: contact.image,
-      },
-      email: contact.email_id,
-      mobile_no: contact.mobile_no,
-    }
+const breadcrumbs = computed(() => {
+  let items = [{ label: 'Contacts', route: { name: 'Contacts' } }]
+  if (!currentContact.value) return items
+  items.push({
+    label: currentContact.value.full_name,
+    route: {
+      name: 'Contact',
+      params: { contactId: currentContact.value.name },
+    },
   })
+  return items
 })
 
 const currentView = ref({
@@ -131,4 +126,63 @@ const viewsDropdownOptions = [
     },
   },
 ]
+
+const rows = computed(() => {
+  return contacts.data.map((contact) => {
+    return {
+      name: contact.name,
+      full_name: {
+        label: contact.full_name,
+        image_label: contact.full_name,
+        image: contact.image,
+      },
+      email: contact.email_id,
+      mobile_no: contact.mobile_no,
+      company_name: {
+        label: contact.company_name,
+        logo: getOrganization(contact.company_name)?.organization_logo,
+      },
+      modified: {
+        label: dateFormat(contact.modified, dateTooltipFormat),
+        timeAgo: timeAgo(contact.modified),
+      },
+    }
+  })
+})
+
+const columns = [
+  {
+    label: 'Name',
+    key: 'full_name',
+    width: '17rem',
+  },
+  {
+    label: 'Email',
+    key: 'email',
+    width: '12rem',
+  },
+  {
+    label: 'Phone',
+    key: 'mobile_no',
+    width: '12rem',
+  },
+  {
+    label: 'Organization',
+    key: 'company_name',
+    width: '12rem',
+  },
+  {
+    label: 'Last modified',
+    key: 'modified',
+    width: '8rem',
+  },
+]
+
+onMounted(() => {
+  const el = document.querySelector('.router-link-active')
+  if (el)
+    setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+})
 </script>

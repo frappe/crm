@@ -40,6 +40,12 @@ const routes = [
     component: () => import('@/pages/Contacts.vue'),
   },
   {
+    path: '/contacts/:contactId',
+    name: 'Contact',
+    component: () => import('@/pages/Contact.vue'),
+    props: true,
+  },
+  {
     path: '/organizations',
     name: 'Organizations',
     component: () => import('@/pages/Organizations.vue'),
