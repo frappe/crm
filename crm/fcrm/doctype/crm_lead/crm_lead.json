@@ -29,9 +29,8 @@
   "next_step",
   "organization_tab",
   "section_break_uixv",
-  "organization_name",
+  "organization",
   "no_of_employees",
-  "organization_logo",
   "column_break_dbsv",
   "website",
   "job_title",
@@ -111,10 +110,12 @@
    "search_index": 1
   },
   {
+   "fetch_from": "organization.website",
    "fieldname": "website",
    "fieldtype": "Data",
    "label": "Website",
-   "options": "URL"
+   "options": "URL",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_sijm",
@@ -146,17 +147,15 @@
    "fieldname": "no_of_employees",
    "fieldtype": "Select",
    "label": "No. of Employees",
-   "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
+   "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+",
+   "read_only": 1
   },
   {
-   "fieldname": "organization_name",
-   "fieldtype": "Data",
-   "label": "Organization Name"
-  },
-  {
+   "fetch_from": "organization.annual_revenue",
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue"
+   "label": "Annual Revenue",
+   "read_only": 1
   },
   {
    "fieldname": "lead_owner",
@@ -171,15 +170,11 @@
    "options": "CRM Lead Source"
   },
   {
+   "fetch_from": "organization.industry",
    "fieldname": "industry",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Industry",
-   "options": "CRM Industry"
-  },
-  {
-   "fieldname": "organization_logo",
-   "fieldtype": "Attach Image",
-   "label": "Organization Logo"
+   "read_only": 1
   },
   {
    "fieldname": "image",
@@ -214,9 +209,11 @@
    "search_index": 1
   },
   {
+   "fetch_from": "organization.job_title",
    "fieldname": "job_title",
    "fieldtype": "Data",
-   "label": "Job Title"
+   "label": "Job Title",
+   "read_only": 1
   },
   {
    "fieldname": "organization_tab",
@@ -259,12 +256,18 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Created as Deal"
+  },
+  {
+   "fieldname": "organization",
+   "fieldtype": "Link",
+   "label": "Organization",
+   "options": "CRM Organization"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-27 18:54:18.196159",
+ "modified": "2023-11-06 15:29:56.868755",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
