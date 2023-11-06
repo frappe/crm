@@ -59,26 +59,32 @@
                 :label="lead.data.first_name"
                 :image="lead.data.image"
               />
-              <Dropdown
-                :options="[
-                  {
-                    icon: 'upload',
-                    label: lead.data.image ? 'Change photo' : 'Upload photo',
-                    onClick: openFileSelector,
-                  },
-                  {
-                    icon: 'trash-2',
-                    label: 'Remove photo',
-                    onClick: () => {
-                      lead.data.image = ''
-                      updateLead('image', '')
-                    },
-                  },
-                ]"
+              <component
+                :is="lead.data.image ? Dropdown : 'div'"
+                v-bind="
+                  lead.data.image
+                    ? {
+                        options: [
+                          {
+                            icon: 'upload',
+                            label: lead.data.image
+                              ? 'Change image'
+                              : 'Upload image',
+                            onClick: openFileSelector,
+                          },
+                          {
+                            icon: 'trash-2',
+                            label: 'Remove image',
+                            onClick: () => changeLeadImage(''),
+                          },
+                        ],
+                      }
+                    : { onClick: openFileSelector }
+                "
                 class="!absolute bottom-0 left-0 right-0"
               >
                 <div
-                  class="z-1 absolute bottom-0 left-0 right-0 flex h-11 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                  class="z-1 absolute bottom-0 left-0 right-0 flex h-13 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
                   style="
                     -webkit-clip-path: inset(12px 0 0 0);
                     clip-path: inset(12px 0 0 0);
@@ -86,7 +92,7 @@
                 >
                   <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
                 </div>
-              </Dropdown>
+              </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="lead.data.lead_name">
