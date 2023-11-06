@@ -21,7 +21,7 @@
             <div v-if="column.key === 'deal_status'">
               <IndicatorIcon :class="item.color" />
             </div>
-            <div v-else-if="column.key === 'organization_name'">
+            <div v-else-if="column.key === 'organization'">
               <Avatar
                 v-if="item.label"
                 class="flex items-center"
