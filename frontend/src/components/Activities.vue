@@ -6,7 +6,7 @@
     <Button
       v-if="title == 'Calls'"
       variant="solid"
-      @click="makeCall(lead.data.mobile_no)"
+      @click="makeCall(doc.data.mobile_no)"
     >
       <template #prefix>
         <PhoneIcon class="h-4 w-4" />
@@ -561,7 +561,7 @@
       v-if="title == 'Calls'"
       variant="solid"
       label="Make a call"
-      @click="makeCall(lead.data.mobile_no)"
+      @click="makeCall(doc.data.mobile_no)"
     />
     <Button
       v-else-if="title == 'Notes'"
@@ -585,20 +585,20 @@
   <CommunicationArea
     ref="emailBox"
     v-if="['Emails', 'Activity'].includes(title)"
-    v-model="lead"
+    v-model="doc"
     v-model:reload="reload_email"
   />
   <NoteModal
     v-model="showNoteModal"
     v-model:reloadNotes="notes"
     :note="note"
-    :lead="lead.data?.name"
+    :lead="doc.data?.name"
   />
   <TaskModal
     v-model="showTaskModal"
     v-model:reloadTasks="tasks"
     :task="task"
-    :lead="lead.data?.name"
+    :lead="doc.data?.name"
   />
 </template>
 <script setup>
@@ -654,22 +654,22 @@ const props = defineProps({
   },
 })
 
-const lead = defineModel()
+const doc = defineModel()
 const reload = defineModel('reload')
 
 const reload_email = ref(false)
 
 const versions = createResource({
-  url: 'crm.fcrm.doctype.crm_lead.api.get_activities',
-  params: { name: lead.value.data.name },
-  cache: ['activity', lead.value.data.name],
+  url: 'crm.api.activities.get_activities',
+  params: { name: doc.value.data.name },
+  cache: ['activity', doc.value.data.name],
   auto: true,
 })
 
 const calls = createListResource({
   type: 'list',
   doctype: 'CRM Call Log',
-  cache: ['Call Logs', lead.value.data.name],
+  cache: ['Call Logs', doc.value.data.name],
   fields: [
     'name',
     'caller',
@@ -685,7 +685,7 @@ const calls = createListResource({
     'creation',
     'note',
   ],
-  filters: { lead: lead.value.data.name },
+  filters: { lead: doc.value.data.name },
   orderBy: 'creation desc',
   pageLength: 999,
   auto: true,
@@ -722,9 +722,9 @@ const calls = createListResource({
 const notes = createListResource({
   type: 'list',
   doctype: 'CRM Note',
-  cache: ['Notes', lead.value.data.name],
+  cache: ['Notes', doc.value.data.name],
   fields: ['name', 'title', 'content', 'owner', 'modified'],
-  filters: { lead: lead.value.data.name },
+  filters: { lead: doc.value.data.name },
   orderBy: 'modified desc',
   pageLength: 999,
   auto: true,
@@ -733,7 +733,7 @@ const notes = createListResource({
 const tasks = createListResource({
   type: 'list',
   doctype: 'CRM Task',
-  cache: ['Tasks', lead.value.data.name],
+  cache: ['Tasks', doc.value.data.name],
   fields: [
     'name',
     'title',
@@ -745,7 +745,7 @@ const tasks = createListResource({
     'status',
     'modified',
   ],
-  filters: { lead: lead.value.data.name },
+  filters: { lead: doc.value.data.name },
   orderBy: 'modified desc',
   pageLength: 999,
   auto: true,
@@ -805,10 +805,6 @@ function update_activities_details(activity) {
 
   if (activity.activity_type == 'creation') {
     activity.type = activity.data
-  } else if (activity.activity_type == 'deal') {
-    activity.type = 'converted the lead to this deal'
-    activity.data.field_label = ''
-    activity.data.value = ''
   } else if (activity.activity_type == 'added') {
     activity.type = 'added'
     activity.value = 'as'
