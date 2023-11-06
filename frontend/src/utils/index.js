@@ -71,23 +71,15 @@ export const dealStatuses = {
 }
 
 export function statusDropdownOptions(data, doctype, action) {
-  let statuses = leadStatuses
-  if (doctype == 'deal') {
-    statuses = dealStatuses
-  }
+  let statuses = doctype == 'deal' ? dealStatuses : leadStatuses
   let options = []
   for (const status in statuses) {
     options.push({
       label: statuses[status].label,
       icon: () => h(IndicatorIcon, { class: statuses[status].color }),
       onClick: () => {
-        if (doctype == 'deal') {
-          data.deal_status = statuses[status].label
-        } else {
-          data.status = statuses[status].label
-        }
-        let field = doctype == 'deal' ? 'deal_status' : 'status'
-        action && action(field, statuses[status].label)
+        data.status = statuses[status].label
+        action && action('status', statuses[status].label)
       },
     })
   }
