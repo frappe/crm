@@ -272,7 +272,7 @@
                       />
                     </div>
                     <ExternalLinkIcon
-                      v-if="field.type === 'link' && field.link"
+                      v-if="field.type === 'link' && field.link && deal.data[field.name]"
                       class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
                       @click="field.link(deal.data[field.name])"
                     />

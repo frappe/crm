@@ -129,7 +129,7 @@
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="(section, i) in detailSections"
+            v-for="section in detailSections"
             :key="section.label"
             class="flex flex-col"
           >
@@ -282,7 +282,7 @@
                       />
                     </div>
                     <ExternalLinkIcon
-                      v-if="field.type === 'link' && field.link"
+                      v-if="field.type === 'link' && field.link && lead.data[field.name]"
                       class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
                       @click="field.link(lead.data[field.name])"
                     />
