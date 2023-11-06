@@ -336,6 +336,7 @@ import {
   Avatar,
   Tabs,
   Breadcrumbs,
+  call,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -372,9 +373,6 @@ function updateLead(fieldname, value) {
     },
     auto: true,
     onSuccess: () => {
-      if (fieldname == 'is_deal') {
-        router.push({ name: 'Deal', params: { dealId: lead.data.name } })
-      }
       lead.reload()
       contacts.reload()
       reload.value = true
@@ -565,8 +563,23 @@ const organization = computed(() => {
 
 function convertToDeal() {
   lead.data.status = 'Qualified'
-  lead.data.is_deal = 1
-  updateLead('is_deal', 1)
+  lead.data.converted = 1
+  createDeal(lead.data)
+}
+
+async function createDeal(lead) {
+  let d = await call('frappe.client.insert', {
+    doc: {
+      doctype: 'CRM Deal',
+      organization: lead.organization,
+      email: lead.email,
+      mobile_no: lead.mobile_no,
+      lead: lead.name,
+    },
+  })
+  if (d.name) {
+    router.push({ name: 'Deal', params: { dealId: d.name } })
+  }
 }
 
 function updateAssignedAgent(email) {
