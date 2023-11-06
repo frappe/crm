@@ -306,7 +306,7 @@ const leads = createListResource({
   ],
   filters: {
     email: contact.value.email_id,
-    is_deal: 0,
+    converted: 0,
   },
   orderBy: 'modified desc',
   pageLength: 20,
@@ -321,7 +321,7 @@ const deals = createListResource({
     'name',
     'organization',
     'annual_revenue',
-    'deal_status',
+    'status',
     'email',
     'mobile_no',
     'lead_owner',
@@ -329,7 +329,7 @@ const deals = createListResource({
   ],
   filters: {
     email: contact.value.email_id,
-    is_deal: 1,
+    converted: 1,
   },
   orderBy: 'modified desc',
   pageLength: 20,
@@ -388,9 +388,9 @@ function getDealRowObject(deal) {
       logo: getOrganization(deal.organization)?.organization_logo,
     },
     annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
-    deal_status: {
-      label: deal.deal_status,
-      color: dealStatuses[deal.deal_status]?.color,
+    status: {
+      label: deal.status,
+      color: dealStatuses[deal.status]?.color,
     },
     email: deal.email,
     mobile_no: deal.mobile_no,
@@ -456,7 +456,7 @@ const dealColumns = [
   },
   {
     label: 'Status',
-    key: 'deal_status',
+    key: 'status',
     width: '10rem',
   },
   {
