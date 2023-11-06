@@ -254,12 +254,12 @@
                         :debounce="500"
                         class="form-control"
                       />
-                      <div
+                      <Tooltip :text="field.tooltip"
                         class="flex h-7 cursor-pointer items-center px-2 py-1"
                         v-else-if="field.type === 'read_only'"
                       >
                         {{ field.value }}
-                      </div>
+                      </Tooltip>
                       <FormControl
                         v-else
                         type="text"
@@ -435,6 +435,7 @@ const detailSections = computed(() => {
           type: 'read_only',
           name: 'website',
           value: organization.value?.website,
+          tooltip: 'It is a read only field, value is fetched from organization',
         },
         {
           label: 'Amount',

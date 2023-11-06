@@ -264,12 +264,13 @@
                           </Button>
                         </template>
                       </Dropdown>
-                      <div
+                      <Tooltip
+                        :text="field.tooltip"
                         class="flex h-7 cursor-pointer items-center px-2 py-1"
                         v-else-if="field.type === 'read_only'"
                       >
                         {{ field.value }}
-                      </div>
+                      </Tooltip>
                       <FormControl
                         v-else
                         type="text"
@@ -282,7 +283,11 @@
                       />
                     </div>
                     <ExternalLinkIcon
-                      v-if="field.type === 'link' && field.link && lead.data[field.name]"
+                      v-if="
+                        field.type === 'link' &&
+                        field.link &&
+                        lead.data[field.name]
+                      "
                       class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
                       @click="field.link(lead.data[field.name])"
                     />
@@ -463,6 +468,8 @@ const detailSections = computed(() => {
           type: 'read_only',
           name: 'website',
           value: organization.value?.website,
+          tooltip:
+            'It is a read only field, value is fetched from organization',
         },
         {
           label: 'Job title',
