@@ -221,7 +221,7 @@ import { ref, computed, h } from 'vue'
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
-const { getOrganization, organizationOptions } = organizationsStore()
+const { getOrganization, getOrganizationOptions } = organizationsStore()
 
 const showContactModal = ref(false)
 
@@ -537,7 +537,7 @@ const details = computed(() => {
       type: 'link',
       name: 'company_name',
       placeholder: 'Select organization',
-      options: organizationOptions,
+      options: getOrganizationOptions(),
       change: (data) => {
         contact.value.company_name = data.value
         updateContact('company_name', data.value)

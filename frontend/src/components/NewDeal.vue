@@ -84,7 +84,7 @@ import { dealStatuses, statusDropdownOptions, activeAgents } from '@/utils'
 import { FormControl, Button, Dropdown, FeatherIcon } from 'frappe-ui'
 
 const { getUser } = usersStore()
-const { organizationOptions } = organizationsStore()
+const { getOrganizationOptions } = organizationsStore()
 
 const props = defineProps({
   newDeal: {
@@ -146,7 +146,7 @@ const allFields = [
         name: 'organization',
         type: 'link',
         placeholder: 'Organization',
-        options: organizationOptions,
+        options: getOrganizationOptions(),
         change: (option) => {
           newDeal.organization = option.name
         },

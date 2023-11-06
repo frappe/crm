@@ -27,7 +27,7 @@ export const organizationsStore = defineStore('crm-organizations', () => {
     return organizationsByName[name]
   }
 
-  const organizationOptions = computed(() => {
+  function getOrganizationOptions() {
     return [
       { label: '', value: '' },
       ...organizations.data?.map((org) => ({
@@ -35,11 +35,11 @@ export const organizationsStore = defineStore('crm-organizations', () => {
         value: org.name,
       })),
     ]
-  })
+  }
 
   return {
     organizations,
-    organizationOptions,
+    getOrganizationOptions,
     getOrganization,
   }
 })

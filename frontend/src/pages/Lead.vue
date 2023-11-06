@@ -325,7 +325,6 @@ import {
   FileUploader,
   ErrorMessage,
   FeatherIcon,
-  Autocomplete,
   FormControl,
   Dropdown,
   Tooltip,
@@ -338,7 +337,7 @@ import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
 const { contacts } = contactsStore()
-const { getOrganization, organizationOptions } = organizationsStore()
+const { getOrganization, getOrganizationOptions } = organizationsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -447,7 +446,7 @@ const detailSections = computed(() => {
           type: 'link',
           name: 'organization',
           placeholder: 'Select organization',
-          options: organizationOptions,
+          options: getOrganizationOptions(),
           change: (data) => {
             lead.data.organization = data.value
             updateLead('organization', data.value)

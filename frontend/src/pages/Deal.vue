@@ -54,14 +54,14 @@
           <Avatar
             size="3xl"
             class="h-[88px] w-[88px]"
-            :label="organization.name"
-            :image="deal.data.organization_logo"
+            :label="organization?.name"
+            :image="organization?.organization_logo"
           />
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate">
-          <Tooltip :text="organization.name">
+          <Tooltip :text="organization?.name">
             <div class="truncate text-2xl font-medium">
-              {{ organization.name }}
+              {{ organization?.name }}
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
@@ -85,7 +85,6 @@
               </Button>
             </Tooltip>
           </div>
-          <ErrorMessage :message="error" />
         </div>
       </div>
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
@@ -313,7 +312,6 @@ import { organizationsStore } from '@/stores/organizations'
 import {
   createResource,
   FeatherIcon,
-  ErrorMessage,
   FormControl,
   Dropdown,
   Tooltip,
@@ -326,7 +324,7 @@ import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
 const { contacts } = contactsStore()
-const { getOrganization, organizationOptions } = organizationsStore()
+const { getOrganization, getOrganizationOptions } = organizationsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -420,7 +418,7 @@ const detailSections = computed(() => {
           type: 'link',
           name: 'organization',
           placeholder: 'Select organization',
-          options: organizationOptions,
+          options: getOrganizationOptions(),
           change: (data) => {
             deal.data.organization = data.value
             updateDeal('organization', data.value)
