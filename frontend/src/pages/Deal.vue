@@ -4,7 +4,8 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <Autocomplete
+      <FormControl
+        type="autocomplete"
         :options="activeAgents"
         :value="getUser(deal.data.lead_owner).full_name"
         @change="(option) => updateAssignedAgent(option.email)"
@@ -16,7 +17,7 @@
         <template #item-prefix="{ option }">
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
-      </Autocomplete>
+      </FormControl>
       <Dropdown :options="statusDropdownOptions(deal.data, 'deal', updateDeal)">
         <template #default="{ open }">
           <Button :label="deal.data.deal_status">
@@ -45,79 +46,48 @@
       >
         About this deal
       </div>
-      <FileUploader @success="changeDealImage" :validateFile="validateFile">
-        <template #default="{ openFileSelector, error }">
-          <div class="flex items-center justify-start gap-5 border-b p-5">
-            <div class="group relative h-[88px] w-[88px]">
-              <Avatar
-                size="3xl"
-                class="h-[88px] w-[88px]"
-                :label="deal.data.organization_name"
-                :image="deal.data.organization_logo"
-              />
-              <Dropdown
-                :options="[
-                  {
-                    icon: 'upload',
-                    label: deal.data.organization_logo
-                      ? 'Change image'
-                      : 'Upload image',
-                    onClick: openFileSelector,
-                  },
-                  {
-                    icon: 'trash-2',
-                    label: 'Remove image',
-                    onClick: () => {
-                      deal.data.organization_logo = ''
-                      updateDeal('organization_logo', '')
-                    },
-                  },
-                ]"
-                class="!absolute bottom-0 left-0 right-0"
+      <div class="flex items-center justify-start gap-5 border-b p-5">
+        <Tooltip
+          text="Organization logo"
+          class="group relative h-[88px] w-[88px]"
+        >
+          <Avatar
+            size="3xl"
+            class="h-[88px] w-[88px]"
+            :label="organization.name"
+            :image="deal.data.organization_logo"
+          />
+        </Tooltip>
+        <div class="flex flex-col gap-2.5 truncate">
+          <Tooltip :text="organization.name">
+            <div class="truncate text-2xl font-medium">
+              {{ organization.name }}
+            </div>
+          </Tooltip>
+          <div class="flex gap-1.5">
+            <Tooltip text="Make a call...">
+              <Button
+                class="h-7 w-7"
+                @click="() => makeCall(deal.data.mobile_no)"
               >
-                <div
-                  class="z-1 absolute bottom-0 left-0 right-0 flex h-11 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
-                  style="
-                    -webkit-clip-path: inset(12px 0 0 0);
-                    clip-path: inset(12px 0 0 0);
-                  "
-                >
-                  <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
-                </div>
-              </Dropdown>
-            </div>
-            <div class="flex flex-col gap-2.5 truncate">
-              <Tooltip :text="deal.data.organization_name">
-                <div class="truncate text-2xl font-medium">
-                  {{ deal.data.organization_name }}
-                </div>
-              </Tooltip>
-              <div class="flex gap-1.5">
-                <Tooltip text="Make a call...">
-                  <Button
-                    class="h-7 w-7"
-                    @click="() => makeCall(deal.data.mobile_no)"
-                  >
-                    <PhoneIcon class="h-4 w-4" />
-                  </Button>
-                </Tooltip>
-                <Button class="h-7 w-7">
-                  <EmailIcon class="h-4 w-4" />
-                </Button>
-                <Tooltip text="Go to website...">
-                  <Button class="h-7 w-7">
-                    <LinkIcon
-                      class="h-4 w-4"
-                      @click="openWebsite(deal.data.website)"
-                    />
-                  </Button>
-                </Tooltip>
-              </div>
-              <ErrorMessage :message="error" />
-            </div>
+                <PhoneIcon class="h-4 w-4" />
+              </Button>
+            </Tooltip>
+            <Button class="h-7 w-7">
+              <EmailIcon class="h-4 w-4" />
+            </Button>
+            <Tooltip text="Go to website...">
+              <Button class="h-7 w-7">
+                <LinkIcon
+                  class="h-4 w-4"
+                  @click="openWebsite(deal.data.website)"
+                />
+              </Button>
+            </Tooltip>
           </div>
-        </template>
-      </FileUploader>
+          <ErrorMessage :message="error" />
+        </div>
+      </div>
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
@@ -152,10 +122,10 @@
                     :key="field.label"
                     class="flex items-center gap-2 px-3 text-base leading-5 first:mt-3"
                   >
-                    <div class="w-[106px] text-gray-600">
+                    <div class="w-[106px] shrink-0 text-gray-600">
                       {{ field.label }}
                     </div>
-                    <div class="flex-1">
+                    <div class="flex-1 overflow-hidden">
                       <FormControl
                         v-if="field.type === 'select'"
                         type="select"
@@ -183,16 +153,18 @@
                         "
                         :debounce="500"
                       />
-                      <Autocomplete
+                      <FormControl
                         v-else-if="field.type === 'link'"
+                        type="autocomplete"
                         :value="deal.data[field.name]"
                         :options="field.options"
                         @change="(e) => field.change(e)"
                         :placeholder="field.placeholder"
                         class="form-control"
                       />
-                      <Autocomplete
+                      <FormControl
                         v-else-if="field.type === 'user'"
+                        type="autocomplete"
                         :options="activeAgents"
                         :value="getUser(deal.data[field.name]).full_name"
                         @change="(option) => updateAssignedAgent(option.email)"
@@ -221,7 +193,7 @@
                             size="sm"
                           />
                         </template>
-                      </Autocomplete>
+                      </FormControl>
                       <Dropdown
                         v-else-if="field.type === 'dropdown'"
                         :options="
@@ -283,6 +255,12 @@
                         :debounce="500"
                         class="form-control"
                       />
+                      <div
+                        class="flex h-7 cursor-pointer items-center px-2 py-1"
+                        v-else-if="field.type === 'read_only'"
+                      >
+                        {{ field.value }}
+                      </div>
                       <FormControl
                         v-else
                         type="text"
@@ -294,6 +272,11 @@
                         class="form-control"
                       />
                     </div>
+                    <ExternalLinkIcon
+                      v-if="field.type === 'link' && field.link"
+                      class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
+                      @click="field.link(deal.data[field.name])"
+                    />
                   </div>
                 </div>
               </transition>
@@ -311,8 +294,8 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
+import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
@@ -326,12 +309,11 @@ import {
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
+import { organizationsStore } from '@/stores/organizations'
 import {
   createResource,
   FeatherIcon,
-  FileUploader,
   ErrorMessage,
-  Autocomplete,
   FormControl,
   Dropdown,
   Tooltip,
@@ -340,9 +322,12 @@ import {
   Breadcrumbs,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-const { getUser, users } = usersStore()
+const { getUser } = usersStore()
 const { contacts } = contactsStore()
+const { getOrganization, organizationOptions } = organizationsStore()
+const router = useRouter()
 
 const props = defineProps({
   dealId: {
@@ -394,7 +379,7 @@ function updateDeal(fieldname, value) {
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Deals', route: { name: 'Deals' } }]
   items.push({
-    label: deal.data.organization_name,
+    label: organization.value.name,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -424,18 +409,6 @@ const tabs = [
   },
 ]
 
-function changeDealImage(file) {
-  deal.data.organization_logo = file.file_url
-  updateDeal('organization_logo', file.file_url)
-}
-
-function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return 'Only PNG and JPG images are allowed'
-  }
-}
-
 const detailSections = computed(() => {
   return [
     {
@@ -444,13 +417,26 @@ const detailSections = computed(() => {
       fields: [
         {
           label: 'Organization',
-          type: 'data',
-          name: 'organization_name',
+          type: 'link',
+          name: 'organization',
+          placeholder: 'Select organization',
+          options: organizationOptions,
+          change: (data) => {
+            deal.data.organization = data.value
+            updateDeal('organization', data.value)
+          },
+          link: () => {
+            router.push({
+              name: 'Organization',
+              params: { organizationId: organization.value.name },
+            })
+          },
         },
         {
           label: 'Website',
-          type: 'data',
+          type: 'read_only',
           name: 'website',
+          value: organization.value?.website,
         },
         {
           label: 'Amount',
@@ -524,6 +510,10 @@ const detailSections = computed(() => {
   ]
 })
 
+const organization = computed(() => {
+  return getOrganization(deal.data.organization)
+})
+
 function updateAssignedAgent(email) {
   deal.data.lead_owner = email
   updateDeal('lead_owner', email)
@@ -538,7 +528,18 @@ function updateAssignedAgent(email) {
   background: white;
 }
 
+:deep(.form-control button) {
+  gap: 0;
+}
+
+:deep(.form-control button > div) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 :deep(.form-control button svg) {
   color: white;
+  width: 0;
 }
 </style>

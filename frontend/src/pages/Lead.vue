@@ -4,7 +4,8 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <Autocomplete
+      <FormControl
+        type="autocomplete"
         :options="activeAgents"
         :value="getUser(lead.data.lead_owner).full_name"
         @change="(option) => updateAssignedAgent(option.email)"
@@ -16,7 +17,7 @@
         <template #item-prefix="{ option }">
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
-      </Autocomplete>
+      </FormControl>
       <Dropdown :options="statusDropdownOptions(lead.data, 'lead', updateLead)">
         <template #default="{ open }">
           <Button :label="lead.data.status">
@@ -154,10 +155,10 @@
                     :key="field.name"
                     class="flex items-center gap-2 px-3 text-base leading-5 last:mb-3"
                   >
-                    <div class="w-[106px] text-gray-600">
+                    <div class="w-[106px] shrink-0 text-gray-600">
                       {{ field.label }}
                     </div>
-                    <div class="flex-1">
+                    <div class="flex-1 overflow-hidden">
                       <FormControl
                         v-if="field.type === 'select'"
                         type="select"
@@ -185,16 +186,18 @@
                         "
                         :debounce="500"
                       />
-                      <Autocomplete
+                      <FormControl
                         v-else-if="field.type === 'link'"
+                        type="autocomplete"
                         :value="lead.data[field.name]"
                         :options="field.options"
                         @change="(e) => field.change(e)"
                         :placeholder="field.placeholder"
                         class="form-control"
                       />
-                      <Autocomplete
+                      <FormControl
                         v-else-if="field.type === 'user'"
+                        type="autocomplete"
                         :options="activeAgents"
                         :value="getUser(lead.data[field.name]).full_name"
                         @change="(option) => updateAssignedAgent(option.email)"
@@ -223,7 +226,7 @@
                             size="sm"
                           />
                         </template>
-                      </Autocomplete>
+                      </FormControl>
                       <Dropdown
                         v-else-if="field.type === 'dropdown'"
                         :options="
@@ -255,6 +258,12 @@
                           </Button>
                         </template>
                       </Dropdown>
+                      <div
+                        class="flex h-7 cursor-pointer items-center px-2 py-1"
+                        v-else-if="field.type === 'read_only'"
+                      >
+                        {{ field.value }}
+                      </div>
                       <FormControl
                         v-else
                         type="text"
@@ -266,6 +275,11 @@
                         :debounce="500"
                       />
                     </div>
+                    <ExternalLinkIcon
+                      v-if="field.type === 'link' && field.link"
+                      class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
+                      @click="field.link(lead.data[field.name])"
+                    />
                   </div>
                 </div>
               </transition>
@@ -283,7 +297,9 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
+import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
@@ -297,6 +313,7 @@ import {
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
+import { organizationsStore } from '@/stores/organizations'
 import {
   createResource,
   FileUploader,
@@ -312,10 +329,10 @@ import {
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import CameraIcon from '../components/Icons/CameraIcon.vue'
 
-const { getUser, users } = usersStore()
+const { getUser } = usersStore()
 const { contacts } = contactsStore()
+const { getOrganization, organizationOptions } = organizationsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -421,13 +438,26 @@ const detailSections = computed(() => {
       fields: [
         {
           label: 'Organization',
-          type: 'data',
-          name: 'organization_name',
+          type: 'link',
+          name: 'organization',
+          placeholder: 'Select organization',
+          options: organizationOptions,
+          change: (data) => {
+            lead.data.organization = data.value
+            updateLead('organization', data.value)
+          },
+          link: () => {
+            router.push({
+              name: 'Organization',
+              params: { organizationId: organization.value?.name },
+            })
+          },
         },
         {
           label: 'Website',
-          type: 'data',
+          type: 'read_only',
           name: 'website',
+          value: organization.value?.website,
         },
         {
           label: 'Job title',
@@ -517,6 +547,10 @@ const detailSections = computed(() => {
   ]
 })
 
+const organization = computed(() => {
+  return getOrganization(lead.data.organization)
+})
+
 function convertToDeal() {
   lead.data.status = 'Qualified'
   lead.data.is_deal = 1
@@ -537,7 +571,18 @@ function updateAssignedAgent(email) {
   background: white;
 }
 
+:deep(.form-control button) {
+  gap: 0;
+}
+
+:deep(.form-control button > div) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 :deep(.form-control button svg) {
   color: white;
+  width: 0;
 }
 </style>
