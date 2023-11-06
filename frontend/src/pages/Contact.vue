@@ -174,11 +174,6 @@
       </template>
     </Tabs>
   </div>
-  <ContactModal
-    v-model="showContactModal"
-    v-model:reloadContacts="contacts"
-    :contact="contact"
-  />
 </template>
 
 <script setup>
@@ -197,7 +192,6 @@ import {
   createListResource,
 } from 'frappe-ui'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import ContactModal from '@/components/ContactModal.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -222,8 +216,6 @@ import { ref, computed, h } from 'vue'
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
 const { getOrganization, getOrganizationOptions } = organizationsStore()
-
-const showContactModal = ref(false)
 
 const props = defineProps({
   contactId: {

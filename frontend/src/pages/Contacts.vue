@@ -43,7 +43,7 @@
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import ContactModal from '@/components/ContactModal.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
