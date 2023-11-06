@@ -1,0 +1,123 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-11-06 17:56:25.210449",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "organization",
+  "website",
+  "annual_revenue",
+  "column_break_afce",
+  "deal_owner",
+  "close_date",
+  "deal_status",
+  "probability",
+  "next_step",
+  "section_break_eepu",
+  "lead",
+  "column_break_bqvs"
+ ],
+ "fields": [
+  {
+   "fieldname": "organization",
+   "fieldtype": "Link",
+   "label": "Organization",
+   "options": "CRM Organization"
+  },
+  {
+   "fieldname": "probability",
+   "fieldtype": "Percent",
+   "label": "Probability"
+  },
+  {
+   "fetch_from": "organization.annual_revenue",
+   "fieldname": "annual_revenue",
+   "fieldtype": "Int",
+   "label": "Annual Revenue"
+  },
+  {
+   "fieldname": "column_break_afce",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "organization.website",
+   "fieldname": "website",
+   "fieldtype": "Data",
+   "label": "Website",
+   "options": "URL"
+  },
+  {
+   "fieldname": "close_date",
+   "fieldtype": "Date",
+   "label": "Close Date"
+  },
+  {
+   "fieldname": "next_step",
+   "fieldtype": "Data",
+   "label": "Next Step"
+  },
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "label": "Lead",
+   "options": "CRM Lead"
+  },
+  {
+   "fieldname": "section_break_eepu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_bqvs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deal_owner",
+   "fieldtype": "Link",
+   "label": "Deal Owner",
+   "options": "User"
+  },
+  {
+   "default": "Qualification",
+   "fieldname": "deal_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Deal Status",
+   "options": "Qualification\nDemo/Making\nProposal/Quotation\nNegotiation\nReady to Close\nWon\nLost",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "CRM-DEAL-.YYYY.-"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-11-06 18:07:22.815164",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Deal",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
