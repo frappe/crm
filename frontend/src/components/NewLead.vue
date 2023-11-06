@@ -19,8 +19,18 @@
             type="email"
             v-model="newLead[field.name]"
           />
-          <Autocomplete
+          <FormControl
             v-else-if="field.type === 'link'"
+            type="autocomplete"
+            :value="newLead[field.name]"
+            :options="field.options"
+            @change="(e) => field.change(e)"
+            :placeholder="field.placeholder"
+            class="form-control"
+          />
+          <FormControl
+            v-else-if="field.type === 'user'"
+            type="autocomplete"
             :options="activeAgents"
             :value="getUser(newLead[field.name]).full_name"
             @change="(option) => (newLead[field.name] = option.email)"
@@ -32,7 +42,7 @@
             <template #item-prefix="{ option }">
               <UserAvatar class="mr-2" :user="option.email" size="sm" />
             </template>
-          </Autocomplete>
+          </FormControl>
           <Dropdown
             v-else-if="field.type === 'dropdown'"
             :options="statusDropdownOptions(newLead)"
@@ -69,17 +79,13 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
+import { organizationsStore } from '@/stores/organizations'
 import { leadStatuses, statusDropdownOptions, activeAgents } from '@/utils'
-import {
-  FormControl,
-  Button,
-  Autocomplete,
-  Dropdown,
-  FeatherIcon,
-} from 'frappe-ui'
-import { computed } from 'vue'
+import { FormControl, Button, Dropdown, FeatherIcon } from 'frappe-ui'
 
-const { getUser, users } = usersStore()
+const { getUser } = usersStore()
+const { organizationOptions } = organizationsStore()
+
 const props = defineProps({
   newLead: {
     type: Object,
@@ -137,8 +143,13 @@ const allFields = [
     fields: [
       {
         label: 'Organization',
-        name: 'organization_name',
-        type: 'data',
+        name: 'organization',
+        type: 'link',
+        placeholder: 'Organization',
+        options: organizationOptions,
+        change: (option) => {
+          newLead.organization = option.name
+        },
       },
       {
         label: 'Status',
@@ -149,7 +160,7 @@ const allFields = [
       {
         label: 'Lead owner',
         name: 'lead_owner',
-        type: 'link',
+        type: 'user',
         placeholder: 'Lead owner',
       },
     ],
