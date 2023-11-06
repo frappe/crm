@@ -148,7 +148,7 @@ const allFields = [
         placeholder: 'Organization',
         options: getOrganizationOptions(),
         change: (option) => {
-          newLead.organization = option.name
+          props.newLead.organization = option.value
         },
       },
       {
