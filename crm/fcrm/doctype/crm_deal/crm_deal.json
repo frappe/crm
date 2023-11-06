@@ -13,12 +13,15 @@
   "column_break_afce",
   "deal_owner",
   "close_date",
-  "deal_status",
+  "status",
   "probability",
   "next_step",
   "section_break_eepu",
   "lead",
-  "column_break_bqvs"
+  "column_break_bqvs",
+  "contacts_tab",
+  "email",
+  "mobile_no"
  ],
  "fields": [
   {
@@ -80,28 +83,46 @@
    "options": "User"
   },
   {
-   "default": "Qualification",
-   "fieldname": "deal_status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Deal Status",
-   "options": "Qualification\nDemo/Making\nProposal/Quotation\nNegotiation\nReady to Close\nWon\nLost",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Naming Series",
    "options": "CRM-DEAL-.YYYY.-"
+  },
+  {
+   "fieldname": "contacts_tab",
+   "fieldtype": "Tab Break",
+   "label": "Contacts"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "options": "Phone"
+  },
+  {
+   "default": "Qualification",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Qualification\nDemo/Making\nProposal/Quotation\nNegotiation\nReady to Close\nWon\nLost",
+   "reqd": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-06 18:07:22.815164",
+ "modified": "2023-11-06 21:53:50.442404",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -119,5 +140,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }
