@@ -18,7 +18,7 @@
       >
         <ListRowItem :item="item">
           <template #prefix>
-            <div v-if="column.key === 'deal_status'">
+            <div v-if="column.key === 'status'">
               <IndicatorIcon :class="item.color" />
             </div>
             <div v-else-if="column.key === 'organization'">
@@ -30,7 +30,7 @@
                 size="sm"
               />
             </div>
-            <div v-else-if="column.key === 'lead_owner'">
+            <div v-else-if="column.key === 'deal_owner'">
               <Avatar
                 v-if="item.full_name"
                 class="flex items-center"
