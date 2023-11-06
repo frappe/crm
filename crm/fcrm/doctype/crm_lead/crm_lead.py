@@ -26,15 +26,17 @@ class CRMLead(Document):
 	def set_lead_name(self):
 		if not self.lead_name:
 			# Check for leads being created through data import
-			if not self.organization_name and not self.email and not self.flags.ignore_mandatory:
+			if not self.organization and not self.email and not self.flags.ignore_mandatory:
 				frappe.throw(_("A Lead requires either a person's name or an organization's name"))
-			elif self.organization_name:
-				self.lead_name = self.organization_name
-			else:
+			elif self.organization:
+				self.lead_name = self.organization
+			elif self.email:
 				self.lead_name = self.email.split("@")[0]
+			else:
+				self.lead_name = "Unnamed Lead"
 
 	def set_title(self):
-		self.title = self.organization_name or self.lead_name
+		self.title = self.organization or self.lead_name
 	
 	def validate_email(self):
 		if self.email:
@@ -106,7 +108,7 @@ class CRMLead(Document):
 				"salutation": self.salutation,
 				"gender": self.gender,
 				"designation": self.job_title,
-				"company_name": self.organization_name,
+				"company_name": self.organization,
 				"image": self.image or "",
 			}
 		)
@@ -132,7 +134,7 @@ class CRMLead(Document):
 			{ "label": 'Modified', "value": 'modified' },
 			{ "label": 'Status', "value": 'status' },
 			{ "label": 'Lead owner', "value": 'lead_owner' },
-			{ "label": 'Organization', "value": 'organization_name' },
+			{ "label": 'Organization', "value": 'organization' },
 			{ "label": 'Name', "value": 'lead_name' },
 			{ "label": 'First Name', "value": 'first_name' },
 			{ "label": 'Last Name', "value": 'last_name' },

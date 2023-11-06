@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { createResource } from 'frappe-ui'
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 
 export const organizationsStore = defineStore('crm-organizations', () => {
   let organizationsByName = reactive({})
@@ -27,8 +27,19 @@ export const organizationsStore = defineStore('crm-organizations', () => {
     return organizationsByName[name]
   }
 
+  function getOrganizationOptions() {
+    return [
+      { label: '', value: '' },
+      ...organizations.data?.map((org) => ({
+        label: org.name,
+        value: org.name,
+      })),
+    ]
+  }
+
   return {
     organizations,
+    getOrganizationOptions,
     getOrganization,
   }
 })

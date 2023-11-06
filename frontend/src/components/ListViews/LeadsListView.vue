@@ -30,7 +30,7 @@
                 size="sm"
               />
             </div>
-            <div v-else-if="column.key === 'organization_name'">
+            <div v-else-if="column.key === 'organization'">
               <Avatar
                 v-if="item.label"
                 class="flex items-center"

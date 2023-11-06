@@ -3,7 +3,7 @@
     <div v-for="section in allFields" :key="section.section">
       <div class="grid grid-cols-3 gap-4">
         <div v-for="field in section.fields" :key="field.name">
-          <div class="text-gray-600 text-sm mb-2">{{ field.label }}</div>
+          <div class="mb-2 text-sm text-gray-600">{{ field.label }}</div>
           <FormControl
             v-if="field.type === 'select'"
             type="select"
@@ -19,8 +19,18 @@
             type="email"
             v-model="newDeal[field.name]"
           />
-          <Autocomplete
+          <FormControl
             v-else-if="field.type === 'link'"
+            type="autocomplete"
+            :value="newDeal[field.name]"
+            :options="field.options"
+            @change="(e) => field.change(e)"
+            :placeholder="field.placeholder"
+            class="form-control"
+          />
+          <FormControl
+            v-else-if="field.type === 'user'"
+            type="autocomplete"
             :options="activeAgents"
             :value="getUser(newDeal[field.name]).full_name"
             @change="(option) => (newDeal[field.name] = option.email)"
@@ -32,7 +42,7 @@
             <template #item-prefix="{ option }">
               <UserAvatar class="mr-2" :user="option.email" size="sm" />
             </template>
-          </Autocomplete>
+          </FormControl>
           <Dropdown
             v-else-if="field.type === 'dropdown'"
             :options="statusDropdownOptions(newDeal, 'deal')"
@@ -41,10 +51,12 @@
             <template #default="{ open }">
               <Button
                 :label="newDeal[field.name]"
-                class="justify-between w-full"
+                class="w-full justify-between"
               >
                 <template #prefix>
-                  <IndicatorIcon :class="dealStatuses[newDeal[field.name]].color" />
+                  <IndicatorIcon
+                    :class="dealStatuses[newDeal[field.name]].color"
+                  />
                 </template>
                 <template #default>{{ newDeal[field.name] }}</template>
                 <template #suffix>
@@ -67,17 +79,13 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
+import { organizationsStore } from '@/stores/organizations'
 import { dealStatuses, statusDropdownOptions, activeAgents } from '@/utils'
-import {
-  FormControl,
-  Button,
-  Autocomplete,
-  Dropdown,
-  FeatherIcon,
-} from 'frappe-ui'
-import { computed } from 'vue'
+import { FormControl, Button, Dropdown, FeatherIcon } from 'frappe-ui'
 
-const { getUser, users } = usersStore()
+const { getUser } = usersStore()
+const { getOrganizationOptions } = organizationsStore()
+
 const props = defineProps({
   newDeal: {
     type: Object,
@@ -135,8 +143,13 @@ const allFields = [
     fields: [
       {
         label: 'Organization',
-        name: 'organization_name',
-        type: 'data',
+        name: 'organization',
+        type: 'link',
+        placeholder: 'Organization',
+        options: getOrganizationOptions(),
+        change: (option) => {
+          newDeal.organization = option.name
+        },
       },
       {
         label: 'Status',

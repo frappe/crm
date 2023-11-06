@@ -289,8 +289,7 @@ const leads = createListResource({
     'first_name',
     'lead_name',
     'image',
-    'organization_name',
-    'organization_logo',
+    'organization',
     'status',
     'email',
     'mobile_no',
@@ -298,7 +297,7 @@ const leads = createListResource({
     'modified',
   ],
   filters: {
-    organization_name: props.organization.name,
+    organization: props.organization.name,
     is_deal: 0,
   },
   orderBy: 'modified desc',
@@ -312,8 +311,7 @@ const deals = createListResource({
   cache: ['deals', props.organization.name],
   fields: [
     'name',
-    'organization_name',
-    'organization_logo',
+    'organization',
     'annual_revenue',
     'deal_status',
     'email',
@@ -322,7 +320,7 @@ const deals = createListResource({
     'modified',
   ],
   filters: {
-    organization_name: props.organization.name,
+    organization: props.organization.name,
     is_deal: 1,
   },
   orderBy: 'modified desc',
@@ -334,7 +332,15 @@ const contacts = createListResource({
   type: 'list',
   doctype: 'Contact',
   cache: ['contacts', props.organization.name],
-  fields: ['name', 'email_id', 'mobile_no', 'company_name', 'modified'],
+  fields: [
+    'name',
+    'full_name',
+    'image',
+    'email_id',
+    'mobile_no',
+    'company_name',
+    'modified',
+  ],
   filters: {
     company_name: props.organization.name,
   },
@@ -374,9 +380,9 @@ function getLeadRowObject(lead) {
       image: lead.image,
       image_label: lead.first_name,
     },
-    organization_name: {
-      label: lead.organization_name,
-      logo: lead.organization_logo,
+    organization: {
+      label: lead.organization,
+      logo: props.organization?.organization_logo,
     },
     status: {
       label: lead.status,
@@ -398,9 +404,9 @@ function getLeadRowObject(lead) {
 function getDealRowObject(deal) {
   return {
     name: deal.name,
-    organization_name: {
-      label: deal.organization_name,
-      logo: deal.organization_logo,
+    organization: {
+      label: deal.organization,
+      logo: props.organization?.organization_logo,
     },
     annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
     deal_status: {
@@ -449,7 +455,7 @@ const leadColumns = [
   },
   {
     label: 'Organization',
-    key: 'organization_name',
+    key: 'organization',
     width: '10rem',
   },
   {
@@ -482,7 +488,7 @@ const leadColumns = [
 const dealColumns = [
   {
     label: 'Organization',
-    key: 'organization_name',
+    key: 'organization',
     width: '11rem',
   },
   {
@@ -546,8 +552,8 @@ const contactColumns = [
 ]
 
 function reload(val) {
-  leads.filters.organization_name = val
-  deals.filters.organization_name = val
+  leads.filters.organization = val
+  deals.filters.organization = val
   contacts.filters.company_name = val
   leads.reload()
   deals.reload()

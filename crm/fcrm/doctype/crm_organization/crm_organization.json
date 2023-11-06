@@ -7,8 +7,13 @@
  "engine": "InnoDB",
  "field_order": [
   "organization_name",
+  "no_of_employees",
+  "organization_logo",
+  "column_break_pnpp",
   "website",
-  "organization_logo"
+  "job_title",
+  "annual_revenue",
+  "industry"
  ],
  "fields": [
   {
@@ -20,18 +25,45 @@
   {
    "fieldname": "website",
    "fieldtype": "Data",
-   "label": "Website"
+   "label": "Website",
+   "options": "URL"
   },
   {
    "fieldname": "organization_logo",
    "fieldtype": "Attach Image",
    "label": "Organization Logo"
+  },
+  {
+   "fieldname": "no_of_employees",
+   "fieldtype": "Select",
+   "label": "No. of Employees",
+   "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
+  },
+  {
+   "fieldname": "column_break_pnpp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "job_title",
+   "fieldtype": "Data",
+   "label": "Job Title"
+  },
+  {
+   "fieldname": "annual_revenue",
+   "fieldtype": "Currency",
+   "label": "Annual Revenue"
+  },
+  {
+   "fieldname": "industry",
+   "fieldtype": "Link",
+   "label": "Industry",
+   "options": "CRM Industry"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-03 16:25:25.366741",
+ "modified": "2023-11-06 15:28:26.610882",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",

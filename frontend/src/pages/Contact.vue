@@ -91,10 +91,10 @@
             :key="field.name"
             class="flex items-center gap-2 px-3 text-base leading-5 last:mb-3"
           >
-            <div class="w-[106px] text-gray-600">
+            <div class="w-[106px] shrink-0 text-gray-600">
               {{ field.label }}
             </div>
-            <div class="flex-1">
+            <div class="flex-1 overflow-hidden">
               <FormControl
                 v-if="field.type === 'email'"
                 type="email"
@@ -121,6 +121,11 @@
                 :debounce="500"
               />
             </div>
+            <ExternalLinkIcon
+              v-if="field.type === 'link' && field.link && contact[field.name]"
+              class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
+              @click="field.link(contact[field.name])"
+            />
           </div>
         </div>
       </div>
@@ -197,6 +202,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import {
@@ -210,10 +216,12 @@ import {
 } from '@/utils'
 import { usersStore } from '@/stores/users.js'
 import { contactsStore } from '@/stores/contacts.js'
+import { organizationsStore } from '@/stores/organizations.js'
 import { ref, computed, h } from 'vue'
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
+const { getOrganization, getOrganizationOptions } = organizationsStore()
 
 const showContactModal = ref(false)
 
@@ -297,8 +305,7 @@ const leads = createListResource({
     'first_name',
     'lead_name',
     'image',
-    'organization_name',
-    'organization_logo',
+    'organization',
     'status',
     'email',
     'mobile_no',
@@ -320,8 +327,7 @@ const deals = createListResource({
   cache: ['deals', props.contactId],
   fields: [
     'name',
-    'organization_name',
-    'organization_logo',
+    'organization',
     'annual_revenue',
     'deal_status',
     'email',
@@ -361,9 +367,9 @@ function getLeadRowObject(lead) {
       image: lead.image,
       image_label: lead.first_name,
     },
-    organization_name: {
-      label: lead.organization_name,
-      logo: lead.organization_logo,
+    organization: {
+      label: lead.organization,
+      logo: getOrganization(lead.organization)?.organization_logo,
     },
     status: {
       label: lead.status,
@@ -385,9 +391,9 @@ function getLeadRowObject(lead) {
 function getDealRowObject(deal) {
   return {
     name: deal.name,
-    organization_name: {
-      label: deal.organization_name,
-      logo: deal.organization_logo,
+    organization: {
+      label: deal.organization,
+      logo: getOrganization(deal.organization)?.organization_logo,
     },
     annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
     deal_status: {
@@ -415,7 +421,7 @@ const leadColumns = [
   },
   {
     label: 'Organization',
-    key: 'organization_name',
+    key: 'organization',
     width: '10rem',
   },
   {
@@ -448,7 +454,7 @@ const leadColumns = [
 const dealColumns = [
   {
     label: 'Organization',
-    key: 'organization_name',
+    key: 'organization',
     width: '11rem',
   },
   {
@@ -483,54 +489,68 @@ const dealColumns = [
   },
 ]
 
-const details = [
-  {
-    label: 'Salutation',
-    type: 'link',
-    name: 'salutation',
-    placeholder: 'Mr./Mrs./Ms.',
-    options: [
-      { label: 'Dr', value: 'Dr' },
-      { label: 'Mr', value: 'Mr' },
-      { label: 'Mrs', value: 'Mrs' },
-      { label: 'Ms', value: 'Ms' },
-      { label: 'Mx', value: 'Mx' },
-      { label: 'Prof', value: 'Prof' },
-      { label: 'Master', value: 'Master' },
-      { label: 'Madam', value: 'Madam' },
-      { label: 'Miss', value: 'Miss' },
-    ],
-    change: (data) => {
-      contact.value.salutation = data.value
-      updateContact('salutation', data.value)
+const details = computed(() => {
+  return [
+    {
+      label: 'Salutation',
+      type: 'link',
+      name: 'salutation',
+      placeholder: 'Mr./Mrs./Ms.',
+      options: [
+        { label: 'Dr', value: 'Dr' },
+        { label: 'Mr', value: 'Mr' },
+        { label: 'Mrs', value: 'Mrs' },
+        { label: 'Ms', value: 'Ms' },
+        { label: 'Mx', value: 'Mx' },
+        { label: 'Prof', value: 'Prof' },
+        { label: 'Master', value: 'Master' },
+        { label: 'Madam', value: 'Madam' },
+        { label: 'Miss', value: 'Miss' },
+      ],
+      change: (data) => {
+        contact.value.salutation = data.value
+        updateContact('salutation', data.value)
+      },
     },
-  },
-  {
-    label: 'First name',
-    type: 'data',
-    name: 'first_name',
-  },
-  {
-    label: 'Last name',
-    type: 'data',
-    name: 'last_name',
-  },
-  {
-    label: 'Email',
-    type: 'email',
-    name: 'email',
-  },
-  {
-    label: 'Mobile no.',
-    type: 'phone',
-    name: 'mobile_no',
-  },
-  {
-    label: 'Organization',
-    type: 'data',
-    name: 'company_name',
-  },
-]
+    {
+      label: 'First name',
+      type: 'data',
+      name: 'first_name',
+    },
+    {
+      label: 'Last name',
+      type: 'data',
+      name: 'last_name',
+    },
+    {
+      label: 'Email',
+      type: 'email',
+      name: 'email',
+    },
+    {
+      label: 'Mobile no.',
+      type: 'phone',
+      name: 'mobile_no',
+    },
+    {
+      label: 'Organization',
+      type: 'link',
+      name: 'company_name',
+      placeholder: 'Select organization',
+      options: getOrganizationOptions(),
+      change: (data) => {
+        contact.value.company_name = data.value
+        updateContact('company_name', data.value)
+      },
+      link: (data) => {
+        router.push({
+          name: 'Organization',
+          params: { organizationId: data.value },
+        })
+      },
+    },
+  ]
+})
 
 function updateContact(fieldname, value) {
   createResource({
@@ -570,7 +590,18 @@ function updateContact(fieldname, value) {
   background: white;
 }
 
+:deep(.form-control button) {
+  gap: 0;
+}
+
+:deep(.form-control button > div) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 :deep(.form-control button svg) {
   color: white;
+  width: 0;
 }
 </style>
