@@ -59,6 +59,7 @@ import NewLead from '@/components/NewLead.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import { usersStore } from '@/stores/users'
+import { organizationsStore } from '@/stores/organizations'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
@@ -78,6 +79,7 @@ import { ref, computed, reactive, watch } from 'vue'
 const breadcrumbs = [{ label: 'Leads', route: { name: 'Leads' } }]
 
 const { getUser } = usersStore()
+const { getOrganization } = organizationsStore()
 const { get: getOrderBy } = useOrderBy()
 const { getArgs, storage } = useFilter()
 
@@ -105,8 +107,7 @@ const leads = createListResource({
     'first_name',
     'lead_name',
     'image',
-    'organization_name',
-    'organization_logo',
+    'organization',
     'status',
     'email',
     'mobile_no',
@@ -147,7 +148,7 @@ const columns = [
   },
   {
     label: 'Organization',
-    key: 'organization_name',
+    key: 'organization',
     width: '10rem',
   },
   {
@@ -187,9 +188,9 @@ const rows = computed(() => {
         image: lead.image,
         image_label: lead.first_name,
       },
-      organization_name: {
-        label: lead.organization_name,
-        logo: lead.organization_logo,
+      organization: {
+        label: lead.organization,
+        logo: getOrganization(lead.organization)?.organization_logo,
       },
       status: {
         label: lead.status,
@@ -259,7 +260,7 @@ let newLead = reactive({
   first_name: '',
   last_name: '',
   lead_name: '',
-  organization_name: '',
+  organization: '',
   status: 'Open',
   email: '',
   mobile_no: '',

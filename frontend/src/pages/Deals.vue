@@ -37,7 +37,7 @@
   <Dialog
     v-model="showNewDialog"
     :options="{
-      width: '3xl',
+      size: '3xl',
       title: 'New Deal',
       actions: [{ label: 'Save', variant: 'solid' }],
     }"
@@ -60,6 +60,7 @@ import NewDeal from '@/components/NewDeal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import { usersStore } from '@/stores/users'
+import { organizationsStore } from '@/stores/organizations'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
@@ -85,6 +86,7 @@ import { ref, computed, reactive, watch } from 'vue'
 const breadcrumbs = [{ label: 'Deals', route: { name: 'Deals' } }]
 
 const { getUser } = usersStore()
+const { getOrganization } = organizationsStore()
 const { get: getOrderBy } = useOrderBy()
 const { getArgs, storage } = useFilter()
 
@@ -105,8 +107,7 @@ const leads = createListResource({
   doctype: 'CRM Lead',
   fields: [
     'name',
-    'organization_name',
-    'organization_logo',
+    'organization',
     'annual_revenue',
     'deal_status',
     'email',
@@ -143,7 +144,7 @@ watch(
 const columns = [
   {
     label: 'Organization',
-    key: 'organization_name',
+    key: 'organization',
     width: '11rem',
   },
   {
@@ -183,9 +184,9 @@ const rows = computed(() => {
   return leads.data.map((lead) => {
     return {
       name: lead.name,
-      organization_name: {
-        label: lead.organization_name,
-        logo: lead.organization_logo,
+      organization: {
+        label: lead.organization,
+        logo: getOrganization(lead.organization)?.organization_logo,
       },
       annual_revenue: formatNumberIntoCurrency(lead.annual_revenue),
       deal_status: {
@@ -256,7 +257,7 @@ let newDeal = reactive({
   first_name: '',
   last_name: '',
   lead_name: '',
-  organization_name: '',
+  organization: '',
   deal_status: 'Qualification',
   email: '',
   mobile_no: '',
