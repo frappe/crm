@@ -13,20 +13,15 @@
   "first_name",
   "middle_name",
   "last_name",
-  "is_deal",
-  "created_as_deal",
   "column_break_izjs",
   "lead_name",
   "gender",
-  "lead_owner",
-  "status",
   "image",
   "column_break_lcuv",
+  "lead_owner",
+  "status",
   "source",
-  "deal_status",
-  "close_date",
-  "probability",
-  "next_step",
+  "converted",
   "organization_tab",
   "section_break_uixv",
   "organization",
@@ -93,7 +88,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Lead Status",
+   "label": "Status",
    "options": "Open\nContacted\nNurture\nQualified\nUnqualified\nJunk",
    "reqd": 1,
    "search_index": 1
@@ -123,8 +118,9 @@
   },
   {
    "fieldname": "mobile_no",
-   "fieldtype": "Phone",
-   "label": "Mobile No"
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "options": "Phone"
   },
   {
    "fieldname": "column_break_sjtw",
@@ -132,8 +128,9 @@
   },
   {
    "fieldname": "phone",
-   "fieldtype": "Phone",
-   "label": "Phone"
+   "fieldtype": "Data",
+   "label": "Phone",
+   "options": "Phone"
   },
   {
    "fieldname": "section_break_uixv",
@@ -190,25 +187,6 @@
    "search_index": 1
   },
   {
-   "default": "Qualification",
-   "fieldname": "deal_status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Deal Status",
-   "options": "Qualification\nDemo/Making\nProposal/Quotation\nNegotiation\nReady to Close\nWon\nLost",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "is_deal",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Is Deal",
-   "search_index": 1
-  },
-  {
    "fetch_from": "organization.job_title",
    "fieldname": "job_title",
    "fieldtype": "Data",
@@ -226,21 +204,6 @@
    "label": "Contact"
   },
   {
-   "fieldname": "close_date",
-   "fieldtype": "Date",
-   "label": "Close Date"
-  },
-  {
-   "fieldname": "probability",
-   "fieldtype": "Data",
-   "label": "Probability"
-  },
-  {
-   "fieldname": "next_step",
-   "fieldtype": "Data",
-   "label": "Next Step"
-  },
-  {
    "fieldname": "contacts",
    "fieldtype": "Table",
    "label": "Contacts",
@@ -251,23 +214,24 @@
    "fieldtype": "Section Break"
   },
   {
-   "default": "0",
-   "fieldname": "created_as_deal",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Created as Deal"
-  },
-  {
    "fieldname": "organization",
    "fieldtype": "Link",
    "label": "Organization",
    "options": "CRM Organization"
+  },
+  {
+   "default": "0",
+   "fieldname": "converted",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Converted"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-06 15:29:56.868755",
+ "modified": "2023-11-06 21:53:32.542503",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
