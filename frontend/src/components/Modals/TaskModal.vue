@@ -92,15 +92,18 @@ import {
   DatePicker,
   call,
 } from 'frappe-ui'
-import { ref, defineModel, h, watch, nextTick } from 'vue'
-import { get } from '@vueuse/core'
+import { ref, defineModel, watch, nextTick } from 'vue'
 
 const props = defineProps({
   task: {
     type: Object,
     default: {},
   },
-  lead: {
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
+  },
+  doc: {
     type: String,
     default: '',
   },
@@ -149,7 +152,8 @@ async function updateTask(close) {
     let d = await call('frappe.client.insert', {
       doc: {
         doctype: 'CRM Task',
-        lead: props.lead || null,
+        reference_doctype: props.doctype,
+        reference_docname: props.doc || null,
         ..._task.value,
       },
     })

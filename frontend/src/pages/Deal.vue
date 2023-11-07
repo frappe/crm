@@ -7,12 +7,12 @@
       <FormControl
         type="autocomplete"
         :options="activeAgents"
-        :value="getUser(deal.data.lead_owner).full_name"
+        :value="getUser(deal.data.deal_owner).full_name"
         @change="(option) => updateAssignedAgent(option.email)"
         placeholder="Deal owner"
       >
         <template #prefix>
-          <UserAvatar class="mr-2" :user="deal.data.lead_owner" size="sm" />
+          <UserAvatar class="mr-2" :user="deal.data.deal_owner" size="sm" />
         </template>
         <template #item-prefix="{ option }">
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
@@ -20,17 +20,16 @@
       </FormControl>
       <Dropdown :options="statusDropdownOptions(deal.data, 'deal', updateDeal)">
         <template #default="{ open }">
-          <Button :label="deal.data.deal_status">
+          <Button :label="deal.data.status">
             <template #prefix>
-              <IndicatorIcon
-                :class="dealStatuses[deal.data.deal_status].color"
-              />
+              <IndicatorIcon :class="dealStatuses[deal.data.status].color" />
             </template>
-            <template #suffix
-              ><FeatherIcon
+            <template #suffix>
+              <FeatherIcon
                 :name="open ? 'chevron-up' : 'chevron-down'"
                 class="h-4 text-gray-600"
-            /></template>
+              />
+            </template>
           </Button>
         </template>
       </Dropdown>
@@ -38,7 +37,12 @@
   </LayoutHeader>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
-      <Activities :title="tab.label" v-model:reload="reload" v-model="deal" />
+      <Activities
+        doctype="CRM Deal"
+        :title="tab.label"
+        v-model:reload="reload"
+        v-model="deal"
+      />
     </Tabs>
     <div class="flex w-[352px] flex-col justify-between border-l">
       <div
@@ -254,7 +258,8 @@
                         :debounce="500"
                         class="form-control"
                       />
-                      <Tooltip :text="field.tooltip"
+                      <Tooltip
+                        :text="field.tooltip"
                         class="flex h-7 cursor-pointer items-center px-2 py-1"
                         v-else-if="field.type === 'read_only'"
                       >
@@ -272,7 +277,11 @@
                       />
                     </div>
                     <ExternalLinkIcon
-                      v-if="field.type === 'link' && field.link && deal.data[field.name]"
+                      v-if="
+                        field.type === 'link' &&
+                        field.link &&
+                        deal.data[field.name]
+                      "
                       class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
                       @click="field.link(deal.data[field.name])"
                     />
@@ -335,7 +344,7 @@ const props = defineProps({
 })
 
 const deal = createResource({
-  url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
+  url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   auto: true,
@@ -347,7 +356,7 @@ function updateDeal(fieldname, value) {
   createResource({
     url: 'frappe.client.set_value',
     params: {
-      doctype: 'CRM Lead',
+      doctype: 'CRM Deal',
       name: props.dealId,
       fieldname,
       value,
@@ -377,7 +386,7 @@ function updateDeal(fieldname, value) {
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Deals', route: { name: 'Deals' } }]
   items.push({
-    label: organization.value.name,
+    label: organization.value?.name,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -435,12 +444,16 @@ const detailSections = computed(() => {
           type: 'read_only',
           name: 'website',
           value: organization.value?.website,
-          tooltip: 'It is a read only field, value is fetched from organization',
+          tooltip:
+            'It is a read only field, value is fetched from organization',
         },
         {
           label: 'Amount',
-          type: 'number',
+          type: 'read_only',
           name: 'annual_revenue',
+          value: organization.value?.annual_revenue,
+          tooltip:
+            'It is a read only field, value is fetched from organization',
         },
         {
           label: 'Close date',
@@ -514,8 +527,8 @@ const organization = computed(() => {
 })
 
 function updateAssignedAgent(email) {
-  deal.data.lead_owner = email
-  updateDeal('lead_owner', email)
+  deal.data.deal_owner = email
+  updateDeal('deal_owner', email)
 }
 </script>
 

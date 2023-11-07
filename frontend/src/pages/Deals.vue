@@ -28,8 +28,8 @@
       </Dropdown>
     </div>
     <div class="flex items-center gap-2">
-      <Filter doctype="CRM Lead" />
-      <SortBy doctype="CRM Lead" />
+      <Filter doctype="CRM Deal" />
+      <SortBy doctype="CRM Deal" />
       <Button icon="more-horizontal" />
     </div>
   </div>
@@ -96,23 +96,20 @@ const currentView = ref({
 })
 
 function getFilter() {
-  return {
-    ...(getArgs() || {}),
-    is_deal: 1,
-  }
+  return getArgs() || {}
 }
 
-const leads = createListResource({
+const deals = createListResource({
   type: 'list',
-  doctype: 'CRM Lead',
+  doctype: 'CRM Deal',
   fields: [
     'name',
     'organization',
     'annual_revenue',
-    'deal_status',
+    'status',
     'email',
     'mobile_no',
-    'lead_owner',
+    'deal_owner',
     'modified',
   ],
   filters: getFilter(),
@@ -125,8 +122,8 @@ watch(
   () => getOrderBy(),
   (value, old_value) => {
     if (!value && !old_value) return
-    leads.orderBy = getOrderBy() || 'modified desc'
-    leads.reload()
+    deals.orderBy = getOrderBy() || 'modified desc'
+    deals.reload()
   },
   { immediate: true }
 )
@@ -135,8 +132,8 @@ watch(
   storage,
   useDebounceFn((value, old_value) => {
     if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    leads.filters = getFilter()
-    leads.reload()
+    deals.filters = getFilter()
+    deals.reload()
   }, 300),
   { deep: true }
 )
@@ -154,7 +151,7 @@ const columns = [
   },
   {
     label: 'Status',
-    key: 'deal_status',
+    key: 'status',
     width: '10rem',
   },
   {
@@ -168,8 +165,8 @@ const columns = [
     width: '11rem',
   },
   {
-    label: 'Lead owner',
-    key: 'lead_owner',
+    label: 'Deal owner',
+    key: 'deal_owner',
     width: '10rem',
   },
   {
@@ -180,28 +177,28 @@ const columns = [
 ]
 
 const rows = computed(() => {
-  if (!leads.data) return []
-  return leads.data.map((lead) => {
+  if (!deals.data) return []
+  return deals.data.map((deal) => {
     return {
-      name: lead.name,
+      name: deal.name,
       organization: {
-        label: lead.organization,
-        logo: getOrganization(lead.organization)?.organization_logo,
+        label: deal.organization,
+        logo: getOrganization(deal.organization)?.organization_logo,
       },
-      annual_revenue: formatNumberIntoCurrency(lead.annual_revenue),
-      deal_status: {
-        label: lead.deal_status,
-        color: dealStatuses[lead.deal_status]?.color,
+      annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
+      status: {
+        label: deal.status,
+        color: dealStatuses[deal.status]?.color,
       },
-      email: lead.email,
-      mobile_no: lead.mobile_no,
-      lead_owner: {
-        label: lead.lead_owner && getUser(lead.lead_owner).full_name,
-        ...(lead.lead_owner && getUser(lead.lead_owner)),
+      email: deal.email,
+      mobile_no: deal.mobile_no,
+      deal_owner: {
+        label: deal.deal_owner && getUser(deal.deal_owner).full_name,
+        ...(deal.deal_owner && getUser(deal.deal_owner)),
       },
       modified: {
-        label: dateFormat(lead.modified, dateTooltipFormat),
-        timeAgo: timeAgo(lead.modified),
+        label: dateFormat(deal.modified, dateTooltipFormat),
+        timeAgo: timeAgo(deal.modified),
       },
     }
   })
@@ -253,25 +250,19 @@ const viewsDropdownOptions = [
 const showNewDialog = ref(false)
 
 let newDeal = reactive({
-  salutation: '',
-  first_name: '',
-  last_name: '',
-  lead_name: '',
   organization: '',
-  deal_status: 'Qualification',
+  status: 'Qualification',
   email: '',
   mobile_no: '',
-  lead_owner: getUser().email,
-  is_deal: 1,
-  created_as_deal: 1,
+  deal_owner: getUser().email,
 })
 
-const createLead = createResource({
+const createDeal = createResource({
   url: 'frappe.client.insert',
   makeParams(values) {
     return {
       doc: {
-        doctype: 'CRM Lead',
+        doctype: 'CRM Deal',
         ...values,
       },
     }
@@ -281,7 +272,7 @@ const createLead = createResource({
 const router = useRouter()
 
 function createNewDeal(close) {
-  createLead
+  createDeal
     .submit(newDeal, {
       validate() {
         if (!newDeal.first_name) {

@@ -41,7 +41,12 @@
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
-      <Activities :title="tab.label" v-model:reload="reload" v-model="lead" />
+      <Activities
+        doctype="CRM Lead"
+        :title="tab.label"
+        v-model:reload="reload"
+        v-model="lead"
+      />
     </Tabs>
     <div class="flex w-[352px] flex-col justify-between border-l">
       <div
@@ -336,6 +341,7 @@ import {
   Avatar,
   Tabs,
   Breadcrumbs,
+  call,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -372,9 +378,6 @@ function updateLead(fieldname, value) {
     },
     auto: true,
     onSuccess: () => {
-      if (fieldname == 'is_deal') {
-        router.push({ name: 'Deal', params: { dealId: lead.data.name } })
-      }
       lead.reload()
       contacts.reload()
       reload.value = true
@@ -565,8 +568,23 @@ const organization = computed(() => {
 
 function convertToDeal() {
   lead.data.status = 'Qualified'
-  lead.data.is_deal = 1
-  updateLead('is_deal', 1)
+  lead.data.converted = 1
+  createDeal(lead.data)
+}
+
+async function createDeal(lead) {
+  let d = await call('frappe.client.insert', {
+    doc: {
+      doctype: 'CRM Deal',
+      organization: lead.organization,
+      email: lead.email,
+      mobile_no: lead.mobile_no,
+      lead: lead.name,
+    },
+  })
+  if (d.name) {
+    router.push({ name: 'Deal', params: { dealId: d.name } })
+  }
 }
 
 function updateAssignedAgent(email) {

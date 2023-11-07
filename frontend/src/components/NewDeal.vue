@@ -10,7 +10,7 @@
             :options="field.options"
             v-model="newDeal[field.name]"
           >
-            <template v-if="field.name == 'deal_status'" #prefix>
+            <template v-if="field.name == 'status'" #prefix>
               <IndicatorIcon :class="dealStatuses[newDeal[field.name]].color" />
             </template>
           </FormControl>
@@ -153,7 +153,7 @@ const allFields = [
       },
       {
         label: 'Status',
-        name: 'deal_status',
+        name: 'status',
         type: 'select',
         options: statusDropdownOptions(props.newDeal, 'deal'),
       },

@@ -91,7 +91,7 @@ const currentView = ref({
 function getFilter() {
   return {
     ...(getArgs() || {}),
-    is_deal: 0,
+    converted: 0,
   }
 }
 
