@@ -47,6 +47,10 @@ def get_deal_activities(name):
 
 		if change := data.get("changed")[0]:
 			field_label, field_option = next(((f.label, f.options) for f in deal_fields_meta if f.fieldname == change[0]), None)
+
+			if field_label == "Lead" or (not change[1] and not change[2]):
+				continue
+
 			activity_type = "changed"
 			data = {
 				"field": change[0],
@@ -54,8 +58,7 @@ def get_deal_activities(name):
 				"old_value": change[1],
 				"value": change[2],
 			}
-			if not change[1] and not change[2]:
-				continue
+
 			if not change[1] and change[2]:
 				activity_type = "added"
 				data = {
@@ -129,6 +132,10 @@ def get_lead_activities(name):
 
 		if change := data.get("changed")[0]:
 			field_label, field_option = next(((f.label, f.options) for f in lead_fields_meta if f.fieldname == change[0]), None)
+
+			if field_label == "Converted" or (not change[1] and not change[2]):
+				continue
+
 			activity_type = "changed"
 			data = {
 				"field": change[0],
@@ -136,8 +143,7 @@ def get_lead_activities(name):
 				"old_value": change[1],
 				"value": change[2],
 			}
-			if not change[1] and not change[2]:
-				continue
+
 			if not change[1] and change[2]:
 				activity_type = "added"
 				data = {
