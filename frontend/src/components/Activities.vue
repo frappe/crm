@@ -592,13 +592,15 @@
     v-model="showNoteModal"
     v-model:reloadNotes="notes"
     :note="note"
-    :lead="doc.data?.name"
+    :doctype="doctype"
+    :doc="doc.data?.name"
   />
   <TaskModal
     v-model="showTaskModal"
     v-model:reloadTasks="tasks"
     :task="task"
-    :lead="doc.data?.name"
+    :doctype="doctype"
+    :doc="doc.data?.name"
   />
 </template>
 <script setup>
@@ -651,6 +653,10 @@ const props = defineProps({
   title: {
     type: String,
     default: 'Activity',
+  },
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
   },
 })
 
@@ -724,7 +730,7 @@ const notes = createListResource({
   doctype: 'CRM Note',
   cache: ['Notes', doc.value.data.name],
   fields: ['name', 'title', 'content', 'owner', 'modified'],
-  filters: { lead: doc.value.data.name },
+  filters: { reference_docname: doc.value.data.name },
   orderBy: 'modified desc',
   pageLength: 999,
   auto: true,
@@ -745,7 +751,7 @@ const tasks = createListResource({
     'status',
     'modified',
   ],
-  filters: { lead: doc.value.data.name },
+  filters: { reference_docname: doc.value.data.name },
   orderBy: 'modified desc',
   pageLength: 999,
   auto: true,
@@ -819,7 +825,7 @@ function update_activities_details(activity) {
 }
 
 const emptyText = computed(() => {
-  let text = 'No emails communications'
+  let text = 'No email communications'
   if (props.title == 'Calls') {
     text = 'No call logs'
   } else if (props.title == 'Notes') {

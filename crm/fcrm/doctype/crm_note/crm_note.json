@@ -9,7 +9,8 @@
  "field_order": [
   "title",
   "content",
-  "lead"
+  "reference_doctype",
+  "reference_docname"
  ],
  "fields": [
   {
@@ -27,10 +28,17 @@
    "label": "Content"
   },
   {
-   "fieldname": "lead",
+   "default": "CRM Lead",
+   "fieldname": "reference_doctype",
    "fieldtype": "Link",
-   "label": "Lead",
-   "options": "CRM Lead"
+   "label": "Reference Document Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_docname",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Doc",
+   "options": "reference_doctype"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -40,7 +48,7 @@
    "link_fieldname": "note"
   }
  ],
- "modified": "2023-08-28 11:48:42.100802",
+ "modified": "2023-11-07 13:41:11.249515",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Note",

@@ -37,7 +37,12 @@
   </LayoutHeader>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
-      <Activities :title="tab.label" v-model:reload="reload" v-model="deal" />
+      <Activities
+        doctype="CRM Deal"
+        :title="tab.label"
+        v-model:reload="reload"
+        v-model="deal"
+      />
     </Tabs>
     <div class="flex w-[352px] flex-col justify-between border-l">
       <div

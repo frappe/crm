@@ -50,7 +50,11 @@ const props = defineProps({
     type: Object,
     default: {},
   },
-  lead: {
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
+  },
+  doc: {
     type: String,
     default: '',
   },
@@ -85,7 +89,8 @@ async function updateNote(close) {
         doctype: 'CRM Note',
         title: _note.value.title,
         content: _note.value.content,
-        lead: props.lead || '',
+        reference_doctype: props.doctype,
+        reference_docname: props.doc || '',
       },
     })
     if (d.name) {
