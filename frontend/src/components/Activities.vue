@@ -691,7 +691,7 @@ const calls = createListResource({
     'creation',
     'note',
   ],
-  filters: { lead: doc.value.data.name },
+  filters: { reference_docname: doc.value.data.name },
   orderBy: 'creation desc',
   pageLength: 999,
   auto: true,

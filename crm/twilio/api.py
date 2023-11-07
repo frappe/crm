@@ -86,9 +86,10 @@ def update_call_log(call_sid, status=None):
 	call_log.duration = call_details.duration
 	call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
 	call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
-	call_log.lead = get_lead_from_number(call_log)
-	if call_log.note and call_log.lead:
-		frappe.db.set_value("CRM Note", call_log.note, "lead", call_log.lead)
+	call_log.reference_docname, call_log.reference_doctype = get_lead_or_deal_from_number(call_log)
+	if call_log.note and call_log.reference_docname:
+		frappe.db.set_value("CRM Note", call_log.note, "reference_doctype", call_log.reference_doctype)
+		frappe.db.set_value("CRM Note", call_log.note, "reference_docname", call_log.reference_docname)
 	call_log.flags.ignore_permissions = True
 	call_log.save()
 	frappe.db.commit()
@@ -145,13 +146,20 @@ def add_note_to_call_log(call_sid, note):
 	frappe.db.set_value("CRM Call Log", call_details.parent_call_sid, "note", note)
 	frappe.db.commit()
 
-def get_lead_from_number(call):
-	"""Get lead from the given number.
+def get_lead_or_deal_from_number(call):
+	"""Get lead/deal from the given number.
 	"""
-	lead = None
+	doctype = "CRM Lead"
+	doc = None
 	if call.type == 'Outgoing':
-		lead = frappe.db.get_value("CRM Lead", { "mobile_no": call.get('to') })
+		doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('to') })
+		if not doc:
+			doctype = "CRM Deal"
+			doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('to') })
 	else:
-		lead = frappe.db.get_value("CRM Lead", { "mobile_no": call.get('from') })
+		doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('from') })
+		if not doc:
+			doctype = "CRM Deal"
+			doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('from') })
 
-	return lead
+	return doc, doctype
