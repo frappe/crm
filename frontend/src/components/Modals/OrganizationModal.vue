@@ -8,7 +8,8 @@
         {
           label: editMode ? 'Update' : 'Create',
           variant: 'solid',
-          onClick: ({ close }) => updateOrganization(close),
+          onClick: ({ close }) =>
+            editMode ? updateOrganization(close) : callInsertDoc(close),
         },
       ],
     }"
@@ -20,7 +21,7 @@
           <TextInput
             ref="title"
             variant="outline"
-            v-model="_organization.name"
+            v-model="_organization.organization_name"
             placeholder="Add organization name"
           />
         </div>
@@ -46,6 +47,13 @@ const props = defineProps({
   organization: {
     type: Object,
     default: {},
+  },
+  options: {
+    type: Object,
+    default: {
+      redirect: true,
+      afterInsert: () => {},
+    },
   },
 })
 
@@ -73,19 +81,14 @@ async function updateOrganization(close) {
     return
   }
 
-  if (editMode.value) {
-    let name
-    if (nameChanged) {
-      name = await callRenameDoc()
-    }
-    if (otherFieldChanged) {
-      name = await callSetValue(values)
-    }
-    handleOrganizationUpdate(name)
-  } else {
-    await callInsertDoc()
+  let name
+  if (nameChanged) {
+    name = await callRenameDoc()
   }
-  close()
+  if (otherFieldChanged) {
+    name = await callSetValue(values)
+  }
+  handleOrganizationUpdate({ name }, close)
 }
 
 async function callRenameDoc() {
@@ -106,25 +109,27 @@ async function callSetValue(values) {
   return d.name
 }
 
-async function callInsertDoc() {
-  const d = await call('frappe.client.insert', {
+async function callInsertDoc(close) {
+  const doc = await call('frappe.client.insert', {
     doc: {
       doctype: 'CRM Organization',
-      organization_name: _organization.value.name,
+      organization_name: _organization.value.organization_name,
       website: _organization.value.website,
     },
   })
-  d.name && handleOrganizationUpdate()
+  doc.name && handleOrganizationUpdate(doc, close)
 }
 
-function handleOrganizationUpdate(name) {
-  organizations.value.reload()
-  if (name) {
+function handleOrganizationUpdate(doc, close) {
+  organizations.value?.reload()
+  if (doc.name && props.options.redirect) {
     router.push({
       name: 'Organization',
-      params: { organizationId: name },
+      params: { organizationId: doc.name },
     })
   }
+  close && close()
+  props.options.afterInsert && props.options.afterInsert(doc)
 }
 
 watch(

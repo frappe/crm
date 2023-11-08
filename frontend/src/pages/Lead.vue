@@ -8,7 +8,7 @@
         type="autocomplete"
         :options="activeAgents"
         :value="getUser(lead.data.lead_owner).full_name"
-        @change="(option) => updateAssignedAgent(option.email)"
+        @change="(option) => updateField('lead_owner', option.email)"
         placeholder="Lead owner"
       >
         <template #prefix>
@@ -197,21 +197,37 @@
                         "
                         :debounce="500"
                       />
-                      <FormControl
+                      <Autocomplete
                         v-else-if="field.type === 'link'"
-                        type="autocomplete"
                         :value="lead.data[field.name]"
                         :options="field.options"
                         @change="(e) => field.change(e)"
                         :placeholder="field.placeholder"
                         class="form-control"
-                      />
+                      >
+                        <template #footer="{ value, close }">
+                          <div>
+                            <Button
+                              variant="ghost"
+                              class="w-full !justify-start"
+                              label="Create one"
+                              @click="field.create(value, close)"
+                            >
+                              <template #prefix>
+                                <FeatherIcon name="plus" class="h-4" />
+                              </template>
+                            </Button>
+                          </div>
+                        </template>
+                      </Autocomplete>
                       <FormControl
                         v-else-if="field.type === 'user'"
                         type="autocomplete"
                         :options="activeAgents"
                         :value="getUser(lead.data[field.name]).full_name"
-                        @change="(option) => updateAssignedAgent(option.email)"
+                        @change="
+                          (option) => updateField('lead_owner', option.email)
+                        "
                         class="form-control"
                         :placeholder="field.placeholder"
                       >
@@ -305,6 +321,14 @@
       </div>
     </div>
   </div>
+  <OrganizationModal
+    v-model="showOrganizationModal"
+    :organization="_organization"
+    :options="{
+      redirect: false,
+      afterInsert: (doc) => updateField('organiation', doc.name),
+    }"
+  />
 </template>
 <script setup>
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -320,6 +344,8 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import {
   leadStatuses,
   statusDropdownOptions,
@@ -366,6 +392,8 @@ const lead = createResource({
 })
 
 const reload = ref(false)
+const showOrganizationModal = ref(false)
+const _organization = ref({})
 
 function updateLead(fieldname, value) {
   createResource({
@@ -455,9 +483,11 @@ const detailSections = computed(() => {
           name: 'organization',
           placeholder: 'Select organization',
           options: getOrganizationOptions(),
-          change: (data) => {
-            lead.data.organization = data.value
-            updateLead('organization', data.value)
+          change: (data) => data && updateField('organization', data.value),
+          create: (value, close) => {
+            _organization.value.organization_name = value
+            showOrganizationModal.value = true
+            close()
           },
           link: () => {
             router.push({
@@ -587,9 +617,9 @@ async function createDeal(lead) {
   }
 }
 
-function updateAssignedAgent(email) {
-  lead.data.lead_owner = email
-  updateLead('lead_owner', email)
+function updateField(name, value) {
+  lead.data[name] = value
+  updateLead(name, value)
 }
 </script>
 
