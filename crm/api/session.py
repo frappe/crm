@@ -39,7 +39,7 @@ def get_organizations():
 
 	organizations = frappe.qb.get_query(
 		"CRM Organization",
-		fields=['name', 'organization_logo', 'website'],
+		fields=['name', 'organization_name', 'organization_logo', 'website'],
 		order_by="name asc",
 		distinct=True,
 	).run(as_dict=1)

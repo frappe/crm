@@ -29,7 +29,7 @@ export const organizationsStore = defineStore('crm-organizations', () => {
 
   function getOrganizationOptions() {
     return [
-      { label: '', value: '' },
+      { label: '---', value: '' },
       ...organizations.data?.map((org) => ({
         label: org.name,
         value: org.name,
