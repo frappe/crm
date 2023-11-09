@@ -1,9 +1,5 @@
-import json
-
 import frappe
 from frappe import _
-from frappe.desk.form.load import get_docinfo
-from crm.fcrm.doctype.crm_lead.api import get_activities as get_lead_activities
 
 
 @frappe.whitelist()
