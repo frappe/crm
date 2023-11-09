@@ -95,14 +95,40 @@
               {{ field.label }}
             </div>
             <div class="flex-1 overflow-hidden">
-              <FormControl
-                v-if="field.type === 'email'"
-                type="email"
-                class="form-control"
-                :value="contact[field.name]"
-                @change.stop="updateContact(field.name, $event.target.value)"
-                :debounce="500"
-              />
+              <Dropdown
+                v-if="field.type === 'dropdown'"
+                :options="field.options"
+                class="form-control show-dropdown-icon w-full flex-1"
+              >
+                <template #default="{ open }">
+                  <div
+                    class="dropdown-button flex w-full items-center justify-between gap-2"
+                  >
+                    <Button
+                      :label="contact[field.name]"
+                      class="w-full justify-between truncate"
+                    >
+                      <div class="truncate">{{ contact[field.name] }}</div>
+                    </Button>
+                    <FeatherIcon
+                      :name="open ? 'chevron-up' : 'chevron-down'"
+                      class="h-4 text-gray-600"
+                    />
+                  </div>
+                </template>
+                <template #footer>
+                  <Button
+                    variant="ghost"
+                    class="w-full !justify-start"
+                    label="Create one"
+                    @click="field.create()"
+                  >
+                    <template #prefix>
+                      <FeatherIcon name="plus" class="h-4" />
+                    </template>
+                  </Button>
+                </template>
+              </Dropdown>
               <FormControl
                 v-else-if="field.type === 'link'"
                 type="autocomplete"
@@ -174,6 +200,16 @@
       </template>
     </Tabs>
   </div>
+  <Dialog v-model="show" :options="dialogOptions">
+    <template #body-content>
+      <FormControl
+        :type="new_field.type"
+        variant="outline"
+        v-model="new_field.value"
+        :placeholder="new_field.placeholder"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
@@ -181,21 +217,23 @@ import {
   FormControl,
   FeatherIcon,
   Breadcrumbs,
+  Dialog,
   Avatar,
   FileUploader,
   ErrorMessage,
-  Dropdown,
   Tooltip,
   Tabs,
   call,
   createResource,
   createListResource,
 } from 'frappe-ui'
+import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import DropdownItem from '@/components/DropdownItem.vue'
 import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
@@ -520,13 +558,63 @@ const details = computed(() => {
     },
     {
       label: 'Email',
-      type: 'email',
-      name: 'email',
+      type: 'dropdown',
+      name: 'email_id',
+      options: contact.value?.email_ids?.map((email) => {
+        return {
+          label: email.email_id,
+          value: email.email_id,
+          component: h(DropdownItem, {
+            value: email.email_id,
+            selected: email.email_id === contact.value.email_id,
+            onClick: () => setAsPrimary('email', email.email_id),
+          }),
+        }
+      }),
+      create: () => {
+        new_field.value = { type: 'email', placeholder: 'Add email address' }
+        dialogOptions.value = {
+          title: 'Add email',
+          actions: [
+            {
+              label: 'Add',
+              variant: 'solid',
+              onClick: ({ close }) => createNew('email', close),
+            },
+          ],
+        }
+        show.value = true
+      },
     },
     {
       label: 'Mobile no.',
-      type: 'phone',
+      type: 'dropdown',
       name: 'mobile_no',
+      options: contact.value?.phone_nos?.map((phone) => {
+        return {
+          label: phone.phone,
+          value: phone.phone,
+          component: h(DropdownItem, {
+            value: phone.phone,
+            selected: phone.phone === contact.value.mobile_no,
+            onClick: () => setAsPrimary('mobile_no', phone.phone),
+          }),
+        }
+      }),
+      create: () => {
+        new_field.value = { type: 'phone', placeholder: 'Add mobile no.' }
+        dialogOptions.value = {
+          title: 'Add mobile no.',
+          actions: [
+            {
+              label: 'Add',
+              variant: 'solid',
+              onClick: ({ close }) => createNew('phone', close),
+            },
+          ],
+        }
+        show.value = true
+      },
     },
     {
       label: 'Organization',
@@ -547,6 +635,11 @@ const details = computed(() => {
     },
   ]
 })
+
+const show = ref(false)
+const new_field = ref({})
+
+const dialogOptions = ref({})
 
 function updateContact(fieldname, value) {
   createResource({
@@ -576,6 +669,39 @@ function updateContact(fieldname, value) {
     },
   })
 }
+
+async function setAsPrimary(field, value) {
+  let d = await call('crm.api.contact.set_as_primary', {
+    contact: props.contactId,
+    field,
+    value,
+  })
+  if (d) {
+    contacts.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function createNew(field, close) {
+  let d = await call('crm.api.contact.create_new', {
+    contact: props.contactId,
+    field,
+    value: new_field.value.value,
+  })
+  if (d) {
+    contacts.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+  close()
+}
 </script>
 
 <style scoped>
@@ -599,5 +725,15 @@ function updateContact(fieldname, value) {
 :deep(.form-control button svg) {
   color: white;
   width: 0;
+}
+
+:deep(:has(> .dropdown-button)) {
+  width: 100%;
+}
+
+:deep(.dropdown-button > button > span) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
