@@ -23,12 +23,37 @@ def get_contacts():
 	if frappe.session.user == "Guest":
 		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
 
-	contacts = frappe.qb.get_query(
+	contacts = frappe.get_all(
 		"Contact",
-		fields=['name', 'first_name', 'last_name', 'full_name', 'image', 'email_id', 'mobile_no', 'phone', 'salutation', 'company_name', 'modified'],
+		fields=[
+			"name",
+			"salutation",
+			"first_name",
+			"last_name",
+			"full_name",
+			"image",
+			"email_id",
+			"mobile_no",
+			"phone",
+			"company_name",
+			"modified"
+		],
 		order_by="first_name asc",
 		distinct=True,
-	).run(as_dict=1)
+	)
+
+	for contact in contacts:
+		contact["email_ids"] = frappe.get_all(
+			"Contact Email",
+			filters={"parenttype": "Contact", "parent": contact.name},
+			fields=["email_id", "is_primary"],
+		)
+
+		contact["phone_nos"] = frappe.get_all(
+			"Contact Phone",
+			filters={"parenttype": "Contact", "parent": contact.name},
+			fields=["phone", "is_primary_phone", "is_primary_mobile_no"],
+		)
 
 	return contacts
 
