@@ -21,7 +21,8 @@
   "column_break_bqvs",
   "contacts_tab",
   "email",
-  "mobile_no"
+  "mobile_no",
+  "contacts"
  ],
  "fields": [
   {
@@ -114,11 +115,17 @@
    "options": "Qualification\nDemo/Making\nProposal/Quotation\nNegotiation\nReady to Close\nWon\nLost",
    "reqd": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "contacts",
+   "fieldtype": "Table",
+   "label": "Contacts",
+   "options": "CRM Contacts"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-06 21:53:50.442404",
+ "modified": "2023-11-09 19:58:15.620483",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

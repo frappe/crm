@@ -18,4 +18,11 @@ def get_deal(name):
 		frappe.throw(_("Deal not found"), frappe.DoesNotExistError)
 	deal = deal.pop()
 
+
+	deal["contacts"] = frappe.get_all(
+		"CRM Contacts",
+		filters={"parenttype": "CRM Deal", "parent": deal.name},
+		fields=["contact"],
+	)
+
 	return deal
