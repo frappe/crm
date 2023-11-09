@@ -212,6 +212,7 @@ import { usersStore } from '@/stores/users.js'
 import { contactsStore } from '@/stores/contacts.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { ref, computed, h } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
@@ -223,6 +224,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const router = useRouter()
 
 const contact = computed(() => getContactByName(props.contactId))
 
@@ -268,6 +271,7 @@ async function deleteContact() {
           })
           contacts.reload()
           close()
+          router.push({ name: 'Contacts' })
         },
       },
     ],
@@ -305,7 +309,7 @@ const leads = createListResource({
     'modified',
   ],
   filters: {
-    email: contact.value.email_id,
+    email: contact.value?.email_id,
     converted: 0,
   },
   orderBy: 'modified desc',
@@ -328,7 +332,7 @@ const deals = createListResource({
     'modified',
   ],
   filters: {
-    email: contact.value.email_id,
+    email: contact.value?.email_id,
     converted: 1,
   },
   orderBy: 'modified desc',
