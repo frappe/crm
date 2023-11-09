@@ -18,7 +18,7 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </FormControl>
-      <Dropdown :options="statusDropdownOptions(lead.data, 'lead', updateLead)">
+      <Dropdown :options="statusDropdownOptions(lead.data, 'lead', updateField)">
         <template #default="{ open }">
           <Button :label="lead.data.status">
             <template #prefix>
@@ -32,11 +32,7 @@
           </Button>
         </template>
       </Dropdown>
-      <Button
-        label="Convert to deal"
-        variant="solid"
-        @click="convertToDeal()"
-      />
+      <Button label="Convert to deal" variant="solid" @click="convertToDeal" />
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
@@ -54,7 +50,7 @@
       >
         About this lead
       </div>
-      <FileUploader @success="changeLeadImage" :validateFile="validateFile">
+      <FileUploader @success="(file) => updateField('image', file.file_url)" :validateFile="validateFile">
         <template #default="{ openFileSelector, error }">
           <div class="flex items-center justify-start gap-5 p-5">
             <div class="group relative h-[88px] w-[88px]">
@@ -80,7 +76,7 @@
                           {
                             icon: 'trash-2',
                             label: 'Remove image',
-                            onClick: () => changeLeadImage(''),
+                            onClick: () => updateField('image', ''),
                           },
                         ],
                       }
@@ -254,37 +250,6 @@
                           />
                         </template>
                       </FormControl>
-                      <Dropdown
-                        v-else-if="field.type === 'dropdown'"
-                        :options="
-                          statusDropdownOptions(lead.data, 'lead', updateLead)
-                        "
-                        class="w-full flex-1"
-                      >
-                        <template #default="{ open }">
-                          <Button
-                            :label="lead.data[field.name]"
-                            class="w-full justify-between"
-                          >
-                            <template #prefix>
-                              <IndicatorIcon
-                                :class="
-                                  leadStatuses[lead.data[field.name]].color
-                                "
-                              />
-                            </template>
-                            <template #default>{{
-                              lead.data[field.name]
-                            }}</template>
-                            <template #suffix>
-                              <FeatherIcon
-                                :name="open ? 'chevron-up' : 'chevron-down'"
-                                class="h-4 text-gray-600"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                      </Dropdown>
                       <Tooltip
                         :text="field.tooltip"
                         class="flex h-7 cursor-pointer items-center px-2 py-1"
@@ -395,7 +360,9 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const _organization = ref({})
 
-function updateLead(fieldname, value) {
+function updateLead(fieldname, value, callback) {
+  value = Array.isArray(fieldname) ? '' : value
+
   createResource({
     url: 'frappe.client.set_value',
     params: {
@@ -414,6 +381,7 @@ function updateLead(fieldname, value) {
         icon: 'check',
         iconClasses: 'text-green-600',
       })
+      callback?.()
     },
     onError: (err) => {
       createToast({
@@ -458,11 +426,6 @@ const tabs = [
     icon: NoteIcon,
   },
 ]
-
-function changeLeadImage(file) {
-  lead.data.image = file.file_url
-  updateLead('image', file.file_url)
-}
 
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
@@ -519,10 +482,7 @@ const detailSections = computed(() => {
             { label: 'Web', value: 'Web' },
             { label: 'Others', value: 'Others' },
           ],
-          change: (data) => {
-            lead.data.source = data.value
-            updateLead('source', data.value)
-          },
+          change: (data) => updateField('source', data.value),
         },
         {
           label: 'Industry',
@@ -535,10 +495,7 @@ const detailSections = computed(() => {
             { label: 'Banking', value: 'Banking' },
             { label: 'Others', value: 'Others' },
           ],
-          change: (data) => {
-            lead.data.industry = data.value
-            updateLead('industry', data.value)
-          },
+          change: (data) => updateField('industry', data.value),
         },
       ],
     },
@@ -562,10 +519,7 @@ const detailSections = computed(() => {
             { label: 'Madam', value: 'Madam' },
             { label: 'Miss', value: 'Miss' },
           ],
-          change: (data) => {
-            lead.data.salutation = data.value
-            updateLead('salutation', data.value)
-          },
+          change: (data) => updateField('salutation', data.value),
         },
         {
           label: 'First name',
@@ -597,9 +551,11 @@ const organization = computed(() => {
 })
 
 function convertToDeal() {
-  lead.data.status = 'Qualified'
-  lead.data.converted = 1
-  createDeal(lead.data)
+  updateLead({ status: 'Qualified', converted: 1 }, '', () => {
+    lead.data.status = 'Qualified'
+    lead.data.converted = 1
+    createDeal(lead.data)
+  })
 }
 
 async function createDeal(lead) {
@@ -618,8 +574,9 @@ async function createDeal(lead) {
 }
 
 function updateField(name, value) {
-  lead.data[name] = value
-  updateLead(name, value)
+  updateLead(name, value, () => {
+    lead.data[name] = value
+  })
 }
 </script>
 

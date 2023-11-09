@@ -8,7 +8,7 @@
         type="autocomplete"
         :options="activeAgents"
         :value="getUser(deal.data.deal_owner).full_name"
-        @change="(option) => updateAssignedAgent(option.email)"
+        @change="(option) => updateField('deal_owner', option.email)"
         placeholder="Deal owner"
       >
         <template #prefix>
@@ -18,7 +18,9 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </FormControl>
-      <Dropdown :options="statusDropdownOptions(deal.data, 'deal', updateDeal)">
+      <Dropdown
+        :options="statusDropdownOptions(deal.data, 'deal', updateField)"
+      >
         <template #default="{ open }">
           <Button :label="deal.data.status">
             <template #prefix>
@@ -170,7 +172,9 @@
                         type="autocomplete"
                         :options="activeAgents"
                         :value="getUser(deal.data[field.name]).full_name"
-                        @change="(option) => updateAssignedAgent(option.email)"
+                        @change="
+                          (option) => updateField('deal_owner', option.email)
+                        "
                         class="form-control"
                         :placeholder="deal.placeholder"
                       >
@@ -200,7 +204,7 @@
                       <Dropdown
                         v-else-if="field.type === 'dropdown'"
                         :options="
-                          statusDropdownOptions(deal.data, 'deal', updateDeal)
+                          statusDropdownOptions(deal.data, 'deal', updateField)
                         "
                         class="w-full flex-1"
                       >
@@ -352,7 +356,9 @@ const deal = createResource({
 
 const reload = ref(false)
 
-function updateDeal(fieldname, value) {
+function updateDeal(fieldname, value, callback) {
+  value = Array.isArray(fieldname) ? '' : value
+
   createResource({
     url: 'frappe.client.set_value',
     params: {
@@ -371,6 +377,7 @@ function updateDeal(fieldname, value) {
         icon: 'check',
         iconClasses: 'text-green-600',
       })
+      callback?.()
     },
     onError: (err) => {
       createToast({
@@ -428,10 +435,7 @@ const detailSections = computed(() => {
           name: 'organization',
           placeholder: 'Select organization',
           options: getOrganizationOptions(),
-          change: (data) => {
-            deal.data.organization = data.value
-            updateDeal('organization', data.value)
-          },
+          change: (data) => updateField('organization', data.value),
           link: () => {
             router.push({
               name: 'Organization',
@@ -492,10 +496,7 @@ const detailSections = computed(() => {
             { label: 'Madam', value: 'Madam' },
             { label: 'Miss', value: 'Miss' },
           ],
-          change: (data) => {
-            deal.data.salutation = data.value
-            updateDeal('salutation', data.value)
-          },
+          change: (data) => updateField('salutation', data.value),
         },
         {
           label: 'First name',
@@ -526,9 +527,10 @@ const organization = computed(() => {
   return getOrganization(deal.data.organization)
 })
 
-function updateAssignedAgent(email) {
-  deal.data.deal_owner = email
-  updateDeal('deal_owner', email)
+function updateField(name, value) {
+  updateDeal(name, value, () => {
+    deal.data[name] = value
+  })
 }
 </script>
 
