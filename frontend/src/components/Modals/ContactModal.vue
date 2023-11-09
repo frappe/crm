@@ -74,6 +74,7 @@
 <script setup>
 import { FormControl, Dialog, call } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch, computed } from 'vue'
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   contact: {
@@ -81,6 +82,8 @@ const props = defineProps({
     default: {},
   },
 })
+
+const router = useRouter()
 
 const show = defineModel()
 const contacts = defineModel('reloadContacts')
@@ -111,6 +114,10 @@ async function updateContact(close) {
     })
     if (d.name) {
       contacts.value.reload()
+      router.push({
+        name: 'Contact',
+        params: { contactId: d.name },
+      })
     }
   }
   close()
