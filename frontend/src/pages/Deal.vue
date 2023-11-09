@@ -103,12 +103,12 @@
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
               <div
-                class="flex max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
+                class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
                 @click="toggle()"
               >
                 <FeatherIcon
                   name="chevron-right"
-                  class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
+                  class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
                   :class="{ 'rotate-90': opened }"
                 />
                 {{ section.label }}
@@ -123,6 +123,7 @@
               >
                 <div v-if="opened" class="flex flex-col gap-1.5">
                   <div
+                    v-if="section.fields"
                     v-for="field in section.fields"
                     :key="field.label"
                     class="flex items-center gap-2 px-3 text-base leading-5 first:mt-3"
@@ -132,34 +133,7 @@
                     </div>
                     <div class="flex-1 overflow-hidden">
                       <FormControl
-                        v-if="field.type === 'select'"
-                        type="select"
-                        :options="field.options"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control cursor-pointer [&_select]:cursor-pointer"
-                      >
-                        <template #prefix>
-                          <IndicatorIcon
-                            :class="dealStatuses[deal.data[field.name]].color"
-                          />
-                        </template>
-                      </FormControl>
-                      <FormControl
-                        v-else-if="field.type === 'email'"
-                        type="email"
-                        class="form-control"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'link'"
+                        v-if="field.type === 'link'"
                         type="autocomplete"
                         :value="deal.data[field.name]"
                         :options="field.options"
@@ -167,40 +141,6 @@
                         :placeholder="field.placeholder"
                         class="form-control"
                       />
-                      <FormControl
-                        v-else-if="field.type === 'user'"
-                        type="autocomplete"
-                        :options="activeAgents"
-                        :value="getUser(deal.data[field.name]).full_name"
-                        @change="
-                          (option) => updateField('deal_owner', option.email)
-                        "
-                        class="form-control"
-                        :placeholder="deal.placeholder"
-                      >
-                        <template #target="{ togglePopover }">
-                          <Button
-                            variant="ghost"
-                            @click="togglePopover()"
-                            :label="getUser(deal.data[field.name]).full_name"
-                            class="w-full !justify-start"
-                          >
-                            <template #prefix>
-                              <UserAvatar
-                                :user="deal.data[field.name]"
-                                size="sm"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                        <template #item-prefix="{ option }">
-                          <UserAvatar
-                            class="mr-2"
-                            :user="option.email"
-                            size="sm"
-                          />
-                        </template>
-                      </FormControl>
                       <Dropdown
                         v-else-if="field.type === 'dropdown'"
                         :options="
@@ -242,26 +182,6 @@
                         :debounce="500"
                         class="form-control"
                       />
-                      <FormControl
-                        v-else-if="field.type === 'number'"
-                        type="number"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'tel'"
-                        type="tel"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control"
-                      />
                       <Tooltip
                         :text="field.tooltip"
                         class="flex h-7 cursor-pointer items-center px-2 py-1"
@@ -289,6 +209,80 @@
                       class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
                       @click="field.link(deal.data[field.name])"
                     />
+                  </div>
+                  <div v-else>
+                    <div v-for="(contact, i) in section.contacts">
+                      <div
+                        class="px-2 pb-2.5"
+                        :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
+                      >
+                        <Toggler
+                          :is-opened="contact.opened"
+                          v-slot="{ opened: cOpened, toggle: cToggle }"
+                        >
+                          <div
+                            class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-gray-700"
+                          >
+                            <div
+                              class="flex h-7 items-center gap-2"
+                              @click="cToggle()"
+                            >
+                              <Avatar
+                                :label="
+                                  getContactByName(contact.name).full_name
+                                "
+                                :image="getContactByName(contact.name).image"
+                                size="md"
+                              />
+                              {{ getContactByName(contact.name).full_name }}
+                            </div>
+                            <div class="flex gap-3">
+                              <ExternalLinkIcon
+                                class="h-4 w-4"
+                                @click="
+                                  router.push({
+                                    name: 'Contact',
+                                    params: { contactId: contact.name },
+                                  })
+                                "
+                              />
+                              <FeatherIcon
+                                name="chevron-right"
+                                class="h-4 w-4 text-gray-900 transition-all duration-300 ease-in-out"
+                                :class="{ 'rotate-90': cOpened }"
+                                @click="cToggle()"
+                              />
+                            </div>
+                          </div>
+                          <transition
+                            enter-active-class="duration-300 ease-in"
+                            leave-active-class="duration-300 ease-[cubic-bezier(0, 1, 0.5, 1)]"
+                            enter-to-class="max-h-[200px] overflow-hidden"
+                            leave-from-class="max-h-[200px] overflow-hidden"
+                            enter-from-class="max-h-0 overflow-hidden"
+                            leave-to-class="max-h-0 overflow-hidden"
+                          >
+                            <div
+                              v-if="cOpened"
+                              class="flex flex-col gap-1.5 text-base text-gray-800"
+                            >
+                              <div class="flex items-center gap-3 pl-1 pb-1.5 pt-4">
+                                <EmailIcon class="h-4 w-4" />
+                                {{ getContactByName(contact.name).email_id }}
+                              </div>
+                              <div class="flex items-center gap-3 p-1 py-1.5">
+                                <PhoneIcon class="h-4 w-4" />
+                                {{ getContactByName(contact.name).mobile_no }}
+                              </div>
+                            </div>
+                          </transition>
+                        </Toggler>
+                      </div>
+                      <div
+                        v-if="i != section.contacts.length - 1"
+                        class="mx-2 h-px border-t border-gray-200"
+                      />
+                    </div>
                   </div>
                 </div>
               </transition>
@@ -336,7 +330,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
-const { contacts } = contactsStore()
+const { getContactByName, contacts } = contactsStore()
 const { getOrganization, getOrganizationOptions } = organizationsStore()
 const router = useRouter()
 
@@ -479,46 +473,12 @@ const detailSections = computed(() => {
     {
       label: 'Contacts',
       opened: true,
-      fields: [
-        {
-          label: 'Salutation',
-          type: 'link',
-          name: 'salutation',
-          placeholder: 'Mr./Mrs./Ms.',
-          options: [
-            { label: 'Dr', value: 'Dr' },
-            { label: 'Mr', value: 'Mr' },
-            { label: 'Mrs', value: 'Mrs' },
-            { label: 'Ms', value: 'Ms' },
-            { label: 'Mx', value: 'Mx' },
-            { label: 'Prof', value: 'Prof' },
-            { label: 'Master', value: 'Master' },
-            { label: 'Madam', value: 'Madam' },
-            { label: 'Miss', value: 'Miss' },
-          ],
-          change: (data) => updateField('salutation', data.value),
-        },
-        {
-          label: 'First name',
-          type: 'data',
-          name: 'first_name',
-        },
-        {
-          label: 'Last name',
-          type: 'data',
-          name: 'last_name',
-        },
-        {
-          label: 'Email',
-          type: 'email',
-          name: 'email',
-        },
-        {
-          label: 'Mobile no.',
-          type: 'tel',
-          name: 'mobile_no',
-        },
-      ],
+      contacts: deal.data.contacts.map((contact) => {
+        return {
+          name: contact.contact,
+          opened: false,
+        }
+      }),
     },
   ]
 })
@@ -536,7 +496,6 @@ function updateField(name, value) {
 
 <style scoped>
 :deep(.form-control input),
-:deep(.form-control select),
 :deep(.form-control button) {
   border-color: transparent;
   background: white;
