@@ -37,9 +37,7 @@
   "column_break_sijm",
   "mobile_no",
   "column_break_sjtw",
-  "phone",
-  "section_break_jyxr",
-  "contacts"
+  "phone"
  ],
  "fields": [
   {
@@ -204,16 +202,6 @@
    "label": "Contact"
   },
   {
-   "fieldname": "contacts",
-   "fieldtype": "Table",
-   "label": "Contacts",
-   "options": "CRM Contacts"
-  },
-  {
-   "fieldname": "section_break_jyxr",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "organization",
    "fieldtype": "Link",
    "label": "Organization",
@@ -231,7 +219,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-06 21:53:32.542503",
+ "modified": "2023-11-09 12:44:18.770076",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
