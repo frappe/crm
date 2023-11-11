@@ -18,7 +18,9 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </FormControl>
-      <Dropdown :options="statusDropdownOptions(lead.data, 'lead', updateField)">
+      <Dropdown
+        :options="statusDropdownOptions(lead.data, 'lead', updateField)"
+      >
         <template #default="{ open }">
           <Button :label="lead.data.status">
             <template #prefix>
@@ -50,7 +52,10 @@
       >
         About this lead
       </div>
-      <FileUploader @success="(file) => updateField('image', file.file_url)" :validateFile="validateFile">
+      <FileUploader
+        @success="(file) => updateField('image', file.file_url)"
+        :validateFile="validateFile"
+      >
         <template #default="{ openFileSelector, error }">
           <div class="flex items-center justify-start gap-5 p-5">
             <div class="group relative h-[88px] w-[88px]">
@@ -201,7 +206,7 @@
                         :placeholder="field.placeholder"
                         class="form-control"
                       >
-                        <template #footer="{ value, close }">
+                        <template v-if="field.create" #footer="{ value, close }">
                           <div>
                             <Button
                               variant="ghost"
@@ -291,7 +296,7 @@
     :organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organiation', doc.name),
+      afterInsert: (doc) => updateField('organization', doc.name),
     }"
   />
 </template>
