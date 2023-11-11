@@ -125,7 +125,7 @@
                         }
                       })
                     "
-                    @change="(e) => addContact(e.value)"
+                    @change="(e) => e.value && addContact(e.value)"
                   >
                     <template #target="{ togglePopover }">
                       <Button
@@ -137,6 +137,29 @@
                           <FeatherIcon name="plus" class="h-4" />
                         </template>
                       </Button>
+                    </template>
+                    <template #footer="{ value, close }">
+                      <div>
+                        <Button
+                          variant="ghost"
+                          class="w-full !justify-start"
+                          label="Create one"
+                          @click="
+                            () => {
+                              _contact = {
+                                first_name: value,
+                                company_name: deal.data.organization,
+                              }
+                              showContactModal = true
+                              close()
+                            }
+                          "
+                        >
+                          <template #prefix>
+                            <FeatherIcon name="plus" class="h-4" />
+                          </template>
+                        </Button>
+                      </div>
                     </template>
                   </Autocomplete>
                 </div>
@@ -339,7 +362,10 @@
                         class="mx-2 h-px border-t border-gray-200"
                       />
                     </div>
-                    <div v-else class="flex justify-center items-center text-base text-gray-600 h-20">
+                    <div
+                      v-else
+                      class="flex h-20 items-center justify-center text-base text-gray-600"
+                    >
                       No contacts added
                     </div>
                   </div>
@@ -359,6 +385,14 @@
       afterInsert: (doc) => updateField('organization', doc.name),
     }"
   />
+  <ContactModal
+    v-model="showContactModal"
+    :contact="_contact"
+    :options="{
+      redirect: false,
+      afterInsert: (doc) => addContact(doc.name),
+    }"
+  />
 </template>
 <script setup>
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -374,6 +408,7 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import {
   dealStatuses,
@@ -560,14 +595,17 @@ const detailSections = computed(() => {
   ]
 })
 
+const showContactModal = ref(false)
+const _contact = ref({})
+
 async function addContact(value) {
   let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.add_contact', {
     deal: props.dealId,
     contact: value,
   })
   if (d) {
+    await contacts.reload()
     deal.reload()
-    contacts.reload()
     createToast({
       title: 'Contact added',
       icon: 'check',

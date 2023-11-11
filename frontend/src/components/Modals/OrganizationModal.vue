@@ -57,13 +57,13 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
 const show = defineModel()
 const organizations = defineModel('reloadOrganizations')
 
 const title = ref(null)
 const editMode = ref(false)
 let _organization = ref({})
-const router = useRouter()
 
 async function updateOrganization(close) {
   const old = { ...props.organization }

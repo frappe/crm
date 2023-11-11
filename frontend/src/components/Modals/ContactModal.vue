@@ -9,7 +9,7 @@
           label: editMode ? 'Update' : 'Create',
           variant: 'solid',
           disabled: !dirty,
-          onClick: ({ close }) => updateContact(close),
+          onClick: ({ close }) => editMode ? updateContact(close) : callInsertDoc(close),
         },
       ],
     }"
@@ -42,11 +42,21 @@
           />
         </div>
         <FormControl
-          type="text"
+          type="autocomplete"
           variant="outline"
           size="md"
           label="Organisation"
-          v-model="_contact.company_name"
+          :value="_contact.company_name"
+          :options="
+            organizations.data.map((d) => {
+              return {
+                label: d.name,
+                value: d.name,
+              }
+            })
+          "
+          @change="(e) => (_contact.company_name = e.value)"
+          placeholder="Select organization"
         />
         <div class="flex gap-4">
           <FormControl
@@ -74,53 +84,72 @@
 <script setup>
 import { FormControl, Dialog, call } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch, computed } from 'vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
+import { organizationsStore } from '@/stores/organizations'
 
 const props = defineProps({
   contact: {
     type: Object,
     default: {},
   },
+  options: {
+    type: Object,
+    default: {
+      redirect: true,
+      afterInsert: () => {},
+    },
+  },
 })
 
 const router = useRouter()
-
 const show = defineModel()
 const contacts = defineModel('reloadContacts')
+
+const { organizations } = organizationsStore()
 
 const editMode = ref(false)
 let _contact = ref({})
 
 async function updateContact(close) {
-  if (JSON.stringify(props.contact) === JSON.stringify(_contact.value)) {
+  if (!dirty.value) {
+    close()
     return
   }
 
-  if (_contact.value.name) {
-    let d = await call('frappe.client.set_value', {
+  let name = await callSetValue(values)
+
+  handleContactUpdate({ name }, close)
+}
+
+async function callSetValue(values) {
+  const d = await call('frappe.client.set_value', {
+    doctype: 'Contact',
+    name: _contact.value.name,
+    fieldname: values,
+  })
+  return d.name
+}
+
+async function callInsertDoc(close) {
+  const doc = await call('frappe.client.insert', {
+    doc: {
       doctype: 'Contact',
-      name: _contact.value.name,
-      fieldname: _contact.value,
+      ..._contact.value,
+    },
+  })
+  doc.name && handleContactUpdate(doc, close)
+}
+
+function handleContactUpdate(doc, close) {
+  contacts.value?.reload()
+  if (doc.name && props.options.redirect) {
+    router.push({
+      name: 'Contact',
+      params: { contactId: doc.name },
     })
-    if (d.name) {
-      contacts.value.reload()
-    }
-  } else {
-    let d = await call('frappe.client.insert', {
-      doc: {
-        doctype: 'Contact',
-        ..._contact.value,
-      },
-    })
-    if (d.name) {
-      contacts.value.reload()
-      router.push({
-        name: 'Contact',
-        params: { contactId: d.name },
-      })
-    }
   }
-  close()
+  close && close()
+  props.options.afterInsert && props.options.afterInsert(doc)
 }
 
 const dirty = computed(() => {
@@ -134,7 +163,7 @@ watch(
     editMode.value = false
     nextTick(() => {
       _contact.value = { ...props.contact }
-      if (_contact.value.first_name) {
+      if (_contact.value.name) {
         editMode.value = true
       }
     })
