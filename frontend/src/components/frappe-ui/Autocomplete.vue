@@ -32,8 +32,8 @@
       </template>
       <template #body="{ isOpen }">
         <div v-show="isOpen">
-          <div class="mt-1 rounded-lg bg-white text-base shadow-2xl">
-            <div class="relative p-1.5 pb-0">
+          <div class="mt-1 rounded-lg bg-white text-base shadow-2xl py-1">
+            <div class="relative px-1.5 pt-0.5">
               <ComboboxInput
                 ref="search"
                 class="form-input w-full"
@@ -98,7 +98,7 @@
                 No results found
               </li>
             </ComboboxOptions>
-            <div v-if="slots.footer" class="border-t p-1.5">
+            <div v-if="slots.footer" class="border-t p-1.5 pb-0.5">
               <slot
                 name="footer"
                 v-bind="{ value: search?.el._value, close }"
