@@ -102,16 +102,44 @@
             :class="{ 'border-b': i !== detailSections.length - 1 }"
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
-              <div
-                class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
-                @click="toggle()"
-              >
-                <FeatherIcon
-                  name="chevron-right"
-                  class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
-                  :class="{ 'rotate-90': opened }"
-                />
-                {{ section.label }}
+              <div class="flex items-center justify-between">
+                <div
+                  class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
+                  @click="toggle()"
+                >
+                  <FeatherIcon
+                    name="chevron-right"
+                    class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+                    :class="{ 'rotate-90': opened }"
+                  />
+                  {{ section.label }}
+                </div>
+                <div v-if="section.contacts" class="pr-2">
+                  <Autocomplete
+                    value=""
+                    :options="
+                      contacts.data.map((contact) => {
+                        return {
+                          label: contact.full_name,
+                          value: contact.name,
+                        }
+                      })
+                    "
+                    @change="(e) => addContact(e.value)"
+                  >
+                    <template #target="{ togglePopover }">
+                      <Button
+                        class="h-7 px-3"
+                        label="Add contact"
+                        @click="togglePopover()"
+                      >
+                        <template #prefix>
+                          <FeatherIcon name="plus" class="h-4" />
+                        </template>
+                      </Button>
+                    </template>
+                  </Autocomplete>
+                </div>
               </div>
               <transition
                 enter-active-class="duration-300 ease-in"
@@ -228,7 +256,11 @@
                     />
                   </div>
                   <div v-else>
-                    <div v-for="(contact, i) in section.contacts">
+                    <div
+                      v-if="section.contacts.length"
+                      v-for="(contact, i) in section.contacts"
+                      :key="contact.name"
+                    >
                       <div
                         class="px-2 pb-2.5"
                         :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
@@ -254,6 +286,11 @@
                               {{ getContactByName(contact.name).full_name }}
                             </div>
                             <div class="flex gap-3">
+                              <FeatherIcon
+                                name="trash-2"
+                                class="h-4 w-4"
+                                @click="removeContact(contact.name)"
+                              />
                               <ExternalLinkIcon
                                 class="h-4 w-4"
                                 @click="
@@ -301,6 +338,9 @@
                         v-if="i != section.contacts.length - 1"
                         class="mx-2 h-px border-t border-gray-200"
                       />
+                    </div>
+                    <div v-else class="flex justify-center items-center text-base text-gray-600 h-20">
+                      No contacts added
                     </div>
                   </div>
                 </div>
@@ -354,6 +394,7 @@ import {
   Avatar,
   Tabs,
   Breadcrumbs,
+  call,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -518,6 +559,38 @@ const detailSections = computed(() => {
     },
   ]
 })
+
+async function addContact(value) {
+  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.add_contact', {
+    deal: props.dealId,
+    contact: value,
+  })
+  if (d) {
+    deal.reload()
+    contacts.reload()
+    createToast({
+      title: 'Contact added',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function removeContact(value) {
+  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
+    deal: props.dealId,
+    contact: value,
+  })
+  if (d) {
+    deal.reload()
+    contacts.reload()
+    createToast({
+      title: 'Contact removed',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
 
 const organization = computed(() => {
   return getOrganization(deal.data.organization)
