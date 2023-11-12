@@ -184,7 +184,7 @@
         />
         <DealsListView
           class="mt-4"
-          v-if="tab.label === 'Deals' && rows.length"
+          v-else-if="tab.label === 'Deals' && rows.length"
           :rows="rows"
           :columns="columns"
         />
@@ -357,7 +357,7 @@ const leads = createListResource({
 
 const deals = createListResource({
   type: 'list',
-  doctype: 'CRM Lead',
+  doctype: 'CRM Deal',
   cache: ['deals', props.contactId],
   fields: [
     'name',
@@ -366,12 +366,11 @@ const deals = createListResource({
     'status',
     'email',
     'mobile_no',
-    'lead_owner',
+    'deal_owner',
     'modified',
   ],
   filters: {
     email: contact.value?.email_id,
-    converted: 1,
   },
   orderBy: 'modified desc',
   pageLength: 20,
@@ -436,9 +435,9 @@ function getDealRowObject(deal) {
     },
     email: deal.email,
     mobile_no: deal.mobile_no,
-    lead_owner: {
-      label: deal.lead_owner && getUser(deal.lead_owner).full_name,
-      ...(deal.lead_owner && getUser(deal.lead_owner)),
+    deal_owner: {
+      label: deal.deal_owner && getUser(deal.deal_owner).full_name,
+      ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
     modified: {
       label: dateFormat(deal.modified, dateTooltipFormat),
@@ -512,8 +511,8 @@ const dealColumns = [
     width: '11rem',
   },
   {
-    label: 'Lead owner',
-    key: 'lead_owner',
+    label: 'Deal owner',
+    key: 'deal_owner',
     width: '10rem',
   },
   {
@@ -629,7 +628,7 @@ const details = computed(() => {
       link: (data) => {
         router.push({
           name: 'Organization',
-          params: { organizationId: data.value },
+          params: { organizationId: data },
         })
       },
     },
