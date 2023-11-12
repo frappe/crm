@@ -307,7 +307,7 @@ const leads = createListResource({
 
 const deals = createListResource({
   type: 'list',
-  doctype: 'CRM Lead',
+  doctype: 'CRM Deal',
   cache: ['deals', props.organization.name],
   fields: [
     'name',
@@ -316,12 +316,11 @@ const deals = createListResource({
     'status',
     'email',
     'mobile_no',
-    'lead_owner',
+    'deal_owner',
     'modified',
   ],
   filters: {
     organization: props.organization.name,
-    converted: 1,
   },
   orderBy: 'modified desc',
   pageLength: 20,
@@ -415,9 +414,9 @@ function getDealRowObject(deal) {
     },
     email: deal.email,
     mobile_no: deal.mobile_no,
-    lead_owner: {
-      label: deal.lead_owner && getUser(deal.lead_owner).full_name,
-      ...(deal.lead_owner && getUser(deal.lead_owner)),
+    deal_owner: {
+      label: deal.deal_owner && getUser(deal.deal_owner).full_name,
+      ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
     modified: {
       label: dateFormat(deal.modified, dateTooltipFormat),
@@ -512,8 +511,8 @@ const dealColumns = [
     width: '11rem',
   },
   {
-    label: 'Lead owner',
-    key: 'lead_owner',
+    label: 'Deal owner',
+    key: 'deal_owner',
     width: '10rem',
   },
   {
