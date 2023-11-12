@@ -379,7 +379,6 @@ function updateLead(fieldname, value, callback) {
     auto: true,
     onSuccess: () => {
       lead.reload()
-      contacts.reload()
       reload.value = true
       createToast({
         title: 'Lead updated',
@@ -555,26 +554,13 @@ const organization = computed(() => {
   return getOrganization(lead.data.organization)
 })
 
-function convertToDeal() {
-  updateLead({ status: 'Qualified', converted: 1 }, '', () => {
-    lead.data.status = 'Qualified'
-    lead.data.converted = 1
-    createDeal(lead.data)
+async function convertToDeal() {
+  let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
+    lead: lead.data.name,
   })
-}
-
-async function createDeal(lead) {
-  let d = await call('frappe.client.insert', {
-    doc: {
-      doctype: 'CRM Deal',
-      organization: lead.organization,
-      email: lead.email,
-      mobile_no: lead.mobile_no,
-      lead: lead.name,
-    },
-  })
-  if (d.name) {
-    router.push({ name: 'Deal', params: { dealId: d.name } })
+  if (deal) {
+    await contacts.reload()
+    router.push({ name: 'Deal', params: { dealId: deal } })
   }
 }
 

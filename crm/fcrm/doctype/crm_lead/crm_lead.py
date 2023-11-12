@@ -15,9 +15,6 @@ class CRMLead(Document):
 		self.set_title()
 		self.validate_email()
 
-		if self.has_value_changed('converted') and self.converted:
-			self.create_contact()
-
 	def set_full_name(self):
 		if self.first_name:
 			self.lead_name = " ".join(
@@ -83,7 +80,7 @@ class CRMLead(Document):
 		contact.insert(ignore_permissions=True)
 		contact.reload()  # load changes by hooks on contact
 
-		return contact
+		return contact.name
 
 	def contact_exists(self):
 		email_exist = frappe.db.exists("Contact Email", {"email_id": self.email})
@@ -105,6 +102,19 @@ class CRMLead(Document):
 
 		return False
 
+	def create_deal(self, contact):
+		deal = frappe.new_doc("CRM Deal")
+		deal.update(
+			{
+				"lead": self.name,
+				"organization": self.organization,
+				"deal_owner": self.lead_owner,
+				"contacts": [{"contact": contact}],
+			}
+		)
+		deal.insert(ignore_permissions=True)
+		return deal.name
+
 	@staticmethod
 	def sort_options():
 		return [
@@ -119,3 +129,16 @@ class CRMLead(Document):
 			{ "label": 'Email', "value": 'email' },
 			{ "label": 'Mobile no', "value": 'mobile_no' },
 		]
+
+@frappe.whitelist()
+def convert_to_deal(lead):
+	if not frappe.has_permission("CRM Lead", "write", lead):
+		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
+
+	lead = frappe.get_cached_doc("CRM Lead", lead)
+	lead.status = "Qualified"
+	lead.converted = 1
+	contact = lead.create_contact()
+	deal = lead.create_deal(contact)
+	lead.save()
+	return deal
