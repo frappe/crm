@@ -7,6 +7,44 @@ from frappe.model.document import Document
 
 
 class CRMDeal(Document):
+	def validate(self):
+		self.set_primary_contact()
+		self.set_primary_email_mobile_no()
+
+	def set_primary_contact(self, contact=None):
+		if not self.contacts:
+			return
+
+		if not contact and len(self.contacts) == 1:
+			self.contacts[0].is_primary = 1
+		elif contact:
+			for d in self.contacts:
+				if d.contact == contact:
+					d.is_primary = 1
+				else:
+					d.is_primary = 0
+
+	def set_primary_email_mobile_no(self):
+		if not self.contacts:
+			self.email = ""
+			self.mobile_no = ""
+			return
+
+		if len([contact for contact in self.contacts if contact.is_primary]) > 1:
+			frappe.throw(_("Only one {0} can be set as primary.").format(frappe.bold("Contact")))
+
+		primary_contact_exists = False
+		for d in self.contacts:
+			if d.is_primary == 1:
+				primary_contact_exists = True
+				self.email = d.email.strip()
+				self.mobile_no = d.mobile_no.strip()
+				break
+
+		if not primary_contact_exists:
+			self.email = ""
+			self.mobile_no = ""
+
 	@staticmethod
 	def sort_options():
 		return [

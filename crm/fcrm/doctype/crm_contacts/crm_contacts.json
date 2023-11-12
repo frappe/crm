@@ -12,7 +12,8 @@
   "column_break_uvny",
   "gender",
   "mobile_no",
-  "phone"
+  "phone",
+  "is_primary"
  ],
  "fields": [
   {
@@ -55,7 +56,6 @@
    "fetch_from": "contact.phone",
    "fieldname": "phone",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Phone",
    "options": "Phone",
    "read_only": 1
@@ -64,16 +64,22 @@
    "fetch_from": "contact.gender",
    "fieldname": "gender",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Gender",
    "options": "Gender",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_primary",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Primary"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-08-25 19:19:27.813526",
+ "modified": "2023-11-12 14:58:18.846919",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Contacts",
