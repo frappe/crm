@@ -39,10 +39,8 @@ const valuePropPassed = computed(() => 'value' in attrs)
 
 const value = computed({
   get: () => (valuePropPassed.value ? attrs.value : props.modelValue),
-  set: (val) => {
-    debugger
-    return emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value)
-  }
+  set: (val) =>
+    emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value),
 })
 
 const autocomplete = ref(null)
