@@ -198,13 +198,13 @@
                         "
                         :debounce="500"
                       />
-                      <Autocomplete
+                      <Link
                         v-else-if="field.type === 'link'"
-                        :value="lead.data[field.name]"
-                        :options="field.options"
-                        @change="(e) => field.change(e)"
-                        :placeholder="field.placeholder"
                         class="form-control"
+                        :value="lead.data[field.name]"
+                        :doctype="field.doctype"
+                        :placeholder="field.placeholder"
+                        @change="(e) => e && field.change(e)"
                       >
                         <template
                           v-if="field.create"
@@ -223,7 +223,7 @@
                             </Button>
                           </div>
                         </template>
-                      </Autocomplete>
+                      </Link>
                       <FormControl
                         v-else-if="field.type === 'user'"
                         type="autocomplete"
@@ -318,7 +318,7 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import Link from '@/components/Controls/Link.vue'
 import {
   leadStatuses,
   statusDropdownOptions,
@@ -347,7 +347,7 @@ import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
 const { contacts } = contactsStore()
-const { getOrganization, getOrganizationOptions } = organizationsStore()
+const { getOrganization } = organizationsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -452,8 +452,8 @@ const detailSections = computed(() => {
           type: 'link',
           name: 'organization',
           placeholder: 'Select organization',
-          options: getOrganizationOptions(),
-          change: (data) => data && updateField('organization', data.value),
+          doctype: 'CRM Organization',
+          change: (data) => data && updateField('organization', data),
           create: (value, close) => {
             _organization.value.organization_name = value
             showOrganizationModal.value = true
@@ -492,12 +492,8 @@ const detailSections = computed(() => {
           type: 'link',
           name: 'source',
           placeholder: 'Select source...',
-          options: [
-            { label: 'Advertisement', value: 'Advertisement' },
-            { label: 'Web', value: 'Web' },
-            { label: 'Others', value: 'Others' },
-          ],
-          change: (data) => updateField('source', data.value),
+          doctype: 'CRM Lead Source',
+          change: (data) => updateField('source', data),
         },
       ],
     },
@@ -509,19 +505,9 @@ const detailSections = computed(() => {
           label: 'Salutation',
           type: 'link',
           name: 'salutation',
-          placeholder: 'Mr./Mrs./Ms.',
-          options: [
-            { label: 'Dr', value: 'Dr' },
-            { label: 'Mr', value: 'Mr' },
-            { label: 'Mrs', value: 'Mrs' },
-            { label: 'Ms', value: 'Ms' },
-            { label: 'Mx', value: 'Mx' },
-            { label: 'Prof', value: 'Prof' },
-            { label: 'Master', value: 'Master' },
-            { label: 'Madam', value: 'Madam' },
-            { label: 'Miss', value: 'Miss' },
-          ],
-          change: (data) => updateField('salutation', data.value),
+          placeholder: 'Mr./Mrs./Ms...',
+          doctype: 'Salutation',
+          change: (data) => updateField('salutation', data),
         },
         {
           label: 'First name',
