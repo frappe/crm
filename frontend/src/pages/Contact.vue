@@ -134,7 +134,7 @@
                 type="autocomplete"
                 :value="contact[field.name]"
                 :options="field.options"
-                @change="(e) => field.change(e)"
+                @change="(e) => e && field.change(e)"
                 :placeholder="field.placeholder"
                 class="form-control"
               />
