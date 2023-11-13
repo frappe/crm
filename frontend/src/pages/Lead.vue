@@ -204,7 +204,7 @@
                         :value="lead.data[field.name]"
                         :doctype="field.doctype"
                         :placeholder="field.placeholder"
-                        @change="(e) => e && field.change(e)"
+                        @change="(e) => field.change(e)"
                       >
                         <template
                           v-if="field.create"

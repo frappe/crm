@@ -118,7 +118,7 @@
                   <Link
                     value=""
                     doctype="Contact"
-                    @change="(e) => e && addContact(e)"
+                    @change="(e) => addContact(e)"
                   >
                     <template #target="{ togglePopover }">
                       <Button

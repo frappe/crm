@@ -5,7 +5,7 @@
     </label>
     <Autocomplete
       ref="autocomplete"
-      :options="options"
+      :options="options.data"
       v-model="value"
       :size="attrs.size || 'sm'"
       :variant="attrs.variant"
@@ -31,10 +31,10 @@
 </template>
 
 <script setup>
-import { call } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { watchDebounced } from '@vueuse/core'
+import { createResource } from 'frappe-ui'
 import { useAttrs, computed, ref } from 'vue'
-import { computedAsync, watchDebounced } from '@vueuse/core'
 
 const props = defineProps({
   doctype: {
@@ -55,8 +55,12 @@ const valuePropPassed = computed(() => 'value' in attrs)
 
 const value = computed({
   get: () => (valuePropPassed.value ? attrs.value : props.modelValue),
-  set: (val) =>
-    emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value),
+  set: (val) => {
+    return (
+      val?.value &&
+      emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value)
+    )
+  },
 })
 
 const autocomplete = ref(null)
@@ -64,22 +68,36 @@ const text = ref('')
 
 watchDebounced(
   () => autocomplete.value?.query,
-  (val) => (text.value = val),
-  { debounce: 500 }
+  (val) => {
+    if (text.value === val) return
+    text.value = val
+    options.update({
+      params: {
+        txt: val,
+        doctype: props.doctype,
+      },
+    })
+    options.reload()
+  },
+  { debounce: 300, immediate: true }
 )
 
-const options = computedAsync(async () => {
-  let options = await call('frappe.desk.search.search_link', {
+const options = createResource({
+  url: 'frappe.desk.search.search_link',
+  cache: [props.doctype, text.value],
+  method: 'POST',
+  params: {
     txt: text.value,
     doctype: props.doctype,
-  })
-  options = options?.map((option) => {
-    return {
-      label: option.value,
-      value: option.value,
-    }
-  })
-  return options
+  },
+  transform: (data) => {
+    return data.map((option) => {
+      return {
+        label: option.value,
+        value: option.value,
+      }
+    })
+  },
 })
 
 const labelClasses = computed(() => {
