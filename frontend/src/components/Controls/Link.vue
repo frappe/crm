@@ -34,7 +34,7 @@
 import { call } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { useAttrs, computed, ref } from 'vue'
-import { computedAsync, watchDebounced, useStorage } from '@vueuse/core'
+import { computedAsync, watchDebounced } from '@vueuse/core'
 
 const props = defineProps({
   doctype: {
@@ -69,12 +69,6 @@ watchDebounced(
 )
 
 const options = computedAsync(async () => {
-  let cachedOptions = localStorage.getItem(props.doctype + '-' + text.value)
-
-  if (cachedOptions) {
-    return JSON.parse(cachedOptions)
-  }
-
   let options = await call('frappe.desk.search.search_link', {
     txt: text.value,
     doctype: props.doctype,
@@ -85,9 +79,6 @@ const options = computedAsync(async () => {
       value: option.value,
     }
   })
-
-  useStorage(props.doctype + '-' + text.value, options)
-
   return options
 })
 
