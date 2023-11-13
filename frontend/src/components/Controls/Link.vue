@@ -4,6 +4,7 @@
       {{ attrs.label }}
     </label>
     <Autocomplete
+      ref="autocomplete"
       :options="options"
       v-model="value"
       :size="attrs.size || 'sm'"
@@ -16,7 +17,7 @@
 <script setup>
 import { call } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { useAttrs, computed } from 'vue'
+import { useAttrs, computed, ref } from 'vue'
 import { computedAsync } from '@vueuse/core'
 
 const props = defineProps({
@@ -39,9 +40,12 @@ const value = computed({
   set: (val) => emit('update:modelValue', val?.value),
 })
 
+const autocomplete = ref(null)
+const text = computed(() => autocomplete.value?.query)
+
 const options = computedAsync(async () => {
   let options = await call('frappe.desk.search.search_link', {
-    txt: '',
+    txt: text.value || '',
     doctype: props.doctype,
   })
   return options?.map((option) => {

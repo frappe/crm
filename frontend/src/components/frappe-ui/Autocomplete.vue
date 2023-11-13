@@ -248,4 +248,6 @@ const inputClasses = computed(() => {
     'transition-colors w-full',
   ]
 })
+
+defineExpose({ query })
 </script>
