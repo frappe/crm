@@ -121,14 +121,36 @@ import {
 import { Popover, Button, FeatherIcon } from 'frappe-ui'
 import { ref, computed, useAttrs, useSlots, watch, nextTick } from 'vue'
 
-const props = defineProps([
-  'modelValue',
-  'options',
-  'placeholder',
-  'variant',
-  'size',
-  'disabled',
-])
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: '',
+  },
+  options: {
+    type: Array,
+    default: () => [],
+  },
+  size: {
+    type: String,
+    default: 'md',
+  },
+  variant: {
+    type: String,
+    default: 'subtle',
+  },
+  placeholder: {
+    type: String,
+    default: '',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  filterable: {
+    type: Boolean,
+    default: true,
+  },
+})
 const emit = defineEmits(['update:modelValue', 'update:query', 'change'])
 
 const query = ref('')
@@ -170,7 +192,7 @@ const groups = computed(() => {
         key: i,
         group: group.group,
         hideLabel: group.hideLabel || false,
-        items: filterOptions(group.items),
+        items: props.filterable ? filterOptions(group.items) : group.items,
       }
     })
     .filter((group) => group.items.length > 0)
