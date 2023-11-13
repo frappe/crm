@@ -10,7 +10,23 @@
       :size="attrs.size || 'sm'"
       :variant="attrs.variant"
       :placeholder="attrs.placeholder"
-    />
+    >
+      <template #target="{ open, togglePopover }">
+        <slot name="target" v-bind="{ open, togglePopover }" />
+      </template>
+
+      <template #prefix>
+        <slot name="prefix" />
+      </template>
+
+      <template #item-prefix="{ active, selected, option }">
+        <slot name="item-prefix" v-bind="{ active, selected, option }" />
+      </template>
+
+      <template v-if="$slots.footer" #footer="{ value, close }">
+        <slot name="footer" v-bind="{ value, close }" />
+      </template>
+    </Autocomplete>
   </div>
 </template>
 
