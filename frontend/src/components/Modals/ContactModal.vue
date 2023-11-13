@@ -16,12 +16,13 @@
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <FormControl
-          type="text"
-          size="md"
+        <Link 
           variant="outline"
+          size="md"
           label="Salutation"
           v-model="_contact.salutation"
+          doctype="Salutation"
+          placeholder="Mr./Mrs./Ms..."
         />
         <div class="flex gap-4">
           <FormControl
@@ -77,7 +78,6 @@ import Link from '@/components/Controls/Link.vue'
 import { FormControl, Dialog, call } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { organizationsStore } from '@/stores/organizations'
 
 const props = defineProps({
   contact: {
@@ -96,8 +96,6 @@ const props = defineProps({
 const router = useRouter()
 const show = defineModel()
 const contacts = defineModel('reloadContacts')
-
-const { organizations } = organizationsStore()
 
 const editMode = ref(false)
 let _contact = ref({})
