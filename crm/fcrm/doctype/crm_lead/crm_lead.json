@@ -20,6 +20,7 @@
   "column_break_lcuv",
   "lead_owner",
   "status",
+  "job_title",
   "source",
   "converted",
   "organization_tab",
@@ -28,7 +29,6 @@
   "no_of_employees",
   "column_break_dbsv",
   "website",
-  "job_title",
   "annual_revenue",
   "industry",
   "contact_tab",
@@ -185,11 +185,9 @@
    "search_index": 1
   },
   {
-   "fetch_from": "organization.job_title",
    "fieldname": "job_title",
    "fieldtype": "Data",
-   "label": "Job Title",
-   "read_only": 1
+   "label": "Job Title"
   },
   {
    "fieldname": "organization_tab",
@@ -219,7 +217,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-09 12:44:18.770076",
+ "modified": "2023-11-13 13:35:35.783003",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

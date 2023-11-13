@@ -11,7 +11,6 @@
   "organization_logo",
   "column_break_pnpp",
   "website",
-  "job_title",
   "annual_revenue",
   "industry"
  ],
@@ -44,11 +43,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "job_title",
-   "fieldtype": "Data",
-   "label": "Job Title"
-  },
-  {
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
    "label": "Annual Revenue"
@@ -63,7 +57,7 @@
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-06 15:28:26.610882",
+ "modified": "2023-11-13 13:32:39.029742",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",

@@ -206,7 +206,10 @@
                         :placeholder="field.placeholder"
                         class="form-control"
                       >
-                        <template v-if="field.create" #footer="{ value, close }">
+                        <template
+                          v-if="field.create"
+                          #footer="{ value, close }"
+                        >
                           <div>
                             <Button
                               variant="ghost"
@@ -472,6 +475,14 @@ const detailSections = computed(() => {
             'It is a read only field, value is fetched from organization',
         },
         {
+          label: 'Industry',
+          type: 'read_only',
+          name: 'industry',
+          value: organization.value?.industry,
+          tooltip:
+            'It is a read only field, value is fetched from organization',
+        },
+        {
           label: 'Job title',
           type: 'data',
           name: 'job_title',
@@ -487,19 +498,6 @@ const detailSections = computed(() => {
             { label: 'Others', value: 'Others' },
           ],
           change: (data) => updateField('source', data.value),
-        },
-        {
-          label: 'Industry',
-          type: 'link',
-          name: 'industry',
-          placeholder: 'Select industry...',
-          options: [
-            { label: 'Advertising', value: 'Advertising' },
-            { label: 'Agriculture', value: 'Agriculture' },
-            { label: 'Banking', value: 'Banking' },
-            { label: 'Others', value: 'Others' },
-          ],
-          change: (data) => updateField('industry', data.value),
         },
       ],
     },
