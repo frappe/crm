@@ -115,17 +115,10 @@
                   {{ section.label }}
                 </div>
                 <div v-if="section.contacts" class="pr-2">
-                  <Autocomplete
+                  <Link
                     value=""
-                    :options="
-                      contacts.data.map((contact) => {
-                        return {
-                          label: contact.full_name,
-                          value: contact.name,
-                        }
-                      })
-                    "
-                    @change="(e) => e.value && addContact(e.value)"
+                    doctype="Contact"
+                    @change="(e) => e && addContact(e)"
                   >
                     <template #target="{ togglePopover }">
                       <Button
@@ -161,7 +154,7 @@
                         </Button>
                       </div>
                     </template>
-                  </Autocomplete>
+                  </Link>
                 </div>
               </div>
               <transition
@@ -183,13 +176,13 @@
                       {{ field.label }}
                     </div>
                     <div class="flex-1 overflow-hidden">
-                      <Autocomplete
+                      <Link
                         v-if="field.type === 'link'"
-                        :value="deal.data[field.name]"
-                        :options="field.options"
-                        @change="(e) => field.change(e)"
-                        :placeholder="field.placeholder"
                         class="form-control"
+                        :value="deal.data[field.name]"
+                        :doctype="field.doctype"
+                        :placeholder="field.placeholder"
+                        @change="(e) => field.change(e)"
                       >
                         <template
                           v-if="field.create"
@@ -208,7 +201,7 @@
                             </Button>
                           </div>
                         </template>
-                      </Autocomplete>
+                      </Link>
                       <FormControl
                         v-else-if="field.type === 'date'"
                         type="date"
@@ -392,7 +385,7 @@ import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import Link from '@/components/Controls/Link.vue'
 import {
   dealStatuses,
   statusDropdownOptions,
@@ -519,8 +512,8 @@ const detailSections = computed(() => {
           type: 'link',
           name: 'organization',
           placeholder: 'Select organization',
-          options: getOrganizationOptions(),
-          change: (data) => updateField('organization', data.value),
+          doctype: 'CRM Organization',
+          change: (data) => updateField('organization', data),
           create: (value, close) => {
             _organization.value.organization_name = value
             showOrganizationModal.value = true
