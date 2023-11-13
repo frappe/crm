@@ -16,21 +16,62 @@
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <div>
-          <div class="mb-1.5 text-sm text-gray-600">Organization name</div>
-          <TextInput
-            ref="title"
-            variant="outline"
-            v-model="_organization.organization_name"
-            placeholder="Add organization name"
-          />
-        </div>
-        <div>
-          <div class="mb-1.5 text-sm text-gray-600">Website</div>
-          <TextInput
+        <FormControl
+          type="text"
+          ref="title"
+          size="md"
+          label="Organization name"
+          variant="outline"
+          v-model="_organization.organization_name"
+          placeholder="Add organization name"
+        />
+        <div class="flex gap-4">
+          <FormControl
+            class="flex-1"
+            type="text"
+            size="md"
+            label="Website"
             variant="outline"
             v-model="_organization.website"
             placeholder="Add website"
+          />
+          <FormControl
+            class="flex-1"
+            type="text"
+            size="md"
+            label="Annual revenue"
+            variant="outline"
+            v-model="_organization.annual_revenue"
+            placeholder="Add annual revenue"
+          />
+        </div>
+        <div class="flex gap-4">
+          <FormControl
+            class="flex-1"
+            type="select"
+            :options="[
+              '1-10',
+              '11-50',
+              '51-200',
+              '201-500',
+              '501-1000',
+              '1001-5000',
+              '5001-10000',
+              '10001+',
+            ]"
+            size="md"
+            label="No. of employees"
+            variant="outline"
+            v-model="_organization.no_of_employees"
+          />
+          <Link
+            class="flex-1"
+            size="md"
+            label="Industry"
+            variant="outline"
+            v-model="_organization.industry"
+            doctype="CRM Industry"
+            placeholder="Add industry"
           />
         </div>
       </div>
@@ -39,7 +80,8 @@
 </template>
 
 <script setup>
-import { TextInput, Dialog, call } from 'frappe-ui'
+import Link from '@/components/Controls/Link.vue'
+import { FormControl, Dialog, call } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -63,7 +105,13 @@ const organizations = defineModel('reloadOrganizations')
 
 const title = ref(null)
 const editMode = ref(false)
-let _organization = ref({})
+let _organization = ref({
+  organization_name: '',
+  website: '',
+  annual_revenue: '',
+  no_of_employees: '1-10',
+  industry: '',
+})
 
 async function updateOrganization(close) {
   const old = { ...props.organization }
@@ -138,7 +186,8 @@ watch(
     if (!value) return
     editMode.value = false
     nextTick(() => {
-      title.value.el.focus()
+      // TODO: Issue with FormControl
+      // title.value.el.focus()
       _organization.value = { ...props.organization }
       if (_organization.value.name) {
         editMode.value = true
