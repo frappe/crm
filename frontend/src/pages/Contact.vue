@@ -96,7 +96,7 @@
             </div>
             <div class="flex-1 overflow-hidden">
               <Dropdown
-                v-if="field.type === 'dropdown'"
+                v-if="field.type === 'dropdown' && field.options.length"
                 :options="field.options"
                 class="form-control show-dropdown-icon w-full flex-1"
               >
@@ -561,8 +561,6 @@ const details = computed(() => {
       name: 'email_id',
       options: contact.value?.email_ids?.map((email) => {
         return {
-          label: email.email_id,
-          value: email.email_id,
           component: h(DropdownItem, {
             value: email.email_id,
             selected: email.email_id === contact.value.email_id,
@@ -570,8 +568,13 @@ const details = computed(() => {
           }),
         }
       }),
-      create: () => {
-        new_field.value = { type: 'email', placeholder: 'Add email address' }
+      create: (value) => {
+        new_field.value = {
+          type: 'email',
+          fieldname: 'email',
+          value,
+          placeholder: 'Add email address',
+        }
         dialogOptions.value = {
           title: 'Add email',
           actions: [
@@ -591,8 +594,6 @@ const details = computed(() => {
       name: 'mobile_no',
       options: contact.value?.phone_nos?.map((phone) => {
         return {
-          label: phone.phone,
-          value: phone.phone,
           component: h(DropdownItem, {
             value: phone.phone,
             selected: phone.phone === contact.value.mobile_no,
@@ -600,8 +601,13 @@ const details = computed(() => {
           }),
         }
       }),
-      create: () => {
-        new_field.value = { type: 'phone', placeholder: 'Add mobile no.' }
+      create: (value) => {
+        new_field.value = {
+          type: 'phone',
+          fieldname: 'mobile_no',
+          value,
+          placeholder: 'Add mobile no.',
+        }
         dialogOptions.value = {
           title: 'Add mobile no.',
           actions: [
@@ -641,6 +647,10 @@ const new_field = ref({})
 const dialogOptions = ref({})
 
 function updateContact(fieldname, value) {
+  if (['mobile_no', 'email_id'].includes(fieldname)) {
+    details.value.find((d) => d.name === fieldname).create(value)
+    return
+  }
   createResource({
     url: 'frappe.client.set_value',
     params: {
@@ -698,6 +708,9 @@ async function createNew(field, close) {
       icon: 'check',
       iconClasses: 'text-green-600',
     })
+    if (!contact.value[new_field.value.fieldname]) {
+      setAsPrimary(new_field.value.fieldname, new_field.value.value)
+    }
   }
   close()
 }
