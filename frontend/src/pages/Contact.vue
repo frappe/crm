@@ -129,14 +129,13 @@
                   </Button>
                 </template>
               </Dropdown>
-              <FormControl
+              <Link
                 v-else-if="field.type === 'link'"
-                type="autocomplete"
-                :value="contact[field.name]"
-                :options="field.options"
-                @change="(e) => e && field.change(e)"
-                :placeholder="field.placeholder"
                 class="form-control"
+                :value="contact[field.name]"
+                :doctype="field.doctype"
+                :placeholder="field.placeholder"
+                @change="(e) => e && field.change(e)"
               />
               <FormControl
                 v-else
@@ -215,6 +214,7 @@
 </template>
 
 <script setup>
+import Link from '@/components/Controls/Link.vue'
 import {
   FormControl,
   FeatherIcon,
@@ -256,7 +256,7 @@ import { useRouter } from 'vue-router'
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
-const { getOrganization, getOrganizationOptions } = organizationsStore()
+const { getOrganization } = organizationsStore()
 
 const props = defineProps({
   contactId: {
@@ -530,21 +530,11 @@ const details = computed(() => {
       label: 'Salutation',
       type: 'link',
       name: 'salutation',
-      placeholder: 'Mr./Mrs./Ms.',
-      options: [
-        { label: 'Dr', value: 'Dr' },
-        { label: 'Mr', value: 'Mr' },
-        { label: 'Mrs', value: 'Mrs' },
-        { label: 'Ms', value: 'Ms' },
-        { label: 'Mx', value: 'Mx' },
-        { label: 'Prof', value: 'Prof' },
-        { label: 'Master', value: 'Master' },
-        { label: 'Madam', value: 'Madam' },
-        { label: 'Miss', value: 'Miss' },
-      ],
-      change: (data) => {
-        contact.value.salutation = data.value
-        updateContact('salutation', data.value)
+      placeholder: 'Mr./Mrs./Ms...',
+      doctype: 'Salutation',
+      change: (value) => {
+        contact.value.salutation = value
+        updateContact('salutation', value)
       },
     },
     {
@@ -626,10 +616,10 @@ const details = computed(() => {
       type: 'link',
       name: 'company_name',
       placeholder: 'Select organization',
-      options: getOrganizationOptions(),
-      change: (data) => {
-        contact.value.company_name = data.value
-        updateContact('company_name', data.value)
+      doctype: 'CRM Organization',
+      change: (value) => {
+        contact.value.company_name = value
+        updateContact('company_name', value)
       },
       link: (data) => {
         router.push({
