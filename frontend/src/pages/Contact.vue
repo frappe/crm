@@ -357,25 +357,12 @@ const leads = createListResource({
   auto: true,
 })
 
-const deals = createListResource({
-  type: 'list',
-  doctype: 'CRM Deal',
+const deals = createResource({
+  url: 'crm.api.contact.get_linked_deals',
   cache: ['deals', props.contactId],
-  fields: [
-    'name',
-    'organization',
-    'annual_revenue',
-    'status',
-    'email',
-    'mobile_no',
-    'deal_owner',
-    'modified',
-  ],
-  filters: {
-    email: contact.value?.email_id,
+  params: {
+    contact: props.contactId,
   },
-  orderBy: 'modified desc',
-  pageLength: 20,
   auto: true,
 })
 
