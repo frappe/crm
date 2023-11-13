@@ -181,12 +181,14 @@
           v-if="tab.label === 'Leads' && rows.length"
           :rows="rows"
           :columns="columns"
+          :options="{ selectable: false }"
         />
         <DealsListView
           class="mt-4"
           v-else-if="tab.label === 'Deals' && rows.length"
           :rows="rows"
           :columns="columns"
+          :options="{ selectable: false }"
         />
         <div
           v-if="!rows.length"
