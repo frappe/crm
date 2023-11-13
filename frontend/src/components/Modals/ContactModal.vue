@@ -9,14 +9,15 @@
           label: editMode ? 'Update' : 'Create',
           variant: 'solid',
           disabled: !dirty,
-          onClick: ({ close }) => editMode ? updateContact(close) : callInsertDoc(close),
+          onClick: ({ close }) =>
+            editMode ? updateContact(close) : callInsertDoc(close),
         },
       ],
     }"
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <Link 
+        <Link
           variant="outline"
           size="md"
           label="Salutation"
@@ -42,7 +43,7 @@
             v-model="_contact.last_name"
           />
         </div>
-        <Link 
+        <Link
           variant="outline"
           size="md"
           label="Organization"
@@ -121,6 +122,16 @@ async function callSetValue(values) {
 }
 
 async function callInsertDoc(close) {
+  if (_contact.value.email_id) {
+    _contact.value.email_ids = [{ email_id: _contact.value.email_id }]
+    delete _contact.value.email_id
+  }
+
+  if (_contact.value.mobile_no) {
+    _contact.value.phone_nos = [{ phone: _contact.value.mobile_no }]
+    delete _contact.value.mobile_no
+  }
+
   const doc = await call('frappe.client.insert', {
     doc: {
       doctype: 'Contact',
