@@ -31,13 +31,18 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'change'])
 
 const attrs = useAttrs()
 
+const valuePropPassed = computed(() => 'value' in attrs)
+
 const value = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val?.value),
+  get: () => (valuePropPassed.value ? attrs.value : props.modelValue),
+  set: (val) => {
+    debugger
+    return emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value)
+  }
 })
 
 const autocomplete = ref(null)
