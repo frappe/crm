@@ -209,37 +209,6 @@
                           </div>
                         </template>
                       </Autocomplete>
-                      <Dropdown
-                        v-else-if="field.type === 'dropdown'"
-                        :options="
-                          statusDropdownOptions(deal.data, 'deal', updateField)
-                        "
-                        class="w-full flex-1"
-                      >
-                        <template #default="{ open }">
-                          <Button
-                            :label="deal.data[field.name]"
-                            class="w-full justify-between"
-                          >
-                            <template #prefix>
-                              <IndicatorIcon
-                                :class="
-                                  dealStatuses[deal.data[field.name]].color
-                                "
-                              />
-                            </template>
-                            <template #default>{{
-                              deal.data[field.name]
-                            }}</template>
-                            <template #suffix>
-                              <FeatherIcon
-                                :name="open ? 'chevron-up' : 'chevron-down'"
-                                class="h-4 text-gray-600"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                      </Dropdown>
                       <FormControl
                         v-else-if="field.type === 'date'"
                         type="date"
@@ -307,28 +276,41 @@
                                 size="md"
                               />
                               {{ getContactByName(contact.name).full_name }}
-                            </div>
-                            <div class="flex gap-3">
-                              <FeatherIcon
-                                name="trash-2"
-                                class="h-4 w-4"
-                                @click="removeContact(contact.name)"
+                              <Badge
+                                v-if="contact.is_primary"
+                                class="ml-2"
+                                variant="outline"
+                                label="Primary"
+                                theme="green"
                               />
-                              <ExternalLinkIcon
-                                class="h-4 w-4"
+                            </div>
+                            <div class="flex items-center">
+                              <Dropdown :options="contactOptions(contact)">
+                                <Button variant="ghost">
+                                  <FeatherIcon
+                                    name="more-horizontal"
+                                    class="h-4 text-gray-600"
+                                  />
+                                </Button>
+                              </Dropdown>
+                              <Button
+                                variant="ghost"
                                 @click="
                                   router.push({
                                     name: 'Contact',
                                     params: { contactId: contact.name },
                                   })
                                 "
-                              />
-                              <FeatherIcon
-                                name="chevron-right"
-                                class="h-4 w-4 text-gray-900 transition-all duration-300 ease-in-out"
-                                :class="{ 'rotate-90': cOpened }"
-                                @click="cToggle()"
-                              />
+                              >
+                                <ExternalLinkIcon class="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" @click="cToggle()">
+                                <FeatherIcon
+                                  name="chevron-right"
+                                  class="h-4 w-4 text-gray-900 transition-all duration-300 ease-in-out"
+                                  :class="{ 'rotate-90': cOpened }"
+                                />
+                              </Button>
                             </div>
                           </div>
                           <transition
@@ -403,6 +385,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
+import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
@@ -430,8 +413,9 @@ import {
   Tabs,
   Breadcrumbs,
   call,
+  Badge,
 } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
@@ -588,6 +572,7 @@ const detailSections = computed(() => {
       contacts: deal.data.contacts.map((contact) => {
         return {
           name: contact.contact,
+          is_primary: contact.is_primary,
           opened: false,
         }
       }),
@@ -598,10 +583,30 @@ const detailSections = computed(() => {
 const showContactModal = ref(false)
 const _contact = ref({})
 
-async function addContact(value) {
+function contactOptions(contact) {
+  let options = [
+    {
+      label: 'Delete',
+      icon: 'trash-2',
+      onClick: () => removeContact(contact.name),
+    },
+  ]
+
+  if (!contact.is_primary) {
+    options.push({
+      label: 'Set as primary contact',
+      icon: h(SuccessIcon, { class: 'h-4 w-4' }),
+      onClick: () => setPrimaryContact(contact.name),
+    })
+  }
+
+  return options
+}
+
+async function addContact(contact) {
   let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.add_contact', {
     deal: props.dealId,
-    contact: value,
+    contact,
   })
   if (d) {
     await contacts.reload()
@@ -614,16 +619,32 @@ async function addContact(value) {
   }
 }
 
-async function removeContact(value) {
+async function removeContact(contact) {
   let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
     deal: props.dealId,
-    contact: value,
+    contact,
   })
   if (d) {
     deal.reload()
     contacts.reload()
     createToast({
       title: 'Contact removed',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function setPrimaryContact(contact) {
+  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
+    deal: props.dealId,
+    contact,
+  })
+  if (d) {
+    await contacts.reload()
+    deal.reload()
+    createToast({
+      title: 'Primary contact set',
       icon: 'check',
       iconClasses: 'text-green-600',
     })

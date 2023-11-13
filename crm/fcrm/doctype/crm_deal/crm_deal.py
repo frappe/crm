@@ -76,3 +76,13 @@ def remove_contact(deal, contact):
 	deal.contacts = [d for d in deal.contacts if d.contact != contact]
 	deal.save()
 	return True
+
+@frappe.whitelist()
+def set_primary_contact(deal, contact):
+	if not frappe.has_permission("CRM Deal", "write", deal):
+		frappe.throw(_("Not allowed to set primary contact for Deal"), frappe.PermissionError)
+
+	deal = frappe.get_cached_doc("CRM Deal", deal)
+	deal.set_primary_contact(contact)
+	deal.save()
+	return True

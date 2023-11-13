@@ -22,7 +22,7 @@ def get_deal(name):
 	deal["contacts"] = frappe.get_all(
 		"CRM Contacts",
 		filters={"parenttype": "CRM Deal", "parent": deal.name},
-		fields=["contact"],
+		fields=["contact", "is_primary"],
 	)
 
 	return deal
