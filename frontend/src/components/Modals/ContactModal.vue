@@ -41,21 +41,12 @@
             v-model="_contact.last_name"
           />
         </div>
-        <FormControl
-          type="autocomplete"
+        <Link 
           variant="outline"
           size="md"
-          label="Organisation"
-          :value="_contact.company_name"
-          :options="
-            organizations.data.map((d) => {
-              return {
-                label: d.name,
-                value: d.name,
-              }
-            })
-          "
-          @change="(e) => (_contact.company_name = e.value)"
+          label="Organization"
+          v-model="_contact.company_name"
+          doctype="CRM Organization"
           placeholder="Select organization"
         />
         <div class="flex gap-4">
@@ -82,6 +73,7 @@
 </template>
 
 <script setup>
+import Link from '@/components/Controls/Link.vue'
 import { FormControl, Dialog, call } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
