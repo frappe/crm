@@ -16,7 +16,7 @@
 <script setup>
 import { call } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { defineModel, useAttrs, computed } from 'vue'
+import { useAttrs, computed } from 'vue'
 import { computedAsync } from '@vueuse/core'
 
 const props = defineProps({
@@ -24,10 +24,20 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  modelValue: {
+    type: String,
+    default: '',
+  },
 })
 
-const value = defineModel()
+const emit = defineEmits(['update:modelValue'])
+
 const attrs = useAttrs()
+
+const value = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val?.value),
+})
 
 const options = computedAsync(async () => {
   let options = await call('frappe.desk.search.search_link', {
