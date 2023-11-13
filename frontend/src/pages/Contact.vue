@@ -573,7 +573,6 @@ const details = computed(() => {
       create: (value) => {
         new_field.value = {
           type: 'email',
-          fieldname: 'email',
           value,
           placeholder: 'Add email address',
         }
@@ -606,7 +605,6 @@ const details = computed(() => {
       create: (value) => {
         new_field.value = {
           type: 'phone',
-          fieldname: 'mobile_no',
           value,
           placeholder: 'Add mobile no.',
         }
@@ -710,9 +708,6 @@ async function createNew(field, close) {
       icon: 'check',
       iconClasses: 'text-green-600',
     })
-    if (!contact.value[new_field.value.fieldname]) {
-      setAsPrimary(new_field.value.fieldname, new_field.value.value)
-    }
   }
   close()
 }
