@@ -61,25 +61,30 @@
             <span class="">{{ website(organization.website) }}</span>
           </div>
           <span
-            v-if="organization.email_id"
+            v-if="organization.industry && organization.website"
             class="text-3xl leading-[0] text-gray-600"
-            >&middot;</span
           >
-          <div v-if="organization.email_id" class="flex items-center gap-1.5">
-            <EmailIcon class="h-4 w-4" />
-            <span class="">{{ organization.email_id }}</span>
+            &middot;
+          </span>
+          <div v-if="organization.industry" class="flex items-center gap-1.5">
+            <FeatherIcon name="briefcase" class="h-4 w-4" />
+            <span class="">{{ organization.industry }}</span>
           </div>
           <span
             v-if="
-              (organization.name || organization.email_id) &&
-              organization.mobile_no
+              (organization.website || organization.industry) &&
+              organization.annual_revenue
             "
             class="text-3xl leading-[0] text-gray-600"
-            >&middot;</span
           >
-          <div v-if="organization.mobile_no" class="flex items-center gap-1.5">
-            <PhoneIcon class="h-4 w-4" />
-            <span class="">{{ organization.mobile_no }}</span>
+            &middot;
+          </span>
+          <div
+            v-if="organization.annual_revenue"
+            class="flex items-center gap-1.5"
+          >
+            <FeatherIcon name="dollar-sign" class="h-4 w-4" />
+            <span class="">{{ organization.annual_revenue }}</span>
           </div>
         </div>
         <div class="mt-1 flex gap-2">
