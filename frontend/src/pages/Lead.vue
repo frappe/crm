@@ -205,25 +205,8 @@
                         :doctype="field.doctype"
                         :placeholder="field.placeholder"
                         @change="(e) => field.change(e)"
-                      >
-                        <template
-                          v-if="field.create"
-                          #footer="{ value, close }"
-                        >
-                          <div>
-                            <Button
-                              variant="ghost"
-                              class="w-full !justify-start"
-                              label="Create one"
-                              @click="field.create(value, close)"
-                            >
-                              <template #prefix>
-                                <FeatherIcon name="plus" class="h-4" />
-                              </template>
-                            </Button>
-                          </div>
-                        </template>
-                      </Link>
+                        :onCreate="field.create"
+                      />
                       <FormControl
                         v-else-if="field.type === 'user'"
                         type="autocomplete"
