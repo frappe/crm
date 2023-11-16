@@ -78,7 +78,6 @@ export function statusDropdownOptions(data, doctype, action) {
       label: statuses[status].label,
       icon: () => h(IndicatorIcon, { class: statuses[status].color }),
       onClick: () => {
-        data.status = statuses[status].label
         action && action('status', statuses[status].label)
       },
     })

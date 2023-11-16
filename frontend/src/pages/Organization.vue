@@ -61,25 +61,30 @@
             <span class="">{{ website(organization.website) }}</span>
           </div>
           <span
-            v-if="organization.email_id"
+            v-if="organization.industry && organization.website"
             class="text-3xl leading-[0] text-gray-600"
-            >&middot;</span
           >
-          <div v-if="organization.email_id" class="flex items-center gap-1.5">
-            <EmailIcon class="h-4 w-4" />
-            <span class="">{{ organization.email_id }}</span>
+            &middot;
+          </span>
+          <div v-if="organization.industry" class="flex items-center gap-1.5">
+            <FeatherIcon name="briefcase" class="h-4 w-4" />
+            <span class="">{{ organization.industry }}</span>
           </div>
           <span
             v-if="
-              (organization.name || organization.email_id) &&
-              organization.mobile_no
+              (organization.website || organization.industry) &&
+              organization.annual_revenue
             "
             class="text-3xl leading-[0] text-gray-600"
-            >&middot;</span
           >
-          <div v-if="organization.mobile_no" class="flex items-center gap-1.5">
-            <PhoneIcon class="h-4 w-4" />
-            <span class="">{{ organization.mobile_no }}</span>
+            &middot;
+          </span>
+          <div
+            v-if="organization.annual_revenue"
+            class="flex items-center gap-1.5"
+          >
+            <FeatherIcon name="dollar-sign" class="h-4 w-4" />
+            <span class="">{{ organization.annual_revenue }}</span>
           </div>
         </div>
         <div class="mt-1 flex gap-2">
@@ -137,18 +142,21 @@
             v-if="tab.label === 'Leads' && rows.length"
             :rows="rows"
             :columns="columns"
+            :options="{ selectable: false }"
           />
           <DealsListView
             class="mt-4"
             v-if="tab.label === 'Deals' && rows.length"
             :rows="rows"
             :columns="columns"
+            :options="{ selectable: false }"
           />
           <ContactsListView
             class="mt-4"
             v-if="tab.label === 'Contacts' && rows.length"
             :rows="rows"
             :columns="columns"
+            :options="{ selectable: false }"
           />
           <div
             v-if="!rows.length"
@@ -307,7 +315,7 @@ const leads = createListResource({
 
 const deals = createListResource({
   type: 'list',
-  doctype: 'CRM Lead',
+  doctype: 'CRM Deal',
   cache: ['deals', props.organization.name],
   fields: [
     'name',
@@ -316,12 +324,11 @@ const deals = createListResource({
     'status',
     'email',
     'mobile_no',
-    'lead_owner',
+    'deal_owner',
     'modified',
   ],
   filters: {
     organization: props.organization.name,
-    converted: 1,
   },
   orderBy: 'modified desc',
   pageLength: 20,
@@ -415,9 +422,9 @@ function getDealRowObject(deal) {
     },
     email: deal.email,
     mobile_no: deal.mobile_no,
-    lead_owner: {
-      label: deal.lead_owner && getUser(deal.lead_owner).full_name,
-      ...(deal.lead_owner && getUser(deal.lead_owner)),
+    deal_owner: {
+      label: deal.deal_owner && getUser(deal.deal_owner).full_name,
+      ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
     modified: {
       label: dateFormat(deal.modified, dateTooltipFormat),
@@ -512,8 +519,8 @@ const dealColumns = [
     width: '11rem',
   },
   {
-    label: 'Lead owner',
-    key: 'lead_owner',
+    label: 'Deal owner',
+    key: 'deal_owner',
     width: '10rem',
   },
   {

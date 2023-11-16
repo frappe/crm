@@ -1,9 +1,5 @@
-import json
-
 import frappe
 from frappe import _
-from frappe.desk.form.load import get_docinfo
-from crm.fcrm.doctype.crm_lead.api import get_activities as get_lead_activities
 
 
 @frappe.whitelist()
@@ -21,5 +17,12 @@ def get_deal(name):
 	if not len(deal):
 		frappe.throw(_("Deal not found"), frappe.DoesNotExistError)
 	deal = deal.pop()
+
+
+	deal["contacts"] = frappe.get_all(
+		"CRM Contacts",
+		filters={"parenttype": "CRM Deal", "parent": deal.name},
+		fields=["contact", "is_primary"],
+	)
 
 	return deal

@@ -14,9 +14,7 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
-		if not self.is_new():
-			self.validate_contact()
-	
+
 	def set_full_name(self):
 		if self.first_name:
 			self.lead_name = " ".join(
@@ -37,7 +35,7 @@ class CRMLead(Document):
 
 	def set_title(self):
 		self.title = self.organization or self.lead_name
-	
+
 	def validate_email(self):
 		if self.email:
 			if not self.flags.ignore_email_validation:
@@ -48,57 +46,14 @@ class CRMLead(Document):
 
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
-	
-	def validate_contact(self):
-		link = frappe.db.exists("Dynamic Link", {"link_doctype": "CRM Lead", "link_name": self.name})
 
-		if link:
-			for field in ["first_name", "last_name", "email", "mobile_no", "phone", "salutation", "image"]:
-				if self.has_value_changed(field):
-					contact = frappe.db.get_value("Dynamic Link", link, "parent")
-					contact_doc = frappe.get_doc("Contact", contact)
-					contact_doc.update({
-						"first_name": self.first_name or self.lead_name,
-						"last_name": self.last_name,
-						"salutation": self.salutation,
-						"image": self.image or "",
-					})
-					if self.has_value_changed("email"):
-						contact_doc.email_ids = []
-						contact_doc.append("email_ids", {"email_id": self.email, "is_primary": 1})
-
-					if self.has_value_changed("phone"):
-						contact_doc.append("phone_nos", {"phone": self.phone, "is_primary_phone": 1})
-
-					if self.has_value_changed("mobile_no"):
-						contact_doc.phone_nos = []
-						contact_doc.append("phone_nos", {"phone": self.mobile_no, "is_primary_mobile_no": 1})
-
-					contact_doc.save()
-					break
-		else:
-			self.contact_doc = self.create_contact()
-			self.link_to_contact()
-
-	def before_insert(self):
-		self.contact_doc = None
-		self.contact_doc = self.create_contact()
-	
-	def after_insert(self):
-		self.link_to_contact()
-	
-	def link_to_contact(self):
-		# update contact links
-		if self.contact_doc:
-			self.contact_doc.append(
-				"links", {"link_doctype": "CRM Lead", "link_name": self.name, "link_title": self.lead_name}
-			)
-			self.contact_doc.save()
-	
 	def create_contact(self):
 		if not self.lead_name:
 			self.set_full_name()
 			self.set_lead_name()
+
+		if self.contact_exists():
+			return
 
 		contact = frappe.new_doc("Contact")
 		contact.update(
@@ -125,7 +80,40 @@ class CRMLead(Document):
 		contact.insert(ignore_permissions=True)
 		contact.reload()  # load changes by hooks on contact
 
-		return contact
+		return contact.name
+
+	def contact_exists(self):
+		email_exist = frappe.db.exists("Contact Email", {"email_id": self.email})
+		phone_exist = frappe.db.exists("Contact Phone", {"phone": self.phone})
+		mobile_exist = frappe.db.exists("Contact Phone", {"phone": self.mobile_no})
+
+		if email_exist or phone_exist or mobile_exist:
+
+			text = "Email" if email_exist else "Phone" if phone_exist else "Mobile No"
+			data = self.email if email_exist else self.phone if phone_exist else self.mobile_no
+
+			value = "{0}: {1}".format(text, data)
+
+			frappe.throw(
+				_("Contact already exists with {0}").format(value),
+				title=_("Contact Already Exists"),
+			)
+			return True
+
+		return False
+
+	def create_deal(self, contact):
+		deal = frappe.new_doc("CRM Deal")
+		deal.update(
+			{
+				"lead": self.name,
+				"organization": self.organization,
+				"deal_owner": self.lead_owner,
+				"contacts": [{"contact": contact}],
+			}
+		)
+		deal.insert(ignore_permissions=True)
+		return deal.name
 
 	@staticmethod
 	def sort_options():
@@ -141,3 +129,16 @@ class CRMLead(Document):
 			{ "label": 'Email', "value": 'email' },
 			{ "label": 'Mobile no', "value": 'mobile_no' },
 		]
+
+@frappe.whitelist()
+def convert_to_deal(lead):
+	if not frappe.has_permission("CRM Lead", "write", lead):
+		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
+
+	lead = frappe.get_cached_doc("CRM Lead", lead)
+	lead.status = "Qualified"
+	lead.converted = 1
+	contact = lead.create_contact()
+	deal = lead.create_deal(contact)
+	lead.save()
+	return deal

@@ -95,22 +95,47 @@
               {{ field.label }}
             </div>
             <div class="flex-1 overflow-hidden">
-              <FormControl
-                v-if="field.type === 'email'"
-                type="email"
-                class="form-control"
-                :value="contact[field.name]"
-                @change.stop="updateContact(field.name, $event.target.value)"
-                :debounce="500"
-              />
-              <FormControl
-                v-else-if="field.type === 'link'"
-                type="autocomplete"
-                :value="contact[field.name]"
+              <Dropdown
+                v-if="field.type === 'dropdown' && field.options.length"
                 :options="field.options"
-                @change="(e) => field.change(e)"
-                :placeholder="field.placeholder"
+                class="form-control show-dropdown-icon w-full flex-1"
+              >
+                <template #default="{ open }">
+                  <div
+                    class="dropdown-button flex w-full items-center justify-between gap-2"
+                  >
+                    <Button
+                      :label="contact[field.name]"
+                      class="w-full justify-between truncate"
+                    >
+                      <div class="truncate">{{ contact[field.name] }}</div>
+                    </Button>
+                    <FeatherIcon
+                      :name="open ? 'chevron-up' : 'chevron-down'"
+                      class="h-4 text-gray-600"
+                    />
+                  </div>
+                </template>
+                <template #footer>
+                  <Button
+                    variant="ghost"
+                    class="w-full !justify-start"
+                    label="Create one"
+                    @click="field.create()"
+                  >
+                    <template #prefix>
+                      <FeatherIcon name="plus" class="h-4" />
+                    </template>
+                  </Button>
+                </template>
+              </Dropdown>
+              <Link
+                v-else-if="field.type === 'link'"
                 class="form-control"
+                :value="contact[field.name]"
+                :doctype="field.doctype"
+                :placeholder="field.placeholder"
+                @change="(e) => field.change(e)"
               />
               <FormControl
                 v-else
@@ -155,12 +180,14 @@
           v-if="tab.label === 'Leads' && rows.length"
           :rows="rows"
           :columns="columns"
+          :options="{ selectable: false }"
         />
         <DealsListView
           class="mt-4"
-          v-if="tab.label === 'Deals' && rows.length"
+          v-else-if="tab.label === 'Deals' && rows.length"
           :rows="rows"
           :columns="columns"
+          :options="{ selectable: false }"
         />
         <div
           v-if="!rows.length"
@@ -174,28 +201,41 @@
       </template>
     </Tabs>
   </div>
+  <Dialog v-model="show" :options="dialogOptions">
+    <template #body-content>
+      <FormControl
+        :type="new_field.type"
+        variant="outline"
+        v-model="new_field.value"
+        :placeholder="new_field.placeholder"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
+import Link from '@/components/Controls/Link.vue'
 import {
   FormControl,
   FeatherIcon,
   Breadcrumbs,
+  Dialog,
   Avatar,
   FileUploader,
   ErrorMessage,
-  Dropdown,
   Tooltip,
   Tabs,
   call,
   createResource,
   createListResource,
 } from 'frappe-ui'
+import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import DropdownItem from '@/components/DropdownItem.vue'
 import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
@@ -212,10 +252,11 @@ import { usersStore } from '@/stores/users.js'
 import { contactsStore } from '@/stores/contacts.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { ref, computed, h } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
-const { getOrganization, getOrganizationOptions } = organizationsStore()
+const { getOrganization } = organizationsStore()
 
 const props = defineProps({
   contactId: {
@@ -223,6 +264,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const router = useRouter()
 
 const contact = computed(() => getContactByName(props.contactId))
 
@@ -268,6 +311,7 @@ async function deleteContact() {
           })
           contacts.reload()
           close()
+          router.push({ name: 'Contacts' })
         },
       },
     ],
@@ -305,7 +349,7 @@ const leads = createListResource({
     'modified',
   ],
   filters: {
-    email: contact.value.email_id,
+    email: contact.value?.email_id,
     converted: 0,
   },
   orderBy: 'modified desc',
@@ -313,26 +357,12 @@ const leads = createListResource({
   auto: true,
 })
 
-const deals = createListResource({
-  type: 'list',
-  doctype: 'CRM Lead',
+const deals = createResource({
+  url: 'crm.api.contact.get_linked_deals',
   cache: ['deals', props.contactId],
-  fields: [
-    'name',
-    'organization',
-    'annual_revenue',
-    'status',
-    'email',
-    'mobile_no',
-    'lead_owner',
-    'modified',
-  ],
-  filters: {
-    email: contact.value.email_id,
-    converted: 1,
+  params: {
+    contact: props.contactId,
   },
-  orderBy: 'modified desc',
-  pageLength: 20,
   auto: true,
 })
 
@@ -394,9 +424,9 @@ function getDealRowObject(deal) {
     },
     email: deal.email,
     mobile_no: deal.mobile_no,
-    lead_owner: {
-      label: deal.lead_owner && getUser(deal.lead_owner).full_name,
-      ...(deal.lead_owner && getUser(deal.lead_owner)),
+    deal_owner: {
+      label: deal.deal_owner && getUser(deal.deal_owner).full_name,
+      ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
     modified: {
       label: dateFormat(deal.modified, dateTooltipFormat),
@@ -470,8 +500,8 @@ const dealColumns = [
     width: '11rem',
   },
   {
-    label: 'Lead owner',
-    key: 'lead_owner',
+    label: 'Deal owner',
+    key: 'deal_owner',
     width: '10rem',
   },
   {
@@ -487,21 +517,11 @@ const details = computed(() => {
       label: 'Salutation',
       type: 'link',
       name: 'salutation',
-      placeholder: 'Mr./Mrs./Ms.',
-      options: [
-        { label: 'Dr', value: 'Dr' },
-        { label: 'Mr', value: 'Mr' },
-        { label: 'Mrs', value: 'Mrs' },
-        { label: 'Ms', value: 'Ms' },
-        { label: 'Mx', value: 'Mx' },
-        { label: 'Prof', value: 'Prof' },
-        { label: 'Master', value: 'Master' },
-        { label: 'Madam', value: 'Madam' },
-        { label: 'Miss', value: 'Miss' },
-      ],
-      change: (data) => {
-        contact.value.salutation = data.value
-        updateContact('salutation', data.value)
+      placeholder: 'Mr./Mrs./Ms...',
+      doctype: 'Salutation',
+      change: (value) => {
+        contact.value.salutation = value
+        updateContact('salutation', value)
       },
     },
     {
@@ -516,35 +536,98 @@ const details = computed(() => {
     },
     {
       label: 'Email',
-      type: 'email',
-      name: 'email',
+      type: 'dropdown',
+      name: 'email_id',
+      options: contact.value?.email_ids?.map((email) => {
+        return {
+          component: h(DropdownItem, {
+            value: email.email_id,
+            selected: email.email_id === contact.value.email_id,
+            onClick: () => setAsPrimary('email', email.email_id),
+          }),
+        }
+      }),
+      create: (value) => {
+        new_field.value = {
+          type: 'email',
+          value,
+          placeholder: 'Add email address',
+        }
+        dialogOptions.value = {
+          title: 'Add email',
+          actions: [
+            {
+              label: 'Add',
+              variant: 'solid',
+              onClick: ({ close }) => createNew('email', close),
+            },
+          ],
+        }
+        show.value = true
+      },
     },
     {
       label: 'Mobile no.',
-      type: 'phone',
+      type: 'dropdown',
       name: 'mobile_no',
+      options: contact.value?.phone_nos?.map((phone) => {
+        return {
+          component: h(DropdownItem, {
+            value: phone.phone,
+            selected: phone.phone === contact.value.mobile_no,
+            onClick: () => setAsPrimary('mobile_no', phone.phone),
+          }),
+        }
+      }),
+      create: (value) => {
+        new_field.value = {
+          type: 'phone',
+          value,
+          placeholder: 'Add mobile no.',
+        }
+        dialogOptions.value = {
+          title: 'Add mobile no.',
+          actions: [
+            {
+              label: 'Add',
+              variant: 'solid',
+              onClick: ({ close }) => createNew('phone', close),
+            },
+          ],
+        }
+        show.value = true
+      },
     },
     {
       label: 'Organization',
       type: 'link',
       name: 'company_name',
       placeholder: 'Select organization',
-      options: getOrganizationOptions(),
-      change: (data) => {
-        contact.value.company_name = data.value
-        updateContact('company_name', data.value)
+      doctype: 'CRM Organization',
+      change: (value) => {
+        contact.value.company_name = value
+        updateContact('company_name', value)
       },
       link: (data) => {
         router.push({
           name: 'Organization',
-          params: { organizationId: data.value },
+          params: { organizationId: data },
         })
       },
     },
   ]
 })
 
+const show = ref(false)
+const new_field = ref({})
+
+const dialogOptions = ref({})
+
 function updateContact(fieldname, value) {
+  if (['mobile_no', 'email_id'].includes(fieldname)) {
+    details.value.find((d) => d.name === fieldname).create(value)
+    return
+  }
   createResource({
     url: 'frappe.client.set_value',
     params: {
@@ -572,6 +655,39 @@ function updateContact(fieldname, value) {
     },
   })
 }
+
+async function setAsPrimary(field, value) {
+  let d = await call('crm.api.contact.set_as_primary', {
+    contact: props.contactId,
+    field,
+    value,
+  })
+  if (d) {
+    contacts.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function createNew(field, close) {
+  let d = await call('crm.api.contact.create_new', {
+    contact: props.contactId,
+    field,
+    value: new_field.value.value,
+  })
+  if (d) {
+    contacts.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+  close()
+}
 </script>
 
 <style scoped>
@@ -595,5 +711,15 @@ function updateContact(fieldname, value) {
 :deep(.form-control button svg) {
   color: white;
   width: 0;
+}
+
+:deep(:has(> .dropdown-button)) {
+  width: 100%;
+}
+
+:deep(.dropdown-button > button > span) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

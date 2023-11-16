@@ -18,7 +18,9 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </FormControl>
-      <Dropdown :options="statusDropdownOptions(lead.data, 'lead', updateLead)">
+      <Dropdown
+        :options="statusDropdownOptions(lead.data, 'lead', updateField)"
+      >
         <template #default="{ open }">
           <Button :label="lead.data.status">
             <template #prefix>
@@ -32,11 +34,7 @@
           </Button>
         </template>
       </Dropdown>
-      <Button
-        label="Convert to deal"
-        variant="solid"
-        @click="convertToDeal()"
-      />
+      <Button label="Convert to deal" variant="solid" @click="convertToDeal" />
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
@@ -54,7 +52,10 @@
       >
         About this lead
       </div>
-      <FileUploader @success="changeLeadImage" :validateFile="validateFile">
+      <FileUploader
+        @success="(file) => updateField('image', file.file_url)"
+        :validateFile="validateFile"
+      >
         <template #default="{ openFileSelector, error }">
           <div class="flex items-center justify-start gap-5 p-5">
             <div class="group relative h-[88px] w-[88px]">
@@ -80,7 +81,7 @@
                           {
                             icon: 'trash-2',
                             label: 'Remove image',
-                            onClick: () => changeLeadImage(''),
+                            onClick: () => updateField('image', ''),
                           },
                         ],
                       }
@@ -197,29 +198,15 @@
                         "
                         :debounce="500"
                       />
-                      <Autocomplete
+                      <Link
                         v-else-if="field.type === 'link'"
-                        :value="lead.data[field.name]"
-                        :options="field.options"
-                        @change="(e) => field.change(e)"
-                        :placeholder="field.placeholder"
                         class="form-control"
-                      >
-                        <template #footer="{ value, close }">
-                          <div>
-                            <Button
-                              variant="ghost"
-                              class="w-full !justify-start"
-                              label="Create one"
-                              @click="field.create(value, close)"
-                            >
-                              <template #prefix>
-                                <FeatherIcon name="plus" class="h-4" />
-                              </template>
-                            </Button>
-                          </div>
-                        </template>
-                      </Autocomplete>
+                        :value="lead.data[field.name]"
+                        :doctype="field.doctype"
+                        :placeholder="field.placeholder"
+                        @change="(e) => field.change(e)"
+                        :onCreate="field.create"
+                      />
                       <FormControl
                         v-else-if="field.type === 'user'"
                         type="autocomplete"
@@ -254,37 +241,6 @@
                           />
                         </template>
                       </FormControl>
-                      <Dropdown
-                        v-else-if="field.type === 'dropdown'"
-                        :options="
-                          statusDropdownOptions(lead.data, 'lead', updateLead)
-                        "
-                        class="w-full flex-1"
-                      >
-                        <template #default="{ open }">
-                          <Button
-                            :label="lead.data[field.name]"
-                            class="w-full justify-between"
-                          >
-                            <template #prefix>
-                              <IndicatorIcon
-                                :class="
-                                  leadStatuses[lead.data[field.name]].color
-                                "
-                              />
-                            </template>
-                            <template #default>{{
-                              lead.data[field.name]
-                            }}</template>
-                            <template #suffix>
-                              <FeatherIcon
-                                :name="open ? 'chevron-up' : 'chevron-down'"
-                                class="h-4 text-gray-600"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                      </Dropdown>
                       <Tooltip
                         :text="field.tooltip"
                         class="flex h-7 cursor-pointer items-center px-2 py-1"
@@ -326,7 +282,10 @@
     :organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organiation', doc.name),
+      afterInsert: (doc) =>
+        updateField('organization', doc.name, () => {
+          organizations.reload()
+        }),
     }"
   />
 </template>
@@ -345,7 +304,7 @@ import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import Link from '@/components/Controls/Link.vue'
 import {
   leadStatuses,
   statusDropdownOptions,
@@ -374,7 +333,7 @@ import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
 const { contacts } = contactsStore()
-const { getOrganization, getOrganizationOptions } = organizationsStore()
+const { organizations, getOrganization } = organizationsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -395,7 +354,9 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const _organization = ref({})
 
-function updateLead(fieldname, value) {
+function updateLead(fieldname, value, callback) {
+  value = Array.isArray(fieldname) ? '' : value
+
   createResource({
     url: 'frappe.client.set_value',
     params: {
@@ -407,13 +368,13 @@ function updateLead(fieldname, value) {
     auto: true,
     onSuccess: () => {
       lead.reload()
-      contacts.reload()
       reload.value = true
       createToast({
         title: 'Lead updated',
         icon: 'check',
         iconClasses: 'text-green-600',
       })
+      callback?.()
     },
     onError: (err) => {
       createToast({
@@ -459,11 +420,6 @@ const tabs = [
   },
 ]
 
-function changeLeadImage(file) {
-  lead.data.image = file.file_url
-  updateLead('image', file.file_url)
-}
-
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
   if (!['png', 'jpg', 'jpeg'].includes(extn)) {
@@ -482,25 +438,32 @@ const detailSections = computed(() => {
           type: 'link',
           name: 'organization',
           placeholder: 'Select organization',
-          options: getOrganizationOptions(),
-          change: (data) => data && updateField('organization', data.value),
+          doctype: 'CRM Organization',
+          change: (data) => data && updateField('organization', data),
           create: (value, close) => {
             _organization.value.organization_name = value
             showOrganizationModal.value = true
             close()
           },
-          link: () => {
+          link: () =>
             router.push({
               name: 'Organization',
-              params: { organizationId: organization.value?.name },
-            })
-          },
+              params: { organizationId: lead.data.organization },
+            }),
         },
         {
           label: 'Website',
           type: 'read_only',
           name: 'website',
           value: organization.value?.website,
+          tooltip:
+            'It is a read only field, value is fetched from organization',
+        },
+        {
+          label: 'Industry',
+          type: 'read_only',
+          name: 'industry',
+          value: organization.value?.industry,
           tooltip:
             'It is a read only field, value is fetched from organization',
         },
@@ -514,31 +477,8 @@ const detailSections = computed(() => {
           type: 'link',
           name: 'source',
           placeholder: 'Select source...',
-          options: [
-            { label: 'Advertisement', value: 'Advertisement' },
-            { label: 'Web', value: 'Web' },
-            { label: 'Others', value: 'Others' },
-          ],
-          change: (data) => {
-            lead.data.source = data.value
-            updateLead('source', data.value)
-          },
-        },
-        {
-          label: 'Industry',
-          type: 'link',
-          name: 'industry',
-          placeholder: 'Select industry...',
-          options: [
-            { label: 'Advertising', value: 'Advertising' },
-            { label: 'Agriculture', value: 'Agriculture' },
-            { label: 'Banking', value: 'Banking' },
-            { label: 'Others', value: 'Others' },
-          ],
-          change: (data) => {
-            lead.data.industry = data.value
-            updateLead('industry', data.value)
-          },
+          doctype: 'CRM Lead Source',
+          change: (data) => updateField('source', data),
         },
       ],
     },
@@ -550,22 +490,9 @@ const detailSections = computed(() => {
           label: 'Salutation',
           type: 'link',
           name: 'salutation',
-          placeholder: 'Mr./Mrs./Ms.',
-          options: [
-            { label: 'Dr', value: 'Dr' },
-            { label: 'Mr', value: 'Mr' },
-            { label: 'Mrs', value: 'Mrs' },
-            { label: 'Ms', value: 'Ms' },
-            { label: 'Mx', value: 'Mx' },
-            { label: 'Prof', value: 'Prof' },
-            { label: 'Master', value: 'Master' },
-            { label: 'Madam', value: 'Madam' },
-            { label: 'Miss', value: 'Miss' },
-          ],
-          change: (data) => {
-            lead.data.salutation = data.value
-            updateLead('salutation', data.value)
-          },
+          placeholder: 'Mr./Mrs./Ms...',
+          doctype: 'Salutation',
+          change: (data) => updateField('salutation', data),
         },
         {
           label: 'First name',
@@ -596,30 +523,21 @@ const organization = computed(() => {
   return getOrganization(lead.data.organization)
 })
 
-function convertToDeal() {
-  lead.data.status = 'Qualified'
-  lead.data.converted = 1
-  createDeal(lead.data)
-}
-
-async function createDeal(lead) {
-  let d = await call('frappe.client.insert', {
-    doc: {
-      doctype: 'CRM Deal',
-      organization: lead.organization,
-      email: lead.email,
-      mobile_no: lead.mobile_no,
-      lead: lead.name,
-    },
+async function convertToDeal() {
+  let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
+    lead: lead.data.name,
   })
-  if (d.name) {
-    router.push({ name: 'Deal', params: { dealId: d.name } })
+  if (deal) {
+    await contacts.reload()
+    router.push({ name: 'Deal', params: { dealId: deal } })
   }
 }
 
-function updateField(name, value) {
-  lead.data[name] = value
-  updateLead(name, value)
+function updateField(name, value, callback) {
+  updateLead(name, value, () => {
+    lead.data[name] = value
+    callback?.()
+  })
 }
 </script>
 

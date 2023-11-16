@@ -8,7 +8,7 @@
         type="autocomplete"
         :options="activeAgents"
         :value="getUser(deal.data.deal_owner).full_name"
-        @change="(option) => updateAssignedAgent(option.email)"
+        @change="(option) => updateField('deal_owner', option.email)"
         placeholder="Deal owner"
       >
         <template #prefix>
@@ -18,7 +18,9 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </FormControl>
-      <Dropdown :options="statusDropdownOptions(deal.data, 'deal', updateDeal)">
+      <Dropdown
+        :options="statusDropdownOptions(deal.data, 'deal', updateField)"
+      >
         <template #default="{ open }">
           <Button :label="deal.data.status">
             <template #prefix>
@@ -100,16 +102,47 @@
             :class="{ 'border-b': i !== detailSections.length - 1 }"
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
-              <div
-                class="flex max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
-                @click="toggle()"
-              >
-                <FeatherIcon
-                  name="chevron-right"
-                  class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
-                  :class="{ 'rotate-90': opened }"
-                />
-                {{ section.label }}
+              <div class="flex items-center justify-between">
+                <div
+                  class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
+                  @click="toggle()"
+                >
+                  <FeatherIcon
+                    name="chevron-right"
+                    class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+                    :class="{ 'rotate-90': opened }"
+                  />
+                  {{ section.label }}
+                </div>
+                <div v-if="section.contacts" class="pr-2">
+                  <Link
+                    value=""
+                    doctype="Contact"
+                    @change="(e) => addContact(e)"
+                    :onCreate="
+                      (value, close) => {
+                        _contact = {
+                          first_name: value,
+                          company_name: deal.data.organization,
+                        }
+                        showContactModal = true
+                        close()
+                      }
+                    "
+                  >
+                    <template #target="{ togglePopover }">
+                      <Button
+                        class="h-7 px-3"
+                        label="Add contact"
+                        @click="togglePopover()"
+                      >
+                        <template #prefix>
+                          <FeatherIcon name="plus" class="h-4" />
+                        </template>
+                      </Button>
+                    </template>
+                  </Link>
+                </div>
               </div>
               <transition
                 enter-active-class="duration-300 ease-in"
@@ -121,6 +154,7 @@
               >
                 <div v-if="opened" class="flex flex-col gap-1.5">
                   <div
+                    v-if="section.fields"
                     v-for="field in section.fields"
                     :key="field.label"
                     class="flex items-center gap-2 px-3 text-base leading-5 first:mt-3"
@@ -129,128 +163,18 @@
                       {{ field.label }}
                     </div>
                     <div class="flex-1 overflow-hidden">
-                      <FormControl
-                        v-if="field.type === 'select'"
-                        type="select"
-                        :options="field.options"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control cursor-pointer [&_select]:cursor-pointer"
-                      >
-                        <template #prefix>
-                          <IndicatorIcon
-                            :class="dealStatuses[deal.data[field.name]].color"
-                          />
-                        </template>
-                      </FormControl>
-                      <FormControl
-                        v-else-if="field.type === 'email'"
-                        type="email"
+                      <Link
+                        v-if="field.type === 'link'"
                         class="form-control"
                         :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'link'"
-                        type="autocomplete"
-                        :value="deal.data[field.name]"
-                        :options="field.options"
-                        @change="(e) => field.change(e)"
+                        :doctype="field.doctype"
                         :placeholder="field.placeholder"
-                        class="form-control"
+                        @change="(e) => field.change(e)"
+                        :onCreate="field.create"
                       />
-                      <FormControl
-                        v-else-if="field.type === 'user'"
-                        type="autocomplete"
-                        :options="activeAgents"
-                        :value="getUser(deal.data[field.name]).full_name"
-                        @change="(option) => updateAssignedAgent(option.email)"
-                        class="form-control"
-                        :placeholder="deal.placeholder"
-                      >
-                        <template #target="{ togglePopover }">
-                          <Button
-                            variant="ghost"
-                            @click="togglePopover()"
-                            :label="getUser(deal.data[field.name]).full_name"
-                            class="w-full !justify-start"
-                          >
-                            <template #prefix>
-                              <UserAvatar
-                                :user="deal.data[field.name]"
-                                size="sm"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                        <template #item-prefix="{ option }">
-                          <UserAvatar
-                            class="mr-2"
-                            :user="option.email"
-                            size="sm"
-                          />
-                        </template>
-                      </FormControl>
-                      <Dropdown
-                        v-else-if="field.type === 'dropdown'"
-                        :options="
-                          statusDropdownOptions(deal.data, 'deal', updateDeal)
-                        "
-                        class="w-full flex-1"
-                      >
-                        <template #default="{ open }">
-                          <Button
-                            :label="deal.data[field.name]"
-                            class="w-full justify-between"
-                          >
-                            <template #prefix>
-                              <IndicatorIcon
-                                :class="
-                                  dealStatuses[deal.data[field.name]].color
-                                "
-                              />
-                            </template>
-                            <template #default>{{
-                              deal.data[field.name]
-                            }}</template>
-                            <template #suffix>
-                              <FeatherIcon
-                                :name="open ? 'chevron-up' : 'chevron-down'"
-                                class="h-4 text-gray-600"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                      </Dropdown>
                       <FormControl
                         v-else-if="field.type === 'date'"
                         type="date"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'number'"
-                        type="number"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'tel'"
-                        type="tel"
                         :value="deal.data[field.name]"
                         @change.stop="
                           updateDeal(field.name, $event.target.value)
@@ -286,6 +210,110 @@
                       @click="field.link(deal.data[field.name])"
                     />
                   </div>
+                  <div v-else>
+                    <div
+                      v-if="section.contacts.length"
+                      v-for="(contact, i) in section.contacts"
+                      :key="contact.name"
+                    >
+                      <div
+                        class="px-2 pb-2.5"
+                        :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
+                      >
+                        <Toggler
+                          :is-opened="contact.opened"
+                          v-slot="{ opened: cOpened, toggle: cToggle }"
+                        >
+                          <div
+                            class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-gray-700"
+                          >
+                            <div
+                              class="flex h-7 items-center gap-2"
+                              @click="cToggle()"
+                            >
+                              <Avatar
+                                :label="
+                                  getContactByName(contact.name).full_name
+                                "
+                                :image="getContactByName(contact.name).image"
+                                size="md"
+                              />
+                              {{ getContactByName(contact.name).full_name }}
+                              <Badge
+                                v-if="contact.is_primary"
+                                class="ml-2"
+                                variant="outline"
+                                label="Primary"
+                                theme="green"
+                              />
+                            </div>
+                            <div class="flex items-center">
+                              <Dropdown :options="contactOptions(contact)">
+                                <Button variant="ghost">
+                                  <FeatherIcon
+                                    name="more-horizontal"
+                                    class="h-4 text-gray-600"
+                                  />
+                                </Button>
+                              </Dropdown>
+                              <Button
+                                variant="ghost"
+                                @click="
+                                  router.push({
+                                    name: 'Contact',
+                                    params: { contactId: contact.name },
+                                  })
+                                "
+                              >
+                                <ExternalLinkIcon class="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" @click="cToggle()">
+                                <FeatherIcon
+                                  name="chevron-right"
+                                  class="h-4 w-4 text-gray-900 transition-all duration-300 ease-in-out"
+                                  :class="{ 'rotate-90': cOpened }"
+                                />
+                              </Button>
+                            </div>
+                          </div>
+                          <transition
+                            enter-active-class="duration-300 ease-in"
+                            leave-active-class="duration-300 ease-[cubic-bezier(0, 1, 0.5, 1)]"
+                            enter-to-class="max-h-[200px] overflow-hidden"
+                            leave-from-class="max-h-[200px] overflow-hidden"
+                            enter-from-class="max-h-0 overflow-hidden"
+                            leave-to-class="max-h-0 overflow-hidden"
+                          >
+                            <div
+                              v-if="cOpened"
+                              class="flex flex-col gap-1.5 text-base text-gray-800"
+                            >
+                              <div
+                                class="flex items-center gap-3 pb-1.5 pl-1 pt-4"
+                              >
+                                <EmailIcon class="h-4 w-4" />
+                                {{ getContactByName(contact.name).email_id }}
+                              </div>
+                              <div class="flex items-center gap-3 p-1 py-1.5">
+                                <PhoneIcon class="h-4 w-4" />
+                                {{ getContactByName(contact.name).mobile_no }}
+                              </div>
+                            </div>
+                          </transition>
+                        </Toggler>
+                      </div>
+                      <div
+                        v-if="i != section.contacts.length - 1"
+                        class="mx-2 h-px border-t border-gray-200"
+                      />
+                    </div>
+                    <div
+                      v-else
+                      class="flex h-20 items-center justify-center text-base text-gray-600"
+                    >
+                      No contacts added
+                    </div>
+                  </div>
                 </div>
               </transition>
             </Toggler>
@@ -294,6 +322,25 @@
       </div>
     </div>
   </div>
+  <OrganizationModal
+    v-model="showOrganizationModal"
+    :organization="_organization"
+    :options="{
+      redirect: false,
+      afterInsert: (doc) =>
+        updateField('organization', doc.name, () => {
+          organizations.reload()
+        }),
+    }"
+  />
+  <ContactModal
+    v-model="showContactModal"
+    :contact="_contact"
+    :options="{
+      redirect: false,
+      afterInsert: (doc) => addContact(doc.name),
+    }"
+  />
 </template>
 <script setup>
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -304,10 +351,14 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
+import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
+import Link from '@/components/Controls/Link.vue'
 import {
   dealStatuses,
   statusDropdownOptions,
@@ -327,13 +378,15 @@ import {
   Avatar,
   Tabs,
   Breadcrumbs,
+  call,
+  Badge,
 } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
-const { contacts } = contactsStore()
-const { getOrganization, getOrganizationOptions } = organizationsStore()
+const { getContactByName, contacts } = contactsStore()
+const { organizations, getOrganization } = organizationsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -351,8 +404,12 @@ const deal = createResource({
 })
 
 const reload = ref(false)
+const showOrganizationModal = ref(false)
+const _organization = ref({})
 
-function updateDeal(fieldname, value) {
+function updateDeal(fieldname, value, callback) {
+  value = Array.isArray(fieldname) ? '' : value
+
   createResource({
     url: 'frappe.client.set_value',
     params: {
@@ -371,6 +428,7 @@ function updateDeal(fieldname, value) {
         icon: 'check',
         iconClasses: 'text-green-600',
       })
+      callback?.()
     },
     onError: (err) => {
       createToast({
@@ -427,10 +485,12 @@ const detailSections = computed(() => {
           type: 'link',
           name: 'organization',
           placeholder: 'Select organization',
-          options: getOrganizationOptions(),
-          change: (data) => {
-            deal.data.organization = data.value
-            updateDeal('organization', data.value)
+          doctype: 'CRM Organization',
+          change: (data) => updateField('organization', data),
+          create: (value, close) => {
+            _organization.value.organization_name = value
+            showOrganizationModal.value = true
+            close()
           },
           link: () => {
             router.push({
@@ -475,66 +535,102 @@ const detailSections = computed(() => {
     {
       label: 'Contacts',
       opened: true,
-      fields: [
-        {
-          label: 'Salutation',
-          type: 'link',
-          name: 'salutation',
-          placeholder: 'Mr./Mrs./Ms.',
-          options: [
-            { label: 'Dr', value: 'Dr' },
-            { label: 'Mr', value: 'Mr' },
-            { label: 'Mrs', value: 'Mrs' },
-            { label: 'Ms', value: 'Ms' },
-            { label: 'Mx', value: 'Mx' },
-            { label: 'Prof', value: 'Prof' },
-            { label: 'Master', value: 'Master' },
-            { label: 'Madam', value: 'Madam' },
-            { label: 'Miss', value: 'Miss' },
-          ],
-          change: (data) => {
-            deal.data.salutation = data.value
-            updateDeal('salutation', data.value)
-          },
-        },
-        {
-          label: 'First name',
-          type: 'data',
-          name: 'first_name',
-        },
-        {
-          label: 'Last name',
-          type: 'data',
-          name: 'last_name',
-        },
-        {
-          label: 'Email',
-          type: 'email',
-          name: 'email',
-        },
-        {
-          label: 'Mobile no.',
-          type: 'tel',
-          name: 'mobile_no',
-        },
-      ],
+      contacts: deal.data.contacts.map((contact) => {
+        return {
+          name: contact.contact,
+          is_primary: contact.is_primary,
+          opened: false,
+        }
+      }),
     },
   ]
 })
+
+const showContactModal = ref(false)
+const _contact = ref({})
+
+function contactOptions(contact) {
+  let options = [
+    {
+      label: 'Delete',
+      icon: 'trash-2',
+      onClick: () => removeContact(contact.name),
+    },
+  ]
+
+  if (!contact.is_primary) {
+    options.push({
+      label: 'Set as primary contact',
+      icon: h(SuccessIcon, { class: 'h-4 w-4' }),
+      onClick: () => setPrimaryContact(contact.name),
+    })
+  }
+
+  return options
+}
+
+async function addContact(contact) {
+  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.add_contact', {
+    deal: props.dealId,
+    contact,
+  })
+  if (d) {
+    await contacts.reload()
+    deal.reload()
+    createToast({
+      title: 'Contact added',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function removeContact(contact) {
+  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
+    deal: props.dealId,
+    contact,
+  })
+  if (d) {
+    deal.reload()
+    contacts.reload()
+    createToast({
+      title: 'Contact removed',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function setPrimaryContact(contact) {
+  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
+    deal: props.dealId,
+    contact,
+  })
+  if (d) {
+    await contacts.reload()
+    deal.reload()
+    createToast({
+      title: 'Primary contact set',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
 
 const organization = computed(() => {
   return getOrganization(deal.data.organization)
 })
 
-function updateAssignedAgent(email) {
-  deal.data.deal_owner = email
-  updateDeal('deal_owner', email)
+function updateField(name, value, callback) {
+  updateDeal(name, value, () => {
+    deal.data[name] = value
+    callback?.()
+  })
 }
 </script>
 
 <style scoped>
 :deep(.form-control input),
-:deep(.form-control select),
 :deep(.form-control button) {
   border-color: transparent;
   background: white;

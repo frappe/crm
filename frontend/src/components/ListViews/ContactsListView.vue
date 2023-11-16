@@ -4,6 +4,7 @@
     :rows="rows"
     :options="{
       getRowRoute: (row) => ({ name: 'Contact', params: { contactId: row.name } }),
+      selectable: options.selectable,
     }"
     row-key="name"
   >
@@ -69,6 +70,12 @@ const props = defineProps({
   columns: {
     type: Array,
     required: true,
+  },
+  options: {
+    type: Object,
+    default: () => ({
+      selectable: true,
+    }),
   },
 })
 </script>

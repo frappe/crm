@@ -5,8 +5,8 @@
         <slot name="target" v-bind="{ open: openPopover, togglePopover }">
           <div class="w-full">
             <button
-              class="flex h-7 w-full items-center justify-between gap-2 rounded bg-gray-100 px-2 py-1 transition-colors hover:bg-gray-200 focus:ring-2 focus:ring-gray-400"
-              :class="{ 'bg-gray-200': isComboboxOpen }"
+              class="flex w-full items-center justify-between focus:outline-none"
+              :class="inputClasses"
               @click="() => togglePopover()"
             >
               <div class="flex items-center">
@@ -32,8 +32,8 @@
       </template>
       <template #body="{ isOpen }">
         <div v-show="isOpen">
-          <div class="mt-1 rounded-lg bg-white text-base shadow-2xl">
-            <div class="relative p-1.5 pb-0">
+          <div class="mt-1 rounded-lg bg-white py-1 text-base shadow-2xl">
+            <div class="relative px-1.5 pt-0.5">
               <ComboboxInput
                 ref="search"
                 class="form-input w-full"
@@ -98,7 +98,7 @@
                 No results found
               </li>
             </ComboboxOptions>
-            <div v-if="slots.footer" class="border-t p-1.5">
+            <div v-if="slots.footer" class="border-t p-1.5 pb-0.5">
               <slot
                 name="footer"
                 v-bind="{ value: search?.el._value, close }"
@@ -121,7 +121,36 @@ import {
 import { Popover, Button, FeatherIcon } from 'frappe-ui'
 import { ref, computed, useAttrs, useSlots, watch, nextTick } from 'vue'
 
-const props = defineProps(['modelValue', 'options', 'placeholder'])
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: '',
+  },
+  options: {
+    type: Array,
+    default: () => [],
+  },
+  size: {
+    type: String,
+    default: 'md',
+  },
+  variant: {
+    type: String,
+    default: 'subtle',
+  },
+  placeholder: {
+    type: String,
+    default: '',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  filterable: {
+    type: Boolean,
+    default: true,
+  },
+})
 const emit = defineEmits(['update:modelValue', 'update:query', 'change'])
 
 const query = ref('')
@@ -163,7 +192,7 @@ const groups = computed(() => {
         key: i,
         group: group.group,
         hideLabel: group.hideLabel || false,
-        items: filterOptions(group.items),
+        items: props.filterable ? filterOptions(group.items) : group.items,
       }
     })
     .filter((group) => group.items.length > 0)
@@ -201,4 +230,46 @@ watch(showOptions, (val) => {
     })
   }
 })
+
+const textColor = computed(() => {
+  return props.disabled ? 'text-gray-600' : 'text-gray-800'
+})
+
+const inputClasses = computed(() => {
+  let sizeClasses = {
+    sm: 'text-base rounded h-7',
+    md: 'text-base rounded h-8',
+    lg: 'text-lg rounded-md h-10',
+    xl: 'text-xl rounded-md h-10',
+  }[props.size]
+
+  let paddingClasses = {
+    sm: 'py-1.5 px-2',
+    md: 'py-1.5 px-2.5',
+    lg: 'py-1.5 px-3',
+    xl: 'py-1.5 px-3',
+  }[props.size]
+
+  let variant = props.disabled ? 'disabled' : props.variant
+  let variantClasses = {
+    subtle:
+      'border border-gray-100 bg-gray-100 placeholder-gray-500 hover:border-gray-200 hover:bg-gray-200 focus:bg-white focus:border-gray-500 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400',
+    outline:
+      'border border-gray-300 bg-white placeholder-gray-500 hover:border-gray-400 hover:shadow-sm focus:bg-white focus:border-gray-500 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400',
+    disabled: [
+      'border bg-gray-50 placeholder-gray-400',
+      props.variant === 'outline' ? 'border-gray-300' : 'border-transparent',
+    ],
+  }[variant]
+
+  return [
+    sizeClasses,
+    paddingClasses,
+    variantClasses,
+    textColor.value,
+    'transition-colors w-full',
+  ]
+})
+
+defineExpose({ query })
 </script>
