@@ -357,7 +357,10 @@
     :organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organization', doc.name),
+      afterInsert: (doc) =>
+        updateField('organization', doc.name, () => {
+          organizations.reload()
+        }),
     }"
   />
   <ContactModal
@@ -413,7 +416,7 @@ import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
 const { getContactByName, contacts } = contactsStore()
-const { getOrganization, getOrganizationOptions } = organizationsStore()
+const { organizations, getOrganization } = organizationsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -648,9 +651,10 @@ const organization = computed(() => {
   return getOrganization(deal.data.organization)
 })
 
-function updateField(name, value) {
+function updateField(name, value, callback) {
   updateDeal(name, value, () => {
     deal.data[name] = value
+    callback?.()
   })
 }
 </script>

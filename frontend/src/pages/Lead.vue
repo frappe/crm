@@ -299,7 +299,10 @@
     :organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organization', doc.name),
+      afterInsert: (doc) =>
+        updateField('organization', doc.name, () => {
+          organizations.reload()
+        }),
     }"
   />
 </template>
@@ -347,7 +350,7 @@ import { useRouter } from 'vue-router'
 
 const { getUser } = usersStore()
 const { contacts } = contactsStore()
-const { getOrganization } = organizationsStore()
+const { organizations, getOrganization } = organizationsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -459,12 +462,11 @@ const detailSections = computed(() => {
             showOrganizationModal.value = true
             close()
           },
-          link: () => {
+          link: () =>
             router.push({
               name: 'Organization',
-              params: { organizationId: organization.value?.name },
-            })
-          },
+              params: { organizationId: lead.data.organization },
+            }),
         },
         {
           label: 'Website',
@@ -548,9 +550,10 @@ async function convertToDeal() {
   }
 }
 
-function updateField(name, value) {
+function updateField(name, value, callback) {
   updateLead(name, value, () => {
     lead.data[name] = value
+    callback?.()
   })
 }
 </script>
