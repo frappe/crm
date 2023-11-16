@@ -1,11 +1,16 @@
 <template>
-  <div class="flex flex-1 flex-col overflow-hidden">
-    <div class="flex gap-6 p-5">
-      <FileUploader
-        @success="changeOrganizationImage"
-        :validateFile="validateFile"
-      >
-        <template #default="{ openFileSelector, error }">
+  <LayoutHeader v-if="organization">
+    <template #left-header>
+      <Breadcrumbs :items="breadcrumbs" />
+    </template>
+  </LayoutHeader>
+  <div v-if="organization" class="flex flex-1 flex-col overflow-hidden">
+    <FileUploader
+      @success="changeOrganizationImage"
+      :validateFile="validateFile"
+    >
+      <template #default="{ openFileSelector, error }">
+        <div class="flex items-center justify-start gap-6 p-5">
           <div class="group relative h-24 w-24">
             <Avatar
               size="3xl"
@@ -47,63 +52,90 @@
                 <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
               </div>
             </component>
-            <ErrorMessage class="mt-2" :message="error" />
           </div>
-        </template>
-      </FileUploader>
-      <div class="flex flex-col justify-center gap-2">
-        <div class="text-3xl font-semibold text-gray-900">
-          {{ organization.name }}
-        </div>
-        <div class="flex items-center gap-2 text-base text-gray-700">
-          <div v-if="organization.website" class="flex items-center gap-1.5">
-            <WebsiteIcon class="h-4 w-4" />
-            <span class="">{{ website(organization.website) }}</span>
-          </div>
-          <span
-            v-if="organization.industry && organization.website"
-            class="text-3xl leading-[0] text-gray-600"
-          >
-            &middot;
-          </span>
-          <div v-if="organization.industry" class="flex items-center gap-1.5">
-            <FeatherIcon name="briefcase" class="h-4 w-4" />
-            <span class="">{{ organization.industry }}</span>
-          </div>
-          <span
-            v-if="
-              (organization.website || organization.industry) &&
-              organization.annual_revenue
-            "
-            class="text-3xl leading-[0] text-gray-600"
-          >
-            &middot;
-          </span>
-          <div
-            v-if="organization.annual_revenue"
-            class="flex items-center gap-1.5"
-          >
-            <FeatherIcon name="dollar-sign" class="h-4 w-4" />
-            <span class="">{{ organization.annual_revenue }}</span>
-          </div>
-        </div>
-        <div class="mt-1 flex gap-2">
-          <Button label="Edit" size="sm" @click="showOrganizationModal = true">
-            <template #prefix>
-              <EditIcon class="h-4 w-4" />
-            </template>
-          </Button>
-          <Button
-            label="Delete"
-            theme="red"
-            size="sm"
-            @click="deleteOrganization"
-          >
-            <template #prefix>
-              <FeatherIcon name="trash-2" class="h-4 w-4" />
-            </template>
-          </Button>
-          <!-- <Button label="Add lead" size="sm">
+          <div class="flex flex-col justify-center gap-0.5">
+            <div class="text-3xl font-semibold text-gray-900">
+              {{ organization.name }}
+            </div>
+            <div class="flex items-center gap-2 text-base text-gray-700">
+              <div
+                v-if="organization.website"
+                class="flex items-center gap-1.5"
+              >
+                <WebsiteIcon class="h-4 w-4" />
+                <span class="">{{ website(organization.website) }}</span>
+              </div>
+              <span
+                v-if="organization.industry && organization.website"
+                class="text-3xl leading-[0] text-gray-600"
+              >
+                &middot;
+              </span>
+              <div
+                v-if="organization.industry"
+                class="flex items-center gap-1.5"
+              >
+                <FeatherIcon name="briefcase" class="h-4 w-4" />
+                <span class="">{{ organization.industry }}</span>
+              </div>
+              <span
+                v-if="
+                  (organization.website || organization.industry) &&
+                  organization.annual_revenue
+                "
+                class="text-3xl leading-[0] text-gray-600"
+              >
+                &middot;
+              </span>
+              <div
+                v-if="organization.annual_revenue"
+                class="flex items-center gap-1.5"
+              >
+                <FeatherIcon name="dollar-sign" class="h-4 w-4" />
+                <span class="">{{ organization.annual_revenue }}</span>
+              </div>
+              <span
+                v-if="
+                  organization.website ||
+                  organization.industry ||
+                  organization.annual_revenue
+                "
+                class="text-3xl leading-[0] text-gray-600"
+              >
+                &middot;
+              </span>
+              <Button
+                v-if="
+                  organization.website ||
+                  organization.industry ||
+                  organization.annual_revenue
+                "
+                variant="ghost"
+                label="More"
+                class="-ml-1 cursor-pointer hover:text-gray-900"
+              />
+            </div>
+            <div class="mt-2 flex gap-1.5">
+              <Button
+                label="Edit"
+                size="sm"
+                @click="showOrganizationModal = true"
+              >
+                <template #prefix>
+                  <EditIcon class="h-4 w-4" />
+                </template>
+              </Button>
+              <Button
+                label="Delete"
+                theme="red"
+                size="sm"
+                @click="deleteOrganization"
+              >
+                <template #prefix>
+                  <FeatherIcon name="trash-2" class="h-4 w-4" />
+                </template>
+              </Button>
+              <!-- <Button label="Add lead" size="sm">
               <template #prefix>
                 <FeatherIcon name="plus" class="h-4 w-4" />
               </template>
@@ -113,9 +145,12 @@
                 <FeatherIcon name="plus" class="h-4 w-4" />
               </template>
             </Button> -->
+            </div>
+            <ErrorMessage class="mt-2" :message="error" />
+          </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </FileUploader>
     <Tabs v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
@@ -180,6 +215,7 @@
 
 <script setup>
 import {
+  Breadcrumbs,
   FeatherIcon,
   Avatar,
   FileUploader,
@@ -190,14 +226,13 @@ import {
   call,
   createListResource,
 } from 'frappe-ui'
+import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -212,17 +247,31 @@ import {
   formatNumberIntoCurrency,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { h, computed, ref, watch, onMounted } from 'vue'
+import { h, computed, ref } from 'vue'
 
 const props = defineProps({
-  organization: {
-    type: Object,
+  organizationId: {
+    type: String,
     required: true,
   },
 })
 
-const { organizations } = organizationsStore()
+const { organizations, getOrganization } = organizationsStore()
 const showOrganizationModal = ref(false)
+
+const organization = computed(() => getOrganization(props.organizationId))
+
+const breadcrumbs = computed(() => {
+  let items = [{ label: 'Organizations', route: { name: 'Organizations' } }]
+  items.push({
+    label: props.organizationId,
+    route: {
+      name: 'Organization',
+      params: { organizationId: props.organizationId },
+    },
+  })
+  return items
+})
 
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
@@ -234,7 +283,7 @@ function validateFile(file) {
 async function changeOrganizationImage(file) {
   await call('frappe.client.set_value', {
     doctype: 'CRM Organization',
-    name: props.organization.name,
+    name: props.organizationId,
     fieldname: 'organization_logo',
     value: file?.file_url || '',
   })
@@ -253,7 +302,7 @@ async function deleteOrganization() {
         async onClick({ close }) {
           await call('frappe.client.delete', {
             doctype: 'CRM Organization',
-            name: props.organization.name,
+            name: props.organizationId,
           })
           organizations.reload()
           close()
@@ -291,7 +340,7 @@ const { getUser } = usersStore()
 const leads = createListResource({
   type: 'list',
   doctype: 'CRM Lead',
-  cache: ['leads', props.organization.name],
+  cache: ['leads', props.organizationId],
   fields: [
     'name',
     'first_name',
@@ -305,7 +354,7 @@ const leads = createListResource({
     'modified',
   ],
   filters: {
-    organization: props.organization.name,
+    organization: props.organizationId,
     converted: 0,
   },
   orderBy: 'modified desc',
@@ -316,7 +365,7 @@ const leads = createListResource({
 const deals = createListResource({
   type: 'list',
   doctype: 'CRM Deal',
-  cache: ['deals', props.organization.name],
+  cache: ['deals', props.organizationId],
   fields: [
     'name',
     'organization',
@@ -328,7 +377,7 @@ const deals = createListResource({
     'modified',
   ],
   filters: {
-    organization: props.organization.name,
+    organization: props.organizationId,
   },
   orderBy: 'modified desc',
   pageLength: 20,
@@ -338,7 +387,7 @@ const deals = createListResource({
 const contacts = createListResource({
   type: 'list',
   doctype: 'Contact',
-  cache: ['contacts', props.organization.name],
+  cache: ['contacts', props.organizationId],
   fields: [
     'name',
     'full_name',
@@ -349,7 +398,7 @@ const contacts = createListResource({
     'modified',
   ],
   filters: {
-    company_name: props.organization.name,
+    company_name: props.organizationId,
   },
   orderBy: 'modified desc',
   pageLength: 20,
@@ -566,11 +615,4 @@ function reload(val) {
   deals.reload()
   contacts.reload()
 }
-
-watch(
-  () => props.organization.name,
-  (val) => val && reload(val)
-)
-
-onMounted(() => reload(props.organization.name))
 </script>
