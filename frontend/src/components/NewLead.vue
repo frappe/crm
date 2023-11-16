@@ -19,14 +19,14 @@
             type="email"
             v-model="newLead[field.name]"
           />
-          <FormControl
+          <Link
             v-else-if="field.type === 'link'"
-            type="autocomplete"
+            class="form-control"
             :value="newLead[field.name]"
-            :options="field.options"
+            :doctype="field.doctype"
             @change="(e) => field.change(e)"
             :placeholder="field.placeholder"
-            class="form-control"
+            :onCreate="field.create"
           />
           <FormControl
             v-else-if="field.type === 'user'"
@@ -73,18 +73,27 @@
       </div>
     </div>
   </div>
+  <OrganizationModal
+    v-model="showOrganizationModal"
+    :organization="_organization"
+    :options="{
+      redirect: false,
+      afterInsert: (doc) => (newLead.organization = doc.name),
+    }"
+  />
 </template>
 
 <script setup>
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { organizationsStore } from '@/stores/organizations'
 import { leadStatuses, statusDropdownOptions, activeAgents } from '@/utils'
 import { FormControl, Button, Dropdown, FeatherIcon } from 'frappe-ui'
+import { ref } from 'vue'
 
 const { getUser } = usersStore()
-const { getOrganizationOptions } = organizationsStore()
 
 const props = defineProps({
   newLead: {
@@ -92,6 +101,9 @@ const props = defineProps({
     required: true,
   },
 })
+
+const showOrganizationModal = ref(false)
+const _organization = ref({})
 
 const allFields = [
   {
@@ -146,9 +158,12 @@ const allFields = [
         name: 'organization',
         type: 'link',
         placeholder: 'Organization',
-        options: getOrganizationOptions(),
-        change: (option) => {
-          props.newLead.organization = option.value
+        doctype: 'CRM Organization',
+        change: (data) => (props.newLead.organization = data),
+        create: (value, close) => {
+          _organization.value.organization_name = value
+          showOrganizationModal.value = true
+          close()
         },
       },
       {
