@@ -40,7 +40,6 @@
   <OrganizationsListView :rows="rows" :columns="columns" />
   <OrganizationModal
     v-model="showOrganizationModal"
-    v-model:reloadOrganizations="organizations"
     :organization="{}"
   />
 </template>

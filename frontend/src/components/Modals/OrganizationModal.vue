@@ -117,6 +117,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import Link from '@/components/Controls/Link.vue'
+import { organizationsStore } from '@/stores/organizations'
 import { FormControl, Dialog, call, FeatherIcon } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -138,7 +139,7 @@ const props = defineProps({
 
 const router = useRouter()
 const show = defineModel()
-const organizations = defineModel('reloadOrganizations')
+const { organizations } = organizationsStore()
 
 const title = ref(null)
 const detailMode = ref(false)
@@ -240,7 +241,7 @@ const dialogOptions = computed(() => {
 })
 
 const fields = computed(() => {
-  return [
+  let details = [
     {
       icon: OrganizationsIcon,
       name: 'organization_name',
@@ -267,6 +268,8 @@ const fields = computed(() => {
       value: _organization.value.industry,
     },
   ]
+
+  return details.filter((field) => field.value)
 })
 
 watch(

@@ -219,7 +219,6 @@
   </div>
   <OrganizationModal
     v-model="showOrganizationModal"
-    v-model:reloadOrganizations="organizations"
     :organization="organization"
     :options="{ detailMode }"
   />
