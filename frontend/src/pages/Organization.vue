@@ -113,13 +113,24 @@
                 variant="ghost"
                 label="More"
                 class="-ml-1 cursor-pointer hover:text-gray-900"
+                @click="
+                  () => {
+                    detailMode = true
+                    showOrganizationModal = true
+                  }
+                "
               />
             </div>
             <div class="mt-2 flex gap-1.5">
               <Button
                 label="Edit"
                 size="sm"
-                @click="showOrganizationModal = true"
+                @click="
+                  () => {
+                    detailMode = false
+                    showOrganizationModal = true
+                  }
+                "
               >
                 <template #prefix>
                   <EditIcon class="h-4 w-4" />
@@ -205,12 +216,13 @@
         </div>
       </template>
     </Tabs>
-    <OrganizationModal
-      v-model="showOrganizationModal"
-      v-model:reloadOrganizations="organizations"
-      :organization="organization"
-    />
   </div>
+  <OrganizationModal
+    v-model="showOrganizationModal"
+    v-model:reloadOrganizations="organizations"
+    :organization="organization"
+    :options="{ detailMode }"
+  />
 </template>
 
 <script setup>
@@ -258,6 +270,7 @@ const props = defineProps({
 
 const { organizations, getOrganization } = organizationsStore()
 const showOrganizationModal = ref(false)
+const detailMode = ref(false)
 
 const organization = computed(() => getOrganization(props.organizationId))
 
