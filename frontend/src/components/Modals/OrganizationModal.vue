@@ -223,17 +223,15 @@ function handleOrganizationUpdate(doc) {
 }
 
 const dialogOptions = computed(() => {
-  let title = detailMode.value
-    ? _organization.value.organization_name
-    : editMode.value
-    ? 'Edit Organization'
-    : 'Create Organization'
+  let title = !editMode.value
+    ? 'New organization'
+    : _organization.value.organization_name
   let size = detailMode.value ? '' : 'xl'
   let actions = detailMode.value
     ? []
     : [
         {
-          label: editMode.value ? 'Update' : 'Create',
+          label: editMode.value ? 'Save' : 'Create',
           variant: 'solid',
           onClick: () =>
             editMode.value ? updateOrganization() : callInsertDoc(),

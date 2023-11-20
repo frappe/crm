@@ -241,17 +241,14 @@ function handleContactUpdate(doc) {
 }
 
 const dialogOptions = computed(() => {
-  let title = detailMode.value
-    ? _contact.value.full_name
-    : editMode.value
-    ? 'Edit contact'
-    : 'Create contact'
+  let title = !editMode.value ? 'New contact' : _contact.value.full_name
+
   let size = detailMode.value ? '' : 'xl'
   let actions = detailMode.value
     ? []
     : [
         {
-          label: editMode.value ? 'Update' : 'Create',
+          label: editMode.value ? 'Save' : 'Create',
           variant: 'solid',
           disabled: !dirty.value,
           onClick: () => (editMode.value ? updateContact() : callInsertDoc()),
