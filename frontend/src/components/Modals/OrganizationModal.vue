@@ -25,11 +25,13 @@
         <div>
           <div v-if="detailMode" class="flex flex-col gap-3.5">
             <div
-              class="flex h-7 items-center gap-2"
+              class="flex h-7 items-center gap-2 text-base text-gray-800"
               v-for="field in fields"
               :key="field.name"
             >
-              <component class="mx-1" :is="field.icon" />
+              <div class="grid w-7 place-content-center">
+                <component class="" :is="field.icon" />
+              </div>
               <div>{{ field.value }}</div>
             </div>
           </div>
@@ -115,11 +117,12 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
+import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import { organizationsStore } from '@/stores/organizations'
 import { FormControl, Dialog, call, FeatherIcon } from 'frappe-ui'
-import { ref, defineModel, nextTick, watch, computed } from 'vue'
+import { ref, defineModel, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -248,22 +251,22 @@ const fields = computed(() => {
       value: _organization.value.organization_name,
     },
     {
-      icon: OrganizationsIcon,
+      icon: WebsiteIcon,
       name: 'website',
       value: _organization.value.website,
     },
     {
-      icon: OrganizationsIcon,
+      icon: h(FeatherIcon, { name: 'dollar-sign', class: 'h-4 w-4' }),
       name: 'annual_revenue',
       value: _organization.value.annual_revenue,
     },
     {
-      icon: OrganizationsIcon,
+      icon: h(FeatherIcon, { name: 'hash', class: 'h-4 w-4' }),
       name: 'no_of_employees',
       value: _organization.value.no_of_employees,
     },
     {
-      icon: OrganizationsIcon,
+      icon: h(FeatherIcon, { name: 'briefcase', class: 'h-4 w-4' }),
       name: 'industry',
       value: _organization.value.industry,
     },
