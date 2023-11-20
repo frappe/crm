@@ -177,12 +177,4 @@ const columns = [
     width: '8rem',
   },
 ]
-
-onMounted(() => {
-  const el = document.querySelector('.router-link-active')
-  if (el)
-    setTimeout(() => {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
-})
 </script>
