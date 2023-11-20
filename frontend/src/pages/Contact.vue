@@ -116,10 +116,25 @@
                 variant="ghost"
                 label="More"
                 class="-ml-1 cursor-pointer hover:text-gray-900"
+                @click="
+                  () => {
+                    detailMode = true
+                    showContactModal = true
+                  }
+                "
               />
             </div>
             <div class="mt-2 flex gap-1.5">
-              <Button label="Edit" size="sm" @click="">
+              <Button
+                label="Edit"
+                size="sm"
+                @click="
+                  () => {
+                    detailMode = false
+                    showContactModal = true
+                  }
+                "
+              >
                 <template #prefix>
                   <EditIcon class="h-4 w-4" />
                 </template>
@@ -186,6 +201,12 @@
       </template>
     </Tabs>
   </div>
+  <ContactModal
+    v-model="showContactModal"
+    v-model:reloadContacts="contacts"
+    :contact="contact"
+    :options="{ detailMode }"
+  />
 </template>
 
 <script setup>
@@ -211,6 +232,7 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
 import {
   dateFormat,
   dateTooltipFormat,
@@ -239,6 +261,9 @@ const props = defineProps({
 const router = useRouter()
 
 const contact = computed(() => getContactByName(props.contactId))
+
+const showContactModal = ref(false)
+const detailMode = ref(false)
 
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Contacts', route: { name: 'Contacts' } }]
