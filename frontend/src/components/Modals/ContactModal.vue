@@ -27,19 +27,19 @@
             <div
               v-for="field in detailFields"
               :key="field.name"
-              class="flex h-7 items-center gap-2"
+              class="flex h-7 items-center gap-2 text-gray-800 text-base"
             >
-              <component class="mx-1" :is="field.icon" />
+              <div class="w-7 grid place-content-center"><component class="" :is="field.icon" /></div>
               <div v-if="field.type == 'dropdown'">
                 <Dropdown
                   :options="field.options"
-                  class="form-control w-full flex-1 -ml-2 mr-2"
+                  class="form-control -ml-2 mr-2 w-full flex-1"
                 >
                   <template #default="{ open }">
                     <Button
                       variant="ghost"
                       :label="contact[field.name]"
-                      class="dropdown-button w-full justify-between truncate"
+                      class="dropdown-button w-full justify-between truncate hover:bg-white"
                     >
                       <div class="truncate">{{ contact[field.name] }}</div>
                       <template #suffix>
@@ -145,7 +145,13 @@
 
 <script setup>
 import DropdownItem from '@/components/DropdownItem.vue'
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import ContactIcon from '@/components/Icons/ContactIcon.vue'
+import GenderIcon from '@/components/Icons/GenderIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import AddressIcon from '@/components/Icons/AddressIcon.vue'
+import CertificateIcon from '@/components/Icons/CertificateIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
@@ -256,41 +262,41 @@ const dialogOptions = computed(() => {
 const detailFields = computed(() => {
   let details = [
     {
-      icon: ContactsIcon,
+      icon: ContactIcon,
       name: 'full_name',
       value:
         (_contact.value.salutation ? _contact.value.salutation + '. ' : '') +
         _contact.value.full_name,
     },
     {
-      icon: ContactsIcon,
+      icon: GenderIcon,
       name: 'gender',
       value: _contact.value.gender,
     },
     {
-      icon: ContactsIcon,
+      icon: EmailIcon,
       name: 'email_id',
       value: _contact.value.email_id,
       ...sections.value[2].fields[0],
     },
     {
-      icon: ContactsIcon,
+      icon: PhoneIcon,
       name: 'mobile_no',
       value: _contact.value.mobile_no,
       ...sections.value[2].fields[1],
     },
     {
-      icon: ContactsIcon,
+      icon: OrganizationsIcon,
       name: 'company_name',
       value: _contact.value.company_name,
     },
     {
-      icon: ContactsIcon,
+      icon: CertificateIcon,
       name: 'designation',
       value: _contact.value.designation,
     },
     {
-      icon: ContactsIcon,
+      icon: AddressIcon,
       name: 'address',
       value: _contact.value.address,
     },
