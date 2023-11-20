@@ -27,9 +27,11 @@
             <div
               v-for="field in detailFields"
               :key="field.name"
-              class="flex h-7 items-center gap-2 text-gray-800 text-base"
+              class="flex h-7 items-center gap-2 text-base text-gray-800"
             >
-              <div class="w-7 grid place-content-center"><component class="" :is="field.icon" /></div>
+              <div class="grid w-7 place-content-center">
+                <component :is="field.icon" />
+              </div>
               <div v-if="field.type == 'dropdown'">
                 <Dropdown
                   :options="field.options"
@@ -227,7 +229,7 @@ async function callInsertDoc() {
 }
 
 function handleContactUpdate(doc) {
-  contacts.value.reload()
+  contacts.reload()
   if (doc.name && props.options.redirect) {
     router.push({
       name: 'Contact',
@@ -283,7 +285,7 @@ const detailFields = computed(() => {
       icon: PhoneIcon,
       name: 'mobile_no',
       value: _contact.value.mobile_no,
-      ...sections.value[2].fields[1],
+      ...sections.value[3].fields[0],
     },
     {
       icon: OrganizationsIcon,
@@ -369,6 +371,10 @@ const sections = computed(() => {
             _show.value = true
           },
         },
+      ],
+    },
+    {
+      fields: [
         {
           label: 'Mobile no.',
           type: 'dropdown',
@@ -401,6 +407,16 @@ const sections = computed(() => {
             _show.value = true
           },
         },
+        {
+          label: 'Gender',
+          type: 'link',
+          name: 'gender',
+          placeholder: 'Select gender',
+          doctype: 'Gender',
+          change: (value) => {
+            _contact.value.gender = value
+          },
+        },
       ],
     },
     {
@@ -419,6 +435,29 @@ const sections = computed(() => {
               name: 'Organization',
               params: { organizationId: data },
             })
+          },
+        },
+      ],
+    },
+    {
+      fields: [
+        {
+          label: 'Designation',
+          type: 'data',
+          name: 'designation',
+        },
+      ],
+    },
+    {
+      fields: [
+        {
+          label: 'Address',
+          type: 'link',
+          name: 'address',
+          placeholder: 'Select address',
+          doctype: 'Address',
+          change: (value) => {
+            _contact.value.address = value
           },
         },
       ],

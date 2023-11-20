@@ -30,7 +30,7 @@
               :key="field.name"
             >
               <div class="grid w-7 place-content-center">
-                <component class="" :is="field.icon" />
+                <component :is="field.icon" />
               </div>
               <div>{{ field.value }}</div>
             </div>
@@ -211,7 +211,7 @@ async function callInsertDoc() {
 }
 
 function handleOrganizationUpdate(doc) {
-  organizations.value?.reload()
+  organizations.reload()
   if (doc.name && props.options.redirect) {
     router.push({
       name: 'Organization',
