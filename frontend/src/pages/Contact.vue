@@ -4,157 +4,142 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
   </LayoutHeader>
-  <div class="flex h-full overflow-hidden">
-    <div class="flex w-[352px] shrink-0 flex-col border-r">
-      <FileUploader @success="changeContactImage" :validateFile="validateFile">
-        <template #default="{ openFileSelector, error }">
-          <div class="flex items-center justify-start gap-5 border-b p-5">
-            <div class="group relative h-[88px] w-[88px]">
-              <Avatar
-                size="3xl"
-                class="h-[88px] w-[88px]"
-                :label="contact.full_name"
-                :image="contact.image"
-              />
-              <component
-                :is="contact.image ? Dropdown : 'div'"
-                v-bind="
-                  contact.image
-                    ? {
-                        options: [
-                          {
-                            icon: 'upload',
-                            label: contact.image
-                              ? 'Change image'
-                              : 'Upload image',
-                            onClick: openFileSelector,
-                          },
-                          {
-                            icon: 'trash-2',
-                            label: 'Remove image',
-                            onClick: () => changeContactImage(''),
-                          },
-                        ],
-                      }
-                    : { onClick: openFileSelector }
-                "
-                class="!absolute bottom-0 left-0 right-0"
-              >
-                <div
-                  class="z-1 absolute bottom-0 left-0 right-0 flex h-13 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
-                  style="
-                    -webkit-clip-path: inset(12px 0 0 0);
-                    clip-path: inset(12px 0 0 0);
-                  "
-                >
-                  <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
-                </div>
-              </component>
-            </div>
-            <div class="flex flex-col gap-2.5 truncate">
-              <Tooltip :text="contact.full_name">
-                <div class="truncate text-2xl font-medium">
-                  {{ contact.full_name }}
-                </div>
-              </Tooltip>
-              <div class="flex gap-1.5">
-                <Button
-                  label="Call"
-                  size="sm"
-                  @click="makeCall(contact.mobile_no)"
-                >
-                  <template #prefix>
-                    <PhoneIcon class="h-4 w-4" />
-                  </template>
-                </Button>
-                <Button
-                  label="Delete"
-                  theme="red"
-                  size="sm"
-                  @click="deleteContact"
-                >
-                  <template #prefix>
-                    <FeatherIcon name="trash-2" class="h-4 w-4" />
-                  </template>
-                </Button>
-              </div>
-              <ErrorMessage :message="error" />
-            </div>
-          </div>
-        </template>
-      </FileUploader>
-      <div class="flex flex-col overflow-y-auto">
-        <div class="px-5 py-3 text-base font-semibold leading-5">Details</div>
-        <div class="flex flex-col gap-1.5 px-2">
-          <div
-            v-for="field in details"
-            :key="field.name"
-            class="flex items-center gap-2 px-3 text-base leading-5 last:mb-3"
-          >
-            <div class="w-[106px] shrink-0 text-gray-600">
-              {{ field.label }}
-            </div>
-            <div class="flex-1 overflow-hidden">
-              <Dropdown
-                v-if="field.type === 'dropdown' && field.options.length"
-                :options="field.options"
-                class="form-control show-dropdown-icon w-full flex-1"
-              >
-                <template #default="{ open }">
-                  <div
-                    class="dropdown-button flex w-full items-center justify-between gap-2"
-                  >
-                    <Button
-                      :label="contact[field.name]"
-                      class="w-full justify-between truncate"
-                    >
-                      <div class="truncate">{{ contact[field.name] }}</div>
-                    </Button>
-                    <FeatherIcon
-                      :name="open ? 'chevron-up' : 'chevron-down'"
-                      class="h-4 text-gray-600"
-                    />
-                  </div>
-                </template>
-                <template #footer>
-                  <Button
-                    variant="ghost"
-                    class="w-full !justify-start"
-                    label="Create one"
-                    @click="field.create()"
-                  >
-                    <template #prefix>
-                      <FeatherIcon name="plus" class="h-4" />
-                    </template>
-                  </Button>
-                </template>
-              </Dropdown>
-              <Link
-                v-else-if="field.type === 'link'"
-                class="form-control"
-                :value="contact[field.name]"
-                :doctype="field.doctype"
-                :placeholder="field.placeholder"
-                @change="(e) => field.change(e)"
-              />
-              <FormControl
-                v-else
-                type="text"
-                :value="contact[field.name]"
-                @change.stop="updateContact(field.name, $event.target.value)"
-                class="form-control"
-                :debounce="500"
-              />
-            </div>
-            <ExternalLinkIcon
-              v-if="field.type === 'link' && field.link && contact[field.name]"
-              class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
-              @click="field.link(contact[field.name])"
+  <div class="flex h-full flex-col overflow-hidden">
+    <FileUploader @success="changeContactImage" :validateFile="validateFile">
+      <template #default="{ openFileSelector, error }">
+        <div class="flex items-center justify-start gap-6 p-5">
+          <div class="group relative h-24 w-24">
+            <Avatar
+              size="3xl"
+              class="h-24 w-24"
+              :label="contact.full_name"
+              :image="contact.image"
             />
+            <component
+              :is="contact.image ? Dropdown : 'div'"
+              v-bind="
+                contact.image
+                  ? {
+                      options: [
+                        {
+                          icon: 'upload',
+                          label: contact.image
+                            ? 'Change image'
+                            : 'Upload image',
+                          onClick: openFileSelector,
+                        },
+                        {
+                          icon: 'trash-2',
+                          label: 'Remove image',
+                          onClick: () => changeContactImage(''),
+                        },
+                      ],
+                    }
+                  : { onClick: openFileSelector }
+              "
+              class="!absolute bottom-0 left-0 right-0"
+            >
+              <div
+                class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                style="
+                  -webkit-clip-path: inset(12px 0 0 0);
+                  clip-path: inset(12px 0 0 0);
+                "
+              >
+                <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
+              </div>
+            </component>
+          </div>
+          <div class="flex flex-col gap-0.5 truncate">
+            <Tooltip :text="contact.full_name">
+              <div class="truncate text-3xl font-semibold">
+                <span v-if="contact.salutation">
+                  {{ contact.salutation + '. ' }}
+                </span>
+                <span>{{ contact.full_name }}</span>
+              </div>
+            </Tooltip>
+            <div class="flex items-center gap-2 text-base text-gray-700">
+              <div v-if="contact.email_id" class="flex items-center gap-1.5">
+                <EmailIcon class="h-4 w-4" />
+                <span class="">{{ contact.email_id }}</span>
+              </div>
+              <span
+                v-if="contact.mobile_no && contact.email_id"
+                class="text-3xl leading-[0] text-gray-600"
+              >
+                &middot;
+              </span>
+              <Tooltip
+                text="Make Call"
+                v-if="contact.mobile_no"
+                class="flex cursor-pointer items-center gap-1.5"
+                @click="makeCall(contact.mobile_no)"
+              >
+                <PhoneIcon class="h-4 w-4" />
+                <span class="">{{ contact.mobile_no }}</span>
+              </Tooltip>
+              <span
+                v-if="
+                  (contact.email_id || contact.mobile_no) &&
+                  contact.company_name
+                "
+                class="text-3xl leading-[0] text-gray-600"
+              >
+                &middot;
+              </span>
+              <div
+                v-if="contact.company_name"
+                class="flex items-center gap-1.5"
+              >
+                <Avatar
+                  size="xs"
+                  :label="contact.company_name"
+                  :image="
+                    getOrganization(contact.company_name)?.organization_logo
+                  "
+                />
+                <span class="">{{ contact.company_name }}</span>
+              </div>
+              <span
+                v-if="
+                  contact.email_id || contact.mobile_no || contact.company_name
+                "
+                class="text-3xl leading-[0] text-gray-600"
+              >
+                &middot;
+              </span>
+              <Button
+                v-if="
+                  contact.email_id || contact.mobile_no || contact.company_name
+                "
+                variant="ghost"
+                label="More"
+                class="-ml-1 cursor-pointer hover:text-gray-900"
+              />
+            </div>
+            <div class="mt-2 flex gap-1.5">
+              <Button label="Edit" size="sm" @click="">
+                <template #prefix>
+                  <EditIcon class="h-4 w-4" />
+                </template>
+              </Button>
+              <Button
+                label="Delete"
+                theme="red"
+                size="sm"
+                @click="deleteContact"
+              >
+                <template #prefix>
+                  <FeatherIcon name="trash-2" class="h-4 w-4" />
+                </template>
+              </Button>
+            </div>
+            <ErrorMessage :message="error" />
           </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </FileUploader>
     <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
@@ -201,25 +186,12 @@
       </template>
     </Tabs>
   </div>
-  <Dialog v-model="show" :options="dialogOptions">
-    <template #body-content>
-      <FormControl
-        :type="new_field.type"
-        variant="outline"
-        v-model="new_field.value"
-        :placeholder="new_field.placeholder"
-      />
-    </template>
-  </Dialog>
 </template>
 
 <script setup>
-import Link from '@/components/Controls/Link.vue'
 import {
-  FormControl,
   FeatherIcon,
   Breadcrumbs,
-  Dialog,
   Avatar,
   FileUploader,
   ErrorMessage,
@@ -231,12 +203,12 @@ import {
 } from 'frappe-ui'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
-import DropdownItem from '@/components/DropdownItem.vue'
-import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import {
@@ -246,7 +218,6 @@ import {
   formatNumberIntoCurrency,
   dealStatuses,
   leadStatuses,
-  createToast,
 } from '@/utils'
 import { usersStore } from '@/stores/users.js'
 import { contactsStore } from '@/stores/contacts.js'
@@ -510,184 +481,6 @@ const dealColumns = [
     width: '8rem',
   },
 ]
-
-const details = computed(() => {
-  return [
-    {
-      label: 'Salutation',
-      type: 'link',
-      name: 'salutation',
-      placeholder: 'Mr./Mrs./Ms...',
-      doctype: 'Salutation',
-      change: (value) => {
-        contact.value.salutation = value
-        updateContact('salutation', value)
-      },
-    },
-    {
-      label: 'First name',
-      type: 'data',
-      name: 'first_name',
-    },
-    {
-      label: 'Last name',
-      type: 'data',
-      name: 'last_name',
-    },
-    {
-      label: 'Email',
-      type: 'dropdown',
-      name: 'email_id',
-      options: contact.value?.email_ids?.map((email) => {
-        return {
-          component: h(DropdownItem, {
-            value: email.email_id,
-            selected: email.email_id === contact.value.email_id,
-            onClick: () => setAsPrimary('email', email.email_id),
-          }),
-        }
-      }),
-      create: (value) => {
-        new_field.value = {
-          type: 'email',
-          value,
-          placeholder: 'Add email address',
-        }
-        dialogOptions.value = {
-          title: 'Add email',
-          actions: [
-            {
-              label: 'Add',
-              variant: 'solid',
-              onClick: ({ close }) => createNew('email', close),
-            },
-          ],
-        }
-        show.value = true
-      },
-    },
-    {
-      label: 'Mobile no.',
-      type: 'dropdown',
-      name: 'mobile_no',
-      options: contact.value?.phone_nos?.map((phone) => {
-        return {
-          component: h(DropdownItem, {
-            value: phone.phone,
-            selected: phone.phone === contact.value.mobile_no,
-            onClick: () => setAsPrimary('mobile_no', phone.phone),
-          }),
-        }
-      }),
-      create: (value) => {
-        new_field.value = {
-          type: 'phone',
-          value,
-          placeholder: 'Add mobile no.',
-        }
-        dialogOptions.value = {
-          title: 'Add mobile no.',
-          actions: [
-            {
-              label: 'Add',
-              variant: 'solid',
-              onClick: ({ close }) => createNew('phone', close),
-            },
-          ],
-        }
-        show.value = true
-      },
-    },
-    {
-      label: 'Organization',
-      type: 'link',
-      name: 'company_name',
-      placeholder: 'Select organization',
-      doctype: 'CRM Organization',
-      change: (value) => {
-        contact.value.company_name = value
-        updateContact('company_name', value)
-      },
-      link: (data) => {
-        router.push({
-          name: 'Organization',
-          params: { organizationId: data },
-        })
-      },
-    },
-  ]
-})
-
-const show = ref(false)
-const new_field = ref({})
-
-const dialogOptions = ref({})
-
-function updateContact(fieldname, value) {
-  if (['mobile_no', 'email_id'].includes(fieldname)) {
-    details.value.find((d) => d.name === fieldname).create(value)
-    return
-  }
-  createResource({
-    url: 'frappe.client.set_value',
-    params: {
-      doctype: 'Contact',
-      name: props.contactId,
-      fieldname,
-      value,
-    },
-    auto: true,
-    onSuccess: () => {
-      contacts.reload()
-      createToast({
-        title: 'Contact updated',
-        icon: 'check',
-        iconClasses: 'text-green-600',
-      })
-    },
-    onError: (err) => {
-      createToast({
-        title: 'Error updating contact',
-        text: err.messages?.[0],
-        icon: 'x',
-        iconClasses: 'text-red-600',
-      })
-    },
-  })
-}
-
-async function setAsPrimary(field, value) {
-  let d = await call('crm.api.contact.set_as_primary', {
-    contact: props.contactId,
-    field,
-    value,
-  })
-  if (d) {
-    contacts.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-green-600',
-    })
-  }
-}
-
-async function createNew(field, close) {
-  let d = await call('crm.api.contact.create_new', {
-    contact: props.contactId,
-    field,
-    value: new_field.value.value,
-  })
-  if (d) {
-    contacts.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-green-600',
-    })
-  }
-  close()
-}
 </script>
 
 <style scoped>
