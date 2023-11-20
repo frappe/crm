@@ -25,96 +25,105 @@
         <div>
           <div v-if="detailMode" class="flex flex-col gap-3.5">
             <div
-              class="flex h-7 items-center gap-2"
-              v-for="field in fields"
+              v-for="field in detailFields"
               :key="field.name"
+              class="flex h-7 items-center gap-2"
             >
               <component class="mx-1" :is="field.icon" />
-              <div>{{ field.value }}</div>
+              <div v-if="field.type == 'dropdown'">
+                <Dropdown
+                  :options="field.options"
+                  class="form-control w-full flex-1 -ml-2 mr-2"
+                >
+                  <template #default="{ open }">
+                    <Button
+                      variant="ghost"
+                      :label="contact[field.name]"
+                      class="dropdown-button w-full justify-between truncate"
+                    >
+                      <div class="truncate">{{ contact[field.name] }}</div>
+                      <template #suffix>
+                        <FeatherIcon
+                          :name="open ? 'chevron-up' : 'chevron-down'"
+                          class="h-4 text-gray-600"
+                        />
+                      </template>
+                    </Button>
+                  </template>
+                </Dropdown>
+              </div>
+              <div v-else>{{ field.value }}</div>
             </div>
           </div>
-          <div v-else>
-            <div class="flex flex-col gap-4">
-              <Link
-                variant="outline"
-                size="md"
-                label="Salutation"
-                v-model="_contact.salutation"
-                doctype="Salutation"
-                placeholder="Mr./Mrs./Ms..."
-              />
-              <div class="flex gap-4">
-                <FormControl
-                  class="flex-1"
-                  variant="outline"
-                  size="md"
-                  type="text"
-                  label="First Name"
-                  v-model="_contact.first_name"
-                />
-                <FormControl
-                  class="flex-1"
-                  variant="outline"
-                  size="md"
-                  type="text"
-                  label="Last Name"
-                  v-model="_contact.last_name"
-                />
-              </div>
-              <Link
-                variant="outline"
-                size="md"
-                label="Organization"
-                v-model="_contact.company_name"
-                doctype="CRM Organization"
-                placeholder="Select organization"
-              />
-              <div class="flex gap-4">
+          <div class="flex flex-col gap-4" v-else>
+            <div class="flex gap-4" v-for="(section, i) in sections" :key="i">
+              <div v-for="(field, j) in section.fields" :key="j" class="flex-1">
                 <Link
-                  class="flex-1"
+                  v-if="field.type === 'link'"
                   variant="outline"
                   size="md"
-                  label="Gender"
-                  v-model="_contact.gender"
-                  doctype="Gender"
-                  placeholder="Select gender"
+                  :label="field.label"
+                  v-model="_contact[field.name]"
+                  :doctype="field.doctype"
+                  :placeholder="field.placeholder"
                 />
+                <div class="space-y-1.5" v-if="field.type === 'dropdown'">
+                  <label class="block text-base text-gray-600">
+                    {{ field.label }}
+                  </label>
+                  <Dropdown
+                    :options="field.options"
+                    class="form-control w-full flex-1"
+                  >
+                    <template #default="{ open }">
+                      <Button
+                        :label="contact[field.name]"
+                        class="dropdown-button h-8 w-full justify-between truncate rounded border border-gray-300 bg-white px-2.5 py-1.5 text-base placeholder-gray-500 hover:border-gray-400 hover:bg-white hover:shadow-sm focus:border-gray-500 focus:bg-white focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400"
+                      >
+                        <div class="truncate">{{ contact[field.name] }}</div>
+                        <template #suffix>
+                          <FeatherIcon
+                            :name="open ? 'chevron-up' : 'chevron-down'"
+                            class="h-4 text-gray-600"
+                          />
+                        </template>
+                      </Button>
+                    </template>
+                    <template #footer>
+                      <Button
+                        variant="ghost"
+                        class="w-full !justify-start"
+                        label="Create one"
+                        @click="field.create()"
+                      >
+                        <template #prefix>
+                          <FeatherIcon name="plus" class="h-4" />
+                        </template>
+                      </Button>
+                    </template>
+                  </Dropdown>
+                </div>
                 <FormControl
-                  class="flex-1"
+                  v-else-if="field.type === 'data'"
                   variant="outline"
                   size="md"
                   type="text"
-                  label="Designation"
-                  v-model="_contact.designation"
+                  :label="field.label"
+                  :placeholder="field.placeholder"
+                  v-model="_contact[field.name]"
                 />
               </div>
-              <div class="flex gap-4">
-                <FormControl
-                  class="flex-1"
-                  variant="outline"
-                  size="md"
-                  type="text"
-                  label="Mobile no"
-                  v-model="_contact.mobile_no"
-                />
-                <FormControl
-                  class="flex-1"
-                  variant="outline"
-                  size="md"
-                  type="email"
-                  label="Email"
-                  v-model="_contact.email_id"
-                />
-              </div>
-              <Link
-                variant="outline"
-                size="md"
-                label="Address"
-                v-model="_contact.address"
-                doctype="Address"
-                placeholder="Select address"
-              />
             </div>
+            <Dialog v-model="_show" :options="_dialogOptions">
+              <template #body-content>
+                <FormControl
+                  :type="new_field.type"
+                  variant="outline"
+                  v-model="new_field.value"
+                  :placeholder="new_field.placeholder"
+                />
+              </template>
+            </Dialog>
           </div>
         </div>
       </div>
@@ -135,11 +144,15 @@
 </template>
 
 <script setup>
+import DropdownItem from '@/components/DropdownItem.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
+import Dropdown from '@/components/frappe-ui/Dropdown.vue'
+import { contactsStore } from '@/stores/contacts'
 import { FormControl, Dialog, call, FeatherIcon } from 'frappe-ui'
-import { ref, defineModel, nextTick, watch, computed } from 'vue'
+import { ref, defineModel, nextTick, watch, computed, h } from 'vue'
+import { createToast } from '@/utils'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -159,7 +172,7 @@ const props = defineProps({
 
 const router = useRouter()
 const show = defineModel()
-const contacts = defineModel('reloadContacts')
+const { contacts } = contactsStore()
 
 const detailMode = ref(false)
 const editMode = ref(false)
@@ -171,7 +184,7 @@ async function updateContact() {
     return
   }
 
-  let values = { ..._contact.value }
+  const values = { ..._contact.value }
 
   let name = await callSetValue(values)
 
@@ -181,7 +194,7 @@ async function updateContact() {
 async function callSetValue(values) {
   const d = await call('frappe.client.set_value', {
     doctype: 'Contact',
-    name: _contact.value.name,
+    name: props.contact.name,
     fieldname: values,
   })
   return d.name
@@ -208,7 +221,7 @@ async function callInsertDoc() {
 }
 
 function handleContactUpdate(doc) {
-  contacts.value?.reload()
+  contacts.value.reload()
   if (doc.name && props.options.redirect) {
     router.push({
       name: 'Contact',
@@ -240,12 +253,14 @@ const dialogOptions = computed(() => {
   return { title, size, actions }
 })
 
-const fields = computed(() => {
-  return [
+const detailFields = computed(() => {
+  let details = [
     {
       icon: ContactsIcon,
       name: 'full_name',
-      value: _contact.value.full_name,
+      value:
+        (_contact.value.salutation ? _contact.value.salutation + '. ' : '') +
+        _contact.value.full_name,
     },
     {
       icon: ContactsIcon,
@@ -256,11 +271,13 @@ const fields = computed(() => {
       icon: ContactsIcon,
       name: 'email_id',
       value: _contact.value.email_id,
+      ...sections.value[2].fields[0],
     },
     {
       icon: ContactsIcon,
       name: 'mobile_no',
       value: _contact.value.mobile_no,
+      ...sections.value[2].fields[1],
     },
     {
       icon: ContactsIcon,
@@ -278,7 +295,168 @@ const fields = computed(() => {
       value: _contact.value.address,
     },
   ]
+
+  return details.filter((detail) => detail.value)
 })
+
+const sections = computed(() => {
+  return [
+    {
+      fields: [
+        {
+          label: 'Salutation',
+          type: 'link',
+          name: 'salutation',
+          placeholder: 'Mr./Mrs./Ms...',
+          doctype: 'Salutation',
+          change: (value) => {
+            _contact.value.salutation = value
+          },
+        },
+      ],
+    },
+    {
+      fields: [
+        {
+          label: 'First name',
+          type: 'data',
+          name: 'first_name',
+        },
+        {
+          label: 'Last name',
+          type: 'data',
+          name: 'last_name',
+        },
+      ],
+    },
+    {
+      fields: [
+        {
+          label: 'Email',
+          type: 'dropdown',
+          name: 'email_id',
+          options: props.contact?.email_ids?.map((email) => {
+            return {
+              component: h(DropdownItem, {
+                value: email.email_id,
+                selected: email.email_id === props.contact.email_id,
+                onClick: () => setAsPrimary('email', email.email_id),
+              }),
+            }
+          }),
+          create: (value) => {
+            new_field.value = {
+              type: 'email',
+              value,
+              placeholder: 'Add email address',
+            }
+            _dialogOptions.value = {
+              title: 'Add email',
+              actions: [
+                {
+                  label: 'Add',
+                  variant: 'solid',
+                  onClick: () => createNew('email'),
+                },
+              ],
+            }
+            _show.value = true
+          },
+        },
+        {
+          label: 'Mobile no.',
+          type: 'dropdown',
+          name: 'mobile_no',
+          options: props.contact?.phone_nos?.map((phone) => {
+            return {
+              component: h(DropdownItem, {
+                value: phone.phone,
+                selected: phone.phone === props.contact.mobile_no,
+                onClick: () => setAsPrimary('mobile_no', phone.phone),
+              }),
+            }
+          }),
+          create: (value) => {
+            new_field.value = {
+              type: 'tel',
+              value,
+              placeholder: 'Add mobile no.',
+            }
+            _dialogOptions.value = {
+              title: 'Add mobile no.',
+              actions: [
+                {
+                  label: 'Add',
+                  variant: 'solid',
+                  onClick: () => createNew('phone'),
+                },
+              ],
+            }
+            _show.value = true
+          },
+        },
+      ],
+    },
+    {
+      fields: [
+        {
+          label: 'Organization',
+          type: 'link',
+          name: 'company_name',
+          placeholder: 'Select organization',
+          doctype: 'CRM Organization',
+          change: (value) => {
+            _contact.value.company_name = value
+          },
+          link: (data) => {
+            router.push({
+              name: 'Organization',
+              params: { organizationId: data },
+            })
+          },
+        },
+      ],
+    },
+  ]
+})
+
+const _show = ref(false)
+const new_field = ref({})
+
+const _dialogOptions = ref({})
+
+async function setAsPrimary(field, value) {
+  let d = await call('crm.api.contact.set_as_primary', {
+    contact: props.contact.name,
+    field,
+    value,
+  })
+  if (d) {
+    contacts.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function createNew(field) {
+  let d = await call('crm.api.contact.create_new', {
+    contact: props.contact.name,
+    field,
+    value: new_field.value?.value,
+  })
+  if (d) {
+    contacts.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+  _show.value = false
+}
 
 const dirty = computed(() => {
   return JSON.stringify(props.contact) !== JSON.stringify(_contact.value)
@@ -299,3 +477,9 @@ watch(
   }
 )
 </script>
+
+<style scoped>
+:deep(:has(> .dropdown-button)) {
+  width: 100%;
+}
+</style>

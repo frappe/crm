@@ -34,11 +34,7 @@
     </div>
   </div>
   <ContactsListView :rows="rows" :columns="columns" />
-  <ContactModal
-    v-model="showContactModal"
-    v-model:reloadContacts="contacts"
-    :contact="{}"
-  />
+  <ContactModal v-model="showContactModal" :contact="{}" />
 </template>
 
 <script setup>

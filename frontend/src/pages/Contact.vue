@@ -203,7 +203,6 @@
   </div>
   <ContactModal
     v-model="showContactModal"
-    v-model:reloadContacts="contacts"
     :contact="contact"
     :options="{ detailMode }"
   />
