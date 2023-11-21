@@ -135,7 +135,7 @@
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="section in detailSections"
+            v-for="section in detailSections.data"
             :key="section.label"
             class="flex flex-col"
           >
@@ -173,6 +173,7 @@
                     <div class="flex-1 overflow-hidden">
                       <FormControl
                         v-if="field.type === 'select'"
+                        class="form-control cursor-pointer [&_select]:cursor-pointer"
                         type="select"
                         :options="field.options"
                         :value="lead.data[field.name]"
@@ -180,14 +181,7 @@
                           updateLead(field.name, $event.target.value)
                         "
                         :debounce="500"
-                        class="form-control cursor-pointer [&_select]:cursor-pointer"
-                      >
-                        <template #prefix>
-                          <IndicatorIcon
-                            :class="leadStatuses[lead.data[field.name]].color"
-                          />
-                        </template>
-                      </FormControl>
+                      />
                       <FormControl
                         v-else-if="field.type === 'email'"
                         type="email"
@@ -204,7 +198,7 @@
                         :value="lead.data[field.name]"
                         :doctype="field.doctype"
                         :placeholder="field.placeholder"
-                        @change="(e) => field.change(e)"
+                        @change="(data) => updateField(field.name, data)"
                         :onCreate="field.create"
                       />
                       <FormControl
@@ -246,12 +240,13 @@
                         class="flex h-7 cursor-pointer items-center px-2 py-1"
                         v-else-if="field.type === 'read_only'"
                       >
-                        {{ field.value }}
+                        {{ field.value || lead.data[field.name] }}
                       </Tooltip>
                       <FormControl
                         v-else
                         type="text"
                         :value="lead.data[field.name]"
+                        :placeholder="field.placeholder"
                         @change.stop="
                           updateLead(field.name, $event.target.value)
                         "
@@ -427,97 +422,37 @@ function validateFile(file) {
   }
 }
 
-const detailSections = computed(() => {
-  return [
-    {
-      label: 'Details',
-      opened: true,
-      fields: [
-        {
-          label: 'Organization',
-          type: 'link',
-          name: 'organization',
-          placeholder: 'Select organization',
-          doctype: 'CRM Organization',
-          change: (data) => data && updateField('organization', data),
-          create: (value, close) => {
-            _organization.value.organization_name = value
-            showOrganizationModal.value = true
-            close()
-          },
-          link: () =>
-            router.push({
-              name: 'Organization',
-              params: { organizationId: lead.data.organization },
-            }),
-        },
-        {
-          label: 'Website',
-          type: 'read_only',
-          name: 'website',
-          value: organization.value?.website,
-          tooltip:
-            'It is a read only field, value is fetched from organization',
-        },
-        {
-          label: 'Industry',
-          type: 'read_only',
-          name: 'industry',
-          value: organization.value?.industry,
-          tooltip:
-            'It is a read only field, value is fetched from organization',
-        },
-        {
-          label: 'Job title',
-          type: 'data',
-          name: 'job_title',
-        },
-        {
-          label: 'Source',
-          type: 'link',
-          name: 'source',
-          placeholder: 'Select source...',
-          doctype: 'CRM Lead Source',
-          change: (data) => updateField('source', data),
-        },
-      ],
-    },
-    {
-      label: 'Person',
-      opened: true,
-      fields: [
-        {
-          label: 'Salutation',
-          type: 'link',
-          name: 'salutation',
-          placeholder: 'Mr./Mrs./Ms...',
-          doctype: 'Salutation',
-          change: (data) => updateField('salutation', data),
-        },
-        {
-          label: 'First name',
-          type: 'data',
-          name: 'first_name',
-        },
-        {
-          label: 'Last name',
-          type: 'data',
-          name: 'last_name',
-        },
-        {
-          label: 'Email',
-          type: 'email',
-          name: 'email',
-        },
-        {
-          label: 'Mobile no.',
-          type: 'phone',
-          name: 'mobile_no',
-        },
-      ],
-    },
-  ]
+const detailSections = createResource({
+  url: 'crm.fcrm.doctype.crm_lead.api.get_lead_fields',
+  cache: 'leadFields',
+  auto: true,
+  transform: (data) => {
+    return getParsedFields(data)
+  },
 })
+
+function getParsedFields(sections) {
+  sections.forEach((section) => {
+    section.fields.forEach((field) => {
+      if (['website', 'industry'].includes(field.name)) {
+        field.value = organization.value?.[field.name]
+      } else if (field.name == 'organization') {
+        field.create = (value, close) => {
+          _organization.value.organization_name = value
+          showOrganizationModal.value = true
+          close()
+        }
+        field.link = () =>
+          router.push({
+            name: 'Organization',
+            params: { organizationId: lead.data.organization },
+          })
+      }
+    })
+  })
+
+  return sections
+}
 
 const organization = computed(() => {
   return getOrganization(lead.data.organization)

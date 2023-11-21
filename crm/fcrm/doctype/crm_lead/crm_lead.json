@@ -8,36 +8,32 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "details",
+  "organization",
+  "website",
+  "industry",
+  "job_title",
   "naming_series",
+  "source",
+  "person_tab",
   "salutation",
   "first_name",
-  "middle_name",
   "last_name",
-  "column_break_izjs",
-  "lead_name",
-  "gender",
-  "image",
-  "column_break_lcuv",
-  "lead_owner",
-  "status",
-  "job_title",
-  "source",
-  "converted",
+  "email",
+  "mobile_no",
   "organization_tab",
   "section_break_uixv",
-  "organization",
-  "no_of_employees",
+  "lead_name",
+  "middle_name",
+  "gender",
+  "phone",
   "column_break_dbsv",
-  "website",
+  "status",
+  "lead_owner",
+  "no_of_employees",
   "annual_revenue",
-  "industry",
-  "contact_tab",
-  "section_break_ymew",
-  "email",
-  "column_break_sijm",
-  "mobile_no",
-  "column_break_sjtw",
-  "phone"
+  "image",
+  "converted"
  ],
  "fields": [
   {
@@ -68,18 +64,10 @@
    "label": "Last Name"
   },
   {
-   "fieldname": "column_break_lcuv",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "gender",
    "fieldtype": "Link",
    "label": "Gender",
    "options": "Gender"
-  },
-  {
-   "fieldname": "column_break_izjs",
-   "fieldtype": "Column Break"
   },
   {
    "default": "Open",
@@ -90,10 +78,6 @@
    "options": "Open\nContacted\nNurture\nQualified\nUnqualified\nJunk",
    "reqd": 1,
    "search_index": 1
-  },
-  {
-   "fieldname": "section_break_ymew",
-   "fieldtype": "Section Break"
   },
   {
    "fieldname": "email",
@@ -111,18 +95,10 @@
    "read_only": 1
   },
   {
-   "fieldname": "column_break_sijm",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
    "label": "Mobile No",
    "options": "Phone"
-  },
-  {
-   "fieldname": "column_break_sjtw",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "phone",
@@ -192,12 +168,8 @@
   {
    "fieldname": "organization_tab",
    "fieldtype": "Tab Break",
-   "label": "Organization"
-  },
-  {
-   "fieldname": "contact_tab",
-   "fieldtype": "Tab Break",
-   "label": "Contact"
+   "label": "Others",
+   "read_only": 1
   },
   {
    "fieldname": "organization",
@@ -212,12 +184,22 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Converted"
+  },
+  {
+   "fieldname": "person_tab",
+   "fieldtype": "Tab Break",
+   "label": "Person"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Tab Break",
+   "label": "Details"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-13 13:35:35.783003",
+ "modified": "2023-11-21 13:02:11.680600",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
