@@ -34,11 +34,7 @@
     </div>
   </div>
   <ContactsListView :rows="rows" :columns="columns" />
-  <ContactModal
-    v-model="showContactModal"
-    v-model:reloadContacts="contacts"
-    :contact="{}"
-  />
+  <ContactModal v-model="showContactModal" :contact="{}" />
 </template>
 
 <script setup>
@@ -177,12 +173,4 @@ const columns = [
     width: '8rem',
   },
 ]
-
-onMounted(() => {
-  const el = document.querySelector('.router-link-active')
-  if (el)
-    setTimeout(() => {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
-})
 </script>

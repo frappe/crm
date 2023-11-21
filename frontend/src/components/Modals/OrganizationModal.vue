@@ -1,78 +1,114 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      title: editMode ? 'Edit Organization' : 'Create Organization',
-      size: 'xl',
-      actions: [
-        {
-          label: editMode ? 'Update' : 'Create',
-          variant: 'solid',
-          onClick: ({ close }) =>
-            editMode ? updateOrganization(close) : callInsertDoc(close),
-        },
-      ],
-    }"
-  >
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <FormControl
-          type="text"
-          ref="title"
-          size="md"
-          label="Organization name"
-          variant="outline"
-          v-model="_organization.organization_name"
-          placeholder="Add organization name"
-        />
-        <div class="flex gap-4">
-          <FormControl
-            class="flex-1"
-            type="text"
-            size="md"
-            label="Website"
-            variant="outline"
-            v-model="_organization.website"
-            placeholder="Add website"
-          />
-          <FormControl
-            class="flex-1"
-            type="text"
-            size="md"
-            label="Annual revenue"
-            variant="outline"
-            v-model="_organization.annual_revenue"
-            placeholder="Add annual revenue"
-          />
+  <Dialog v-model="show" :options="dialogOptions">
+    <template #body>
+      <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
+        <div class="mb-5 flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+              {{ dialogOptions.title || 'Untitled' }}
+            </h3>
+          </div>
+          <div class="flex items-center gap-1">
+            <Button
+              v-if="detailMode"
+              variant="ghost"
+              class="w-7"
+              @click="detailMode = false"
+            >
+              <EditIcon class="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" class="w-7" @click="show = false">
+              <FeatherIcon name="x" class="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-        <div class="flex gap-4">
-          <FormControl
-            class="flex-1"
-            type="select"
-            :options="[
-              '1-10',
-              '11-50',
-              '51-200',
-              '201-500',
-              '501-1000',
-              '1001-5000',
-              '5001-10000',
-              '10001+',
-            ]"
-            size="md"
-            label="No. of employees"
-            variant="outline"
-            v-model="_organization.no_of_employees"
-          />
-          <Link
-            class="flex-1"
-            size="md"
-            label="Industry"
-            variant="outline"
-            v-model="_organization.industry"
-            doctype="CRM Industry"
-            placeholder="Add industry"
-          />
+        <div>
+          <div v-if="detailMode" class="flex flex-col gap-3.5">
+            <div
+              class="flex h-7 items-center gap-2 text-base text-gray-800"
+              v-for="field in fields"
+              :key="field.name"
+            >
+              <div class="grid w-7 place-content-center">
+                <component :is="field.icon" />
+              </div>
+              <div>{{ field.value }}</div>
+            </div>
+          </div>
+          <div v-else>
+            <div class="flex flex-col gap-4">
+              <FormControl
+                type="text"
+                ref="title"
+                size="md"
+                label="Organization name"
+                variant="outline"
+                v-model="_organization.organization_name"
+                placeholder="Add organization name"
+              />
+              <div class="flex gap-4">
+                <FormControl
+                  class="flex-1"
+                  type="text"
+                  size="md"
+                  label="Website"
+                  variant="outline"
+                  v-model="_organization.website"
+                  placeholder="Add website"
+                />
+                <FormControl
+                  class="flex-1"
+                  type="text"
+                  size="md"
+                  label="Annual revenue"
+                  variant="outline"
+                  v-model="_organization.annual_revenue"
+                  placeholder="Add annual revenue"
+                />
+              </div>
+              <div class="flex gap-4">
+                <FormControl
+                  class="flex-1"
+                  type="select"
+                  :options="[
+                    '1-10',
+                    '11-50',
+                    '51-200',
+                    '201-500',
+                    '501-1000',
+                    '1001-5000',
+                    '5001-10000',
+                    '10001+',
+                  ]"
+                  size="md"
+                  label="No. of employees"
+                  variant="outline"
+                  v-model="_organization.no_of_employees"
+                />
+                <Link
+                  class="flex-1"
+                  size="md"
+                  label="Industry"
+                  variant="outline"
+                  v-model="_organization.industry"
+                  doctype="CRM Industry"
+                  placeholder="Add industry"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="!detailMode" class="px-4 pb-7 pt-4 sm:px-6">
+        <div class="space-y-2">
+          <Button
+            class="w-full"
+            v-for="action in dialogOptions.actions"
+            :key="action.label"
+            v-bind="action"
+          >
+            {{ action.label }}
+          </Button>
         </div>
       </div>
     </template>
@@ -80,9 +116,13 @@
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
+import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import { FormControl, Dialog, call } from 'frappe-ui'
-import { ref, defineModel, nextTick, watch } from 'vue'
+import { organizationsStore } from '@/stores/organizations'
+import { FormControl, Dialog, call, FeatherIcon } from 'frappe-ui'
+import { ref, defineModel, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -94,6 +134,7 @@ const props = defineProps({
     type: Object,
     default: {
       redirect: true,
+      detailMode: false,
       afterInsert: () => {},
     },
   },
@@ -101,9 +142,10 @@ const props = defineProps({
 
 const router = useRouter()
 const show = defineModel()
-const organizations = defineModel('reloadOrganizations')
+const { organizations } = organizationsStore()
 
 const title = ref(null)
+const detailMode = ref(false)
 const editMode = ref(false)
 let _organization = ref({
   organization_name: '',
@@ -113,7 +155,7 @@ let _organization = ref({
   industry: '',
 })
 
-async function updateOrganization(close) {
+async function updateOrganization() {
   const old = { ...props.organization }
   const newOrg = { ..._organization.value }
 
@@ -125,7 +167,7 @@ async function updateOrganization(close) {
   const values = newOrg
 
   if (!nameChanged && !otherFieldChanged) {
-    close()
+    show.value = false
     return
   }
 
@@ -136,7 +178,7 @@ async function updateOrganization(close) {
   if (otherFieldChanged) {
     name = await callSetValue(values)
   }
-  handleOrganizationUpdate({ name }, close)
+  handleOrganizationUpdate({ name })
 }
 
 async function callRenameDoc() {
@@ -157,7 +199,7 @@ async function callSetValue(values) {
   return d.name
 }
 
-async function callInsertDoc(close) {
+async function callInsertDoc() {
   const doc = await call('frappe.client.insert', {
     doc: {
       doctype: 'CRM Organization',
@@ -165,26 +207,78 @@ async function callInsertDoc(close) {
       website: _organization.value.website,
     },
   })
-  doc.name && handleOrganizationUpdate(doc, close)
+  doc.name && handleOrganizationUpdate(doc)
 }
 
-function handleOrganizationUpdate(doc, close) {
-  organizations.value?.reload()
+function handleOrganizationUpdate(doc) {
+  organizations.reload()
   if (doc.name && props.options.redirect) {
     router.push({
       name: 'Organization',
       params: { organizationId: doc.name },
     })
   }
-  close && close()
+  show.value = false
   props.options.afterInsert && props.options.afterInsert(doc)
 }
+
+const dialogOptions = computed(() => {
+  let title = !editMode.value
+    ? 'New organization'
+    : _organization.value.organization_name
+  let size = detailMode.value ? '' : 'xl'
+  let actions = detailMode.value
+    ? []
+    : [
+        {
+          label: editMode.value ? 'Save' : 'Create',
+          variant: 'solid',
+          onClick: () =>
+            editMode.value ? updateOrganization() : callInsertDoc(),
+        },
+      ]
+
+  return { title, size, actions }
+})
+
+const fields = computed(() => {
+  let details = [
+    {
+      icon: OrganizationsIcon,
+      name: 'organization_name',
+      value: _organization.value.organization_name,
+    },
+    {
+      icon: WebsiteIcon,
+      name: 'website',
+      value: _organization.value.website,
+    },
+    {
+      icon: h(FeatherIcon, { name: 'dollar-sign', class: 'h-4 w-4' }),
+      name: 'annual_revenue',
+      value: _organization.value.annual_revenue,
+    },
+    {
+      icon: h(FeatherIcon, { name: 'hash', class: 'h-4 w-4' }),
+      name: 'no_of_employees',
+      value: _organization.value.no_of_employees,
+    },
+    {
+      icon: h(FeatherIcon, { name: 'briefcase', class: 'h-4 w-4' }),
+      name: 'industry',
+      value: _organization.value.industry,
+    },
+  ]
+
+  return details.filter((field) => field.value)
+})
 
 watch(
   () => show.value,
   (value) => {
     if (!value) return
     editMode.value = false
+    detailMode.value = props.options.detailMode
     nextTick(() => {
       // TODO: Issue with FormControl
       // title.value.el.focus()
