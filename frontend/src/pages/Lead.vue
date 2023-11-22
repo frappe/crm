@@ -57,7 +57,7 @@
         :validateFile="validateFile"
       >
         <template #default="{ openFileSelector, error }">
-          <div class="flex items-center justify-start gap-5 p-5">
+          <div class="flex items-center justify-start gap-5 border-b p-5">
             <div class="group relative h-[88px] w-[88px]">
               <Avatar
                 size="3xl"
@@ -135,41 +135,18 @@
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="section in detailSections.data"
+            v-for="(section, i) in detailSections.data"
             :key="section.label"
-            class="flex flex-col"
+            class="flex flex-col p-3"
+            :class="{ 'border-b': i !== detailSections.data.length - 1 }"
           >
-            <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
-              <div class="sticky top-0 z-10 border-t bg-white p-3">
-                <div
-                  class="flex max-w-fit cursor-pointer items-center gap-2 px-2 text-base font-semibold leading-5"
-                  @click="toggle()"
-                >
-                  <FeatherIcon
-                    name="chevron-right"
-                    class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
-                    :class="{ 'rotate-90': opened }"
-                  />
-                  {{ section.label }}
-                </div>
-              </div>
-              <transition
-                enter-active-class="duration-300 ease-in"
-                leave-active-class="duration-300 ease-[cubic-bezier(0, 1, 0.5, 1)]"
-                enter-to-class="max-h-[200px] overflow-hidden"
-                leave-from-class="max-h-[200px] overflow-hidden"
-                enter-from-class="max-h-0 overflow-hidden"
-                leave-to-class="max-h-0 overflow-hidden"
-              >
-                <div v-if="opened" class="flex flex-col gap-1.5 px-3">
-                  <SectionFields
-                    :fields="section.fields"
-                    v-model="lead.data"
-                    @update="updateField"
-                  />
-                </div>
-              </transition>
-            </Toggler>
+            <Section :is-opened="section.opened" :label="section.label">
+              <SectionFields
+                :fields="section.fields"
+                v-model="lead.data"
+                @update="updateField"
+              />
+            </Section>
           </div>
         </div>
       </div>
@@ -197,10 +174,10 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import {
   leadStatuses,
