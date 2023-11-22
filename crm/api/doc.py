@@ -172,6 +172,12 @@ def get_type(field):
 		return "phone"
 	elif field.fieldtype == "Data" and field.options == "Email":
 		return "email"
+	elif field.fieldtype == "Check":
+		return "checkbox"
+	elif field.fieldtype == "Int":
+		return "number"
+	elif field.fieldtype in ["Small Text", "Text", "Long Text"]:
+		return "textarea"
 	elif field.read_only:
 		return "read_only"
 	return field.fieldtype.lower()

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-1.5">
+  <div class="flex flex-col gap-1.5 max-h-[300px] overflow-y-auto">
     <div
       v-for="field in fields"
       :key="field.label"
@@ -8,15 +8,24 @@
       <div class="w-[106px] shrink-0 text-gray-600">
         {{ field.label }}
       </div>
-      <div class="flex-1 overflow-hidden">
-        <Link
-          v-if="field.type === 'link'"
+      <div class="grid flex-1 items-center overflow-hidden min-h-[28px]">
+        <FormControl
+          v-if="
+            [
+              'email',
+              'number',
+              'date',
+              'password',
+              'textarea',
+              'checkbox',
+            ].includes(field.type)
+          "
           class="form-control"
+          :type="field.type"
           :value="data[field.name]"
-          :doctype="field.doctype"
           :placeholder="field.placeholder"
-          @change="(data) => emit('update', field.name, data)"
-          :onCreate="field.create"
+          :debounce="500"
+          @change.stop="emit('update', field.name, $event.target.value)"
         />
         <FormControl
           v-else-if="field.type === 'select'"
@@ -27,21 +36,14 @@
           :debounce="500"
           @change.stop="emit('update', field.name, $event.target.value)"
         />
-        <FormControl
-          v-else-if="field.type === 'email'"
+        <Link
+          v-else-if="field.type === 'link'"
           class="form-control"
-          type="email"
           :value="data[field.name]"
-          :debounce="500"
-          @change.stop="emit('update', field.name, $event.target.value)"
-        />
-        <FormControl
-          v-else-if="field.type === 'date'"
-          class="form-control"
-          type="date"
-          :value="data[field.name]"
-          :debounce="500"
-          @change.stop="emit('update', field.name, $event.target.value)"
+          :doctype="field.doctype"
+          :placeholder="field.placeholder"
+          @change="(data) => emit('update', field.name, data)"
+          :onCreate="field.create"
         />
         <Tooltip
           v-else-if="field.type === 'read_only'"
@@ -86,3 +88,32 @@ const emit = defineEmits(['update'])
 
 const data = defineModel()
 </script>
+
+<style scoped>
+:deep(.form-control input:not([type='checkbox'])),
+:deep(.form-control select),
+:deep(.form-control textarea),
+:deep(.form-control button) {
+  border-color: transparent;
+  background: white;
+}
+
+:deep(.form-control button) {
+  gap: 0;
+}
+:deep(.form-control [type='checkbox']) {
+  margin-left: 9px;
+  cursor: pointer;
+}
+
+:deep(.form-control button > div) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:deep(.form-control button svg) {
+  color: white;
+  width: 0;
+}
+</style>

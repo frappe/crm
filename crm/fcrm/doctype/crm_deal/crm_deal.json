@@ -40,7 +40,7 @@
   {
    "fetch_from": "organization.annual_revenue",
    "fieldname": "annual_revenue",
-   "fieldtype": "Int",
+   "fieldtype": "Currency",
    "label": "Amount",
    "read_only": 1
   },
@@ -136,7 +136,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-22 13:26:52.401192",
+ "modified": "2023-11-22 17:52:31.595525",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
