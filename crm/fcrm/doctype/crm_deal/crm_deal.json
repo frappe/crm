@@ -6,23 +6,24 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
+  "organization_tab",
   "organization",
   "website",
   "annual_revenue",
-  "column_break_afce",
-  "deal_owner",
   "close_date",
-  "status",
   "probability",
   "next_step",
-  "section_break_eepu",
-  "lead",
-  "column_break_bqvs",
   "contacts_tab",
   "email",
   "mobile_no",
-  "contacts"
+  "contacts",
+  "others_tab",
+  "naming_series",
+  "status",
+  "deal_owner",
+  "section_break_eepu",
+  "lead",
+  "column_break_bqvs"
  ],
  "fields": [
   {
@@ -40,18 +41,16 @@
    "fetch_from": "organization.annual_revenue",
    "fieldname": "annual_revenue",
    "fieldtype": "Int",
-   "label": "Annual Revenue"
-  },
-  {
-   "fieldname": "column_break_afce",
-   "fieldtype": "Column Break"
+   "label": "Amount",
+   "read_only": 1
   },
   {
    "fetch_from": "organization.website",
    "fieldname": "website",
    "fieldtype": "Data",
    "label": "Website",
-   "options": "URL"
+   "options": "URL",
+   "read_only": 1
   },
   {
    "fieldname": "close_date",
@@ -92,7 +91,8 @@
   {
    "fieldname": "contacts_tab",
    "fieldtype": "Tab Break",
-   "label": "Contacts"
+   "label": "Contacts",
+   "read_only": 1
   },
   {
    "fieldname": "email",
@@ -121,11 +121,22 @@
    "fieldtype": "Table",
    "label": "Contacts",
    "options": "CRM Contacts"
+  },
+  {
+   "fieldname": "others_tab",
+   "fieldtype": "Tab Break",
+   "label": "Others",
+   "read_only": 1
+  },
+  {
+   "fieldname": "organization_tab",
+   "fieldtype": "Tab Break",
+   "label": "Organization"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-09 19:58:15.620483",
+ "modified": "2023-11-22 13:26:52.401192",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

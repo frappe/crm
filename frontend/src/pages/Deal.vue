@@ -96,10 +96,10 @@
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="(section, i) in detailSections"
+            v-for="(section, i) in detailSections.data"
             :key="section.label"
             class="flex flex-col p-3"
-            :class="{ 'border-b': i !== detailSections.length - 1 }"
+            :class="{ 'border-b': i !== detailSections.data.length - 1 }"
           >
             <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
               <div class="flex items-center justify-between">
@@ -191,13 +191,14 @@
                       </Tooltip>
                       <FormControl
                         v-else
+                        class="form-control"
                         type="text"
                         :value="deal.data[field.name]"
                         @change.stop="
                           updateDeal(field.name, $event.target.value)
                         "
                         :debounce="500"
-                        class="form-control"
+                        :placeholder="field.placeholder"
                       />
                     </div>
                     <ExternalLinkIcon
@@ -474,77 +475,52 @@ const tabs = [
   },
 ]
 
-const detailSections = computed(() => {
-  return [
-    {
-      label: 'Organization',
-      opened: true,
-      fields: [
-        {
-          label: 'Organization',
-          type: 'link',
-          name: 'organization',
-          placeholder: 'Select organization',
-          doctype: 'CRM Organization',
-          change: (data) => updateField('organization', data),
-          create: (value, close) => {
-            _organization.value.organization_name = value
-            showOrganizationModal.value = true
-            close()
-          },
-          link: () => {
-            router.push({
-              name: 'Organization',
-              params: { organizationId: organization.value.name },
-            })
-          },
-        },
-        {
-          label: 'Website',
-          type: 'read_only',
-          name: 'website',
-          value: organization.value?.website,
-          tooltip:
-            'It is a read only field, value is fetched from organization',
-        },
-        {
-          label: 'Amount',
-          type: 'read_only',
-          name: 'annual_revenue',
-          value: organization.value?.annual_revenue,
-          tooltip:
-            'It is a read only field, value is fetched from organization',
-        },
-        {
-          label: 'Close date',
-          type: 'date',
-          name: 'close_date',
-        },
-        {
-          label: 'Probability',
-          type: 'data',
-          name: 'probability',
-        },
-        {
-          label: 'Next step',
-          type: 'data',
-          name: 'next_step',
-        },
-      ],
-    },
-    {
-      label: 'Contacts',
-      opened: true,
-      contacts: deal.data.contacts.map((contact) => {
-        return {
-          name: contact.contact,
-          is_primary: contact.is_primary,
-          opened: false,
-        }
-      }),
-    },
-  ]
+const detailSections = createResource({
+  url: 'crm.api.doc.get_doctype_fields',
+  params: { doctype: 'CRM Deal' },
+  cache: 'dealFields',
+  auto: true,
+  transform: (data) => {
+    return getParsedFields(data)
+  },
 })
+
+function getParsedFields(sections) {
+  sections.forEach((section) => {
+    section.fields.forEach((field) => {
+      if (['website', 'annual_revenue'].includes(field.name)) {
+        field.value = organization.value?.[field.name]
+        field.tooltip =
+          'This field is read-only and is fetched from the organization'
+      } else if (field.name == 'organization') {
+        field.create = (value, close) => {
+          _organization.value.organization_name = value
+          showOrganizationModal.value = true
+          close()
+        }
+        field.link = () =>
+          router.push({
+            name: 'Organization',
+            params: { organizationId: deal.data.organization },
+          })
+      }
+    })
+  })
+
+  let contactSection = {
+    label: 'Contacts',
+    opened: true,
+    contacts: deal.data.contacts.map((contact) => {
+      return {
+        name: contact.contact,
+        is_primary: contact.is_primary,
+        opened: false,
+      }
+    }),
+  }
+
+  return [...sections, contactSection]
+}
 
 const showContactModal = ref(false)
 const _contact = ref({})
