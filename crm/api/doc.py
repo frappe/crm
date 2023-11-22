@@ -95,15 +95,7 @@ def get_doctype_fields(doctype):
 	all_fields = []
 	all_fields.extend(fields)
 
-	# Add custom fields based on insert_after
-	for custom_field in custom_fields:
-		if custom_field.insert_after:
-			for i, field in enumerate(all_fields):
-				if field.fieldname == custom_field.insert_after:
-					all_fields.insert(i + 1, custom_field)
-					break
-		else:
-			all_fields.prepend(custom_field)
+	sort_custom_fields(custom_fields, all_fields)
 
 	sections = {}
 	section_fields = []
@@ -135,6 +127,25 @@ def get_doctype_fields(doctype):
 		deal_fields.append(sections[section])
 
 	return deal_fields
+
+def sort_custom_fields(custom_fields, all_fields):
+	# sort custom fields based on insert_after
+	not_in_fields = []
+	for custom_field in custom_fields:
+		if custom_field.insert_after:
+			field_exists = False
+			for i, field in enumerate(all_fields):
+				if field.fieldname == custom_field.insert_after:
+					all_fields.insert(i + 1, custom_field)
+					field_exists = True
+					break
+			if not field_exists:
+				not_in_fields.append(custom_field)
+		else:
+			all_fields.prepend(custom_field)
+
+	if not_in_fields:
+		sort_custom_fields(not_in_fields, all_fields)
 
 def get_field_obj(field):
 	obj = {
