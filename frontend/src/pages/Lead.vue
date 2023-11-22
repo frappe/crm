@@ -57,7 +57,7 @@
         :validateFile="validateFile"
       >
         <template #default="{ openFileSelector, error }">
-          <div class="flex items-center justify-start gap-5 p-5">
+          <div class="flex items-center justify-start gap-5 border-b p-5">
             <div class="group relative h-[88px] w-[88px]">
               <Avatar
                 size="3xl"
@@ -135,143 +135,18 @@
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="section in detailSections"
+            v-for="(section, i) in detailSections.data"
             :key="section.label"
-            class="flex flex-col"
+            class="flex flex-col p-3"
+            :class="{ 'border-b': i !== detailSections.data.length - 1 }"
           >
-            <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
-              <div class="sticky top-0 z-10 border-t bg-white p-3">
-                <div
-                  class="flex max-w-fit cursor-pointer items-center gap-2 px-2 text-base font-semibold leading-5"
-                  @click="toggle()"
-                >
-                  <FeatherIcon
-                    name="chevron-right"
-                    class="h-4 text-gray-600 transition-all duration-300 ease-in-out"
-                    :class="{ 'rotate-90': opened }"
-                  />
-                  {{ section.label }}
-                </div>
-              </div>
-              <transition
-                enter-active-class="duration-300 ease-in"
-                leave-active-class="duration-300 ease-[cubic-bezier(0, 1, 0.5, 1)]"
-                enter-to-class="max-h-[200px] overflow-hidden"
-                leave-from-class="max-h-[200px] overflow-hidden"
-                enter-from-class="max-h-0 overflow-hidden"
-                leave-to-class="max-h-0 overflow-hidden"
-              >
-                <div v-if="opened" class="flex flex-col gap-1.5 px-3">
-                  <div
-                    v-for="field in section.fields"
-                    :key="field.name"
-                    class="flex items-center gap-2 px-3 text-base leading-5 last:mb-3"
-                  >
-                    <div class="w-[106px] shrink-0 text-gray-600">
-                      {{ field.label }}
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                      <FormControl
-                        v-if="field.type === 'select'"
-                        type="select"
-                        :options="field.options"
-                        :value="lead.data[field.name]"
-                        @change.stop="
-                          updateLead(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control cursor-pointer [&_select]:cursor-pointer"
-                      >
-                        <template #prefix>
-                          <IndicatorIcon
-                            :class="leadStatuses[lead.data[field.name]].color"
-                          />
-                        </template>
-                      </FormControl>
-                      <FormControl
-                        v-else-if="field.type === 'email'"
-                        type="email"
-                        class="form-control"
-                        :value="lead.data[field.name]"
-                        @change.stop="
-                          updateLead(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                      />
-                      <Link
-                        v-else-if="field.type === 'link'"
-                        class="form-control"
-                        :value="lead.data[field.name]"
-                        :doctype="field.doctype"
-                        :placeholder="field.placeholder"
-                        @change="(e) => field.change(e)"
-                        :onCreate="field.create"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'user'"
-                        type="autocomplete"
-                        :options="activeAgents"
-                        :value="getUser(lead.data[field.name]).full_name"
-                        @change="
-                          (option) => updateField('lead_owner', option.email)
-                        "
-                        class="form-control"
-                        :placeholder="field.placeholder"
-                      >
-                        <template #target="{ togglePopover }">
-                          <Button
-                            variant="ghost"
-                            @click="togglePopover()"
-                            :label="getUser(lead.data[field.name]).full_name"
-                            class="w-full !justify-start"
-                          >
-                            <template #prefix>
-                              <UserAvatar
-                                :user="lead.data[field.name]"
-                                size="sm"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                        <template #item-prefix="{ option }">
-                          <UserAvatar
-                            class="mr-2"
-                            :user="option.email"
-                            size="sm"
-                          />
-                        </template>
-                      </FormControl>
-                      <Tooltip
-                        :text="field.tooltip"
-                        class="flex h-7 cursor-pointer items-center px-2 py-1"
-                        v-else-if="field.type === 'read_only'"
-                      >
-                        {{ field.value }}
-                      </Tooltip>
-                      <FormControl
-                        v-else
-                        type="text"
-                        :value="lead.data[field.name]"
-                        @change.stop="
-                          updateLead(field.name, $event.target.value)
-                        "
-                        class="form-control"
-                        :debounce="500"
-                      />
-                    </div>
-                    <ExternalLinkIcon
-                      v-if="
-                        field.type === 'link' &&
-                        field.link &&
-                        lead.data[field.name]
-                      "
-                      class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
-                      @click="field.link(lead.data[field.name])"
-                    />
-                  </div>
-                </div>
-              </transition>
-            </Toggler>
+            <Section :is-opened="section.opened" :label="section.label">
+              <SectionFields
+                :fields="section.fields"
+                v-model="lead.data"
+                @update="updateField"
+              />
+            </Section>
           </div>
         </div>
       </div>
@@ -298,13 +173,12 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
-import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
-import Link from '@/components/Controls/Link.vue'
+import Section from '@/components/Section.vue'
+import SectionFields from '@/components/SectionFields.vue'
 import {
   leadStatuses,
   statusDropdownOptions,
@@ -427,97 +301,40 @@ function validateFile(file) {
   }
 }
 
-const detailSections = computed(() => {
-  return [
-    {
-      label: 'Details',
-      opened: true,
-      fields: [
-        {
-          label: 'Organization',
-          type: 'link',
-          name: 'organization',
-          placeholder: 'Select organization',
-          doctype: 'CRM Organization',
-          change: (data) => data && updateField('organization', data),
-          create: (value, close) => {
-            _organization.value.organization_name = value
-            showOrganizationModal.value = true
-            close()
-          },
-          link: () =>
-            router.push({
-              name: 'Organization',
-              params: { organizationId: lead.data.organization },
-            }),
-        },
-        {
-          label: 'Website',
-          type: 'read_only',
-          name: 'website',
-          value: organization.value?.website,
-          tooltip:
-            'It is a read only field, value is fetched from organization',
-        },
-        {
-          label: 'Industry',
-          type: 'read_only',
-          name: 'industry',
-          value: organization.value?.industry,
-          tooltip:
-            'It is a read only field, value is fetched from organization',
-        },
-        {
-          label: 'Job title',
-          type: 'data',
-          name: 'job_title',
-        },
-        {
-          label: 'Source',
-          type: 'link',
-          name: 'source',
-          placeholder: 'Select source...',
-          doctype: 'CRM Lead Source',
-          change: (data) => updateField('source', data),
-        },
-      ],
-    },
-    {
-      label: 'Person',
-      opened: true,
-      fields: [
-        {
-          label: 'Salutation',
-          type: 'link',
-          name: 'salutation',
-          placeholder: 'Mr./Mrs./Ms...',
-          doctype: 'Salutation',
-          change: (data) => updateField('salutation', data),
-        },
-        {
-          label: 'First name',
-          type: 'data',
-          name: 'first_name',
-        },
-        {
-          label: 'Last name',
-          type: 'data',
-          name: 'last_name',
-        },
-        {
-          label: 'Email',
-          type: 'email',
-          name: 'email',
-        },
-        {
-          label: 'Mobile no.',
-          type: 'phone',
-          name: 'mobile_no',
-        },
-      ],
-    },
-  ]
+const detailSections = createResource({
+  url: 'crm.api.doc.get_doctype_fields',
+  params: { doctype: 'CRM Lead' },
+  cache: 'leadFields',
+  auto: true,
+  transform: (data) => {
+    return getParsedFields(data)
+  },
 })
+
+function getParsedFields(sections) {
+  sections.forEach((section) => {
+    section.fields.forEach((field) => {
+      if (['website', 'industry'].includes(field.name)) {
+        field.value = organization.value?.[field.name]
+        field.tooltip =
+          'This field is read-only and is fetched from the organization'
+      } else if (field.name == 'organization') {
+        field.create = (value, close) => {
+          _organization.value.organization_name = value
+          showOrganizationModal.value = true
+          close()
+        }
+        field.link = () =>
+          router.push({
+            name: 'Organization',
+            params: { organizationId: lead.data.organization },
+          })
+      }
+    })
+  })
+
+  return sections
+}
 
 const organization = computed(() => {
   return getOrganization(lead.data.organization)
@@ -540,27 +357,3 @@ function updateField(name, value, callback) {
   })
 }
 </script>
-
-<style scoped>
-:deep(.form-control input),
-:deep(.form-control select),
-:deep(.form-control button) {
-  border-color: transparent;
-  background: white;
-}
-
-:deep(.form-control button) {
-  gap: 0;
-}
-
-:deep(.form-control button > div) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-:deep(.form-control button svg) {
-  color: white;
-  width: 0;
-}
-</style>

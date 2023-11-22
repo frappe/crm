@@ -96,24 +96,13 @@
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="(section, i) in detailSections"
+            v-for="(section, i) in detailSections.data"
             :key="section.label"
             class="flex flex-col p-3"
-            :class="{ 'border-b': i !== detailSections.length - 1 }"
+            :class="{ 'border-b': i !== detailSections.data.length - 1 }"
           >
-            <Toggler :is-opened="section.opened" v-slot="{ opened, toggle }">
-              <div class="flex items-center justify-between">
-                <div
-                  class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
-                  @click="toggle()"
-                >
-                  <FeatherIcon
-                    name="chevron-right"
-                    class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
-                    :class="{ 'rotate-90': opened }"
-                  />
-                  {{ section.label }}
-                </div>
+            <Section :is-opened="section.opened" :label="section.label">
+              <template #actions>
                 <div v-if="section.contacts" class="pr-2">
                   <Link
                     value=""
@@ -143,180 +132,103 @@
                     </template>
                   </Link>
                 </div>
-              </div>
-              <transition
-                enter-active-class="duration-300 ease-in"
-                leave-active-class="duration-300 ease-[cubic-bezier(0, 1, 0.5, 1)]"
-                enter-to-class="max-h-[200px] overflow-hidden"
-                leave-from-class="max-h-[200px] overflow-hidden"
-                enter-from-class="max-h-0 overflow-hidden"
-                leave-to-class="max-h-0 overflow-hidden"
-              >
-                <div v-if="opened" class="flex flex-col gap-1.5">
+              </template>
+              <SectionFields
+                v-if="section.fields"
+                :fields="section.fields"
+                v-model="deal.data"
+                @update="updateField"
+              />
+              <div v-else>
+                <div
+                  v-if="section.contacts.length"
+                  v-for="(contact, i) in section.contacts"
+                  :key="contact.name"
+                >
                   <div
-                    v-if="section.fields"
-                    v-for="field in section.fields"
-                    :key="field.label"
-                    class="flex items-center gap-2 px-3 text-base leading-5 first:mt-3"
+                    class="px-2 pb-2.5"
+                    :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
                   >
-                    <div class="w-[106px] shrink-0 text-gray-600">
-                      {{ field.label }}
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                      <Link
-                        v-if="field.type === 'link'"
-                        class="form-control"
-                        :value="deal.data[field.name]"
-                        :doctype="field.doctype"
-                        :placeholder="field.placeholder"
-                        @change="(e) => field.change(e)"
-                        :onCreate="field.create"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'date'"
-                        type="date"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control"
-                      />
-                      <Tooltip
-                        :text="field.tooltip"
-                        class="flex h-7 cursor-pointer items-center px-2 py-1"
-                        v-else-if="field.type === 'read_only'"
-                      >
-                        {{ field.value }}
-                      </Tooltip>
-                      <FormControl
-                        v-else
-                        type="text"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control"
-                      />
-                    </div>
-                    <ExternalLinkIcon
-                      v-if="
-                        field.type === 'link' &&
-                        field.link &&
-                        deal.data[field.name]
-                      "
-                      class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
-                      @click="field.link(deal.data[field.name])"
-                    />
-                  </div>
-                  <div v-else>
-                    <div
-                      v-if="section.contacts.length"
-                      v-for="(contact, i) in section.contacts"
-                      :key="contact.name"
-                    >
-                      <div
-                        class="px-2 pb-2.5"
-                        :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
-                      >
-                        <Toggler
-                          :is-opened="contact.opened"
-                          v-slot="{ opened: cOpened, toggle: cToggle }"
+                    <Section :is-opened="contact.opened">
+                      <template #header="{ opened, toggle }">
+                        <div
+                          class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-gray-700"
                         >
                           <div
-                            class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-gray-700"
+                            class="flex h-7 items-center gap-2"
+                            @click="toggle()"
                           >
-                            <div
-                              class="flex h-7 items-center gap-2"
-                              @click="cToggle()"
-                            >
-                              <Avatar
-                                :label="
-                                  getContactByName(contact.name).full_name
-                                "
-                                :image="getContactByName(contact.name).image"
-                                size="md"
-                              />
-                              {{ getContactByName(contact.name).full_name }}
-                              <Badge
-                                v-if="contact.is_primary"
-                                class="ml-2"
-                                variant="outline"
-                                label="Primary"
-                                theme="green"
-                              />
-                            </div>
-                            <div class="flex items-center">
-                              <Dropdown :options="contactOptions(contact)">
-                                <Button variant="ghost">
-                                  <FeatherIcon
-                                    name="more-horizontal"
-                                    class="h-4 text-gray-600"
-                                  />
-                                </Button>
-                              </Dropdown>
-                              <Button
-                                variant="ghost"
-                                @click="
-                                  router.push({
-                                    name: 'Contact',
-                                    params: { contactId: contact.name },
-                                  })
-                                "
-                              >
-                                <ExternalLinkIcon class="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" @click="cToggle()">
+                            <Avatar
+                              :label="getContactByName(contact.name).full_name"
+                              :image="getContactByName(contact.name).image"
+                              size="md"
+                            />
+                            {{ getContactByName(contact.name).full_name }}
+                            <Badge
+                              v-if="contact.is_primary"
+                              class="ml-2"
+                              variant="outline"
+                              label="Primary"
+                              theme="green"
+                            />
+                          </div>
+                          <div class="flex items-center">
+                            <Dropdown :options="contactOptions(contact)">
+                              <Button variant="ghost">
                                 <FeatherIcon
-                                  name="chevron-right"
-                                  class="h-4 w-4 text-gray-900 transition-all duration-300 ease-in-out"
-                                  :class="{ 'rotate-90': cOpened }"
+                                  name="more-horizontal"
+                                  class="h-4 text-gray-600"
                                 />
                               </Button>
-                            </div>
-                          </div>
-                          <transition
-                            enter-active-class="duration-300 ease-in"
-                            leave-active-class="duration-300 ease-[cubic-bezier(0, 1, 0.5, 1)]"
-                            enter-to-class="max-h-[200px] overflow-hidden"
-                            leave-from-class="max-h-[200px] overflow-hidden"
-                            enter-from-class="max-h-0 overflow-hidden"
-                            leave-to-class="max-h-0 overflow-hidden"
-                          >
-                            <div
-                              v-if="cOpened"
-                              class="flex flex-col gap-1.5 text-base text-gray-800"
+                            </Dropdown>
+                            <Button
+                              variant="ghost"
+                              @click="
+                                router.push({
+                                  name: 'Contact',
+                                  params: { contactId: contact.name },
+                                })
+                              "
                             >
-                              <div
-                                class="flex items-center gap-3 pb-1.5 pl-1 pt-4"
-                              >
-                                <EmailIcon class="h-4 w-4" />
-                                {{ getContactByName(contact.name).email_id }}
-                              </div>
-                              <div class="flex items-center gap-3 p-1 py-1.5">
-                                <PhoneIcon class="h-4 w-4" />
-                                {{ getContactByName(contact.name).mobile_no }}
-                              </div>
-                            </div>
-                          </transition>
-                        </Toggler>
-                      </div>
+                              <ExternalLinkIcon class="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" @click="toggle()">
+                              <FeatherIcon
+                                name="chevron-right"
+                                class="h-4 w-4 text-gray-900 transition-all duration-300 ease-in-out"
+                                :class="{ 'rotate-90': opened }"
+                              />
+                            </Button>
+                          </div>
+                        </div>
+                      </template>
                       <div
-                        v-if="i != section.contacts.length - 1"
-                        class="mx-2 h-px border-t border-gray-200"
-                      />
-                    </div>
-                    <div
-                      v-else
-                      class="flex h-20 items-center justify-center text-base text-gray-600"
-                    >
-                      No contacts added
-                    </div>
+                        class="flex flex-col gap-1.5 text-base text-gray-800"
+                      >
+                        <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
+                          <EmailIcon class="h-4 w-4" />
+                          {{ getContactByName(contact.name).email_id }}
+                        </div>
+                        <div class="flex items-center gap-3 p-1 py-1.5">
+                          <PhoneIcon class="h-4 w-4" />
+                          {{ getContactByName(contact.name).mobile_no }}
+                        </div>
+                      </div>
+                    </Section>
                   </div>
+                  <div
+                    v-if="i != section.contacts.length - 1"
+                    class="mx-2 h-px border-t border-gray-200"
+                  />
                 </div>
-              </transition>
-            </Toggler>
+                <div
+                  v-else
+                  class="flex h-20 items-center justify-center text-base text-gray-600"
+                >
+                  No contacts added
+                </div>
+              </div>
+            </Section>
           </div>
         </div>
       </div>
@@ -353,12 +265,13 @@ import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
+import Section from '@/components/Section.vue'
+import SectionFields from '@/components/SectionFields.vue'
 import {
   dealStatuses,
   statusDropdownOptions,
@@ -474,77 +387,52 @@ const tabs = [
   },
 ]
 
-const detailSections = computed(() => {
-  return [
-    {
-      label: 'Organization',
-      opened: true,
-      fields: [
-        {
-          label: 'Organization',
-          type: 'link',
-          name: 'organization',
-          placeholder: 'Select organization',
-          doctype: 'CRM Organization',
-          change: (data) => updateField('organization', data),
-          create: (value, close) => {
-            _organization.value.organization_name = value
-            showOrganizationModal.value = true
-            close()
-          },
-          link: () => {
-            router.push({
-              name: 'Organization',
-              params: { organizationId: organization.value.name },
-            })
-          },
-        },
-        {
-          label: 'Website',
-          type: 'read_only',
-          name: 'website',
-          value: organization.value?.website,
-          tooltip:
-            'It is a read only field, value is fetched from organization',
-        },
-        {
-          label: 'Amount',
-          type: 'read_only',
-          name: 'annual_revenue',
-          value: organization.value?.annual_revenue,
-          tooltip:
-            'It is a read only field, value is fetched from organization',
-        },
-        {
-          label: 'Close date',
-          type: 'date',
-          name: 'close_date',
-        },
-        {
-          label: 'Probability',
-          type: 'data',
-          name: 'probability',
-        },
-        {
-          label: 'Next step',
-          type: 'data',
-          name: 'next_step',
-        },
-      ],
-    },
-    {
-      label: 'Contacts',
-      opened: true,
-      contacts: deal.data.contacts.map((contact) => {
-        return {
-          name: contact.contact,
-          is_primary: contact.is_primary,
-          opened: false,
-        }
-      }),
-    },
-  ]
+const detailSections = createResource({
+  url: 'crm.api.doc.get_doctype_fields',
+  params: { doctype: 'CRM Deal' },
+  cache: 'dealFields',
+  auto: true,
+  transform: (data) => {
+    return getParsedFields(data)
+  },
 })
+
+function getParsedFields(sections) {
+  sections.forEach((section) => {
+    section.fields.forEach((field) => {
+      if (['website', 'annual_revenue'].includes(field.name)) {
+        field.value = organization.value?.[field.name]
+        field.tooltip =
+          'This field is read-only and is fetched from the organization'
+      } else if (field.name == 'organization') {
+        field.create = (value, close) => {
+          _organization.value.organization_name = value
+          showOrganizationModal.value = true
+          close()
+        }
+        field.link = () =>
+          router.push({
+            name: 'Organization',
+            params: { organizationId: deal.data.organization },
+          })
+      }
+    })
+  })
+
+  let contactSection = {
+    label: 'Contacts',
+    opened: true,
+    contacts: deal.data.contacts.map((contact) => {
+      return {
+        name: contact.contact,
+        is_primary: contact.is_primary,
+        opened: false,
+      }
+    }),
+  }
+
+  return [...sections, contactSection]
+}
 
 const showContactModal = ref(false)
 const _contact = ref({})
@@ -628,26 +516,3 @@ function updateField(name, value, callback) {
   })
 }
 </script>
-
-<style scoped>
-:deep(.form-control input),
-:deep(.form-control button) {
-  border-color: transparent;
-  background: white;
-}
-
-:deep(.form-control button) {
-  gap: 0;
-}
-
-:deep(.form-control button > div) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-:deep(.form-control button svg) {
-  color: white;
-  width: 0;
-}
-</style>
