@@ -153,64 +153,12 @@
                 leave-to-class="max-h-0 overflow-hidden"
               >
                 <div v-if="opened" class="flex flex-col gap-1.5">
-                  <div
+                  <SectionFields
                     v-if="section.fields"
-                    v-for="field in section.fields"
-                    :key="field.label"
-                    class="flex items-center gap-2 px-3 text-base leading-5 first:mt-3"
-                  >
-                    <div class="w-[106px] shrink-0 text-gray-600">
-                      {{ field.label }}
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                      <Link
-                        v-if="field.type === 'link'"
-                        class="form-control"
-                        :value="deal.data[field.name]"
-                        :doctype="field.doctype"
-                        :placeholder="field.placeholder"
-                        @change="(e) => field.change(e)"
-                        :onCreate="field.create"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'date'"
-                        type="date"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        class="form-control"
-                      />
-                      <Tooltip
-                        :text="field.tooltip"
-                        class="flex h-7 cursor-pointer items-center px-2 py-1"
-                        v-else-if="field.type === 'read_only'"
-                      >
-                        {{ field.value }}
-                      </Tooltip>
-                      <FormControl
-                        v-else
-                        class="form-control"
-                        type="text"
-                        :value="deal.data[field.name]"
-                        @change.stop="
-                          updateDeal(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                        :placeholder="field.placeholder"
-                      />
-                    </div>
-                    <ExternalLinkIcon
-                      v-if="
-                        field.type === 'link' &&
-                        field.link &&
-                        deal.data[field.name]
-                      "
-                      class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
-                      @click="field.link(deal.data[field.name])"
-                    />
-                  </div>
+                    :fields="section.fields"
+                    v-model="deal.data"
+                    @update="updateField"
+                  />
                   <div v-else>
                     <div
                       v-if="section.contacts.length"
@@ -360,6 +308,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
+import SectionFields from '@/components/SectionFields.vue'
 import {
   dealStatuses,
   statusDropdownOptions,

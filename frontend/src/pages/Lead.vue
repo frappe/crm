@@ -162,108 +162,11 @@
                 leave-to-class="max-h-0 overflow-hidden"
               >
                 <div v-if="opened" class="flex flex-col gap-1.5 px-3">
-                  <div
-                    v-for="field in section.fields"
-                    :key="field.name"
-                    class="flex items-center gap-2 px-3 text-base leading-5 last:mb-3"
-                  >
-                    <div class="w-[106px] shrink-0 text-gray-600">
-                      {{ field.label }}
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                      <FormControl
-                        v-if="field.type === 'select'"
-                        class="form-control cursor-pointer [&_select]:cursor-pointer"
-                        type="select"
-                        :options="field.options"
-                        :value="lead.data[field.name]"
-                        @change.stop="
-                          updateLead(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'email'"
-                        type="email"
-                        class="form-control"
-                        :value="lead.data[field.name]"
-                        @change.stop="
-                          updateLead(field.name, $event.target.value)
-                        "
-                        :debounce="500"
-                      />
-                      <Link
-                        v-else-if="field.type === 'link'"
-                        class="form-control"
-                        :value="lead.data[field.name]"
-                        :doctype="field.doctype"
-                        :placeholder="field.placeholder"
-                        @change="(data) => updateField(field.name, data)"
-                        :onCreate="field.create"
-                      />
-                      <FormControl
-                        v-else-if="field.type === 'user'"
-                        type="autocomplete"
-                        :options="activeAgents"
-                        :value="getUser(lead.data[field.name]).full_name"
-                        @change="
-                          (option) => updateField('lead_owner', option.email)
-                        "
-                        class="form-control"
-                        :placeholder="field.placeholder"
-                      >
-                        <template #target="{ togglePopover }">
-                          <Button
-                            variant="ghost"
-                            @click="togglePopover()"
-                            :label="getUser(lead.data[field.name]).full_name"
-                            class="w-full !justify-start"
-                          >
-                            <template #prefix>
-                              <UserAvatar
-                                :user="lead.data[field.name]"
-                                size="sm"
-                              />
-                            </template>
-                          </Button>
-                        </template>
-                        <template #item-prefix="{ option }">
-                          <UserAvatar
-                            class="mr-2"
-                            :user="option.email"
-                            size="sm"
-                          />
-                        </template>
-                      </FormControl>
-                      <Tooltip
-                        :text="field.tooltip"
-                        class="flex h-7 cursor-pointer items-center px-2 py-1"
-                        v-else-if="field.type === 'read_only'"
-                      >
-                        {{ field.value || lead.data[field.name] }}
-                      </Tooltip>
-                      <FormControl
-                        v-else
-                        type="text"
-                        :value="lead.data[field.name]"
-                        :placeholder="field.placeholder"
-                        @change.stop="
-                          updateLead(field.name, $event.target.value)
-                        "
-                        class="form-control"
-                        :debounce="500"
-                      />
-                    </div>
-                    <ExternalLinkIcon
-                      v-if="
-                        field.type === 'link' &&
-                        field.link &&
-                        lead.data[field.name]
-                      "
-                      class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
-                      @click="field.link(lead.data[field.name])"
-                    />
-                  </div>
+                  <SectionFields
+                    :fields="section.fields"
+                    v-model="lead.data"
+                    @update="updateField"
+                  />
                 </div>
               </transition>
             </Toggler>
@@ -293,13 +196,12 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
-import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Toggler from '@/components/Toggler.vue'
 import Activities from '@/components/Activities.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
-import Link from '@/components/Controls/Link.vue'
+import SectionFields from '@/components/SectionFields.vue'
 import {
   leadStatuses,
   statusDropdownOptions,
