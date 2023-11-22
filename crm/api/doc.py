@@ -48,60 +48,19 @@ def get_filterable_fields(doctype: str):
 
 @frappe.whitelist()
 def get_doctype_fields(doctype):
-	DocField = frappe.qb.DocType("DocField")
-	CustomField = frappe.qb.DocType("Custom Field")
 	not_allowed_fieldtypes = [
 		"Section Break",
 		"Column Break",
 	]
 
-	fields = (
-		frappe.qb.from_(DocField)
-		.select(
-			DocField.fieldname,
-			DocField.fieldtype,
-			DocField.label,
-			DocField.name,
-			DocField.options,
-			DocField.read_only,
-			DocField.idx,
-		)
-		.where(DocField.parent == doctype)
-		.where(DocField.hidden == False)
-		.where(Criterion.notin(DocField.fieldtype, not_allowed_fieldtypes))
-		.orderby(DocField.idx)
-		.run(as_dict=True)
-	)
-
-	custom_fields = (
-		frappe.qb.from_(CustomField)
-		.select(
-			CustomField.fieldname,
-			CustomField.fieldtype,
-			CustomField.label,
-			CustomField.name,
-			CustomField.options,
-			CustomField.read_only,
-			CustomField.idx,
-			CustomField.insert_after,
-		)
-		.where(CustomField.dt == doctype)
-		.where(CustomField.hidden == False)
-		.where(Criterion.notin(CustomField.fieldtype, not_allowed_fieldtypes))
-		.orderby(CustomField.idx)
-		.run(as_dict=True)
-	)
-
-	all_fields = []
-	all_fields.extend(fields)
-
-	sort_custom_fields(custom_fields, all_fields)
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
 
 	sections = {}
 	section_fields = []
 	last_section = None
 
-	for field in all_fields:
+	for field in fields:
 		if field.fieldtype == "Tab Break" and last_section:
 			sections[last_section]["fields"] = section_fields
 			last_section = None
@@ -122,30 +81,11 @@ def get_doctype_fields(doctype):
 		else:
 			section_fields.append(get_field_obj(field))
 
-	deal_fields = []
+	all_fields = []
 	for section in sections:
-		deal_fields.append(sections[section])
+		all_fields.append(sections[section])
 
-	return deal_fields
-
-def sort_custom_fields(custom_fields, all_fields):
-	# sort custom fields based on insert_after
-	not_in_fields = []
-	for custom_field in custom_fields:
-		if custom_field.insert_after:
-			field_exists = False
-			for i, field in enumerate(all_fields):
-				if field.fieldname == custom_field.insert_after:
-					all_fields.insert(i + 1, custom_field)
-					field_exists = True
-					break
-			if not field_exists:
-				not_in_fields.append(custom_field)
-		else:
-			all_fields.prepend(custom_field)
-
-	if not_in_fields:
-		sort_custom_fields(not_in_fields, all_fields)
+	return all_fields
 
 def get_field_obj(field):
 	obj = {
