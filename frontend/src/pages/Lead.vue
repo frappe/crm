@@ -423,7 +423,8 @@ function validateFile(file) {
 }
 
 const detailSections = createResource({
-  url: 'crm.fcrm.doctype.crm_lead.api.get_lead_fields',
+  url: 'crm.api.doc.get_doctype_fields',
+  params: { doctype: 'CRM Lead' },
   cache: 'leadFields',
   auto: true,
   transform: (data) => {
@@ -436,6 +437,8 @@ function getParsedFields(sections) {
     section.fields.forEach((field) => {
       if (['website', 'industry'].includes(field.name)) {
         field.value = organization.value?.[field.name]
+        field.tooltip =
+          'This field is read-only and is fetched from the organization'
       } else if (field.name == 'organization') {
         field.create = (value, close) => {
           _organization.value.organization_name = value
