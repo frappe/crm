@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2023-11-06 17:56:25.210449",
@@ -136,7 +137,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-22 17:52:31.595525",
+ "modified": "2023-11-23 13:11:37.858710",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

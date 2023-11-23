@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2023-07-24 12:19:39.616298",
@@ -199,7 +200,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-22 13:03:02.261001",
+ "modified": "2023-11-23 13:11:38.314962",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

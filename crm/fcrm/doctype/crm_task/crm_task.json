@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "autoname": "autoincrement",
  "creation": "2023-09-28 15:04:28.084159",
  "default_view": "List",
@@ -86,7 +87,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-07 13:41:18.277998",
+ "modified": "2023-11-23 13:11:39.233502",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Task",
