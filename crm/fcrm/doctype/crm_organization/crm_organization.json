@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:organization_name",
  "creation": "2023-11-03 16:23:59.341751",
@@ -57,7 +58,7 @@
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-13 13:32:39.029742",
+ "modified": "2023-11-23 13:11:37.301082",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
