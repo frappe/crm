@@ -38,6 +38,7 @@
  ],
  "fields": [
   {
+   "default": "CRM-LEAD-.YYYY.-",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
@@ -200,7 +201,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-23 13:11:38.314962",
+ "modified": "2023-11-24 16:38:36.695965",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

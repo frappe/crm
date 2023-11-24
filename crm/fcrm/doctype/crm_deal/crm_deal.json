@@ -84,6 +84,7 @@
    "options": "User"
   },
   {
+   "default": "CRM-DEAL-.YYYY.-",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Naming Series",
@@ -137,7 +138,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-23 13:11:37.858710",
+ "modified": "2023-11-24 16:50:07.177125",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
