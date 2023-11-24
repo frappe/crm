@@ -16,7 +16,8 @@ def get_activities(name):
 def get_deal_activities(name):
 	get_docinfo('', "CRM Deal", name)
 	docinfo = frappe.response["docinfo"]
-	deal_fields_meta = frappe.get_meta("CRM Deal").fields
+	deal_meta = frappe.get_meta("CRM Deal")
+	deal_fields = {field.fieldname: {"label": field.label, "options": field.options} for field in deal_meta.fields}
 
 	doc = frappe.db.get_values("CRM Deal", name, ["creation", "owner", "lead"])[0]
 	lead = doc[2]
@@ -43,13 +44,14 @@ def get_deal_activities(name):
 		if not data.get("changed"):
 			continue
 
-		field_option = None
-
 		if change := data.get("changed")[0]:
-			field_label, field_option = next(((f.label, f.options) for f in deal_fields_meta if f.fieldname == change[0]), None)
+			field = deal_fields.get(change[0], None)
 
-			if field_label == "Lead" or (not change[1] and not change[2]):
+			if not field or change[0] == "lead" or (not change[1] and not change[2]):
 				continue
+
+			field_label = field.get("label") or change[0]
+			field_option = field.get("options") or None
 
 			activity_type = "changed"
 			data = {
@@ -110,7 +112,8 @@ def get_deal_activities(name):
 def get_lead_activities(name):
 	get_docinfo('', "CRM Lead", name)
 	docinfo = frappe.response["docinfo"]
-	lead_fields_meta = frappe.get_meta("CRM Lead").fields
+	lead_meta = frappe.get_meta("CRM Lead")
+	lead_fields = {field.fieldname: {"label": field.label, "options": field.options} for field in lead_meta.fields}
 
 	doc = frappe.db.get_values("CRM Lead", name, ["creation", "owner"])[0]
 	activities = [{
@@ -128,13 +131,14 @@ def get_lead_activities(name):
 		if not data.get("changed"):
 			continue
 
-		field_option = None
-
 		if change := data.get("changed")[0]:
-			field_label, field_option = next(((f.label, f.options) for f in lead_fields_meta if f.fieldname == change[0]), None)
+			field = lead_fields.get(change[0], None)
 
-			if field_label == "Converted" or (not change[1] and not change[2]):
+			if not field or change[0] == "converted" or (not change[1] and not change[2]):
 				continue
+
+			field_label = field.get("label") or change[0]
+			field_option = field.get("options") or None
 
 			activity_type = "changed"
 			data = {
