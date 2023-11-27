@@ -29,7 +29,7 @@
     <div class="flex items-center gap-2">
       <Filter doctype="CRM Lead" />
       <SortBy doctype="CRM Lead" />
-      <Button icon="more-horizontal" />
+      <ViewSettings doctype="CRM Lead" v-model="leads"/>
     </div>
   </div>
   <LeadsListView
@@ -62,6 +62,7 @@ import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import NewLead from '@/components/NewLead.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import ViewSettings from '@/components/ViewSettings.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { useOrderBy } from '@/composables/orderby'

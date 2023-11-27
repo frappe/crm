@@ -30,7 +30,7 @@
     <div class="flex items-center gap-2">
       <Filter doctype="CRM Deal" />
       <SortBy doctype="CRM Deal" />
-      <Button icon="more-horizontal" />
+      <ViewSettings doctype="CRM Deal" v-model="deals"/>
     </div>
   </div>
   <DealsListView v-if="deals.data" :rows="rows" :columns="deals.data.columns" />
@@ -59,6 +59,7 @@ import DealsListView from '@/components/ListViews/DealsListView.vue'
 import NewDeal from '@/components/NewDeal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import ViewSettings from '@/components/ViewSettings.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { useOrderBy } from '@/composables/orderby'
