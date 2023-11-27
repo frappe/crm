@@ -7,7 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "user",
-  "columns"
+  "columns",
+  "data_fields"
  ],
  "fields": [
   {
@@ -20,11 +21,16 @@
    "fieldtype": "Link",
    "label": "User",
    "options": "User"
+  },
+  {
+   "fieldname": "data_fields",
+   "fieldtype": "Code",
+   "label": "Data Fields"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-27 16:34:16.393091",
+ "modified": "2023-11-27 18:47:23.123396",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM List View Settings",
