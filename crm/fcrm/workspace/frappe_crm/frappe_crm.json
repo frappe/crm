@@ -1,0 +1,69 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"1nr6UkvDiL\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h5\\\"><b>PORTAL</b></span>\",\"col\":12}},{\"id\":\"1hyi8SysUY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CRM Portal Page\",\"col\":3}},{\"id\":\"ktENiGaqXQ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"VgeWLYOuAS\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>SHORTCUTS</b>\",\"col\":12}},{\"id\":\"A66FpG-K3T\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"n9b6N5ebOj\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deals\",\"col\":3}},{\"id\":\"sGHTXrludH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Organizations\",\"col\":3}},{\"id\":\"uXZNCdqxy0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Contacts\",\"col\":3}}]",
+ "creation": "2023-11-27 13:55:17.090361",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "crm",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Frappe CRM",
+ "links": [],
+ "modified": "2023-11-27 14:29:01.217327",
+ "modified_by": "shariq@frappe.io",
+ "module": "FCRM",
+ "name": "Frappe CRM",
+ "number_cards": [],
+ "owner": "shariq@frappe.io",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Leads",
+   "link_to": "CRM Lead",
+   "stats_filter": "[[\"CRM Lead\",\"converted\",\"=\",0,false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "CRM Portal Page",
+   "type": "URL",
+   "url": "/crm"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Deals",
+   "link_to": "CRM Deal",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Organizations",
+   "link_to": "CRM Organization",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Contacts",
+   "link_to": "Contact",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Frappe CRM"
+}

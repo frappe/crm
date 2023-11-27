@@ -155,7 +155,7 @@
                           class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-gray-700"
                         >
                           <div
-                            class="flex h-7 items-center gap-2"
+                            class="flex h-7 items-center gap-2 truncate"
                             @click="toggle()"
                           >
                             <Avatar
@@ -163,7 +163,7 @@
                               :image="getContactByName(contact.name).image"
                               size="md"
                             />
-                            {{ getContactByName(contact.name).full_name }}
+                            <div class="truncate">{{ getContactByName(contact.name).full_name }}</div>
                             <Badge
                               v-if="contact.is_primary"
                               class="ml-2"
