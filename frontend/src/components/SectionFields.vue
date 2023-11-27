@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-1.5 max-h-[300px] overflow-y-auto">
+  <div class="flex max-h-[300px] flex-col gap-1.5 overflow-y-auto">
     <div
       v-for="field in fields"
       :key="field.label"
@@ -8,7 +8,7 @@
       <div class="w-[106px] shrink-0 text-gray-600">
         {{ field.label }}
       </div>
-      <div class="grid flex-1 items-center overflow-hidden min-h-[28px]">
+      <div class="grid min-h-[28px] flex-1 items-center overflow-hidden">
         <FormControl
           v-if="
             [
@@ -21,6 +21,7 @@
             ].includes(field.type)
           "
           class="form-control"
+          :class="{ '[&_input]:text-gray-500': field.type === 'date' && !data[field.name] }"
           :type="field.type"
           :value="data[field.name]"
           :placeholder="field.placeholder"
