@@ -47,13 +47,14 @@ class CRMLead(Document):
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
 
-	def create_contact(self):
+	def create_contact(self, throw=True):
 		if not self.lead_name:
 			self.set_full_name()
 			self.set_lead_name()
 
-		if self.contact_exists():
-			return
+		existing_contact = self.contact_exists(throw)
+		if existing_contact:
+			return existing_contact
 
 		contact = frappe.new_doc("Contact")
 		contact.update(
@@ -82,23 +83,28 @@ class CRMLead(Document):
 
 		return contact.name
 
-	def contact_exists(self):
+	def contact_exists(self, throw=True):
 		email_exist = frappe.db.exists("Contact Email", {"email_id": self.email})
 		phone_exist = frappe.db.exists("Contact Phone", {"phone": self.phone})
 		mobile_exist = frappe.db.exists("Contact Phone", {"phone": self.mobile_no})
 
-		if email_exist or phone_exist or mobile_exist:
+		doctype = "Contact Email" if email_exist else "Contact Phone"
+		name = email_exist or phone_exist or mobile_exist
 
+		if name:
 			text = "Email" if email_exist else "Phone" if phone_exist else "Mobile No"
 			data = self.email if email_exist else self.phone if phone_exist else self.mobile_no
 
 			value = "{0}: {1}".format(text, data)
 
-			frappe.throw(
-				_("Contact already exists with {0}").format(value),
-				title=_("Contact Already Exists"),
-			)
-			return True
+			contact = frappe.db.get_value(doctype, name, "parent")
+
+			if throw:
+				frappe.throw(
+					_("Contact already exists with {0}").format(value),
+					title=_("Contact Already Exists"),
+				)
+			return contact
 
 		return False
 
@@ -138,7 +144,7 @@ def convert_to_deal(lead):
 	lead = frappe.get_cached_doc("CRM Lead", lead)
 	lead.status = "Qualified"
 	lead.converted = 1
-	contact = lead.create_contact()
+	contact = lead.create_contact(False)
 	deal = lead.create_deal(contact)
 	lead.save()
 	return deal
