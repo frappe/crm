@@ -96,8 +96,17 @@ class CRMDeal(Document):
 				'width': '8rem',
 			},
 		]
-		data_fields = ['name']
-		return {'columns': columns, 'data_fields': data_fields}
+		rows = [
+			"name",
+			"organization",
+			"annual_revenue",
+			"status",
+			"email",
+			"mobile_no",
+			"deal_owner",
+			"modified",
+		]
+		return {'columns': columns, 'rows': rows}
 
 @frappe.whitelist()
 def add_contact(deal, contact):

@@ -53,20 +53,21 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 	columns = []
 	rows = []
 
-	data_fields = []
-
 	if frappe.db.exists("CRM List View Settings", doctype):
 		list_view_settings = frappe.get_doc("CRM List View Settings", doctype)
 		columns = frappe.parse_json(list_view_settings.columns)
-		data_fields = frappe.parse_json(list_view_settings.data_fields)
+		rows = frappe.parse_json(list_view_settings.rows)
 	else:
 		list = get_controller(doctype)
 
 		if hasattr(list, "default_list_data"):
 			columns = list.default_list_data().get("columns")
-			data_fields = list.default_list_data().get("data_fields")
+			rows = list.default_list_data().get("rows")
 
-	rows = [i['key'] for i in columns] + data_fields
+	# check if rows has all keys from columns if not add them
+	for column in columns:
+		if column.get("key") not in rows:
+			rows.append(column.get("key"))
 
 	data = frappe.get_all(
 		doctype,

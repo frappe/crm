@@ -8,7 +8,7 @@
  "field_order": [
   "user",
   "columns",
-  "data_fields"
+  "rows"
  ],
  "fields": [
   {
@@ -23,14 +23,14 @@
    "options": "User"
   },
   {
-   "fieldname": "data_fields",
+   "fieldname": "rows",
    "fieldtype": "Code",
-   "label": "Data Fields"
+   "label": "Rows"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-27 18:47:23.123396",
+ "modified": "2023-11-28 00:17:42.675332",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM List View Settings",

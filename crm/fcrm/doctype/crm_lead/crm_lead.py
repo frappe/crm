@@ -175,8 +175,19 @@ class CRMLead(Document):
 				'width': '8rem',
 			},
 		]
-		data_fields = ['name', 'first_name', 'image']
-		return {'columns': columns, 'data_fields': data_fields}
+		rows = [
+			"name",
+			"lead_name",
+			"organization",
+			"status",
+			"email",
+			"mobile_no",
+			"lead_owner",
+			"first_name",
+			"modified",
+			"image",
+		]
+		return {'columns': columns, 'rows': rows}
 
 @frappe.whitelist()
 def convert_to_deal(lead):
