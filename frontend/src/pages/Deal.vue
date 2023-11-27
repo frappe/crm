@@ -141,7 +141,7 @@
               />
               <div v-else>
                 <div
-                  v-if="section.contacts.length"
+                  v-if="section.contacts"
                   v-for="(contact, i) in section.contacts"
                   :key="contact.name"
                 >
@@ -320,6 +320,10 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const _organization = ref({})
 
+const organization = computed(() => {
+  return deal.data?.organization && getOrganization(deal.data.organization)
+})
+
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
 
@@ -422,7 +426,7 @@ function getParsedFields(sections) {
   let contactSection = {
     label: 'Contacts',
     opened: true,
-    contacts: deal.data.contacts.map((contact) => {
+    contacts: deal.data?.contacts.map((contact) => {
       return {
         name: contact.contact,
         is_primary: contact.is_primary,
@@ -504,10 +508,6 @@ async function setPrimaryContact(contact) {
     })
   }
 }
-
-const organization = computed(() => {
-  return getOrganization(deal.data.organization)
-})
 
 function updateField(name, value, callback) {
   updateDeal(name, value, () => {

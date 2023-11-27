@@ -228,6 +228,10 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const _organization = ref({})
 
+const organization = computed(() => {
+  return lead.data?.organization && getOrganization(lead.data.organization)
+})
+
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
 
@@ -335,10 +339,6 @@ function getParsedFields(sections) {
 
   return sections
 }
-
-const organization = computed(() => {
-  return getOrganization(lead.data.organization)
-})
 
 async function convertToDeal() {
   let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
