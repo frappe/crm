@@ -57,6 +57,48 @@ class CRMDeal(Document):
 			{ "label": 'Mobile no', "value": 'mobile_no' },
 		]
 
+	@staticmethod
+	def default_list_data():
+		columns = [
+			{
+				'label': 'Organization',
+				'key': 'organization',
+				'width': '11rem',
+			},
+			{
+				'label': 'Amount',
+				'key': 'annual_revenue',
+				'width': '9rem',
+			},
+			{
+				'label': 'Status',
+				'key': 'status',
+				'width': '10rem',
+			},
+			{
+				'label': 'Email',
+				'key': 'email',
+				'width': '12rem',
+			},
+			{
+				'label': 'Mobile no',
+				'key': 'mobile_no',
+				'width': '11rem',
+			},
+			{
+				'label': 'Deal owner',
+				'key': 'deal_owner',
+				'width': '10rem',
+			},
+			{
+				'label': 'Last modified',
+				'key': 'modified',
+				'width': '8rem',
+			},
+		]
+		data_fields = ['name']
+		return {'columns': columns, 'data_fields': data_fields}
+
 @frappe.whitelist()
 def add_contact(deal, contact):
 	if not frappe.has_permission("CRM Deal", "write", deal):

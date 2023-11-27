@@ -12,6 +12,7 @@ def sort_options(doctype: str):
 
 	return c.sort_options()
 
+
 @frappe.whitelist()
 def get_filterable_fields(doctype: str):
 	DocField = frappe.qb.DocType("DocField")
@@ -45,6 +46,34 @@ def get_filterable_fields(doctype: str):
 	res = []
 	res.extend(from_doc_fields)
 	return res
+
+
+@frappe.whitelist()
+def get_list_data(doctype: str, filters: dict, order_by: str):
+	columns = []
+	rows = []
+
+	data_fields = []
+
+	list = get_controller(doctype)
+
+	if hasattr(list, "default_list_data"):
+		columns = list.default_list_data().get("columns")
+		data_fields = list.default_list_data().get("data_fields")
+
+	rows = [i['key'] for i in columns]
+	rows = rows + data_fields
+
+	data = frappe.get_all(
+		doctype,
+		fields=rows,
+		filters=filters,
+		order_by=order_by,
+		page_length=20,
+	) or []
+
+	return {'data': data, 'columns': columns, 'rows': rows}
+
 
 @frappe.whitelist()
 def get_doctype_fields(doctype):
@@ -87,6 +116,7 @@ def get_doctype_fields(doctype):
 
 	return all_fields
 
+
 def get_field_obj(field):
 	obj = {
 		"label": field.label,
@@ -106,6 +136,7 @@ def get_field_obj(field):
 		obj["tooltip"] = "This field is read only and cannot be edited."
 
 	return obj
+
 
 def get_type(field):
 	if field.fieldtype == "Data" and field.options == "Phone":
