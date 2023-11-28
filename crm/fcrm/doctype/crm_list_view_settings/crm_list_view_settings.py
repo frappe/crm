@@ -16,11 +16,14 @@ def update(doctype, columns, rows):
 		doc = frappe.new_doc("CRM List View Settings")
 		doc.name = doctype
 		doc.columns = json.dumps(columns)
-		doc.rows = json.dumps(rows)
+		doc.rows = json.dumps(remove_duplicates(rows))
 		doc.insert()
 	else:
 		# update existing CRM List View Settings
 		doc = frappe.get_doc("CRM List View Settings", doctype)
 		doc.columns = json.dumps(columns)
-		doc.rows = json.dumps(rows)
+		doc.rows = json.dumps(remove_duplicates(rows))
 		doc.save()
+
+def remove_duplicates(l):
+	return list(dict.fromkeys(l))
