@@ -3,7 +3,10 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      getRowRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
+      getRowRoute: (row) => ({
+        name: 'Call Log',
+        params: { callLogId: row.name },
+      }),
       selectable: options.selectable,
     }"
     row-key="name"
@@ -19,33 +22,32 @@
       >
         <ListRowItem :item="item">
           <template #prefix>
-            <div v-if="column.key === 'status'">
-              <IndicatorIcon :class="item.color" />
-            </div>
-            <div v-else-if="column.key === 'organization'">
+            <div v-if="['caller', 'receiver'].includes(column.key)">
               <Avatar
                 v-if="item.label"
                 class="flex items-center"
-                :image="item.logo"
+                :image="item.image"
                 :label="item.label"
                 size="sm"
               />
             </div>
-            <div v-else-if="column.key === 'deal_owner'">
-              <Avatar
-                v-if="item.full_name"
-                class="flex items-center"
-                :image="item.user_image"
-                :label="item.full_name"
-                size="sm"
-              />
-            </div>
-            <div v-else-if="column.key === 'mobile_no'">
-              <PhoneIcon class="h-4 w-4" />
+            <div v-else-if="['type', 'duration'].includes(column.key)">
+              <FeatherIcon :name="item.icon" class="h-3 w-3" />
             </div>
           </template>
-          <div v-if="['modified', 'creation'].includes(column.key)" class="truncate text-base">
+          <div
+            v-if="['modified', 'creation'].includes(column.key)"
+            class="truncate text-base"
+          >
             {{ item.timeAgo }}
+          </div>
+          <div v-else-if="column.key === 'status'" class="truncate text-base">
+            <Badge
+              :variant="'subtle'"
+              :theme="item.color"
+              size="md"
+              :label="item.label"
+            />
           </div>
           <div v-else-if="column.type === 'Check'">
             <FormControl
@@ -61,19 +63,18 @@
     <ListSelectBanner />
   </ListView>
 </template>
-
 <script setup>
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import {
   Avatar,
   ListView,
   ListHeader,
   ListRows,
   ListRow,
-  ListRowItem,
   ListSelectBanner,
+  ListRowItem,
   FormControl,
+  FeatherIcon,
+  Badge,
 } from 'frappe-ui'
 
 const props = defineProps({

@@ -22,7 +22,7 @@
       >
         <ListRowItem :item="item">
           <template #prefix>
-            <div v-if="column.key === 'organization'">
+            <div v-if="column.key === 'organization_name'">
               <Avatar
                 v-if="item.label"
                 class="flex items-center"
@@ -32,8 +32,16 @@
               />
             </div>
           </template>
-          <div v-if="column.key === 'modified'" class="truncate text-base">
+          <div v-if="['modified', 'creation'].includes(column.key)" class="truncate text-base">
             {{ item.timeAgo }}
+          </div>
+          <div v-else-if="column.type === 'Check'">
+            <FormControl
+              type="checkbox"
+              :modelValue="item"
+              :disabled="true"
+              class="text-gray-900"
+            />
           </div>
         </ListRowItem>
       </ListRow>
@@ -50,6 +58,7 @@ import {
   ListRow,
   ListSelectBanner,
   ListRowItem,
+  FormControl,
 } from 'frappe-ui'
 
 const props = defineProps({

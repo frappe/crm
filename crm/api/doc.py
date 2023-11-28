@@ -1,5 +1,6 @@
 import frappe
 from frappe.model.document import get_controller
+from frappe.model import no_value_fields
 from pypika import Criterion
 
 
@@ -50,8 +51,11 @@ def get_filterable_fields(doctype: str):
 
 @frappe.whitelist()
 def get_list_data(doctype: str, filters: dict, order_by: str):
-	columns = []
-	rows = []
+	columns = [
+		{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
+		{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
+	]
+	rows = ["name"]
 
 	if frappe.db.exists("CRM List View Settings", doctype):
 		list_view_settings = frappe.get_doc("CRM List View Settings", doctype)
@@ -77,22 +81,30 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 		page_length=20,
 	) or []
 
-	not_allowed_fieldtypes = [
-		"Section Break",
-		"Column Break",
-		"Tab Break",
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in no_value_fields]
+	fields = [
+		{
+			"label": field.label,
+			"type": field.fieldtype,
+			"value": field.fieldname,
+			"options": field.options,
+		}
+		for field in fields
+		if field.label and field.fieldname
 	]
 
-	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
-	fields = [{"label": field.label, "value": field.fieldname} for field in fields if field.label and field.fieldname]
-
 	std_fields = [
-		{'label': 'Name', 'value': 'name'},
-		{'label': 'Created On', 'value': 'creation'},
-		{'label': 'Last Modified', 'value': 'modified'},
-		{'label': 'Modified By', 'value': 'modified_by'},
-		{'label': 'Owner', 'value': 'owner'},
+		{"label": "Name", "type": "Data", "value": "name"},
+		{"label": "Created On", "type": "Datetime", "value": "creation"},
+		{"label": "Last Modified", "type": "Datetime", "value": "modified"},
+		{
+			"label": "Modified By",
+			"type": "Link",
+			"value": "modified_by",
+			"options": "User",
+		},
+		{"label": "Owner", "type": "Link", "value": "owner", "options": "User"},
 	]
 
 	for field in std_fields:

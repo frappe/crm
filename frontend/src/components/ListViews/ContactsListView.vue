@@ -3,7 +3,10 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      getRowRoute: (row) => ({ name: 'Contact', params: { contactId: row.name } }),
+      getRowRoute: (row) => ({
+        name: 'Contact',
+        params: { contactId: row.name },
+      }),
       selectable: options.selectable,
     }"
     row-key="name"
@@ -41,8 +44,19 @@
               <PhoneIcon class="h-4 w-4" />
             </div>
           </template>
-          <div v-if="column.key === 'modified'" class="truncate text-base">
+          <div
+            v-if="['modified', 'creation'].includes(column.key)"
+            class="truncate text-base"
+          >
             {{ item.timeAgo }}
+          </div>
+          <div v-else-if="column.type === 'Check'">
+            <FormControl
+              type="checkbox"
+              :modelValue="item"
+              :disabled="true"
+              class="text-gray-900"
+            />
           </div>
         </ListRowItem>
       </ListRow>
@@ -60,6 +74,7 @@ import {
   ListRow,
   ListSelectBanner,
   ListRowItem,
+  FormControl,
 } from 'frappe-ui'
 
 const props = defineProps({

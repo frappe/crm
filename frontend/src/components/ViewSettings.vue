@@ -163,6 +163,7 @@ const fields = computed(() => {
 async function addColumn(c) {
   let _column = {
     label: c.label,
+    type: c.type,
     key: c.value,
     width: '10rem',
   }
