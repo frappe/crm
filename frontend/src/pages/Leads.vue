@@ -29,10 +29,14 @@
     <div class="flex items-center gap-2">
       <Filter doctype="CRM Lead" />
       <SortBy doctype="CRM Lead" />
-      <Button icon="more-horizontal" />
+      <ViewSettings doctype="CRM Lead" v-model="leads"/>
     </div>
   </div>
-  <LeadsListView :rows="rows" :columns="columns" />
+  <LeadsListView
+    v-if="leads.data"
+    :rows="rows"
+    :columns="leads.data.columns"
+  />
   <Dialog
     v-model="showNewDialog"
     :options="{
@@ -58,6 +62,7 @@ import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import NewLead from '@/components/NewLead.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import ViewSettings from '@/components/ViewSettings.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { useOrderBy } from '@/composables/orderby'
@@ -69,7 +74,6 @@ import {
   Dialog,
   Button,
   Dropdown,
-  createListResource,
   createResource,
   Breadcrumbs,
 } from 'frappe-ui'
@@ -88,35 +92,24 @@ const currentView = ref({
   icon: 'list',
 })
 
-function getFilter() {
-  return {
-    ...(getArgs() || {}),
+function getParams() {
+  const filters = {
     converted: 0,
+    ...(getArgs() || {}),
+  }
+
+  const order_by = getOrderBy() || 'modified desc'
+
+  return {
+    doctype: 'CRM Lead',
+    filters: filters,
+    order_by: order_by,
   }
 }
 
-function getSortBy() {
-  return getOrderBy() || 'modified desc'
-}
-
-const leads = createListResource({
-  type: 'list',
-  doctype: 'CRM Lead',
-  fields: [
-    'name',
-    'first_name',
-    'lead_name',
-    'image',
-    'organization',
-    'status',
-    'email',
-    'mobile_no',
-    'lead_owner',
-    'modified',
-  ],
-  filters: getFilter(),
-  orderBy: getSortBy(),
-  pageLength: 20,
+const leads = createResource({
+  url: 'crm.api.doc.get_list_data',
+  params: getParams(),
   auto: true,
 })
 
@@ -124,7 +117,7 @@ watch(
   () => getOrderBy(),
   (value, old_value) => {
     if (!value && !old_value) return
-    leads.orderBy = getSortBy()
+    leads.params = getParams()
     leads.reload()
   },
   { immediate: true }
@@ -134,79 +127,54 @@ watch(
   storage,
   useDebounceFn((value, old_value) => {
     if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    leads.filters = getFilter()
+    leads.params = getParams()
     leads.reload()
   }, 300),
   { deep: true }
 )
 
-const columns = [
-  {
-    label: 'Name',
-    key: 'lead_name',
-    width: '12rem',
-  },
-  {
-    label: 'Organization',
-    key: 'organization',
-    width: '10rem',
-  },
-  {
-    label: 'Status',
-    key: 'status',
-    width: '8rem',
-  },
-  {
-    label: 'Email',
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: 'Mobile no',
-    key: 'mobile_no',
-    width: '11rem',
-  },
-  {
-    label: 'Lead owner',
-    key: 'lead_owner',
-    width: '10rem',
-  },
-  {
-    label: 'Last modified',
-    key: 'modified',
-    width: '8rem',
-  },
-]
-
 const rows = computed(() => {
-  if (!leads.data) return []
-  return leads.data.map((lead) => {
-    return {
-      name: lead.name,
-      lead_name: {
-        label: lead.lead_name,
-        image: lead.image,
-        image_label: lead.first_name,
-      },
-      organization: {
-        label: lead.organization,
-        logo: getOrganization(lead.organization)?.organization_logo,
-      },
-      status: {
-        label: lead.status,
-        color: leadStatuses[lead.status]?.color,
-      },
-      email: lead.email,
-      mobile_no: lead.mobile_no,
-      lead_owner: {
-        label: lead.lead_owner && getUser(lead.lead_owner).full_name,
-        ...(lead.lead_owner && getUser(lead.lead_owner)),
-      },
-      modified: {
-        label: dateFormat(lead.modified, dateTooltipFormat),
-        timeAgo: timeAgo(lead.modified),
-      },
-    }
+  if (!leads.data?.data) return []
+  return leads.data.data.map((lead) => {
+    let _rows = {}
+
+    leads.data.rows.forEach((row) => {
+      _rows[row] = lead[row]
+
+      if (row == 'lead_name') {
+        _rows[row] = {
+          label: lead.lead_name,
+          image: lead.image,
+          image_label: lead.first_name,
+        }
+      } else if (row == 'organization') {
+        _rows[row] = {
+          label: lead.organization,
+          logo: getOrganization(lead.organization)?.organization_logo,
+        }
+      } else if (row == 'status') {
+        _rows[row] = {
+          label: lead.status,
+          color: leadStatuses[lead.status]?.color,
+        }
+      } else if (row == 'lead_owner') {
+        _rows[row] = {
+          label: lead.lead_owner && getUser(lead.lead_owner).full_name,
+          ...(lead.lead_owner && getUser(lead.lead_owner)),
+        }
+      } else if (row == 'modified') {
+        _rows[row] = {
+          label: dateFormat(lead.modified, dateTooltipFormat),
+          timeAgo: timeAgo(lead.modified),
+        }
+      } else if (row == 'creation') {
+        _rows[row] = {
+          label: dateFormat(lead.creation, dateTooltipFormat),
+          timeAgo: timeAgo(lead.creation),
+        }
+      }
+    })
+    return _rows
   })
 })
 

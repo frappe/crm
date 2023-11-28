@@ -30,10 +30,10 @@
     <div class="flex items-center gap-2">
       <Filter doctype="CRM Deal" />
       <SortBy doctype="CRM Deal" />
-      <Button icon="more-horizontal" />
+      <ViewSettings doctype="CRM Deal" v-model="deals"/>
     </div>
   </div>
-  <DealsListView :rows="rows" :columns="columns" />
+  <DealsListView v-if="deals.data" :rows="rows" :columns="deals.data.columns" />
   <Dialog
     v-model="showNewDialog"
     :options="{
@@ -59,6 +59,7 @@ import DealsListView from '@/components/ListViews/DealsListView.vue'
 import NewDeal from '@/components/NewDeal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import ViewSettings from '@/components/ViewSettings.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { useOrderBy } from '@/composables/orderby'
@@ -76,7 +77,6 @@ import {
   Dialog,
   Button,
   Dropdown,
-  createListResource,
   createResource,
   Breadcrumbs,
 } from 'frappe-ui'
@@ -95,26 +95,20 @@ const currentView = ref({
   icon: 'list',
 })
 
-function getFilter() {
-  return getArgs() || {}
+function getParams() {
+  const filters = getArgs() || {}
+  const order_by = getOrderBy() || 'modified desc'
+
+  return {
+    doctype: 'CRM Deal',
+    filters: filters,
+    order_by: order_by,
+  }
 }
 
-const deals = createListResource({
-  type: 'list',
-  doctype: 'CRM Deal',
-  fields: [
-    'name',
-    'organization',
-    'annual_revenue',
-    'status',
-    'email',
-    'mobile_no',
-    'deal_owner',
-    'modified',
-  ],
-  filters: getFilter(),
-  orderBy: 'modified desc',
-  pageLength: 20,
+const deals = createResource({
+  url: 'crm.api.doc.get_list_data',
+  params: getParams(),
   auto: true,
 })
 
@@ -122,7 +116,7 @@ watch(
   () => getOrderBy(),
   (value, old_value) => {
     if (!value && !old_value) return
-    deals.orderBy = getOrderBy() || 'modified desc'
+    deals.params = getParams()
     deals.reload()
   },
   { immediate: true }
@@ -132,75 +126,49 @@ watch(
   storage,
   useDebounceFn((value, old_value) => {
     if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    deals.filters = getFilter()
+    deals.params = getParams()
     deals.reload()
   }, 300),
   { deep: true }
 )
 
-const columns = [
-  {
-    label: 'Organization',
-    key: 'organization',
-    width: '11rem',
-  },
-  {
-    label: 'Amount',
-    key: 'annual_revenue',
-    width: '9rem',
-  },
-  {
-    label: 'Status',
-    key: 'status',
-    width: '10rem',
-  },
-  {
-    label: 'Email',
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: 'Mobile no',
-    key: 'mobile_no',
-    width: '11rem',
-  },
-  {
-    label: 'Deal owner',
-    key: 'deal_owner',
-    width: '10rem',
-  },
-  {
-    label: 'Last modified',
-    key: 'modified',
-    width: '8rem',
-  },
-]
-
 const rows = computed(() => {
-  if (!deals.data) return []
-  return deals.data.map((deal) => {
-    return {
-      name: deal.name,
-      organization: {
-        label: deal.organization,
-        logo: getOrganization(deal.organization)?.organization_logo,
-      },
-      annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
-      status: {
-        label: deal.status,
-        color: dealStatuses[deal.status]?.color,
-      },
-      email: deal.email,
-      mobile_no: deal.mobile_no,
-      deal_owner: {
-        label: deal.deal_owner && getUser(deal.deal_owner).full_name,
-        ...(deal.deal_owner && getUser(deal.deal_owner)),
-      },
-      modified: {
-        label: dateFormat(deal.modified, dateTooltipFormat),
-        timeAgo: timeAgo(deal.modified),
-      },
-    }
+  if (!deals.data?.data) return []
+  return deals.data.data.map((deal) => {
+    let _rows = {}
+    deals.data.rows.forEach((row) => {
+      _rows[row] = deal[row]
+
+      if (row == 'organization') {
+        _rows[row] = {
+          label: deal.organization,
+          logo: getOrganization(deal.organization)?.organization_logo,
+        }
+      } else if (row == 'annual_revenue') {
+        _rows[row] = formatNumberIntoCurrency(deal.annual_revenue)
+      } else if (row == 'status') {
+        _rows[row] = {
+          label: deal.status,
+          color: dealStatuses[deal.status]?.color,
+        }
+      } else if (row == 'deal_owner') {
+        _rows[row] = {
+          label: deal.deal_owner && getUser(deal.deal_owner).full_name,
+          ...(deal.deal_owner && getUser(deal.deal_owner)),
+        }
+      } else if (row == 'modified') {
+        _rows[row] = {
+          label: dateFormat(deal.modified, dateTooltipFormat),
+          timeAgo: timeAgo(deal.modified),
+        }
+      } else if (row == 'creation') {
+        _rows[row] = {
+          label: dateFormat(deal.creation, dateTooltipFormat),
+          timeAgo: timeAgo(deal.creation),
+        }
+      }
+    })
+    return _rows
   })
 })
 
