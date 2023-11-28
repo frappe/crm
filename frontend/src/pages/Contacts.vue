@@ -143,15 +143,10 @@ const rows = computed(() => {
           label: contact.company_name,
           logo: getOrganization(contact.company_name)?.organization_logo,
         }
-      } else if (row == 'modified') {
+      } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(contact.modified, dateTooltipFormat),
-          timeAgo: timeAgo(contact.modified),
-        }
-      } else if (row == 'creation') {
-        _rows[row] = {
-          label: dateFormat(contact.creation, dateTooltipFormat),
-          timeAgo: timeAgo(contact.creation),
+          label: dateFormat(contact[row], dateTooltipFormat),
+          timeAgo: timeAgo(contact[row]),
         }
       }
     })

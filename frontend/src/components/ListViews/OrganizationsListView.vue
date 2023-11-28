@@ -22,7 +22,7 @@
       >
         <ListRowItem :item="item">
           <template #prefix>
-            <div v-if="column.key === 'organization'">
+            <div v-if="column.key === 'organization_name'">
               <Avatar
                 v-if="item.label"
                 class="flex items-center"

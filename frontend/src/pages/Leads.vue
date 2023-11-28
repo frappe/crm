@@ -161,15 +161,10 @@ const rows = computed(() => {
           label: lead.lead_owner && getUser(lead.lead_owner).full_name,
           ...(lead.lead_owner && getUser(lead.lead_owner)),
         }
-      } else if (row == 'modified') {
+      } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(lead.modified, dateTooltipFormat),
-          timeAgo: timeAgo(lead.modified),
-        }
-      } else if (row == 'creation') {
-        _rows[row] = {
-          label: dateFormat(lead.creation, dateTooltipFormat),
-          timeAgo: timeAgo(lead.creation),
+          label: dateFormat(lead[row], dateTooltipFormat),
+          timeAgo: timeAgo(lead[row]),
         }
       }
     })

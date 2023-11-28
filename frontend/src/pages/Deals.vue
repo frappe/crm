@@ -156,15 +156,10 @@ const rows = computed(() => {
           label: deal.deal_owner && getUser(deal.deal_owner).full_name,
           ...(deal.deal_owner && getUser(deal.deal_owner)),
         }
-      } else if (row == 'modified') {
+      } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(deal.modified, dateTooltipFormat),
-          timeAgo: timeAgo(deal.modified),
-        }
-      } else if (row == 'creation') {
-        _rows[row] = {
-          label: dateFormat(deal.creation, dateTooltipFormat),
-          timeAgo: timeAgo(deal.creation),
+          label: dateFormat(deal[row], dateTooltipFormat),
+          timeAgo: timeAgo(deal[row]),
         }
       }
     })
