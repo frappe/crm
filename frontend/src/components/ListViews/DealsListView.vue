@@ -47,6 +47,14 @@
           <div v-if="['modified', 'creation'].includes(column.key)" class="truncate text-base">
             {{ item.timeAgo }}
           </div>
+          <div v-else-if="column.type === 'Check'">
+            <FormControl
+              type="checkbox"
+              :modelValue="item"
+              :disabled="true"
+              class="text-gray-900"
+            />
+          </div>
         </ListRowItem>
       </ListRow>
     </ListRows>
@@ -65,6 +73,7 @@ import {
   ListRow,
   ListRowItem,
   ListSelectBanner,
+  FormControl,
 } from 'frappe-ui'
 
 const props = defineProps({

@@ -62,36 +62,45 @@ class CRMDeal(Document):
 		columns = [
 			{
 				'label': 'Organization',
+				'type': 'Link',
 				'key': 'organization',
+				'options': 'CRM Organization',
 				'width': '11rem',
 			},
 			{
 				'label': 'Amount',
+				'type': 'Currency',
 				'key': 'annual_revenue',
 				'width': '9rem',
 			},
 			{
 				'label': 'Status',
+				'type': 'Select',
 				'key': 'status',
 				'width': '10rem',
 			},
 			{
 				'label': 'Email',
+				'type': 'Data',
 				'key': 'email',
 				'width': '12rem',
 			},
 			{
 				'label': 'Mobile no',
+				'type': 'Data',
 				'key': 'mobile_no',
 				'width': '11rem',
 			},
 			{
 				'label': 'Deal owner',
+				'type': 'Link',
 				'key': 'deal_owner',
+				'options': 'User',
 				'width': '10rem',
 			},
 			{
 				'label': 'Last modified',
+				'type': 'Datetime',
 				'key': 'modified',
 				'width': '8rem',
 			},

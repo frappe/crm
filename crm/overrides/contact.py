@@ -22,26 +22,31 @@ class CustomContact(Contact):
 		columns = [
 			{
 				'label': 'Name',
+				'type': 'Data',
 				'key': 'full_name',
 				'width': '17rem',
 			},
 			{
 				'label': 'Email',
+				'type': 'Data',
 				'key': 'email_id',
 				'width': '12rem',
 			},
 			{
 				'label': 'Phone',
+				'type': 'Data',
 				'key': 'mobile_no',
 				'width': '12rem',
 			},
 			{
 				'label': 'Organization',
+				'type': 'Data',
 				'key': 'company_name',
 				'width': '12rem',
 			},
 			{
 				'label': 'Last modified',
+				'type': 'Datetime',
 				'key': 'modified',
 				'width': '8rem',
 			},
