@@ -44,7 +44,7 @@
               <PhoneIcon class="h-4 w-4" />
             </div>
           </template>
-          <div v-if="column.key === 'modified'" class="truncate text-base">
+          <div v-if="['modified', 'creation'].includes(column.key)" class="truncate text-base">
             {{ item.timeAgo }}
           </div>
         </ListRowItem>

@@ -74,7 +74,6 @@ import {
   Dialog,
   Button,
   Dropdown,
-  createListResource,
   createResource,
   Breadcrumbs,
 } from 'frappe-ui'
@@ -167,6 +166,11 @@ const rows = computed(() => {
         _rows[row] = {
           label: dateFormat(lead.modified, dateTooltipFormat),
           timeAgo: timeAgo(lead.modified),
+        }
+      } else if (row == 'creation') {
+        _rows[row] = {
+          label: dateFormat(lead.creation, dateTooltipFormat),
+          timeAgo: timeAgo(lead.creation),
         }
       }
     })
