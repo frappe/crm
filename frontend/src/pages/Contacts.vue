@@ -30,10 +30,14 @@
     <div class="flex items-center gap-2">
       <Filter doctype="Contact" />
       <SortBy doctype="Contact" />
-      <Button icon="more-horizontal" />
+      <ViewSettings doctype="Contact" v-model="contacts" />
     </div>
   </div>
-  <ContactsListView :rows="rows" :columns="columns" />
+  <ContactsListView
+    v-if="contacts.data"
+    :rows="rows"
+    :columns="contacts.data.columns"
+  />
   <ContactModal v-model="showContactModal" :contact="{}" />
 </template>
 
@@ -43,21 +47,25 @@ import ContactModal from '@/components/Modals/ContactModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
-import { FeatherIcon, Breadcrumbs, Dropdown } from 'frappe-ui'
-import { contactsStore } from '@/stores/contacts.js'
+import ViewSettings from '@/components/ViewSettings.vue'
+import { FeatherIcon, Breadcrumbs, Dropdown, createResource } from 'frappe-ui'
 import { organizationsStore } from '@/stores/organizations.js'
+import { useOrderBy } from '@/composables/orderby'
+import { useFilter } from '@/composables/filter'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
-import { ref, computed, onMounted } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-const { contacts } = contactsStore()
 const { getOrganization } = organizationsStore()
+const { get: getOrderBy } = useOrderBy()
+const { getArgs, storage } = useFilter()
 const route = useRoute()
 
 const showContactModal = ref(false)
 
 const currentContact = computed(() => {
-  return contacts.data.find(
+  return contacts.data?.data?.find(
     (contact) => contact.name === route.params.contactId
   )
 })
@@ -78,6 +86,77 @@ const breadcrumbs = computed(() => {
 const currentView = ref({
   label: 'List',
   icon: 'list',
+})
+
+function getParams() {
+  const filters = getArgs() || {}
+  const order_by = getOrderBy() || 'modified desc'
+
+  return {
+    doctype: 'Contact',
+    filters: filters,
+    order_by: order_by,
+  }
+}
+
+const contacts = createResource({
+  url: 'crm.api.doc.get_list_data',
+  params: getParams(),
+  auto: true,
+})
+
+watch(
+  () => getOrderBy(),
+  (value, old_value) => {
+    if (!value && !old_value) return
+    contacts.params = getParams()
+    contacts.reload()
+  },
+  { immediate: true }
+)
+
+watch(
+  storage,
+  useDebounceFn((value, old_value) => {
+    if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
+    contacts.params = getParams()
+    contacts.reload()
+  }, 300),
+  { deep: true }
+)
+
+const rows = computed(() => {
+  if (!contacts.data?.data) return []
+  return contacts.data.data.map((contact) => {
+    let _rows = {}
+    contacts.data.rows.forEach((row) => {
+      _rows[row] = contact[row]
+
+      if (row == 'full_name') {
+        _rows[row] = {
+          label: contact.full_name,
+          image_label: contact.full_name,
+          image: contact.image,
+        }
+      } else if (row == 'company_name') {
+        _rows[row] = {
+          label: contact.company_name,
+          logo: getOrganization(contact.company_name)?.organization_logo,
+        }
+      } else if (row == 'modified') {
+        _rows[row] = {
+          label: dateFormat(contact.modified, dateTooltipFormat),
+          timeAgo: timeAgo(contact.modified),
+        }
+      } else if (row == 'creation') {
+        _rows[row] = {
+          label: dateFormat(contact.creation, dateTooltipFormat),
+          timeAgo: timeAgo(contact.creation),
+        }
+      }
+    })
+    return _rows
+  })
 })
 
 const viewsDropdownOptions = [
@@ -120,57 +199,6 @@ const viewsDropdownOptions = [
         icon: 'columns',
       }
     },
-  },
-]
-
-const rows = computed(() => {
-  return contacts.data.map((contact) => {
-    return {
-      name: contact.name,
-      full_name: {
-        label: contact.full_name,
-        image_label: contact.full_name,
-        image: contact.image,
-      },
-      email: contact.email_id,
-      mobile_no: contact.mobile_no,
-      company_name: {
-        label: contact.company_name,
-        logo: getOrganization(contact.company_name)?.organization_logo,
-      },
-      modified: {
-        label: dateFormat(contact.modified, dateTooltipFormat),
-        timeAgo: timeAgo(contact.modified),
-      },
-    }
-  })
-})
-
-const columns = [
-  {
-    label: 'Name',
-    key: 'full_name',
-    width: '17rem',
-  },
-  {
-    label: 'Email',
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: 'Phone',
-    key: 'mobile_no',
-    width: '12rem',
-  },
-  {
-    label: 'Organization',
-    key: 'company_name',
-    width: '12rem',
-  },
-  {
-    label: 'Last modified',
-    key: 'modified',
-    width: '8rem',
   },
 ]
 </script>

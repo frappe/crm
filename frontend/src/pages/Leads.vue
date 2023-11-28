@@ -137,7 +137,6 @@ const rows = computed(() => {
   if (!leads.data?.data) return []
   return leads.data.data.map((lead) => {
     let _rows = {}
-
     leads.data.rows.forEach((row) => {
       _rows[row] = lead[row]
 
