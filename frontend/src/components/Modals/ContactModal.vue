@@ -95,7 +95,7 @@
                       <Button
                         variant="ghost"
                         class="w-full !justify-start"
-                        label="Create one"
+                        label="Create New"
                         @click="field.create()"
                       >
                         <template #prefix>
@@ -241,7 +241,7 @@ function handleContactUpdate(doc) {
 }
 
 const dialogOptions = computed(() => {
-  let title = !editMode.value ? 'New contact' : _contact.value.full_name
+  let title = !editMode.value ? 'New Contact' : _contact.value.full_name
 
   let size = detailMode.value ? '' : 'xl'
   let actions = detailMode.value
@@ -323,12 +323,12 @@ const sections = computed(() => {
     {
       fields: [
         {
-          label: 'First name',
+          label: 'First Name',
           type: 'data',
           name: 'first_name',
         },
         {
-          label: 'Last name',
+          label: 'Last Name',
           type: 'data',
           name: 'last_name',
         },
@@ -353,10 +353,10 @@ const sections = computed(() => {
             new_field.value = {
               type: 'email',
               value,
-              placeholder: 'Add email address',
+              placeholder: 'Add Email Address',
             }
             _dialogOptions.value = {
-              title: 'Add email',
+              title: 'Add Email',
               actions: [
                 {
                   label: 'Add',
@@ -373,7 +373,7 @@ const sections = computed(() => {
     {
       fields: [
         {
-          label: 'Mobile no.',
+          label: 'Mobile No.',
           type: 'dropdown',
           name: 'mobile_no',
           options: props.contact?.phone_nos?.map((phone) => {
@@ -389,10 +389,10 @@ const sections = computed(() => {
             new_field.value = {
               type: 'tel',
               value,
-              placeholder: 'Add mobile no.',
+              placeholder: 'Add Mobile No.',
             }
             _dialogOptions.value = {
-              title: 'Add mobile no.',
+              title: 'Add Mobile No.',
               actions: [
                 {
                   label: 'Add',
@@ -408,7 +408,7 @@ const sections = computed(() => {
           label: 'Gender',
           type: 'link',
           name: 'gender',
-          placeholder: 'Select gender',
+          placeholder: 'Select Gender',
           doctype: 'Gender',
           change: (value) => {
             _contact.value.gender = value
@@ -422,7 +422,7 @@ const sections = computed(() => {
           label: 'Organization',
           type: 'link',
           name: 'company_name',
-          placeholder: 'Select organization',
+          placeholder: 'Select Organization',
           doctype: 'CRM Organization',
           change: (value) => {
             _contact.value.company_name = value
@@ -451,7 +451,7 @@ const sections = computed(() => {
           label: 'Address',
           type: 'link',
           name: 'address',
-          placeholder: 'Select address',
+          placeholder: 'Select Address',
           doctype: 'Address',
           change: (value) => {
             _contact.value.address = value

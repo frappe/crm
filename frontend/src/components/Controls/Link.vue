@@ -29,7 +29,7 @@
           <Button
             variant="ghost"
             class="w-full !justify-start"
-            label="Create one"
+            label="Create New"
             @click="attrs.onCreate(value, close)"
           >
             <template #prefix>

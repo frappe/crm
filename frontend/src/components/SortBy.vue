@@ -66,7 +66,7 @@
                   class="!text-gray-600"
                   variant="ghost"
                   @click="togglePopover()"
-                  label="Add sort"
+                  label="Add Sort"
                 >
                   <template #prefix>
                     <FeatherIcon name="plus" class="h-4" />
@@ -78,7 +78,7 @@
               v-if="sortValues.length"
               class="!text-gray-600"
               variant="ghost"
-              label="Clear sort"
+              label="Clear Sort"
               @click="clearSort(close)"
             />
           </div>

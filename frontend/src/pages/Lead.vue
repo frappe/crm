@@ -34,7 +34,7 @@
           </Button>
         </template>
       </Dropdown>
-      <Button label="Convert to deal" variant="solid" @click="convertToDeal" />
+      <Button label="Convert to Deal" variant="solid" @click="convertToDeal" />
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
@@ -50,7 +50,7 @@
       <div
         class="flex h-[41px] items-center border-b px-5 py-2.5 text-lg font-semibold"
       >
-        About this lead
+        About this Lead
       </div>
       <FileUploader
         @success="(file) => updateField('image', file.file_url)"

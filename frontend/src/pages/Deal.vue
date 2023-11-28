@@ -50,7 +50,7 @@
       <div
         class="flex h-[41px] items-center border-b px-5 py-2.5 text-lg font-semibold"
       >
-        About this deal
+        About this Deal
       </div>
       <div class="flex items-center justify-start gap-5 border-b p-5">
         <Tooltip
@@ -122,7 +122,7 @@
                     <template #target="{ togglePopover }">
                       <Button
                         class="h-7 px-3"
-                        label="Add contact"
+                        label="Add Contact"
                         @click="togglePopover()"
                       >
                         <template #prefix>
@@ -452,7 +452,7 @@ function contactOptions(contact) {
 
   if (!contact.is_primary) {
     options.push({
-      label: 'Set as primary contact',
+      label: 'Set as Primary Contact',
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
       onClick: () => setPrimaryContact(contact.name),
     })

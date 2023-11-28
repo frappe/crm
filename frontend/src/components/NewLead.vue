@@ -144,7 +144,7 @@ const allFields = [
         type: 'data',
       },
       {
-        label: 'Mobile no',
+        label: 'Mobile No',
         name: 'mobile_no',
         type: 'data',
       },
@@ -173,10 +173,10 @@ const allFields = [
         options: statusDropdownOptions(props.newLead),
       },
       {
-        label: 'Lead owner',
+        label: 'Lead Owner',
         name: 'lead_owner',
         type: 'user',
-        placeholder: 'Lead owner',
+        placeholder: 'Lead Owner',
       },
     ],
   },

@@ -86,20 +86,20 @@ class CRMDeal(Document):
 				'width': '12rem',
 			},
 			{
-				'label': 'Mobile no',
+				'label': 'Mobile No',
 				'type': 'Data',
 				'key': 'mobile_no',
 				'width': '11rem',
 			},
 			{
-				'label': 'Deal owner',
+				'label': 'Deal Owner',
 				'type': 'Link',
 				'key': 'deal_owner',
 				'options': 'User',
 				'width': '10rem',
 			},
 			{
-				'label': 'Last modified',
+				'label': 'Last Modified',
 				'type': 'Datetime',
 				'key': 'modified',
 				'width': '8rem',

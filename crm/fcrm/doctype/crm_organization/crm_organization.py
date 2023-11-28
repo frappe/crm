@@ -46,7 +46,7 @@ class CRMOrganization(Document):
 					'width': '14rem',
 				},
 				{
-					'label': 'Last modified',
+					'label': 'Last Modified',
 					'type': 'Datetime',
 					'key': 'modified',
 					'width': '8rem',

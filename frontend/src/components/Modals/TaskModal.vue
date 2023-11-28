@@ -21,7 +21,7 @@
             ref="title"
             variant="outline"
             v-model="_task.title"
-            placeholder="Add title"
+            placeholder="Add Title"
           />
         </div>
         <div>
@@ -33,7 +33,7 @@
             :bubbleMenu="true"
             :content="_task.description"
             @change="(val) => (_task.description = val)"
-            placeholder="Type a description"
+            placeholder="Type a Description"
           />
         </div>
         <div class="flex items-center gap-2">
@@ -60,7 +60,7 @@
           <DatePicker
             class="datepicker w-36"
             v-model="_task.due_date"
-            placeholder="Due date"
+            placeholder="Due Date"
             input-class="border-none"
             :formatValue="(val) => val.split('-').reverse().join('-')"
           />
