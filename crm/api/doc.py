@@ -51,8 +51,11 @@ def get_filterable_fields(doctype: str):
 
 @frappe.whitelist()
 def get_list_data(doctype: str, filters: dict, order_by: str):
-	columns = []
-	rows = []
+	columns = [
+		{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
+		{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
+	]
+	rows = ["name"]
 
 	if frappe.db.exists("CRM List View Settings", doctype):
 		list_view_settings = frappe.get_doc("CRM List View Settings", doctype)
