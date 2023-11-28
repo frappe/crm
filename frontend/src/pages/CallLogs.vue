@@ -6,74 +6,26 @@
   </LayoutHeader>
   <div class="flex items-center justify-between px-5 pb-4 pt-3">
     <div class="flex items-center gap-2">
-      <Button label="Sort">
-        <template #prefix><SortIcon class="h-4" /></template>
-      </Button>
-      <Button label="Filter">
-        <template #prefix><FilterIcon class="h-4" /></template>
-      </Button>
+      <SortBy doctype="CRM Call Log" />
+      <Filter doctype="CRM Call Log" />
     </div>
     <div class="flex items-center gap-2">
-      <Button icon="more-horizontal" />
+      <ViewSettings doctype="CRM Call Log" v-model="callLogs" />
     </div>
   </div>
-  <ListView
-    :columns="columns"
+  <CallLogsListView
+    v-if="callLogs.data"
     :rows="rows"
-    :options="{
-      getRowRoute: (row) => ({
-        name: 'Call Log',
-        params: { callLogId: row.name },
-      }),
-    }"
-    row-key="name"
-  >
-    <ListHeader class="mx-5" />
-    <ListRows>
-      <ListRow
-        class="mx-5"
-        v-for="row in rows"
-        :key="row.name"
-        v-slot="{ column, item }"
-        :row="row"
-      >
-        <ListRowItem :item="item">
-          <template #prefix>
-            <div v-if="['caller', 'receiver'].includes(column.key)">
-              <Avatar
-                v-if="item.label"
-                class="flex items-center"
-                :image="item.image"
-                :label="item.label"
-                size="sm"
-              />
-            </div>
-            <div v-else-if="['type', 'duration'].includes(column.key)">
-              <FeatherIcon :name="item.icon" class="h-3 w-3" />
-            </div>
-          </template>
-          <div v-if="column.key === 'creation'" class="truncate text-base">
-            {{ item.timeAgo }}
-          </div>
-          <div v-else-if="column.key === 'status'" class="truncate text-base">
-            <Badge
-              :variant="'subtle'"
-              :theme="item.color"
-              size="md"
-              :label="item.label"
-            />
-          </div>
-        </ListRowItem>
-      </ListRow>
-    </ListRows>
-    <ListSelectBanner />
-  </ListView>
+    :columns="callLogs.data.columns"
+  />
 </template>
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import SortIcon from '@/components/Icons/SortIcon.vue'
-import FilterIcon from '@/components/Icons/FilterIcon.vue'
+import SortBy from '@/components/SortBy.vue'
+import Filter from '@/components/Filter.vue'
+import ViewSettings from '@/components/ViewSettings.vue'
+import CallLogsListView from '@/components/ListViews/CallLogsListView.vue'
 import {
   secondsToDuration,
   dateFormat,
@@ -82,140 +34,106 @@ import {
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import {
-  Avatar,
-  Badge,
-  createListResource,
-  Breadcrumbs,
-  ListView,
-  ListHeader,
-  ListRows,
-  ListRow,
-  ListRowItem,
-  ListSelectBanner,
-  FeatherIcon,
-} from 'frappe-ui'
-import { computed } from 'vue'
+import { useOrderBy } from '@/composables/orderby'
+import { useFilter } from '@/composables/filter'
+import { useDebounceFn } from '@vueuse/core'
+import { createResource, Breadcrumbs } from 'frappe-ui'
+import { computed, watch } from 'vue'
 
 const { getUser } = usersStore()
 const { getContact } = contactsStore()
+const { get: getOrderBy } = useOrderBy()
+const { getArgs, storage } = useFilter()
 
 const breadcrumbs = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
 
-const callLogs = createListResource({
-  type: 'list',
-  doctype: 'CRM Call Log',
-  fields: [
-    'name',
-    'caller',
-    'receiver',
-    'from',
-    'to',
-    'duration',
-    'start_time',
-    'end_time',
-    'status',
-    'type',
-    'recording_url',
-    'creation',
-  ],
-  orderBy: 'creation desc',
-  cache: 'Call Logs',
-  pageLength: 999,
+function getParams() {
+  const filters = getArgs() || {}
+  const order_by = getOrderBy() || 'creation desc'
+
+  return {
+    doctype: 'CRM Call Log',
+    filters: filters,
+    order_by: order_by,
+  }
+}
+
+const callLogs = createResource({
+  url: 'crm.api.doc.get_list_data',
+  params: getParams(),
   auto: true,
 })
 
-const columns = [
-  {
-    label: 'From',
-    key: 'caller',
-    width: '9rem',
+watch(
+  () => getOrderBy(),
+  (value, old_value) => {
+    if (!value && !old_value) return
+    callLogs.params = getParams()
+    callLogs.reload()
   },
-  {
-    label: 'To',
-    key: 'receiver',
-    width: '9rem',
-  },
-  {
-    label: 'Type',
-    key: 'type',
-    width: '9rem',
-  },
-  {
-    label: 'Status',
-    key: 'status',
-    width: '9rem',
-  },
-  {
-    label: 'Duration',
-    key: 'duration',
-    width: '6rem',
-  },
-  {
-    label: 'From (number)',
-    key: 'from',
-    width: '9rem',
-  },
-  {
-    label: 'To (number)',
-    key: 'to',
-    width: '9rem',
-  },
-  {
-    label: 'Created on',
-    key: 'creation',
-    width: '8rem',
-  },
-]
+  { immediate: true }
+)
+
+watch(
+  storage,
+  useDebounceFn((value, old_value) => {
+    if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
+    callLogs.params = getParams()
+    callLogs.reload()
+  }, 300),
+  { deep: true }
+)
 
 const rows = computed(() => {
-  return callLogs.data?.map((callLog) => {
-    let caller = callLog.caller
-    let receiver = callLog.receiver
+  if (!callLogs.data?.data) return []
+  return callLogs.data.data.map((callLog) => {
+    let _rows = {}
+    callLogs.data.rows.forEach((row) => {
+      _rows[row] = callLog[row]
 
-    if (callLog.type === 'Incoming') {
-      caller = {
-        label: getContact(callLog.from)?.full_name || 'Unknown',
-        image: getContact(callLog.from)?.image,
-      }
-      receiver = {
-        label: getUser(receiver).full_name,
-        image: getUser(receiver).user_image,
-      }
-    } else {
-      caller = {
-        label: getUser(caller).full_name,
-        image: getUser(caller).user_image,
-      }
-      receiver = {
-        label: getContact(callLog.to)?.full_name || 'Unknown',
-        image: getContact(callLog.to)?.image,
-      }
-    }
+      let incoming = callLog.type === 'Incoming'
 
-    return {
-      name: callLog.name,
-      caller: caller,
-      receiver: receiver,
-      from: callLog.from,
-      to: callLog.to,
-      duration: {
-        label: secondsToDuration(callLog.duration),
-        icon: 'clock',
-      },
-      type: {
-        label: callLog.type,
-        icon: callLog.type === 'Incoming' ? 'phone-incoming' : 'phone-outgoing',
-      },
-      status: {
-        label: callLog.status,
-        color: callLog.status === 'Completed' ? 'green' : 'gray',
-      },
-      creation: {
-        label: dateFormat(callLog.creation, dateTooltipFormat),
-        timeAgo: timeAgo(callLog.creation),
-      },
-    }
+      if (row === 'caller') {
+        _rows[row] = {
+          label: incoming
+            ? getContact(callLog.from)?.full_name || 'Unknown'
+            : getUser(callLog.caller).full_name,
+          image: incoming
+            ? getContact(callLog.from)?.image
+            : getUser(callLog.caller).user_image,
+        }
+      } else if (row === 'receiver') {
+        _rows[row] = {
+          label: incoming
+            ? getUser(callLog.receiver).full_name
+            : getContact(callLog.to)?.full_name || 'Unknown',
+          image: incoming
+            ? getUser(callLog.receiver).user_image
+            : getContact(callLog.to)?.image,
+        }
+      } else if (row === 'duration') {
+        _rows[row] = {
+          label: secondsToDuration(callLog.duration),
+          icon: 'clock',
+        }
+      } else if (row === 'type') {
+        _rows[row] = {
+          label: callLog.type,
+          icon: incoming ? 'phone-incoming' : 'phone-outgoing',
+        }
+      } else if (row === 'status') {
+        _rows[row] = {
+          label: callLog.status,
+          color: callLog.status === 'Completed' ? 'green' : 'gray',
+        }
+      } else if (['modified', 'creation'].includes(row)) {
+        _rows[row] = {
+          label: dateFormat(callLog[row], dateTooltipFormat),
+          timeAgo: timeAgo(callLog[row]),
+        }
+      }
+    })
+    return _rows
   })
 })
 </script>
