@@ -69,9 +69,6 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 		if column.get("key") not in rows:
 			rows.append(column.get("key"))
 
-	if "name" not in rows:
-		rows.append("name")
-
 	data = frappe.get_all(
 		doctype,
 		fields=rows,
@@ -89,6 +86,20 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
 	fields = [{"label": field.label, "value": field.fieldname} for field in fields if field.label and field.fieldname]
+
+	std_fields = [
+		{'label': 'Name', 'value': 'name'},
+		{'label': 'Created On', 'value': 'creation'},
+		{'label': 'Last Modified', 'value': 'modified'},
+		{'label': 'Modified By', 'value': 'modified_by'},
+		{'label': 'Owner', 'value': 'owner'},
+	]
+
+	for field in std_fields:
+		if field.get('value') not in rows:
+			rows.append(field.get('value'))
+		if field not in fields:
+			fields.append(field)
 
 	return {'data': data, 'columns': columns, 'rows': rows, 'fields': fields}
 
