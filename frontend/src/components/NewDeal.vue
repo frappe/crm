@@ -144,7 +144,7 @@ const allFields = [
         type: 'data',
       },
       {
-        label: 'Mobile no',
+        label: 'Mobile No',
         name: 'mobile_no',
         type: 'data',
       },
@@ -173,10 +173,10 @@ const allFields = [
         options: statusDropdownOptions(props.newDeal, 'deal'),
       },
       {
-        label: 'Deal owner',
+        label: 'Deal Owner',
         name: 'lead_owner',
         type: 'link',
-        placeholder: 'Deal owner',
+        placeholder: 'Deal Owner',
       },
     ],
   },

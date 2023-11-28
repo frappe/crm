@@ -33,7 +33,7 @@
             :bubbleMenu="true"
             :content="_note.content"
             @change="(val) => (_note.content = val)"
-            placeholder="Type a content"
+            placeholder="Type a Content"
           />
         </div>
       </div>

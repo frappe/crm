@@ -11,19 +11,19 @@
       <template #prefix>
         <PhoneIcon class="h-4 w-4" />
       </template>
-      <span>Make a call</span>
+      <span>Make a Call</span>
     </Button>
     <Button v-else-if="title == 'Notes'" variant="solid" @click="showNote()">
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>New note</span>
+      <span>New Note</span>
     </Button>
     <Button v-else-if="title == 'Tasks'" variant="solid" @click="showTask()">
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>New task</span>
+      <span>New Task</span>
     </Button>
   </div>
   <div v-if="activities?.length" class="flex-1 overflow-y-auto">
@@ -118,7 +118,7 @@
               :options="taskStatusOptions(updateTaskStatus, task)"
               @click.stop
             >
-              <Tooltip text="Change status">
+              <Tooltip text="Change Status">
                 <Button variant="ghosted" class="hover:bg-gray-300">
                   <TaskStatusIcon :status="task.status" />
                 </Button>
@@ -131,7 +131,7 @@
                   label: 'Delete',
                   onClick: () => {
                     $dialog({
-                      title: 'Delete task',
+                      title: 'Delete Task',
                       message: 'Are you sure you want to delete this task?',
                       actions: [
                         {
@@ -187,7 +187,7 @@
           >
             <div class="flex items-center justify-between">
               <div>
-                {{ call.type == 'Incoming' ? 'Inbound' : 'Outbound' }} call
+                {{ call.type == 'Incoming' ? 'Inbound' : 'Outbound' }} Call
               </div>
               <div>
                 <Tooltip
@@ -213,7 +213,7 @@
                 <PlayIcon class="h-4 w-4 text-gray-600" />
                 <div class="text-sm text-gray-600">
                   {{
-                    call.show_recording ? 'Hide recording' : 'Listen to call'
+                    call.show_recording ? 'Hide Recording' : 'Listen to Call'
                   }}
                 </div>
               </div>
@@ -226,7 +226,7 @@
                 class="audio-control"
                 controls
                 :src="call.recording_url"
-              ></audio>
+              />
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
@@ -336,7 +336,7 @@
         >
           <div class="flex items-center justify-between">
             <div>
-              {{ activity.type == 'Incoming' ? 'Inbound' : 'Outbound' }} call
+              {{ activity.type == 'Incoming' ? 'Inbound' : 'Outbound' }} Call
             </div>
             <div>
               <Tooltip
@@ -362,7 +362,7 @@
               <PlayIcon class="h-4 w-4 text-gray-600" />
               <div class="text-sm text-gray-600">
                 {{
-                  activity.show_recording ? 'Hide recording' : 'Listen to call'
+                  activity.show_recording ? 'Hide Recording' : 'Listen to Call'
                 }}
               </div>
             </div>
@@ -534,7 +534,7 @@
           <div v-if="activity.other_versions">
             <Button
               :label="
-                activity.show_others ? 'Hide all changes' : 'Show all changes'
+                activity.show_others ? 'Hide all Changes' : 'Show all Changes'
               "
               variant="outline"
               @click="activity.show_others = !activity.show_others"
@@ -560,25 +560,25 @@
     <Button
       v-if="title == 'Calls'"
       variant="solid"
-      label="Make a call"
+      label="Make a Call"
       @click="makeCall(doc.data.mobile_no)"
     />
     <Button
       v-else-if="title == 'Notes'"
       variant="solid"
-      label="Create note"
+      label="Create Note"
       @click="showNote()"
     />
     <Button
       v-else-if="title == 'Emails'"
       variant="solid"
-      label="Send email"
+      label="Send Email"
       @click="$refs.emailBox.show = true"
     />
     <Button
       v-else-if="title == 'Tasks'"
       variant="solid"
-      label="Create task"
+      label="Create Task"
       @click="showTask()"
     />
   </div>
@@ -825,13 +825,13 @@ function update_activities_details(activity) {
 }
 
 const emptyText = computed(() => {
-  let text = 'No email communications'
+  let text = 'No Email Communications'
   if (props.title == 'Calls') {
-    text = 'No call logs'
+    text = 'No Call Logs'
   } else if (props.title == 'Notes') {
-    text = 'No notes'
+    text = 'No Notes'
   } else if (props.title == 'Tasks') {
-    text = 'No tasks'
+    text = 'No Tasks'
   }
   return text
 })

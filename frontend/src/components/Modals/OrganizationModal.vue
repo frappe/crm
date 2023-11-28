@@ -41,10 +41,10 @@
                 type="text"
                 ref="title"
                 size="md"
-                label="Organization name"
+                label="Organization Name"
                 variant="outline"
                 v-model="_organization.organization_name"
-                placeholder="Add organization name"
+                placeholder="Add Organization Name"
               />
               <div class="flex gap-4">
                 <FormControl
@@ -54,16 +54,16 @@
                   label="Website"
                   variant="outline"
                   v-model="_organization.website"
-                  placeholder="Add website"
+                  placeholder="Add Website"
                 />
                 <FormControl
                   class="flex-1"
                   type="text"
                   size="md"
-                  label="Annual revenue"
+                  label="Annual Revenue"
                   variant="outline"
                   v-model="_organization.annual_revenue"
-                  placeholder="Add annual revenue"
+                  placeholder="Add Annual Revenue"
                 />
               </div>
               <div class="flex gap-4">
@@ -81,7 +81,7 @@
                     '10001+',
                   ]"
                   size="md"
-                  label="No. of employees"
+                  label="No. of Employees"
                   variant="outline"
                   v-model="_organization.no_of_employees"
                 />
@@ -92,7 +92,7 @@
                   variant="outline"
                   v-model="_organization.industry"
                   doctype="CRM Industry"
-                  placeholder="Add industry"
+                  placeholder="Add Industry"
                 />
               </div>
             </div>
@@ -224,7 +224,7 @@ function handleOrganizationUpdate(doc) {
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
-    ? 'New organization'
+    ? 'New Organization'
     : _organization.value.organization_name
   let size = detailMode.value ? '' : 'xl'
   let actions = detailMode.value

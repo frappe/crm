@@ -50,7 +50,7 @@
       <div
         class="flex h-[41px] items-center border-b px-5 py-2.5 text-lg font-semibold"
       >
-        About this deal
+        About this Deal
       </div>
       <div class="flex items-center justify-start gap-5 border-b p-5">
         <Tooltip
@@ -122,7 +122,7 @@
                     <template #target="{ togglePopover }">
                       <Button
                         class="h-7 px-3"
-                        label="Add contact"
+                        label="Add Contact"
                         @click="togglePopover()"
                       >
                         <template #prefix>
@@ -190,7 +190,7 @@
                                 })
                               "
                             >
-                              <ExternalLinkIcon class="h-4 w-4" />
+                              <ArrowUpRightIcon class="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" @click="toggle()">
                               <FeatherIcon
@@ -262,7 +262,7 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
-import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities.vue'
@@ -452,7 +452,7 @@ function contactOptions(contact) {
 
   if (!contact.is_primary) {
     options.push({
-      label: 'Set as primary contact',
+      label: 'Set as Primary Contact',
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
       onClick: () => setPrimaryContact(contact.name),
     })

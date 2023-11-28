@@ -165,10 +165,10 @@ def get_field_obj(field):
 		"name": field.fieldname,
 	}
 
-	obj["placeholder"] = "Add " + field.label.lower() + "..."
+	obj["placeholder"] = "Add " + field.label + "..."
 
 	if field.fieldtype == "Link":
-		obj["placeholder"] = "Select " + field.label.lower() + "..."
+		obj["placeholder"] = "Select " + field.label + "..."
 		obj["doctype"] = field.options
 	elif field.fieldtype == "Select":
 		obj["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]

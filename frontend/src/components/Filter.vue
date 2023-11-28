@@ -78,7 +78,7 @@
                   class="!text-gray-600"
                   variant="ghost"
                   @click="togglePopover()"
-                  label="Add filter"
+                  label="Add Filter"
                 >
                   <template #prefix>
                     <FeatherIcon name="plus" class="h-4" />
@@ -90,7 +90,7 @@
               v-if="storage.size"
               class="!text-gray-600"
               variant="ghost"
-              label="Clear all filter"
+              label="Clear all Filter"
               @click="clearfilter(close)"
             />
           </div>
