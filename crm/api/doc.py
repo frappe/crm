@@ -69,6 +69,9 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 		if column.get("key") not in rows:
 			rows.append(column.get("key"))
 
+	if "name" not in rows:
+		rows.append("name")
+
 	data = frappe.get_all(
 		doctype,
 		fields=rows,
@@ -77,7 +80,17 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 		page_length=20,
 	) or []
 
-	return {'data': data, 'columns': columns, 'rows': rows}
+	not_allowed_fieldtypes = [
+		"Section Break",
+		"Column Break",
+		"Tab Break",
+	]
+
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
+	fields = [{"label": field.label, "value": field.fieldname} for field in fields if field.label and field.fieldname]
+
+	return {'data': data, 'columns': columns, 'rows': rows, 'fields': fields}
 
 
 @frappe.whitelist()
