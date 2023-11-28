@@ -43,3 +43,8 @@ def sync_default_list_rows(doctype):
 		rows = list.default_list_data().get("rows")
 
 	return rows
+
+@frappe.whitelist()
+def reset_to_default(doctype):
+	if frappe.db.exists("CRM List View Settings", doctype):
+		frappe.delete_doc("CRM List View Settings", doctype)

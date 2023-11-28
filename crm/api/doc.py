@@ -57,10 +57,13 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 	]
 	rows = ["name"]
 
+	is_default = True
+
 	if frappe.db.exists("CRM List View Settings", doctype):
 		list_view_settings = frappe.get_doc("CRM List View Settings", doctype)
 		columns = frappe.parse_json(list_view_settings.columns)
 		rows = frappe.parse_json(list_view_settings.rows)
+		is_default = False
 	else:
 		list = get_controller(doctype)
 
@@ -113,7 +116,13 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 		if field not in fields:
 			fields.append(field)
 
-	return {'data': data, 'columns': columns, 'rows': rows, 'fields': fields}
+	return {
+		"data": data,
+		"columns": columns,
+		"rows": rows,
+		"fields": fields,
+		"is_default": is_default,
+	}
 
 
 @frappe.whitelist()
