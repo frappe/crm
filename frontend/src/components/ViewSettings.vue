@@ -173,7 +173,9 @@ async function addColumn(c) {
 
 function removeColumn(c) {
   columns.value = columns.value.filter((column) => column.key !== c.key)
-  rows.value = rows.value.filter((row) => row !== c.key)
+  if (c.key !== 'name') {
+    rows.value = rows.value.filter((row) => row !== c.key)
+  }
   updateColumnDetails()
 }
 
