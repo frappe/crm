@@ -190,6 +190,10 @@ function updateColumn(c) {
   let index = columns.value.findIndex((column) => column.key === c.key)
   columns.value[index].label = c.label
   columns.value[index].width = c.width
+
+  if (columns.value[index].old) {
+    delete columns.value[index].old
+  }
   updateColumnDetails()
 }
 
