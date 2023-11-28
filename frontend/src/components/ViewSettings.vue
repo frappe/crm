@@ -200,10 +200,9 @@ function updateColumn(c) {
 
 function cancelUpdate() {
   edit.value = false
-  column.value = {
-    ...column.value.old,
-    old: {},
-  }
+  column.value.label = column.value.old.label
+  column.value.width = column.value.old.width
+  delete column.value.old
 }
 
 async function updateColumnDetails() {
