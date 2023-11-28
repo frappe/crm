@@ -21,7 +21,10 @@
             ].includes(field.type)
           "
           class="form-control"
-          :class="{ '[&_input]:text-gray-500': field.type === 'date' && !data[field.name] }"
+          :class="{
+            '[&_input]:text-gray-500':
+              field.type === 'date' && !data[field.name],
+          }"
           :type="field.type"
           :value="data[field.name]"
           :placeholder="field.placeholder"
@@ -63,9 +66,9 @@
           @change.stop="emit('update', field.name, $event.target.value)"
         />
       </div>
-      <ExternalLinkIcon
+      <ArrowUpRightIcon
         v-if="field.type === 'link' && field.link && data[field.name]"
-        class="h-4 w-4 shrink-0 cursor-pointer text-gray-600"
+        class="h-4 w-4 shrink-0 cursor-pointer text-gray-600 hover:text-gray-800"
         @click="field.link(data[field.name])"
       />
     </div>
@@ -73,7 +76,7 @@
 </template>
 
 <script setup>
-import ExternalLinkIcon from '@/components/Icons/ExternalLinkIcon.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import { FormControl, Tooltip } from 'frappe-ui'
 import { defineModel } from 'vue'
