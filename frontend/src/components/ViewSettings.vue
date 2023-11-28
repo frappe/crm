@@ -45,7 +45,7 @@
               </div>
             </template>
           </Draggable>
-          <div class="mt-1.5 border-t pt-1.5">
+          <div class="mt-1.5 flex flex-col gap-1 border-t pt-1.5">
             <Autocomplete
               value=""
               :options="fields"
@@ -64,6 +64,17 @@
                 </Button>
               </template>
             </Autocomplete>
+            <Button
+              v-if="!is_default"
+              class="w-full !justify-start !text-gray-600"
+              variant="ghost"
+              @click="resetToDefault"
+              label="Reset to Default"
+            >
+              <template #prefix>
+                <ReloadIcon class="h-4" />
+              </template>
+            </Button>
           </div>
         </div>
         <div v-else>
@@ -115,6 +126,7 @@
 import SettingsIcon from '@/components/Icons/SettingsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
+import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import Draggable from 'vuedraggable'
@@ -135,6 +147,13 @@ const column = ref({
   label: '',
   key: '',
   width: '10rem',
+})
+
+const is_default = computed({
+  get: () => list.value?.data?.is_default,
+  set: (val) => {
+    list.value.data.is_default = val
+  },
 })
 
 const columns = computed({
@@ -207,6 +226,7 @@ function cancelUpdate() {
 }
 
 async function updateColumnDetails() {
+  is_default.value = false
   await call(
     'crm.fcrm.doctype.crm_list_view_settings.crm_list_view_settings.update',
     {
@@ -215,5 +235,15 @@ async function updateColumnDetails() {
       rows: rows.value,
     }
   )
+}
+
+async function resetToDefault() {
+  await call(
+    'crm.fcrm.doctype.crm_list_view_settings.crm_list_view_settings.reset_to_default',
+    {
+      doctype: props.doctype,
+    }
+  )
+  list.value.reload()
 }
 </script>
