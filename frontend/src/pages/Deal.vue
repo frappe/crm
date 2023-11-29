@@ -18,13 +18,11 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </FormControl>
-      <Dropdown
-        :options="statusDropdownOptions(deal.data, 'deal', updateField)"
-      >
+      <Dropdown :options="statusOptions('deal', updateField)">
         <template #default="{ open }">
           <Button :label="deal.data.status">
             <template #prefix>
-              <IndicatorIcon :class="dealStatuses[deal.data.status].color" />
+              <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -163,7 +161,9 @@
                               :image="getContactByName(contact.name).image"
                               size="md"
                             />
-                            <div class="truncate">{{ getContactByName(contact.name).full_name }}</div>
+                            <div class="truncate">
+                              {{ getContactByName(contact.name).full_name }}
+                            </div>
                             <Badge
                               v-if="contact.is_primary"
                               class="ml-2"
@@ -272,16 +272,11 @@ import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
-import {
-  dealStatuses,
-  statusDropdownOptions,
-  openWebsite,
-  createToast,
-  activeAgents,
-} from '@/utils'
+import { openWebsite, createToast, activeAgents } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
+import { statusesStore } from '@/stores/statuses'
 import {
   createResource,
   FeatherIcon,
@@ -300,6 +295,7 @@ import { useRouter } from 'vue-router'
 const { getUser } = usersStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations, getOrganization } = organizationsStore()
+const { statusOptions, getDealStatus } = statusesStore()
 const router = useRouter()
 
 const props = defineProps({

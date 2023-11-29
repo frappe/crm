@@ -11,7 +11,7 @@
             v-model="newLead[field.name]"
           >
             <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon :class="leadStatuses[newLead[field.name]].color" />
+              <IndicatorIcon :class="getLeadStatus(newLead[field.name]).color" />
             </template>
           </FormControl>
           <FormControl
@@ -45,7 +45,7 @@
           </FormControl>
           <Dropdown
             v-else-if="field.type === 'dropdown'"
-            :options="statusDropdownOptions(newLead)"
+            :options="statusOptions('lead')"
             class="w-full flex-1"
           >
             <template #default="{ open }">
@@ -55,7 +55,7 @@
               >
                 <template #prefix>
                   <IndicatorIcon
-                    :class="leadStatuses[newLead[field.name]].color"
+                    :class="getLeadStatus(newLead[field.name]).color"
                   />
                 </template>
                 <template #default>{{ newLead[field.name] }}</template>
@@ -89,11 +89,13 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { leadStatuses, statusDropdownOptions, activeAgents } from '@/utils'
+import { statusesStore } from '@/stores/statuses'
+import { activeAgents } from '@/utils'
 import { FormControl, Button, Dropdown, FeatherIcon } from 'frappe-ui'
 import { ref } from 'vue'
 
 const { getUser } = usersStore()
+const { getLeadStatus, statusOptions } = statusesStore()
 
 const props = defineProps({
   newLead: {
@@ -170,7 +172,7 @@ const allFields = [
         label: 'Status',
         name: 'status',
         type: 'select',
-        options: statusDropdownOptions(props.newLead),
+        options: statusOptions('lead'),
       },
       {
         label: 'Lead Owner',

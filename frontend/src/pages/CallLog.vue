@@ -143,7 +143,7 @@
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
-import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
+import { dateFormat, timeAgo, dateTooltipFormat, secondsToDuration } from '@/utils'
 import {
   TextEditor,
   Avatar,
@@ -156,7 +156,6 @@ import {
 } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import { secondsToDuration } from '@/utils'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 

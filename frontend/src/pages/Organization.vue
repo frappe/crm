@@ -248,16 +248,15 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations.js'
+import { statusesStore } from '@/stores/statuses'
 import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
-  leadStatuses,
-  dealStatuses,
   formatNumberIntoCurrency,
 } from '@/utils'
-import { usersStore } from '@/stores/users'
 import { h, computed, ref } from 'vue'
 
 const props = defineProps({
@@ -268,6 +267,7 @@ const props = defineProps({
 })
 
 const { organizations, getOrganization } = organizationsStore()
+const { getLeadStatus, getDealStatus } = statusesStore()
 const showOrganizationModal = ref(false)
 const detailMode = ref(false)
 
@@ -454,7 +454,7 @@ function getLeadRowObject(lead) {
     },
     status: {
       label: lead.status,
-      color: leadStatuses[lead.status]?.color,
+      color: getLeadStatus(lead.status)?.color,
     },
     email: lead.email,
     mobile_no: lead.mobile_no,
@@ -479,7 +479,7 @@ function getDealRowObject(deal) {
     annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
     status: {
       label: deal.status,
-      color: dealStatuses[deal.status]?.color,
+      color: getDealStatus(deal.status)?.color,
     },
     email: deal.email,
     mobile_no: deal.mobile_no,

@@ -18,13 +18,11 @@
           <UserAvatar class="mr-2" :user="option.email" size="sm" />
         </template>
       </FormControl>
-      <Dropdown
-        :options="statusDropdownOptions(lead.data, 'lead', updateField)"
-      >
+      <Dropdown :options="statusOptions('lead', updateField)">
         <template #default="{ open }">
           <Button :label="lead.data.status">
             <template #prefix>
-              <IndicatorIcon :class="leadStatuses[lead.data.status].color" />
+              <IndicatorIcon :class="getLeadStatus(lead.data.status).color" />
             </template>
             <template #suffix
               ><FeatherIcon
@@ -179,16 +177,11 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
-import {
-  leadStatuses,
-  statusDropdownOptions,
-  openWebsite,
-  createToast,
-  activeAgents,
-} from '@/utils'
+import { openWebsite, createToast, activeAgents } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
+import { statusesStore } from '@/stores/statuses'
 import {
   createResource,
   FileUploader,
@@ -208,6 +201,7 @@ import { useRouter } from 'vue-router'
 const { getUser } = usersStore()
 const { contacts } = contactsStore()
 const { organizations, getOrganization } = organizationsStore()
+const { statusOptions, getLeadStatus } = statusesStore()
 const router = useRouter()
 
 const props = defineProps({

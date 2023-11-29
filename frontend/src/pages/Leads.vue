@@ -29,14 +29,10 @@
     <div class="flex items-center gap-2">
       <Filter doctype="CRM Lead" />
       <SortBy doctype="CRM Lead" />
-      <ViewSettings doctype="CRM Lead" v-model="leads"/>
+      <ViewSettings doctype="CRM Lead" v-model="leads" />
     </div>
   </div>
-  <LeadsListView
-    v-if="leads.data"
-    :rows="rows"
-    :columns="leads.data.columns"
-  />
+  <LeadsListView v-if="leads.data" :rows="rows" :columns="leads.data.columns" />
   <Dialog
     v-model="showNewDialog"
     :options="{
@@ -65,10 +61,11 @@ import Filter from '@/components/Filter.vue'
 import ViewSettings from '@/components/ViewSettings.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
+import { statusesStore } from '@/stores/statuses'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
-import { leadStatuses, dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
+import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import {
   FeatherIcon,
   Dialog,
@@ -84,6 +81,7 @@ const breadcrumbs = [{ label: 'Leads', route: { name: 'Leads' } }]
 
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
+const { getLeadStatus } = statusesStore()
 const { get: getOrderBy } = useOrderBy()
 const { getArgs, storage } = useFilter()
 
@@ -154,7 +152,7 @@ const rows = computed(() => {
       } else if (row == 'status') {
         _rows[row] = {
           label: lead.status,
-          color: leadStatuses[lead.status]?.color,
+          color: getLeadStatus(lead.status)?.color,
         }
       } else if (row == 'lead_owner') {
         _rows[row] = {

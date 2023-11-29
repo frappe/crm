@@ -30,7 +30,7 @@
     <div class="flex items-center gap-2">
       <Filter doctype="CRM Deal" />
       <SortBy doctype="CRM Deal" />
-      <ViewSettings doctype="CRM Deal" v-model="deals"/>
+      <ViewSettings doctype="CRM Deal" v-model="deals" />
     </div>
   </div>
   <DealsListView v-if="deals.data" :rows="rows" :columns="deals.data.columns" />
@@ -62,11 +62,11 @@ import Filter from '@/components/Filter.vue'
 import ViewSettings from '@/components/ViewSettings.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
+import { statusesStore } from '@/stores/statuses'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
 import {
-  dealStatuses,
   dateFormat,
   dateTooltipFormat,
   timeAgo,
@@ -87,6 +87,7 @@ const breadcrumbs = [{ label: 'Deals', route: { name: 'Deals' } }]
 
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
+const { getDealStatus } = statusesStore()
 const { get: getOrderBy } = useOrderBy()
 const { getArgs, storage } = useFilter()
 
@@ -149,7 +150,7 @@ const rows = computed(() => {
       } else if (row == 'status') {
         _rows[row] = {
           label: deal.status,
-          color: dealStatuses[deal.status]?.color,
+          color: getDealStatus(deal.status)?.color,
         }
       } else if (row == 'deal_owner') {
         _rows[row] = {
