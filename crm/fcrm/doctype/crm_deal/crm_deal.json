@@ -111,10 +111,10 @@
   {
    "default": "Qualification",
    "fieldname": "status",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Qualification\nDemo/Making\nProposal/Quotation\nNegotiation\nReady to Close\nWon\nLost",
+   "options": "CRM Deal Status",
    "reqd": 1,
    "search_index": 1
   },
@@ -138,7 +138,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-24 16:50:07.177125",
+ "modified": "2023-11-29 11:31:46.968519",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
