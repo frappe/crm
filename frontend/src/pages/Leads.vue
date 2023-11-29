@@ -152,7 +152,7 @@ const rows = computed(() => {
       } else if (row == 'status') {
         _rows[row] = {
           label: lead.status,
-          color: getLeadStatus(lead.status)?.color,
+          color: getLeadStatus(lead.status)?.iconColorClass,
         }
       } else if (row == 'lead_owner') {
         _rows[row] = {

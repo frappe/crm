@@ -150,7 +150,7 @@ const rows = computed(() => {
       } else if (row == 'status') {
         _rows[row] = {
           label: deal.status,
-          color: getDealStatus(deal.status)?.color,
+          color: getDealStatus(deal.status)?.iconColorClass,
         }
       } else if (row == 'deal_owner') {
         _rows[row] = {

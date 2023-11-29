@@ -11,7 +11,7 @@
             v-model="newLead[field.name]"
           >
             <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon :class="getLeadStatus(newLead[field.name]).color" />
+              <IndicatorIcon :class="getLeadStatus(newLead[field.name]).iconColorClass" />
             </template>
           </FormControl>
           <FormControl
@@ -43,31 +43,6 @@
               <UserAvatar class="mr-2" :user="option.email" size="sm" />
             </template>
           </FormControl>
-          <Dropdown
-            v-else-if="field.type === 'dropdown'"
-            :options="statusOptions('lead')"
-            class="w-full flex-1"
-          >
-            <template #default="{ open }">
-              <Button
-                :label="newLead[field.name]"
-                class="w-full justify-between"
-              >
-                <template #prefix>
-                  <IndicatorIcon
-                    :class="getLeadStatus(newLead[field.name]).color"
-                  />
-                </template>
-                <template #default>{{ newLead[field.name] }}</template>
-                <template #suffix>
-                  <FeatherIcon
-                    :name="open ? 'chevron-up' : 'chevron-down'"
-                    class="h-4 text-gray-600"
-                  />
-                </template>
-              </Button>
-            </template>
-          </Dropdown>
           <FormControl v-else type="text" v-model="newLead[field.name]" />
         </div>
       </div>

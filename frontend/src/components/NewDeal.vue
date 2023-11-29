@@ -11,7 +11,9 @@
             v-model="newDeal[field.name]"
           >
             <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon :class="getDealStatus(newDeal[field.name]).color" />
+              <IndicatorIcon
+                :class="getDealStatus(newDeal[field.name]).iconColorClass"
+              />
             </template>
           </FormControl>
           <FormControl
@@ -43,31 +45,6 @@
               <UserAvatar class="mr-2" :user="option.email" size="sm" />
             </template>
           </FormControl>
-          <Dropdown
-            v-else-if="field.type === 'dropdown'"
-            :options="statusOptions('deal')"
-            class="w-full flex-1"
-          >
-            <template #default="{ open }">
-              <Button
-                :label="newDeal[field.name]"
-                class="w-full justify-between"
-              >
-                <template #prefix>
-                  <IndicatorIcon
-                    :class="getDealStatus(newDeal[field.name]).color"
-                  />
-                </template>
-                <template #default>{{ newDeal[field.name] }}</template>
-                <template #suffix>
-                  <FeatherIcon
-                    :name="open ? 'chevron-up' : 'chevron-down'"
-                    class="h-4 text-gray-600"
-                  />
-                </template>
-              </Button>
-            </template>
-          </Dropdown>
           <FormControl v-else type="text" v-model="newDeal[field.name]" />
         </div>
       </div>

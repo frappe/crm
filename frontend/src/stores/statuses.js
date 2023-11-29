@@ -16,10 +16,8 @@ export const statusesStore = defineStore('crm-statuses', () => {
     auto: true,
     transform(statuses) {
       for (let status of statuses) {
-        status.color =
-          status.color == 'black'
-            ? '!text-gray-900'
-            : `!text-${status.color}-600`
+        status.colorClass = colorClasses(status.color)
+        status.iconColorClass = colorClasses(status.color, true)
         leadStatusesByName[status.name] = status
       }
       return statuses
@@ -35,15 +33,26 @@ export const statusesStore = defineStore('crm-statuses', () => {
     auto: true,
     transform(statuses) {
       for (let status of statuses) {
-        status.color =
-          status.color == 'black'
-            ? '!text-gray-900'
-            : `!text-${status.color}-600`
+        status.colorClass = colorClasses(status.color)
+        status.iconColorClass = colorClasses(status.color, true)
         dealStatusesByName[status.name] = status
       }
       return statuses
     },
   })
+
+  function colorClasses(color, onlyIcon = false) {
+    let textColor = `!text-${color}-600`
+    if (color == 'black') {
+      textColor = '!text-gray-900'
+    } else if (['gray', 'green'].includes(color)) {
+      textColor = `!text-${color}-700`
+    }
+  
+    let bgColor = `!bg-${color}-100 hover:!bg-${color}-200 active:!bg-${color}-300`
+  
+    return [textColor, onlyIcon ? '' : bgColor]
+  }
 
   function getLeadStatus(name) {
     return leadStatusesByName[name]
@@ -60,7 +69,10 @@ export const statusesStore = defineStore('crm-statuses', () => {
     for (const status in statusesByName) {
       options.push({
         label: statusesByName[status].name,
-        icon: () => h(IndicatorIcon, { class: statusesByName[status].color }),
+        icon: () =>
+          h(IndicatorIcon, {
+            class: statusesByName[status].iconColorClass,
+          }),
         onClick: () => {
           action && action('status', statusesByName[status].name)
         },

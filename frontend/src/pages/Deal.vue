@@ -20,14 +20,17 @@
       </FormControl>
       <Dropdown :options="statusOptions('deal', updateField)">
         <template #default="{ open }">
-          <Button :label="deal.data.status">
+          <Button
+            :label="deal.data.status"
+            :class="getDealStatus(deal.data.status).colorClass"
+          >
             <template #prefix>
-              <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
+              <IndicatorIcon />
             </template>
             <template #suffix>
               <FeatherIcon
                 :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4 text-gray-600"
+                class="h-4"
               />
             </template>
           </Button>

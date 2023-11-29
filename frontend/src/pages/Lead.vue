@@ -20,15 +20,19 @@
       </FormControl>
       <Dropdown :options="statusOptions('lead', updateField)">
         <template #default="{ open }">
-          <Button :label="lead.data.status">
+          <Button
+            :label="lead.data.status"
+            :class="getLeadStatus(lead.data.status).colorClass"
+          >
             <template #prefix>
-              <IndicatorIcon :class="getLeadStatus(lead.data.status).color" />
+              <IndicatorIcon />
             </template>
-            <template #suffix
-              ><FeatherIcon
+            <template #suffix>
+              <FeatherIcon
                 :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4 text-gray-600"
-            /></template>
+                class="h-4"
+              />
+            </template>
           </Button>
         </template>
       </Dropdown>

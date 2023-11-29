@@ -390,7 +390,7 @@ function getLeadRowObject(lead) {
     },
     status: {
       label: lead.status,
-      color: getLeadStatus(lead.status)?.color,
+      color: getLeadStatus(lead.status)?.iconColorClass,
     },
     email: lead.email,
     mobile_no: lead.mobile_no,
@@ -415,7 +415,7 @@ function getDealRowObject(deal) {
     annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
     status: {
       label: deal.status,
-      color: getDealStatus(deal.status)?.color,
+      color: getDealStatus(deal.status)?.iconColorClass,
     },
     email: deal.email,
     mobile_no: deal.mobile_no,
