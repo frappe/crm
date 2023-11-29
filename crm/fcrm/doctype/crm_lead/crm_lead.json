@@ -74,10 +74,10 @@
   {
    "default": "Open",
    "fieldname": "status",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Open\nContacted\nNurture\nQualified\nUnqualified\nJunk",
+   "options": "CRM Lead Status",
    "reqd": 1,
    "search_index": 1
   },
@@ -201,7 +201,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-24 16:38:36.695965",
+ "modified": "2023-11-29 11:31:08.555096",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

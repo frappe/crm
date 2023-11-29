@@ -11,7 +11,7 @@
             v-model="newDeal[field.name]"
           >
             <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon :class="dealStatuses[newDeal[field.name]].color" />
+              <IndicatorIcon :class="getDealStatus(newDeal[field.name]).color" />
             </template>
           </FormControl>
           <FormControl
@@ -45,7 +45,7 @@
           </FormControl>
           <Dropdown
             v-else-if="field.type === 'dropdown'"
-            :options="statusDropdownOptions(newDeal, 'deal')"
+            :options="statusOptions('deal')"
             class="w-full flex-1"
           >
             <template #default="{ open }">
@@ -55,7 +55,7 @@
               >
                 <template #prefix>
                   <IndicatorIcon
-                    :class="dealStatuses[newDeal[field.name]].color"
+                    :class="getDealStatus(newDeal[field.name]).color"
                   />
                 </template>
                 <template #default>{{ newDeal[field.name] }}</template>
@@ -89,11 +89,13 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import { usersStore } from '@/stores/users'
-import { dealStatuses, statusDropdownOptions, activeAgents } from '@/utils'
+import { statusesStore } from '@/stores/statuses'
+import { activeAgents } from '@/utils'
 import { FormControl, Button, Dropdown, FeatherIcon } from 'frappe-ui'
 import { ref } from 'vue'
 
 const { getUser } = usersStore()
+const { getDealStatus, statusOptions } = statusesStore()
 
 const props = defineProps({
   newDeal: {
@@ -170,7 +172,7 @@ const allFields = [
         label: 'Status',
         name: 'status',
         type: 'select',
-        options: statusDropdownOptions(props.newDeal, 'deal'),
+        options: statusOptions('deal'),
       },
       {
         label: 'Deal Owner',

@@ -237,18 +237,18 @@ import {
   dateTooltipFormat,
   timeAgo,
   formatNumberIntoCurrency,
-  dealStatuses,
-  leadStatuses,
 } from '@/utils'
 import { usersStore } from '@/stores/users.js'
 import { contactsStore } from '@/stores/contacts.js'
 import { organizationsStore } from '@/stores/organizations.js'
+import { statusesStore } from '@/stores/statuses'
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
+const { getLeadStatus, getDealStatus } = statusesStore()
 
 const props = defineProps({
   contactId: {
@@ -390,7 +390,7 @@ function getLeadRowObject(lead) {
     },
     status: {
       label: lead.status,
-      color: leadStatuses[lead.status]?.color,
+      color: getLeadStatus(lead.status)?.color,
     },
     email: lead.email,
     mobile_no: lead.mobile_no,
@@ -415,7 +415,7 @@ function getDealRowObject(deal) {
     annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
     status: {
       label: deal.status,
-      color: dealStatuses[deal.status]?.color,
+      color: getDealStatus(deal.status)?.color,
     },
     email: deal.email,
     mobile_no: deal.mobile_no,
