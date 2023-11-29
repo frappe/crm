@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/logo.png" alt="Gameplan logo" height="50" />
+  <img src=".github/logo.png" alt="CRM logo" height="50" />
   <p align="center" style="font-weight: bold;">Modern, open-source, CRM solution to supercharge your sales operations.</p>
 </p>
 
