@@ -258,6 +258,7 @@ import {
   formatNumberIntoCurrency,
 } from '@/utils'
 import { h, computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   organizationId: {
@@ -270,6 +271,8 @@ const { organizations, getOrganization } = organizationsStore()
 const { getLeadStatus, getDealStatus } = statusesStore()
 const showOrganizationModal = ref(false)
 const detailMode = ref(false)
+
+const router = useRouter()
 
 const organization = computed(() => getOrganization(props.organizationId))
 
@@ -311,13 +314,13 @@ async function deleteOrganization() {
         label: 'Delete',
         theme: 'red',
         variant: 'solid',
-        async onClick({ close }) {
+        async onClick(close) {
           await call('frappe.client.delete', {
             doctype: 'CRM Organization',
             name: props.organizationId,
           })
-          organizations.reload()
           close()
+          router.push({ name: 'Organizations' })
         },
       },
     ],

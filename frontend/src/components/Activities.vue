@@ -138,7 +138,7 @@
                           label: 'Delete',
                           theme: 'red',
                           variant: 'solid',
-                          onClick({ close }) {
+                          onClick(close) {
                             deleteTask(task.name)
                             close()
                           },
