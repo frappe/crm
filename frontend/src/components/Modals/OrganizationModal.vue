@@ -203,8 +203,7 @@ async function callInsertDoc() {
   const doc = await call('frappe.client.insert', {
     doc: {
       doctype: 'CRM Organization',
-      organization_name: _organization.value.organization_name,
-      website: _organization.value.website,
+      ..._organization.value,
     },
   })
   doc.name && handleOrganizationUpdate(doc)
