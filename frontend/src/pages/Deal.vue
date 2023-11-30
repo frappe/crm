@@ -425,13 +425,15 @@ function getParsedFields(sections) {
   let contactSection = {
     label: 'Contacts',
     opened: true,
-    contacts: deal.data?.contacts.map((contact) => {
-      return {
-        name: contact.contact,
-        is_primary: contact.is_primary,
-        opened: false,
-      }
-    }),
+    contacts: computed(() =>
+      deal.data?.contacts.map((contact) => {
+        return {
+          name: contact.contact,
+          is_primary: contact.is_primary,
+          opened: false,
+        }
+      })
+    ),
   }
 
   return [...sections, contactSection]
@@ -466,7 +468,6 @@ async function addContact(contact) {
     contact,
   })
   if (d) {
-    await contacts.reload()
     deal.reload()
     createToast({
       title: 'Contact added',
@@ -483,7 +484,6 @@ async function removeContact(contact) {
   })
   if (d) {
     deal.reload()
-    contacts.reload()
     createToast({
       title: 'Contact removed',
       icon: 'check',
