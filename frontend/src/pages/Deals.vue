@@ -140,13 +140,15 @@ const rows = computed(() => {
     deals.data.rows.forEach((row) => {
       _rows[row] = deal[row]
 
+      let org = getOrganization(deal.organization)
+
       if (row == 'organization') {
         _rows[row] = {
           label: deal.organization,
-          logo: getOrganization(deal.organization)?.organization_logo,
+          logo: org?.organization_logo,
         }
       } else if (row == 'annual_revenue') {
-        _rows[row] = formatNumberIntoCurrency(deal.annual_revenue)
+        _rows[row] = formatNumberIntoCurrency(org?.annual_revenue)
       } else if (row == 'status') {
         _rows[row] = {
           label: deal.status,
