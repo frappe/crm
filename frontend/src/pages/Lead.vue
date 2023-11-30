@@ -326,10 +326,10 @@ function getParsedFields(sections) {
           showOrganizationModal.value = true
           close()
         }
-        field.link = () =>
+        field.link = (org) =>
           router.push({
             name: 'Organization',
-            params: { organizationId: lead.data.organization },
+            params: { organizationId: org },
           })
       }
     })
