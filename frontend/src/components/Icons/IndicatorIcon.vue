@@ -10,7 +10,7 @@
       cx="8"
       cy="8"
       r="4.5"
-      fill="white"
+      fill="transparent"
       stroke="currentColor"
       stroke-width="3"
     />
