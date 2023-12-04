@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-12-04 13:18:58.028384",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "default_priority",
+  "reference_doctype",
+  "priority",
+  "first_response_time"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "default_priority",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Default Priority"
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Priority",
+   "options": "reference_doctype",
+   "reqd": 1
+  },
+  {
+   "fieldname": "first_response_time",
+   "fieldtype": "Duration",
+   "in_list_view": 1,
+   "label": "First Response TIme",
+   "reqd": 1
+  },
+  {
+   "default": "CRM Lead Status",
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "DocType",
+   "options": "DocType"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-12-04 14:05:42.838493",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Service Level Priority",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
