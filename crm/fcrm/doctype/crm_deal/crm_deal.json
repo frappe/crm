@@ -24,7 +24,17 @@
   "deal_owner",
   "section_break_eepu",
   "lead",
-  "column_break_bqvs"
+  "column_break_bqvs",
+  "sla_tab",
+  "sla",
+  "column_break_pfvq",
+  "sla_status",
+  "sla_creation",
+  "response_details_section",
+  "response_by",
+  "column_break_hpvj",
+  "first_response_time",
+  "first_responded_on"
  ],
  "fields": [
   {
@@ -134,11 +144,62 @@
    "fieldname": "organization_tab",
    "fieldtype": "Tab Break",
    "label": "Organization"
+  },
+  {
+   "fieldname": "sla_tab",
+   "fieldtype": "Tab Break",
+   "label": "SLA",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sla",
+   "fieldtype": "Link",
+   "label": "SLA",
+   "options": "CRM Service Level Agreement"
+  },
+  {
+   "fieldname": "response_by",
+   "fieldtype": "Datetime",
+   "label": "Response By"
+  },
+  {
+   "fieldname": "column_break_pfvq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sla_status",
+   "fieldtype": "Select",
+   "label": "SLA Status",
+   "options": "\nFirst Response Due\nFailed\nFulfilled"
+  },
+  {
+   "fieldname": "sla_creation",
+   "fieldtype": "Datetime",
+   "label": "SLA Creation"
+  },
+  {
+   "fieldname": "response_details_section",
+   "fieldtype": "Section Break",
+   "label": "Response Details"
+  },
+  {
+   "fieldname": "column_break_hpvj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "first_response_time",
+   "fieldtype": "Duration",
+   "label": "First Response Time"
+  },
+  {
+   "fieldname": "first_responded_on",
+   "fieldtype": "Datetime",
+   "label": "First Responded On"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-29 11:31:46.968519",
+ "modified": "2023-12-04 15:27:30.887589",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
