@@ -5,8 +5,7 @@ from __future__ import unicode_literals
 import frappe
 
 def before_install():
-	frappe.reload_doc("fcrm", "doctype", "crm_lead_status")
-	frappe.reload_doc("fcrm", "doctype", "crm_deal_status")
+	pass
 
 def after_install():
 	add_default_lead_statuses()
