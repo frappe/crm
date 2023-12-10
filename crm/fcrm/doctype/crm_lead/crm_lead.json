@@ -220,9 +220,9 @@
    "options": "CRM Service Level Agreement"
   },
   {
-   "fieldname": "response_by",
+   "fieldname": "sla_creation",
    "fieldtype": "Datetime",
-   "label": "Response By"
+   "label": "SLA Creation"
   },
   {
    "fieldname": "column_break_ffnp",
@@ -235,14 +235,14 @@
    "options": "\nFirst Response Due\nFailed\nFulfilled"
   },
   {
-   "fieldname": "sla_creation",
-   "fieldtype": "Datetime",
-   "label": "SLA Creation"
-  },
-  {
    "fieldname": "response_details_section",
    "fieldtype": "Section Break",
    "label": "Response Details"
+  },
+  {
+   "fieldname": "response_by",
+   "fieldtype": "Datetime",
+   "label": "Response By"
   },
   {
    "fieldname": "column_break_pweh",
@@ -262,7 +262,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-04 15:25:07.155734",
+ "modified": "2023-12-10 13:54:53.630114",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
