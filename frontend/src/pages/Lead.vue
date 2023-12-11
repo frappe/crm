@@ -134,6 +134,72 @@
           </div>
         </template>
       </FileUploader>
+      <div v-if="lead.data.sla_status" class="flex flex-col gap-2 border-b p-5">
+        <div
+          v-if="lead.data.sla_status == 'First Response Due'"
+          class="flex items-center gap-4 text-base leading-5"
+        >
+          <div class="w-[106px] text-gray-600">Response By</div>
+          <Tooltip
+            :text="dateFormat(lead.data.response_by, 'ddd, MMM D, YYYY h:mm A')"
+            class="cursor-pointer"
+          >
+            {{ timeAgo(lead.data.response_by) }}
+          </Tooltip>
+        </div>
+        <div
+          v-if="lead.data.sla_status == 'Fulfilled'"
+          class="flex items-center gap-4 text-base leading-5"
+        >
+          <div class="w-[106px] text-gray-600">Fulfilled In</div>
+          <Tooltip
+            :text="
+              dateFormat(
+                lead.data.first_responded_on,
+                'ddd, MMM D, YYYY h:mm A'
+              )
+            "
+            class="cursor-pointer"
+          >
+            {{ formatTime(lead.data.first_response_time) }}
+          </Tooltip>
+        </div>
+        <div
+          v-if="
+            lead.data.sla_status == 'Failed' && lead.data.first_responded_on
+          "
+          class="flex items-center gap-4 text-base leading-5"
+        >
+          <div class="w-[106px] text-gray-600">Fulfilled In</div>
+          <Tooltip
+            :text="
+              dateFormat(
+                lead.data.first_responded_on,
+                'ddd, MMM D, YYYY h:mm A'
+              )
+            "
+            class="cursor-pointer"
+          >
+            {{ formatTime(lead.data.first_response_time) }}
+          </Tooltip>
+        </div>
+        <div class="flex items-center gap-4 text-base leading-5">
+          <div class="w-[106px] text-gray-600">Status</div>
+          <div class="">
+            <Badge
+              :label="lead.data.sla_status"
+              variant="outline"
+              :theme="
+                lead.data.sla_status === 'Failed'
+                  ? 'red'
+                  : lead.data.sla_status === 'Fulfilled'
+                  ? 'green'
+                  : 'gray'
+              "
+            />
+          </div>
+        </div>
+      </div>
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
@@ -181,7 +247,14 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
-import { openWebsite, createToast, activeAgents } from '@/utils'
+import {
+  openWebsite,
+  createToast,
+  activeAgents,
+  dateFormat,
+  timeAgo,
+  formatTime,
+} from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
@@ -197,6 +270,7 @@ import {
   Avatar,
   Tabs,
   Breadcrumbs,
+  Badge,
   call,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
@@ -220,6 +294,15 @@ const lead = createResource({
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   auto: true,
+  onSuccess: (data) => {
+    if (
+      data.response_by &&
+      data.sla_status == 'First Response Due' &&
+      new Date(data.response_by) < new Date()
+    ) {
+      updateField('sla_status', 'Failed')
+    }
+  },
 })
 
 const reload = ref(false)

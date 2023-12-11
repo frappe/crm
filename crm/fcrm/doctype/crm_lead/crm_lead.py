@@ -9,11 +9,17 @@ from frappe.utils import has_gravatar, validate_email_address
 
 
 class CRMLead(Document):
+	def before_validate(self):
+		self.set_sla()
+
 	def validate(self):
 		self.set_full_name()
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+
+	def before_save(self):
+		self.apply_sla()
 
 	def set_full_name(self):
 		if self.first_name:
@@ -121,6 +127,22 @@ class CRMLead(Document):
 		deal.insert(ignore_permissions=True)
 		return deal.name
 
+	def set_sla(self):
+		"""
+		Find an SLA to apply to the lead.
+		"""
+		if sla := get_sla("CRM Lead"):
+			if not sla:
+				return
+			self.sla = sla.name
+
+	def apply_sla(self):
+		"""
+		Apply SLA if set.
+		"""
+		if sla := frappe.get_last_doc("CRM Service Level Agreement", {"name": self.sla}):
+			sla.apply(self)
+
 	@staticmethod
 	def sort_options():
 		return [
@@ -193,6 +215,9 @@ class CRMLead(Document):
 			"mobile_no",
 			"lead_owner",
 			"first_name",
+			"sla_status",
+			"first_response_time",
+			"first_responded_on",
 			"modified",
 			"image",
 		]
@@ -210,3 +235,9 @@ def convert_to_deal(lead):
 	deal = lead.create_deal(contact)
 	lead.save()
 	return deal
+
+def get_sla(doctype):
+	sla = frappe.db.exists("CRM Service Level Agreement", {"apply_on": doctype, "enabled": 1})
+	if not sla:
+		return None
+	return frappe.get_cached_doc("CRM Service Level Agreement", sla)

@@ -7,9 +7,15 @@ from frappe.model.document import Document
 
 
 class CRMDeal(Document):
+	def before_validate(self):
+		self.set_sla()
+
 	def validate(self):
 		self.set_primary_contact()
 		self.set_primary_email_mobile_no()
+
+	def before_save(self):
+		self.apply_sla()
 
 	def set_primary_contact(self, contact=None):
 		if not self.contacts:
@@ -44,6 +50,22 @@ class CRMDeal(Document):
 		if not primary_contact_exists:
 			self.email = ""
 			self.mobile_no = ""
+
+	def set_sla(self):
+		"""
+		Find an SLA to apply to the deal.
+		"""
+		if sla := get_sla("CRM Deal"):
+			if not sla:
+				return
+			self.sla = sla.name
+
+	def apply_sla(self):
+		"""
+		Apply SLA if set.
+		"""
+		if sla := frappe.get_last_doc("CRM Service Level Agreement", {"name": self.sla}):
+			sla.apply(self)
 
 	@staticmethod
 	def sort_options():
@@ -113,6 +135,9 @@ class CRMDeal(Document):
 			"email",
 			"mobile_no",
 			"deal_owner",
+			"sla_status",
+			"first_response_time",
+			"first_responded_on",
 			"modified",
 		]
 		return {'columns': columns, 'rows': rows}
@@ -146,3 +171,9 @@ def set_primary_contact(deal, contact):
 	deal.set_primary_contact(contact)
 	deal.save()
 	return True
+
+def get_sla(doctype):
+	sla = frappe.db.exists("CRM Service Level Agreement", {"apply_on": doctype, "enabled": 1})
+	if not sla:
+		return None
+	return frappe.get_cached_doc("CRM Service Level Agreement", sla)
