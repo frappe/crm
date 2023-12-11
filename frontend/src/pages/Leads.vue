@@ -245,7 +245,7 @@ let newLead = reactive({
   status: 'Open',
   email: '',
   mobile_no: '',
-  lead_owner: getUser().email,
+  lead_owner: '',
 })
 
 const createLead = createResource({

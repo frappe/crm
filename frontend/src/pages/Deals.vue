@@ -242,7 +242,7 @@ let newDeal = reactive({
   status: 'Qualification',
   email: '',
   mobile_no: '',
-  deal_owner: getUser().email,
+  deal_owner: '',
 })
 
 const createDeal = createResource({
