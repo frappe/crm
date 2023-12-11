@@ -215,6 +215,9 @@ class CRMLead(Document):
 			"mobile_no",
 			"lead_owner",
 			"first_name",
+			"sla_status",
+			"first_response_time",
+			"first_responded_on",
 			"modified",
 			"image",
 		]

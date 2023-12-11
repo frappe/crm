@@ -65,7 +65,7 @@ import { statusesStore } from '@/stores/statuses'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
-import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
+import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
 import {
   FeatherIcon,
   Dialog,
@@ -154,6 +154,16 @@ const rows = computed(() => {
           label: lead.status,
           color: getLeadStatus(lead.status)?.iconColorClass,
         }
+      } else if (row == 'sla_status') {
+        _rows[row] = {
+          label: lead.sla_status,
+          color:
+            lead.sla_status === 'Failed'
+              ? 'red'
+              : lead.sla_status === 'Fulfilled'
+              ? 'green'
+              : 'gray',
+        }
       } else if (row == 'lead_owner') {
         _rows[row] = {
           label: lead.lead_owner && getUser(lead.lead_owner).full_name,
@@ -163,6 +173,17 @@ const rows = computed(() => {
         _rows[row] = {
           label: dateFormat(lead[row], dateTooltipFormat),
           timeAgo: timeAgo(lead[row]),
+        }
+      } else if (['first_response_time', 'first_responded_on'].includes(row)) {
+        _rows[row] = {
+          label: lead.first_responded_on
+            ? dateFormat(lead.first_responded_on, dateTooltipFormat)
+            : '',
+          timeAgo: lead[row]
+            ? row == 'first_responded_on'
+              ? timeAgo(lead[row])
+              : formatTime(lead[row])
+            : '',
         }
       }
     })
