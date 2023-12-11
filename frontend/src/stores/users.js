@@ -28,6 +28,12 @@ export const usersStore = defineStore('crm-users', () => {
   function getUser(email) {
     if (!email || email === 'sessionUser') {
       email = session.user
+
+      if (email === 'Administrator' && users.data.length > 2) {
+        email = users.data.filter(
+          (user) => !['Administrator', 'Guest'].includes(user.name)
+        )[0].name
+      }
     }
     if (!usersByName[email]) {
       usersByName[email] = {
