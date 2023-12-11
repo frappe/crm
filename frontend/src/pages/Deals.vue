@@ -71,6 +71,7 @@ import {
   dateTooltipFormat,
   timeAgo,
   formatNumberIntoCurrency,
+  formatTime,
 } from '@/utils'
 import {
   FeatherIcon,
@@ -154,6 +155,16 @@ const rows = computed(() => {
           label: deal.status,
           color: getDealStatus(deal.status)?.iconColorClass,
         }
+      } else if (row == 'sla_status') {
+        _rows[row] = {
+          label: deal.sla_status,
+          color:
+            deal.sla_status === 'Failed'
+              ? 'red'
+              : deal.sla_status === 'Fulfilled'
+              ? 'green'
+              : 'gray',
+        }
       } else if (row == 'deal_owner') {
         _rows[row] = {
           label: deal.deal_owner && getUser(deal.deal_owner).full_name,
@@ -163,6 +174,17 @@ const rows = computed(() => {
         _rows[row] = {
           label: dateFormat(deal[row], dateTooltipFormat),
           timeAgo: timeAgo(deal[row]),
+        }
+      } else if (['first_response_time', 'first_responded_on'].includes(row)) {
+        _rows[row] = {
+          label: deal.first_responded_on
+            ? dateFormat(deal.first_responded_on, dateTooltipFormat)
+            : '',
+          timeAgo: deal[row]
+            ? row == 'first_responded_on'
+              ? timeAgo(deal[row])
+              : formatTime(deal[row])
+            : '',
         }
       }
     })

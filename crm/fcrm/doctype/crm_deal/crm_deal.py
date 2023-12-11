@@ -135,6 +135,9 @@ class CRMDeal(Document):
 			"email",
 			"mobile_no",
 			"deal_owner",
+			"sla_status",
+			"first_response_time",
+			"first_responded_on",
 			"modified",
 		]
 		return {'columns': columns, 'rows': rows}

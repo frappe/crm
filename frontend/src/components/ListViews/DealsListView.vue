@@ -44,8 +44,30 @@
               <PhoneIcon class="h-4 w-4" />
             </div>
           </template>
-          <div v-if="['modified', 'creation'].includes(column.key)" class="truncate text-base">
+          <div
+            v-if="
+              [
+                'modified',
+                'creation',
+                'first_response_time',
+                'first_responded_on',
+              ].includes(column.key)
+            "
+            class="truncate text-base"
+          >
             {{ item.timeAgo }}
+          </div>
+          <div
+            v-else-if="column.key === 'sla_status'"
+            class="truncate text-base"
+          >
+            <Badge
+              v-if="item.label"
+              :variant="'subtle'"
+              :theme="item.color"
+              size="md"
+              :label="item.label"
+            />
           </div>
           <div v-else-if="column.type === 'Check'">
             <FormControl
@@ -74,6 +96,7 @@ import {
   ListRowItem,
   ListSelectBanner,
   FormControl,
+  Badge,
 } from 'frappe-ui'
 
 const props = defineProps({
