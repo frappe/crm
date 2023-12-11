@@ -1,8 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
-from typing import Literal
 
 # import frappe
+from datetime import timedelta
 from frappe.model.document import Document
 from frappe.utils import (
 	add_to_date,
@@ -30,7 +30,14 @@ class CRMServiceLevelAgreement(Document):
 	def handle_status(self, doc: Document):
 		if doc.is_new() or not doc.has_value_changed("status"):
 			return
+		self.set_first_responded_on(doc)
 		self.set_first_response_time(doc)
+
+	def set_first_responded_on(self, doc: Document):
+		if doc.status != self.get_default_priority():
+			doc.first_responded_on = (
+				doc.first_responded_on or now_datetime()
+			)
 
 	def set_first_response_time(self, doc: Document):
 		start_at = doc.sla_creation
@@ -43,8 +50,18 @@ class CRMServiceLevelAgreement(Document):
 		self.set_response_by(doc)
 
 	def set_response_by(self, doc: Document):
-		start = doc.sla_creation
-		doc.response_by = self.calc_time(start, doc.status, "first_response_time")
+		start_time = doc.sla_creation
+		status = doc.status
+
+		priorities = self.get_priorities()
+		priority = priorities.get(status)
+		if not priority or doc.response_by:
+			return
+
+		first_response_time = priority.get("first_response_time", 0)
+		end_time = self.calc_time(start_time, first_response_time)
+		if end_time:
+			doc.response_by = end_time
 
 	def handle_sla_status(self, doc: Document):
 		is_failed = self.is_first_response_failed(doc)
@@ -65,12 +82,10 @@ class CRMServiceLevelAgreement(Document):
 	def calc_time(
 		self,
 		start_at: str,
-		priority: str,
-		target: Literal["first_response_time"],
+		duration_seconds: int,
 	):
 		res = get_datetime(start_at)
-		priority = self.get_priorities()[priority]
-		time_needed = priority.get(target, 0)
+		time_needed = duration_seconds
 		holidays = []
 		weekdays = get_weekdays()
 		workdays = self.get_workdays()
@@ -98,8 +113,7 @@ class CRMServiceLevelAgreement(Document):
 			res = add_to_date(res, seconds=time_required, as_datetime=True)
 		return res
 
-
-	def calc_elapsed_time(self, start_at, end_at) -> float:
+	def calc_elapsed_time(self, start_time, end_time) -> float:
 		"""
 		Get took from start to end, excluding non-working hours
 
@@ -107,38 +121,25 @@ class CRMServiceLevelAgreement(Document):
 		:param end_at: Date at which calculation ends
 		:return: Number of seconds
 		"""
-		start_at = getdate(start_at)
-		end_at = getdate(end_at)
-		time_took = 0
-		holidays = []
-		weekdays = get_weekdays()
-		workdays = self.get_workdays()
-		while getdate(start_at) <= getdate(end_at):
-			today = start_at
-			today_day = getdate(today)
-			today_weekday = weekdays[today.weekday()]
-			is_workday = today_weekday in workdays
-			is_holiday = today_day in holidays
-			if is_holiday or not is_workday:
-				start_at = getdate(add_to_date(start_at, days=1, as_datetime=True))
+		start_time = get_datetime(start_time)
+		end_time = get_datetime(end_time)
+		holiday_list = []
+		working_day_list = self.get_working_days()
+		working_hours = self.get_working_hours()
+
+		total_seconds = 0
+		current_time = start_time
+
+		while current_time < end_time:
+			in_holiday_list = current_time.date() in holiday_list
+			not_in_working_day_list = get_weekdays()[current_time.weekday()] not in working_day_list
+			if in_holiday_list or not_in_working_day_list or not self.is_working_time(current_time, working_hours):
+				current_time += timedelta(seconds=1)
 				continue
-			today_workday = workdays[today_weekday]
-			is_today = getdate(start_at) == getdate(end_at)
-			if not is_today:
-				working_start = today_workday.start_time
-				working_end = today_workday.end_time
-				working_time = time_diff_in_seconds(working_start, working_end)
-				time_took += working_time
-				start_at = getdate(add_to_date(start_at, days=1, as_datetime=True))
-				continue
-			now_in_seconds = time_diff_in_seconds(today, today_day)
-			start_time = max(today_workday.start_time.total_seconds(), now_in_seconds)
-			end_at_seconds = time_diff_in_seconds(getdate(end_at), end_at)
-			end_time = max(today_workday.end_time.total_seconds(), end_at_seconds)
-			time_taken = end_time - start_time
-			time_took += time_taken
-			start_at = getdate(add_to_date(start_at, days=1, as_datetime=True))
-		return time_took
+			total_seconds += 1
+			current_time += timedelta(seconds=1)
+
+		return total_seconds
 
 	def get_priorities(self):
 		"""
@@ -149,6 +150,16 @@ class CRMServiceLevelAgreement(Document):
 			res[row.priority] = row
 		return res
 
+	def get_default_priority(self):
+		"""
+		Return default priority
+		"""
+		for row in self.priorities:
+			if row.default_priority:
+				return row.priority
+
+		return self.priorities[0].priority
+
 	def get_workdays(self) -> dict[str, dict]:
 		"""
 		Return workdays related info as a dict. With `workday` as key
@@ -157,3 +168,21 @@ class CRMServiceLevelAgreement(Document):
 		for row in self.working_hours:
 			res[row.workday] = row
 		return res
+
+	def get_working_days(self) -> dict[str, dict]:
+		workdays = []
+		for row in self.working_hours:
+			workdays.append(row.workday)
+		return workdays
+
+	def get_working_hours(self) -> dict[str, dict]:
+		res = {}
+		for row in self.working_hours:
+			res[row.workday] = (row.start_time, row.end_time)
+		return res
+
+	def is_working_time(self, date_time, working_hours):
+		day_of_week = get_weekdays()[date_time.weekday()]
+		start_time, end_time = working_hours.get(day_of_week, (0, 0))
+		date_time = timedelta(hours=date_time.hour, minutes=date_time.minute, seconds=date_time.second)
+		return start_time <= date_time < end_time
