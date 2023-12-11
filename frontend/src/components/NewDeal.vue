@@ -30,6 +30,24 @@
             :placeholder="field.placeholder"
             :onCreate="field.create"
           />
+          <Link
+            v-else-if="field.type === 'user'"
+            class="form-control"
+            :value="getUser(newDeal[field.name]).full_name"
+            :doctype="field.doctype"
+            @change="(e) => field.change(e)"
+            :placeholder="field.placeholder"
+          >
+            <template #prefix>
+              <UserAvatar class="mr-2" :user="newDeal[field.name]" size="sm" />
+            </template>
+            <template #item-prefix="{ option }">
+              <UserAvatar class="mr-2" :user="option.value" size="sm" />
+            </template>
+            <template #item-label="{ option }">
+              {{ getUser(option.value).full_name }}
+            </template>
+          </Link>
           <FormControl
             v-else-if="field.type === 'user'"
             type="autocomplete"
@@ -156,6 +174,8 @@ const allFields = [
         name: 'deal_owner',
         type: 'user',
         placeholder: 'Deal Owner',
+        doctype: 'User',
+        change: (data) => (props.newDeal.deal_owner = data),
       },
     ],
   },

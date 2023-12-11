@@ -87,7 +87,12 @@
                       name="item-prefix"
                       v-bind="{ active, selected, option }"
                     />
-                    {{ option.label }}
+                    <slot
+                      name="item-label"
+                      v-bind="{ active, selected, option }"
+                    >
+                      {{ option.label }}
+                    </slot>
                   </li>
                 </ComboboxOption>
               </div>

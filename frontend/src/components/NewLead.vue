@@ -11,7 +11,9 @@
             v-model="newLead[field.name]"
           >
             <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon :class="getLeadStatus(newLead[field.name]).iconColorClass" />
+              <IndicatorIcon
+                :class="getLeadStatus(newLead[field.name]).iconColorClass"
+              />
             </template>
           </FormControl>
           <FormControl
@@ -28,21 +30,24 @@
             :placeholder="field.placeholder"
             :onCreate="field.create"
           />
-          <FormControl
+          <Link
             v-else-if="field.type === 'user'"
-            type="autocomplete"
-            :options="activeAgents"
+            class="form-control"
             :value="getUser(newLead[field.name]).full_name"
-            @change="(option) => (newLead[field.name] = option.email)"
+            :doctype="field.doctype"
+            @change="(e) => field.change(e)"
             :placeholder="field.placeholder"
           >
             <template #prefix>
               <UserAvatar class="mr-2" :user="newLead[field.name]" size="sm" />
             </template>
             <template #item-prefix="{ option }">
-              <UserAvatar class="mr-2" :user="option.email" size="sm" />
+              <UserAvatar class="mr-2" :user="option.value" size="sm" />
             </template>
-          </FormControl>
+            <template #item-label="{ option }">
+              {{ getUser(option.value).full_name }}
+            </template>
+          </Link>
           <FormControl v-else type="text" v-model="newLead[field.name]" />
         </div>
       </div>
@@ -154,6 +159,8 @@ const allFields = [
         name: 'lead_owner',
         type: 'user',
         placeholder: 'Lead Owner',
+        doctype: 'User',
+        change: (data) => (props.newLead.lead_owner = data),
       },
     ],
   },

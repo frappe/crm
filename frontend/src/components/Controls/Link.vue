@@ -24,6 +24,10 @@
         <slot name="item-prefix" v-bind="{ active, selected, option }" />
       </template>
 
+      <template #item-label="{ active, selected, option }">
+        <slot name="item-label" v-bind="{ active, selected, option }" />
+      </template>
+
       <template v-if="attrs.onCreate" #footer="{ value, close }">
         <div>
           <Button

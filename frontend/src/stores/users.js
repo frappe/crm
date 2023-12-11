@@ -36,6 +36,7 @@ export const usersStore = defineStore('crm-users', () => {
       }
     }
     if (!usersByName[email]) {
+      users.reload()
       usersByName[email] = {
         name: email,
         email: email,
