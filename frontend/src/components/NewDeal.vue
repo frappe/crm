@@ -153,8 +153,8 @@ const allFields = [
       },
       {
         label: 'Deal Owner',
-        name: 'lead_owner',
-        type: 'link',
+        name: 'deal_owner',
+        type: 'user',
         placeholder: 'Deal Owner',
       },
     ],
