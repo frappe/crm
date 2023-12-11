@@ -131,16 +131,19 @@ class CRMLead(Document):
 		"""
 		Find an SLA to apply to the lead.
 		"""
-		if sla := get_sla("CRM Lead"):
-			if not sla:
-				return
-			self.sla = sla.name
+		sla = get_sla("CRM Lead")
+		if not sla:
+			return
+		self.sla = sla.name
 
 	def apply_sla(self):
 		"""
 		Apply SLA if set.
 		"""
-		if sla := frappe.get_last_doc("CRM Service Level Agreement", {"name": self.sla}):
+		if not self.sla:
+			return
+		sla = frappe.get_last_doc("CRM Service Level Agreement", {"name": self.sla})
+		if sla:
 			sla.apply(self)
 
 	@staticmethod
