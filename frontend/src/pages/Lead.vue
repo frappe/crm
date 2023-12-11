@@ -4,20 +4,25 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <FormControl
-        type="autocomplete"
-        :options="activeAgents"
+      <Link
+        class="form-control"
         :value="getUser(lead.data.lead_owner).full_name"
-        @change="(option) => updateField('lead_owner', option.email)"
-        placeholder="Lead owner"
+        doctype="User"
+        @change="(option) => updateField('lead_owner', option)"
+        placeholder="Lead Owner"
       >
         <template #prefix>
           <UserAvatar class="mr-2" :user="lead.data.lead_owner" size="sm" />
         </template>
         <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.email" size="sm" />
+          <UserAvatar class="mr-2" :user="option.value" size="sm" />
         </template>
-      </FormControl>
+        <template #item-label="{ option }">
+          <Tooltip :text="option.value">
+            {{ getUser(option.value).full_name }}
+          </Tooltip>
+        </template>
+      </Link>
       <Dropdown :options="statusOptions('lead', updateField)">
         <template #default="{ open }">
           <Button
@@ -247,10 +252,10 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
+import Link from '@/components/Controls/Link.vue'
 import {
   openWebsite,
   createToast,
-  activeAgents,
   dateFormat,
   timeAgo,
   formatTime,
@@ -264,7 +269,6 @@ import {
   FileUploader,
   ErrorMessage,
   FeatherIcon,
-  FormControl,
   Dropdown,
   Tooltip,
   Avatar,

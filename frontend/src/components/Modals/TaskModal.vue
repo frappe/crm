@@ -44,19 +44,25 @@
               </template>
             </Button>
           </Dropdown>
-          <Autocomplete
-            :options="activeAgents"
+          <Link
+            class="form-control"
             :value="getUser(_task.assigned_to).full_name"
-            @change="(option) => (_task.assigned_to = option.email)"
+            doctype="User"
+            @change="(option) => (_task.assigned_to = option)"
             placeholder="Assignee"
           >
             <template #prefix>
               <UserAvatar class="mr-2 !h-4 !w-4" :user="_task.assigned_to" />
             </template>
             <template #item-prefix="{ option }">
-              <UserAvatar class="mr-2" :user="option.email" size="sm" />
+              <UserAvatar class="mr-2" :user="option.value" size="sm" />
             </template>
-          </Autocomplete>
+            <template #item-label="{ option }">
+              <Tooltip :text="option.value">
+                {{ getUser(option.value).full_name }}
+              </Tooltip>
+            </template>
+          </Link>
           <DatePicker
             class="datepicker w-36"
             v-model="_task.due_date"
@@ -81,14 +87,15 @@
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { activeAgents, taskStatusOptions, taskPriorityOptions } from '@/utils'
+import Link from '@/components/Controls/Link.vue'
+import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import {
   TextInput,
   TextEditor,
   Dialog,
   Dropdown,
-  Autocomplete,
+  Tooltip,
   DatePicker,
   call,
 } from 'frappe-ui'

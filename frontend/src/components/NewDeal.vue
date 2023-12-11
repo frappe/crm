@@ -45,24 +45,11 @@
               <UserAvatar class="mr-2" :user="option.value" size="sm" />
             </template>
             <template #item-label="{ option }">
-              {{ getUser(option.value).full_name }}
+              <Tooltip :text="option.value">
+                {{ getUser(option.value).full_name }}
+              </Tooltip>
             </template>
           </Link>
-          <FormControl
-            v-else-if="field.type === 'user'"
-            type="autocomplete"
-            :options="activeAgents"
-            :value="getUser(newDeal[field.name]).full_name"
-            @change="(option) => (newDeal[field.name] = option.email)"
-            :placeholder="field.placeholder"
-          >
-            <template #prefix>
-              <UserAvatar class="mr-2" :user="newDeal[field.name]" size="sm" />
-            </template>
-            <template #item-prefix="{ option }">
-              <UserAvatar class="mr-2" :user="option.email" size="sm" />
-            </template>
-          </FormControl>
           <FormControl v-else type="text" v-model="newDeal[field.name]" />
         </div>
       </div>
@@ -85,8 +72,7 @@ import Link from '@/components/Controls/Link.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
-import { activeAgents } from '@/utils'
-import { FormControl, Button, Dropdown, FeatherIcon } from 'frappe-ui'
+import { FormControl, Tooltip } from 'frappe-ui'
 import { ref } from 'vue'
 
 const { getUser } = usersStore()

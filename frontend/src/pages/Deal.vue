@@ -4,20 +4,25 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <FormControl
-        type="autocomplete"
-        :options="activeAgents"
+      <Link
+        class="form-control"
         :value="getUser(deal.data.deal_owner).full_name"
-        @change="(option) => updateField('deal_owner', option.email)"
-        placeholder="Deal owner"
+        doctype="User"
+        @change="(option) => updateField('deal_owner', option)"
+        placeholder="Deal Owner"
       >
         <template #prefix>
           <UserAvatar class="mr-2" :user="deal.data.deal_owner" size="sm" />
         </template>
         <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.email" size="sm" />
+          <UserAvatar class="mr-2" :user="option.value" size="sm" />
         </template>
-      </FormControl>
+        <template #item-label="{ option }">
+          <Tooltip :text="option.value">
+            {{ getUser(option.value).full_name }}
+          </Tooltip>
+        </template>
+      </Link>
       <Dropdown :options="statusOptions('deal', updateField)">
         <template #default="{ open }">
           <Button
@@ -344,7 +349,6 @@ import SectionFields from '@/components/SectionFields.vue'
 import {
   openWebsite,
   createToast,
-  activeAgents,
   dateFormat,
   timeAgo,
   formatTime,
@@ -356,7 +360,6 @@ import { statusesStore } from '@/stores/statuses'
 import {
   createResource,
   FeatherIcon,
-  FormControl,
   Dropdown,
   Tooltip,
   Avatar,
