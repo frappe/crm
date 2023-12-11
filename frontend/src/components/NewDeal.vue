@@ -138,7 +138,7 @@ const allFields = [
         type: 'link',
         placeholder: 'Organization',
         doctype: 'CRM Organization',
-        change: (data) => (newDeal.organization = data),
+        change: (data) => (props.newDeal.organization = data),
         create: (value, close) => {
           _organization.value.organization_name = value
           showOrganizationModal.value = true
