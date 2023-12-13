@@ -1,7 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
+from frappe import _
 from datetime import timedelta
 from frappe.model.document import Document
 from frappe.utils import (
@@ -12,9 +13,24 @@ from frappe.utils import (
 	now_datetime,
 	time_diff_in_seconds,
 )
+from crm.fcrm.doctype.crm_service_level_agreement.utils import get_context
 
 
 class CRMServiceLevelAgreement(Document):
+	def validate(self):
+		self.validate_condition()
+
+	def validate_condition(self):
+		if not self.condition:
+			return
+		try:
+			temp_doc = frappe.new_doc(self.apply_on)
+			frappe.safe_eval(self.condition, None, get_context(temp_doc))
+		except Exception as e:
+			frappe.throw(
+				_("The Condition '{0}' is invalid: {1}").format(self.condition, str(e))
+			)
+
 	def apply(self, doc: Document):
 		self.handle_new(doc)
 		self.handle_communication_status(doc)
