@@ -6,16 +6,3 @@
 
 // 	},
 // });
-
-frappe.ui.form.on("CRM Service Level Priority", {
-	priorities_add: function (frm, cdt, cdn) {
-		if (frm.doc.apply_on == "CRM Deal") {
-			frappe.model.set_value(
-				cdt,
-				cdn,
-				"reference_doctype",
-				"CRM Deal Status"
-			);
-		}
-	},
-});

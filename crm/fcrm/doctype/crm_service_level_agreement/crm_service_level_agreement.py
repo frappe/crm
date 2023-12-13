@@ -17,7 +17,7 @@ from frappe.utils import (
 class CRMServiceLevelAgreement(Document):
 	def apply(self, doc: Document):
 		self.handle_new(doc)
-		self.handle_status(doc)
+		self.handle_communication_status(doc)
 		self.handle_targets(doc)
 		self.handle_sla_status(doc)
 
@@ -27,14 +27,14 @@ class CRMServiceLevelAgreement(Document):
 		creation = doc.sla_creation or now_datetime()
 		doc.sla_creation = creation
 
-	def handle_status(self, doc: Document):
-		if doc.is_new() or not doc.has_value_changed("status"):
+	def handle_communication_status(self, doc: Document):
+		if doc.is_new() or not doc.has_value_changed("communication_status"):
 			return
 		self.set_first_responded_on(doc)
 		self.set_first_response_time(doc)
 
 	def set_first_responded_on(self, doc: Document):
-		if doc.status != self.get_default_priority():
+		if doc.communication_status != self.get_default_priority():
 			doc.first_responded_on = (
 				doc.first_responded_on or now_datetime()
 			)
@@ -51,10 +51,10 @@ class CRMServiceLevelAgreement(Document):
 
 	def set_response_by(self, doc: Document):
 		start_time = doc.sla_creation
-		status = doc.status
+		communication_status = doc.communication_status
 
 		priorities = self.get_priorities()
-		priority = priorities.get(status)
+		priority = priorities.get(communication_status)
 		if not priority or doc.response_by:
 			return
 
