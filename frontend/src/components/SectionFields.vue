@@ -3,12 +3,12 @@
     <div
       v-for="field in fields"
       :key="field.label"
-      class="flex items-center gap-2 px-3 text-base leading-5 first:mt-3"
+      class="flex items-center gap-2 px-3 leading-5 first:mt-3"
     >
-      <div class="w-[106px] shrink-0 text-gray-600">
+      <div class="w-[106px] shrink-0 text-sm text-gray-600">
         {{ field.label }}
       </div>
-      <div class="grid min-h-[28px] flex-1 items-center overflow-hidden">
+      <div class="grid min-h-[28px] flex-1 text-base items-center overflow-hidden">
         <FormControl
           v-if="
             [

@@ -219,6 +219,7 @@ class CRMLead(Document):
 			"lead_owner",
 			"first_name",
 			"sla_status",
+			"response_by",
 			"first_response_time",
 			"first_responded_on",
 			"modified",

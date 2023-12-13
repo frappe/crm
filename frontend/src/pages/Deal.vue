@@ -389,15 +389,6 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   auto: true,
-  onSuccess: (data) => {
-    if (
-      data.response_by &&
-      data.sla_status == 'First Response Due' &&
-      new Date(data.response_by) < new Date()
-    ) {
-      updateField('sla_status', 'Failed')
-    }
-  },
 })
 
 const reload = ref(false)

@@ -60,6 +60,7 @@
                 'creation',
                 'first_response_time',
                 'first_responded_on',
+                'response_by',
               ].includes(column.key)
             "
             class="truncate text-base"
@@ -71,11 +72,11 @@
             class="truncate text-base"
           >
             <Badge
-              v-if="item.label"
+              v-if="item.value"
               :variant="'subtle'"
               :theme="item.color"
               size="md"
-              :label="item.label"
+              :label="item.value"
             />
           </div>
           <div v-else-if="column.type === 'Check'">

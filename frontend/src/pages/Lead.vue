@@ -141,68 +141,15 @@
       </FileUploader>
       <div v-if="lead.data.sla_status" class="flex flex-col gap-2 border-b p-5">
         <div
-          v-if="lead.data.sla_status == 'First Response Due'"
+          v-for="s in slaSection"
+          :key="s.label"
           class="flex items-center gap-4 text-base leading-5"
         >
-          <div class="w-[106px] text-gray-600">Response By</div>
-          <Tooltip
-            :text="dateFormat(lead.data.response_by, 'ddd, MMM D, YYYY h:mm A')"
-            class="cursor-pointer"
-          >
-            {{ timeAgo(lead.data.response_by) }}
+          <div class="w-[106px] text-gray-600">{{ s.label }}</div>
+          <Tooltip :text="s.tooltipText" class="cursor-pointer">
+            <div v-if="!s.isBadge">{{ s.value }}</div>
+            <Badge v-else :label="s.value" variant="subtle" :theme="s.color" />
           </Tooltip>
-        </div>
-        <div
-          v-if="lead.data.sla_status == 'Fulfilled'"
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">Fulfilled In</div>
-          <Tooltip
-            :text="
-              dateFormat(
-                lead.data.first_responded_on,
-                'ddd, MMM D, YYYY h:mm A'
-              )
-            "
-            class="cursor-pointer"
-          >
-            {{ formatTime(lead.data.first_response_time) }}
-          </Tooltip>
-        </div>
-        <div
-          v-if="
-            lead.data.sla_status == 'Failed' && lead.data.first_responded_on
-          "
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">Fulfilled In</div>
-          <Tooltip
-            :text="
-              dateFormat(
-                lead.data.first_responded_on,
-                'ddd, MMM D, YYYY h:mm A'
-              )
-            "
-            class="cursor-pointer"
-          >
-            {{ formatTime(lead.data.first_response_time) }}
-          </Tooltip>
-        </div>
-        <div class="flex items-center gap-4 text-base leading-5">
-          <div class="w-[106px] text-gray-600">Status</div>
-          <div class="">
-            <Badge
-              :label="lead.data.sla_status"
-              variant="outline"
-              :theme="
-                lead.data.sla_status === 'Failed'
-                  ? 'red'
-                  : lead.data.sla_status === 'Fulfilled'
-                  ? 'green'
-                  : 'gray'
-              "
-            />
-          </div>
         </div>
       </div>
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
@@ -259,6 +206,7 @@ import {
   dateFormat,
   timeAgo,
   formatTime,
+  dateTooltipFormat,
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -298,15 +246,6 @@ const lead = createResource({
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   auto: true,
-  onSuccess: (data) => {
-    if (
-      data.response_by &&
-      data.sla_status == 'First Response Due' &&
-      new Date(data.response_by) < new Date()
-    ) {
-      updateField('sla_status', 'Failed')
-    }
-  },
 })
 
 const reload = ref(false)
@@ -441,4 +380,41 @@ function updateField(name, value, callback) {
     callback?.()
   })
 }
+
+let slaSection = computed(() => {
+  let sections = []
+  if (lead.data.first_response_time) {
+    sections.push({
+      label: 'Fulfilled In',
+      value: formatTime(lead.data.first_response_time),
+      tooltipText: dateFormat(lead.data.first_responded_on, dateTooltipFormat),
+    })
+  }
+
+  let status = lead.data.sla_status
+  let tooltipText = status
+  let color =
+    lead.data.sla_status == 'Failed'
+      ? 'red'
+      : lead.data.sla_status == 'Fulfilled'
+      ? 'green'
+      : 'orange'
+
+  if (status == 'First Response Due') {
+    status = timeAgo(lead.data.response_by)
+    tooltipText = dateFormat(lead.data.response_by, dateTooltipFormat)
+    if (new Date(lead.data.response_by) < new Date()) {
+      color = 'red'
+    }
+  }
+
+  sections.push({
+    label: 'Status',
+    isBadge: true,
+    value: status,
+    tooltipText: tooltipText,
+    color: color,
+  })
+  return sections
+})
 </script>

@@ -139,6 +139,7 @@ class CRMDeal(Document):
 			"mobile_no",
 			"deal_owner",
 			"sla_status",
+			"response_by",
 			"first_response_time",
 			"first_responded_on",
 			"modified",
