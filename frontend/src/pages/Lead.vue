@@ -139,19 +139,11 @@
           </div>
         </template>
       </FileUploader>
-      <div v-if="lead.data.sla_status" class="flex flex-col gap-2 border-b p-5">
-        <div
-          v-for="s in slaSection"
-          :key="s.label"
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">{{ s.label }}</div>
-          <Tooltip :text="s.tooltipText" class="cursor-pointer">
-            <div v-if="!s.isBadge">{{ s.value }}</div>
-            <Badge v-else :label="s.value" variant="subtle" :theme="s.color" />
-          </Tooltip>
-        </div>
-      </div>
+      <SLASection
+        v-if="lead.data.sla_status"
+        v-model="lead.data"
+        @updateField="updateField"
+      />
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
@@ -199,15 +191,9 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
+import SLASection from '@/components/SLASection.vue'
 import Link from '@/components/Controls/Link.vue'
-import {
-  openWebsite,
-  createToast,
-  dateFormat,
-  timeAgo,
-  formatTime,
-  dateTooltipFormat,
-} from '@/utils'
+import { openWebsite, createToast } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
@@ -222,7 +208,6 @@ import {
   Avatar,
   Tabs,
   Breadcrumbs,
-  Badge,
   call,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
@@ -380,41 +365,4 @@ function updateField(name, value, callback) {
     callback?.()
   })
 }
-
-let slaSection = computed(() => {
-  let sections = []
-  if (lead.data.first_response_time) {
-    sections.push({
-      label: 'Fulfilled In',
-      value: formatTime(lead.data.first_response_time),
-      tooltipText: dateFormat(lead.data.first_responded_on, dateTooltipFormat),
-    })
-  }
-
-  let status = lead.data.sla_status
-  let tooltipText = status
-  let color =
-    lead.data.sla_status == 'Failed'
-      ? 'red'
-      : lead.data.sla_status == 'Fulfilled'
-      ? 'green'
-      : 'orange'
-
-  if (status == 'First Response Due') {
-    status = timeAgo(lead.data.response_by)
-    tooltipText = dateFormat(lead.data.response_by, dateTooltipFormat)
-    if (new Date(lead.data.response_by) < new Date()) {
-      color = 'red'
-    }
-  }
-
-  sections.push({
-    label: 'Status',
-    isBadge: true,
-    value: status,
-    tooltipText: tooltipText,
-    color: color,
-  })
-  return sections
-})
 </script>

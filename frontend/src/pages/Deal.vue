@@ -99,72 +99,11 @@
           </div>
         </div>
       </div>
-      <div v-if="deal.data.sla_status" class="flex flex-col gap-2 border-b p-5">
-        <div
-          v-if="deal.data.sla_status == 'First Response Due'"
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">Response By</div>
-          <Tooltip
-            :text="dateFormat(deal.data.response_by, 'ddd, MMM D, YYYY h:mm A')"
-            class="cursor-pointer"
-          >
-            {{ timeAgo(deal.data.response_by) }}
-          </Tooltip>
-        </div>
-        <div
-          v-if="deal.data.sla_status == 'Fulfilled'"
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">Fulfilled In</div>
-          <Tooltip
-            :text="
-              dateFormat(
-                deal.data.first_responded_on,
-                'ddd, MMM D, YYYY h:mm A'
-              )
-            "
-            class="cursor-pointer"
-          >
-            {{ formatTime(deal.data.first_response_time) }}
-          </Tooltip>
-        </div>
-        <div
-          v-if="
-            deal.data.sla_status == 'Failed' && deal.data.first_responded_on
-          "
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">Fulfilled In</div>
-          <Tooltip
-            :text="
-              dateFormat(
-                deal.data.first_responded_on,
-                'ddd, MMM D, YYYY h:mm A'
-              )
-            "
-            class="cursor-pointer"
-          >
-            {{ formatTime(deal.data.first_response_time) }}
-          </Tooltip>
-        </div>
-        <div class="flex items-center gap-4 text-base leading-5">
-          <div class="w-[106px] text-gray-600">Status</div>
-          <div class="">
-            <Badge
-              :label="deal.data.sla_status"
-              variant="outline"
-              :theme="
-                deal.data.sla_status === 'Failed'
-                  ? 'red'
-                  : deal.data.sla_status === 'Fulfilled'
-                  ? 'green'
-                  : 'gray'
-              "
-            />
-          </div>
-        </div>
-      </div>
+      <SLASection
+        v-if="deal.data.sla_status"
+        v-model="deal.data"
+        @updateField="updateField"
+      />
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <div
@@ -346,13 +285,8 @@ import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
-import {
-  openWebsite,
-  createToast,
-  dateFormat,
-  timeAgo,
-  formatTime,
-} from '@/utils'
+import SLASection from '@/components/SLASection.vue'
+import { openWebsite, createToast } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
