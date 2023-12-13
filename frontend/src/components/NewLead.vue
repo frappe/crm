@@ -8,7 +8,7 @@
             v-if="field.type === 'select'"
             type="select"
             :options="field.options"
-            v-model="field.value"
+            v-model="newLead[field.name]"
           >
             <template v-if="field.prefix" #prefix>
               <IndicatorIcon :class="field.prefix" />
@@ -71,7 +71,7 @@ import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { FormControl, Tooltip } from 'frappe-ui'
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const { getUser } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
@@ -86,73 +86,83 @@ const props = defineProps({
 const showOrganizationModal = ref(false)
 const _organization = ref({})
 
-const allFields = [
-  {
-    section: 'Lead Details',
-    fields: [
-      {
-        label: 'Salutation',
-        name: 'salutation',
-        type: 'link',
-        placeholder: 'Salutation',
-        doctype: 'Salutation',
-        change: (data) => (props.newLead.salutation = data),
-      },
-      {
-        label: 'First Name',
-        name: 'first_name',
-        type: 'data',
-      },
-      {
-        label: 'Last Name',
-        name: 'last_name',
-        type: 'data',
-      },
-      {
-        label: 'Email',
-        name: 'email',
-        type: 'data',
-      },
-      {
-        label: 'Mobile No',
-        name: 'mobile_no',
-        type: 'data',
-      },
-    ],
-  },
-  {
-    section: 'Other Details',
-    fields: [
-      {
-        label: 'Organization',
-        name: 'organization',
-        type: 'link',
-        placeholder: 'Organization',
-        doctype: 'CRM Organization',
-        change: (data) => (props.newLead.organization = data),
-        create: (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
-          close()
+const allFields = computed(() => {
+  return [
+    {
+      section: 'Lead Details',
+      fields: [
+        {
+          label: 'Salutation',
+          name: 'salutation',
+          type: 'link',
+          placeholder: 'Salutation',
+          doctype: 'Salutation',
+          change: (data) => (props.newLead.salutation = data),
         },
-      },
-      {
-        label: 'Status',
-        name: 'status',
-        type: 'select',
-        options: statusOptions('lead'),
-        value: props.newLead.status || getLeadStatus(props.newLead.status).name,
-        prefix: getLeadStatus(props.newLead.status).iconColorClass,
-      },
-      {
-        label: 'Lead Owner',
-        name: 'lead_owner',
-        type: 'user',
-        placeholder: 'Lead Owner',
-        doctype: 'User',
-        change: (data) => (props.newLead.lead_owner = data),
-      },
-    ],
-  },
-]
+        {
+          label: 'First Name',
+          name: 'first_name',
+          type: 'data',
+        },
+        {
+          label: 'Last Name',
+          name: 'last_name',
+          type: 'data',
+        },
+        {
+          label: 'Email',
+          name: 'email',
+          type: 'data',
+        },
+        {
+          label: 'Mobile No',
+          name: 'mobile_no',
+          type: 'data',
+        },
+      ],
+    },
+    {
+      section: 'Other Details',
+      fields: [
+        {
+          label: 'Organization',
+          name: 'organization',
+          type: 'link',
+          placeholder: 'Organization',
+          doctype: 'CRM Organization',
+          change: (data) => (props.newLead.organization = data),
+          create: (value, close) => {
+            _organization.value.organization_name = value
+            showOrganizationModal.value = true
+            close()
+          },
+        },
+        {
+          label: 'Status',
+          name: 'status',
+          type: 'select',
+          options: statusOptions(
+            'lead',
+            (field, value) => (props.newLead[field] = value)
+          ),
+          prefix: getLeadStatus(props.newLead.status).iconColorClass,
+        },
+        {
+          label: 'Lead Owner',
+          name: 'lead_owner',
+          type: 'user',
+          placeholder: 'Lead Owner',
+          doctype: 'User',
+          change: (data) => (props.newLead.lead_owner = data),
+        },
+      ],
+    },
+  ]
+})
+
+onMounted(() => {
+  if (!props.newLead.status) {
+    props.newLead.status = getLeadStatus(props.newLead.status).name
+  }
+})
 </script>
