@@ -338,7 +338,7 @@ const sections = computed(() => {
       fields: [
         {
           label: 'Email',
-          type: 'dropdown',
+          type: props.contact.name ? 'dropdown' : 'data',
           name: 'email_id',
           options: props.contact?.email_ids?.map((email) => {
             return {
@@ -374,7 +374,7 @@ const sections = computed(() => {
       fields: [
         {
           label: 'Mobile No.',
-          type: 'dropdown',
+          type: props.contact.name ? 'dropdown' : 'data',
           name: 'mobile_no',
           options: props.contact?.phone_nos?.map((phone) => {
             return {
