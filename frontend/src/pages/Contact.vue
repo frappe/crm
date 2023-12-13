@@ -175,16 +175,9 @@
         </button>
       </template>
       <template #default="{ tab }">
-        <LeadsListView
-          class="mt-4"
-          v-if="tab.label === 'Leads' && rows.length"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false }"
-        />
         <DealsListView
           class="mt-4"
-          v-else-if="tab.label === 'Deals' && rows.length"
+          v-if="tab.label === 'Deals' && rows.length"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false }"
@@ -227,9 +220,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
-import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
-import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import {
@@ -248,7 +239,7 @@ import { useRouter } from 'vue-router'
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
-const { getLeadStatus, getDealStatus } = statusesStore()
+const { getDealStatus } = statusesStore()
 
 const props = defineProps({
   contactId: {
@@ -315,41 +306,11 @@ async function deleteContact() {
 const tabIndex = ref(0)
 const tabs = [
   {
-    label: 'Leads',
-    icon: h(LeadsIcon, { class: 'h-4 w-4' }),
-    count: computed(() => leads.data?.length),
-  },
-  {
     label: 'Deals',
     icon: h(DealsIcon, { class: 'h-4 w-4' }),
     count: computed(() => deals.data?.length),
   },
 ]
-
-const leads = createListResource({
-  type: 'list',
-  doctype: 'CRM Lead',
-  cache: ['leads', props.contactId],
-  fields: [
-    'name',
-    'first_name',
-    'lead_name',
-    'image',
-    'organization',
-    'status',
-    'email',
-    'mobile_no',
-    'lead_owner',
-    'modified',
-  ],
-  filters: {
-    email: contact.value?.email_id,
-    converted: 0,
-  },
-  orderBy: 'modified desc',
-  pageLength: 20,
-  auto: true,
-})
 
 const deals = createResource({
   url: 'crm.api.contact.get_linked_deals',
@@ -361,48 +322,12 @@ const deals = createResource({
 })
 
 const rows = computed(() => {
-  let list = []
-  list = tabIndex.value ? deals : leads
+  if (!deals.data || deals.data == []) return []
 
-  if (!list.data) return []
-
-  return list.data.map((row) => {
-    return tabIndex.value ? getDealRowObject(row) : getLeadRowObject(row)
-  })
+  return deals.data.map((row) => getDealRowObject(row))
 })
 
-const columns = computed(() => {
-  return tabIndex.value ? dealColumns : leadColumns
-})
-
-function getLeadRowObject(lead) {
-  return {
-    name: lead.name,
-    lead_name: {
-      label: lead.lead_name,
-      image: lead.image,
-      image_label: lead.first_name,
-    },
-    organization: {
-      label: lead.organization,
-      logo: getOrganization(lead.organization)?.organization_logo,
-    },
-    status: {
-      label: lead.status,
-      color: getLeadStatus(lead.status)?.iconColorClass,
-    },
-    email: lead.email,
-    mobile_no: lead.mobile_no,
-    lead_owner: {
-      label: lead.lead_owner && getUser(lead.lead_owner).full_name,
-      ...(lead.lead_owner && getUser(lead.lead_owner)),
-    },
-    modified: {
-      label: dateFormat(lead.modified, dateTooltipFormat),
-      timeAgo: timeAgo(lead.modified),
-    },
-  }
-}
+const columns = computed(() => dealColumns)
 
 function getDealRowObject(deal) {
   return {
@@ -428,44 +353,6 @@ function getDealRowObject(deal) {
     },
   }
 }
-
-const leadColumns = [
-  {
-    label: 'Name',
-    key: 'lead_name',
-    width: '12rem',
-  },
-  {
-    label: 'Organization',
-    key: 'organization',
-    width: '10rem',
-  },
-  {
-    label: 'Status',
-    key: 'status',
-    width: '8rem',
-  },
-  {
-    label: 'Email',
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: 'Mobile no',
-    key: 'mobile_no',
-    width: '11rem',
-  },
-  {
-    label: 'Lead owner',
-    key: 'lead_owner',
-    width: '10rem',
-  },
-  {
-    label: 'Last modified',
-    key: 'modified',
-    width: '8rem',
-  },
-]
 
 const dealColumns = [
   {
