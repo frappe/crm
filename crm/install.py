@@ -10,11 +10,12 @@ def before_install():
 def after_install():
 	add_default_lead_statuses()
 	add_default_deal_statuses()
+	add_default_communication_statuses()
 	frappe.db.commit()
 
 def add_default_lead_statuses():
 	statuses = {
-		"Open": {
+		"New": {
 			"color": "gray",
 			"position": 1,
 		},
@@ -90,4 +91,15 @@ def add_default_deal_statuses():
 		doc.deal_status = status
 		doc.color = statuses[status]["color"]
 		doc.position = statuses[status]["position"]
+		doc.insert()
+
+def add_default_communication_statuses():
+	statuses = ["Open", "Replied"]
+
+	for status in statuses:
+		if frappe.db.exists("CRM Communication Status", status):
+			continue
+
+		doc = frappe.new_doc("CRM Communication Status")
+		doc.status = status
 		doc.insert()
