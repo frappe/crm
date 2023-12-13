@@ -70,14 +70,23 @@ export const statusesStore = defineStore('crm-statuses', () => {
   }
 
   function getLeadStatus(name) {
+    if (!name) {
+      name = leadStatuses.data[0].name
+    }
     return leadStatusesByName[name]
   }
 
   function getDealStatus(name) {
+    if (!name) {
+      name = dealStatuses.data[0].name
+    }
     return dealStatusesByName[name]
   }
 
   function getCommunicationStatus(name) {
+    if (!name) {
+      name = communicationStatuses.data[0].name
+    }
     return communicationStatuses[name]
   }
 
