@@ -1,0 +1,62 @@
+import frappe
+from frappe.model.document import Document
+from frappe.query_builder import JoinType
+from frappe.utils.safe_exec import get_safe_globals
+
+DOCTYPE = "CRM Service Level Agreement"
+
+def get_sla(doc: Document) -> Document:
+	"""
+	Get Service Level Agreement for `doc`
+
+	:param doc: Lead/Deal to use
+	:return: Applicable SLA
+	"""
+	check_permissions(DOCTYPE, None)
+	SLA = frappe.qb.DocType(DOCTYPE)
+	Priority = frappe.qb.DocType("CRM Service Level Priority")
+	priority = doc.communication_status
+	q = (
+		frappe.qb.from_(SLA)
+		.select(SLA.name, SLA.condition)
+		.where(SLA.apply_on == doc.doctype)
+		.where(SLA.enabled == True)
+	)
+	if priority:
+		q = (
+			q.join(Priority, JoinType.inner)
+			.on(Priority.parent == SLA.name)
+			.where(Priority.priority == priority)
+		)
+	sla_list = q.run(as_dict=True)
+	res = None
+	for sla in sla_list:
+		cond = sla.get("condition")
+		if not cond or frappe.safe_eval(cond, None, get_context(doc)):
+			res = sla
+			break
+	return res
+
+def check_permissions(doctype, parent):
+	user = frappe.session.user
+	permissions = ("select", "read")
+	has_select_permission, has_read_permission = [
+		frappe.has_permission(doctype, perm, user=user, parent_doctype=parent)
+		for perm in permissions
+	]
+
+	if not has_select_permission and not has_read_permission:
+		frappe.throw(f"Insufficient Permission for {doctype}", frappe.PermissionError)
+
+def get_context(d: Document) -> dict:
+	"""
+	Get safe context for `safe_eval`
+
+	:param doc: `Document` to add in context
+	:return: Context with `doc` and safe variables
+	"""
+	utils = get_safe_globals().get("frappe").get("utils")
+	return {
+		"doc": d.as_dict(),
+		"frappe": frappe._dict(utils=utils),
+	}
