@@ -8,12 +8,10 @@
             v-if="field.type === 'select'"
             type="select"
             :options="field.options"
-            v-model="newLead[field.name]"
+            v-model="field.value"
           >
-            <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon
-                :class="getLeadStatus(newLead[field.name]).iconColorClass"
-              />
+            <template v-if="field.prefix" #prefix>
+              <IndicatorIcon :class="field.prefix" />
             </template>
           </FormControl>
           <FormControl
@@ -95,21 +93,10 @@ const allFields = [
       {
         label: 'Salutation',
         name: 'salutation',
-        type: 'select',
-        options: [
-          {
-            label: 'Mr',
-            value: 'Mr',
-          },
-          {
-            label: 'Ms',
-            value: 'Ms',
-          },
-          {
-            label: 'Mrs',
-            value: 'Mrs',
-          },
-        ],
+        type: 'link',
+        placeholder: 'Salutation',
+        doctype: 'Salutation',
+        change: (data) => (props.newLead.salutation = data),
       },
       {
         label: 'First Name',
@@ -154,6 +141,8 @@ const allFields = [
         name: 'status',
         type: 'select',
         options: statusOptions('lead'),
+        value: props.newLead.status || getLeadStatus(props.newLead.status).name,
+        prefix: getLeadStatus(props.newLead.status).iconColorClass,
       },
       {
         label: 'Lead Owner',

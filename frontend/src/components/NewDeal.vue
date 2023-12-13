@@ -8,12 +8,10 @@
             v-if="field.type === 'select'"
             type="select"
             :options="field.options"
-            v-model="newDeal[field.name]"
+            v-model="field.value"
           >
-            <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon
-                :class="getDealStatus(newDeal[field.name]).iconColorClass"
-              />
+            <template v-if="field.prefix" #prefix>
+              <IndicatorIcon :class="field.prefix" />
             </template>
           </FormControl>
           <FormControl
@@ -95,21 +93,10 @@ const allFields = [
       {
         label: 'Salutation',
         name: 'salutation',
-        type: 'select',
-        options: [
-          {
-            label: 'Mr',
-            value: 'Mr',
-          },
-          {
-            label: 'Ms',
-            value: 'Ms',
-          },
-          {
-            label: 'Mrs',
-            value: 'Mrs',
-          },
-        ],
+        type: 'link',
+        doctype: 'Salutation',
+        placeholder: 'Salutation',
+        change: (data) => (props.newDeal.salutation = data),
       },
       {
         label: 'First Name',
@@ -154,6 +141,8 @@ const allFields = [
         name: 'status',
         type: 'select',
         options: statusOptions('deal'),
+        value: props.newDeal.status || getDealStatus(props.newDeal.status).name,
+        prefix: getDealStatus(props.newDeal.status).iconColorClass,
       },
       {
         label: 'Deal Owner',
