@@ -54,7 +54,7 @@ const { communicationStatuses } = statusesStore()
 
 let slaSection = computed(() => {
   let sections = []
-  if (data.value.first_response_time) {
+  if (data.value.first_responded_on) {
     sections.push({
       label: 'Fulfilled In',
       type: 'Duration',
