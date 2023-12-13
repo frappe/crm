@@ -6,6 +6,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 export const statusesStore = defineStore('crm-statuses', () => {
   let leadStatusesByName = reactive({})
   let dealStatusesByName = reactive({})
+  let communicationStatusesByName = reactive({})
 
   const leadStatuses = createListResource({
     doctype: 'CRM Lead Status',
@@ -41,6 +42,20 @@ export const statusesStore = defineStore('crm-statuses', () => {
     },
   })
 
+  const communicationStatuses = createListResource({
+    doctype: 'CRM Communication Status',
+    fields: ['name'],
+    cache: 'communication-statuses',
+    initialData: [],
+    auto: true,
+    transform(statuses) {
+      for (let status of statuses) {
+        communicationStatusesByName[status.name] = status
+      }
+      return statuses
+    },
+  })
+
   function colorClasses(color, onlyIcon = false) {
     let textColor = `!text-${color}-600`
     if (color == 'black') {
@@ -60,6 +75,10 @@ export const statusesStore = defineStore('crm-statuses', () => {
 
   function getDealStatus(name) {
     return dealStatusesByName[name]
+  }
+
+  function getCommunicationStatus(name) {
+    return communicationStatuses[name]
   }
 
   function statusOptions(doctype, action) {
@@ -84,8 +103,10 @@ export const statusesStore = defineStore('crm-statuses', () => {
   return {
     leadStatuses,
     dealStatuses,
+    communicationStatuses,
     getLeadStatus,
     getDealStatus,
+    getCommunicationStatus,
     statusOptions,
   }
 })
