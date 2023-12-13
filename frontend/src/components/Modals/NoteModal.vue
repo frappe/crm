@@ -8,7 +8,7 @@
         {
           label: editMode ? 'Update' : 'Create',
           variant: 'solid',
-          onClick: ({ close }) => updateNote(close),
+          onClick: () => updateNote(),
         },
       ],
     }"
@@ -67,7 +67,7 @@ const title = ref(null)
 const editMode = ref(false)
 let _note = ref({})
 
-async function updateNote(close) {
+async function updateNote() {
   if (
     props.note.title === _note.value.title &&
     props.note.content === _note.value.content
@@ -97,7 +97,7 @@ async function updateNote(close) {
       notes.value.reload()
     }
   }
-  close()
+  show.value = false
 }
 
 watch(
