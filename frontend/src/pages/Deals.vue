@@ -253,7 +253,7 @@ const showNewDialog = ref(false)
 
 let newDeal = reactive({
   organization: '',
-  status: 'Qualification',
+  status: '',
   email: '',
   mobile_no: '',
   deal_owner: '',

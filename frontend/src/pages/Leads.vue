@@ -256,7 +256,7 @@ let newLead = reactive({
   last_name: '',
   lead_name: '',
   organization: '',
-  status: 'Open',
+  status: '',
   email: '',
   mobile_no: '',
   lead_owner: '',
