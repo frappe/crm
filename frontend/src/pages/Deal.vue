@@ -4,6 +4,33 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <Dropdown
+        :options="[
+          {
+            icon: 'trash-2',
+            label: 'Delete',
+            onClick: () =>
+              $dialog({
+                title: 'Delete Deal',
+                message: 'Are you sure you want to delete this deal?',
+                actions: [
+                  {
+                    label: 'Delete',
+                    theme: 'red',
+                    variant: 'solid',
+                    onClick(close) {
+                      deleteDeal(deal.data.name)
+                      close()
+                    },
+                  },
+                ],
+              }),
+          },
+        ]"
+        @click.stop
+      >
+        <Button icon="more-horizontal" />
+      </Dropdown>
       <Link
         class="form-control"
         :value="getUser(deal.data.deal_owner).full_name"
@@ -523,5 +550,13 @@ function updateField(name, value, callback) {
     deal.data[name] = value
     callback?.()
   })
+}
+
+async function deleteDeal(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Deal',
+    name,
+  })
+  router.push({ name: 'Deals' })
 }
 </script>
