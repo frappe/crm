@@ -377,6 +377,7 @@ function getParsedFields(sections) {
 }
 
 async function convertToDeal() {
+  updateField('communication_status', 'Replied')
   let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
     lead: lead.data.name,
   })

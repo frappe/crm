@@ -125,6 +125,19 @@ class CRMLead(Document):
 				"contacts": [{"contact": contact}],
 			}
 		)
+
+		if self.first_responded_on:
+			deal.update(
+				{
+					"sla_creation": self.sla_creation,
+					"response_by": self.response_by,
+					"sla_status": self.sla_status,
+					"communication_status": self.communication_status,
+					"first_response_time": self.first_response_time,
+					"first_responded_on": self.first_responded_on
+				}
+			)
+
 		deal.insert(ignore_permissions=True)
 		return deal.name
 
