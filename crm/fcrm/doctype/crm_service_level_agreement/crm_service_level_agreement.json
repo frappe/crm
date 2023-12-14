@@ -6,15 +6,25 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "sla_name",
   "apply_on",
+  "column_break_uxua",
+  "sla_name",
   "enabled",
   "default",
-  "column_break_uxua",
+  "section_break_nevd",
+  "start_date",
+  "end_date",
+  "column_break_pzjg",
   "condition",
   "section_break_ufaf",
+  "apply_sla_for_follow_up",
   "priorities",
+  "section_break_jlli",
+  "sla_fulfilled_on",
+  "column_break_faws",
+  "sla_paused_on",
   "section_break_rmgo",
+  "holiday_list",
   "working_hours"
  ],
  "fields": [
@@ -60,7 +70,8 @@
   },
   {
    "fieldname": "section_break_ufaf",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Response and Follow Up"
   },
   {
    "fieldname": "priorities",
@@ -71,7 +82,8 @@
   },
   {
    "fieldname": "section_break_rmgo",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Working Hours"
   },
   {
    "fieldname": "working_hours",
@@ -79,11 +91,64 @@
    "label": "Working Hours",
    "options": "CRM Service Day",
    "reqd": 1
+  },
+  {
+   "depends_on": "apply_sla_for_follow_up",
+   "fieldname": "section_break_jlli",
+   "fieldtype": "Section Break",
+   "label": "Follow Up Conditions"
+  },
+  {
+   "fieldname": "sla_fulfilled_on",
+   "fieldtype": "Table",
+   "label": "SLA Fulfilled On",
+   "options": "CRM SLA Fulfilled On Status"
+  },
+  {
+   "fieldname": "column_break_faws",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sla_paused_on",
+   "fieldtype": "Table",
+   "label": "SLA Paused On",
+   "options": "CRM Pause SLA On Status"
+  },
+  {
+   "fieldname": "section_break_nevd",
+   "fieldtype": "Section Break",
+   "label": "Validity"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "column_break_pzjg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "CRM Holiday List"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_sla_for_follow_up",
+   "fieldtype": "Check",
+   "label": "Apply SLA for Follow Up"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-04 16:13:24.638239",
+ "modified": "2023-12-14 11:28:41.751377",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Service Level Agreement",
