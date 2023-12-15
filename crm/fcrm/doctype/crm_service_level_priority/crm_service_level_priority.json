@@ -11,8 +11,7 @@
   "priority",
   "section_break_anyl",
   "first_response_time",
-  "column_break_bwgs",
-  "follow_up_time"
+  "column_break_bwgs"
  ],
  "fields": [
   {
@@ -48,19 +47,12 @@
   {
    "fieldname": "column_break_bwgs",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "follow_up_time",
-   "fieldtype": "Duration",
-   "hidden": 1,
-   "in_list_view": 1,
-   "label": "Follow Up Time"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-12-14 11:37:13.929628",
+ "modified": "2023-12-15 11:49:54.424029",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Service Level Priority",

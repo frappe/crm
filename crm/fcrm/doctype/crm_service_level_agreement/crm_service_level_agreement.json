@@ -17,12 +17,7 @@
   "column_break_pzjg",
   "condition",
   "section_break_ufaf",
-  "apply_sla_for_follow_up",
   "priorities",
-  "section_break_jlli",
-  "sla_fulfilled_on",
-  "column_break_faws",
-  "sla_paused_on",
   "section_break_rmgo",
   "holiday_list",
   "working_hours"
@@ -93,28 +88,6 @@
    "reqd": 1
   },
   {
-   "depends_on": "apply_sla_for_follow_up",
-   "fieldname": "section_break_jlli",
-   "fieldtype": "Section Break",
-   "label": "Follow Up Conditions"
-  },
-  {
-   "fieldname": "sla_fulfilled_on",
-   "fieldtype": "Table",
-   "label": "SLA Fulfilled On",
-   "options": "CRM SLA Fulfilled On Status"
-  },
-  {
-   "fieldname": "column_break_faws",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "sla_paused_on",
-   "fieldtype": "Table",
-   "label": "SLA Paused On",
-   "options": "CRM Pause SLA On Status"
-  },
-  {
    "fieldname": "section_break_nevd",
    "fieldtype": "Section Break",
    "label": "Validity"
@@ -138,17 +111,11 @@
    "fieldtype": "Link",
    "label": "Holiday List",
    "options": "CRM Holiday List"
-  },
-  {
-   "default": "0",
-   "fieldname": "apply_sla_for_follow_up",
-   "fieldtype": "Check",
-   "label": "Apply SLA for Follow Up"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-14 11:28:41.751377",
+ "modified": "2023-12-15 11:50:29.956775",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Service Level Agreement",
