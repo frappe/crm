@@ -131,13 +131,16 @@
         v-model="deal.data"
         @updateField="updateField"
       />
-      <div class="flex flex-1 flex-col justify-between overflow-hidden">
+      <div
+        v-if="detailSections.length"
+        class="flex flex-1 flex-col justify-between overflow-hidden"
+      >
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="(section, i) in detailSections.data"
+            v-for="(section, i) in detailSections"
             :key="section.label"
             class="flex flex-col p-3"
-            :class="{ 'border-b': i !== detailSections.data.length - 1 }"
+            :class="{ 'border-b': i !== detailSections.length - 1 }"
           >
             <Section :is-opened="section.opened" :label="section.label">
               <template #actions>
@@ -427,17 +430,13 @@ const tabs = [
   },
 ]
 
-const detailSections = createResource({
-  url: 'crm.api.doc.get_doctype_fields',
-  params: { doctype: 'CRM Deal' },
-  cache: 'dealFields',
-  auto: true,
-  transform: (data) => {
-    return getParsedFields(data)
-  },
+const detailSections = computed(() => {
+  let data = deal.data
+  if (!data) return []
+  return getParsedFields(data.doctype_fields, data.contacts)
 })
 
-function getParsedFields(sections) {
+function getParsedFields(sections, contacts) {
   sections.forEach((section) => {
     section.fields.forEach((field) => {
       if (['website', 'annual_revenue'].includes(field.name)) {
@@ -462,15 +461,14 @@ function getParsedFields(sections) {
   let contactSection = {
     label: 'Contacts',
     opened: true,
-    contacts: computed(() =>
-      deal.data?.contacts.map((contact) => {
+    contacts:
+      contacts?.map((contact) => {
         return {
           name: contact.contact,
           is_primary: contact.is_primary,
           opened: false,
         }
-      })
-    ),
+      }) || [],
   }
 
   return [...sections, contactSection]

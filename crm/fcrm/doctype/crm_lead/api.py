@@ -1,6 +1,7 @@
 import frappe
 from frappe import _
 
+from crm.api.doc import get_doctype_fields
 
 @frappe.whitelist()
 def get_lead(name):
@@ -13,4 +14,5 @@ def get_lead(name):
 		frappe.throw(_("Lead not found"), frappe.DoesNotExistError)
 	lead = lead.pop()
 
+	lead["doctype_fields"] = get_doctype_fields("CRM Lead")
 	return lead

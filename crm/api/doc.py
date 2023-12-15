@@ -125,7 +125,6 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 	}
 
 
-@frappe.whitelist()
 def get_doctype_fields(doctype):
 	not_allowed_fieldtypes = [
 		"Section Break",

@@ -171,13 +171,16 @@
         v-model="lead.data"
         @updateField="updateField"
       />
-      <div class="flex flex-1 flex-col justify-between overflow-hidden">
+      <div
+        v-if="detailSections.length"
+        class="flex flex-1 flex-col justify-between overflow-hidden"
+      >
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="(section, i) in detailSections.data"
+            v-for="(section, i) in detailSections"
             :key="section.label"
             class="flex flex-col p-3"
-            :class="{ 'border-b': i !== detailSections.data.length - 1 }"
+            :class="{ 'border-b': i !== detailSections.length - 1 }"
           >
             <Section :is-opened="section.opened" :label="section.label">
               <SectionFields
@@ -341,14 +344,10 @@ function validateFile(file) {
   }
 }
 
-const detailSections = createResource({
-  url: 'crm.api.doc.get_doctype_fields',
-  params: { doctype: 'CRM Lead' },
-  cache: 'leadFields',
-  auto: true,
-  transform: (data) => {
-    return getParsedFields(data)
-  },
+const detailSections = computed(() => {
+  let data = lead.data
+  if (!data) return []
+  return getParsedFields(data.doctype_fields, data.contacts)
 })
 
 function getParsedFields(sections) {
