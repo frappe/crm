@@ -155,14 +155,25 @@ const rows = computed(() => {
           color: getLeadStatus(lead.status)?.iconColorClass,
         }
       } else if (row == 'sla_status') {
+        let value = lead.sla_status
+        let tooltipText = value
+        let color =
+          lead.sla_status == 'Failed'
+            ? 'red'
+            : lead.sla_status == 'Fulfilled'
+            ? 'green'
+            : 'orange'
+        if (value == 'First Response Due') {
+          value = timeAgo(lead.response_by)
+          tooltipText = dateFormat(lead.response_by, dateTooltipFormat)
+          if (new Date(lead.response_by) < new Date()) {
+            color = 'red'
+          }
+        }
         _rows[row] = {
-          label: lead.sla_status,
-          color:
-            lead.sla_status === 'Failed'
-              ? 'red'
-              : lead.sla_status === 'Fulfilled'
-              ? 'green'
-              : 'gray',
+          label: tooltipText,
+          value: value,
+          color: color,
         }
       } else if (row == 'lead_owner') {
         _rows[row] = {
@@ -174,15 +185,18 @@ const rows = computed(() => {
           label: dateFormat(lead[row], dateTooltipFormat),
           timeAgo: timeAgo(lead[row]),
         }
-      } else if (['first_response_time', 'first_responded_on'].includes(row)) {
+      } else if (
+        ['first_response_time', 'first_responded_on', 'response_by'].includes(
+          row
+        )
+      ) {
+        let field = row == 'response_by' ? 'response_by' : 'first_responded_on'
         _rows[row] = {
-          label: lead.first_responded_on
-            ? dateFormat(lead.first_responded_on, dateTooltipFormat)
-            : '',
+          label: lead[field] ? dateFormat(lead[field], dateTooltipFormat) : '',
           timeAgo: lead[row]
-            ? row == 'first_responded_on'
-              ? timeAgo(lead[row])
-              : formatTime(lead[row])
+            ? row == 'first_response_time'
+              ? formatTime(lead[row])
+              : timeAgo(lead[row])
             : '',
         }
       }
@@ -242,7 +256,7 @@ let newLead = reactive({
   last_name: '',
   lead_name: '',
   organization: '',
-  status: 'Open',
+  status: '',
   email: '',
   mobile_no: '',
   lead_owner: '',

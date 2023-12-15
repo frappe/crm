@@ -10,10 +10,8 @@
             :options="field.options"
             v-model="newDeal[field.name]"
           >
-            <template v-if="field.name == 'status'" #prefix>
-              <IndicatorIcon
-                :class="getDealStatus(newDeal[field.name]).iconColorClass"
-              />
+            <template v-if="field.prefix" #prefix>
+              <IndicatorIcon :class="field.prefix" />
             </template>
           </FormControl>
           <FormControl
@@ -73,7 +71,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { FormControl, Tooltip } from 'frappe-ui'
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const { getUser } = usersStore()
 const { getDealStatus, statusOptions } = statusesStore()
@@ -88,82 +86,83 @@ const props = defineProps({
 const showOrganizationModal = ref(false)
 const _organization = ref({})
 
-const allFields = [
-  {
-    section: 'Deal Details',
-    fields: [
-      {
-        label: 'Salutation',
-        name: 'salutation',
-        type: 'select',
-        options: [
-          {
-            label: 'Mr',
-            value: 'Mr',
-          },
-          {
-            label: 'Ms',
-            value: 'Ms',
-          },
-          {
-            label: 'Mrs',
-            value: 'Mrs',
-          },
-        ],
-      },
-      {
-        label: 'First Name',
-        name: 'first_name',
-        type: 'data',
-      },
-      {
-        label: 'Last Name',
-        name: 'last_name',
-        type: 'data',
-      },
-      {
-        label: 'Email',
-        name: 'email',
-        type: 'data',
-      },
-      {
-        label: 'Mobile No',
-        name: 'mobile_no',
-        type: 'data',
-      },
-    ],
-  },
-  {
-    section: 'Other Details',
-    fields: [
-      {
-        label: 'Organization',
-        name: 'organization',
-        type: 'link',
-        placeholder: 'Organization',
-        doctype: 'CRM Organization',
-        change: (data) => (props.newDeal.organization = data),
-        create: (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
-          close()
+const allFields = computed(() => {
+  return [
+    {
+      section: 'Deal Details',
+      fields: [
+        {
+          label: 'Salutation',
+          name: 'salutation',
+          type: 'link',
+          doctype: 'Salutation',
+          placeholder: 'Salutation',
+          change: (data) => (props.newDeal.salutation = data),
         },
-      },
-      {
-        label: 'Status',
-        name: 'status',
-        type: 'select',
-        options: statusOptions('deal'),
-      },
-      {
-        label: 'Deal Owner',
-        name: 'deal_owner',
-        type: 'user',
-        placeholder: 'Deal Owner',
-        doctype: 'User',
-        change: (data) => (props.newDeal.deal_owner = data),
-      },
-    ],
-  },
-]
+        {
+          label: 'First Name',
+          name: 'first_name',
+          type: 'data',
+        },
+        {
+          label: 'Last Name',
+          name: 'last_name',
+          type: 'data',
+        },
+        {
+          label: 'Email',
+          name: 'email',
+          type: 'data',
+        },
+        {
+          label: 'Mobile No',
+          name: 'mobile_no',
+          type: 'data',
+        },
+      ],
+    },
+    {
+      section: 'Other Details',
+      fields: [
+        {
+          label: 'Organization',
+          name: 'organization',
+          type: 'link',
+          placeholder: 'Organization',
+          doctype: 'CRM Organization',
+          change: (data) => (props.newDeal.organization = data),
+          create: (value, close) => {
+            _organization.value.organization_name = value
+            showOrganizationModal.value = true
+            close()
+          },
+        },
+        {
+          label: 'Status',
+          name: 'status',
+          type: 'select',
+          options: statusOptions(
+            'deal',
+            (field, value) => (props.newDeal[field] = value)
+          ),
+          prefix: getDealStatus(props.newDeal.status).iconColorClass,
+        },
+        {
+          label: 'Deal Owner',
+          name: 'deal_owner',
+          type: 'user',
+          placeholder: 'Deal Owner',
+          doctype: 'User',
+          change: (data) => (props.newDeal.deal_owner = data),
+        },
+      ],
+    },
+  ]
+})
+
+onMounted(() => {
+  if (!props.newDeal.status) {
+    props.newDeal.status = getDealStatus(props.newDeal.status).name
+  }
+})
 </script>

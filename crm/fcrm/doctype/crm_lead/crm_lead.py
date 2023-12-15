@@ -6,6 +6,7 @@ from frappe import _
 from frappe.model.document import Document
 
 from frappe.utils import has_gravatar, validate_email_address
+from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 
 
 class CRMLead(Document):
@@ -124,6 +125,19 @@ class CRMLead(Document):
 				"contacts": [{"contact": contact}],
 			}
 		)
+
+		if self.first_responded_on:
+			deal.update(
+				{
+					"sla_creation": self.sla_creation,
+					"response_by": self.response_by,
+					"sla_status": self.sla_status,
+					"communication_status": self.communication_status,
+					"first_response_time": self.first_response_time,
+					"first_responded_on": self.first_responded_on
+				}
+			)
+
 		deal.insert(ignore_permissions=True)
 		return deal.name
 
@@ -131,7 +145,7 @@ class CRMLead(Document):
 		"""
 		Find an SLA to apply to the lead.
 		"""
-		sla = get_sla("CRM Lead")
+		sla = get_sla(self)
 		if not sla:
 			return
 		self.sla = sla.name
@@ -219,6 +233,7 @@ class CRMLead(Document):
 			"lead_owner",
 			"first_name",
 			"sla_status",
+			"response_by",
 			"first_response_time",
 			"first_responded_on",
 			"modified",
@@ -239,8 +254,3 @@ def convert_to_deal(lead):
 	lead.save()
 	return deal
 
-def get_sla(doctype):
-	sla = frappe.db.exists("CRM Service Level Agreement", {"apply_on": doctype, "enabled": 1})
-	if not sla:
-		return None
-	return frappe.get_cached_doc("CRM Service Level Agreement", sla)

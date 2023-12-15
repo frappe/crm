@@ -8,7 +8,7 @@
         {
           label: editMode ? 'Update' : 'Create',
           variant: 'solid',
-          onClick: ({ close }) => updateTask(close),
+          onClick: () => updateTask(),
         },
       ],
     }"
@@ -142,7 +142,7 @@ function updateTaskPriority(priority) {
   _task.value.priority = priority
 }
 
-async function updateTask(close) {
+async function updateTask() {
   if (!_task.value.assigned_to) {
     _task.value.assigned_to = getUser().email
   }
@@ -168,7 +168,7 @@ async function updateTask(close) {
       tasks.value.reload()
     }
   }
-  close()
+  show.value = false
 }
 
 watch(

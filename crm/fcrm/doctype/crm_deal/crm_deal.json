@@ -30,6 +30,7 @@
   "sla_creation",
   "column_break_pfvq",
   "sla_status",
+  "communication_status",
   "response_details_section",
   "response_by",
   "column_break_hpvj",
@@ -195,11 +196,18 @@
    "fieldname": "first_responded_on",
    "fieldtype": "Datetime",
    "label": "First Responded On"
+  },
+  {
+   "default": "Open",
+   "fieldname": "communication_status",
+   "fieldtype": "Link",
+   "label": "Communication Status",
+   "options": "CRM Communication Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-11 12:37:51.198228",
+ "modified": "2023-12-13 13:50:55.235109",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

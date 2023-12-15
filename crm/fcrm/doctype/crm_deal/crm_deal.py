@@ -5,6 +5,8 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
+
 
 class CRMDeal(Document):
 	def before_validate(self):
@@ -55,7 +57,7 @@ class CRMDeal(Document):
 		"""
 		Find an SLA to apply to the deal.
 		"""
-		sla = get_sla("CRM Deal")
+		sla = get_sla(self)
 		if not sla:
 			return
 		self.sla = sla.name
@@ -139,6 +141,7 @@ class CRMDeal(Document):
 			"mobile_no",
 			"deal_owner",
 			"sla_status",
+			"response_by",
 			"first_response_time",
 			"first_responded_on",
 			"modified",
@@ -175,8 +178,3 @@ def set_primary_contact(deal, contact):
 	deal.save()
 	return True
 
-def get_sla(doctype):
-	sla = frappe.db.exists("CRM Service Level Agreement", {"apply_on": doctype, "enabled": 1})
-	if not sla:
-		return None
-	return frappe.get_cached_doc("CRM Service Level Agreement", sla)

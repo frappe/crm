@@ -6,6 +6,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 export const statusesStore = defineStore('crm-statuses', () => {
   let leadStatusesByName = reactive({})
   let dealStatusesByName = reactive({})
+  let communicationStatusesByName = reactive({})
 
   const leadStatuses = createListResource({
     doctype: 'CRM Lead Status',
@@ -41,6 +42,20 @@ export const statusesStore = defineStore('crm-statuses', () => {
     },
   })
 
+  const communicationStatuses = createListResource({
+    doctype: 'CRM Communication Status',
+    fields: ['name'],
+    cache: 'communication-statuses',
+    initialData: [],
+    auto: true,
+    transform(statuses) {
+      for (let status of statuses) {
+        communicationStatusesByName[status.name] = status
+      }
+      return statuses
+    },
+  })
+
   function colorClasses(color, onlyIcon = false) {
     let textColor = `!text-${color}-600`
     if (color == 'black') {
@@ -55,11 +70,24 @@ export const statusesStore = defineStore('crm-statuses', () => {
   }
 
   function getLeadStatus(name) {
+    if (!name) {
+      name = leadStatuses.data[0].name
+    }
     return leadStatusesByName[name]
   }
 
   function getDealStatus(name) {
+    if (!name) {
+      name = dealStatuses.data[0].name
+    }
     return dealStatusesByName[name]
+  }
+
+  function getCommunicationStatus(name) {
+    if (!name) {
+      name = communicationStatuses.data[0].name
+    }
+    return communicationStatuses[name]
   }
 
   function statusOptions(doctype, action) {
@@ -84,8 +112,10 @@ export const statusesStore = defineStore('crm-statuses', () => {
   return {
     leadStatuses,
     dealStatuses,
+    communicationStatuses,
     getLeadStatus,
     getDealStatus,
+    getCommunicationStatus,
     statusOptions,
   }
 })

@@ -156,14 +156,25 @@ const rows = computed(() => {
           color: getDealStatus(deal.status)?.iconColorClass,
         }
       } else if (row == 'sla_status') {
+        let value = deal.sla_status
+        let tooltipText = value
+        let color =
+          deal.sla_status == 'Failed'
+            ? 'red'
+            : deal.sla_status == 'Fulfilled'
+            ? 'green'
+            : 'orange'
+        if (value == 'First Response Due') {
+          value = timeAgo(deal.response_by)
+          tooltipText = dateFormat(deal.response_by, dateTooltipFormat)
+          if (new Date(deal.response_by) < new Date()) {
+            color = 'red'
+          }
+        }
         _rows[row] = {
-          label: deal.sla_status,
-          color:
-            deal.sla_status === 'Failed'
-              ? 'red'
-              : deal.sla_status === 'Fulfilled'
-              ? 'green'
-              : 'gray',
+          label: tooltipText,
+          value: value,
+          color: color,
         }
       } else if (row == 'deal_owner') {
         _rows[row] = {
@@ -175,15 +186,18 @@ const rows = computed(() => {
           label: dateFormat(deal[row], dateTooltipFormat),
           timeAgo: timeAgo(deal[row]),
         }
-      } else if (['first_response_time', 'first_responded_on'].includes(row)) {
+      } else if (
+        ['first_response_time', 'first_responded_on', 'response_by'].includes(
+          row
+        )
+      ) {
+        let field = row == 'response_by' ? 'response_by' : 'first_responded_on'
         _rows[row] = {
-          label: deal.first_responded_on
-            ? dateFormat(deal.first_responded_on, dateTooltipFormat)
-            : '',
+          label: deal[field] ? dateFormat(deal[field], dateTooltipFormat) : '',
           timeAgo: deal[row]
-            ? row == 'first_responded_on'
-              ? timeAgo(deal[row])
-              : formatTime(deal[row])
+            ? row == 'first_response_time'
+              ? formatTime(deal[row])
+              : timeAgo(deal[row])
             : '',
         }
       }
@@ -239,7 +253,7 @@ const showNewDialog = ref(false)
 
 let newDeal = reactive({
   organization: '',
-  status: 'Qualification',
+  status: '',
   email: '',
   mobile_no: '',
   deal_owner: '',

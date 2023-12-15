@@ -6,15 +6,20 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "sla_name",
   "apply_on",
+  "column_break_uxua",
+  "sla_name",
   "enabled",
   "default",
-  "column_break_uxua",
+  "section_break_nevd",
+  "start_date",
+  "end_date",
+  "column_break_pzjg",
   "condition",
   "section_break_ufaf",
   "priorities",
   "section_break_rmgo",
+  "holiday_list",
   "working_hours"
  ],
  "fields": [
@@ -60,7 +65,8 @@
   },
   {
    "fieldname": "section_break_ufaf",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Response and Follow Up"
   },
   {
    "fieldname": "priorities",
@@ -71,7 +77,8 @@
   },
   {
    "fieldname": "section_break_rmgo",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Working Hours"
   },
   {
    "fieldname": "working_hours",
@@ -79,11 +86,36 @@
    "label": "Working Hours",
    "options": "CRM Service Day",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_nevd",
+   "fieldtype": "Section Break",
+   "label": "Validity"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "column_break_pzjg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "CRM Holiday List"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-04 16:13:24.638239",
+ "modified": "2023-12-15 11:50:29.956775",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Service Level Agreement",

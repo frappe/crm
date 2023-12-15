@@ -4,6 +4,33 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <Dropdown
+        :options="[
+          {
+            icon: 'trash-2',
+            label: 'Delete',
+            onClick: () =>
+              $dialog({
+                title: 'Delete Lead',
+                message: 'Are you sure you want to delete this lead?',
+                actions: [
+                  {
+                    label: 'Delete',
+                    theme: 'red',
+                    variant: 'solid',
+                    onClick(close) {
+                      deleteLead(lead.data.name)
+                      close()
+                    },
+                  },
+                ],
+              }),
+          },
+        ]"
+        @click.stop
+      >
+        <Button icon="more-horizontal" />
+      </Dropdown>
       <Link
         class="form-control"
         :value="getUser(lead.data.lead_owner).full_name"
@@ -139,79 +166,21 @@
           </div>
         </template>
       </FileUploader>
-      <div v-if="lead.data.sla_status" class="flex flex-col gap-2 border-b p-5">
-        <div
-          v-if="lead.data.sla_status == 'First Response Due'"
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">Response By</div>
-          <Tooltip
-            :text="dateFormat(lead.data.response_by, 'ddd, MMM D, YYYY h:mm A')"
-            class="cursor-pointer"
-          >
-            {{ timeAgo(lead.data.response_by) }}
-          </Tooltip>
-        </div>
-        <div
-          v-if="lead.data.sla_status == 'Fulfilled'"
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">Fulfilled In</div>
-          <Tooltip
-            :text="
-              dateFormat(
-                lead.data.first_responded_on,
-                'ddd, MMM D, YYYY h:mm A'
-              )
-            "
-            class="cursor-pointer"
-          >
-            {{ formatTime(lead.data.first_response_time) }}
-          </Tooltip>
-        </div>
-        <div
-          v-if="
-            lead.data.sla_status == 'Failed' && lead.data.first_responded_on
-          "
-          class="flex items-center gap-4 text-base leading-5"
-        >
-          <div class="w-[106px] text-gray-600">Fulfilled In</div>
-          <Tooltip
-            :text="
-              dateFormat(
-                lead.data.first_responded_on,
-                'ddd, MMM D, YYYY h:mm A'
-              )
-            "
-            class="cursor-pointer"
-          >
-            {{ formatTime(lead.data.first_response_time) }}
-          </Tooltip>
-        </div>
-        <div class="flex items-center gap-4 text-base leading-5">
-          <div class="w-[106px] text-gray-600">Status</div>
-          <div class="">
-            <Badge
-              :label="lead.data.sla_status"
-              variant="outline"
-              :theme="
-                lead.data.sla_status === 'Failed'
-                  ? 'red'
-                  : lead.data.sla_status === 'Fulfilled'
-                  ? 'green'
-                  : 'gray'
-              "
-            />
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-1 flex-col justify-between overflow-hidden">
+      <SLASection
+        v-if="lead.data.sla_status"
+        v-model="lead.data"
+        @updateField="updateField"
+      />
+      <div
+        v-if="detailSections.length"
+        class="flex flex-1 flex-col justify-between overflow-hidden"
+      >
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="(section, i) in detailSections.data"
+            v-for="(section, i) in detailSections"
             :key="section.label"
             class="flex flex-col p-3"
-            :class="{ 'border-b': i !== detailSections.data.length - 1 }"
+            :class="{ 'border-b': i !== detailSections.length - 1 }"
           >
             <Section :is-opened="section.opened" :label="section.label">
               <SectionFields
@@ -252,14 +221,9 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
+import SLASection from '@/components/SLASection.vue'
 import Link from '@/components/Controls/Link.vue'
-import {
-  openWebsite,
-  createToast,
-  dateFormat,
-  timeAgo,
-  formatTime,
-} from '@/utils'
+import { openWebsite, createToast } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
@@ -274,7 +238,6 @@ import {
   Avatar,
   Tabs,
   Breadcrumbs,
-  Badge,
   call,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
@@ -298,15 +261,6 @@ const lead = createResource({
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   auto: true,
-  onSuccess: (data) => {
-    if (
-      data.response_by &&
-      data.sla_status == 'First Response Due' &&
-      new Date(data.response_by) < new Date()
-    ) {
-      updateField('sla_status', 'Failed')
-    }
-  },
 })
 
 const reload = ref(false)
@@ -390,14 +344,10 @@ function validateFile(file) {
   }
 }
 
-const detailSections = createResource({
-  url: 'crm.api.doc.get_doctype_fields',
-  params: { doctype: 'CRM Lead' },
-  cache: 'leadFields',
-  auto: true,
-  transform: (data) => {
-    return getParsedFields(data)
-  },
+const detailSections = computed(() => {
+  let data = lead.data
+  if (!data) return []
+  return getParsedFields(data.doctype_fields, data.contacts)
 })
 
 function getParsedFields(sections) {
@@ -426,6 +376,7 @@ function getParsedFields(sections) {
 }
 
 async function convertToDeal() {
+  updateField('communication_status', 'Replied')
   let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
     lead: lead.data.name,
   })
@@ -440,5 +391,13 @@ function updateField(name, value, callback) {
     lead.data[name] = value
     callback?.()
   })
+}
+
+async function deleteLead(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Lead',
+    name,
+  })
+  router.push({ name: 'Leads' })
 }
 </script>
