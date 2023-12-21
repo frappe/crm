@@ -1,7 +1,7 @@
 <template>
   <TextEditor
     ref="textEditor"
-    :editor-class="['prose-sm max-w-none', editable && 'min-h-[4rem]']"
+    :editor-class="['prose-sm max-w-none', editable && 'min-h-[7rem]']"
     :content="value"
     @change="editable ? $emit('change', $event) : null"
     :starterkit-options="{ heading: { levels: [2, 3, 4, 5, 6] } }"
@@ -9,26 +9,24 @@
     :editable="editable"
   >
     <template #top>
-      <div class="mb-2">
-        <span class="text-base text-gray-600">To:</span>
+      <div class="mx-10 border-t border-b py-2.5">
+        <span class="text-xs text-gray-500">TO:</span>
         <span
           v-if="modelValue.email"
-          class="ml-2 bg-gray-100 px-2 py-1 rounded-md text-sm text-gray-800 cursor-pointer"
-          >{{ modelValue.email }}</span
+          class="ml-2 cursor-pointer rounded-md bg-gray-100 px-2 py-1 text-sm text-gray-800"
         >
+          {{ modelValue.email }}
+        </span>
       </div>
     </template>
     <template v-slot:editor="{ editor }">
       <EditorContent
-        :class="[editable && 'max-h-[50vh] overflow-y-auto']"
+        :class="[editable && 'mx-10 py-3 max-h-[50vh] overflow-y-auto']"
         :editor="editor"
       />
     </template>
     <template v-slot:bottom>
-      <div
-        v-if="editable"
-        class="mt-2 flex flex-col justify-between sm:flex-row sm:items-center"
-      >
+      <div v-if="editable" class="flex justify-between border-t px-10 py-2.5">
         <TextEditorFixedMenu
           class="-ml-1 overflow-x-auto"
           :buttons="textEditorMenuButtons"
