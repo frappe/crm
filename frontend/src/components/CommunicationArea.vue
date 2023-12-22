@@ -106,5 +106,5 @@ async function submitComment() {
   reload.value = true
 }
 
-defineExpose({ show: showCommunicationBox })
+defineExpose({ show: showCommunicationBox, editor: newEmailEditor })
 </script>

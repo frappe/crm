@@ -222,11 +222,7 @@
               v-if="call.show_recording"
               class="flex items-center justify-between rounded border"
             >
-              <audio
-                class="audio-control"
-                controls
-                :src="call.recording_url"
-              />
+              <audio class="audio-control" controls :src="call.recording_url" />
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
@@ -316,15 +312,13 @@
                   {{ timeAgo(activity.creation) }}
                 </Tooltip>
               </div>
-              <div>
-                <Button
-                  variant="ghost"
-                  icon="more-horizontal"
-                  class="text-gray-600"
-                />
+              <div class="flex gap-0.5">
+                <Button variant="ghost" class="text-gray-700" @click="reply(activity.data.content)">
+                  <ReplyIcon class="h-4 w-4" />
+                </Button>
               </div>
             </div>
-            <div class="px-1" v-html="activity.data.content" />
+            <span class="prose-f" v-html="activity.data.content" />
           </div>
         </div>
         <div
@@ -620,6 +614,7 @@ import DotIcon from '@/components/Icons/DotIcon.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
+import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
@@ -876,6 +871,7 @@ function timelineIcon(activity_type, is_lead) {
 // Notes
 const showNoteModal = ref(false)
 const note = ref({})
+const emailBox = ref(null)
 
 function showNote(n) {
   note.value = n || {
@@ -926,6 +922,21 @@ function updateTaskStatus(status, task) {
   }).then(() => {
     tasks.reload()
   })
+}
+
+// Email
+function reply(message) {
+  emailBox.value.show = true
+  let editor = emailBox.value.editor.editor
+  editor
+    .chain()
+    .clearContent()
+    .insertContent(message)
+    .focus('all')
+    .setBlockquote()
+    .insertContentAt(0, { type: 'paragraph' })
+    .focus('start')
+    .run()
 }
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
