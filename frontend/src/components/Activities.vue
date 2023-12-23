@@ -313,7 +313,11 @@
                 </Tooltip>
               </div>
               <div class="flex gap-0.5">
-                <Button variant="ghost" class="text-gray-700" @click="reply(activity.data.content)">
+                <Button
+                  variant="ghost"
+                  class="text-gray-700"
+                  @click="reply(activity.data.content)"
+                >
                   <ReplyIcon class="h-4 w-4" />
                 </Button>
               </div>
@@ -639,7 +643,16 @@ import {
   createListResource,
   call,
 } from 'frappe-ui'
-import { ref, computed, h, defineModel, markRaw, watch } from 'vue'
+import {
+  ref,
+  computed,
+  h,
+  defineModel,
+  markRaw,
+  watch,
+  onMounted,
+  nextTick,
+} from 'vue'
 
 const { getUser } = usersStore()
 const { getContact } = contactsStore()
@@ -756,7 +769,7 @@ function all_activities() {
   if (!versions.data) return []
   if (!calls.data) return versions.data
   return [...versions.data, ...calls.data].sort(
-    (a, b) => new Date(b.creation) - new Date(a.creation)
+    (a, b) => new Date(a.creation) - new Date(b.creation)
   )
 }
 
@@ -766,15 +779,21 @@ const activities = computed(() => {
     activities = all_activities()
   } else if (props.title == 'Emails') {
     if (!versions.data) return []
-    activities = versions.data.filter(
-      (activity) => activity.activity_type === 'communication'
-    )
+    activities = versions.data
+      .filter((activity) => activity.activity_type === 'communication')
+      .sort((a, b) => new Date(a.creation) - new Date(b.creation))
   } else if (props.title == 'Calls') {
-    return calls.data
+    return calls.data.sort(
+      (a, b) => new Date(a.creation) - new Date(b.creation)
+    )
   } else if (props.title == 'Tasks') {
-    return tasks.data
+    return tasks.data.sort(
+      (a, b) => new Date(a.creation) - new Date(b.creation)
+    )
   } else if (props.title == 'Notes') {
-    return notes.data
+    return notes.data.sort(
+      (a, b) => new Date(a.creation) - new Date(b.creation)
+    )
   }
   activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
