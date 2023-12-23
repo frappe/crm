@@ -39,6 +39,8 @@
       }"
       :editable="showCommunicationBox"
       v-model="doc.data"
+      v-model:attachments="attachments"
+      :doctype="doctype"
       placeholder="Add a reply..."
     />
   </div>
@@ -51,6 +53,13 @@ import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { ref, watch, computed, defineModel } from 'vue'
 
+const props = defineProps({
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
+  },
+})
+
 const doc = defineModel()
 const reload = defineModel('reload')
 
@@ -62,6 +71,7 @@ const showCommunicationBox = ref(false)
 const newEmail = ref('')
 const newEmailEditor = ref(null)
 const sendEmailRef = ref(null)
+const attachments = ref([]);
 
 watch(
   () => showCommunicationBox.value,
@@ -81,18 +91,14 @@ const onNewEmailChange = (value) => {
 }
 
 async function sendMail() {
-  let doctype = 'CRM Lead'
-  if (doc.value.data.lead) {
-    doctype = 'CRM Deal'
-  }
-
   await call('frappe.core.doctype.communication.email.make', {
     recipients: doc.value.data.email,
+    attachments: attachments.value.map((x) => x.name),
     cc: '',
     bcc: '',
     subject: 'Email from Agent',
     content: newEmail.value,
-    doctype: doctype,
+    doctype: props.doctype,
     name: doc.value.data.name,
     send_email: 1,
     sender: getUser().name,

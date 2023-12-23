@@ -9,7 +9,7 @@
     :editable="editable"
   >
     <template #top>
-      <div class="mx-10 border-t border-b py-2.5">
+      <div class="mx-10 border-b border-t py-2.5">
         <span class="text-xs text-gray-500">TO:</span>
         <span
           v-if="modelValue.email"
@@ -21,21 +21,60 @@
     </template>
     <template v-slot:editor="{ editor }">
       <EditorContent
-        :class="[editable && 'mx-10 py-3 max-h-[50vh] overflow-y-auto']"
+        :class="[editable && 'mx-10 max-h-[50vh] overflow-y-auto py-3']"
         :editor="editor"
       />
     </template>
     <template v-slot:bottom>
-      <div v-if="editable" class="flex justify-between border-t px-10 py-2.5">
-        <TextEditorFixedMenu
-          class="-ml-1 overflow-x-auto"
-          :buttons="textEditorMenuButtons"
-        />
-        <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
-          <Button v-bind="discardButtonProps || {}"> Discard </Button>
-          <Button variant="solid" v-bind="submitButtonProps || {}">
-            Submit
-          </Button>
+      <div v-if="editable" class="flex flex-col gap-2">
+        <div class="flex flex-wrap gap-2 px-10">
+          <AttachmentItem
+            v-for="a in attachments"
+            :key="a.file_url"
+            :label="a.file_name"
+          >
+            <template #suffix>
+              <FeatherIcon
+                class="h-3.5"
+                name="x"
+                @click.stop="removeAttachment(a)"
+              />
+            </template>
+          </AttachmentItem>
+        </div>
+        <div class="flex justify-between border-t px-10 py-2.5">
+          <div class="flex items-center">
+            <TextEditorFixedMenu
+              class="-ml-1 overflow-x-auto"
+              :buttons="textEditorMenuButtons"
+            />
+            <FileUploader
+              :upload-args="{
+                doctype: doctype,
+                docname: modelValue.name,
+                private: true,
+              }"
+              @success="(f) => attachments.push(f)"
+            >
+              <template #default="{ openFileSelector }">
+                <Button
+                  theme="gray"
+                  variant="ghost"
+                  @click="openFileSelector()"
+                >
+                  <template #icon>
+                    <AttachmentIcon class="h-4" />
+                  </template>
+                </Button>
+              </template>
+            </FileUploader>
+          </div>
+          <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
+            <Button v-bind="discardButtonProps || {}"> Discard </Button>
+            <Button variant="solid" v-bind="submitButtonProps || {}">
+              Submit
+            </Button>
+          </div>
         </div>
       </div>
     </template>
@@ -43,7 +82,14 @@
 </template>
 
 <script setup>
-import { TextEditorFixedMenu, TextEditor } from 'frappe-ui'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import AttachmentItem from '@/components/AttachmentItem.vue'
+import {
+  TextEditorFixedMenu,
+  TextEditor,
+  FileUploader,
+  FeatherIcon,
+} from 'frappe-ui'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel } from 'vue'
 
@@ -59,6 +105,10 @@ const props = defineProps({
   editable: {
     type: Boolean,
     default: true,
+  },
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
   },
   editorProps: {
     type: Object,
@@ -76,12 +126,17 @@ const props = defineProps({
 
 const emit = defineEmits(['change'])
 const modelValue = defineModel()
+const attachments = defineModel('attachments')
 
 const textEditor = ref(null)
 
 const editor = computed(() => {
   return textEditor.value.editor
 })
+
+function removeAttachment(attachment) {
+  attachments.value = attachments.value.filter((a) => a !== attachment)
+}
 
 defineExpose({ editor })
 

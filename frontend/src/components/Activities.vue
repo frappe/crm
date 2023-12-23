@@ -326,6 +326,14 @@
               </div>
             </div>
             <span class="prose-f" v-html="activity.data.content" />
+            <div class="flex flex-wrap gap-2">
+              <AttachmentItem
+                v-for="a in activity.data.attachments"
+                :key="a.file_url"
+                :label="a.file_name"
+                :url="a.file_url"
+              />
+            </div>
           </div>
         </div>
         <div
@@ -588,6 +596,7 @@
     v-if="['Emails', 'Activity'].includes(title)"
     v-model="doc"
     v-model:reload="reload_email"
+    :doctype="doctype"
     @scroll="scroll"
   />
   <NoteModal
@@ -623,6 +632,7 @@ import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
+import AttachmentItem from '@/components/AttachmentItem.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
