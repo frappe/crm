@@ -135,7 +135,7 @@
   <NoteModal
     v-model="showNoteModal"
     :note="callLog.data?.note_doc"
-    @updateNote="updateNote"
+    @after="updateNote"
   />
 </template>
 
