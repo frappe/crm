@@ -46,7 +46,7 @@
 
 <script setup>
 import EmailEditor from '@/components/EmailEditor.vue'
-import EmailIcon from '@/components/icons/EmailIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { ref, watch, computed, defineModel } from 'vue'
