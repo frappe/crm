@@ -63,6 +63,8 @@ const props = defineProps({
 const show = defineModel()
 const notes = defineModel('reloadNotes')
 
+const emit = defineEmits(['after'])
+
 const title = ref(null)
 const editMode = ref(false)
 let _note = ref({})
@@ -81,7 +83,8 @@ async function updateNote() {
       fieldname: _note.value,
     })
     if (d.name) {
-      notes.value.reload()
+      notes.value?.reload()
+      emit('after', d)
     }
   } else {
     let d = await call('frappe.client.insert', {
@@ -94,7 +97,8 @@ async function updateNote() {
       },
     })
     if (d.name) {
-      notes.value.reload()
+      notes.value?.reload()
+      emit('after', d)
     }
   }
   show.value = false

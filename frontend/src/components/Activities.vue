@@ -26,8 +26,11 @@
       <span>New Task</span>
     </Button>
   </div>
-  <div v-if="activities?.length" class="flex-1 overflow-y-auto">
-    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 pb-5">
+  <div v-if="activities?.length" class="activities flex-1 overflow-y-auto">
+    <div
+      v-if="title == 'Notes'"
+      class="activity grid grid-cols-3 gap-4 px-10 pb-5"
+    >
       <div
         v-for="note in activities"
         class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
@@ -77,7 +80,7 @@
         </div>
       </div>
     </div>
-    <div v-else-if="title == 'Tasks'" class="px-10 pb-5">
+    <div v-else-if="title == 'Tasks'" class="activity px-10 pb-5">
       <div v-for="(task, i) in activities">
         <div
           class="flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
@@ -164,7 +167,7 @@
         />
       </div>
     </div>
-    <div v-else-if="title == 'Calls'">
+    <div v-else-if="title == 'Calls'" class="activity">
       <div v-for="(call, i) in activities">
         <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
           <div
@@ -222,11 +225,7 @@
               v-if="call.show_recording"
               class="flex items-center justify-between rounded border"
             >
-              <audio
-                class="audio-control"
-                controls
-                :src="call.recording_url"
-              />
+              <audio class="audio-control" controls :src="call.recording_url" />
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
@@ -266,7 +265,7 @@
         </div>
       </div>
     </div>
-    <div v-else v-for="(activity, i) in activities">
+    <div v-else v-for="(activity, i) in activities" class="activity">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
         <div
           class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
@@ -316,15 +315,25 @@
                   {{ timeAgo(activity.creation) }}
                 </Tooltip>
               </div>
-              <div>
+              <div class="flex gap-0.5">
                 <Button
                   variant="ghost"
-                  icon="more-horizontal"
-                  class="text-gray-600"
-                />
+                  class="text-gray-700"
+                  @click="reply(activity.data.content)"
+                >
+                  <ReplyIcon class="h-4 w-4" />
+                </Button>
               </div>
             </div>
-            <div class="px-1" v-html="activity.data.content" />
+            <span class="prose-f" v-html="activity.data.content" />
+            <div class="flex flex-wrap gap-2">
+              <AttachmentItem
+                v-for="a in activity.data.attachments"
+                :key="a.file_url"
+                :label="a.file_name"
+                :url="a.file_url"
+              />
+            </div>
           </div>
         </div>
         <div
@@ -587,6 +596,8 @@
     v-if="['Emails', 'Activity'].includes(title)"
     v-model="doc"
     v-model:reload="reload_email"
+    :doctype="doctype"
+    @scroll="scroll"
   />
   <NoteModal
     v-model="showNoteModal"
@@ -620,6 +631,8 @@ import DotIcon from '@/components/Icons/DotIcon.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
+import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
+import AttachmentItem from '@/components/AttachmentItem.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
@@ -644,7 +657,8 @@ import {
   createListResource,
   call,
 } from 'frappe-ui'
-import { ref, computed, h, defineModel, markRaw, watch } from 'vue'
+import { useElementVisibility } from '@vueuse/core'
+import { ref, computed, h, defineModel, markRaw, watch, nextTick } from 'vue'
 
 const { getUser } = usersStore()
 const { getContact } = contactsStore()
@@ -761,7 +775,7 @@ function all_activities() {
   if (!versions.data) return []
   if (!calls.data) return versions.data
   return [...versions.data, ...calls.data].sort(
-    (a, b) => new Date(b.creation) - new Date(a.creation)
+    (a, b) => new Date(a.creation) - new Date(b.creation)
   )
 }
 
@@ -771,15 +785,21 @@ const activities = computed(() => {
     activities = all_activities()
   } else if (props.title == 'Emails') {
     if (!versions.data) return []
-    activities = versions.data.filter(
-      (activity) => activity.activity_type === 'communication'
-    )
+    activities = versions.data
+      .filter((activity) => activity.activity_type === 'communication')
+      .sort((a, b) => new Date(a.creation) - new Date(b.creation))
   } else if (props.title == 'Calls') {
-    return calls.data
+    return calls.data.sort(
+      (a, b) => new Date(a.creation) - new Date(b.creation)
+    )
   } else if (props.title == 'Tasks') {
-    return tasks.data
+    return tasks.data.sort(
+      (a, b) => new Date(a.creation) - new Date(b.creation)
+    )
   } else if (props.title == 'Notes') {
-    return notes.data
+    return notes.data.sort(
+      (a, b) => new Date(a.creation) - new Date(b.creation)
+    )
   }
   activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
@@ -876,6 +896,7 @@ function timelineIcon(activity_type, is_lead) {
 // Notes
 const showNoteModal = ref(false)
 const note = ref({})
+const emailBox = ref(null)
 
 function showNote(n) {
   note.value = n || {
@@ -928,6 +949,21 @@ function updateTaskStatus(status, task) {
   })
 }
 
+// Email
+function reply(message) {
+  emailBox.value.show = true
+  let editor = emailBox.value.editor.editor
+  editor
+    .chain()
+    .clearContent()
+    .insertContent(message)
+    .focus('all')
+    .setBlockquote()
+    .insertContentAt(0, { type: 'paragraph' })
+    .focus('start')
+    .run()
+}
+
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
     versions.reload()
@@ -935,6 +971,21 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
     reload_email.value = false
   }
 })
+
+function scroll(el) {
+  setTimeout(() => {
+    if (!el) {
+      let e = document.getElementsByClassName('activity')
+      el = e[e.length - 1]
+    }
+    if (!useElementVisibility(el).value) {
+      el.scrollIntoView({ behavior: 'smooth' })
+      el.focus()
+    }
+  }, 500)
+}
+
+nextTick(() => scroll())
 </script>
 
 <style scoped>

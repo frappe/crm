@@ -1,63 +1,69 @@
 <template>
-  <div class="flex gap-3 px-10 pb-6 pt-2">
-    <UserAvatar
-      :user="getUser().name"
-      size="xl"
-      :class="showCommunicationBox ? 'mt-3' : ''"
-    />
+  <div class="flex gap-1.5 border-t px-10 py-2.5">
     <Button
       ref="sendEmailRef"
-      variant="outline"
-      size="md"
-      class="inline-flex h-8.5 w-full justify-between"
-      @click="showCommunicationBox = true"
-      v-show="!showCommunicationBox"
+      variant="ghost"
+      :class="[showCommunicationBox ? '!bg-gray-300 hover:!bg-gray-200' : '']"
+      label="Reply"
+      @click="showCommunicationBox = !showCommunicationBox"
     >
-      <div class="text-base text-gray-600">Add a reply...</div>
-      <template #suffix>
-        <div class="flex gap-3">
-          <!-- <FeatherIcon name="paperclip" class="h-4" /> -->
-        </div>
+      <template #prefix>
+        <EmailIcon class="h-4" />
       </template>
     </Button>
-    <div
-      v-show="showCommunicationBox"
-      class="w-full rounded-lg border bg-white p-4 focus-within:border-gray-400"
-      @keydown.ctrl.enter.capture.stop="submitComment"
-      @keydown.meta.enter.capture.stop="submitComment"
-    >
-      <EmailEditor
-        ref="newEmailEditor"
-        :value="newEmail"
-        @change="onNewEmailChange"
-        :submitButtonProps="{
-          variant: 'solid',
-          onClick: submitComment,
-          disabled: emailEmpty,
-        }"
-        :discardButtonProps="{
-          onClick: () => {
-            showCommunicationBox = false
-            newEmail = ''
-          },
-        }"
-        :editable="showCommunicationBox"
-        v-model="doc.data"
-        placeholder="Add a reply..."
-      />
-    </div>
+    <!-- <Button variant="ghost" label="Comment">
+      <template #prefix>
+        <CommentIcon class="h-4" />
+      </template>
+    </Button> -->
+  </div>
+  <div
+    v-show="showCommunicationBox"
+    @keydown.ctrl.enter.capture.stop="submitComment"
+    @keydown.meta.enter.capture.stop="submitComment"
+  >
+    <EmailEditor
+      ref="newEmailEditor"
+      :value="newEmail"
+      @change="onNewEmailChange"
+      :submitButtonProps="{
+        variant: 'solid',
+        onClick: submitComment,
+        disabled: emailEmpty,
+      }"
+      :discardButtonProps="{
+        onClick: () => {
+          showCommunicationBox = false
+          newEmail = ''
+        },
+      }"
+      :editable="showCommunicationBox"
+      v-model="doc.data"
+      v-model:attachments="attachments"
+      :doctype="doctype"
+      placeholder="Add a reply..."
+    />
   </div>
 </template>
 
 <script setup>
-import UserAvatar from '@/components/UserAvatar.vue'
 import EmailEditor from '@/components/EmailEditor.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { ref, watch, computed, defineModel } from 'vue'
 
+const props = defineProps({
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
+  },
+})
+
 const doc = defineModel()
 const reload = defineModel('reload')
+
+const emit = defineEmits(['scroll'])
 
 const { getUser } = usersStore()
 
@@ -65,6 +71,7 @@ const showCommunicationBox = ref(false)
 const newEmail = ref('')
 const newEmailEditor = ref(null)
 const sendEmailRef = ref(null)
+const attachments = ref([]);
 
 watch(
   () => showCommunicationBox.value,
@@ -84,18 +91,14 @@ const onNewEmailChange = (value) => {
 }
 
 async function sendMail() {
-  let doctype = 'CRM Lead'
-  if (doc.value.data.lead) {
-    doctype = 'CRM Deal'
-  }
-
   await call('frappe.core.doctype.communication.email.make', {
     recipients: doc.value.data.email,
+    attachments: attachments.value.map((x) => x.name),
     cc: '',
     bcc: '',
     subject: 'Email from Agent',
     content: newEmail.value,
-    doctype: doctype,
+    doctype: props.doctype,
     name: doc.value.data.name,
     send_email: 1,
     sender: getUser().name,
@@ -109,7 +112,8 @@ async function submitComment() {
   await sendMail()
   newEmail.value = ''
   reload.value = true
+  emit('scroll')
 }
 
-defineExpose({ show: showCommunicationBox })
+defineExpose({ show: showCommunicationBox, editor: newEmailEditor })
 </script>

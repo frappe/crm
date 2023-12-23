@@ -85,6 +85,7 @@ const text = ref('')
 watchDebounced(
   () => autocomplete.value?.query,
   (val) => {
+    val = val || ''
     if (text.value === val) return
     text.value = val
     options.update({

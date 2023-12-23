@@ -96,6 +96,7 @@ def get_call_log(name):
 	if doc.note:
 		note = frappe.db.get_values("CRM Note", doc.note, ["title", "content"])[0]
 		_doc.note_doc = {
+			"name": doc.note,
 			"title": note[0],
 			"content": note[1]
 		}

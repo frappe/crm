@@ -2,6 +2,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.utils.caching import redis_cache
 from frappe.desk.form.load import get_docinfo
 
 @frappe.whitelist()
@@ -98,6 +99,7 @@ def get_deal_activities(name):
 				"recipients": communication.recipients,
 				"cc": communication.cc,
 				"bcc": communication.bcc,
+				"attachments": get_attachments(communication.name),
 				"read_by_recipient": communication.read_by_recipient,
 			},
 			"is_lead": False,
@@ -185,6 +187,7 @@ def get_lead_activities(name):
 				"recipients": communication.recipients,
 				"cc": communication.cc,
 				"bcc": communication.bcc,
+				"attachments": get_attachments(communication.name),
 				"read_by_recipient": communication.read_by_recipient,
 			},
 			"is_lead": True,
@@ -195,6 +198,14 @@ def get_lead_activities(name):
 	activities = handle_multiple_versions(activities)
 
 	return activities
+
+@redis_cache()
+def get_attachments(name):
+	return frappe.db.get_all(
+		"File",
+		filters={"attached_to_doctype": "Communication", "attached_to_name": name},
+		fields=["name", "file_name", "file_url", "file_size", "is_private"],
+	)
 
 def handle_multiple_versions(versions):
 	activities = []
