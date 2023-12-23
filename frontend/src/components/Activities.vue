@@ -26,8 +26,11 @@
       <span>New Task</span>
     </Button>
   </div>
-  <div v-if="activities?.length" class="flex-1 overflow-y-auto">
-    <div v-if="title == 'Notes'" class="grid grid-cols-3 gap-4 px-10 pb-5">
+  <div v-if="activities?.length" class="activities flex-1 overflow-y-auto">
+    <div
+      v-if="title == 'Notes'"
+      class="activity grid grid-cols-3 gap-4 px-10 pb-5"
+    >
       <div
         v-for="note in activities"
         class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
@@ -77,7 +80,7 @@
         </div>
       </div>
     </div>
-    <div v-else-if="title == 'Tasks'" class="px-10 pb-5">
+    <div v-else-if="title == 'Tasks'" class="activity px-10 pb-5">
       <div v-for="(task, i) in activities">
         <div
           class="flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
@@ -164,7 +167,7 @@
         />
       </div>
     </div>
-    <div v-else-if="title == 'Calls'">
+    <div v-else-if="title == 'Calls'" class="activity">
       <div v-for="(call, i) in activities">
         <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
           <div
@@ -262,7 +265,7 @@
         </div>
       </div>
     </div>
-    <div v-else v-for="(activity, i) in activities">
+    <div v-else v-for="(activity, i) in activities" class="activity">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
         <div
           class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
@@ -585,6 +588,7 @@
     v-if="['Emails', 'Activity'].includes(title)"
     v-model="doc"
     v-model:reload="reload_email"
+    @scroll="scroll"
   />
   <NoteModal
     v-model="showNoteModal"
@@ -643,16 +647,8 @@ import {
   createListResource,
   call,
 } from 'frappe-ui'
-import {
-  ref,
-  computed,
-  h,
-  defineModel,
-  markRaw,
-  watch,
-  onMounted,
-  nextTick,
-} from 'vue'
+import { useElementVisibility } from '@vueuse/core'
+import { ref, computed, h, defineModel, markRaw, watch, nextTick } from 'vue'
 
 const { getUser } = usersStore()
 const { getContact } = contactsStore()
@@ -965,6 +961,21 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
     reload_email.value = false
   }
 })
+
+function scroll(el) {
+  setTimeout(() => {
+    if (!el) {
+      let e = document.getElementsByClassName('activity')
+      el = e[e.length - 1]
+    }
+    if (!useElementVisibility(el).value) {
+      el.scrollIntoView({ behavior: 'smooth' })
+      el.focus()
+    }
+  }, 500)
+}
+
+nextTick(() => scroll())
 </script>
 
 <style scoped>

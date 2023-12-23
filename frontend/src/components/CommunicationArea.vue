@@ -54,6 +54,8 @@ import { ref, watch, computed, defineModel } from 'vue'
 const doc = defineModel()
 const reload = defineModel('reload')
 
+const emit = defineEmits(['scroll'])
+
 const { getUser } = usersStore()
 
 const showCommunicationBox = ref(false)
@@ -104,6 +106,7 @@ async function submitComment() {
   await sendMail()
   newEmail.value = ''
   reload.value = true
+  emit('scroll')
 }
 
 defineExpose({ show: showCommunicationBox, editor: newEmailEditor })
