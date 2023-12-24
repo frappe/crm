@@ -48,7 +48,7 @@
     >
       <OrganizationsIcon class="h-10 w-10" />
       <span>No Organizations Found</span>
-      <Button label="Create" @click="showNewDialog = true">
+      <Button label="Create" @click="showOrganizationModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>

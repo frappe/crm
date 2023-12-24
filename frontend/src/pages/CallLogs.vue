@@ -24,9 +24,6 @@
     >
       <PhoneIcon class="h-10 w-10" />
       <span>No Logs Found</span>
-      <Button label="Create" @click="showNewDialog = true">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
     </div>
   </div>
 </template>

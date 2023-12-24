@@ -44,7 +44,7 @@
     >
       <ContactsIcon class="h-10 w-10" />
       <span>No Contacts Found</span>
-      <Button label="Create" @click="showNewDialog = true">
+      <Button label="Create" @click="showContactModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
