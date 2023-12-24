@@ -34,14 +34,26 @@
     </div>
   </div>
   <ContactsListView
-    v-if="contacts.data"
+    v-if="contacts.data && rows.length"
     :rows="rows"
     :columns="contacts.data.columns"
   />
+  <div v-else-if="contacts.data" class="flex h-full items-center justify-center">
+    <div
+      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+    >
+      <ContactsIcon class="h-10 w-10" />
+      <span>No Contacts Found</span>
+      <Button label="Create" @click="showNewDialog = true">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
+    </div>
+  </div>
   <ContactModal v-model="showContactModal" :contact="{}" />
 </template>
 
 <script setup>
+import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'

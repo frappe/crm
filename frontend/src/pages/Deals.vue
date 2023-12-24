@@ -33,7 +33,18 @@
       <ViewSettings doctype="CRM Deal" v-model="deals" />
     </div>
   </div>
-  <DealsListView v-if="deals.data" :rows="rows" :columns="deals.data.columns" />
+  <DealsListView v-if="deals.data && rows.length" :rows="rows" :columns="deals.data.columns" />
+  <div v-else-if="deals.data" class="flex h-full items-center justify-center">
+    <div
+      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+    >
+      <DealsIcon class="h-10 w-10" />
+      <span>No Deals Found</span>
+      <Button label="Create" @click="showNewDialog = true">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
+    </div>
+  </div>
   <Dialog
     v-model="showNewDialog"
     :options="{
@@ -54,6 +65,7 @@
 </template>
 
 <script setup>
+import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import NewDeal from '@/components/NewDeal.vue'

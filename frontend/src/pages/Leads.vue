@@ -32,7 +32,22 @@
       <ViewSettings doctype="CRM Lead" v-model="leads" />
     </div>
   </div>
-  <LeadsListView v-if="leads.data" :rows="rows" :columns="leads.data.columns" />
+  <LeadsListView
+    v-if="leads.data && rows.length"
+    :rows="rows"
+    :columns="leads.data.columns"
+  />
+  <div v-else-if="leads.data" class="flex h-full items-center justify-center">
+    <div
+      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+    >
+      <LeadsIcon class="h-10 w-10" />
+      <span>No Leads Found</span>
+      <Button label="Create" @click="showNewDialog = true">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
+    </div>
+  </div>
   <Dialog
     v-model="showNewDialog"
     :options="{
@@ -53,6 +68,7 @@
 </template>
 
 <script setup>
+import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import NewLead from '@/components/NewLead.vue'
