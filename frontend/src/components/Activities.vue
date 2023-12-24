@@ -35,6 +35,47 @@
       </template>
       <span>New Task</span>
     </Button>
+    <Dropdown
+      v-else
+      :options="[
+        {
+          icon: h(EmailIcon, { class: 'h-4 w-4' }),
+          label: 'New Email',
+          onClick: () => ($refs.emailBox.show = true),
+        },
+        {
+          icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+          label: 'Make a Call',
+          onClick: () => makeCall(doc.data.mobile_no),
+        },
+        {
+          icon: h(NoteIcon, { class: 'h-4 w-4' }),
+          label: 'New Note',
+          onClick: () => showNote(),
+        },
+        {
+          icon: h(TaskIcon, { class: 'h-4 w-4' }),
+          label: 'New Task',
+          onClick: () => showTask(),
+        },
+      ]"
+      @click.stop
+    >
+      <template v-slot="{ open }">
+        <Button variant="solid" class="flex items-center gap-1">
+          <template #prefix>
+            <FeatherIcon name="plus" class="h-4 w-4" />
+          </template>
+          <span>New</span>
+          <template #suffix>
+            <FeatherIcon
+              :name="open ? 'chevron-up' : 'chevron-down'"
+              class="h-4 w-4"
+            />
+          </template>
+        </Button>
+      </template>
+    </Dropdown>
   </div>
   <div v-if="activities?.length" class="activities flex-1 overflow-y-auto">
     <div
