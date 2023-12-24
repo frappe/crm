@@ -4,7 +4,17 @@
       {{ title }}
     </div>
     <Button
-      v-if="title == 'Calls'"
+      v-if="title == 'Emails'"
+      variant="solid"
+      @click="$refs.emailBox.show = true"
+    >
+      <template #prefix>
+        <FeatherIcon name="plus" class="h-4 w-4" />
+      </template>
+      <span>New Email</span>
+    </Button>
+    <Button
+      v-else-if="title == 'Calls'"
       variant="solid"
       @click="makeCall(doc.data.mobile_no)"
     >
@@ -578,7 +588,7 @@
     />
     <Button
       v-else-if="title == 'Emails'"
-      label="Send Email"
+      label="New Email"
       @click="$refs.emailBox.show = true"
     />
     <Button
@@ -974,7 +984,7 @@ function scroll(el) {
       let e = document.getElementsByClassName('activity')
       el = e[e.length - 1]
     }
-    if (!useElementVisibility(el).value) {
+    if (el && !useElementVisibility(el).value) {
       el.scrollIntoView({ behavior: 'smooth' })
       el.focus()
     }
