@@ -568,25 +568,21 @@
     <span>{{ emptyText }}</span>
     <Button
       v-if="title == 'Calls'"
-      variant="solid"
       label="Make a Call"
       @click="makeCall(doc.data.mobile_no)"
     />
     <Button
       v-else-if="title == 'Notes'"
-      variant="solid"
       label="Create Note"
       @click="showNote()"
     />
     <Button
       v-else-if="title == 'Emails'"
-      variant="solid"
       label="Send Email"
       @click="$refs.emailBox.show = true"
     />
     <Button
       v-else-if="title == 'Tasks'"
-      variant="solid"
       label="Create Task"
       @click="showTask()"
     />

@@ -38,13 +38,25 @@
     </div>
   </div>
   <OrganizationsListView
-    v-if="organizations.data"
+    v-if="organizations.data && rows.length"
     :rows="rows"
     :columns="organizations.data.columns"
   />
+  <div v-else-if="organizations.data" class="flex h-full items-center justify-center">
+    <div
+      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+    >
+      <OrganizationsIcon class="h-10 w-10" />
+      <span>No Organizations Found</span>
+      <Button label="Create" @click="showNewDialog = true">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
+    </div>
+  </div>
   <OrganizationModal v-model="showOrganizationModal" :organization="{}" />
 </template>
 <script setup>
+import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'

@@ -61,13 +61,15 @@
       </div>
     </div>
   </div>
-  <div
-    v-else
-    class="flex flex-1 items-center justify-center p-5 text-xl font-medium text-gray-500"
-  >
-    <div class="flex flex-col items-center gap-2">
-      <NoteIcon class="h-10 w-10 text-gray-500" />
-      <span>No notes</span>
+  <div v-else class="flex h-full items-center justify-center">
+    <div
+      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+    >
+      <NoteIcon class="h-10 w-10" />
+      <span>No Notes Found</span>
+      <Button label="Create" @click="createNote">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
     </div>
   </div>
   <NoteModal

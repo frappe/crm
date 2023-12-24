@@ -14,13 +14,25 @@
     </div>
   </div>
   <CallLogsListView
-    v-if="callLogs.data"
+    v-if="callLogs.data && rows.length"
     :rows="rows"
     :columns="callLogs.data.columns"
   />
+  <div v-else-if="callLogs.data" class="flex h-full items-center justify-center">
+    <div
+      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+    >
+      <PhoneIcon class="h-10 w-10" />
+      <span>No Logs Found</span>
+      <Button label="Create" @click="showNewDialog = true">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
+    </div>
+  </div>
 </template>
 
 <script setup>
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
@@ -37,7 +49,7 @@ import { contactsStore } from '@/stores/contacts'
 import { useOrderBy } from '@/composables/orderby'
 import { useFilter } from '@/composables/filter'
 import { useDebounceFn } from '@vueuse/core'
-import { createResource, Breadcrumbs } from 'frappe-ui'
+import { createResource, Breadcrumbs, FeatherIcon } from 'frappe-ui'
 import { computed, watch } from 'vue'
 
 const { getUser } = usersStore()
