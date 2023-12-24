@@ -208,9 +208,9 @@
             v-if="!rows.length"
             class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
           >
-            <div class="flex flex-col items-center justify-center space-y-2">
+            <div class="flex flex-col items-center justify-center space-y-3">
               <component :is="tab.icon" class="!h-10 !w-10" />
-              <div>No {{ tab.label.toLowerCase() }} found</div>
+              <div>No {{ tab.label }} Found</div>
             </div>
           </div>
         </div>
