@@ -249,6 +249,8 @@ def convert_to_deal(lead):
 	lead = frappe.get_cached_doc("CRM Lead", lead)
 	lead.status = "Qualified"
 	lead.converted = 1
+	if lead.sla:
+		lead.communication_status = 'Replied'
 	contact = lead.create_contact(False)
 	deal = lead.create_deal(contact)
 	lead.save()
