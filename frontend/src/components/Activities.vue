@@ -370,9 +370,16 @@
                 <Button
                   variant="ghost"
                   class="text-gray-700"
-                  @click="reply(activity.data.content)"
+                  @click="reply(activity.data)"
                 >
                   <ReplyIcon class="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  class="text-gray-700"
+                  @click="reply(activity.data, true)"
+                >
+                  <ReplyAllIcon class="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -689,6 +696,7 @@ import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
+import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
@@ -1007,10 +1015,26 @@ function updateTaskStatus(status, task) {
 }
 
 // Email
-function reply(message) {
+function reply(email, reply_all = false) {
   emailBox.value.show = true
-  let editor = emailBox.value.editor.editor
-  editor
+  let editor = emailBox.value.editor
+  let message = email.content
+  let recipients = email.recipients.split(',').map((r) => r.trim())
+  editor.toEmails = recipients
+  editor.cc = editor.bcc = false
+
+  if (reply_all) {
+    let cc = email.cc?.split(',').map((r) => r.trim())
+    let bcc = email.bcc?.split(',').map((r) => r.trim())
+
+    editor.cc = cc ? true : false
+    editor.bcc = bcc ? true : false
+
+    editor.ccEmails = cc
+    editor.bccEmails = bcc
+  }
+
+  editor.editor
     .chain()
     .clearContent()
     .insertContent(message)
