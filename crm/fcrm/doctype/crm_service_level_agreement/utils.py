@@ -35,6 +35,14 @@ def get_sla(doc: Document) -> Document:
 		)
 	sla_list = q.run(as_dict=True)
 	res = None
+
+	# move default sla to the end of the list
+	for sla in sla_list:
+		if sla.get("default") == True:
+			sla_list.remove(sla)
+			sla_list.append(sla)
+			break
+
 	for sla in sla_list:
 		cond = sla.get("condition")
 		if not cond or frappe.safe_eval(cond, None, get_context(doc)):
