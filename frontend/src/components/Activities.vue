@@ -354,7 +354,7 @@
           <div
             class="cursor-pointer rounded-md bg-gray-50 p-3 text-base leading-6 transition-all duration-300 ease-in-out"
           >
-            <div class="mb-3 flex items-center justify-between gap-2">
+            <div class="mb-1 flex items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <UserAvatar :user="activity.data.sender" size="md" />
                 <span>{{ activity.data.sender_full_name }}</span>
@@ -370,11 +370,28 @@
                 <Button
                   variant="ghost"
                   class="text-gray-700"
-                  @click="reply(activity.data.content)"
+                  @click="reply(activity.data)"
                 >
                   <ReplyIcon class="h-4 w-4" />
                 </Button>
+                <Button
+                  variant="ghost"
+                  class="text-gray-700"
+                  @click="reply(activity.data, true)"
+                >
+                  <ReplyAllIcon class="h-4 w-4" />
+                </Button>
               </div>
+            </div>
+            <div class="mb-3 text-sm leading-5 text-gray-600">
+              <span class="mr-1">TO:</span>
+              <span>{{ activity.data.recipients }}</span>
+              <span v-if="activity.data.cc">, </span>
+              <span v-if="activity.data.cc" class="mr-1">CC:</span>
+              <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
+              <span v-if="activity.data.bcc">, </span>
+              <span v-if="activity.data.bcc" class="mr-1">BCC:</span>
+              <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
             </div>
             <span class="prose-f" v-html="activity.data.content" />
             <div class="flex flex-wrap gap-2">
@@ -679,6 +696,7 @@ import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
+import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
@@ -997,10 +1015,28 @@ function updateTaskStatus(status, task) {
 }
 
 // Email
-function reply(message) {
+function reply(email, reply_all = false) {
   emailBox.value.show = true
-  let editor = emailBox.value.editor.editor
-  editor
+  let editor = emailBox.value.editor
+  let message = email.content
+  let recipients = email.recipients.split(',').map((r) => r.trim())
+  editor.toEmails = recipients
+  editor.cc = editor.bcc = false
+  editor.ccEmails = []
+  editor.bccEmails = []
+
+  if (reply_all) {
+    let cc = email.cc?.split(',').map((r) => r.trim())
+    let bcc = email.bcc?.split(',').map((r) => r.trim())
+
+    editor.cc = cc ? true : false
+    editor.bcc = bcc ? true : false
+
+    editor.ccEmails = cc
+    editor.bccEmails = bcc
+  }
+
+  editor.editor
     .chain()
     .clearContent()
     .insertContent(message)

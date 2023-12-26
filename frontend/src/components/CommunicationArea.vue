@@ -1,21 +1,35 @@
 <template>
-  <div class="flex gap-1.5 border-t px-10 py-2.5">
-    <Button
-      ref="sendEmailRef"
-      variant="ghost"
-      :class="[showCommunicationBox ? '!bg-gray-300 hover:!bg-gray-200' : '']"
-      label="Reply"
-      @click="showCommunicationBox = !showCommunicationBox"
-    >
-      <template #prefix>
-        <EmailIcon class="h-4" />
-      </template>
-    </Button>
-    <!-- <Button variant="ghost" label="Comment">
-      <template #prefix>
-        <CommentIcon class="h-4" />
-      </template>
-    </Button> -->
+  <div class="flex justify-between gap-3 border-t px-10 py-2.5">
+    <div class="flex gap-1.5">
+      <Button
+        ref="sendEmailRef"
+        variant="ghost"
+        :class="[showCommunicationBox ? '!bg-gray-300 hover:!bg-gray-200' : '']"
+        label="Reply"
+        @click="showCommunicationBox = !showCommunicationBox"
+      >
+        <template #prefix>
+          <EmailIcon class="h-4" />
+        </template>
+      </Button>
+      <!-- <Button variant="ghost" label="Comment">
+        <template #prefix>
+          <CommentIcon class="h-4" />
+        </template>
+      </Button> -->
+    </div>
+    <div v-if="showCommunicationBox" class="flex gap-1.5">
+      <Button
+        label="CC"
+        @click="newEmailEditor.cc = !newEmailEditor.cc"
+        :class="[newEmailEditor.cc ? 'bg-gray-300 hover:bg-gray-200' : '']"
+      />
+      <Button
+        label="BCC"
+        @click="newEmailEditor.bcc = !newEmailEditor.bcc"
+        :class="[newEmailEditor.bcc ? 'bg-gray-300 hover:bg-gray-200' : '']"
+      />
+    </div>
   </div>
   <div
     v-show="showCommunicationBox"
@@ -71,7 +85,7 @@ const showCommunicationBox = ref(false)
 const newEmail = ref('')
 const newEmailEditor = ref(null)
 const sendEmailRef = ref(null)
-const attachments = ref([]);
+const attachments = ref([])
 
 watch(
   () => showCommunicationBox.value,
@@ -91,11 +105,14 @@ const onNewEmailChange = (value) => {
 }
 
 async function sendMail() {
+  let recipients = newEmailEditor.value.toEmails
+  let cc = newEmailEditor.value.ccEmails
+  let bcc = newEmailEditor.value.bccEmails
   await call('frappe.core.doctype.communication.email.make', {
-    recipients: doc.value.data.email,
+    recipients: recipients.join(', '),
     attachments: attachments.value.map((x) => x.name),
-    cc: '',
-    bcc: '',
+    cc: cc.join(', '),
+    bcc: bcc.join(', '),
     subject: 'Email from Agent',
     content: newEmail.value,
     doctype: props.doctype,
