@@ -354,7 +354,7 @@
           <div
             class="cursor-pointer rounded-md bg-gray-50 p-3 text-base leading-6 transition-all duration-300 ease-in-out"
           >
-            <div class="mb-3 flex items-center justify-between gap-2">
+            <div class="mb-1 flex items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <UserAvatar :user="activity.data.sender" size="md" />
                 <span>{{ activity.data.sender_full_name }}</span>
@@ -375,6 +375,16 @@
                   <ReplyIcon class="h-4 w-4" />
                 </Button>
               </div>
+            </div>
+            <div class="mb-3 text-sm text-gray-600 leading-5">
+              <span class="mr-1">TO:</span>
+              <span>{{ activity.data.recipients }}</span>
+              <span v-if="activity.data.cc">, </span>
+              <span v-if="activity.data.cc" class="mr-1">CC:</span>
+              <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
+              <span v-if="activity.data.bcc">, </span>
+              <span v-if="activity.data.bcc" class="mr-1">BCC:</span>
+              <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
             </div>
             <span class="prose-f" v-html="activity.data.content" />
             <div class="flex flex-wrap gap-2">
