@@ -22,6 +22,7 @@
         @keydown.enter.capture.stop="addValue"
         @keydown.tab.capture.stop="addValue"
         @keydown.delete.capture.stop="removeLastValue"
+        @keydown.meta.delete.capture.stop="removeAllValue"
       />
     </div>
     <ErrorMessage class="mt-2 pl-2" v-if="error" :message="error" />
@@ -72,6 +73,10 @@ const addValue = () => {
 
 const removeValue = (value) => {
   values.value = values.value.filter((v) => v !== value)
+}
+
+const removeAllValue = () => {
+  values.value = []
 }
 
 const removeLastValue = () => {
