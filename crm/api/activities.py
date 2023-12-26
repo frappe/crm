@@ -19,6 +19,14 @@ def get_deal_activities(name):
 	docinfo = frappe.response["docinfo"]
 	deal_meta = frappe.get_meta("CRM Deal")
 	deal_fields = {field.fieldname: {"label": field.label, "options": field.options} for field in deal_meta.fields}
+	avoid_fields = [
+		"lead",
+		"response_by",
+		"sla_creation",
+		"sla",
+		"first_response_time",
+		"first_responded_on",
+	]
 
 	doc = frappe.db.get_values("CRM Deal", name, ["creation", "owner", "lead"])[0]
 	lead = doc[2]
@@ -48,7 +56,7 @@ def get_deal_activities(name):
 		if change := data.get("changed")[0]:
 			field = deal_fields.get(change[0], None)
 
-			if not field or change[0] == "lead" or (not change[1] and not change[2]):
+			if not field or change[0] in avoid_fields or (not change[1] and not change[2]):
 				continue
 
 			field_label = field.get("label") or change[0]
@@ -116,6 +124,14 @@ def get_lead_activities(name):
 	docinfo = frappe.response["docinfo"]
 	lead_meta = frappe.get_meta("CRM Lead")
 	lead_fields = {field.fieldname: {"label": field.label, "options": field.options} for field in lead_meta.fields}
+	avoid_fields = [
+		"converted",
+		"response_by",
+		"sla_creation",
+		"sla",
+		"first_response_time",
+		"first_responded_on",
+	]
 
 	doc = frappe.db.get_values("CRM Lead", name, ["creation", "owner"])[0]
 	activities = [{
@@ -136,7 +152,7 @@ def get_lead_activities(name):
 		if change := data.get("changed")[0]:
 			field = lead_fields.get(change[0], None)
 
-			if not field or change[0] == "converted" or (not change[1] and not change[2]):
+			if not field or change[0] in avoid_fields or (not change[1] and not change[2]):
 				continue
 
 			field_label = field.get("label") or change[0]
