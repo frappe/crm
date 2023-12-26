@@ -105,11 +105,14 @@ const onNewEmailChange = (value) => {
 }
 
 async function sendMail() {
+  let recipients = newEmailEditor.value.toEmails
+  let cc = newEmailEditor.value.ccEmails
+  let bcc = newEmailEditor.value.bccEmails
   await call('frappe.core.doctype.communication.email.make', {
-    recipients: doc.value.data.email,
+    recipients: recipients.join(','),
     attachments: attachments.value.map((x) => x.name),
-    cc: '',
-    bcc: '',
+    cc: cc.join(','),
+    bcc: bcc.join(','),
     subject: 'Email from Agent',
     content: newEmail.value,
     doctype: props.doctype,
