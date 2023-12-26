@@ -251,8 +251,8 @@ def convert_to_deal(lead):
 	lead.converted = 1
 	if lead.sla:
 		lead.communication_status = 'Replied'
+	lead.save()
 	contact = lead.create_contact(False)
 	deal = lead.create_deal(contact)
-	lead.save()
 	return deal
 
