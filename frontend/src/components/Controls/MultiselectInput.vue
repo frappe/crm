@@ -17,7 +17,7 @@
         </template>
       </Button>
       <TextInput
-        class="min-w-20 flex-1 border-none bg-white hover:bg-white focus:border-none focus:shadow-none focus-visible:ring-0"
+        class="min-w-20 flex-1 border-none bg-white hover:bg-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
         v-model="currentValue"
         @keydown.enter.capture.stop="addValue"
         @keydown.tab.capture.stop="addValue"
