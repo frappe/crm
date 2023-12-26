@@ -16,7 +16,7 @@
         <span class="text-xs text-gray-500">TO:</span>
         <MultiselectInput
           class="flex-1"
-          :values="modelValue.email ? [modelValue.email] : []"
+          v-model="toEmails"
           :validate="validateEmail"
           error-message="Invalid email address"
         />
@@ -29,7 +29,7 @@
         <span class="text-xs text-gray-500">CC:</span>
         <MultiselectInput
           class="flex-1"
-          :values="[]"
+          v-model="ccEmails"
           :validate="validateEmail"
           error-message="Invalid email address"
         />
@@ -38,7 +38,7 @@
         <span class="text-xs text-gray-500">BCC:</span>
         <MultiselectInput
           class="flex-1"
-          :values="[]"
+          v-model="bccEmails"
           :validate="validateEmail"
           error-message="Invalid email address"
         />
@@ -163,6 +163,10 @@ const textEditor = ref(null)
 const cc = ref(false)
 const bcc = ref(false)
 
+const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
+const ccEmails = ref([])
+const bccEmails = ref([])
+
 const editor = computed(() => {
   return textEditor.value.editor
 })
@@ -171,7 +175,7 @@ function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
 }
 
-defineExpose({ editor, cc, bcc })
+defineExpose({ editor, cc, bcc, toEmails, ccEmails, bccEmails })
 
 const textEditorMenuButtons = [
   'Paragraph',
