@@ -74,9 +74,15 @@ let slaSection = computed(() => {
 
   if (status == 'First Response Due') {
     status = timeAgo(data.value.response_by)
+    if (status == 'just now') {
+      status = 'In less than a minute'
+    }
     tooltipText = dateFormat(data.value.response_by, dateTooltipFormat)
     if (new Date(data.value.response_by) < new Date()) {
       color = 'red'
+      if (status == 'In less than a minute') {
+        status = 'less than a minute ago'
+      }
     }
   }
 
