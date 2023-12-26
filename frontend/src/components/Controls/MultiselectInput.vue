@@ -64,10 +64,11 @@ const addValue = () => {
           }
           // add value to values array
           values.value.push(value)
+          currentValue.value = currentValue.value.replace(value, '')
         }
       }
     })
-    currentValue.value = ''
+    !error.value && (currentValue.value = '')
   }
 }
 
