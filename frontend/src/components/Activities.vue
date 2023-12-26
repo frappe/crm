@@ -383,7 +383,7 @@
                 </Button>
               </div>
             </div>
-            <div class="mb-3 text-sm text-gray-600 leading-5">
+            <div class="mb-3 text-sm leading-5 text-gray-600">
               <span class="mr-1">TO:</span>
               <span>{{ activity.data.recipients }}</span>
               <span v-if="activity.data.cc">, </span>
@@ -1022,6 +1022,8 @@ function reply(email, reply_all = false) {
   let recipients = email.recipients.split(',').map((r) => r.trim())
   editor.toEmails = recipients
   editor.cc = editor.bcc = false
+  editor.ccEmails = []
+  editor.bccEmails = []
 
   if (reply_all) {
     let cc = email.cc?.split(',').map((r) => r.trim())
