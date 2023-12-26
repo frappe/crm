@@ -161,7 +161,8 @@
   {
    "fieldname": "response_by",
    "fieldtype": "Datetime",
-   "label": "Response By"
+   "label": "Response By",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_pfvq",
@@ -171,12 +172,14 @@
    "fieldname": "sla_status",
    "fieldtype": "Select",
    "label": "SLA Status",
-   "options": "\nFirst Response Due\nFailed\nFulfilled"
+   "options": "\nFirst Response Due\nFailed\nFulfilled",
+   "read_only": 1
   },
   {
    "fieldname": "sla_creation",
    "fieldtype": "Datetime",
-   "label": "SLA Creation"
+   "label": "SLA Creation",
+   "read_only": 1
   },
   {
    "fieldname": "response_details_section",
@@ -190,12 +193,14 @@
   {
    "fieldname": "first_response_time",
    "fieldtype": "Duration",
-   "label": "First Response Time"
+   "label": "First Response Time",
+   "read_only": 1
   },
   {
    "fieldname": "first_responded_on",
    "fieldtype": "Datetime",
-   "label": "First Responded On"
+   "label": "First Responded On",
+   "read_only": 1
   },
   {
    "default": "Open",
@@ -207,7 +212,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-13 13:50:55.235109",
+ "modified": "2023-12-26 15:49:52.597014",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
