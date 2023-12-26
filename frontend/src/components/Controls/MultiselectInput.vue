@@ -20,6 +20,7 @@
         class="min-w-20 flex-1 border-none bg-white hover:bg-white focus:border-none focus:shadow-none focus-visible:ring-0"
         v-model="currentValue"
         @keydown.enter.capture.stop="addValue"
+        @keydown.tab.capture.stop="addValue"
         @keydown.delete.capture.stop="removeLastValue"
       />
     </div>
@@ -29,13 +30,9 @@
 
 <script setup>
 import { Button, ErrorMessage, FeatherIcon, TextInput } from 'frappe-ui'
-import { ref } from 'vue'
+import { ref, defineModel } from 'vue'
 
 const props = defineProps({
-  values: {
-    type: Array,
-    default: () => [],
-  },
   validate: {
     type: Function,
     default: null,
@@ -46,8 +43,8 @@ const props = defineProps({
   },
 })
 
+const values = defineModel()
 const currentValue = ref('')
-const values = ref(props.values)
 const error = ref(null)
 
 const addValue = () => {
