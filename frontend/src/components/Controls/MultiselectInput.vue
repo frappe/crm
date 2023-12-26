@@ -38,8 +38,8 @@ const props = defineProps({
     default: null,
   },
   errorMessage: {
-    type: String,
-    default: 'Invalid value',
+    type: Function,
+    default: (value) => `${value} is an Invalid value`,
   },
 })
 
@@ -49,16 +49,23 @@ const error = ref(null)
 
 const addValue = () => {
   error.value = null
-  if (
-    currentValue.value &&
-    props.validate &&
-    !props.validate(currentValue.value)
-  ) {
-    error.value = props.errorMessage
-    return
-  }
   if (currentValue.value) {
-    values.value.push(currentValue.value)
+    const splitValues = currentValue.value.split(',')
+    splitValues.forEach((value) => {
+      value = value.trim()
+      if (value) {
+        // check if value is not already in the values array
+        if (!values.value.includes(value)) {
+          // check if value is valid
+          if (value && props.validate && !props.validate(value)) {
+            error.value = props.errorMessage(value)
+            return
+          }
+          // add value to values array
+          values.value.push(value)
+        }
+      }
+    })
     currentValue.value = ''
   }
 }
