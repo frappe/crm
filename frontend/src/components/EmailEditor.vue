@@ -18,7 +18,7 @@
           class="flex-1"
           v-model="toEmails"
           :validate="validateEmail"
-          error-message="Invalid email address"
+          :error-message="(value) => `${value} is an invalid email address`"
         />
       </div>
       <div
@@ -31,7 +31,7 @@
           class="flex-1"
           v-model="ccEmails"
           :validate="validateEmail"
-          error-message="Invalid email address"
+          :error-message="(value) => `${value} is an invalid email address`"
         />
       </div>
       <div v-if="bcc" class="mx-10 flex items-center gap-2 border-b py-2.5">
@@ -40,7 +40,7 @@
           class="flex-1"
           v-model="bccEmails"
           :validate="validateEmail"
-          error-message="Invalid email address"
+          :error-message="(value) => `${value} is an invalid email address`"
         />
       </div>
     </template>
