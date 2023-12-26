@@ -2,6 +2,8 @@ import frappe
 from frappe.model.document import Document
 from frappe.query_builder import JoinType
 from frappe.utils.safe_exec import get_safe_globals
+from frappe.utils import now_datetime
+from pypika import Criterion
 
 DOCTYPE = "CRM Service Level Agreement"
 
@@ -15,12 +17,15 @@ def get_sla(doc: Document) -> Document:
 	check_permissions(DOCTYPE, None)
 	SLA = frappe.qb.DocType(DOCTYPE)
 	Priority = frappe.qb.DocType("CRM Service Level Priority")
+	now = now_datetime()
 	priority = doc.communication_status
 	q = (
 		frappe.qb.from_(SLA)
 		.select(SLA.name, SLA.condition)
 		.where(SLA.apply_on == doc.doctype)
 		.where(SLA.enabled == True)
+		.where(Criterion.any([SLA.start_date.isnull(), SLA.start_date <= now]))
+		.where(Criterion.any([SLA.end_date.isnull(), SLA.end_date >= now]))
 	)
 	if priority:
 		q = (
