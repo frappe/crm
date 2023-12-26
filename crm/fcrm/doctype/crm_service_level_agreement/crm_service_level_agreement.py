@@ -18,7 +18,22 @@ from crm.fcrm.doctype.crm_service_level_agreement.utils import get_context
 
 class CRMServiceLevelAgreement(Document):
 	def validate(self):
+		self.validate_default()
 		self.validate_condition()
+
+	def validate_default(self):
+		if self.default:
+			other_slas = frappe.get_all(
+				"CRM Service Level Agreement",
+				filters={"apply_on": self.apply_on, "default": True},
+				fields=["name"],
+			)
+			if other_slas:
+				frappe.throw(
+					_(
+						"Default Service Level Agreement already exists for {0}"
+					).format(self.apply_on)
+				)
 
 	def validate_condition(self):
 		if not self.condition:
