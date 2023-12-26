@@ -9,32 +9,39 @@
     :editable="editable"
   >
     <template #top>
-      <div class="mx-10 border-t py-2.5" :class="[cc || bcc ? '' : 'border-b']">
+      <div
+        class="mx-10 flex items-center gap-2 border-t py-2.5"
+        :class="[cc || bcc ? '' : 'border-b']"
+      >
         <span class="text-xs text-gray-500">TO:</span>
-        <span
-          v-if="modelValue.email"
-          class="ml-2 cursor-pointer rounded-md bg-gray-100 px-2 py-1 text-sm text-gray-800"
-        >
-          {{ modelValue.email }}
-        </span>
+        <MultiselectInput
+          class="flex-1"
+          :values="modelValue.email ? [modelValue.email] : []"
+          :validate="validateEmail"
+          error-message="Invalid email address"
+        />
       </div>
-      <div v-if="cc" class="mx-10 py-2.5" :class="bcc ? '' : 'border-b'">
+      <div
+        v-if="cc"
+        class="mx-10 flex items-center gap-2 py-2.5"
+        :class="bcc ? '' : 'border-b'"
+      >
         <span class="text-xs text-gray-500">CC:</span>
-        <span
-          v-if="modelValue.email"
-          class="ml-2 cursor-pointer rounded-md bg-gray-100 px-2 py-1 text-sm text-gray-800"
-        >
-          {{ modelValue.email }}
-        </span>
+        <MultiselectInput
+          class="flex-1"
+          :values="[]"
+          :validate="validateEmail"
+          error-message="Invalid email address"
+        />
       </div>
-      <div v-if="bcc" class="mx-10 border-b py-2.5">
+      <div v-if="bcc" class="mx-10 flex items-center gap-2 border-b py-2.5">
         <span class="text-xs text-gray-500">BCC:</span>
-        <span
-          v-if="modelValue.email"
-          class="ml-2 cursor-pointer rounded-md bg-gray-100 px-2 py-1 text-sm text-gray-800"
-        >
-          {{ modelValue.email }}
-        </span>
+        <MultiselectInput
+          class="flex-1"
+          :values="[]"
+          :validate="validateEmail"
+          error-message="Invalid email address"
+        />
       </div>
     </template>
     <template v-slot:editor="{ editor }">
@@ -106,12 +113,14 @@
 <script setup>
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
+import MultiselectInput from '@/components/Controls/MultiselectInput.vue'
 import {
   TextEditorFixedMenu,
   TextEditor,
   FileUploader,
   FeatherIcon,
 } from 'frappe-ui'
+import { validateEmail } from '@/utils'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel } from 'vue'
 
