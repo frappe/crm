@@ -107,6 +107,7 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 			"value": "modified_by",
 			"options": "User",
 		},
+		{"label": "Assigned To", "type": "Text", "value": "_assign"},
 		{"label": "Owner", "type": "Link", "value": "owner", "options": "User"},
 	]
 

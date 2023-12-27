@@ -196,6 +196,13 @@ const rows = computed(() => {
           label: lead.lead_owner && getUser(lead.lead_owner).full_name,
           ...(lead.lead_owner && getUser(lead.lead_owner)),
         }
+      } else if (row == '_assign') {
+        let assignees = JSON.parse(lead._assign) || []
+        _rows[row] = assignees.map((user) => ({
+          name: user,
+          image: getUser(user).user_image,
+          label: getUser(user).full_name,
+        }))
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(lead[row], dateTooltipFormat),
