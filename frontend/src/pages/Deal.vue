@@ -31,25 +31,10 @@
       >
         <Button icon="more-horizontal" />
       </Dropdown>
-      <Link
-        class="form-control"
-        :value="getUser(deal.data.deal_owner).full_name"
-        doctype="User"
-        @change="(option) => updateField('deal_owner', option)"
-        placeholder="Deal Owner"
-      >
-        <template #prefix>
-          <UserAvatar class="mr-2" :user="deal.data.deal_owner" size="sm" />
-        </template>
-        <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            {{ getUser(option.value).full_name }}
-          </Tooltip>
-        </template>
-      </Link>
+      <MultipleAvatar
+        v-model="deal.data._assignedTo"
+        @click="showAssignmentModal = true"
+      />
       <Dropdown :options="statusOptions('deal', updateField)">
         <template #default="{ open }">
           <Button
@@ -296,6 +281,12 @@
       afterInsert: (doc) => addContact(doc.name),
     }"
   />
+  <AssignmentModal
+    v-if="deal.data"
+    :doc="deal.data"
+    v-model="showAssignmentModal"
+    v-model:assignees="deal.data._assignedTo"
+  />
 </template>
 <script setup>
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -309,8 +300,9 @@ import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
@@ -353,10 +345,19 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   auto: true,
+  onSuccess: (data) => {
+    let assignees = JSON.parse(data._assign) || []
+    data._assignedTo = assignees.map((user) => ({
+      name: user,
+      image: getUser(user).user_image,
+      label: getUser(user).full_name,
+    }))
+  },
 })
 
 const reload = ref(false)
 const showOrganizationModal = ref(false)
+const showAssignmentModal = ref(false)
 const _organization = ref({})
 
 const organization = computed(() => {
