@@ -32,7 +32,7 @@
         <Button icon="more-horizontal" />
       </Dropdown>
       <MultipleAvatar
-        v-model="deal.data._assignedTo"
+        :avatars="deal.data._assignedTo"
         @click="showAssignmentModal = true"
       />
       <Dropdown :options="statusOptions('deal', updateField)">
