@@ -140,10 +140,9 @@ class CRMDeal(Document):
 				'width': '11rem',
 			},
 			{
-				'label': 'Deal Owner',
-				'type': 'Link',
-				'key': 'deal_owner',
-				'options': 'User',
+				'label': 'Assigned To',
+				'type': 'Text',
+				'key': '_assign',
 				'width': '10rem',
 			},
 			{
@@ -166,6 +165,7 @@ class CRMDeal(Document):
 			"first_response_time",
 			"first_responded_on",
 			"modified",
+			"_assign",
 		]
 		return {'columns': columns, 'rows': rows}
 

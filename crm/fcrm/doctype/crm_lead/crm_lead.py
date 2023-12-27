@@ -231,10 +231,9 @@ class CRMLead(Document):
 				'width': '11rem',
 			},
 			{
-				'label': 'Lead Owner',
-				'type': 'Link',
-				'key': 'lead_owner',
-				'options': 'User',
+				'label': 'Assigned To',
+				'type': 'Text',
+				'key': '_assign',
 				'width': '10rem',
 			},
 			{
@@ -258,6 +257,7 @@ class CRMLead(Document):
 			"first_response_time",
 			"first_responded_on",
 			"modified",
+			"_assign",
 			"image",
 		]
 		return {'columns': columns, 'rows': rows}
