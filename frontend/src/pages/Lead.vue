@@ -31,10 +31,12 @@
       >
         <Button icon="more-horizontal" />
       </Dropdown>
-      <MultipleAvatar
-        :avatars="lead.data._assignedTo"
-        @click="showAssignmentModal = true"
-      />
+      <component :is="lead.data._assignedTo?.length == 1 ? 'Button' : 'div'">
+        <MultipleAvatar
+          :avatars="lead.data._assignedTo"
+          @click="showAssignmentModal = true"
+        />
+      </component>
       <Dropdown :options="statusOptions('lead', updateField)">
         <template #default="{ open }">
           <Button
