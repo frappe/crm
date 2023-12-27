@@ -1,8 +1,10 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
+import json
 
 import frappe
 from frappe import _
+from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
 from frappe.utils import has_gravatar, validate_email_address
@@ -18,6 +20,12 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+		if self.lead_owner and not self.is_new():
+			self.assign_agent(self.lead_owner)
+
+	def after_insert(self):
+		if self.lead_owner:
+			self.assign_agent(self.lead_owner)
 
 	def before_save(self):
 		self.apply_sla()
@@ -53,6 +61,19 @@ class CRMLead(Document):
 
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
+
+	def assign_agent(self, agent):
+		if not agent:
+			return
+
+		if self.get("_assign"):
+			assignees = json.loads(self._assign)
+			for assignee in assignees:
+				if agent == assignee:
+					# the agent is already set as an assignee
+					return
+
+		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name})
 
 	def create_contact(self, throw=True):
 		if not self.lead_name:
@@ -210,10 +231,9 @@ class CRMLead(Document):
 				'width': '11rem',
 			},
 			{
-				'label': 'Lead Owner',
-				'type': 'Link',
-				'key': 'lead_owner',
-				'options': 'User',
+				'label': 'Assigned To',
+				'type': 'Text',
+				'key': '_assign',
 				'width': '10rem',
 			},
 			{
@@ -237,6 +257,7 @@ class CRMLead(Document):
 			"first_response_time",
 			"first_responded_on",
 			"modified",
+			"_assign",
 			"image",
 		]
 		return {'columns': columns, 'rows': rows}

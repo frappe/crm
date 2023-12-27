@@ -27,4 +27,5 @@ def get_deal(name):
 	)
 
 	deal["doctype_fields"] = get_doctype_fields("CRM Deal") 
+	deal["doctype"] = "CRM Deal" 
 	return deal

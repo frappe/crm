@@ -31,25 +31,10 @@
       >
         <Button icon="more-horizontal" />
       </Dropdown>
-      <Link
-        class="form-control"
-        :value="getUser(lead.data.lead_owner).full_name"
-        doctype="User"
-        @change="(option) => updateField('lead_owner', option)"
-        placeholder="Lead Owner"
-      >
-        <template #prefix>
-          <UserAvatar class="mr-2" :user="lead.data.lead_owner" size="sm" />
-        </template>
-        <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            {{ getUser(option.value).full_name }}
-          </Tooltip>
-        </template>
-      </Link>
+      <MultipleAvatar
+        :avatars="lead.data._assignedTo"
+        @click="showAssignmentModal = true"
+      />
       <Dropdown :options="statusOptions('lead', updateField)">
         <template #default="{ open }">
           <Button
@@ -205,6 +190,12 @@
         }),
     }"
   />
+  <AssignmentModal
+    v-if="lead.data"
+    :doc="lead.data"
+    v-model="showAssignmentModal"
+    v-model:assignees="lead.data._assignedTo"
+  />
 </template>
 <script setup>
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -217,12 +208,12 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import SLASection from '@/components/SLASection.vue'
-import Link from '@/components/Controls/Link.vue'
 import { openWebsite, createToast } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -261,10 +252,19 @@ const lead = createResource({
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   auto: true,
+  onSuccess: (data) => {
+    let assignees = JSON.parse(data._assign) || []
+    data._assignedTo = assignees.map((user) => ({
+      name: user,
+      image: getUser(user).user_image,
+      label: getUser(user).full_name,
+    }))
+  },
 })
 
 const reload = ref(false)
 const showOrganizationModal = ref(false)
+const showAssignmentModal = ref(false)
 const _organization = ref({})
 
 const organization = computed(() => {

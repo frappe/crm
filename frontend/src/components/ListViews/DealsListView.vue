@@ -17,7 +17,10 @@
         v-slot="{ column, item }"
         :row="row"
       >
-        <ListRowItem :item="item">
+        <div v-if="column.key === '_assign'" class="flex items-center">
+          <MultipleAvatar :avatars="item" />
+        </div>
+        <ListRowItem v-else :item="item">
           <template #prefix>
             <div v-if="column.key === 'status'">
               <IndicatorIcon :class="item.color" />
@@ -86,6 +89,7 @@
 </template>
 
 <script setup>
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import {
