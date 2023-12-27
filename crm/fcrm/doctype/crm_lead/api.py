@@ -15,4 +15,5 @@ def get_lead(name):
 	lead = lead.pop()
 
 	lead["doctype_fields"] = get_doctype_fields("CRM Lead")
+	lead["doctype"] = "CRM Lead"
 	return lead

@@ -1,8 +1,10 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
+import json
 
 import frappe
 from frappe import _
+from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
@@ -15,6 +17,12 @@ class CRMDeal(Document):
 	def validate(self):
 		self.set_primary_contact()
 		self.set_primary_email_mobile_no()
+		if self.deal_owner and not self.is_new():
+			self.assign_agent(self.deal_owner)
+
+	def after_insert(self):
+		if self.deal_owner:
+			self.assign_agent(self.deal_owner)
 
 	def before_save(self):
 		self.apply_sla()
@@ -52,6 +60,19 @@ class CRMDeal(Document):
 		if not primary_contact_exists:
 			self.email = ""
 			self.mobile_no = ""
+
+	def assign_agent(self, agent):
+		if not agent:
+			return
+
+		if self._assign:
+			assignees = json.loads(self._assign)
+			for assignee in assignees:
+				if agent == assignee:
+					# the agent is already set as an assignee
+					return
+
+		assign({"assign_to": [agent], "doctype": "CRM Deal", "name": self.name})
 
 	def set_sla(self):
 		"""
