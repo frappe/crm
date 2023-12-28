@@ -8,33 +8,6 @@
         v-if="deal.data._customActions"
         :actions="deal.data._customActions"
       />
-      <Dropdown
-        :options="[
-          {
-            icon: 'trash-2',
-            label: 'Delete',
-            onClick: () =>
-              $dialog({
-                title: 'Delete Deal',
-                message: 'Are you sure you want to delete this deal?',
-                actions: [
-                  {
-                    label: 'Delete',
-                    theme: 'red',
-                    variant: 'solid',
-                    onClick(close) {
-                      deleteDeal(deal.data.name)
-                      close()
-                    },
-                  },
-                ],
-              }),
-          },
-        ]"
-        @click.stop
-      >
-        <Button icon="more-horizontal" />
-      </Dropdown>
       <component :is="deal.data._assignedTo?.length == 1 ? 'Button' : 'div'">
         <MultipleAvatar
           :avatars="deal.data._assignedTo"
@@ -357,7 +330,7 @@ const deal = createResource({
   auto: true,
   onSuccess: (data) => {
     setupAssignees(data)
-    setupCustomActions(data, { doc: data, updateField })
+    setupCustomActions(data, { doc: data, $dialog, updateField, deleteDoc: deleteDeal })
   },
 })
 
