@@ -330,7 +330,14 @@ const deal = createResource({
   auto: true,
   onSuccess: (data) => {
     setupAssignees(data)
-    setupCustomActions(data, { doc: data, $dialog, updateField, deleteDoc: deleteDeal })
+    setupCustomActions(data, {
+      doc: data,
+      $dialog,
+      router,
+      updateField,
+      deleteDoc: deleteDeal,
+      call,
+    })
   },
 })
 

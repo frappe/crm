@@ -237,7 +237,14 @@ const lead = createResource({
   auto: true,
   onSuccess: (data) => {
     setupAssignees(data)
-    setupCustomActions(data, { doc: data, $dialog, updateField, deleteDoc: deleteLead })
+    setupCustomActions(data, {
+      doc: data,
+      $dialog,
+      router,
+      updateField,
+      deleteDoc: deleteLead,
+      call,
+    })
   },
 })
 
