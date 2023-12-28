@@ -8,7 +8,9 @@
       <div class="w-[106px] shrink-0 text-sm text-gray-600">
         {{ field.label }}
       </div>
-      <div class="grid min-h-[28px] flex-1 text-base items-center overflow-hidden">
+      <div
+        class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
+      >
         <FormControl
           v-if="
             [
@@ -40,6 +42,25 @@
           :debounce="500"
           @change.stop="emit('update', field.name, $event.target.value)"
         />
+        <Link
+          v-else-if="['lead_owner', 'deal_owner'].includes(field.name)"
+          class="form-control"
+          :value="getUser(data[field.name]).full_name"
+          doctype="User"
+          @change="(data) => emit('update', field.name, data)"
+        >
+          <template #prefix>
+            <UserAvatar class="mr-1.5" :user="data[field.name]" size="sm" />
+          </template>
+          <template #item-prefix="{ option }">
+            <UserAvatar class="mr-1.5" :user="option.value" size="sm" />
+          </template>
+          <template #item-label="{ option }">
+            <Tooltip :text="option.value">
+              {{ getUser(option.value).full_name }}
+            </Tooltip>
+          </template>
+        </Link>
         <Link
           v-else-if="field.type === 'link'"
           class="form-control"
@@ -78,6 +99,8 @@
 <script setup>
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import Link from '@/components/Controls/Link.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
+import { usersStore } from '@/stores/users'
 import { FormControl, Tooltip } from 'frappe-ui'
 import { defineModel } from 'vue'
 
@@ -87,6 +110,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const { getUser } = usersStore()
 
 const emit = defineEmits(['update'])
 
