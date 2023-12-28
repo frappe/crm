@@ -4,6 +4,10 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <CustomActions
+        v-if="deal.data._customActions"
+        :actions="deal.data._customActions"
+      />
       <Dropdown
         :options="[
           {
@@ -310,8 +314,13 @@ import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import SLASection from '@/components/SLASection.vue'
-import { openWebsite, createToast } from '@/utils'
-import { usersStore } from '@/stores/users'
+import CustomActions from '@/components/CustomActions.vue'
+import {
+  openWebsite,
+  createToast,
+  setupAssignees,
+  setupCustomActions,
+} from '@/utils'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
@@ -329,7 +338,6 @@ import {
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
-const { getUser } = usersStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
@@ -348,12 +356,8 @@ const deal = createResource({
   cache: ['deal', props.dealId],
   auto: true,
   onSuccess: (data) => {
-    let assignees = JSON.parse(data._assign) || []
-    data._assignedTo = assignees.map((user) => ({
-      name: user,
-      image: getUser(user).user_image,
-      label: getUser(user).full_name,
-    }))
+    setupAssignees(data)
+    setupCustomActions(data, { doc: data, updateField })
   },
 })
 
