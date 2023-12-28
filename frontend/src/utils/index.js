@@ -1,8 +1,9 @@
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { useDateFormat, useTimeAgo } from '@vueuse/core'
+import { usersStore } from '@/stores/users'
 import { toast } from 'frappe-ui'
-import { h, computed } from 'vue'
+import { h } from 'vue'
 
 export function createToast(options) {
   toast({
@@ -111,4 +112,20 @@ export function validateEmail(email) {
   let regExp =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return regExp.test(email)
+}
+
+export function setupAssignees(data) {
+  let { getUser } = usersStore()
+  let assignees = JSON.parse(data._assign) || []
+  data._assignedTo = assignees.map((user) => ({
+    name: user,
+    image: getUser(user).user_image,
+    label: getUser(user).full_name,
+  }))
+}
+
+export function setupCustomActions(data, obj) {
+  let script = new Function(data._form_script + '\nreturn setupForm')()
+  let formScript = script(obj)
+  data._customActions = formScript?.actions || []
 }

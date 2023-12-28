@@ -2,6 +2,7 @@ import frappe
 from frappe import _
 
 from crm.api.doc import get_doctype_fields
+from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 
 @frappe.whitelist()
 def get_deal(name):
@@ -27,5 +28,6 @@ def get_deal(name):
 	)
 
 	deal["doctype_fields"] = get_doctype_fields("CRM Deal") 
-	deal["doctype"] = "CRM Deal" 
+	deal["doctype"] = "CRM Deal"
+	deal["_form_script"] = get_form_script('CRM Deal') 
 	return deal
