@@ -200,6 +200,7 @@ import {
   setupAssignees,
   setupCustomActions,
 } from '@/utils'
+import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
@@ -218,6 +219,7 @@ import {
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
+const { $dialog } = globalStore()
 const { contacts } = contactsStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()

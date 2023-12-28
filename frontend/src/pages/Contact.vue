@@ -229,12 +229,15 @@ import {
   timeAgo,
   formatNumberIntoCurrency,
 } from '@/utils'
+import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
 import { contactsStore } from '@/stores/contacts.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
+
+const { $dialog } = globalStore()
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()

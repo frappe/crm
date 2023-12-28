@@ -248,6 +248,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
@@ -267,6 +268,7 @@ const props = defineProps({
   },
 })
 
+const { $dialog } = globalStore()
 const { organizations, getOrganization } = organizationsStore()
 const { getLeadStatus, getDealStatus } = statusesStore()
 const showOrganizationModal = ref(false)
