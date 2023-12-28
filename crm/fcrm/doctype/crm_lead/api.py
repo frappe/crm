@@ -2,6 +2,7 @@ import frappe
 from frappe import _
 
 from crm.api.doc import get_doctype_fields
+from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 
 @frappe.whitelist()
 def get_lead(name):
@@ -16,4 +17,5 @@ def get_lead(name):
 
 	lead["doctype_fields"] = get_doctype_fields("CRM Lead")
 	lead["doctype"] = "CRM Lead"
+	lead["_form_script"] = get_form_script('CRM Lead')
 	return lead

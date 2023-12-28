@@ -26,3 +26,20 @@ class CRMFormScript(Document):
 					),
 					frappe.DuplicateEntryError,
 				)
+
+def get_form_script(dt):
+	"""Returns the script for the given doctype"""
+	FormScript = frappe.qb.DocType("CRM Form Script")
+	query = (
+		frappe.qb.from_(FormScript)
+		.select("script")
+		.where(FormScript.dt == dt)
+		.where(FormScript.enabled == 1)
+		.limit(1)
+	)
+
+	doc = query.run(as_dict=True)
+	if doc:
+		return doc[0].script
+	else:
+		return None
