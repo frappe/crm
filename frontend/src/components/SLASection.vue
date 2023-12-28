@@ -89,7 +89,7 @@ let slaSection = computed(() => {
   sections.push(
     ...[
       {
-        label: 'SLA',
+        label: 'First Response',
         type: 'Badge',
         value: status,
         tooltipText: tooltipText,
