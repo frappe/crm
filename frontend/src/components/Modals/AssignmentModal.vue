@@ -53,6 +53,7 @@
             </template>
             <template #suffix>
               <FeatherIcon
+                v-if="assignee.name !== owner"
                 class="h-3.5"
                 name="x"
                 @click.stop="removeValue(assignee.name)"
@@ -71,7 +72,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { Dialog, Tooltip, FeatherIcon, call, ErrorMessage } from 'frappe-ui'
-import { defineModel, ref } from 'vue'
+import { defineModel, ref, computed } from 'vue'
 import { watchOnce } from '@vueuse/core'
 
 const props = defineProps({
@@ -94,6 +95,12 @@ const removeValue = (value) => {
     (assignee) => assignee.name !== value
   )
 }
+
+const owner = computed(() => {
+  if (!props.doc) return ''
+  if (props.doc.doctype == 'CRM Lead') return props.doc.lead_owner
+  return props.doc.deal_owner
+})
 
 const addValue = (value) => {
   error.value = ''
