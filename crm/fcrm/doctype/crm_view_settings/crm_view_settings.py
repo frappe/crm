@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document, get_controller
 
 
-class CRMListViewSettings(Document):
+class CRMViewSettings(Document):
 	pass
 
 
@@ -18,16 +18,16 @@ def update(doctype, columns, rows):
 
 	rows = remove_duplicates(rows)
 
-	if not frappe.db.exists("CRM List View Settings", doctype):
-		# create new CRM List View Settings
-		doc = frappe.new_doc("CRM List View Settings")
+	if not frappe.db.exists("CRM View Settings", doctype):
+		# create new CRM View Settings
+		doc = frappe.new_doc("CRM View Settings")
 		doc.name = doctype
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.insert()
 	else:
-		# update existing CRM List View Settings
-		doc = frappe.get_doc("CRM List View Settings", doctype)
+		# update existing CRM View Settings
+		doc = frappe.get_doc("CRM View Settings", doctype)
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.save()
@@ -46,5 +46,5 @@ def sync_default_list_rows(doctype):
 
 @frappe.whitelist()
 def reset_to_default(doctype):
-	if frappe.db.exists("CRM List View Settings", doctype):
-		frappe.delete_doc("CRM List View Settings", doctype)
+	if frappe.db.exists("CRM View Settings", doctype):
+		frappe.delete_doc("CRM View Settings", doctype)

@@ -228,7 +228,7 @@ function cancelUpdate() {
 async function updateColumnDetails() {
   is_default.value = false
   await call(
-    'crm.fcrm.doctype.crm_list_view_settings.crm_list_view_settings.update',
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.update',
     {
       doctype: props.doctype,
       columns: columns.value,
@@ -239,7 +239,7 @@ async function updateColumnDetails() {
 
 async function resetToDefault() {
   await call(
-    'crm.fcrm.doctype.crm_list_view_settings.crm_list_view_settings.reset_to_default',
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.reset_to_default',
     {
       doctype: props.doctype,
     }

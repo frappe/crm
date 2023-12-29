@@ -59,8 +59,8 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 
 	is_default = True
 
-	if frappe.db.exists("CRM List View Settings", doctype):
-		list_view_settings = frappe.get_doc("CRM List View Settings", doctype)
+	if frappe.db.exists("CRM View Settings", doctype):
+		list_view_settings = frappe.get_doc("CRM View Settings", doctype)
 		columns = frappe.parse_json(list_view_settings.columns)
 		rows = frappe.parse_json(list_view_settings.rows)
 		is_default = False

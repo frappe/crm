@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestCRMListViewSettings(FrappeTestCase):
+class TestCRMViewSettings(FrappeTestCase):
 	pass
