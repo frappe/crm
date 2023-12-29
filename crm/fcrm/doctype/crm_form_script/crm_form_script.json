@@ -36,6 +36,7 @@
    "label": "Enabled"
   },
   {
+   "default": "function setupForm({ doc }) {\n    return {\n        actions: []\n    }\n}",
    "fieldname": "script",
    "fieldtype": "Code",
    "label": "Script",
@@ -44,7 +45,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-28 16:26:39.967069",
+ "modified": "2023-12-29 12:14:45.706725",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Form Script",
