@@ -56,21 +56,31 @@ def get_filterable_fields(doctype: str):
 
 
 @frappe.whitelist()
-def get_list_data(doctype: str, filters: dict, order_by: str):
-	columns = [
-		{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
-		{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
-	]
-	rows = ["name"]
-
+def get_list_data(doctype: str, filters: dict, order_by: str, columns=None , rows=None, custom_view_name=None):
+	custom_view = False
+	filters = frappe._dict(filters)
 	is_default = True
+	if columns or rows:
+		custom_view = True
+		is_default = False
+		columns = frappe.parse_json(columns)
+		rows = frappe.parse_json(rows)
 
-	if frappe.db.exists("CRM View Settings", doctype):
+	if not columns:
+		columns = [
+			{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
+			{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
+		]
+
+	if not rows:
+		rows = ["name"]
+
+	if not custom_view and frappe.db.exists("CRM View Settings", doctype):
 		list_view_settings = frappe.get_doc("CRM View Settings", doctype)
 		columns = frappe.parse_json(list_view_settings.columns)
 		rows = frappe.parse_json(list_view_settings.rows)
 		is_default = False
-	else:
+	elif not custom_view or is_default:
 		list = get_controller(doctype)
 
 		if hasattr(list, "default_list_data"):
@@ -123,13 +133,21 @@ def get_list_data(doctype: str, filters: dict, order_by: str):
 		if field not in fields:
 			fields.append(field)
 
+	if not is_default and custom_view_name:
+		is_default = frappe.db.get_value("CRM View Settings", custom_view_name, "default_columns")
+
 	return {
 		"data": data,
 		"columns": columns,
 		"rows": rows,
 		"fields": fields,
 		"is_default": is_default,
+		"views": get_views(doctype),
 	}
+
+def get_views(doctype):
+	views = frappe.get_all("CRM View Settings", fields=["*"], filters={"dt": doctype})
+	return views
 
 
 def get_doctype_fields(doctype):
