@@ -278,6 +278,7 @@ function apply(reload = false, isDefault = false, reset = false) {
 watchOnce(
   () => list.value.data,
   (val) => {
+    if (!val) return
     oldValues.value.columns = JSON.parse(JSON.stringify(val.columns))
     oldValues.value.rows = JSON.parse(JSON.stringify(val.rows))
     oldValues.value.isDefault = val.is_default
