@@ -63,9 +63,6 @@ import OrganizationsListView from '@/components/ListViews/OrganizationsListView.
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import ViewSettings from '@/components/ViewSettings.vue'
-import { useOrderBy } from '@/composables/orderby'
-import { useFilter } from '@/composables/filter'
-import { useDebounceFn } from '@vueuse/core'
 import { FeatherIcon, Breadcrumbs, Dropdown, createResource } from 'frappe-ui'
 import {
   dateFormat,
@@ -73,12 +70,10 @@ import {
   timeAgo,
   formatNumberIntoCurrency,
 } from '@/utils'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const { get: getOrderBy } = useOrderBy()
-const { getArgs, storage } = useFilter()
 
 const showOrganizationModal = ref(false)
 
@@ -107,8 +102,8 @@ const currentView = ref({
 })
 
 function getParams() {
-  const filters = getArgs() || {}
-  const order_by = getOrderBy() || 'modified desc'
+  const filters = {}
+  const order_by = 'modified desc'
 
   return {
     doctype: 'CRM Organization',
@@ -122,26 +117,6 @@ const organizations = createResource({
   params: getParams(),
   auto: true,
 })
-
-watch(
-  () => getOrderBy(),
-  (value, old_value) => {
-    if (!value && !old_value) return
-    organizations.params = getParams()
-    organizations.reload()
-  },
-  { immediate: true }
-)
-
-watch(
-  storage,
-  useDebounceFn((value, old_value) => {
-    if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    organizations.params = getParams()
-    organizations.reload()
-  }, 300),
-  { deep: true }
-)
 
 const rows = computed(() => {
   if (!organizations.data?.data) return []

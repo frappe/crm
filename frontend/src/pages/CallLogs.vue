@@ -43,22 +43,17 @@ import {
 } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import { useOrderBy } from '@/composables/orderby'
-import { useFilter } from '@/composables/filter'
-import { useDebounceFn } from '@vueuse/core'
-import { createResource, Breadcrumbs, FeatherIcon } from 'frappe-ui'
-import { computed, watch } from 'vue'
+import { createResource, Breadcrumbs } from 'frappe-ui'
+import { computed } from 'vue'
 
 const { getUser } = usersStore()
 const { getContact } = contactsStore()
-const { get: getOrderBy } = useOrderBy()
-const { getArgs, storage } = useFilter()
 
 const breadcrumbs = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
 
 function getParams() {
-  const filters = getArgs() || {}
-  const order_by = getOrderBy() || 'creation desc'
+  const filters = {}
+  const order_by = 'creation desc'
 
   return {
     doctype: 'CRM Call Log',
@@ -72,26 +67,6 @@ const callLogs = createResource({
   params: getParams(),
   auto: true,
 })
-
-watch(
-  () => getOrderBy(),
-  (value, old_value) => {
-    if (!value && !old_value) return
-    callLogs.params = getParams()
-    callLogs.reload()
-  },
-  { immediate: true }
-)
-
-watch(
-  storage,
-  useDebounceFn((value, old_value) => {
-    if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    callLogs.params = getParams()
-    callLogs.reload()
-  }, 300),
-  { deep: true }
-)
 
 const rows = computed(() => {
   if (!callLogs.data?.data) return []

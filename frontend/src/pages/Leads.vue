@@ -78,9 +78,6 @@ import ViewSettings from '@/components/ViewSettings.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { useOrderBy } from '@/composables/orderby'
-import { useFilter } from '@/composables/filter'
-import { useDebounceFn } from '@vueuse/core'
 import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
 import {
   FeatherIcon,
@@ -91,15 +88,13 @@ import {
   Breadcrumbs,
 } from 'frappe-ui'
 import { useRouter } from 'vue-router'
-import { ref, computed, reactive, watch } from 'vue'
+import { ref, computed, reactive } from 'vue'
 
 const breadcrumbs = [{ label: 'Leads', route: { name: 'Leads' } }]
 
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
-const { get: getOrderBy } = useOrderBy()
-const { getArgs, storage } = useFilter()
 
 const currentView = ref({
   label: 'List',
@@ -107,12 +102,9 @@ const currentView = ref({
 })
 
 function getParams() {
-  const filters = {
-    converted: 0,
-    ...(getArgs() || {}),
-  }
+  const filters = { converted: 0 }
 
-  const order_by = getOrderBy() || 'modified desc'
+  const order_by = 'modified desc'
 
   return {
     doctype: 'CRM Lead',
@@ -126,26 +118,6 @@ const leads = createResource({
   params: getParams(),
   auto: true,
 })
-
-watch(
-  () => getOrderBy(),
-  (value, old_value) => {
-    if (!value && !old_value) return
-    leads.params = getParams()
-    leads.reload()
-  },
-  { immediate: true }
-)
-
-watch(
-  storage,
-  useDebounceFn((value, old_value) => {
-    if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    leads.params = getParams()
-    leads.reload()
-  }, 300),
-  { deep: true }
-)
 
 const rows = computed(() => {
   if (!leads.data?.data) return []

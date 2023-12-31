@@ -62,16 +62,11 @@ import Filter from '@/components/Filter.vue'
 import ViewSettings from '@/components/ViewSettings.vue'
 import { FeatherIcon, Breadcrumbs, Dropdown, createResource } from 'frappe-ui'
 import { organizationsStore } from '@/stores/organizations.js'
-import { useOrderBy } from '@/composables/orderby'
-import { useFilter } from '@/composables/filter'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
-import { useDebounceFn } from '@vueuse/core'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const { getOrganization } = organizationsStore()
-const { get: getOrderBy } = useOrderBy()
-const { getArgs, storage } = useFilter()
 const route = useRoute()
 
 const showContactModal = ref(false)
@@ -101,8 +96,8 @@ const currentView = ref({
 })
 
 function getParams() {
-  const filters = getArgs() || {}
-  const order_by = getOrderBy() || 'modified desc'
+  const filters = {}
+  const order_by = 'modified desc'
 
   return {
     doctype: 'Contact',
@@ -116,26 +111,6 @@ const contacts = createResource({
   params: getParams(),
   auto: true,
 })
-
-watch(
-  () => getOrderBy(),
-  (value, old_value) => {
-    if (!value && !old_value) return
-    contacts.params = getParams()
-    contacts.reload()
-  },
-  { immediate: true }
-)
-
-watch(
-  storage,
-  useDebounceFn((value, old_value) => {
-    if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    contacts.params = getParams()
-    contacts.reload()
-  }, 300),
-  { deep: true }
-)
 
 const rows = computed(() => {
   if (!contacts.data?.data) return []
