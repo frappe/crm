@@ -58,6 +58,7 @@ def update(view):
 	rows = remove_duplicates(rows)
 
 	doc = frappe.get_doc("CRM View Settings", view.name)
+	doc.label = view.label
 	doc.default_columns = default_columns
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by

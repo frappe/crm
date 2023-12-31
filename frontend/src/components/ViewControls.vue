@@ -20,7 +20,10 @@
     <div class="flex items-center gap-2">
       <div v-if="viewUpdated" class="flex items-center gap-2 border-r pr-2">
         <Button label="Cancel" @click="cancelChanges" />
-        <Button label="Save Changes" @click="saveView" />
+        <Button
+          :label="view?.name ? 'Save Changes' : 'Create View'"
+          @click="saveView"
+        />
       </div>
       <div class="flex items-center gap-2">
         <Filter v-model="list" :doctype="doctype" @update="updateFilter" />
@@ -48,7 +51,13 @@
         viewUpdated = false
         router.push({ name: route.name, query: { view: v.name } })
       },
-      afterUpdate: () => (viewUpdated = false),
+      afterUpdate: (v) => {
+        viewUpdated = false
+        currentView = {
+          label: v.label,
+          icon: v.icon || 'list',
+        }
+      },
     }"
     v-model="showViewModal"
   />
