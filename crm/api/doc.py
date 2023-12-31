@@ -146,7 +146,11 @@ def get_list_data(doctype: str, filters: dict, order_by: str, columns=None , row
 	}
 
 def get_views(doctype):
-	views = frappe.get_all("CRM View Settings", fields=["*"], filters={"dt": doctype})
+	views = frappe.get_all(
+		"CRM View Settings",
+		fields=["*"],
+		filters={"dt": doctype, "user": frappe.session.user}
+	)
 	return views
 
 
