@@ -3,27 +3,27 @@
     <template #target>
       <Button label="Filter">
         <template #prefix><FilterIcon class="h-4" /></template>
-        <template v-if="storage.size" #suffix>
+        <template v-if="filters?.size" #suffix>
           <div
-            class="flex justify-center items-center w-5 h-5 text-2xs font-medium pt-[1px] bg-gray-900 text-white rounded"
+            class="flex h-5 w-5 items-center justify-center rounded bg-gray-900 pt-[1px] text-2xs font-medium text-white"
           >
-            {{ storage.size }}
+            {{ filters.size }}
           </div>
         </template>
       </Button>
     </template>
     <template #body="{ close }">
-      <div class="rounded-lg border border-gray-100 bg-white shadow-xl my-2">
-        <div class="p-2 min-w-[400px]">
+      <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
+        <div class="min-w-[400px] p-2">
           <div
-            v-if="storage.size"
-            v-for="(f, i) in storage"
+            v-if="filters?.size"
+            v-for="(f, i) in filters"
             :key="i"
             id="filter-list"
-            class="flex items-center justify-between gap-2 mb-3"
+            class="mb-3 flex items-center justify-between gap-2"
           >
             <div class="flex items-center gap-2">
-              <div class="text-gray-600 text-base pl-2 w-13 text-end">
+              <div class="w-13 pl-2 text-end text-base text-gray-600">
                 {{ i == 0 ? 'Where' : 'And' }}
               </div>
               <div id="fieldname" class="!min-w-[140px]">
@@ -37,7 +37,8 @@
               <div id="operator">
                 <FormControl
                   type="select"
-                  v-model="f.operator"
+                  :value="f.operator"
+                  @change="(e) => updateOperator(e, f)"
                   :options="getOperators(f.field.fieldtype)"
                   placeholder="Operator"
                 />
@@ -45,15 +46,17 @@
               <div id="value" class="!min-w-[140px]">
                 <SearchComplete
                   v-if="typeLink.includes(f.field.fieldtype)"
-                  :doctype="f.field.options"
+                  class="form-control"
                   :value="f.value"
-                  @change="(v) => (f.value = v.value)"
+                  :doctype="f.field.options"
+                  @change="(v) => updateValue(v, f)"
                   placeholder="Value"
                 />
                 <component
                   v-else
                   :is="getValSelect(f.field.fieldtype, f.field.options)"
-                  v-model="f.value"
+                  :value="f.value"
+                  @change="(e) => updateValue(e.target.value, f)"
                   placeholder="Value"
                 />
               </div>
@@ -62,7 +65,7 @@
           </div>
           <div
             v-else
-            class="text-gray-600 flex items-center text-sm px-3 h-7 mb-3"
+            class="mb-3 flex h-7 items-center px-3 text-sm text-gray-600"
           >
             Empty - Choose a field to filter by
           </div>
@@ -87,7 +90,7 @@
               </template>
             </Autocomplete>
             <Button
-              v-if="storage.size"
+              v-if="filters?.size"
               class="!text-gray-600"
               variant="ghost"
               label="Clear all Filter"
@@ -103,15 +106,19 @@
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import SearchComplete from '@/components/SearchComplete.vue'
-import { useDebounceFn } from '@vueuse/core'
-import { useFilter } from '@/composables/filter'
 import {
   FeatherIcon,
   Autocomplete,
   FormControl,
   createResource,
 } from 'frappe-ui'
-import { h, watch } from 'vue'
+import { h, defineModel, computed } from 'vue'
+
+const typeCheck = ['Check']
+const typeLink = ['Link']
+const typeNumber = ['Float', 'Int']
+const typeSelect = ['Select']
+const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 
 const props = defineProps({
   doctype: {
@@ -119,6 +126,10 @@ const props = defineProps({
     required: true,
   },
 })
+
+const emit = defineEmits(['update'])
+
+const list = defineModel()
 
 const filterableFields = createResource({
   url: 'crm.api.doc.get_filterable_fields',
@@ -139,18 +150,49 @@ const filterableFields = createResource({
   },
 })
 
-const { apply, storage } = useFilter(() => filterableFields.data)
-const typeCheck = ['Check']
-const typeLink = ['Link']
-const typeNumber = ['Float', 'Int']
-const typeSelect = ['Select']
-const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
+const filters = computed(() => {
+  if (!list.value?.data) return new Set()
+  let allFilters = list.value?.params?.filters
+  if (!allFilters || !filterableFields.data) return new Set()
+  // remove default filters
+  if (list.value.data._defaultFilters) {
+    allFilters = removeCommonFilters(list.value.data._defaultFilters, allFilters)
+  }
+  return convertFilters(filterableFields.data, allFilters)
+})
 
-watch(
-  storage,
-  useDebounceFn(() => apply(), 300),
-  { deep: true }
-)
+function removeCommonFilters(commonFilters, allFilters) {
+  for (const key in commonFilters) {
+    if (commonFilters.hasOwnProperty(key) && allFilters.hasOwnProperty(key)) {
+      if (commonFilters[key] === allFilters[key]) {
+        delete allFilters[key];
+      }
+    }
+  }
+  return allFilters;
+}
+
+function convertFilters(data, allFilters) {
+  let f = []
+  for (let [key, value] of Object.entries(allFilters)) {
+    let field = data.find((f) => f.fieldname === key)
+    if (typeof value !== 'object') {
+      value = ['=', value]
+      if (field.fieldtype === 'Check') {
+        value = ['equals', value[1] ? 'Yes' : 'No']
+      }
+    }
+    if (field) {
+      f.push({
+        field,
+        fieldname: key,
+        operator: oppositeOperatorMap[value[0]],
+        value: value[1],
+      })
+    }
+  }
+  return new Set(f)
+}
 
 function getOperators(fieldtype) {
   let options = []
@@ -231,7 +273,7 @@ function getSelectOptions(options) {
 }
 
 function setfilter(data) {
-  storage.value.add({
+  filters.value.add({
     field: {
       label: data.label,
       fieldname: data.value,
@@ -242,11 +284,12 @@ function setfilter(data) {
     operator: getDefaultOperator(data.fieldtype),
     value: getDefaultValue(data),
   })
+  apply()
 }
 
 function updateFilter(data, index) {
-  storage.value.delete(Array.from(storage.value)[index])
-  storage.value.add({
+  filters.value.delete(Array.from(filters.value)[index])
+  filters.value.add({
     fieldname: data.value,
     operator: getDefaultOperator(data.fieldtype),
     value: getDefaultValue(data),
@@ -257,14 +300,93 @@ function updateFilter(data, index) {
       options: data.options,
     },
   })
+  apply()
 }
 
 function removeFilter(index) {
-  storage.value.delete(Array.from(storage.value)[index])
+  filters.value.delete(Array.from(filters.value)[index])
+  apply()
 }
 
 function clearfilter(close) {
-  storage.value.clear()
+  filters.value.clear()
+  apply()
   close()
+}
+
+function updateValue(value, filter) {
+  filter.value = value
+  apply()
+}
+
+function updateOperator(event, filter) {
+  filter.operator = event.target.value
+  apply()
+}
+
+function apply() {
+  let _filters = []
+  filters.value.forEach((f) => {
+    _filters.push({
+      fieldname: f.fieldname,
+      operator: f.operator,
+      value: f.value,
+    })
+  })
+  emit('update', parseFilters(_filters))
+}
+
+function parseFilters(filters) {
+  const l__ = Array.from(filters)
+  const obj = l__.map(transformIn).reduce((p, c) => {
+    if (['equals', '='].includes(c.operator)) {
+      p[c.fieldname] =
+        c.value == 'Yes' ? true : c.value == 'No' ? false : c.value
+    } else {
+      p[c.fieldname] = [operatorMap[c.operator.toLowerCase()], c.value]
+    }
+    return p
+  }, {})
+  const merged = { ...obj }
+  return merged
+}
+
+function transformIn(f) {
+  if (f.fieldname === '_assign') {
+    f.operator = f.operator === 'is' ? 'like' : 'not like'
+  }
+  if (f.operator.includes('like') && !f.value.includes('%')) {
+    f.value = `%${f.value}%`
+  }
+  return f
+}
+
+const operatorMap = {
+  is: '=',
+  'is not': '!=',
+  equals: '=',
+  'not equals': '!=',
+  yes: true,
+  no: false,
+  like: 'LIKE',
+  'not like': 'NOT LIKE',
+  '>': '>',
+  '<': '<',
+  '>=': '>=',
+  '<=': '<=',
+}
+
+const oppositeOperatorMap = {
+  '=': 'is',
+  equals: 'equals',
+  '!=': 'is not',
+  true: 'yes',
+  false: 'no',
+  LIKE: 'like',
+  'NOT LIKE': 'not like',
+  '>': '>',
+  '<': '<',
+  '>=': '>=',
+  '<=': '<=',
 }
 </script>
