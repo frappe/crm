@@ -7,14 +7,14 @@
         </template>
       </Button>
     </template>
-    <template #body>
+    <template #body="{ close }">
       <div
         class="my-2 rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl"
       >
         <div v-if="!edit">
           <Draggable
             :list="columns"
-            @end="updateColumnDetails"
+            @end="apply"
             item-key="key"
             class="list-group"
           >
@@ -65,10 +65,21 @@
               </template>
             </Autocomplete>
             <Button
+              v-if="columnsUpdated"
+              class="w-full !justify-start !text-gray-600"
+              variant="ghost"
+              @click="reset(close)"
+              label="Reset Changes"
+            >
+              <template #prefix>
+                <ReloadIcon class="h-4" />
+              </template>
+            </Button>
+            <Button
               v-if="!is_default"
               class="w-full !justify-start !text-gray-600"
               variant="ghost"
-              @click="resetToDefault"
+              @click="resetToDefault(close)"
               label="Reset to Default"
             >
               <template #prefix>
@@ -131,13 +142,23 @@ import NestedPopover from '@/components/NestedPopover.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import Draggable from 'vuedraggable'
 import { computed, defineModel, ref } from 'vue'
-import { FeatherIcon, FormControl, call } from 'frappe-ui'
+import { FeatherIcon, FormControl } from 'frappe-ui'
+import { watchOnce } from '@vueuse/core'
 
 const props = defineProps({
   doctype: {
     type: String,
     required: true,
   },
+})
+
+const emit = defineEmits(['update'])
+const columnsUpdated = ref(false)
+
+const oldValues = ref({
+  columns: [],
+  rows: [],
+  isDefault: false,
 })
 
 const list = defineModel()
@@ -179,7 +200,7 @@ const fields = computed(() => {
   })
 })
 
-async function addColumn(c) {
+function addColumn(c) {
   let _column = {
     label: c.label,
     type: c.type,
@@ -188,8 +209,7 @@ async function addColumn(c) {
   }
   columns.value.push(_column)
   rows.value.push(c.value)
-  await updateColumnDetails()
-  list.value.reload()
+  apply(true)
 }
 
 function removeColumn(c) {
@@ -197,7 +217,7 @@ function removeColumn(c) {
   if (c.key !== 'name') {
     rows.value = rows.value.filter((row) => row !== c.key)
   }
-  updateColumnDetails()
+  apply()
 }
 
 function editColumn(c) {
@@ -215,7 +235,7 @@ function updateColumn(c) {
   if (columns.value[index].old) {
     delete columns.value[index].old
   }
-  updateColumnDetails()
+  apply()
 }
 
 function cancelUpdate() {
@@ -225,25 +245,42 @@ function cancelUpdate() {
   delete column.value.old
 }
 
-async function updateColumnDetails() {
-  is_default.value = false
-  await call(
-    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.update',
-    {
-      doctype: props.doctype,
-      columns: columns.value,
-      rows: rows.value,
-    }
-  )
+function reset(close) {
+  apply(true, false, true)
+  close()
 }
 
-async function resetToDefault() {
-  await call(
-    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.reset_to_default',
-    {
-      doctype: props.doctype,
-    }
-  )
-  list.value.reload()
+function resetToDefault(close) {
+  apply(true, true)
+  close()
 }
+
+function apply(reload = false, isDefault = false, reset = false) {
+  is_default.value = isDefault
+  columnsUpdated.value = true
+  let obj = {
+    columns: reset ? oldValues.value.columns : columns.value,
+    rows: reset ? oldValues.value.rows : rows.value,
+    isDefault: reset ? oldValues.value.isDefault : isDefault,
+    reload,
+    reset,
+  }
+  emit('update', obj)
+
+  if (reload) {
+    setTimeout(() => {
+      is_default.value = reset ? oldValues.value.isDefault : isDefault
+      columnsUpdated.value = !reset
+    }, 100)
+  }
+}
+
+watchOnce(
+  () => list.value.data,
+  (val) => {
+    oldValues.value.columns = JSON.parse(JSON.stringify(val.columns))
+    oldValues.value.rows = JSON.parse(JSON.stringify(val.rows))
+    oldValues.value.isDefault = val.is_default
+  }
+)
 </script>
