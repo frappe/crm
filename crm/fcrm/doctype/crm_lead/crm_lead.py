@@ -197,6 +197,10 @@ class CRMLead(Document):
 		]
 
 	@staticmethod
+	def get_non_filterable_fields():
+		return ["converted"]
+
+	@staticmethod
 	def default_list_data():
 		columns = [
 			{

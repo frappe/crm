@@ -30,6 +30,11 @@ def get_filterable_fields(doctype: str):
 		"Text",
 	]
 
+	c = get_controller(doctype)
+	restricted_fields = []
+	if hasattr(c, "get_non_filterable_fields"):
+		restricted_fields = c.get_non_filterable_fields()
+
 	from_doc_fields = (
 		frappe.qb.from_(DocField)
 		.select(
@@ -42,6 +47,7 @@ def get_filterable_fields(doctype: str):
 		.where(DocField.parent == doctype)
 		.where(DocField.hidden == False)
 		.where(Criterion.any([DocField.fieldtype == i for i in allowed_fieldtypes]))
+		.where(Criterion.all([DocField.fieldname != i for i in restricted_fields]))
 		.run(as_dict=True)
 	)
 	res = []
