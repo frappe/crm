@@ -44,7 +44,7 @@
                 />
               </div>
               <div id="value" class="!min-w-[140px]">
-                <SearchComplete
+                <Link
                   v-if="typeLink.includes(f.field.fieldtype)"
                   class="form-control"
                   :value="f.value"
@@ -105,7 +105,7 @@
 <script setup>
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import SearchComplete from '@/components/SearchComplete.vue'
+import Link from '@/components/Controls/Link.vue'
 import {
   FeatherIcon,
   Autocomplete,
