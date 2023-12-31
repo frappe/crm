@@ -88,14 +88,14 @@ watchDebounced(
     val = val || ''
     if (text.value === val) return
     text.value = val
-    options.update({
-      params: {
-        txt: val,
-        doctype: props.doctype,
-      },
-    })
-    options.reload()
+    reload(val)
   },
+  { debounce: 300, immediate: true }
+)
+
+watchDebounced(
+  () => props.doctype,
+  () => reload(''),
   { debounce: 300, immediate: true }
 )
 
@@ -116,6 +116,16 @@ const options = createResource({
     })
   },
 })
+
+function reload(val) {
+  options.update({
+    params: {
+      txt: val,
+      doctype: props.doctype,
+    },
+  })
+  options.reload()
+}
 
 const labelClasses = computed(() => {
   return [
