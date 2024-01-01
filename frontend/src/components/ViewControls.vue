@@ -209,10 +209,19 @@ function setupViews(views) {
     }
   })
 
-  if (views.length) {
+  let pinnedViews = views?.filter((v) => v.pinned) || []
+  let savedViews = views?.filter((v) => !v.pinned) || []
+
+  if (savedViews.length) {
     viewsDropdownOptions.value.push({
       group: 'Saved Views',
-      items: views,
+      items: savedViews,
+    })
+  }
+  if (pinnedViews.length) {
+    viewsDropdownOptions.value.push({
+      group: 'Pinned Views',
+      items: pinnedViews,
     })
   }
 }
