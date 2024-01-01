@@ -89,7 +89,7 @@ const props = defineProps({
 })
 
 const { $dialog } = globalStore()
-const { getView } = viewsStore()
+const { reload: reloadView, getView } = viewsStore()
 
 const list = defineModel()
 
@@ -132,6 +132,7 @@ function getParams() {
       order_by: _view.order_by,
       columns: _view.columns,
       rows: _view.rows,
+      route_name: _view.route_name,
       default_columns: _view.row,
       pinned: _view.pinned,
     }
@@ -143,6 +144,7 @@ function getParams() {
       order_by: 'modified desc',
       columns: '',
       rows: '',
+      route_name: '',
       default_columns: true,
       pinned: false,
     }
@@ -302,6 +304,7 @@ const viewActions = computed(() => {
           value: !view.value.pinned,
         }).then(() => {
           view.value.pinned = !view.value.pinned
+          reloadView()
         })
       },
     })
@@ -332,6 +335,7 @@ const viewActions = computed(() => {
                       }
                     ).then(() => {
                       router.push({ name: route.name })
+                      reloadView()
                     })
                   },
                 },
@@ -357,6 +361,7 @@ function saveView() {
     order_by: defaultParams.value.order_by,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
+    route_name: route.name,
     default_columns: view.value.default_columns,
   }
   showViewModal.value = true

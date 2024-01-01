@@ -15,6 +15,27 @@
           class="mx-2 my-0.5"
         />
       </div>
+      <div
+        v-if="getPinnedViews().length"
+        class="mt-4 flex flex-col overflow-y-auto"
+      >
+        <div class="h-7 px-3 text-base text-gray-600">Pinned Views</div>
+        <SidebarLink
+          v-for="pinnedView in getPinnedViews()"
+          :icon="
+            h(getIcon(pinnedView.route_name), {
+              class: 'h-4.5 w-4.5 text-gray-700',
+            })
+          "
+          :label="pinnedView.label"
+          :to="{
+            name: pinnedView.route_name,
+            query: { view: pinnedView.name },
+          }"
+          :isCollapsed="isSidebarCollapsed"
+          class="mx-2 my-0.5"
+        />
+      </div>
     </div>
     <SidebarLink
       :label="isSidebarCollapsed ? 'Expand' : 'Collapse'"
@@ -35,6 +56,7 @@
 </template>
 
 <script setup>
+import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -44,7 +66,11 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
+import { viewsStore } from '@/stores/views'
 import { useStorage } from '@vueuse/core'
+import { h } from 'vue'
+
+const { getPinnedViews } = viewsStore()
 
 const links = [
   {
@@ -78,6 +104,25 @@ const links = [
     to: 'Call Logs',
   },
 ]
+
+function getIcon(routeName) {
+  switch (routeName) {
+    case 'Leads':
+      return LeadsIcon
+    case 'Deals':
+      return DealsIcon
+    case 'Contacts':
+      return ContactsIcon
+    case 'Organizations':
+      return OrganizationsIcon
+    case 'Notes':
+      return NoteIcon
+    case 'Call Logs':
+      return PhoneIcon
+    default:
+      return PinIcon
+  }
+}
 
 const isSidebarCollapsed = useStorage('sidebar_is_collapsed', false)
 </script>
