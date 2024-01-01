@@ -72,6 +72,12 @@ def delete(name):
 	if frappe.db.exists("CRM View Settings", name):
 		frappe.delete_doc("CRM View Settings", name)
 
+@frappe.whitelist()
+def pin(name, value):
+	doc = frappe.get_doc("CRM View Settings", name)
+	doc.pinned = value
+	doc.save()
+
 def remove_duplicates(l):
 	return list(dict.fromkeys(l))
 

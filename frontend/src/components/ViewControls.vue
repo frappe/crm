@@ -63,6 +63,9 @@
   />
 </template>
 <script setup>
+import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
+import PinIcon from '@/components/Icons/PinIcon.vue'
+import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
@@ -71,7 +74,7 @@ import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { useDebounceFn } from '@vueuse/core'
 import { createResource, FeatherIcon, Dropdown, call } from 'frappe-ui'
-import { computed, ref, defineModel, onMounted, watch } from 'vue'
+import { computed, ref, defineModel, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const props = defineProps({
@@ -111,6 +114,7 @@ const view = ref({
   columns: '',
   rows: '',
   default_columns: false,
+  pinned: false,
 })
 
 function getParams() {
@@ -129,6 +133,7 @@ function getParams() {
       columns: _view.columns,
       rows: _view.rows,
       default_columns: _view.row,
+      pinned: _view.pinned,
     }
   } else {
     view.value = {
@@ -139,6 +144,7 @@ function getParams() {
       columns: '',
       rows: '',
       default_columns: true,
+      pinned: false,
     }
   }
 
@@ -273,8 +279,8 @@ const viewActions = computed(() => {
       hideLabel: true,
       items: [
         {
-          label: 'Duplicate View',
-          icon: 'copy',
+          label: 'Duplicate',
+          icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
           onClick: () => {
             view.value.name = ''
             view.value.label = view.value.label + ' New'
@@ -286,6 +292,20 @@ const viewActions = computed(() => {
   ]
 
   if (route.query.view) {
+    o[0].items.push({
+      label: view.value.pinned ? 'Unpin View' : 'Pin View',
+      icon: () =>
+        h(view.value.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
+      onClick: () => {
+        call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.pin', {
+          name: route.query.view,
+          value: !view.value.pinned,
+        }).then(() => {
+          view.value.pinned = !view.value.pinned
+        })
+      },
+    })
+
     o.push({
       group: 'Delete View',
       hideLabel: true,
