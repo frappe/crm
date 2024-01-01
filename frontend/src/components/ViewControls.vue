@@ -63,6 +63,9 @@
   />
 </template>
 <script setup>
+import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
+import PinIcon from '@/components/Icons/PinIcon.vue'
+import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
@@ -71,7 +74,7 @@ import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { useDebounceFn } from '@vueuse/core'
 import { createResource, FeatherIcon, Dropdown, call } from 'frappe-ui'
-import { computed, ref, defineModel, onMounted, watch } from 'vue'
+import { computed, ref, defineModel, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const props = defineProps({
@@ -86,7 +89,7 @@ const props = defineProps({
 })
 
 const { $dialog } = globalStore()
-const { getView } = viewsStore()
+const { reload: reloadView, getView } = viewsStore()
 
 const list = defineModel()
 
@@ -111,6 +114,7 @@ const view = ref({
   columns: '',
   rows: '',
   default_columns: false,
+  pinned: false,
 })
 
 function getParams() {
@@ -128,7 +132,9 @@ function getParams() {
       order_by: _view.order_by,
       columns: _view.columns,
       rows: _view.rows,
+      route_name: _view.route_name,
       default_columns: _view.row,
+      pinned: _view.pinned,
     }
   } else {
     view.value = {
@@ -138,7 +144,9 @@ function getParams() {
       order_by: 'modified desc',
       columns: '',
       rows: '',
+      route_name: '',
       default_columns: true,
+      pinned: false,
     }
   }
 
@@ -201,10 +209,19 @@ function setupViews(views) {
     }
   })
 
-  if (views.length) {
+  let pinnedViews = views?.filter((v) => v.pinned) || []
+  let savedViews = views?.filter((v) => !v.pinned) || []
+
+  if (savedViews.length) {
     viewsDropdownOptions.value.push({
       group: 'Saved Views',
-      items: views,
+      items: savedViews,
+    })
+  }
+  if (pinnedViews.length) {
+    viewsDropdownOptions.value.push({
+      group: 'Pinned Views',
+      items: pinnedViews,
     })
   }
 }
@@ -273,8 +290,8 @@ const viewActions = computed(() => {
       hideLabel: true,
       items: [
         {
-          label: 'Duplicate View',
-          icon: 'copy',
+          label: 'Duplicate',
+          icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
           onClick: () => {
             view.value.name = ''
             view.value.label = view.value.label + ' New'
@@ -286,6 +303,21 @@ const viewActions = computed(() => {
   ]
 
   if (route.query.view) {
+    o[0].items.push({
+      label: view.value.pinned ? 'Unpin View' : 'Pin View',
+      icon: () =>
+        h(view.value.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
+      onClick: () => {
+        call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.pin', {
+          name: route.query.view,
+          value: !view.value.pinned,
+        }).then(() => {
+          view.value.pinned = !view.value.pinned
+          reloadView()
+        })
+      },
+    })
+
     o.push({
       group: 'Delete View',
       hideLabel: true,
@@ -312,6 +344,7 @@ const viewActions = computed(() => {
                       }
                     ).then(() => {
                       router.push({ name: route.name })
+                      reloadView()
                     })
                   },
                 },
@@ -337,6 +370,7 @@ function saveView() {
     order_by: defaultParams.value.order_by,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
+    route_name: route.name,
     default_columns: view.value.default_columns,
   }
   showViewModal.value = true

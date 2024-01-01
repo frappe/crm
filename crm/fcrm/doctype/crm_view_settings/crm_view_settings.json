@@ -9,6 +9,8 @@
   "user",
   "column_break_zacm",
   "dt",
+  "route_name",
+  "pinned",
   "columns_tab",
   "default_columns",
   "columns",
@@ -84,11 +86,22 @@
    "fieldname": "default_columns",
    "fieldtype": "Check",
    "label": "Default Columns"
+  },
+  {
+   "default": "0",
+   "fieldname": "pinned",
+   "fieldtype": "Check",
+   "label": "Pinned"
+  },
+  {
+   "fieldname": "route_name",
+   "fieldtype": "Data",
+   "label": "Route Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-30 19:28:02.541487",
+ "modified": "2024-01-01 18:44:22.815490",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

@@ -3,7 +3,7 @@
     class="flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-56'"
   >
-    <div class="flex flex-col overflow-hidden">
+    <div class="flex flex-1 flex-col overflow-hidden">
       <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
       <div class="flex flex-col overflow-y-auto">
         <SidebarLink
@@ -11,6 +11,41 @@
           :icon="link.icon"
           :label="link.label"
           :to="link.to"
+          :isCollapsed="isSidebarCollapsed"
+          class="mx-2 my-0.5"
+        />
+      </div>
+      <div
+        v-if="isSidebarCollapsed && getPinnedViews().length"
+        class="mx-2 my-2 h-1 border-b"
+      />
+      <div
+        v-if="getPinnedViews().length"
+        class="flex flex-col overflow-y-auto"
+        :class="isSidebarCollapsed ? 'mt-0' : 'mt-4'"
+      >
+        <div
+          class="h-7 px-3 text-base text-gray-600 transition-all duration-300 ease-in-out"
+          :class="
+            isSidebarCollapsed
+              ? 'ml-0 h-0 overflow-hidden opacity-0'
+              : 'ml-2 w-auto opacity-100'
+          "
+        >
+          Pinned Views
+        </div>
+        <SidebarLink
+          v-for="pinnedView in getPinnedViews()"
+          :icon="
+            h(getIcon(pinnedView.route_name), {
+              class: 'h-4.5 w-4.5 text-gray-700',
+            })
+          "
+          :label="pinnedView.label"
+          :to="{
+            name: pinnedView.route_name,
+            query: { view: pinnedView.name },
+          }"
           :isCollapsed="isSidebarCollapsed"
           class="mx-2 my-0.5"
         />
@@ -35,6 +70,7 @@
 </template>
 
 <script setup>
+import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -44,7 +80,11 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
+import { viewsStore } from '@/stores/views'
 import { useStorage } from '@vueuse/core'
+import { h } from 'vue'
+
+const { getPinnedViews } = viewsStore()
 
 const links = [
   {
@@ -78,6 +118,25 @@ const links = [
     to: 'Call Logs',
   },
 ]
+
+function getIcon(routeName) {
+  switch (routeName) {
+    case 'Leads':
+      return LeadsIcon
+    case 'Deals':
+      return DealsIcon
+    case 'Contacts':
+      return ContactsIcon
+    case 'Organizations':
+      return OrganizationsIcon
+    case 'Notes':
+      return NoteIcon
+    case 'Call Logs':
+      return PhoneIcon
+    default:
+      return PinIcon
+  }
+}
 
 const isSidebarCollapsed = useStorage('sidebar_is_collapsed', false)
 </script>
