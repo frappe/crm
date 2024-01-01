@@ -13,36 +13,16 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div class="flex items-center justify-between px-5 pb-4 pt-3">
-    <div class="flex items-center gap-2">
-      <Dropdown :options="viewsDropdownOptions">
-        <template #default="{ open }">
-          <Button :label="currentView.label">
-            <template #prefix>
-              <FeatherIcon :name="currentView.icon" class="h-4" />
-            </template>
-            <template #suffix>
-              <FeatherIcon
-                :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4 text-gray-600"
-              />
-            </template>
-          </Button>
-        </template>
-      </Dropdown>
-    </div>
-    <div class="flex items-center gap-2">
-      <Filter doctype="CRM Organization" />
-      <SortBy doctype="CRM Organization" />
-      <ViewSettings doctype="CRM Organization" v-model="organizations" />
-    </div>
-  </div>
+  <ViewControls v-model="organizations" doctype="CRM Organization" />
   <OrganizationsListView
     v-if="organizations.data && rows.length"
     :rows="rows"
     :columns="organizations.data.columns"
   />
-  <div v-else-if="organizations.data" class="flex h-full items-center justify-center">
+  <div
+    v-else-if="organizations.data"
+    class="flex h-full items-center justify-center"
+  >
     <div
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
@@ -60,30 +40,23 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
-import SortBy from '@/components/SortBy.vue'
-import Filter from '@/components/Filter.vue'
-import ViewSettings from '@/components/ViewSettings.vue'
-import { useOrderBy } from '@/composables/orderby'
-import { useFilter } from '@/composables/filter'
-import { useDebounceFn } from '@vueuse/core'
-import { FeatherIcon, Breadcrumbs, Dropdown, createResource } from 'frappe-ui'
+import ViewControls from '@/components/ViewControls.vue'
+import { FeatherIcon, Breadcrumbs } from 'frappe-ui'
 import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
   formatNumberIntoCurrency,
 } from '@/utils'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const { get: getOrderBy } = useOrderBy()
-const { getArgs, storage } = useFilter()
 
 const showOrganizationModal = ref(false)
 
 const currentOrganization = computed(() => {
-  return organizations.data?.data?.find(
+  return organizations.value?.data?.data?.find(
     (organization) => organization.name === route.params.organizationId
   )
 })
@@ -101,53 +74,13 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-const currentView = ref({
-  label: 'List',
-  icon: 'list',
-})
-
-function getParams() {
-  const filters = getArgs() || {}
-  const order_by = getOrderBy() || 'modified desc'
-
-  return {
-    doctype: 'CRM Organization',
-    filters: filters,
-    order_by: order_by,
-  }
-}
-
-const organizations = createResource({
-  url: 'crm.api.doc.get_list_data',
-  params: getParams(),
-  auto: true,
-})
-
-watch(
-  () => getOrderBy(),
-  (value, old_value) => {
-    if (!value && !old_value) return
-    organizations.params = getParams()
-    organizations.reload()
-  },
-  { immediate: true }
-)
-
-watch(
-  storage,
-  useDebounceFn((value, old_value) => {
-    if (JSON.stringify([...value]) === JSON.stringify([...old_value])) return
-    organizations.params = getParams()
-    organizations.reload()
-  }, 300),
-  { deep: true }
-)
+const organizations = ref({})
 
 const rows = computed(() => {
-  if (!organizations.data?.data) return []
-  return organizations.data.data.map((organization) => {
+  if (!organizations.value?.data?.data) return []
+  return organizations.value?.data.data.map((organization) => {
     let _rows = {}
-    organizations.data.rows.forEach((row) => {
+    organizations.value?.data.rows.forEach((row) => {
       _rows[row] = organization[row]
 
       if (row === 'organization_name') {
@@ -169,49 +102,6 @@ const rows = computed(() => {
     return _rows
   })
 })
-
-const viewsDropdownOptions = [
-  {
-    label: 'List',
-    icon: 'list',
-    onClick() {
-      currentView.value = {
-        label: 'List',
-        icon: 'list',
-      }
-    },
-  },
-  {
-    label: 'Table',
-    icon: 'grid',
-    onClick() {
-      currentView.value = {
-        label: 'Table',
-        icon: 'grid',
-      }
-    },
-  },
-  {
-    label: 'Calender',
-    icon: 'calendar',
-    onClick() {
-      currentView.value = {
-        label: 'Calender',
-        icon: 'calendar',
-      }
-    },
-  },
-  {
-    label: 'Board',
-    icon: 'columns',
-    onClick() {
-      currentView.value = {
-        label: 'Board',
-        icon: 'columns',
-      }
-    },
-  },
-]
 
 function website(url) {
   return url && url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')

@@ -1,0 +1,116 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2023-11-27 16:29:10.993403",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "label",
+  "user",
+  "column_break_zacm",
+  "dt",
+  "columns_tab",
+  "default_columns",
+  "columns",
+  "rows",
+  "filters_tab",
+  "filters",
+  "order_by_tab",
+  "order_by"
+ ],
+ "fields": [
+  {
+   "fieldname": "columns",
+   "fieldtype": "Code",
+   "label": "Columns"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "fieldname": "rows",
+   "fieldtype": "Code",
+   "label": "Rows"
+  },
+  {
+   "fieldname": "filters",
+   "fieldtype": "Code",
+   "label": "Filters"
+  },
+  {
+   "fieldname": "columns_tab",
+   "fieldtype": "Tab Break",
+   "label": "Columns"
+  },
+  {
+   "fieldname": "filters_tab",
+   "fieldtype": "Tab Break",
+   "label": "Filters"
+  },
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Label"
+  },
+  {
+   "fieldname": "column_break_zacm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dt",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "DocType",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "order_by_tab",
+   "fieldtype": "Tab Break",
+   "label": "Order By"
+  },
+  {
+   "fieldname": "order_by",
+   "fieldtype": "Code",
+   "label": "Order By"
+  },
+  {
+   "default": "0",
+   "fieldname": "default_columns",
+   "fieldtype": "Check",
+   "label": "Default Columns"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-12-30 19:28:02.541487",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM View Settings",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "read_only": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
