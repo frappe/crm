@@ -45,7 +45,7 @@ const props = defineProps({
     default: '',
   },
   to: {
-    type: String,
+    type: [Object, String],
     default: '',
   },
   isCollapsed: {
@@ -55,7 +55,11 @@ const props = defineProps({
 })
 
 function handleClick() {
-  router.push({ name: props.to })
+  if (typeof props.to === 'object') {
+    router.push(props.to)
+  } else {
+    router.push({ name: props.to })
+  }
 }
 
 let isActive = computed(() => {
