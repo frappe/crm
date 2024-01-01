@@ -3,7 +3,7 @@
     class="flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-56'"
   >
-    <div class="flex flex-col overflow-hidden">
+    <div class="flex flex-1 flex-col overflow-hidden">
       <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
       <div class="flex flex-col overflow-y-auto">
         <SidebarLink
@@ -16,10 +16,24 @@
         />
       </div>
       <div
+        v-if="isSidebarCollapsed && getPinnedViews().length"
+        class="mx-2 my-2 h-1 border-b"
+      />
+      <div
         v-if="getPinnedViews().length"
-        class="mt-4 flex flex-col overflow-y-auto"
+        class="flex flex-col overflow-y-auto"
+        :class="isSidebarCollapsed ? 'mt-0' : 'mt-4'"
       >
-        <div class="h-7 px-3 text-base text-gray-600">Pinned Views</div>
+        <div
+          class="h-7 px-3 text-base text-gray-600 transition-all duration-300 ease-in-out"
+          :class="
+            isSidebarCollapsed
+              ? 'ml-0 h-0 overflow-hidden opacity-0'
+              : 'ml-2 w-auto opacity-100'
+          "
+        >
+          Pinned Views
+        </div>
         <SidebarLink
           v-for="pinnedView in getPinnedViews()"
           :icon="
