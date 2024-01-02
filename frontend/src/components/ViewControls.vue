@@ -107,9 +107,10 @@ const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
 const currentView = computed(() => {
+  let _view = getView(route.query.view)
   return {
-    label: view.value.label || 'List View',
-    icon: view.value.icon || 'list',
+    label: _view?.label || 'List View',
+    icon: _view?.icon || 'list',
   }
 })
 
@@ -172,7 +173,6 @@ list.value = createResource({
   params: getParams(),
   cache: [props.doctype, route.query.view],
   onSuccess(data) {
-    setupViews(data.views)
     setupDefaults(data)
   },
 })
@@ -186,8 +186,6 @@ function reload() {
   list.value.reload()
 }
 
-const viewsDropdownOptions = ref([])
-
 const defaultViews = [
   {
     label: 'List View',
@@ -199,8 +197,8 @@ const defaultViews = [
   },
 ]
 
-function setupViews(views) {
-  viewsDropdownOptions.value = [
+const viewsDropdownOptions = computed(() => {
+  let _views = [
     {
       group: 'Default Views',
       hideLabel: true,
@@ -208,31 +206,24 @@ function setupViews(views) {
     },
   ]
 
-  views?.forEach((view) => {
-    view.icon = view.icon || 'list'
-    view.filters = JSON.parse(view.filters)
-    view.onClick = () => {
-      viewUpdated.value = false
-      router.push({ ...route, query: { view: view.name } })
-    }
-  })
+  if (list.value?.data?.views) {
+    let savedViews = list.value.data.views.filter((v) => !v.pinned)
+    let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
-  let pinnedViews = views?.filter((v) => v.pinned) || []
-  let savedViews = views?.filter((v) => !v.pinned) || []
+    savedViews.length &&
+      _views.push({
+        group: 'Saved Views',
+        items: savedViews,
+      })
+    pinnedViews.length &&
+      _views.push({
+        group: 'Pinned Views',
+        items: pinnedViews,
+      })
+  }
 
-  if (savedViews.length) {
-    viewsDropdownOptions.value.push({
-      group: 'Saved Views',
-      items: savedViews,
-    })
-  }
-  if (pinnedViews.length) {
-    viewsDropdownOptions.value.push({
-      group: 'Pinned Views',
-      items: pinnedViews,
-    })
-  }
-}
+  return _views
+})
 
 function setupDefaults(data) {
   let cv = getView(route.query.view)
