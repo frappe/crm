@@ -32,9 +32,10 @@
 <script setup>
 import { Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 
 const props = defineProps({
   icon: {
@@ -63,6 +64,9 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
-  return router.currentRoute.value.name === props.to
+  if (route.query.view) {
+    return route.query.view == props.to?.query?.view
+  }
+  return route.name === props.to
 })
 </script>
