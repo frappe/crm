@@ -207,6 +207,17 @@ const viewsDropdownOptions = computed(() => {
   ]
 
   if (list.value?.data?.views) {
+    list.value.data.views.forEach((view) => {
+      view.icon = view.icon || 'list'
+      view.filters =
+        typeof view.filters == 'string'
+          ? JSON.parse(view.filters)
+          : view.filters
+      view.onClick = () => {
+        viewUpdated.value = false
+        router.push({ ...route, query: { view: view.name } })
+      }
+    })
     let savedViews = list.value.data.views.filter((v) => !v.pinned)
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
