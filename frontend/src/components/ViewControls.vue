@@ -26,7 +26,12 @@
         />
       </div>
       <div class="flex items-center gap-2">
-        <Filter v-model="list" :doctype="doctype" @update="updateFilter" />
+        <Filter
+          v-model="list"
+          :doctype="doctype"
+          :default_filters="filters"
+          @update="updateFilter"
+        />
         <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
         <ViewSettings
           v-model="list"
@@ -101,9 +106,11 @@ const defaultParams = ref('')
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
-const currentView = ref({
-  label: 'List View',
-  icon: 'list',
+const currentView = computed(() => {
+  return {
+    label: view.value.label || 'List View',
+    icon: view.value.icon || 'list',
+  }
 })
 
 const view = ref({
@@ -163,6 +170,7 @@ function getParams() {
 list.value = createResource({
   url: 'crm.api.doc.get_list_data',
   params: getParams(),
+  cache: [props.doctype, route.query.view],
   onSuccess(data) {
     setupViews(data.views)
     setupDefaults(data)
@@ -228,10 +236,6 @@ function setupViews(views) {
 
 function setupDefaults(data) {
   let cv = getView(route.query.view)
-  currentView.value = {
-    label: cv?.label || 'List View',
-    icon: cv?.icon || 'list',
-  }
 
   defaultParams.value = {
     doctype: props.doctype,
@@ -241,8 +245,6 @@ function setupDefaults(data) {
     rows: data.rows,
     custom_view_name: cv?.name || '',
   }
-
-  data._defaultFilters = props.filters
 }
 
 function updateFilter(filters) {

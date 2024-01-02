@@ -125,6 +125,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  default_filters: {
+    type: Object,
+    default: {},
+  },
 })
 
 const emit = defineEmits(['update'])
@@ -155,8 +159,8 @@ const filters = computed(() => {
   let allFilters = list.value?.params?.filters
   if (!allFilters || !filterableFields.data) return new Set()
   // remove default filters
-  if (list.value.data._defaultFilters) {
-    allFilters = removeCommonFilters(list.value.data._defaultFilters, allFilters)
+  if (props.default_filters) {
+    allFilters = removeCommonFilters(props.default_filters, allFilters)
   }
   return convertFilters(filterableFields.data, allFilters)
 })
@@ -165,11 +169,11 @@ function removeCommonFilters(commonFilters, allFilters) {
   for (const key in commonFilters) {
     if (commonFilters.hasOwnProperty(key) && allFilters.hasOwnProperty(key)) {
       if (commonFilters[key] === allFilters[key]) {
-        delete allFilters[key];
+        delete allFilters[key]
       }
     }
   }
-  return allFilters;
+  return allFilters
 }
 
 function convertFilters(data, allFilters) {
