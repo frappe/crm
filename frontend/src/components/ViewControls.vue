@@ -50,20 +50,17 @@
   </div>
   <ViewModal
     :doctype="doctype"
-    :view="view"
     :options="{
       afterCreate: (v) => {
         viewUpdated = false
         router.push({ name: route.name, query: { view: v.name } })
       },
-      afterUpdate: (v) => {
+      afterUpdate: () => {
         viewUpdated = false
-        currentView = {
-          label: v.label,
-          icon: v.icon || 'list',
-        }
+        reloadView()
       },
     }"
+    v-model:view="view"
     v-model="showViewModal"
   />
 </template>
@@ -256,6 +253,7 @@ function updateFilter(filters) {
   }
   list.value.params = defaultParams.value
   list.value.params.filters = filters
+  view.value.filters = filters
   list.value.reload()
 }
 
@@ -266,6 +264,7 @@ function updateSort(order_by) {
   }
   list.value.params = defaultParams.value
   list.value.params.order_by = order_by
+  view.value.order_by = order_by
   list.value.reload()
 }
 
@@ -288,7 +287,7 @@ function updateColumns(obj) {
 
 // View Actions
 const viewActions = computed(() => {
-  let o = [
+  let actions = [
     {
       group: 'Default Views',
       hideLabel: true,
@@ -296,33 +295,21 @@ const viewActions = computed(() => {
         {
           label: 'Duplicate',
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
-          onClick: () => {
-            view.value.name = ''
-            view.value.label = view.value.label + ' New'
-            showViewModal.value = true
-          },
+          onClick: () => setupDuplicate(),
         },
       ],
     },
   ]
 
   if (route.query.view) {
-    o[0].items.push({
+    actions[0].items.push({
       label: view.value.pinned ? 'Unpin View' : 'Pin View',
       icon: () =>
         h(view.value.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
-      onClick: () => {
-        call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.pin', {
-          name: route.query.view,
-          value: !view.value.pinned,
-        }).then(() => {
-          view.value.pinned = !view.value.pinned
-          reloadView()
-        })
-      },
+      onClick: () => pinView(),
     })
 
-    o.push({
+    actions.push({
       group: 'Delete View',
       hideLabel: true,
       items: [
@@ -339,18 +326,7 @@ const viewActions = computed(() => {
                   label: 'Delete',
                   variant: 'solid',
                   theme: 'red',
-                  onClick: (close) => {
-                    close()
-                    call(
-                      'crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete',
-                      {
-                        name: route.query.view,
-                      }
-                    ).then(() => {
-                      router.push({ name: route.name })
-                      reloadView()
-                    })
-                  },
+                  onClick: (close) => deleteView(close),
                 },
               ],
             }),
@@ -358,8 +334,34 @@ const viewActions = computed(() => {
       ],
     })
   }
-  return o
+  return actions
 })
+
+function setupDuplicate() {
+  view.value.name = ''
+  view.value.label = view.value.label + ' New'
+  showViewModal.value = true
+}
+
+function pinView() {
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.pin', {
+    name: route.query.view,
+    value: !view.value.pinned,
+  }).then(() => {
+    view.value.pinned = !view.value.pinned
+    reloadView()
+  })
+}
+
+function deleteView(close) {
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete', {
+    name: route.query.view,
+  }).then(() => {
+    router.push({ name: route.name })
+    reloadView()
+  })
+  close()
+}
 
 function cancelChanges() {
   reload()

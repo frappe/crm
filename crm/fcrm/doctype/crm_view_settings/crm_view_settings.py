@@ -3,42 +3,33 @@
 import json
 import frappe
 from frappe.model.document import Document, get_controller
+from frappe.utils import parse_json
 
 
 class CRMViewSettings(Document):
 	pass
 
 @frappe.whitelist()
-def create(view, duplicate=False):
+def create(view):
 	view = frappe._dict(view)
 
-	if duplicate:
-		view.filters = json.loads(view.filters)
-		view.columns = json.loads(view.columns)
-		view.rows = json.loads(view.rows)
+	view.filters = parse_json(view.filters) or {}
+	view.columns = parse_json(view.columns) or []
+	view.rows = parse_json(view.rows) or []
+
+	default_rows = sync_default_list_rows(view.doctype)
+	view.rows = view.rows + default_rows if default_rows else view.rows
+	view.rows = remove_duplicates(view.rows)
 
 	doc = frappe.new_doc("CRM View Settings")
 	doc.name = view.label
 	doc.label = view.label
 	doc.dt = view.doctype
 	doc.user = frappe.session.user
-	doc.filters = json.dumps(view.filters)
-	doc.order_by = view.order_by
 	doc.route_name = view.route_name or ""
 	doc.load_default_columns = view.load_default_columns or False
-
-	if not view.columns:
-		view.columns = []
-	if not view.rows:
-		view.rows = []
-
-	default_rows = sync_default_list_rows(view.doctype)
-
-	if default_rows:
-		view.rows = view.rows + default_rows
-
-	view.rows = remove_duplicates(view.rows)
-
+	doc.filters = json.dumps(view.filters)
+	doc.order_by = view.order_by
 	doc.columns = json.dumps(view.columns)
 	doc.rows = json.dumps(view.rows)
 	doc.insert()
@@ -47,15 +38,13 @@ def create(view, duplicate=False):
 @frappe.whitelist()
 def update(view):
 	view = frappe._dict(view)
+
+	filters = parse_json(view.filters) or {}
+	columns = parse_json(view.columns) or []
+	rows = parse_json(view.rows) or []
+
 	default_rows = sync_default_list_rows(view.doctype)
-	columns = view.columns or []
-	filters = view.filters
-	rows = view.rows or []
-	default_columns = view.default_columns or False
-
-	if default_rows:
-		rows = rows + default_rows
-
+	rows = rows + default_rows if default_rows else rows
 	rows = remove_duplicates(rows)
 
 	doc = frappe.get_doc("CRM View Settings", view.name)

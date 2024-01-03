@@ -9,7 +9,11 @@
         : 'Create View',
       actions: [
         {
-          label: editMode ? 'Save Changes' : duplicateMode ? 'Duplicate' : 'Create',
+          label: editMode
+            ? 'Save Changes'
+            : duplicateMode
+            ? 'Duplicate'
+            : 'Create',
           variant: 'solid',
           onClick: () => (editMode ? update() : create()),
         },
@@ -33,26 +37,10 @@
 import { Dialog, FormControl, call } from 'frappe-ui'
 import { ref, watch, defineModel, nextTick } from 'vue'
 
-const show = defineModel()
-const editMode = ref(false)
-const duplicateMode = ref(false)
-const _view = ref({
-  name: '',
-  label: '',
-  filters: {},
-  order_by: 'modified desc',
-  columns: '',
-  rows: '',
-})
-
 const props = defineProps({
   doctype: {
     type: String,
     required: true,
-  },
-  view: {
-    type: Object,
-    default: () => {},
   },
   options: {
     type: Object,
@@ -63,26 +51,39 @@ const props = defineProps({
   },
 })
 
+
+const show = defineModel()
+const view = defineModel('view')
+
+const editMode = ref(false)
+const duplicateMode = ref(false)
+
+const _view = ref({
+  name: '',
+  label: '',
+  filters: {},
+  order_by: 'modified desc',
+  columns: '',
+  rows: '',
+})
+
 async function create() {
-  props.view.doctype = props.doctype
+  view.value.doctype = props.doctype
   let v = await call(
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create',
-    {
-      view: props.view,
-      duplicate: duplicateMode.value,
-    }
+    { view: view.value }
   )
   show.value = false
-  props.options.afterCreate?.(v, props.view)
+  props.options.afterCreate?.(v, view.value)
 }
 
 async function update() {
-  props.view.doctype = props.doctype
+  view.value.doctype = props.doctype
   await call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
-    view: props.view,
+    view: view.value,
   })
   show.value = false
-  props.options.afterUpdate?.(props.view)
+  props.options.afterUpdate?.(view.value)
 }
 
 watch(show, (value) => {
@@ -90,7 +91,7 @@ watch(show, (value) => {
   editMode.value = false
   duplicateMode.value = false
   nextTick(() => {
-    _view.value = { ...props.view }
+    _view.value = { ...view.value }
     if (_view.value.name) {
       editMode.value = true
     } else if (_view.value.label) {
