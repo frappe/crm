@@ -12,7 +12,7 @@
   "route_name",
   "pinned",
   "columns_tab",
-  "default_columns",
+  "load_default_columns",
   "columns",
   "rows",
   "filters_tab",
@@ -83,12 +83,6 @@
   },
   {
    "default": "0",
-   "fieldname": "default_columns",
-   "fieldtype": "Check",
-   "label": "Default Columns"
-  },
-  {
-   "default": "0",
    "fieldname": "pinned",
    "fieldtype": "Check",
    "label": "Pinned"
@@ -97,11 +91,17 @@
    "fieldname": "route_name",
    "fieldtype": "Data",
    "label": "Route Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "load_default_columns",
+   "fieldtype": "Check",
+   "label": "Load Default Columns"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-01 18:44:22.815490",
+ "modified": "2024-01-03 16:54:52.195687",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

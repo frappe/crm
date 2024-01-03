@@ -25,7 +25,7 @@ def create(view, duplicate=False):
 	doc.filters = json.dumps(view.filters)
 	doc.order_by = view.order_by
 	doc.route_name = view.route_name or ""
-	doc.default_columns = view.default_columns or False
+	doc.load_default_columns = view.load_default_columns or False
 
 	if not view.columns:
 		view.columns = []
@@ -61,7 +61,7 @@ def update(view):
 	doc = frappe.get_doc("CRM View Settings", view.name)
 	doc.label = view.label
 	doc.route_name = view.route_name or ""
-	doc.default_columns = default_columns
+	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by
 	doc.columns = json.dumps(columns)

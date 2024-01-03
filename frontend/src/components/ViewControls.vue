@@ -121,7 +121,7 @@ const view = ref({
   order_by: 'modified desc',
   columns: '',
   rows: '',
-  default_columns: false,
+  load_default_columns: false,
   pinned: false,
 })
 
@@ -141,7 +141,7 @@ function getParams() {
       columns: _view.columns,
       rows: _view.rows,
       route_name: _view.route_name,
-      default_columns: _view.row,
+      load_default_columns: _view.row,
       pinned: _view.pinned,
     }
   } else {
@@ -153,7 +153,7 @@ function getParams() {
       columns: '',
       rows: '',
       route_name: '',
-      default_columns: true,
+      load_default_columns: true,
       pinned: false,
     }
   }
@@ -272,7 +272,7 @@ function updateSort(order_by) {
 function updateColumns(obj) {
   defaultParams.value.columns = obj.isDefault ? '' : obj.columns
   defaultParams.value.rows = obj.isDefault ? '' : obj.rows
-  view.value.default_columns = obj.isDefault
+  view.value.load_default_columns = obj.isDefault
 
   if (obj.reset) {
     defaultParams.value.columns = getParams().columns
@@ -375,7 +375,7 @@ function saveView() {
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,
-    default_columns: view.value.default_columns,
+    load_default_columns: view.value.load_default_columns,
   }
   showViewModal.value = true
 }

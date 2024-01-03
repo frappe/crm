@@ -134,7 +134,7 @@ def get_list_data(doctype: str, filters: dict, order_by: str, columns=None , row
 			fields.append(field)
 
 	if not is_default and custom_view_name:
-		is_default = frappe.db.get_value("CRM View Settings", custom_view_name, "default_columns")
+		is_default = frappe.db.get_value("CRM View Settings", custom_view_name, "load_default_columns")
 
 	return {
 		"data": data,
