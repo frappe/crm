@@ -270,8 +270,10 @@ function updateSort(order_by) {
 }
 
 function updateColumns(obj) {
-  defaultParams.value.columns = obj.isDefault ? '' : obj.columns
-  defaultParams.value.rows = obj.isDefault ? '' : obj.rows
+  defaultParams.value.columns = view.value.columns = obj.isDefault
+    ? ''
+    : obj.columns
+  defaultParams.value.rows = view.value.rows = obj.isDefault ? '' : obj.rows
   view.value.load_default_columns = obj.isDefault
 
   if (obj.reset) {
