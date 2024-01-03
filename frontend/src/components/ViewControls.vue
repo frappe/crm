@@ -33,7 +33,7 @@
           @update="updateFilter"
         />
         <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
-        <ViewSettings
+        <ColumnSettings
           v-model="list"
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
@@ -71,7 +71,7 @@ import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
-import ViewSettings from '@/components/ViewSettings.vue'
+import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { useDebounceFn } from '@vueuse/core'

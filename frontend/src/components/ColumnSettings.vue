@@ -1,7 +1,7 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button label="View Settings">
+      <Button label="Column Settings">
         <template #prefix>
           <SettingsIcon class="h-4" />
         </template>
