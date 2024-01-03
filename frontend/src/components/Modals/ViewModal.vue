@@ -74,7 +74,7 @@ async function create() {
     { view: view.value }
   )
   show.value = false
-  props.options.afterCreate?.(v, view.value)
+  props.options.afterCreate?.(v)
 }
 
 async function update() {

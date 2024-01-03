@@ -37,8 +37,8 @@ export const viewsStore = defineStore('crm-views', () => {
     return pinnedViews.value
   }
 
-  function reload() {
-    views.reload()
+  async function reload(wait = false) {
+    await views.reload()
   }
 
   return {

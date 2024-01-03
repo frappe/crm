@@ -51,7 +51,8 @@
   <ViewModal
     :doctype="doctype"
     :options="{
-      afterCreate: (v) => {
+      afterCreate: async (v) => {
+        await reloadView()
         viewUpdated = false
         router.push({ name: route.name, query: { view: v.name } })
       },
@@ -171,7 +172,16 @@ list.value = createResource({
   params: getParams(),
   cache: [props.doctype, route.query.view],
   onSuccess(data) {
-    setupDefaults(data)
+    let cv = getView(route.query.view)
+
+    defaultParams.value = {
+      doctype: props.doctype,
+      filters: list.value.params.filters,
+      order_by: list.value.params.order_by,
+      columns: data.columns,
+      rows: data.rows,
+      custom_view_name: cv?.name || '',
+    }
   },
 })
 
@@ -233,19 +243,6 @@ const viewsDropdownOptions = computed(() => {
 
   return _views
 })
-
-function setupDefaults(data) {
-  let cv = getView(route.query.view)
-
-  defaultParams.value = {
-    doctype: props.doctype,
-    filters: list.value.params.filters,
-    order_by: list.value.params.order_by,
-    columns: data.columns,
-    rows: data.rows,
-    custom_view_name: cv?.name || '',
-  }
-}
 
 function updateFilter(filters) {
   viewUpdated.value = true
