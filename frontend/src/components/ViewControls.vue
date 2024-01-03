@@ -65,6 +65,7 @@
   />
 </template>
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
@@ -295,19 +296,26 @@ const viewActions = computed(() => {
         {
           label: 'Duplicate',
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
-          onClick: () => setupDuplicate(),
+          onClick: () => duplicateView(),
         },
       ],
     },
   ]
 
   if (route.query.view) {
-    actions[0].items.push({
-      label: view.value.pinned ? 'Unpin View' : 'Pin View',
-      icon: () =>
-        h(view.value.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
-      onClick: () => pinView(),
-    })
+    actions[0].items.push(
+      {
+        label: 'Rename',
+        icon: () => h(EditIcon, { class: 'h-4 w-4' }),
+        onClick: () => renameView(),
+      },
+      {
+        label: view.value.pinned ? 'Unpin View' : 'Pin View',
+        icon: () =>
+          h(view.value.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
+        onClick: () => pinView(),
+      }
+    )
 
     actions.push({
       group: 'Delete View',
@@ -337,9 +345,15 @@ const viewActions = computed(() => {
   return actions
 })
 
-function setupDuplicate() {
+function duplicateView() {
   view.value.name = ''
   view.value.label = view.value.label + ' New'
+  showViewModal.value = true
+}
+
+function renameView() {
+  view.value.name = route.query.view
+  view.value.label = getView(route.query.view).label
   showViewModal.value = true
 }
 
