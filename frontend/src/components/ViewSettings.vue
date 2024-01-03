@@ -268,6 +268,7 @@ function apply(reload = false, isDefault = false, reset = false) {
   emit('update', obj)
 
   if (reload) {
+    // will have think of a better way to do this
     setTimeout(() => {
       is_default.value = reset ? oldValues.value.isDefault : isDefault
       columnsUpdated.value = !reset

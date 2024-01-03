@@ -10,6 +10,7 @@ export const contactsStore = defineStore('crm-contacts', () => {
     url: 'crm.api.session.get_contacts',
     cache: 'contacts',
     initialData: [],
+    auto: true,
     transform(contacts) {
       for (let contact of contacts) {
         contactsByPhone[contact.mobile_no] = contact
@@ -23,7 +24,6 @@ export const contactsStore = defineStore('crm-contacts', () => {
       }
     },
   })
-  contacts.fetch()
 
   function getContact(mobile_no) {
     return contactsByPhone[mobile_no]

@@ -9,6 +9,7 @@ export const organizationsStore = defineStore('crm-organizations', () => {
     url: 'crm.api.session.get_organizations',
     cache: 'organizations',
     initialData: [],
+    auto: true,
     transform(organizations) {
       for (let organization of organizations) {
         organizationsByName[organization.name] = organization
@@ -21,7 +22,6 @@ export const organizationsStore = defineStore('crm-organizations', () => {
       }
     },
   })
-  organizations.fetch()
 
   function getOrganization(name) {
     return organizationsByName[name]
