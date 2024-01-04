@@ -9,10 +9,11 @@
  "field_order": [
   "organization_name",
   "no_of_employees",
+  "annual_revenue",
   "organization_logo",
   "column_break_pnpp",
   "website",
-  "annual_revenue",
+  "territory",
   "industry"
  ],
  "fields": [
@@ -53,12 +54,18 @@
    "fieldtype": "Link",
    "label": "Industry",
    "options": "CRM Industry"
+  },
+  {
+   "fieldname": "territory",
+   "fieldtype": "Link",
+   "label": "Territory",
+   "options": "CRM Territory"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-23 13:11:37.301082",
+ "modified": "2024-01-04 18:57:52.519305",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
