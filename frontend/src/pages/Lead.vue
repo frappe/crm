@@ -262,6 +262,8 @@ const organization = computed(() => {
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
 
+  if (validateRequired(fieldname, value)) return
+
   createResource({
     url: 'frappe.client.set_value',
     params: {
@@ -290,6 +292,20 @@ function updateLead(fieldname, value, callback) {
       })
     },
   })
+}
+
+function validateRequired(fieldname, value) {
+  let meta = lead.data.all_fields || {}
+  if (meta[fieldname]?.reqd && !value) {
+    createToast({
+      title: 'Error Updating Lead',
+      text: `${meta[fieldname].label} is a required field`,
+      icon: 'x',
+      iconClasses: 'text-red-600',
+    })
+    return true
+  }
+  return false
 }
 
 const breadcrumbs = computed(() => {
@@ -335,33 +351,8 @@ function validateFile(file) {
 const detailSections = computed(() => {
   let data = lead.data
   if (!data) return []
-  return getParsedFields(data.doctype_fields, data.contacts)
+  return data.doctype_fields
 })
-
-function getParsedFields(sections) {
-  sections.forEach((section) => {
-    section.fields.forEach((field) => {
-      if (['website', 'industry'].includes(field.name)) {
-        field.value = organization.value?.[field.name]
-        field.tooltip =
-          'This field is read-only and is fetched from the organization'
-      } else if (field.name == 'organization') {
-        field.create = (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
-          close()
-        }
-        field.link = (org) =>
-          router.push({
-            name: 'Organization',
-            params: { organizationId: org },
-          })
-      }
-    })
-  })
-
-  return sections
-}
 
 async function convertToDeal() {
   let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {

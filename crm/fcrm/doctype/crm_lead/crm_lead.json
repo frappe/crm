@@ -184,9 +184,8 @@
   },
   {
    "fieldname": "organization",
-   "fieldtype": "Link",
-   "label": "Organization",
-   "options": "CRM Organization"
+   "fieldtype": "Data",
+   "label": "Organization"
   },
   {
    "default": "0",
@@ -279,7 +278,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-04 20:12:22.104289",
+ "modified": "2024-01-04 21:34:32.388456",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
