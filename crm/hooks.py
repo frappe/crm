@@ -129,6 +129,9 @@ doc_events = {
 	"Contact": {
 		"validate": ["crm.api.contact.validate"],
 	},
+	"ToDo": {
+		"after_insert": ["crm.api.todo.after_insert"],
+	},
 }
 
 # Scheduled Tasks
