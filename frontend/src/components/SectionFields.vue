@@ -3,16 +3,25 @@
     <div
       v-for="field in fields"
       :key="field.label"
+      :class="[field.hidden && 'hidden']"
       class="flex items-center gap-2 px-3 leading-5 first:mt-3"
     >
       <div class="w-[106px] shrink-0 text-sm text-gray-600">
         {{ field.label }}
+        <span class="text-red-500">{{ field.reqd ? ' *' : '' }}</span>
       </div>
       <div
         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
       >
+        <Tooltip
+          v-if="field.read_only"
+          class="flex h-7 cursor-pointer items-center px-2 py-1 text-gray-600"
+          :text="field.tooltip"
+        >
+          {{ data[field.name] }}
+        </Tooltip>
         <FormControl
-          v-if="
+          v-else-if="
             [
               'email',
               'number',
@@ -70,13 +79,6 @@
           @change="(data) => emit('update', field.name, data)"
           :onCreate="field.create"
         />
-        <Tooltip
-          v-else-if="field.type === 'read_only'"
-          class="flex h-7 cursor-pointer items-center px-2 py-1"
-          :text="field.tooltip"
-        >
-          {{ field.value }}
-        </Tooltip>
         <FormControl
           v-else
           class="form-control"

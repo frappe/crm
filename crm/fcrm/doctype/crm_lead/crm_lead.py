@@ -111,6 +111,26 @@ class CRMLead(Document):
 
 		return contact.name
 
+	def create_organization(self):
+		if not self.organization:
+			return
+
+		existing_organization = frappe.db.exists("CRM Organization", {"organization_name": self.organization})
+		if existing_organization:
+			return existing_organization
+
+		organization = frappe.new_doc("CRM Organization")
+		organization.update(
+			{
+				"organization_name": self.organization,
+				"website": self.website,
+				"territory": self.territory,
+				"annual_revenue": self.annual_revenue,
+			}
+		)
+		organization.insert(ignore_permissions=True)
+		return organization.name
+
 	def contact_exists(self, throw=True):
 		email_exist = frappe.db.exists("Contact Email", {"email_id": self.email})
 		phone_exist = frappe.db.exists("Contact Phone", {"phone": self.phone})
@@ -136,12 +156,12 @@ class CRMLead(Document):
 
 		return False
 
-	def create_deal(self, contact):
+	def create_deal(self, contact, organization):
 		deal = frappe.new_doc("CRM Deal")
 		deal.update(
 			{
 				"lead": self.name,
-				"organization": self.organization,
+				"organization": organization,
 				"deal_owner": self.lead_owner,
 				"source": self.source,
 				"contacts": [{"contact": contact}],
@@ -279,6 +299,7 @@ def convert_to_deal(lead):
 		lead.communication_status = 'Replied'
 	lead.save()
 	contact = lead.create_contact(False)
-	deal = lead.create_deal(contact)
+	organization = lead.create_organization()
+	deal = lead.create_deal(contact, organization)
 	return deal
 
