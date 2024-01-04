@@ -200,6 +200,9 @@ def get_field_obj(field):
 		"label": field.label,
 		"type": get_type(field),
 		"name": field.fieldname,
+		"hidden": field.hidden,
+		"reqd": field.reqd,
+		"read_only": field.read_only,
 	}
 
 	obj["placeholder"] = "Add " + field.label + "..."
