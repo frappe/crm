@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:territory_name",
  "creation": "2024-01-04 18:52:58.872535",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -22,7 +23,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Territory Name",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "default": "0",
@@ -87,10 +89,11 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-01-04 18:56:49.292276",
+ "modified": "2024-01-04 19:16:36.234887",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Territory",
+ "naming_rule": "By fieldname",
  "nsm_parent_field": "parent_crm_territory",
  "owner": "Administrator",
  "permissions": [

@@ -66,6 +66,15 @@
                   placeholder="Add Annual Revenue"
                 />
               </div>
+              <Link
+                class="flex-1"
+                size="md"
+                label="Territory"
+                variant="outline"
+                v-model="_organization.territory"
+                doctype="CRM Territory"
+                placeholder="Add Territory"
+              />
               <div class="flex gap-4">
                 <FormControl
                   class="flex-1"
@@ -119,6 +128,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import { organizationsStore } from '@/stores/organizations'
 import { FormControl, Dialog, call, FeatherIcon } from 'frappe-ui'
@@ -251,6 +261,11 @@ const fields = computed(() => {
       icon: WebsiteIcon,
       name: 'website',
       value: _organization.value.website,
+    },
+    {
+      icon: TerritoryIcon,
+      name: 'territory',
+      value: _organization.value.territory,
     },
     {
       icon: h(FeatherIcon, { name: 'dollar-sign', class: 'h-4 w-4' }),
