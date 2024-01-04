@@ -444,11 +444,13 @@ const detailSections = computed(() => {
 function getParsedFields(sections, contacts) {
   sections.forEach((section) => {
     section.fields.forEach((field) => {
-      if (['website', 'annual_revenue'].includes(field.name)) {
-        field.value = organization.value?.[field.name]
-        field.tooltip =
-          'This field is read-only and is fetched from the organization'
-      } else if (field.name == 'organization') {
+      if (
+        !deal.data.organization &&
+        ['website', 'territory', 'annual_revenue'].includes(field.name)
+      ) {
+        field.hidden = true
+      }
+      if (field.name == 'organization') {
         field.create = (value, close) => {
           _organization.value.organization_name = value
           showOrganizationModal.value = true
