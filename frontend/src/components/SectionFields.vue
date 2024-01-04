@@ -8,6 +8,7 @@
     >
       <div class="w-[106px] shrink-0 text-sm text-gray-600">
         {{ field.label }}
+        <span class="text-red-500">{{ field.reqd ? ' *' : '' }}</span>
       </div>
       <div
         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"

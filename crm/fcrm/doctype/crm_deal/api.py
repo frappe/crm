@@ -27,7 +27,7 @@ def get_deal(name):
 		fields=["contact", "is_primary"],
 	)
 
-	deal["doctype_fields"] = get_doctype_fields("CRM Deal") 
+	deal["doctype_fields"], deal["all_fields"] = get_doctype_fields("CRM Deal") 
 	deal["doctype"] = "CRM Deal"
 	deal["_form_script"] = get_form_script('CRM Deal') 
 	return deal

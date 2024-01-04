@@ -188,11 +188,16 @@ def get_doctype_fields(doctype):
 		else:
 			section_fields.append(get_field_obj(field))
 
-	all_fields = []
+	section_fields = []
 	for section in sections:
-		all_fields.append(sections[section])
+		section_fields.append(sections[section])
 
-	return all_fields
+	fields = [field for field in fields if field.fieldtype not in "Tab Break"]
+	fields_meta = {}
+	for field in fields:
+		fields_meta[field.fieldname] = field
+
+	return section_fields, fields_meta
 
 
 def get_field_obj(field):

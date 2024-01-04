@@ -355,6 +355,8 @@ const organization = computed(() => {
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
 
+  if (validateRequired(fieldname, value)) return
+
   createResource({
     url: 'frappe.client.set_value',
     params: {
@@ -384,6 +386,20 @@ function updateDeal(fieldname, value, callback) {
       })
     },
   })
+}
+
+function validateRequired(fieldname, value) {
+  let meta = deal.data.all_fields || {}
+  if (meta[fieldname]?.reqd && !value) {
+    createToast({
+      title: 'Error Updating Deal',
+      text: `${meta[fieldname].label} is a required field`,
+      icon: 'x',
+      iconClasses: 'text-red-600',
+    })
+    return true
+  }
+  return false
 }
 
 const breadcrumbs = computed(() => {
