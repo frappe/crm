@@ -66,7 +66,7 @@
                 <span class="">{{ website(organization.website) }}</span>
               </div>
               <span
-                v-if="organization.industry && organization.website"
+                v-if="organization.website"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
@@ -79,10 +79,20 @@
                 <span class="">{{ organization.industry }}</span>
               </div>
               <span
-                v-if="
-                  (organization.website || organization.industry) &&
-                  organization.annual_revenue
-                "
+                v-if="organization.industry"
+                class="text-3xl leading-[0] text-gray-600"
+              >
+                &middot;
+              </span>
+              <div
+                v-if="organization.territory"
+                class="flex items-center gap-1.5"
+              >
+                <TerritoryIcon class="h-4 w-4" />
+                <span class="">{{ organization.territory }}</span>
+              </div>
+              <span
+                v-if="organization.territory"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
@@ -95,11 +105,7 @@
                 <span class="">{{ organization.annual_revenue }}</span>
               </div>
               <span
-                v-if="
-                  organization.website ||
-                  organization.industry ||
-                  organization.annual_revenue
-                "
+                v-if="organization.annual_revenue"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
@@ -108,6 +114,7 @@
                 v-if="
                   organization.website ||
                   organization.industry ||
+                  organization.territory ||
                   organization.annual_revenue
                 "
                 variant="ghost"
@@ -243,6 +250,7 @@ import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
+import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'

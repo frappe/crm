@@ -10,6 +10,7 @@
   "organization_tab",
   "organization",
   "website",
+  "territory",
   "annual_revenue",
   "close_date",
   "probability",
@@ -208,11 +209,18 @@
    "fieldtype": "Link",
    "label": "Communication Status",
    "options": "CRM Communication Status"
+  },
+  {
+   "fetch_from": "organization.territory",
+   "fieldname": "territory",
+   "fieldtype": "Data",
+   "label": "Territory",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-28 11:40:16.934256",
+ "modified": "2024-01-04 18:58:55.295874",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

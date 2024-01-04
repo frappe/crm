@@ -12,6 +12,7 @@
   "details",
   "organization",
   "website",
+  "territory",
   "industry",
   "job_title",
   "source",
@@ -270,12 +271,19 @@
    "fieldtype": "Link",
    "label": "Communication Status",
    "options": "CRM Communication Status"
+  },
+  {
+   "fetch_from": "organization.territory",
+   "fieldname": "territory",
+   "fieldtype": "Data",
+   "label": "Territory",
+   "read_only": 1
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-28 11:39:47.573673",
+ "modified": "2024-01-04 18:58:26.603817",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

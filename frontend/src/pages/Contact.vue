@@ -65,7 +65,7 @@
                 <span class="">{{ contact.email_id }}</span>
               </div>
               <span
-                v-if="contact.mobile_no && contact.email_id"
+                v-if="contact.email_id"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
@@ -80,10 +80,7 @@
                 <span class="">{{ contact.mobile_no }}</span>
               </Tooltip>
               <span
-                v-if="
-                  (contact.email_id || contact.mobile_no) &&
-                  contact.company_name
-                "
+                v-if="contact.mobile_no"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
@@ -102,9 +99,7 @@
                 <span class="">{{ contact.company_name }}</span>
               </div>
               <span
-                v-if="
-                  contact.email_id || contact.mobile_no || contact.company_name
-                "
+                v-if="contact.company_name"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
