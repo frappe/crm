@@ -101,12 +101,10 @@
    "search_index": 1
   },
   {
-   "fetch_from": "organization.website",
    "fieldname": "website",
    "fieldtype": "Data",
    "label": "Website",
-   "options": "URL",
-   "read_only": 1
+   "options": "URL"
   },
   {
    "fieldname": "mobile_no",
@@ -155,11 +153,10 @@
    "options": "CRM Lead Source"
   },
   {
-   "fetch_from": "organization.industry",
    "fieldname": "industry",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Industry",
-   "read_only": 1
+   "options": "CRM Industry"
   },
   {
    "fieldname": "image",
@@ -273,17 +270,16 @@
    "options": "CRM Communication Status"
   },
   {
-   "fetch_from": "organization.territory",
    "fieldname": "territory",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Territory",
-   "read_only": 1
+   "options": "CRM Territory"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-04 18:58:26.603817",
+ "modified": "2024-01-04 20:12:22.104289",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

@@ -52,19 +52,17 @@
    "label": "Probability"
   },
   {
-   "fetch_from": "organization.annual_revenue",
+   "fetch_from": ".annual_revenue",
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Amount",
-   "read_only": 1
+   "label": "Amount"
   },
   {
-   "fetch_from": "organization.website",
+   "fetch_from": ".website",
    "fieldname": "website",
    "fieldtype": "Data",
    "label": "Website",
-   "options": "URL",
-   "read_only": 1
+   "options": "URL"
   },
   {
    "fieldname": "close_date",
@@ -212,11 +210,11 @@
    "options": "CRM Communication Status"
   },
   {
-   "fetch_from": "organization.territory",
+   "fetch_from": ".territory",
    "fieldname": "territory",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Territory",
-   "read_only": 1
+   "options": "CRM Territory"
   },
   {
    "fieldname": "source",
@@ -227,7 +225,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-04 20:02:23.823826",
+ "modified": "2024-01-04 20:53:31.618792",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
