@@ -26,6 +26,7 @@
   "section_break_eepu",
   "lead",
   "column_break_bqvs",
+  "source",
   "sla_tab",
   "sla",
   "sla_creation",
@@ -216,11 +217,17 @@
    "fieldtype": "Data",
    "label": "Territory",
    "read_only": 1
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "label": "Source",
+   "options": "CRM Lead Source"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-04 18:58:55.295874",
+ "modified": "2024-01-04 20:02:23.823826",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
