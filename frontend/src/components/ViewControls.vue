@@ -346,7 +346,7 @@ const viewActions = computed(() => {
 
 function duplicateView() {
   view.value.name = ''
-  view.value.label = view.value.label + ' New'
+  view.value.label = getView(route.query.view).label + ' New'
   showViewModal.value = true
 }
 
