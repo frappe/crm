@@ -125,6 +125,7 @@ export function setupAssignees(data) {
 }
 
 export function setupCustomActions(data, obj) {
+  if (!data._form_script) return []
   let script = new Function(data._form_script + '\nreturn setupForm')()
   let formScript = script(obj)
   data._customActions = formScript?.actions || []

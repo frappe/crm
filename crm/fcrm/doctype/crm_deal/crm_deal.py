@@ -45,6 +45,7 @@ class CRMDeal(Document):
 		if not self.contacts:
 			self.email = ""
 			self.mobile_no = ""
+			self.phone = ""
 			return
 
 		if len([contact for contact in self.contacts if contact.is_primary]) > 1:
@@ -56,11 +57,13 @@ class CRMDeal(Document):
 				primary_contact_exists = True
 				self.email = d.email.strip()
 				self.mobile_no = d.mobile_no.strip()
+				self.phone = d.phone.strip()
 				break
 
 		if not primary_contact_exists:
 			self.email = ""
 			self.mobile_no = ""
+			self.phone = ""
 
 	def update_organization(self):
 		if self.organization:

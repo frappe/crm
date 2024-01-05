@@ -19,10 +19,15 @@
   "contacts_tab",
   "email",
   "mobile_no",
+  "phone",
   "contacts",
   "others_tab",
   "naming_series",
   "status",
+  "section_break_sygz",
+  "no_of_employees",
+  "column_break_nwob",
+  "job_title",
   "section_break_eepu",
   "lead",
   "column_break_bqvs",
@@ -221,11 +226,36 @@
    "fieldtype": "Link",
    "label": "Source",
    "options": "CRM Lead Source"
+  },
+  {
+   "fieldname": "no_of_employees",
+   "fieldtype": "Select",
+   "label": "No. of Employees",
+   "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
+  },
+  {
+   "fieldname": "section_break_sygz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_nwob",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "job_title",
+   "fieldtype": "Data",
+   "label": "Job Title"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "options": "Phone"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-04 20:53:31.618792",
+ "modified": "2024-01-05 16:10:59.595577",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
