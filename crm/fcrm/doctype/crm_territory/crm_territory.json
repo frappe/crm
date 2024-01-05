@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:territory_name",
  "creation": "2024-01-04 18:52:58.872535",
@@ -89,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-01-04 19:16:36.234887",
+ "modified": "2024-01-05 12:26:25.485080",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Territory",
