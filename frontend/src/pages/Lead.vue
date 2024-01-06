@@ -32,7 +32,11 @@
           </Button>
         </template>
       </Dropdown>
-      <Button label="Convert to Deal" variant="solid" @click="convertToDeal" />
+      <Button
+        label="Convert to Deal"
+        variant="solid"
+        @click="showConvertToDealModal = true"
+      />
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
@@ -175,6 +179,68 @@
     v-model="showAssignmentModal"
     v-model:assignees="lead.data._assignedTo"
   />
+  <Dialog
+    v-model="showConvertToDealModal"
+    :options="{
+      title: 'Convert to Deal',
+      size: 'xl',
+      actions: [
+        {
+          label: 'Convert',
+          variant: 'solid',
+          onClick: convertToDeal,
+        },
+      ],
+    }"
+  >
+    <template #body-content>
+      <div class="mb-4 flex items-center gap-2 text-gray-600">
+        <OrganizationsIcon class="h-4 w-4" />
+        <label class="block text-base"> Organization </label>
+      </div>
+      <div class="ml-6">
+        <div class="flex items-center justify-between text-base">
+          <div>Choose Existing</div>
+          <Switch v-model="existingOrganizationChecked" />
+        </div>
+        <Link
+          v-if="existingOrganizationChecked"
+          class="form-control mt-2.5"
+          variant="outline"
+          size="md"
+          :value="existingOrganization"
+          doctype="CRM Organization"
+          @change="(data) => (existingOrganization = data)"
+        />
+        <div v-else class="mt-2.5 text-base">
+          New organization will be created based on the data in details section
+        </div>
+      </div>
+
+      <div class="mb-4 mt-6 flex items-center gap-2 text-gray-600">
+        <ContactsIcon class="h-4 w-4" />
+        <label class="block text-base"> Contact </label>
+      </div>
+      <div class="ml-6">
+        <div class="flex items-center justify-between text-base">
+          <div>Choose Existing</div>
+          <Switch v-model="existingContactChecked" />
+        </div>
+        <Link
+          v-if="existingContactChecked"
+          class="form-control mt-2.5"
+          variant="outline"
+          size="md"
+          :value="existingContact"
+          doctype="Contact"
+          @change="(data) => (existingContact = data)"
+        />
+        <div v-else class="mt-2.5 text-base">
+          New contact will be created based on the person's details
+        </div>
+      </div>
+    </template>
+  </Dialog>
 </template>
 <script setup>
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -185,11 +251,14 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
+import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
+import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import SLASection from '@/components/SLASection.vue'
@@ -211,6 +280,7 @@ import {
   Tooltip,
   Avatar,
   Tabs,
+  Switch,
   Breadcrumbs,
   call,
 } from 'frappe-ui'
@@ -218,8 +288,8 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { $dialog } = globalStore()
-const { contacts } = contactsStore()
-const { organizations, getOrganization } = organizationsStore()
+const { getContactByName, contacts } = contactsStore()
+const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const router = useRouter()
 
@@ -253,14 +323,10 @@ const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
 const _organization = ref({})
 
-const organization = computed(() => {
-  return lead.data?.organization && getOrganization(lead.data.organization)
-})
-
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
 
-  if (validateRequired(fieldname, value)) return
+  if (!Array.isArray(fieldname) && validateRequired(fieldname, value)) return
 
   createResource({
     url: 'frappe.client.set_value',
@@ -352,16 +418,6 @@ const detailSections = computed(() => {
   return data.doctype_fields
 })
 
-async function convertToDeal() {
-  let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
-    lead: lead.data.name,
-  })
-  if (deal) {
-    await contacts.reload()
-    router.push({ name: 'Deal', params: { dealId: deal } })
-  }
-}
-
 function updateField(name, value, callback) {
   updateLead(name, value, () => {
     lead.data[name] = value
@@ -375,5 +431,83 @@ async function deleteLead(name) {
     name,
   })
   router.push({ name: 'Leads' })
+}
+
+// Convert to Deal
+const showConvertToDealModal = ref(false)
+const existingContactChecked = ref(false)
+const existingOrganizationChecked = ref(false)
+
+const existingContact = ref('')
+const existingOrganization = ref('')
+
+async function convertToDeal(updated) {
+  let valueUpdated = false
+
+  if (existingContactChecked.value && !existingContact.value) {
+    createToast({
+      title: 'Error',
+      text: 'Please select an existing contact',
+      icon: 'x',
+      iconClasses: 'text-red-600',
+    })
+    return
+  }
+
+  if (existingOrganizationChecked.value && !existingOrganization.value) {
+    createToast({
+      title: 'Error',
+      text: 'Please select an existing organization',
+      icon: 'x',
+      iconClasses: 'text-red-600',
+    })
+    return
+  }
+
+  if (existingContactChecked.value && existingContact.value) {
+    lead.data.salutation = getContactByName(existingContact.value).salutation
+    lead.data.first_name = getContactByName(existingContact.value).first_name
+    lead.data.last_name = getContactByName(existingContact.value).last_name
+    lead.data.email_id = getContactByName(existingContact.value).email_id
+    lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
+    existingContactChecked.value = false
+    valueUpdated = true
+  }
+
+  if (existingOrganizationChecked.value && existingOrganization.value) {
+    lead.data.organization = existingOrganization.value
+    existingOrganizationChecked.value = false
+    valueUpdated = true
+  }
+
+  if (valueUpdated) {
+    updateLead(
+      {
+        salutation: lead.data.salutation,
+        first_name: lead.data.first_name,
+        last_name: lead.data.last_name,
+        email_id: lead.data.email_id,
+        mobile_no: lead.data.mobile_no,
+        organization: lead.data.organization,
+      },
+      '',
+      () => convertToDeal(true)
+    )
+    showConvertToDealModal.value = false
+  } else {
+    let deal = await call(
+      'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
+      {
+        lead: lead.data.name,
+      }
+    )
+    if (deal) {
+      if (updated) {
+        await organizations.reload()
+        await contacts.reload()
+      }
+      router.push({ name: 'Deal', params: { dealId: deal } })
+    }
+  }
 }
 </script>
