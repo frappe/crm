@@ -9,6 +9,7 @@ from frappe.model.document import Document
 
 from frappe.utils import has_gravatar, validate_email_address
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
+from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
 
 
 class CRMLead(Document):
@@ -22,6 +23,8 @@ class CRMLead(Document):
 		self.validate_email()
 		if self.lead_owner and not self.is_new():
 			self.assign_agent(self.lead_owner)
+		if self.has_value_changed("status"):
+			add_status_change_log(self)
 
 	def after_insert(self):
 		if self.lead_owner:
