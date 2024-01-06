@@ -257,7 +257,8 @@
   {
    "fieldname": "log_tab",
    "fieldtype": "Tab Break",
-   "label": "Log"
+   "label": "Log",
+   "read_only": 1
   },
   {
    "fieldname": "status_change_log",
@@ -268,7 +269,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-06 14:05:52.669699",
+ "modified": "2024-01-06 17:19:49.009903",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
