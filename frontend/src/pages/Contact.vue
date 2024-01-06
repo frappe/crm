@@ -198,16 +198,13 @@
 
 <script setup>
 import {
-  FeatherIcon,
   Breadcrumbs,
   Avatar,
   FileUploader,
-  ErrorMessage,
   Tooltip,
   Tabs,
   call,
   createResource,
-  createListResource,
 } from 'frappe-ui'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'

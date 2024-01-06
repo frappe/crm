@@ -59,13 +59,7 @@ import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
-import {
-  FeatherIcon,
-  Dialog,
-  Button,
-  createResource,
-  Breadcrumbs,
-} from 'frappe-ui'
+import { createResource, Breadcrumbs } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
 

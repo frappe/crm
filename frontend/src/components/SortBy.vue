@@ -99,13 +99,7 @@ import NestedPopover from '@/components/NestedPopover.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
-import {
-  FeatherIcon,
-  Button,
-  Autocomplete,
-  FormControl,
-  createResource,
-} from 'frappe-ui'
+import { Autocomplete, createResource } from 'frappe-ui'
 import { computed, ref, nextTick } from 'vue'
 
 const props = defineProps({

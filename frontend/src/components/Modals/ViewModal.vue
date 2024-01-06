@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { Dialog, FormControl, call } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import { ref, watch, defineModel, nextTick } from 'vue'
 
 const props = defineProps({

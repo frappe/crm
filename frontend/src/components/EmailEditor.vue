@@ -114,12 +114,7 @@
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import MultiselectInput from '@/components/Controls/MultiselectInput.vue'
-import {
-  TextEditorFixedMenu,
-  TextEditor,
-  FileUploader,
-  FeatherIcon,
-} from 'frappe-ui'
+import { TextEditorFixedMenu, TextEditor, FileUploader } from 'frappe-ui'
 import { validateEmail } from '@/utils'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel } from 'vue'

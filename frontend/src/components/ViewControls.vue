@@ -77,7 +77,7 @@ import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { useDebounceFn } from '@vueuse/core'
-import { createResource, FeatherIcon, Dropdown, call } from 'frappe-ui'
+import { createResource, Dropdown, call } from 'frappe-ui'
 import { computed, ref, defineModel, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 

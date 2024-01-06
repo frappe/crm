@@ -30,7 +30,6 @@
 </template>
 
 <script setup>
-import { Button, ErrorMessage, FeatherIcon, TextInput } from 'frappe-ui'
 import { ref, defineModel } from 'vue'
 
 const props = defineProps({

@@ -72,9 +72,6 @@ import {
   ListRow,
   ListSelectBanner,
   ListRowItem,
-  FormControl,
-  FeatherIcon,
-  Badge,
 } from 'frappe-ui'
 
 const props = defineProps({

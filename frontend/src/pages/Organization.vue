@@ -234,13 +234,10 @@
 <script setup>
 import {
   Breadcrumbs,
-  FeatherIcon,
   Avatar,
   FileUploader,
-  ErrorMessage,
   Dropdown,
   Tabs,
-  Badge,
   call,
   createListResource,
 } from 'frappe-ui'

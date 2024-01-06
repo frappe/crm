@@ -131,7 +131,7 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import { organizationsStore } from '@/stores/organizations'
-import { FormControl, Dialog, call, FeatherIcon } from 'frappe-ui'
+import { call, FeatherIcon } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 

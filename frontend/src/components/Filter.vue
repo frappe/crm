@@ -106,12 +106,7 @@
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import {
-  FeatherIcon,
-  Autocomplete,
-  FormControl,
-  createResource,
-} from 'frappe-ui'
+import { FormControl, Autocomplete, createResource } from 'frappe-ui'
 import { h, defineModel, computed } from 'vue'
 
 const typeCheck = ['Check']

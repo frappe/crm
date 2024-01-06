@@ -61,13 +61,7 @@ import {
   formatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
-import {
-  FeatherIcon,
-  Dialog,
-  Button,
-  createResource,
-  Breadcrumbs,
-} from 'frappe-ui'
+import { createResource, Breadcrumbs } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
 

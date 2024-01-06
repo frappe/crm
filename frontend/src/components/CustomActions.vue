@@ -19,7 +19,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Dropdown, FeatherIcon } from 'frappe-ui'
+import { Dropdown } from 'frappe-ui'
 
 const props = defineProps({
   actions: {

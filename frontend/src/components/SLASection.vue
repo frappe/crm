@@ -42,7 +42,7 @@
   </div>
 </template>
 <script setup>
-import { Dropdown, Badge, Tooltip, FeatherIcon } from 'frappe-ui'
+import { Dropdown, Tooltip } from 'frappe-ui'
 import { timeAgo, dateFormat, formatTime, dateTooltipFormat } from '@/utils'
 import { statusesStore } from '@/stores/statuses'
 import { computed, defineModel } from 'vue'

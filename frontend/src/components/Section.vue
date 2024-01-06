@@ -29,7 +29,6 @@
   </transition>
 </template>
 <script setup>
-import { FeatherIcon } from 'frappe-ui'
 import { ref } from 'vue'
 const props = defineProps({
   label: {

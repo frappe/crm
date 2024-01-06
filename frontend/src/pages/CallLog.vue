@@ -143,14 +143,17 @@
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
-import { dateFormat, timeAgo, dateTooltipFormat, secondsToDuration } from '@/utils'
+import {
+  dateFormat,
+  timeAgo,
+  dateTooltipFormat,
+  secondsToDuration,
+} from '@/utils'
 import {
   TextEditor,
   Avatar,
-  FeatherIcon,
   call,
   Tooltip,
-  Badge,
   createResource,
   Breadcrumbs,
 } from 'frappe-ui'

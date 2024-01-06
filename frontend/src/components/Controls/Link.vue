@@ -49,7 +49,7 @@
 <script setup>
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { watchDebounced } from '@vueuse/core'
-import { createResource, FeatherIcon } from 'frappe-ui'
+import { createResource } from 'frappe-ui'
 import { useAttrs, computed, ref } from 'vue'
 
 const props = defineProps({
