@@ -162,17 +162,6 @@
       </div>
     </div>
   </div>
-  <OrganizationModal
-    v-model="showOrganizationModal"
-    :organization="_organization"
-    :options="{
-      redirect: false,
-      afterInsert: (doc) =>
-        updateField('organization', doc.name, () => {
-          organizations.reload()
-        }),
-    }"
-  />
   <AssignmentModal
     v-if="lead.data"
     :doc="lead.data"
@@ -255,7 +244,6 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities.vue'
-import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
@@ -319,9 +307,7 @@ const lead = createResource({
 })
 
 const reload = ref(false)
-const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
-const _organization = ref({})
 
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
