@@ -8,6 +8,7 @@ from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
+from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
 
 
 class CRMDeal(Document):
@@ -20,6 +21,8 @@ class CRMDeal(Document):
 		self.update_organization()
 		if self.deal_owner and not self.is_new():
 			self.assign_agent(self.deal_owner)
+		if self.has_value_changed("status"):
+			add_status_change_log(self)
 
 	def after_insert(self):
 		if self.deal_owner:

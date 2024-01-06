@@ -42,7 +42,9 @@
   "response_by",
   "column_break_hpvj",
   "first_response_time",
-  "first_responded_on"
+  "first_responded_on",
+  "log_tab",
+  "status_change_log"
  ],
  "fields": [
   {
@@ -251,11 +253,22 @@
    "fieldtype": "Data",
    "label": "Phone",
    "options": "Phone"
+  },
+  {
+   "fieldname": "log_tab",
+   "fieldtype": "Tab Break",
+   "label": "Log"
+  },
+  {
+   "fieldname": "status_change_log",
+   "fieldtype": "Table",
+   "label": "Status Change Log",
+   "options": "CRM Status Change Log"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-05 16:10:59.595577",
+ "modified": "2024-01-06 14:05:52.669699",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
