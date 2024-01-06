@@ -37,7 +37,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Button, Dialog } from 'frappe-ui'
 import mime from 'mime'
 import FileTypeIcon from '@/components/Icons/FileTypeIcon.vue'
 import FileImageIcon from '@/components/Icons/FileImageIcon.vue'

@@ -32,7 +32,10 @@
               />
             </div>
           </template>
-          <div v-if="['modified', 'creation'].includes(column.key)" class="truncate text-base">
+          <div
+            v-if="['modified', 'creation'].includes(column.key)"
+            class="truncate text-base"
+          >
             {{ item.timeAgo }}
           </div>
           <div v-else-if="column.type === 'Check'">
@@ -58,7 +61,6 @@ import {
   ListRow,
   ListSelectBanner,
   ListRowItem,
-  FormControl,
 } from 'frappe-ui'
 
 const props = defineProps({

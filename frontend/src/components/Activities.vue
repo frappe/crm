@@ -713,7 +713,6 @@ import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import {
   Button,
-  FeatherIcon,
   Tooltip,
   Dropdown,
   TextEditor,

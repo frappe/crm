@@ -100,8 +100,6 @@ import {
   ListRow,
   ListRowItem,
   ListSelectBanner,
-  FormControl,
-  Badge,
 } from 'frappe-ui'
 
 const props = defineProps({

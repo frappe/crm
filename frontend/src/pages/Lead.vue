@@ -207,8 +207,6 @@ import { statusesStore } from '@/stores/statuses'
 import {
   createResource,
   FileUploader,
-  ErrorMessage,
-  FeatherIcon,
   Dropdown,
   Tooltip,
   Avatar,

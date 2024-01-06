@@ -71,7 +71,7 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { Dialog, Tooltip, FeatherIcon, call, ErrorMessage } from 'frappe-ui'
+import { Tooltip, call } from 'frappe-ui'
 import { defineModel, ref, computed } from 'vue'
 import { watchOnce } from '@vueuse/core'
 

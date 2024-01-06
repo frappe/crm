@@ -103,7 +103,7 @@ import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
-import { FormControl, Tooltip } from 'frappe-ui'
+import { Tooltip } from 'frappe-ui'
 import { defineModel } from 'vue'
 
 const props = defineProps({

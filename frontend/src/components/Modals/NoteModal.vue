@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { TextInput, TextEditor, Dialog, call } from 'frappe-ui'
+import { TextEditor, call } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch } from 'vue'
 
 const props = defineProps({

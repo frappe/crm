@@ -70,7 +70,7 @@ import Link from '@/components/Controls/Link.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
-import { FormControl, Tooltip } from 'frappe-ui'
+import { Tooltip } from 'frappe-ui'
 import { computed, onMounted, ref } from 'vue'
 
 const { getUser } = usersStore()

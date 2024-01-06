@@ -46,7 +46,7 @@
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
-import { Dropdown, FeatherIcon } from 'frappe-ui'
+import { Dropdown } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({

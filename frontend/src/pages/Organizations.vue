@@ -41,7 +41,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
-import { FeatherIcon, Breadcrumbs } from 'frappe-ui'
+import { Breadcrumbs } from 'frappe-ui'
 import {
   dateFormat,
   dateTooltipFormat,

@@ -17,6 +17,7 @@ import {
   Badge,
   setConfig,
   frappeRequest,
+  FeatherIcon,
 } from 'frappe-ui'
 import { createDialog } from './utils/dialogs'
 import socket from './socket'
@@ -32,6 +33,7 @@ let globalComponents = {
   Dialog,
   Alert,
   Badge,
+  FeatherIcon,
 }
 
 // create a pinia instance

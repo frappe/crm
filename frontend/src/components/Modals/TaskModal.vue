@@ -90,15 +90,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
-import {
-  TextInput,
-  TextEditor,
-  Dialog,
-  Dropdown,
-  Tooltip,
-  DatePicker,
-  call,
-} from 'frappe-ui'
+import { TextEditor, Dropdown, Tooltip, DatePicker, call } from 'frappe-ui'
 import { ref, defineModel, watch, nextTick } from 'vue'
 
 const props = defineProps({

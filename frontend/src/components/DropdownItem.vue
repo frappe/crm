@@ -18,8 +18,6 @@
   </button>
 </template>
 <script setup>
-import { FeatherIcon } from 'frappe-ui'
-
 const props = defineProps({
   value: {
     type: String,

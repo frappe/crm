@@ -78,7 +78,7 @@
 <script setup>
 import CRMLogo from '@/components/Icons/CRMLogo.vue';
 import { sessionStore } from '@/stores/session'
-import { FormControl, ErrorMessage, createResource } from 'frappe-ui'
+import { createResource } from 'frappe-ui'
 import { ref } from 'vue'
 
 const session = sessionStore()

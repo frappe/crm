@@ -300,14 +300,12 @@ import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import {
   createResource,
-  FeatherIcon,
   Dropdown,
   Tooltip,
   Avatar,
   Tabs,
   Breadcrumbs,
   call,
-  Badge,
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'

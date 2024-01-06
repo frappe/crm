@@ -86,8 +86,6 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import {
-  FeatherIcon,
-  Button,
   createListResource,
   TextEditor,
   call,

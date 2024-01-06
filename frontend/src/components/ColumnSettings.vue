@@ -142,7 +142,6 @@ import NestedPopover from '@/components/NestedPopover.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import Draggable from 'vuedraggable'
 import { computed, defineModel, ref } from 'vue'
-import { FeatherIcon, FormControl } from 'frappe-ui'
 import { watchOnce } from '@vueuse/core'
 
 const props = defineProps({
