@@ -16,8 +16,13 @@
   />
   <LeadsListView
     v-if="leads.data && rows.length"
+    v-model="leads.data.page_length"
     :rows="rows"
     :columns="leads.data.columns"
+    :options="{
+      rowCount: leads.data.row_count,
+      totalCount: leads.data.total_count,
+    }"
   />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
     <div

@@ -60,6 +60,7 @@ def get_list_data(
 	doctype: str,
 	filters: dict,
 	order_by: str,
+	page_length=20,
 	columns=None,
 	rows=None,
 	custom_view_name=None,
@@ -110,7 +111,7 @@ def get_list_data(
 		fields=rows,
 		filters=filters,
 		order_by=order_by,
-		page_length=20,
+		page_length=page_length,
 	) or []
 
 	fields = frappe.get_meta(doctype).fields
@@ -154,8 +155,11 @@ def get_list_data(
 		"columns": columns,
 		"rows": rows,
 		"fields": fields,
+		"page_length": page_length,
 		"is_default": is_default,
 		"views": get_views(doctype),
+		"total_count": frappe.client.get_count(doctype, filters=filters),
+		"row_count": len(data),
 	}
 
 def get_views(doctype):
