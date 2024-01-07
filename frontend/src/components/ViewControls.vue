@@ -116,7 +116,7 @@ const currentView = computed(() => {
 const view = ref({
   name: '',
   label: '',
-  filters: props.filters,
+  filters: {},
   order_by: 'modified desc',
   columns: '',
   rows: '',
@@ -126,7 +126,7 @@ const view = ref({
 
 function getParams() {
   let _view = getView(route.query.view)
-  const filters = (_view?.filters && JSON.parse(_view.filters)) || props.filters
+  const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const columns = _view?.columns || ''
   const rows = _view?.rows || ''
@@ -147,7 +147,7 @@ function getParams() {
     view.value = {
       name: '',
       label: '',
-      filters: props.filters,
+      filters: {},
       order_by: 'modified desc',
       columns: '',
       rows: '',
@@ -164,6 +164,7 @@ function getParams() {
     columns: columns,
     rows: rows,
     custom_view_name: _view?.name || '',
+    default_filters: props.filters,
   }
 }
 
@@ -181,6 +182,7 @@ list.value = createResource({
       columns: data.columns,
       rows: data.rows,
       custom_view_name: cv?.name || '',
+      default_filters: props.filters,
     }
   },
 })

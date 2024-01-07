@@ -56,9 +56,22 @@ def get_filterable_fields(doctype: str):
 
 
 @frappe.whitelist()
-def get_list_data(doctype: str, filters: dict, order_by: str, columns=None , rows=None, custom_view_name=None):
+def get_list_data(
+	doctype: str,
+	filters: dict,
+	order_by: str,
+	columns=None,
+	rows=None,
+	custom_view_name=None,
+	default_filters=None,
+):
 	custom_view = False
 	filters = frappe._dict(filters)
+
+	if default_filters:
+		default_filters = frappe.parse_json(default_filters)
+		filters.update(default_filters)
+
 	is_default = True
 	if columns or rows:
 		custom_view = True
