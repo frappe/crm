@@ -95,6 +95,15 @@
     </ListRows>
     <ListSelectBanner />
   </ListView>
+  <ListFooter
+    class="border-t px-5 py-2"
+    v-model="pageLengthCount"
+    :options="{
+      rowCount: options.rowCount,
+      totalCount: options.totalCount,
+    }"
+    @loadMore="emit('loadMore')"
+  />
 </template>
 
 <script setup>
@@ -109,6 +118,7 @@ import {
   ListRow,
   ListSelectBanner,
   ListRowItem,
+  ListFooter,
 } from 'frappe-ui'
 
 const props = defineProps({
@@ -124,7 +134,13 @@ const props = defineProps({
     type: Object,
     default: () => ({
       selectable: true,
+      totalCount: 0,
+      rowCount: 0,
     }),
   },
 })
+
+const emit = defineEmits(['loadMore'])
+
+const pageLengthCount = defineModel()
 </script>

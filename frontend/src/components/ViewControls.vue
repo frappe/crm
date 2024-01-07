@@ -96,6 +96,7 @@ const { $dialog } = globalStore()
 const { reload: reloadView, getView } = viewsStore()
 
 const list = defineModel()
+const loadMore = defineModel('loadMore')
 
 const route = useRoute()
 const router = useRouter()
@@ -116,7 +117,7 @@ const currentView = computed(() => {
 const view = ref({
   name: '',
   label: '',
-  filters: props.filters,
+  filters: {},
   order_by: 'modified desc',
   columns: '',
   rows: '',
@@ -124,9 +125,25 @@ const view = ref({
   pinned: false,
 })
 
+const pageLength = computed(() => list.value?.data?.page_length)
+const pageLengthCount = computed(() => list.value?.data?.page_length_count)
+
+watch(loadMore, (value) => {
+  if (!value) return
+  updatePageLength(value, true)
+})
+
+watch(
+  () => list.value?.data?.page_length_count,
+  (value) => {
+    if (!value) return
+    updatePageLength(value)
+  }
+)
+
 function getParams() {
   let _view = getView(route.query.view)
-  const filters = (_view?.filters && JSON.parse(_view.filters)) || props.filters
+  const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const columns = _view?.columns || ''
   const rows = _view?.rows || ''
@@ -147,7 +164,7 @@ function getParams() {
     view.value = {
       name: '',
       label: '',
-      filters: props.filters,
+      filters: {},
       order_by: 'modified desc',
       columns: '',
       rows: '',
@@ -163,7 +180,10 @@ function getParams() {
     order_by: order_by,
     columns: columns,
     rows: rows,
+    page_length: pageLength.value,
+    page_length_count: pageLengthCount.value,
     custom_view_name: _view?.name || '',
+    default_filters: props.filters,
   }
 }
 
@@ -178,9 +198,12 @@ list.value = createResource({
       doctype: props.doctype,
       filters: list.value.params.filters,
       order_by: list.value.params.order_by,
+      page_length: list.value.params.page_length,
+      page_length_count: list.value.params.page_length_count,
       columns: data.columns,
       rows: data.rows,
       custom_view_name: cv?.name || '',
+      default_filters: props.filters,
     }
   },
 })
@@ -283,6 +306,20 @@ function updateColumns(obj) {
     list.value.reload()
   }
   viewUpdated.value = true
+}
+
+function updatePageLength(value, loadMore = false) {
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  if (loadMore) {
+    list.value.params.page_length += list.value.params.page_length_count
+  } else {
+    list.value.params.page_length = value
+    list.value.params.page_length_count = value
+  }
+  list.value.reload()
 }
 
 // View Actions

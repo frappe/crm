@@ -56,9 +56,24 @@ def get_filterable_fields(doctype: str):
 
 
 @frappe.whitelist()
-def get_list_data(doctype: str, filters: dict, order_by: str, columns=None , rows=None, custom_view_name=None):
+def get_list_data(
+	doctype: str,
+	filters: dict,
+	order_by: str,
+	page_length=20,
+	page_length_count=20,
+	columns=None,
+	rows=None,
+	custom_view_name=None,
+	default_filters=None,
+):
 	custom_view = False
 	filters = frappe._dict(filters)
+
+	if default_filters:
+		default_filters = frappe.parse_json(default_filters)
+		filters.update(default_filters)
+
 	is_default = True
 	if columns or rows:
 		custom_view = True
@@ -97,7 +112,7 @@ def get_list_data(doctype: str, filters: dict, order_by: str, columns=None , row
 		fields=rows,
 		filters=filters,
 		order_by=order_by,
-		page_length=20,
+		page_length=page_length,
 	) or []
 
 	fields = frappe.get_meta(doctype).fields
@@ -141,8 +156,12 @@ def get_list_data(doctype: str, filters: dict, order_by: str, columns=None , row
 		"columns": columns,
 		"rows": rows,
 		"fields": fields,
+		"page_length": page_length,
+		"page_length_count": page_length_count,
 		"is_default": is_default,
 		"views": get_views(doctype),
+		"total_count": frappe.client.get_count(doctype, filters=filters),
+		"row_count": len(data),
 	}
 
 def get_views(doctype):
