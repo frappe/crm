@@ -124,10 +124,10 @@ const view = ref({
   pinned: false,
 })
 
-const pageLength = computed(() => list.value?.data?.page_length)
+const pageLengthCount = computed(() => list.value?.data?.page_length_count)
 
 watch(
-  () => list.value?.data?.page_length,
+  () => list.value?.data?.page_length_count,
   (value) => {
     if (!value) return
     updatePageLength(value)
@@ -173,7 +173,7 @@ function getParams() {
     order_by: order_by,
     columns: columns,
     rows: rows,
-    page_length: pageLength.value,
+    page_length_count: pageLengthCount.value,
     custom_view_name: _view?.name || '',
     default_filters: props.filters,
   }
@@ -190,7 +190,7 @@ list.value = createResource({
       doctype: props.doctype,
       filters: list.value.params.filters,
       order_by: list.value.params.order_by,
-      page_length: list.value.params.page_length,
+      page_length_count: list.value.params.page_length_count,
       columns: data.columns,
       rows: data.rows,
       custom_view_name: cv?.name || '',
@@ -299,12 +299,12 @@ function updateColumns(obj) {
   viewUpdated.value = true
 }
 
-function updatePageLength(page_length) {
+function updatePageLength(value) {
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
   list.value.params = defaultParams.value
-  list.value.params.page_length = page_length
+  list.value.params.page_length_count = value
   list.value.reload()
 }
 

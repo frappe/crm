@@ -16,7 +16,7 @@
   />
   <LeadsListView
     v-if="leads.data && rows.length"
-    v-model="leads.data.page_length"
+    v-model="leads.data.page_length_count"
     :rows="rows"
     :columns="leads.data.columns"
     :options="{

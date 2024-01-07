@@ -97,7 +97,7 @@
   </ListView>
   <ListFooter
     class="border-t px-5 py-2"
-    v-model="pageLength"
+    v-model="pageLengthCount"
     :options="{
       rowCount: options.rowCount,
       totalCount: options.totalCount,
@@ -139,5 +139,5 @@ const props = defineProps({
   },
 })
 
-const pageLength = defineModel()
+const pageLengthCount = defineModel()
 </script>
