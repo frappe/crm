@@ -11,6 +11,7 @@
   </LayoutHeader>
   <ViewControls
     v-model="leads"
+    v-model:loadMore="loadMore"
     doctype="CRM Lead"
     :filters="{ converted: 0 }"
   />
@@ -23,6 +24,7 @@
       rowCount: leads.data.row_count,
       totalCount: leads.data.total_count,
     }"
+    @loadMore="() => loadMore++"
   />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
     <div
@@ -78,6 +80,7 @@ const router = useRouter()
 
 // leads data is loaded in the ViewControls component
 const leads = ref({})
+const loadMore = ref(1)
 
 // Rows
 const rows = computed(() => {

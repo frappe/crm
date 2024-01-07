@@ -102,6 +102,7 @@
       rowCount: options.rowCount,
       totalCount: options.totalCount,
     }"
+    @loadMore="emit('loadMore')"
   />
 </template>
 
@@ -138,6 +139,8 @@ const props = defineProps({
     }),
   },
 })
+
+const emit = defineEmits(['loadMore'])
 
 const pageLengthCount = defineModel()
 </script>
