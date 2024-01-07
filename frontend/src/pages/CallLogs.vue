@@ -4,11 +4,17 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
   </LayoutHeader>
-  <ViewControls v-model="callLogs" doctype="CRM Call Log" />
+  <ViewControls v-model="callLogs" v-model:loadMore="loadMore" doctype="CRM Call Log" />
   <CallLogsListView
     v-if="callLogs.data && rows.length"
+    v-model="callLogs.data.page_length_count"
     :rows="rows"
     :columns="callLogs.data.columns"
+    :options="{
+      rowCount: callLogs.data.row_count,
+      totalCount: callLogs.data.total_count,
+    }"
+    @loadMore="() => loadMore++"
   />
   <div
     v-else-if="callLogs.data"
@@ -44,7 +50,9 @@ const { getContact } = contactsStore()
 
 const breadcrumbs = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
 
+// callLogs data is loaded in the ViewControls component
 const callLogs = ref({})
+const loadMore = ref(1)
 
 const rows = computed(() => {
   if (!callLogs.value?.data?.data) return []

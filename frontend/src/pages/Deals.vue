@@ -9,11 +9,21 @@
       </Button>
     </template>
   </LayoutHeader>
-  <ViewControls v-model="deals" doctype="CRM Deal" />
+  <ViewControls
+    v-model="deals"
+    v-model:loadMore="loadMore"
+    doctype="CRM Deal"
+  />
   <DealsListView
     v-if="deals.data && rows.length"
+    v-model="deals.data.page_length_count"
     :rows="rows"
     :columns="deals.data.columns"
+    :options="{
+      rowCount: deals.data.row_count,
+      totalCount: deals.data.total_count,
+    }"
+    @loadMore="() => loadMore++"
   />
   <div v-else-if="deals.data" class="flex h-full items-center justify-center">
     <div
@@ -75,6 +85,7 @@ const router = useRouter()
 
 // deals data is loaded in the ViewControls component
 const deals = ref({})
+const loadMore = ref(1)
 
 // Rows
 const rows = computed(() => {
