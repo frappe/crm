@@ -156,6 +156,9 @@ def get_twilio_number_owners(phone_number):
 		'owner2': {....}
 	}
 	"""
+	# remove special characters from phone number and get only digits also remove white spaces
+	# keep + sign in the number at start of the number
+	phone_number = ''.join([c for c in phone_number if c.isdigit() or c == '+'])
 	user_voice_settings = frappe.get_all(
 		'Twilio Agents',
 		filters={'twilio_number': phone_number},
@@ -200,8 +203,8 @@ class TwilioCallDetails:
 		self.application_sid = call_info.get('ApplicationSid')
 		self.call_sid = call_info.get('CallSid')
 		self.call_status = self.get_call_status(call_info.get('CallStatus'))
-		self._call_from = call_from
-		self._call_to = call_to
+		self._call_from = call_from or call_info.get('From')
+		self._call_to = call_to or call_info.get('To')
 
 	def get_direction(self):
 		if self.call_info.get('Caller').lower().startswith('client'):
