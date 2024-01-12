@@ -4,6 +4,7 @@ import json
 import frappe
 from frappe import _
 from .twilio_handler import Twilio, IncomingCall, TwilioCallDetails
+from .utils import parse_mobile_no
 
 @frappe.whitelist()
 def is_enabled():
@@ -149,17 +150,32 @@ def add_note_to_call_log(call_sid, note):
 def get_lead_or_deal_from_number(call):
 	"""Get lead/deal from the given number.
 	"""
+
+	def find_record(doctype, mobile_no):
+		mobile_no = parse_mobile_no(mobile_no)
+		data = frappe.db.sql(
+			"""
+				SELECT name, mobile_no
+				FROM `tab{doctype}`
+				WHERE CONCAT('+', REGEXP_REPLACE(mobile_no, '[^0-9]', '')) = {mobile_no}
+			""".format(doctype=doctype, mobile_no=mobile_no),
+			as_dict=True
+		)
+		return data[0].name if data else None
+
 	doctype = "CRM Lead"
 	doc = None
+	to_number = call.get('to')
+	from_number = call.get('from')
 	if call.type == 'Outgoing':
-		doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('to') })
+		doc = find_record(doctype, to_number)
 		if not doc:
 			doctype = "CRM Deal"
-			doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('to') })
+			doc = find_record(doctype, to_number)
 	else:
-		doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('from') })
+		doc = find_record(doctype, from_number)
 		if not doc:
 			doctype = "CRM Deal"
-			doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('from') })
+			doc = find_record(doctype, from_number)
 
 	return doc, doctype

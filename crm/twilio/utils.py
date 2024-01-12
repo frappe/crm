@@ -14,3 +14,10 @@ def merge_dicts(d1: dict, d2: dict):
 	... {'name1': {'age': 20, 'phone': '+xxx'}, 'name2': {'age': 30, 'phone': '+yyy'}}
 	"""
 	return {k:{**v, **d2.get(k, {})} for k, v in d1.items()}
+
+def parse_mobile_no(mobile_no: str):
+	"""Parse mobile number to remove spaces, brackets, etc.
+	>>> parse_mobile_no('+91 (766) 667 6666')
+	... '+917666676666'
+	"""
+	return ''.join([c for c in mobile_no if c.isdigit() or c == '+'])
