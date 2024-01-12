@@ -310,7 +310,7 @@ import {
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
-const { $dialog } = globalStore()
+const { $dialog, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()

@@ -70,14 +70,14 @@
               >
                 &middot;
               </span>
-              <Tooltip
-                text="Make Call"
-                v-if="contact.mobile_no"
-                class="flex cursor-pointer items-center gap-1.5"
-                @click="makeCall(contact.mobile_no)"
-              >
-                <PhoneIcon class="h-4 w-4" />
-                <span class="">{{ contact.mobile_no }}</span>
+              <Tooltip text="Make Call" v-if="contact.mobile_no">
+                <div
+                  class="flex cursor-pointer items-center gap-1.5"
+                  @click="makeCall(contact.mobile_no)"
+                >
+                  <PhoneIcon class="h-4 w-4" />
+                  <span class="">{{ contact.mobile_no }}</span>
+                </div>
               </Tooltip>
               <span
                 v-if="contact.mobile_no"
@@ -229,7 +229,7 @@ import { statusesStore } from '@/stores/statuses'
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
-const { $dialog } = globalStore()
+const { $dialog, makeCall } = globalStore()
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()

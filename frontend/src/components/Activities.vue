@@ -709,6 +709,7 @@ import {
   startCase,
   taskStatusOptions,
 } from '@/utils'
+import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import {
@@ -724,6 +725,7 @@ import {
 import { useElementVisibility } from '@vueuse/core'
 import { ref, computed, h, defineModel, markRaw, watch, nextTick } from 'vue'
 
+const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getContact } = contactsStore()
 
