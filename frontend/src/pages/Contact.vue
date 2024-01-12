@@ -171,8 +171,8 @@
       </template>
       <template #default="{ tab }">
         <DealsListView
-          class="mt-4"
           v-if="tab.label === 'Deals' && rows.length"
+          class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false }"
