@@ -727,7 +727,7 @@ import { ref, computed, h, defineModel, markRaw, watch, nextTick } from 'vue'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
-const { getContact } = contactsStore()
+const { getContact, getLeadContact } = contactsStore()
 
 const props = defineProps({
   title: {
@@ -783,8 +783,11 @@ const calls = createListResource({
       doc.duration = secondsToDuration(doc.duration)
       if (doc.type === 'Incoming') {
         doc.caller = {
-          label: getContact(doc.from)?.full_name || 'Unknown',
-          image: getContact(doc.from)?.image,
+          label:
+            getContact(doc.from)?.full_name ||
+            getLeadContact(doc.from)?.full_name ||
+            'Unknown',
+          image: getContact(doc.from)?.image || getLeadContact(doc.from)?.image,
         }
         doc.receiver = {
           label: getUser(doc.receiver).full_name,
@@ -796,8 +799,11 @@ const calls = createListResource({
           image: getUser(doc.caller).user_image,
         }
         doc.receiver = {
-          label: getContact(doc.to)?.full_name || 'Unknown',
-          image: getContact(doc.to)?.image,
+          label:
+            getContact(doc.to)?.full_name ||
+            getLeadContact(doc.to)?.full_name ||
+            'Unknown',
+          image: getContact(doc.to)?.image || getLeadContact(doc.to)?.image,
         }
       }
     })

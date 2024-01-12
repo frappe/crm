@@ -188,7 +188,7 @@ import { contactsStore } from '@/stores/contacts'
 import { Avatar, call } from 'frappe-ui'
 import { onMounted, ref, watch } from 'vue'
 
-const { getContact } = contactsStore()
+const { getContact, getLeadContact } = contactsStore()
 const { setMakeCall, setTwilioEnabled } = globalStore()
 
 let device = ''
@@ -309,8 +309,10 @@ function handleIncomingCall(call) {
   log.value = `Incoming call from ${call.parameters.From}`
 
   // get name of the caller from the phone number
-
   contact.value = getContact(call.parameters.From)
+  if (!contact.value) {
+    contact.value = getLeadContact(call.parameters.From)
+  }
 
   if (!contact.value) {
     contact.value = {
@@ -381,6 +383,9 @@ function handleDisconnectedIncomingCall() {
 
 async function makeOutgoingCall(number) {
   contact.value = getContact(number)
+  if (!contact.value) {
+    contact.value = getLeadContact(number)
+  }
 
   if (device) {
     log.value = `Attempting to call ${contact.value.mobile_no} ...`

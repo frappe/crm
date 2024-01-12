@@ -164,7 +164,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { getUser } = usersStore()
-const { contacts, getContact } = contactsStore()
+const { contacts, getContact, getLeadContact } = contactsStore()
 
 const props = defineProps({
   callLogId: {
@@ -186,8 +186,11 @@ const callLog = createResource({
     doc.duration = secondsToDuration(doc.duration)
     if (doc.type === 'Incoming') {
       doc.caller = {
-        label: getContact(doc.from)?.full_name || 'Unknown',
-        image: getContact(doc.from)?.image,
+        label:
+          getContact(doc.from)?.full_name ||
+          getLeadContact(doc.from)?.full_name ||
+          'Unknown',
+        image: getContact(doc.from)?.image || getLeadContact(doc.from)?.image,
       }
       doc.receiver = {
         label: getUser(doc.receiver).full_name,
@@ -199,8 +202,11 @@ const callLog = createResource({
         image: getUser(doc.caller).user_image,
       }
       doc.receiver = {
-        label: getContact(doc.to)?.full_name || 'Unknown',
-        image: getContact(doc.to)?.image,
+        label:
+          getContact(doc.to)?.full_name ||
+          getLeadContact(doc.to)?.full_name ||
+          'Unknown',
+        image: getContact(doc.to)?.image || getLeadContact(doc.to)?.image,
       }
     }
     return doc
