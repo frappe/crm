@@ -72,8 +72,8 @@ class Twilio:
 		url_path = "/api/method/crm.twilio.api.update_recording_info"
 		return get_public_url(url_path)
 
-	def get_call_status_callback_url(self):
-		url_path = "/api/method/crm.twilio.api.get_call_info"
+	def get_update_call_status_callback_url(self):
+		url_path = "/api/method/crm.twilio.api.update_call_status_info"
 		return get_public_url(url_path)
 
 	def generate_twilio_dial_response(self, from_number: str, to_number: str):
@@ -89,14 +89,11 @@ class Twilio:
 		dial.number(
 			to_number,
 			status_callback_event='initiated ringing answered completed',
-			status_callback=self.get_call_status_callback_url(),
+			status_callback=self.get_update_call_status_callback_url(),
 			status_callback_method='POST'
 		)
 		resp.append(dial)
 		return resp
-
-	def get_call_info(self, call_sid):
-		return self.twilio_client.calls(call_sid).fetch()
 
 	def generate_twilio_client_response(self, client, ring_tone='at'):
 		"""Generates voice call instructions to forward the call to agents computer.
@@ -108,7 +105,12 @@ class Twilio:
 			recording_status_callback=self.get_recording_status_callback_url(),
 			recording_status_callback_event='completed'
 		)
-		dial.client(client)
+		dial.client(
+			client,
+			status_callback_event='initiated ringing answered completed',
+			status_callback=self.get_update_call_status_callback_url(),
+			status_callback_method='POST'
+		)
 		resp.append(dial)
 		return resp
 
