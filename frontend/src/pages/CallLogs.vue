@@ -103,8 +103,8 @@ const rows = computed(() => {
         }
       } else if (row === 'status') {
         _rows[row] = {
-          label: callLog.status,
-          color: callLog.status === 'Completed' ? 'green' : 'gray',
+          label: statusLabelMap[callLog.status],
+          color: statusColorMap[callLog.status],
         }
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
@@ -116,4 +116,20 @@ const rows = computed(() => {
     return _rows
   })
 })
+
+const statusLabelMap = {
+  Completed: 'Completed',
+  Busy: 'Declined',
+  Ringing: 'Ringing',
+  'No Answer': 'Missed Call',
+  'In Progress': 'In Progress',
+}
+
+const statusColorMap = {
+  Completed: 'green',
+  Busy: 'orange',
+  Ringing: 'gray',
+  'No Answer': 'red',
+  'In Progress': 'blue',
+}
 </script>

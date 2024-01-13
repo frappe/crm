@@ -35,9 +35,9 @@
         <div>
           <Badge
             :variant="'subtle'"
-            :theme="callLog.data.status === 'Completed' ? 'green' : 'gray'"
+            :theme="statusColorMap[callLog.data.status]"
             size="md"
-            :label="callLog.data.status"
+            :label="statusLabelMap[callLog.data.status]"
           />
         </div>
       </div>
@@ -245,6 +245,22 @@ const breadcrumbs = computed(() => [
     route: { name: 'Call Log', params: { callLogId: props.callLogId } },
   },
 ])
+
+const statusLabelMap = {
+  Completed: 'Completed',
+  Busy: 'Declined',
+  Ringing: 'Ringing',
+  'No Answer': 'Missed Call',
+  'In Progress': 'In Progress',
+}
+
+const statusColorMap = {
+  Completed: 'green',
+  Busy: 'orange',
+  Ringing: 'gray',
+  'No Answer': 'red',
+  'In Progress': 'blue',
+}
 </script>
 
 <style scoped>
