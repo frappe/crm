@@ -51,8 +51,7 @@
    "fieldname": "organization",
    "fieldtype": "Link",
    "label": "Organization",
-   "options": "CRM Organization",
-   "reqd": 1
+   "options": "CRM Organization"
   },
   {
    "fieldname": "probability",
@@ -270,7 +269,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-06 18:45:26.263974",
+ "modified": "2024-01-13 11:50:37.361190",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
