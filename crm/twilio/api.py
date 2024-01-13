@@ -70,7 +70,7 @@ def create_call_log(call_details: TwilioCallDetails):
 		'doctype': 'CRM Call Log',
 		'medium': 'Twilio'
 	})
-
+	call_log.reference_docname, call_log.reference_doctype = get_lead_or_deal_from_number(call_log)
 	call_log.flags.ignore_permissions = True
 	call_log.save()
 	frappe.db.commit()
@@ -87,7 +87,6 @@ def update_call_log(call_sid, status=None):
 	call_log.duration = call_details.duration
 	call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
 	call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
-	call_log.reference_docname, call_log.reference_doctype = get_lead_or_deal_from_number(call_log)
 	if call_log.note and call_log.reference_docname:
 		frappe.db.set_value("CRM Note", call_log.note, "reference_doctype", call_log.reference_doctype)
 		frappe.db.set_value("CRM Note", call_log.note, "reference_docname", call_log.reference_docname)
