@@ -172,7 +172,7 @@
     <Tabs v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
-          class="group -mb-px flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
           :class="{ 'text-gray-900': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
