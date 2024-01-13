@@ -70,14 +70,14 @@
               >
                 &middot;
               </span>
-              <Tooltip
-                text="Make Call"
-                v-if="contact.mobile_no"
-                class="flex cursor-pointer items-center gap-1.5"
-                @click="makeCall(contact.mobile_no)"
-              >
-                <PhoneIcon class="h-4 w-4" />
-                <span class="">{{ contact.mobile_no }}</span>
+              <Tooltip text="Make Call" v-if="contact.mobile_no">
+                <div
+                  class="flex cursor-pointer items-center gap-1.5"
+                  @click="makeCall(contact.mobile_no)"
+                >
+                  <PhoneIcon class="h-4 w-4" />
+                  <span class="">{{ contact.mobile_no }}</span>
+                </div>
               </Tooltip>
               <span
                 v-if="contact.mobile_no"
@@ -153,7 +153,7 @@
     <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
-          class="group -mb-px flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
           :class="{ 'text-gray-900': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
@@ -171,8 +171,8 @@
       </template>
       <template #default="{ tab }">
         <DealsListView
-          class="mt-4"
           v-if="tab.label === 'Deals' && rows.length"
+          class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false }"
@@ -229,7 +229,7 @@ import { statusesStore } from '@/stores/statuses'
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
-const { $dialog } = globalStore()
+const { $dialog, makeCall } = globalStore()
 
 const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()

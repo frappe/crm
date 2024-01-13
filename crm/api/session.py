@@ -61,6 +61,27 @@ def get_contacts():
 	return contacts
 
 @frappe.whitelist()
+def get_lead_contacts():
+	if frappe.session.user == "Guest":
+		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
+
+	lead_contacts = frappe.get_all(
+		"CRM Lead",
+		fields=[
+			"name",
+			"lead_name",
+			"mobile_no",
+			"phone",
+			"image",
+			"modified"
+		],
+		order_by="lead_name asc",
+		distinct=True,
+	)
+
+	return lead_contacts
+
+@frappe.whitelist()
 def get_organizations():
 	if frappe.session.user == "Guest":
 		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)

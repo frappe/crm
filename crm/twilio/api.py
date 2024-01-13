@@ -4,6 +4,7 @@ import json
 import frappe
 from frappe import _
 from .twilio_handler import Twilio, IncomingCall, TwilioCallDetails
+from .utils import parse_mobile_no
 
 @frappe.whitelist()
 def is_enabled():
@@ -69,7 +70,7 @@ def create_call_log(call_details: TwilioCallDetails):
 		'doctype': 'CRM Call Log',
 		'medium': 'Twilio'
 	})
-
+	call_log.reference_docname, call_log.reference_doctype = get_lead_or_deal_from_number(call_log)
 	call_log.flags.ignore_permissions = True
 	call_log.save()
 	frappe.db.commit()
@@ -82,11 +83,10 @@ def update_call_log(call_sid, status=None):
 
 	call_details = twilio.get_call_info(call_sid)
 	call_log = frappe.get_doc("CRM Call Log", call_sid)
-	call_log.status = status or TwilioCallDetails.get_call_status(call_details.status)
+	call_log.status = TwilioCallDetails.get_call_status(status or call_details.status)
 	call_log.duration = call_details.duration
 	call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
 	call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
-	call_log.reference_docname, call_log.reference_doctype = get_lead_or_deal_from_number(call_log)
 	if call_log.note and call_log.reference_docname:
 		frappe.db.set_value("CRM Note", call_log.note, "reference_doctype", call_log.reference_doctype)
 		frappe.db.set_value("CRM Note", call_log.note, "reference_docname", call_log.reference_docname)
@@ -104,6 +104,15 @@ def update_recording_info(**kwargs):
 		frappe.db.set_value("CRM Call Log", call_sid, "recording_url", recording_url)
 	except:
 		frappe.log_error(title=_("Failed to capture Twilio recording"))
+
+@frappe.whitelist(allow_guest=True)
+def update_call_status_info(**kwargs):
+	try:
+		args = frappe._dict(kwargs)
+		parent_call_sid = args.ParentCallSid
+		update_call_log(parent_call_sid, status=args.CallStatus)
+	except:
+		frappe.log_error(title=_("Failed to update Twilio call status"))
 
 @frappe.whitelist(allow_guest=True)
 def get_call_info(**kwargs):
@@ -149,17 +158,25 @@ def add_note_to_call_log(call_sid, note):
 def get_lead_or_deal_from_number(call):
 	"""Get lead/deal from the given number.
 	"""
+
+	def find_record(doctype, mobile_no):
+		mobile_no = parse_mobile_no(mobile_no)
+		data = frappe.db.sql(
+			"""
+				SELECT name, mobile_no
+				FROM `tab{doctype}`
+				WHERE CONCAT('+', REGEXP_REPLACE(mobile_no, '[^0-9]', '')) = {mobile_no}
+			""".format(doctype=doctype, mobile_no=mobile_no),
+			as_dict=True
+		)
+		return data[0].name if data else None
+
 	doctype = "CRM Lead"
-	doc = None
-	if call.type == 'Outgoing':
-		doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('to') })
-		if not doc:
-			doctype = "CRM Deal"
-			doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('to') })
-	else:
-		doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('from') })
-		if not doc:
-			doctype = "CRM Deal"
-			doc = frappe.get_cached_value(doctype, { "mobile_no": call.get('from') })
+	number = call.get('to') if call.type == 'Outgoing' else call.get('from')
+
+	doc = find_record(doctype, number) or None
+	if not doc:
+		doctype = "CRM Deal"
+		doc = find_record(doctype, number)
 
 	return doc, doctype

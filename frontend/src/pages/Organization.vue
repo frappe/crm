@@ -172,7 +172,7 @@
     <Tabs v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
-          class="group -mb-px flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
           :class="{ 'text-gray-900': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
@@ -189,36 +189,34 @@
         </button>
       </template>
       <template #default="{ tab }">
-        <div class="flex h-full">
-          <LeadsListView
-            class="mt-4"
-            v-if="tab.label === 'Leads' && rows.length"
-            :rows="rows"
-            :columns="columns"
-            :options="{ selectable: false }"
-          />
-          <DealsListView
-            class="mt-4"
-            v-if="tab.label === 'Deals' && rows.length"
-            :rows="rows"
-            :columns="columns"
-            :options="{ selectable: false }"
-          />
-          <ContactsListView
-            class="mt-4"
-            v-if="tab.label === 'Contacts' && rows.length"
-            :rows="rows"
-            :columns="columns"
-            :options="{ selectable: false }"
-          />
-          <div
-            v-if="!rows.length"
-            class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
-          >
-            <div class="flex flex-col items-center justify-center space-y-3">
-              <component :is="tab.icon" class="!h-10 !w-10" />
-              <div>No {{ tab.label }} Found</div>
-            </div>
+        <LeadsListView
+          class="mt-4"
+          v-if="tab.label === 'Leads' && rows.length"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false }"
+        />
+        <DealsListView
+          class="mt-4"
+          v-if="tab.label === 'Deals' && rows.length"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false }"
+        />
+        <ContactsListView
+          class="mt-4"
+          v-if="tab.label === 'Contacts' && rows.length"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false }"
+        />
+        <div
+          v-if="!rows.length"
+          class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
+        >
+          <div class="flex flex-col items-center justify-center space-y-3">
+            <component :is="tab.icon" class="!h-10 !w-10" />
+            <div>No {{ tab.label }} Found</div>
           </div>
         </div>
       </template>

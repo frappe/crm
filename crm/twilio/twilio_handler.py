@@ -72,8 +72,8 @@ class Twilio:
 		url_path = "/api/method/crm.twilio.api.update_recording_info"
 		return get_public_url(url_path)
 
-	def get_call_status_callback_url(self):
-		url_path = "/api/method/crm.twilio.api.get_call_info"
+	def get_update_call_status_callback_url(self):
+		url_path = "/api/method/crm.twilio.api.update_call_status_info"
 		return get_public_url(url_path)
 
 	def generate_twilio_dial_response(self, from_number: str, to_number: str):
@@ -89,14 +89,11 @@ class Twilio:
 		dial.number(
 			to_number,
 			status_callback_event='initiated ringing answered completed',
-			status_callback=self.get_call_status_callback_url(),
+			status_callback=self.get_update_call_status_callback_url(),
 			status_callback_method='POST'
 		)
 		resp.append(dial)
 		return resp
-
-	def get_call_info(self, call_sid):
-		return self.twilio_client.calls(call_sid).fetch()
 
 	def generate_twilio_client_response(self, client, ring_tone='at'):
 		"""Generates voice call instructions to forward the call to agents computer.
@@ -108,7 +105,12 @@ class Twilio:
 			recording_status_callback=self.get_recording_status_callback_url(),
 			recording_status_callback_event='completed'
 		)
-		dial.client(client)
+		dial.client(
+			client,
+			status_callback_event='initiated ringing answered completed',
+			status_callback=self.get_update_call_status_callback_url(),
+			status_callback_method='POST'
+		)
 		resp.append(dial)
 		return resp
 
@@ -156,6 +158,9 @@ def get_twilio_number_owners(phone_number):
 		'owner2': {....}
 	}
 	"""
+	# remove special characters from phone number and get only digits also remove white spaces
+	# keep + sign in the number at start of the number
+	phone_number = ''.join([c for c in phone_number if c.isdigit() or c == '+'])
 	user_voice_settings = frappe.get_all(
 		'Twilio Agents',
 		filters={'twilio_number': phone_number},
@@ -200,8 +205,8 @@ class TwilioCallDetails:
 		self.application_sid = call_info.get('ApplicationSid')
 		self.call_sid = call_info.get('CallSid')
 		self.call_status = self.get_call_status(call_info.get('CallStatus'))
-		self._call_from = call_from
-		self._call_to = call_to
+		self._call_from = call_from or call_info.get('From')
+		self._call_to = call_to or call_info.get('To')
 
 	def get_direction(self):
 		if self.call_info.get('Caller').lower().startswith('client'):
