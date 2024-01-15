@@ -234,7 +234,7 @@ def get_field_obj(field):
 	if field.fieldtype == "Link":
 		obj["placeholder"] = "Select " + field.label + "..."
 		obj["doctype"] = field.options
-	elif field.fieldtype == "Select":
+	elif field.fieldtype == "Select" and field.options:
 		obj["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]
 
 	if field.read_only:
