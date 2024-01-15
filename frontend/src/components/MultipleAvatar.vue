@@ -13,7 +13,7 @@
         shape="circle"
         :image="avatars[0].image"
         :label="avatars[0].label"
-        size="md"
+        size="sm"
       />
       <div class="truncate">{{ avatars[0].label }}</div>
     </Tooltip>
@@ -28,7 +28,7 @@
         shape="circle"
         :image="avatar.image"
         :label="avatar.label"
-        size="md"
+        :size="size"
       />
     </Tooltip>
   </div>
@@ -41,6 +41,10 @@ const props = defineProps({
   avatars: {
     type: Array,
     default: [],
+  },
+  size: {
+    type: String,
+    default: 'md',
   },
 })
 const reverseAvatars = computed(() => props.avatars.reverse())

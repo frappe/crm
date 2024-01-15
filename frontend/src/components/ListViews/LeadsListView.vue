@@ -19,7 +19,7 @@
         :row="row"
       >
         <div v-if="column.key === '_assign'" class="flex items-center">
-          <MultipleAvatar :avatars="item" />
+          <MultipleAvatar :avatars="item" size="sm" />
         </div>
         <ListRowItem v-else :item="item">
           <template #prefix>
