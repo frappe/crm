@@ -47,16 +47,13 @@ class CRMServiceLevelAgreement(Document):
 			)
 
 	def apply(self, doc: Document):
-		self.handle_new(doc)
+		self.handle_creation(doc)
 		self.handle_communication_status(doc)
 		self.handle_targets(doc)
 		self.handle_sla_status(doc)
 
-	def handle_new(self, doc: Document):
-		if not doc.is_new():
-			return
-		creation = doc.sla_creation or now_datetime()
-		doc.sla_creation = creation
+	def handle_creation(self, doc: Document):
+		doc.sla_creation = doc.sla_creation or now_datetime()
 
 	def handle_communication_status(self, doc: Document):
 		if doc.is_new() or not doc.has_value_changed("communication_status"):
