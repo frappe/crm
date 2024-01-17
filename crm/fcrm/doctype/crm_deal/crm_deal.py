@@ -58,9 +58,9 @@ class CRMDeal(Document):
 		for d in self.contacts:
 			if d.is_primary == 1:
 				primary_contact_exists = True
-				self.email = d.email.strip()
-				self.mobile_no = d.mobile_no.strip()
-				self.phone = d.phone.strip()
+				self.email = d.email.strip() if d.email else ""
+				self.mobile_no = d.mobile_no.strip() if d.mobile_no else ""
+				self.phone = d.phone.strip() if d.phone else ""
 				break
 
 		if not primary_contact_exists:
