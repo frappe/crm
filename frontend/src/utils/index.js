@@ -116,7 +116,7 @@ export function validateEmail(email) {
 
 export function setupAssignees(data) {
   let { getUser } = usersStore()
-  let assignees = JSON.parse(data._assign) || []
+  let assignees = data._assign || []
   data._assignedTo = assignees.map((user) => ({
     name: user,
     image: getUser(user).user_image,

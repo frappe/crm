@@ -257,3 +257,17 @@ def get_type(field):
 	elif field.read_only:
 		return "read_only"
 	return field.fieldtype.lower()
+
+def get_assigned_users(doctype, name):
+	assigned_users = frappe.get_all(
+		"ToDo",
+		fields=["allocated_to"],
+		filters={
+			"reference_type": doctype,
+			"reference_name": name,
+			"status": ("!=", "Cancelled"),
+		},
+		pluck="allocated_to",
+	)
+
+	return list(set(assigned_users))
