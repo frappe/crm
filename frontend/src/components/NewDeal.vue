@@ -164,5 +164,8 @@ onMounted(() => {
   if (!props.newDeal.status) {
     props.newDeal.status = getDealStatus(props.newDeal.status).name
   }
+  if (!props.newDeal.deal_owner) {
+    props.newDeal.deal_owner = getUser().email
+  }
 })
 </script>

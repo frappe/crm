@@ -164,5 +164,8 @@ onMounted(() => {
   if (!props.newLead.status) {
     props.newLead.status = getLeadStatus(props.newLead.status).name
   }
+  if (!props.newLead.lead_owner) {
+    props.newLead.lead_owner = getUser().email
+  }
 })
 </script>
