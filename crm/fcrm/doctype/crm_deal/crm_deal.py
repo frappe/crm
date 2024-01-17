@@ -86,8 +86,8 @@ class CRMDeal(Document):
 		if not agent:
 			return
 
-		if self._assign:
-			assignees = json.loads(self._assign)
+		assignees = self.get_assigned_users()
+		if assignees:
 			for assignee in assignees:
 				if agent == assignee:
 					# the agent is already set as an assignee
