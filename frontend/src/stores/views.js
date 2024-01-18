@@ -1,14 +1,19 @@
 import { defineStore } from 'pinia'
+import { usersStore } from '@/stores/users'
 import { createListResource } from 'frappe-ui'
 import { reactive, ref } from 'vue'
 
 export const viewsStore = defineStore('crm-views', () => {
+
+  const { getUser } = usersStore()
+
   let viewsByName = reactive({})
   let pinnedViews = ref([])
 
   const views = createListResource({
     doctype: 'CRM View Settings',
     fields: ['*'],
+    filters: { user: getUser().email },
     cache: 'crm-views',
     initialData: [],
     auto: true,
