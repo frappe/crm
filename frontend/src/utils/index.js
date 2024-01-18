@@ -130,3 +130,12 @@ export function setupCustomActions(data, obj) {
   let formScript = script(obj)
   data._customActions = formScript?.actions || []
 }
+
+export function errorMessage(title, message) {
+  createToast({
+    title: title || 'Error',
+    text: message,
+    icon: 'x',
+    iconClasses: 'text-red-600',
+  })
+}

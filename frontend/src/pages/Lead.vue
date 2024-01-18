@@ -113,19 +113,35 @@
                 <Tooltip text="Make a call...">
                   <Button
                     class="h-7 w-7"
-                    @click="() => makeCall(lead.data.mobile_no)"
+                    @click="
+                      () =>
+                        lead.data.mobile_no
+                          ? makeCall(lead.data.mobile_no)
+                          : errorMessage('No phone number set')
+                    "
                   >
                     <PhoneIcon class="h-4 w-4" />
                   </Button>
                 </Tooltip>
                 <Button class="h-7 w-7">
-                  <EmailIcon class="h-4 w-4" @click="openEmailBox()" />
+                  <EmailIcon
+                    class="h-4 w-4"
+                    @click="
+                      lead.data.email
+                        ? openEmailBox()
+                        : errorMessage('No email set')
+                    "
+                  />
                 </Button>
-                <Tooltip v-if="lead.data.website" text="Go to website...">
+                <Tooltip text="Go to website...">
                   <Button class="h-7 w-7">
                     <LinkIcon
                       class="h-4 w-4"
-                      @click="openWebsite(lead.data.website)"
+                      @click="
+                        lead.data.website
+                          ? openWebsite(lead.data.website)
+                          : errorMessage('No website set')
+                      "
                     />
                   </Button>
                 </Tooltip>
@@ -257,6 +273,7 @@ import {
   createToast,
   setupAssignees,
   setupCustomActions,
+  errorMessage,
 } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
