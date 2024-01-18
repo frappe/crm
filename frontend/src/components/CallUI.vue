@@ -41,11 +41,11 @@
           class="rounded-full"
           @click="toggleMute"
         />
-        <Button class="rounded-full">
+        <!-- <Button class="rounded-full">
           <template #icon>
             <DialpadIcon class="cursor-pointer rounded-full" />
           </template>
-        </Button>
+        </Button> -->
         <Button class="rounded-full">
           <template #icon>
             <NoteIcon
@@ -171,7 +171,12 @@
       </Button>
     </div>
   </div>
-  <NoteModal v-model="showNoteModal" :note="note" @updateNote="updateNote" />
+  <NoteModal
+    v-model="showNoteModal"
+    :note="note"
+    doctype="CRM Call Log"
+    @after="updateNote"
+  />
 </template>
 
 <script setup>
@@ -213,29 +218,13 @@ const note = ref({
   content: '',
 })
 
-async function updateNote(_note) {
-  if (_note.name) {
-    await call('frappe.client.set_value', {
-      doctype: 'CRM Note',
-      name: _note.name,
-      fieldname: _note,
+async function updateNote(_note, insert_mode = false) {
+  note.value = _note
+  if (insert_mode && _note.name) {
+    await call('crm.twilio.api.add_note_to_call_log', {
+      call_sid: _call.value.parameters.CallSid,
+      note: _note.name,
     })
-    note.value = _note
-  } else {
-    let d = await call('frappe.client.insert', {
-      doc: {
-        doctype: 'CRM Note',
-        title: _note.title,
-        content: _note.content,
-      },
-    })
-    if (d.name) {
-      note.value = d
-      await call('crm.twilio.api.add_note_to_call_log', {
-        call_sid: _call.value.parameters.CallSid,
-        note: d.name,
-      })
-    }
   }
 }
 

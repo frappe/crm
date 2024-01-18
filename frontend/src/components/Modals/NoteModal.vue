@@ -98,7 +98,7 @@ async function updateNote() {
     })
     if (d.name) {
       notes.value?.reload()
-      emit('after', d)
+      emit('after', d, true)
     }
   }
   show.value = false

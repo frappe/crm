@@ -148,7 +148,9 @@ def add_note_to_call_log(call_sid, note):
 	if not twilio: return
 
 	call_details = twilio.get_call_info(call_sid)
-	frappe.db.set_value("CRM Call Log", call_details.parent_call_sid, "note", note)
+	sid = call_sid if call_details.direction == 'inbound' else call_details.parent_call_sid
+
+	frappe.db.set_value("CRM Call Log", sid, "note", note)
 	frappe.db.commit()
 
 def get_lead_or_deal_from_number(call):
