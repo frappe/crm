@@ -1075,6 +1075,8 @@ function scroll(el) {
   }, 500)
 }
 
+defineExpose({ emailBox })
+
 nextTick(() => scroll())
 </script>
 

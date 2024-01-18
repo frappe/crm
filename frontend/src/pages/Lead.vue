@@ -42,6 +42,7 @@
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
       <Activities
+        ref="activities"
         doctype="CRM Lead"
         :title="tab.label"
         v-model:reload="reload"
@@ -118,9 +119,9 @@
                   </Button>
                 </Tooltip>
                 <Button class="h-7 w-7">
-                  <EmailIcon class="h-4 w-4" />
+                  <EmailIcon class="h-4 w-4" @click="openEmailBox()" />
                 </Button>
-                <Tooltip text="Go to website...">
+                <Tooltip v-if="lead.data.website" text="Go to website...">
                   <Button class="h-7 w-7">
                     <LinkIcon
                       class="h-4 w-4"
@@ -495,5 +496,11 @@ async function convertToDeal(updated) {
       router.push({ name: 'Deal', params: { dealId: deal } })
     }
   }
+}
+
+const activities = ref(null)
+
+function openEmailBox() {
+  activities.value.emailBox.show = true
 }
 </script>

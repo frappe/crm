@@ -37,6 +37,7 @@
   <div v-if="deal.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
       <Activities
+        ref="activities"
         doctype="CRM Deal"
         :title="tab.label"
         v-model:reload="reload"
@@ -77,13 +78,13 @@
               </Button>
             </Tooltip>
             <Button class="h-7 w-7">
-              <EmailIcon class="h-4 w-4" />
+              <EmailIcon class="h-4 w-4" @click="openEmailBox()" />
             </Button>
-            <Tooltip text="Go to website...">
+            <Tooltip v-if="deal.data.website" text="Go to website...">
               <Button class="h-7 w-7">
                 <LinkIcon
                   class="h-4 w-4"
-                  @click="openWebsite(deal.data.website)"
+                  @click="deal.data.website && openWebsite(deal.data.website)"
                 />
               </Button>
             </Tooltip>
@@ -561,5 +562,11 @@ async function deleteDeal(name) {
     name,
   })
   router.push({ name: 'Deals' })
+}
+
+const activities = ref(null)
+
+function openEmailBox() {
+  activities.value.emailBox.show = true
 }
 </script>
