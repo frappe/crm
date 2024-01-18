@@ -111,28 +111,22 @@ def update_call_status_info(**kwargs):
 		args = frappe._dict(kwargs)
 		parent_call_sid = args.ParentCallSid
 		update_call_log(parent_call_sid, status=args.CallStatus)
+
+		call_info = {
+			'ParentCallSid': args.ParentCallSid,
+			'CallSid': args.CallSid,
+			'CallStatus': args.CallStatus,
+			'CallDuration': args.CallDuration,
+			'From': args.From,
+			'To': args.To,
+		}
+
+		client = Twilio.get_twilio_client()
+		client.calls(args.ParentCallSid).user_defined_messages.create(
+			content=json.dumps(call_info)
+		)
 	except:
 		frappe.log_error(title=_("Failed to update Twilio call status"))
-
-@frappe.whitelist(allow_guest=True)
-def get_call_info(**kwargs):
-	"""This is a webhook called when the outgoing call status changes.
-		E.g. 'initiated' 'ringing', 'in-progress', 'completed' etc.
-	"""
-	args = frappe._dict(kwargs)
-	call_info = {
-		'ParentCallSid': args.ParentCallSid,
-		'CallSid': args.CallSid,
-		'CallStatus': args.CallStatus,
-		'CallDuration': args.CallDuration,
-		'From': args.From,
-		'To': args.To,
-	}
-
-	client = Twilio.get_twilio_client()
-	client.calls(args.ParentCallSid).user_defined_messages.create(
-		content=json.dumps(call_info)
-	)
 
 def get_datetime_from_timestamp(timestamp):
 	from datetime import datetime
