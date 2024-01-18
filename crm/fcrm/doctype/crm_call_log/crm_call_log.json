@@ -43,7 +43,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Ringing\nIn Progress\nCompleted\nFailed\nBusy\nNo Answer\nQueued\nCanceled",
+   "options": "Initiated\nRinging\nIn Progress\nCompleted\nFailed\nBusy\nNo Answer\nQueued\nCanceled",
    "read_only": 1
   },
   {
@@ -127,7 +127,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-23 13:11:38.804903",
+ "modified": "2024-01-18 13:27:19.776926",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Call Log",

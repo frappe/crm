@@ -95,6 +95,9 @@ class Twilio:
 		resp.append(dial)
 		return resp
 
+	def get_call_info(self, call_sid):
+		return self.twilio_client.calls(call_sid).fetch()
+
 	def generate_twilio_client_response(self, client, ring_tone='at'):
 		"""Generates voice call instructions to forward the call to agents computer.
 		"""

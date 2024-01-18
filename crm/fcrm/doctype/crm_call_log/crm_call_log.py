@@ -90,18 +90,18 @@ class CRMCallLog(Document):
 @frappe.whitelist()
 def get_call_log(name):
 	doc = frappe.get_doc("CRM Call Log", name)
-	_doc = doc.as_dict()
+	doc = doc.as_dict()
 	if doc.lead:
-		_doc.lead_name = frappe.db.get_value("CRM Lead", doc.lead, "lead_name")
+		doc.lead_name = frappe.db.get_value("CRM Lead", doc.lead, "lead_name")
 	if doc.note:
 		note = frappe.db.get_values("CRM Note", doc.note, ["title", "content"])[0]
-		_doc.note_doc = {
+		doc.note_doc = {
 			"name": doc.note,
 			"title": note[0],
 			"content": note[1]
 		}
 
-	return _doc
+	return doc
 
 @frappe.whitelist()
 def create_lead_from_call_log(call_log):
