@@ -9,6 +9,13 @@
     :editable="editable"
   >
     <template #top>
+      <div class="mx-10 flex items-center gap-2 border-t py-2.5">
+        <span class="text-xs text-gray-500">SUBJECT:</span>
+        <TextInput
+          class="flex-1 border-none bg-white hover:bg-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
+          v-model="subject"
+        />
+      </div>
       <div
         class="mx-10 flex items-center gap-2 border-t py-2.5"
         :class="[cc || bcc ? '' : 'border-b']"
@@ -136,6 +143,10 @@ const props = defineProps({
     type: String,
     default: 'CRM Lead',
   },
+  subject: {
+    type: String,
+    default: 'Email from Lead',
+  },
   editorProps: {
     type: Object,
     default: () => ({}),
@@ -158,6 +169,7 @@ const textEditor = ref(null)
 const cc = ref(false)
 const bcc = ref(false)
 
+const subject = ref(props.subject)
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
 const ccEmails = ref([])
 const bccEmails = ref([])
@@ -170,7 +182,7 @@ function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
 }
 
-defineExpose({ editor, cc, bcc, toEmails, ccEmails, bccEmails })
+defineExpose({ editor, subject, cc, bcc, toEmails, ccEmails, bccEmails })
 
 const textEditorMenuButtons = [
   'Paragraph',

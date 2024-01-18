@@ -55,6 +55,7 @@
       v-model="doc.data"
       v-model:attachments="attachments"
       :doctype="doctype"
+      :subject="subject"
       placeholder="Add a reply..."
     />
   </div>
@@ -87,6 +88,16 @@ const newEmailEditor = ref(null)
 const sendEmailRef = ref(null)
 const attachments = ref([])
 
+const subject = computed(() => {
+  let prefix = ''
+  if (doc.value.data?.lead_name) {
+    prefix = doc.value.data.lead_name
+  } else if (doc.value.data?.organization) {
+    prefix = doc.value.data.organization
+  }
+  return `${prefix} (#${doc.value.data.name})`
+})
+
 watch(
   () => showCommunicationBox.value,
   (value) => {
@@ -106,6 +117,7 @@ const onNewEmailChange = (value) => {
 
 async function sendMail() {
   let recipients = newEmailEditor.value.toEmails
+  let subject = newEmailEditor.value.subject
   let cc = newEmailEditor.value.ccEmails
   let bcc = newEmailEditor.value.bccEmails
   await call('frappe.core.doctype.communication.email.make', {
@@ -113,7 +125,7 @@ async function sendMail() {
     attachments: attachments.value.map((x) => x.name),
     cc: cc.join(', '),
     bcc: bcc.join(', '),
-    subject: 'Email from Agent',
+    subject: subject,
     content: newEmail.value,
     doctype: props.doctype,
     name: doc.value.data.name,
