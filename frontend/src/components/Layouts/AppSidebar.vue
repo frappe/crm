@@ -16,24 +16,53 @@
         />
       </div>
       <div
+        v-if="isSidebarCollapsed && getPublicViews().length"
+        class="mx-2 my-2 h-1 border-b"
+      />
+      <div
+        v-if="getPublicViews().length"
+        class="px-3 text-base text-gray-600 transition-all duration-300 ease-in-out"
+        :class="
+          isSidebarCollapsed
+            ? 'ml-0 h-0 overflow-hidden opacity-0'
+            : 'ml-2 h-7 w-auto opacity-100 mt-4'
+        "
+      >
+        Public Views
+      </div>
+      <div v-if="getPublicViews().length" class="flex flex-col overflow-y-auto">
+        <SidebarLink
+          v-for="publicView in getPublicViews()"
+          :icon="
+            h(getIcon(publicView.route_name), {
+              class: 'h-4.5 w-4.5 text-gray-700',
+            })
+          "
+          :label="publicView.label"
+          :to="{
+            name: publicView.route_name,
+            query: { view: publicView.name },
+          }"
+          :isCollapsed="isSidebarCollapsed"
+          class="mx-2 my-0.5"
+        />
+      </div>
+      <div
         v-if="isSidebarCollapsed && getPinnedViews().length"
         class="mx-2 my-2 h-1 border-b"
       />
       <div
         v-if="getPinnedViews().length"
-        class="flex flex-col overflow-y-auto"
-        :class="isSidebarCollapsed ? 'mt-0' : 'mt-4'"
+        class="px-3 text-base text-gray-600 transition-all duration-300 ease-in-out"
+        :class="
+          isSidebarCollapsed
+            ? 'ml-0 h-0 overflow-hidden opacity-0'
+            : 'ml-2 h-7 w-auto opacity-100 mt-4'
+        "
       >
-        <div
-          class="h-7 px-3 text-base text-gray-600 transition-all duration-300 ease-in-out"
-          :class="
-            isSidebarCollapsed
-              ? 'ml-0 h-0 overflow-hidden opacity-0'
-              : 'ml-2 w-auto opacity-100'
-          "
-        >
-          Pinned Views
-        </div>
+        Pinned Views
+      </div>
+      <div v-if="getPinnedViews().length" class="flex flex-col overflow-y-auto">
         <SidebarLink
           v-for="pinnedView in getPinnedViews()"
           :icon="
@@ -84,7 +113,7 @@ import { viewsStore } from '@/stores/views'
 import { useStorage } from '@vueuse/core'
 import { h } from 'vue'
 
-const { getPinnedViews } = viewsStore()
+const { getPinnedViews, getPublicViews } = viewsStore()
 
 const links = [
   {
