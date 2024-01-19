@@ -249,8 +249,15 @@ const viewsDropdownOptions = computed(() => {
         router.push({ ...route, query: { view: view.name } })
       }
     })
-    let savedViews = list.value.data.views.filter((v) => !v.pinned)
+    let publicViews = list.value.data.views.filter((v) => v.public)
+    let savedViews = list.value.data.views.filter((v) => !v.pinned && !v.public)
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
+
+    publicViews.length &&
+      _views.push({
+        group: 'Public Views',
+        items: publicViews,
+      })
 
     savedViews.length &&
       _views.push({
