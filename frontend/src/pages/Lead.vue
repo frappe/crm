@@ -318,6 +318,7 @@ const lead = createResource({
       $dialog,
       router,
       updateField,
+      errorMessage,
       deleteDoc: deleteLead,
       call,
     })
