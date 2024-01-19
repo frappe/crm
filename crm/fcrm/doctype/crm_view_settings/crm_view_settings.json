@@ -11,6 +11,7 @@
   "dt",
   "route_name",
   "pinned",
+  "public",
   "columns_tab",
   "load_default_columns",
   "columns",
@@ -97,11 +98,17 @@
    "fieldname": "load_default_columns",
    "fieldtype": "Check",
    "label": "Load Default Columns"
+  },
+  {
+   "default": "0",
+   "fieldname": "public",
+   "fieldtype": "Check",
+   "label": "Public"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-03 16:54:52.195687",
+ "modified": "2024-01-19 19:55:14.876998",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
