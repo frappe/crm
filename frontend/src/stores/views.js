@@ -1,28 +1,29 @@
 import { defineStore } from 'pinia'
-import { usersStore } from '@/stores/users'
-import { createListResource } from 'frappe-ui'
+import { createResource } from 'frappe-ui'
 import { reactive, ref } from 'vue'
 
-export const viewsStore = defineStore('crm-views', () => {
-
-  const { getUser } = usersStore()
-
+export const viewsStore = defineStore('crm-views', (doctype) => {
   let viewsByName = reactive({})
   let pinnedViews = ref([])
+  let publicViews = ref([])
 
-  const views = createListResource({
-    doctype: 'CRM View Settings',
-    fields: ['*'],
-    filters: { user: getUser().email },
-    cache: 'crm-views',
+  // Views
+  const views = createResource({
+    url: 'crm.api.views.get_views',
+    params: { doctype: doctype || '' },
+    cache: "crm-views",
     initialData: [],
     auto: true,
     transform(views) {
       pinnedViews.value = []
+      publicViews.value = []
       for (let view of views) {
         viewsByName[view.name] = view
         if (view.pinned) {
           pinnedViews.value?.push(view)
+        }
+        if (view.public) {
+          publicViews.value?.push(view)
         }
       }
       return views
@@ -42,13 +43,18 @@ export const viewsStore = defineStore('crm-views', () => {
     return pinnedViews.value
   }
 
-  async function reload(wait = false) {
+  function getPublicViews() {
+    if (!publicViews.value?.length) return []
+    return publicViews.value
+  }
+
+  async function reload() {
     await views.reload()
   }
 
   return {
-    views,
     getPinnedViews,
+    getPublicViews,
     reload,
     getView,
   }

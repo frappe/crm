@@ -51,7 +51,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-17 22:21:00.606384",
+ "modified": "2024-01-19 21:57:18.626669",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Twilio Agents",
@@ -66,7 +66,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "System Manager",
+   "role": "Sales Manager",
    "share": 1,
    "write": 1
   }

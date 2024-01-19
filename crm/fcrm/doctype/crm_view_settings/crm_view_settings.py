@@ -64,6 +64,16 @@ def delete(name):
 		frappe.delete_doc("CRM View Settings", name)
 
 @frappe.whitelist()
+def public(name, value):
+	if "Sales Manager" not in frappe.get_roles() or frappe.session.user != "Administrator":
+		frappe.throw("Not permitted", frappe.PermissionError)
+
+	doc = frappe.get_doc("CRM View Settings", name)
+	doc.public = value
+	doc.user = "" if value else frappe.session.user
+	doc.save()
+
+@frappe.whitelist()
 def pin(name, value):
 	doc = frappe.get_doc("CRM View Settings", name)
 	doc.pinned = value

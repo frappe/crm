@@ -13,10 +13,10 @@
   "section_break_qhaf",
   "old_parent",
   "parent_crm_territory",
-  "is_group",
   "column_break_pypy",
   "lft",
-  "rgt"
+  "rgt",
+  "is_group"
  ],
  "fields": [
   {
@@ -90,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-01-05 12:26:25.485080",
+ "modified": "2024-01-19 21:53:53.451891",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Territory",
@@ -106,7 +106,19 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "System Manager",
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
    "share": 1,
    "write": 1
   }

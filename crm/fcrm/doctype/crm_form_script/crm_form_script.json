@@ -45,7 +45,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-29 12:14:45.706725",
+ "modified": "2024-01-19 21:52:46.078626",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Form Script",
@@ -60,7 +60,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "System Manager",
+   "role": "Sales Manager",
    "share": 1,
    "write": 1
   }

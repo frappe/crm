@@ -16,6 +16,10 @@ def get_users():
 	for user in users:
 		if frappe.session.user == user.name:
 			user.session_user = True
+
+		user.is_manager = (
+			"Sales Manager" in frappe.get_roles(user.name) or user.name == "Administrator"
+		)
 	return users
 
 @frappe.whitelist()

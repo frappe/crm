@@ -3,6 +3,8 @@ from frappe.model.document import get_controller
 from frappe.model import no_value_fields
 from pypika import Criterion
 
+from crm.api.views import get_views
+
 
 @frappe.whitelist()
 def sort_options(doctype: str):
@@ -163,14 +165,6 @@ def get_list_data(
 		"total_count": frappe.client.get_count(doctype, filters=filters),
 		"row_count": len(data),
 	}
-
-def get_views(doctype):
-	views = frappe.get_all(
-		"CRM View Settings",
-		fields=["*"],
-		filters={"dt": doctype, "user": frappe.session.user}
-	)
-	return views
 
 
 def get_doctype_fields(doctype):
