@@ -18,7 +18,10 @@
       </Dropdown>
     </div>
     <div class="flex items-center gap-2">
-      <div v-if="viewUpdated" class="flex items-center gap-2 border-r pr-2">
+      <div
+        v-if="viewUpdated && (!view.public || isManager())"
+        class="flex items-center gap-2 border-r pr-2"
+      >
         <Button label="Cancel" @click="cancelChanges" />
         <Button
           :label="view?.name ? 'Save Changes' : 'Create View'"
@@ -76,8 +79,9 @@ import Filter from '@/components/Filter.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
+import { usersStore } from '@/stores/users'
 import { useDebounceFn } from '@vueuse/core'
-import { createResource, Dropdown, call } from 'frappe-ui'
+import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
 import { computed, ref, defineModel, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -94,6 +98,7 @@ const props = defineProps({
 
 const { $dialog } = globalStore()
 const { reload: reloadView, getView } = viewsStore()
+const { isManager } = usersStore()
 
 const list = defineModel()
 const loadMore = defineModel('loadMore')
@@ -123,6 +128,7 @@ const view = ref({
   rows: '',
   load_default_columns: false,
   pinned: false,
+  public: false,
 })
 
 const pageLength = computed(() => list.value?.data?.page_length)
@@ -159,6 +165,7 @@ function getParams() {
       route_name: _view.route_name,
       load_default_columns: _view.row,
       pinned: _view.pinned,
+      public: _view.public,
     }
   } else {
     view.value = {
@@ -171,6 +178,7 @@ function getParams() {
       route_name: '',
       load_default_columns: true,
       pinned: false,
+      public: false,
     }
   }
 
@@ -345,7 +353,7 @@ const viewActions = computed(() => {
     },
   ]
 
-  if (route.query.view) {
+  if (route.query.view && (!view.value.public || isManager())) {
     actions[0].items.push(
       {
         label: 'Rename',
@@ -359,6 +367,18 @@ const viewActions = computed(() => {
         onClick: () => pinView(),
       }
     )
+
+    if (route.query.view && isManager()) {
+      actions[0].items.push({
+        label: view.value.public ? 'Make Private' : 'Make Public',
+        icon: () =>
+          h(FeatherIcon, {
+            name: view.value.public ? 'lock' : 'unlock',
+            class: 'h-4 w-4',
+          }),
+        onClick: () => publicView(),
+      })
+    }
 
     actions.push({
       group: 'Delete View',
@@ -398,6 +418,16 @@ function renameView() {
   view.value.name = route.query.view
   view.value.label = getView(route.query.view).label
   showViewModal.value = true
+}
+
+function publicView() {
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.public', {
+    name: route.query.view,
+    value: !view.value.public,
+  }).then(() => {
+    view.value.public = !view.value.public
+    reloadView()
+  })
 }
 
 function pinView() {
