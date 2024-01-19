@@ -353,7 +353,7 @@ const deal = createResource({
       $dialog,
       router,
       updateField,
-      errorMessage,
+      createToast,
       deleteDoc: deleteDeal,
       call,
     })
