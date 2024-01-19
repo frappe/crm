@@ -17,6 +17,7 @@
   "next_step",
   "deal_owner",
   "contacts_tab",
+  "lead_name",
   "email",
   "mobile_no",
   "phone",
@@ -265,11 +266,16 @@
    "fieldtype": "Table",
    "label": "Status Change Log",
    "options": "CRM Status Change Log"
+  },
+  {
+   "fieldname": "lead_name",
+   "fieldtype": "Data",
+   "label": "Lead Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-13 11:50:37.361190",
+ "modified": "2024-01-19 17:13:41.931398",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

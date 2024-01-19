@@ -167,6 +167,7 @@ class CRMLead(Document):
 				"organization": organization,
 				"deal_owner": self.lead_owner,
 				"source": self.source,
+				"lead_name": self.lead_name,
 				"contacts": [{"contact": contact}],
 			}
 		)
