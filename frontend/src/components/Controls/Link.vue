@@ -108,12 +108,20 @@ const options = createResource({
     doctype: props.doctype,
   },
   transform: (data) => {
-    return data.map((option) => {
+    let allData = data.map((option) => {
       return {
         label: option.value,
         value: option.value,
       }
     })
+
+    if (props.doctype == 'User') {
+      allData.unshift({
+        label: '@me',
+        value: '@me',
+      })
+    }
+    return allData
   },
 })
 

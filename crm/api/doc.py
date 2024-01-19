@@ -72,6 +72,14 @@ def get_list_data(
 	custom_view = False
 	filters = frappe._dict(filters)
 
+	for key in filters:
+		value = filters[key]
+		if isinstance(value, list):
+			if "@me" in value:
+				value[value.index("@me")] = frappe.session.user
+			elif value == "@me":
+				filters[key] = frappe.session.user
+
 	if default_filters:
 		default_filters = frappe.parse_json(default_filters)
 		filters.update(default_filters)
@@ -98,11 +106,11 @@ def get_list_data(
 		rows = frappe.parse_json(list_view_settings.rows)
 		is_default = False
 	elif not custom_view or is_default:
-		list = get_controller(doctype)
+		_list = get_controller(doctype)
 
-		if hasattr(list, "default_list_data"):
-			columns = list.default_list_data().get("columns")
-			rows = list.default_list_data().get("rows")
+		if hasattr(_list, "default_list_data"):
+			columns = _list.default_list_data().get("columns")
+			rows = _list.default_list_data().get("rows")
 
 	# check if rows has all keys from columns if not add them
 	for column in columns:
