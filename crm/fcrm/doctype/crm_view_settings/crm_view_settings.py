@@ -65,7 +65,7 @@ def delete(name):
 
 @frappe.whitelist()
 def public(name, value):
-	if "Sales Manager" not in frappe.get_roles() or frappe.session.user != "Administrator":
+	if frappe.session.user != "Administrator" and "Sales Manager" not in frappe.get_roles():
 		frappe.throw("Not permitted", frappe.PermissionError)
 
 	doc = frappe.get_doc("CRM View Settings", name)
