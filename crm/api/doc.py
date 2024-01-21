@@ -116,8 +116,12 @@ def get_list_data(
 		if isinstance(value, list):
 			if "@me" in value:
 				value[value.index("@me")] = frappe.session.user
-			elif value == "@me":
-				filters[key] = frappe.session.user
+			elif "%@me%" in value:
+				index = [i for i, v in enumerate(value) if v == "%@me%"]
+				for i in index:
+					value[i] = "%" + frappe.session.user + "%"
+		elif value == "@me":
+			filters[key] = frappe.session.user
 
 	if default_filters:
 		default_filters = frappe.parse_json(default_filters)
