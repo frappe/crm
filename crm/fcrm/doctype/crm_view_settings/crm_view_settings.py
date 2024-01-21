@@ -14,8 +14,8 @@ def create(view):
 	view = frappe._dict(view)
 
 	view.filters = parse_json(view.filters) or {}
-	view.columns = parse_json(view.columns) or []
-	view.rows = parse_json(view.rows) or []
+	view.columns = parse_json(view.columns or '[]')
+	view.rows = parse_json(view.rows or '[]')
 
 	default_rows = sync_default_list_rows(view.doctype)
 	view.rows = view.rows + default_rows if default_rows else view.rows
