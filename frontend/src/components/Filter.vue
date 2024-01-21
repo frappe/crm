@@ -39,7 +39,7 @@
                   type="select"
                   :value="f.operator"
                   @change="(e) => updateOperator(e, f)"
-                  :options="getOperators(f.field.fieldtype)"
+                  :options="getOperators(f.field.fieldtype, f.field.fieldname)"
                   placeholder="Operator"
                 />
               </div>
@@ -193,7 +193,7 @@ function convertFilters(data, allFilters) {
   return new Set(f)
 }
 
-function getOperators(fieldtype) {
+function getOperators(fieldtype, fieldname) {
   let options = []
   if (typeString.includes(fieldtype)) {
     options.push(
@@ -204,6 +204,12 @@ function getOperators(fieldtype) {
         { label: 'Not Like', value: 'not like' },
       ]
     )
+  }
+  if (fieldname === '_assign') {
+    options = [
+      { label: 'Like', value: 'like' },
+      { label: 'Not Like', value: 'not like' },
+    ]
   }
   if (typeNumber.includes(fieldtype)) {
     options.push(
@@ -351,9 +357,6 @@ function parseFilters(filters) {
 }
 
 function transformIn(f) {
-  if (f.fieldname === '_assign') {
-    f.operator = f.operator === 'is' ? 'like' : 'not like'
-  }
   if (f.operator.includes('like') && !f.value.includes('%')) {
     f.value = `%${f.value}%`
   }
