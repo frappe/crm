@@ -18,7 +18,6 @@ def sort_options(doctype: str):
 
 @frappe.whitelist()
 def get_filterable_fields(doctype: str):
-	DocField = frappe.qb.DocType("DocField")
 	allowed_fieldtypes = [
 		"Check",
 		"Data",
@@ -37,7 +36,51 @@ def get_filterable_fields(doctype: str):
 	if hasattr(c, "get_non_filterable_fields"):
 		restricted_fields = c.get_non_filterable_fields()
 
-	from_doc_fields = (
+	res = []
+
+	# append DocFields
+	DocField = frappe.qb.DocType("DocField")
+	doc_fields = get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields)
+	res.extend(doc_fields)
+
+	# append Custom Fields
+	CustomField = frappe.qb.DocType("Custom Field")
+	custom_fields = get_fields_meta(CustomField, doctype, allowed_fieldtypes, restricted_fields)
+	res.extend(custom_fields)
+
+	# append standard fields (getting error when using frappe.model.std_fields)
+	standard_fields = [
+		{"fieldname": "name", "fieldtype": "Link", "label": "ID", "options": doctype},
+		{
+			"fieldname": "owner",
+			"fieldtype": "Link",
+			"label": "Created By",
+			"options": "User"
+		},
+		{
+			"fieldname": "modified_by",
+			"fieldtype": "Link",
+			"label": "Last Updated By",
+			"options": "User",
+		},
+		{"fieldname": "_user_tags", "fieldtype": "Data", "label": "Tags"},
+		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Liked By"},
+		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
+		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
+	]
+	for field in standard_fields:
+		if (
+			field.get("fieldname") not in restricted_fields and
+			field.get("fieldtype") in allowed_fieldtypes
+		):
+			field["name"] = field.get("fieldname")
+			res.append(field)
+
+	return res
+
+def get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
+	parent = "parent" if DocField._table_name == "tabDocField" else "dt"
+	return (
 		frappe.qb.from_(DocField)
 		.select(
 			DocField.fieldname,
@@ -46,16 +89,12 @@ def get_filterable_fields(doctype: str):
 			DocField.name,
 			DocField.options,
 		)
-		.where(DocField.parent == doctype)
+		.where(DocField[parent] == doctype)
 		.where(DocField.hidden == False)
 		.where(Criterion.any([DocField.fieldtype == i for i in allowed_fieldtypes]))
 		.where(Criterion.all([DocField.fieldname != i for i in restricted_fields]))
 		.run(as_dict=True)
 	)
-	res = []
-	res.extend(from_doc_fields)
-	return res
-
 
 @frappe.whitelist()
 def get_list_data(
