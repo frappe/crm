@@ -54,11 +54,13 @@
         <Link
           v-else-if="['lead_owner', 'deal_owner'].includes(field.name)"
           class="form-control"
-          :value="getUser(data[field.name]).full_name"
+          :value="data[field.name] && getUser(data[field.name]).full_name"
           doctype="User"
           @change="(data) => emit('update', field.name, data)"
+          :placeholder="'Select' + ' ' + field.label + '...'"
+          :hideMe="true"
         >
-          <template #prefix>
+          <template v-if="data[field.name]" #prefix>
             <UserAvatar class="mr-1.5" :user="data[field.name]" size="sm" />
           </template>
           <template #item-prefix="{ option }">
