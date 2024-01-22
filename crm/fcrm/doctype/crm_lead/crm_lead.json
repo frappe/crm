@@ -7,6 +7,7 @@
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
+ "email_append_to": 1,
  "engine": "InnoDB",
  "field_order": [
   "details",
@@ -293,7 +294,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:52:28.923346",
+ "modified": "2024-01-22 14:33:21.980634",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
@@ -325,6 +326,8 @@
    "write": 1
   }
  ],
+ "sender_field": "email",
+ "sender_name_field": "first_name",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
