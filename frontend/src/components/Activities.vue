@@ -404,6 +404,31 @@
             </div>
           </div>
         </div>
+        <div class="mb-4" v-if="activity.activity_type == 'comment'">
+          <div class="mb-0.5 py-1.5 flex items-start justify-stretch gap-2 text-base">
+            <div class="inline-flex flex-wrap gap-1 text-gray-600">
+              <span class="font-medium text-gray-800">
+                {{ activity.owner_name }}
+              </span>
+              <span>added a</span>
+              <span class="max-w-xs truncate font-medium text-gray-800">
+                comment
+              </span>
+            </div>
+            <div class="ml-auto whitespace-nowrap">
+              <Tooltip
+                :text="dateFormat(activity.creation, dateTooltipFormat)"
+                class="text-gray-600"
+              >
+                {{ timeAgo(activity.creation) }}
+              </Tooltip>
+            </div>
+          </div>
+          <div
+            class="cursor-pointer rounded bg-gray-50 px-4 py-3 text-base leading-6 transition-all duration-300 ease-in-out"
+            v-html="activity.content"
+          />
+        </div>
         <div
           v-else-if="
             activity.activity_type == 'incoming_call' ||
@@ -692,6 +717,7 @@ import PlayIcon from '@/components/Icons/PlayIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
@@ -948,6 +974,9 @@ function timelineIcon(activity_type, is_lead) {
       break
     case 'deal':
       icon = DealsIcon
+      break
+    case 'comment':
+      icon = CommentIcon
       break
     case 'communication':
       icon = EmailAtIcon

@@ -95,6 +95,16 @@ def get_deal_activities(name):
 		}
 		activities.append(activity)
 
+	for comment in docinfo.comments:
+		activity = {
+			"activity_type": "comment",
+			"creation": comment.creation,
+			"owner": comment.owner,
+			"content": comment.content,
+			"is_lead": False,
+		}
+		activities.append(activity)
+
 	for communication in docinfo.communications:
 		activity = {
 			"activity_type": "communication",
@@ -188,6 +198,16 @@ def get_lead_activities(name):
 			"data": data,
 			"is_lead": True,
 			"options": field_option,
+		}
+		activities.append(activity)
+
+	for comment in docinfo.comments:
+		activity = {
+			"activity_type": "comment",
+			"creation": comment.creation,
+			"owner": comment.owner,
+			"content": comment.content,
+			"is_lead": True,
 		}
 		activities.append(activity)
 
