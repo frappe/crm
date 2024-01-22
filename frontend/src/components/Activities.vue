@@ -404,7 +404,7 @@
             </div>
           </div>
         </div>
-        <div class="mb-4" v-if="activity.activity_type == 'comment'">
+        <div class="mb-4" v-else-if="activity.activity_type == 'comment'">
           <div class="mb-0.5 py-1.5 flex items-start justify-stretch gap-2 text-base">
             <div class="inline-flex flex-wrap gap-1 text-gray-600">
               <span class="font-medium text-gray-800">
