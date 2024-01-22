@@ -24,6 +24,7 @@ def create(view):
 	doc = frappe.new_doc("CRM View Settings")
 	doc.name = view.label
 	doc.label = view.label
+	doc.is_view = True
 	doc.dt = view.doctype
 	doc.user = frappe.session.user
 	doc.route_name = view.route_name or ""
@@ -49,6 +50,7 @@ def update(view):
 
 	doc = frappe.get_doc("CRM View Settings", view.name)
 	doc.label = view.label
+	doc.is_view = True
 	doc.route_name = view.route_name or ""
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(filters)

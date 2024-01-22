@@ -12,6 +12,7 @@
   "route_name",
   "pinned",
   "public",
+  "is_view",
   "columns_tab",
   "load_default_columns",
   "columns",
@@ -104,11 +105,17 @@
    "fieldname": "public",
    "fieldtype": "Check",
    "label": "Public"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_view",
+   "fieldtype": "Check",
+   "label": "Is View"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:44:52.285420",
+ "modified": "2024-01-22 21:44:41.733977",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
