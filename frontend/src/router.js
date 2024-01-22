@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
+import { viewsStore } from '@/stores/views'
 
 const routes = [
   {
     path: '/',
-    redirect: '/leads',
+    name: 'Home',
   },
   {
     path: '/leads',
@@ -92,10 +93,22 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const { users } = usersStore()
   const { isLoggedIn } = sessionStore()
+  const { getDefaultView } = viewsStore()
 
   await users.promise
 
-  if (to.name === 'Login' && isLoggedIn) {
+  if (to.path === '/') {
+    const defaultView = getDefaultView()
+    if (defaultView?.route_name) {
+      if (defaultView.is_view) {
+        next({ name: defaultView.route_name, query: { view: defaultView.name } })
+      } else {
+        next({ name: defaultView.route_name })
+      }
+    } else {
+      next({ name: 'Leads' })
+    }
+  } else if (to.name === 'Login' && isLoggedIn) {
     next({ name: 'Leads' })
   } else if (to.name !== 'Login' && !isLoggedIn) {
     next({ name: 'Login' })

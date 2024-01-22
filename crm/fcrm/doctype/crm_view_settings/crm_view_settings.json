@@ -7,11 +7,13 @@
  "field_order": [
   "label",
   "user",
+  "user_list",
   "column_break_zacm",
   "dt",
   "route_name",
   "pinned",
   "public",
+  "default",
   "is_view",
   "columns_tab",
   "load_default_columns",
@@ -29,6 +31,7 @@
    "label": "Columns"
   },
   {
+   "depends_on": "eval: doc.public == false",
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
@@ -108,9 +111,21 @@
   },
   {
    "default": "0",
+   "fieldname": "default",
+   "fieldtype": "Check",
+   "label": "Default"
+  },
+  {
+   "default": "0",
    "fieldname": "is_view",
    "fieldtype": "Check",
    "label": "Is View"
+  },
+  {
+   "depends_on": "eval: doc.public == true",
+   "fieldname": "user_list",
+   "fieldtype": "Text",
+   "label": "User List"
   }
  ],
  "index_web_pages_for_search": 1,
