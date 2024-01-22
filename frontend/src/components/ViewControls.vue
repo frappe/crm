@@ -77,6 +77,7 @@ import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
+import { createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
@@ -97,7 +98,7 @@ const props = defineProps({
 })
 
 const { $dialog } = globalStore()
-const { reload: reloadView, getView } = viewsStore()
+const { reload: reloadView, getView, getDefaultView } = viewsStore()
 const { isManager } = usersStore()
 
 const list = defineModel()
@@ -353,6 +354,20 @@ const viewActions = computed(() => {
     },
   ]
 
+  let defaultView = getDefaultView()
+  if (
+    !defaultView ||
+    (route.query.view && route.query.view != defaultView.name) ||
+    (!route.query.view &&
+      (defaultView.route_name != route.name || defaultView.is_view))
+  ) {
+    actions[0].items.push({
+      label: 'Make Default',
+      icon: () => h(FeatherIcon, { name: 'star', class: 'h-4 w-4' }),
+      onClick: () => makeDefault(),
+    })
+  }
+
   if (route.query.view && (!view.value.public || isManager())) {
     actions[0].items.push(
       {
@@ -407,6 +422,21 @@ const viewActions = computed(() => {
   }
   return actions
 })
+
+function makeDefault() {
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.make_default', {
+    name: route.query.view || '',
+    doctype: props.doctype,
+    route_name: route.name,
+  }).then(() => {
+    createToast({
+      title: 'Default View Set',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+    reloadView()
+  })
+}
 
 function duplicateView() {
   view.value.name = ''
