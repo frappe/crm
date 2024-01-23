@@ -54,15 +54,6 @@ const { communicationStatuses } = statusesStore()
 
 let slaSection = computed(() => {
   let sections = []
-  if (data.value.first_responded_on) {
-    sections.push({
-      label: 'Fulfilled In',
-      type: 'Duration',
-      value: formatTime(data.value.first_response_time),
-      tooltipText: dateFormat(data.value.first_responded_on, dateTooltipFormat),
-    })
-  }
-
   let status = data.value.sla_status
   let tooltipText = status
   let color =
@@ -84,6 +75,9 @@ let slaSection = computed(() => {
         status = 'less than a minute ago'
       }
     }
+  } else if (["Fulfilled", "Failed"].includes(status)) {
+    status = status + " in " + formatTime(data.value.first_response_time)
+    tooltipText = dateFormat(data.value.first_responded_on, dateTooltipFormat)
   }
 
   sections.push(
