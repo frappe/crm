@@ -29,24 +29,7 @@ const props = defineProps({
 })
 
 const groupedActions = computed(() => {
-  const _actions = props.actions.filter((action) => action.group)
-  const groupedActions = {}
-
-  for (const action of _actions) {
-    if (!groupedActions[action.group]) {
-      groupedActions[action.group] = []
-    }
-
-    groupedActions[action.group].push(action)
-  }
-
-  let _groupedActions = [
-    ...Object.keys(groupedActions).map((group) => ({
-      group,
-      items: groupedActions[group],
-    })),
-  ]
-  return _groupedActions
+  return props.actions.filter((action) => action.group)
 })
 
 const normalActions = computed(() => {
