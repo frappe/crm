@@ -279,6 +279,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { viewsStore } from '@/stores/views'
 import {
   createResource,
   FileUploader,
@@ -297,6 +298,7 @@ const { $dialog, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
+const { getDefaultView } = viewsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -378,7 +380,12 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Leads', route: { name: 'Leads' } }]
+  let defaultView = getDefaultView()
+  let route = { name: 'Leads' }
+  if (defaultView?.route_name == 'Leads' && defaultView?.is_view) {
+    route = { name: 'Leads', query: { view: defaultView.name } }
+  }
+  let items = [{ label: 'Leads', route: route }]
   items.push({
     label: lead.data.lead_name,
     route: { name: 'Lead', params: { leadId: lead.data.name } },

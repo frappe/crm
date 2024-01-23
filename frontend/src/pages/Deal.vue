@@ -316,6 +316,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { viewsStore } from '@/stores/views'
 import {
   createResource,
   Dropdown,
@@ -332,6 +333,7 @@ const { $dialog, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
+const { getDefaultView } = viewsStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -420,7 +422,12 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Deals', route: { name: 'Deals' } }]
+  let defaultView = getDefaultView()
+  let route = { name: 'Deals' }
+  if (defaultView?.route_name == 'Deals' && defaultView?.is_view) {
+    route = { name: 'Deals', query: { view: defaultView.name } }
+  }
+  let items = [{ label: 'Deals', route: route }]
   items.push({
     label: organization.value?.name,
     route: { name: 'Deal', params: { dealId: deal.data.name } },

@@ -226,6 +226,7 @@ import { usersStore } from '@/stores/users.js'
 import { contactsStore } from '@/stores/contacts.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
+import { viewsStore } from '@/stores/views'
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -235,6 +236,7 @@ const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
+const { getDefaultView } = viewsStore()
 
 const props = defineProps({
   contactId: {
@@ -251,7 +253,12 @@ const showContactModal = ref(false)
 const detailMode = ref(false)
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Contacts', route: { name: 'Contacts' } }]
+  let defaultView = getDefaultView()
+  let route = { name: 'Contacts' }
+  if (defaultView?.route_name == 'Contacts' && defaultView?.is_view) {
+    route = { name: 'Contacts', query: { view: defaultView.name } }
+  }
+  let items = [{ label: 'Contacts', route: route }]
   items.push({
     label: contact.value.full_name,
     route: { name: 'Contact', params: { contactId: contact.value.name } },
