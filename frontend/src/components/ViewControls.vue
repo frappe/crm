@@ -41,6 +41,11 @@
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
         />
+        <Button label="Refresh" @click="reload()" :loading="isLoading">
+          <template #icon>
+            <RefreshIcon class="h-4 w-4" />
+          </template>
+        </Button>
         <Dropdown :options="viewActions">
           <template #default>
             <Button>
@@ -69,6 +74,7 @@
   />
 </template>
 <script setup>
+import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
@@ -220,6 +226,8 @@ list.value = createResource({
 onMounted(() => {
   useDebounceFn(() => reload(), 100)()
 })
+
+const isLoading = computed(() => list.value?.loading)
 
 function reload() {
   list.value.params = getParams()
