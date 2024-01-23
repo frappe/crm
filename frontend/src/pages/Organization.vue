@@ -153,16 +153,6 @@
                   <FeatherIcon name="trash-2" class="h-4 w-4" />
                 </template>
               </Button>
-              <!-- <Button label="Add lead" size="sm">
-              <template #prefix>
-                <FeatherIcon name="plus" class="h-4 w-4" />
-              </template>
-            </Button>
-            <Button label="Add deal" size="sm">
-              <template #prefix>
-                <FeatherIcon name="plus" class="h-4 w-4" />
-              </template>
-            </Button> -->
             </div>
             <ErrorMessage class="mt-2" :message="error" />
           </div>
@@ -189,13 +179,6 @@
         </button>
       </template>
       <template #default="{ tab }">
-        <LeadsListView
-          class="mt-4"
-          v-if="tab.label === 'Leads' && rows.length"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false }"
-        />
         <DealsListView
           class="mt-4"
           v-if="tab.label === 'Deals' && rows.length"
@@ -241,14 +224,12 @@ import {
 } from 'frappe-ui'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
-import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
-import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import { globalStore } from '@/stores/global'
@@ -274,7 +255,7 @@ const props = defineProps({
 
 const { $dialog } = globalStore()
 const { organizations, getOrganization } = organizationsStore()
-const { getLeadStatus, getDealStatus } = statusesStore()
+const { getDealStatus } = statusesStore()
 const { getDefaultView } = viewsStore()
 const showOrganizationModal = ref(false)
 const detailMode = ref(false)
@@ -346,11 +327,6 @@ function website(url) {
 const tabIndex = ref(0)
 const tabs = [
   {
-    label: 'Leads',
-    icon: h(LeadsIcon, { class: 'h-4 w-4' }),
-    count: computed(() => leads.data?.length),
-  },
-  {
     label: 'Deals',
     icon: h(DealsIcon, { class: 'h-4 w-4' }),
     count: computed(() => deals.data?.length),
@@ -363,31 +339,6 @@ const tabs = [
 ]
 
 const { getUser } = usersStore()
-
-const leads = createListResource({
-  type: 'list',
-  doctype: 'CRM Lead',
-  cache: ['leads', props.organizationId],
-  fields: [
-    'name',
-    'first_name',
-    'lead_name',
-    'image',
-    'organization',
-    'status',
-    'email',
-    'mobile_no',
-    'lead_owner',
-    'modified',
-  ],
-  filters: {
-    organization: props.organizationId,
-    converted: 0,
-  },
-  orderBy: 'modified desc',
-  pageLength: 20,
-  auto: true,
-})
 
 const deals = createListResource({
   type: 'list',
@@ -434,55 +385,18 @@ const contacts = createListResource({
 
 const rows = computed(() => {
   let list = []
-  list = !tabIndex.value ? leads : tabIndex.value == 1 ? deals : contacts
+  list = !tabIndex.value ? deals : contacts
 
   if (!list.data) return []
 
   return list.data.map((row) => {
-    return !tabIndex.value
-      ? getLeadRowObject(row)
-      : tabIndex.value == 1
-      ? getDealRowObject(row)
-      : getContactRowObject(row)
+    return !tabIndex.value ? getDealRowObject(row) : getContactRowObject(row)
   })
 })
 
 const columns = computed(() => {
-  return tabIndex.value === 0
-    ? leadColumns
-    : tabIndex.value === 1
-    ? dealColumns
-    : contactColumns
+  return tabIndex.value === 0 ? dealColumns : contactColumns
 })
-
-function getLeadRowObject(lead) {
-  return {
-    name: lead.name,
-    lead_name: {
-      label: lead.lead_name,
-      image: lead.image,
-      image_label: lead.first_name,
-    },
-    organization: {
-      label: lead.organization,
-      logo: props.organization?.organization_logo,
-    },
-    status: {
-      label: lead.status,
-      color: getLeadStatus(lead.status)?.iconColorClass,
-    },
-    email: lead.email,
-    mobile_no: lead.mobile_no,
-    lead_owner: {
-      label: lead.lead_owner && getUser(lead.lead_owner).full_name,
-      ...(lead.lead_owner && getUser(lead.lead_owner)),
-    },
-    modified: {
-      label: dateFormat(lead.modified, dateTooltipFormat),
-      timeAgo: timeAgo(lead.modified),
-    },
-  }
-}
 
 function getDealRowObject(deal) {
   return {
@@ -529,44 +443,6 @@ function getContactRowObject(contact) {
     },
   }
 }
-
-const leadColumns = [
-  {
-    label: 'Name',
-    key: 'lead_name',
-    width: '12rem',
-  },
-  {
-    label: 'Organization',
-    key: 'organization',
-    width: '10rem',
-  },
-  {
-    label: 'Status',
-    key: 'status',
-    width: '8rem',
-  },
-  {
-    label: 'Email',
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: 'Mobile no',
-    key: 'mobile_no',
-    width: '11rem',
-  },
-  {
-    label: 'Lead owner',
-    key: 'lead_owner',
-    width: '10rem',
-  },
-  {
-    label: 'Last modified',
-    key: 'modified',
-    width: '8rem',
-  },
-]
 
 const dealColumns = [
   {
@@ -633,13 +509,4 @@ const contactColumns = [
     width: '8rem',
   },
 ]
-
-function reload(val) {
-  leads.filters.organization = val
-  deals.filters.organization = val
-  contacts.filters.company_name = val
-  leads.reload()
-  deals.reload()
-  contacts.reload()
-}
 </script>
