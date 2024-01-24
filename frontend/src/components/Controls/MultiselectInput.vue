@@ -110,7 +110,7 @@ const props = defineProps({
 
 const values = defineModel()
 
-const { contacts } = contactsStore()
+const { getContacts } = contactsStore()
 
 const emails = ref([])
 const search = ref(null)
@@ -119,8 +119,9 @@ const query = ref('')
 const showOptions = ref(false)
 
 const emailList = computed(() => {
+  let contacts = getContacts() || []
   return (
-    contacts.data
+    contacts
       ?.filter((contact) => contact.email_id)
       .map((contact) => {
         return {

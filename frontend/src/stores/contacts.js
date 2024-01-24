@@ -6,6 +6,7 @@ export const contactsStore = defineStore('crm-contacts', () => {
   let contactsByPhone = reactive({})
   let contactsByName = reactive({})
   let leadContactsByPhone = reactive({})
+  let allContacts = reactive([])
 
   const contacts = createResource({
     url: 'crm.api.session.get_contacts',
@@ -20,6 +21,7 @@ export const contactsStore = defineStore('crm-contacts', () => {
         contactsByPhone[contact.mobile_no] = contact
         contactsByName[contact.name] = contact
       }
+      allContacts = [...contacts]
       return contacts
     },
     onError(error) {
@@ -63,8 +65,13 @@ export const contactsStore = defineStore('crm-contacts', () => {
     return leadContactsByPhone[mobile_no]
   }
 
+  function getContacts() {
+    return allContacts || contacts?.data || []
+  }
+
   return {
     contacts,
+    getContacts,
     getContact,
     getContactByName,
     getLeadContact,
