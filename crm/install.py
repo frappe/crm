@@ -11,6 +11,7 @@ def after_install():
 	add_default_lead_statuses()
 	add_default_deal_statuses()
 	add_default_communication_statuses()
+	add_property_setter()
 	frappe.db.commit()
 
 def add_default_lead_statuses():
@@ -102,4 +103,14 @@ def add_default_communication_statuses():
 
 		doc = frappe.new_doc("CRM Communication Status")
 		doc.status = status
+		doc.insert()
+
+def add_property_setter():
+	if not frappe.db.exists("Property Setter", {"name": "Contact-main-search_fields"}):
+		doc = frappe.new_doc("Property Setter")
+		doc.doctype_or_field = "DocType"
+		doc.doc_type = "Contact"
+		doc.property = "search_fields"
+		doc.property_type = "Data"
+		doc.value = "email_id"
 		doc.insert()
