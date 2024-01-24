@@ -13,7 +13,7 @@
     row-key="name"
   >
     <ListHeader class="mx-5" />
-    <ListRows>
+    <ListRows id="list-rows">
       <ListRow
         class="mx-5"
         v-for="row in rows"
