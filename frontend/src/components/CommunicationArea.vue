@@ -65,6 +65,7 @@
 import EmailEditor from '@/components/EmailEditor.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import { usersStore } from '@/stores/users'
+import { useStorage } from '@vueuse/core'
 import { call } from 'frappe-ui'
 import { ref, watch, computed, defineModel, nextTick } from 'vue'
 
@@ -83,7 +84,7 @@ const emit = defineEmits(['scroll'])
 const { getUser } = usersStore()
 
 const showCommunicationBox = ref(false)
-const newEmail = ref('')
+const newEmail = useStorage('emailBoxContent', '')
 const newEmailEditor = ref(null)
 const sendEmailRef = ref(null)
 const attachments = ref([])
