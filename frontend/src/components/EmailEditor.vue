@@ -35,6 +35,7 @@
       >
         <span class="text-xs text-gray-500">CC:</span>
         <MultiselectInput
+          ref="ccInput"
           class="flex-1"
           v-model="ccEmails"
           :validate="validateEmail"
@@ -44,6 +45,7 @@
       <div v-if="bcc" class="mx-10 flex items-center gap-2 border-b py-2.5">
         <span class="text-xs text-gray-500">BCC:</span>
         <MultiselectInput
+          ref="bccInput"
           class="flex-1"
           v-model="bccEmails"
           :validate="validateEmail"
@@ -173,6 +175,8 @@ const subject = ref(props.subject)
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
 const ccEmails = ref([])
 const bccEmails = ref([])
+const ccInput = ref(null)
+const bccInput = ref(null)
 
 const editor = computed(() => {
   return textEditor.value.editor
@@ -182,7 +186,17 @@ function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
 }
 
-defineExpose({ editor, subject, cc, bcc, toEmails, ccEmails, bccEmails })
+defineExpose({
+  editor,
+  subject,
+  cc,
+  bcc,
+  toEmails,
+  ccEmails,
+  bccEmails,
+  ccInput,
+  bccInput,
+})
 
 const textEditorMenuButtons = [
   'Paragraph',

@@ -202,11 +202,17 @@ const removeLastValue = () => {
         emailRef = emails.value[emails.value.length - 1].$el
         emailRef.focus()
       } else {
-        search.value.$el.focus()
+        setFocus()
       }
     })
   } else {
     emailRef.focus()
   }
 }
+
+function setFocus() {
+  search.value.$el.focus()
+}
+
+defineExpose({ setFocus })
 </script>

@@ -21,12 +21,12 @@
     <div v-if="showCommunicationBox" class="flex gap-1.5">
       <Button
         label="CC"
-        @click="newEmailEditor.cc = !newEmailEditor.cc"
+        @click="toggleCC()"
         :class="[newEmailEditor.cc ? 'bg-gray-300 hover:bg-gray-200' : '']"
       />
       <Button
         label="BCC"
-        @click="newEmailEditor.bcc = !newEmailEditor.bcc"
+        @click="toggleBCC()"
         :class="[newEmailEditor.bcc ? 'bg-gray-300 hover:bg-gray-200' : '']"
       />
     </div>
@@ -66,7 +66,7 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
-import { ref, watch, computed, defineModel } from 'vue'
+import { ref, watch, computed, defineModel, nextTick } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -142,6 +142,20 @@ async function submitComment() {
   newEmail.value = ''
   reload.value = true
   emit('scroll')
+}
+
+function toggleCC() {
+  newEmailEditor.value.cc = !newEmailEditor.value.cc
+  newEmailEditor.value.cc && nextTick(() => {
+    newEmailEditor.value.ccInput.setFocus()
+  })
+}
+
+function toggleBCC() {
+  newEmailEditor.value.bcc = !newEmailEditor.value.bcc
+  newEmailEditor.value.bcc && nextTick(() => {
+    newEmailEditor.value.bccInput.setFocus()
+  })
 }
 
 defineExpose({ show: showCommunicationBox, editor: newEmailEditor })
