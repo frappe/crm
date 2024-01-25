@@ -256,6 +256,7 @@ const breadcrumbs = computed(() => {
 
 const statusLabelMap = {
   Completed: 'Completed',
+  Initiated: 'Initiated',
   Busy: 'Declined',
   Failed: 'Failed',
   Queued: 'Queued',
@@ -269,6 +270,7 @@ const statusColorMap = {
   Completed: 'green',
   Busy: 'orange',
   Failed: 'red',
+  Initiated: 'gray',
   Queued: 'gray',
   Cancelled: 'gray',
   Ringing: 'gray',
