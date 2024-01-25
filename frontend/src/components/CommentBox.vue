@@ -7,6 +7,7 @@
     :starterkit-options="{ heading: { levels: [2, 3, 4, 5, 6] } }"
     :placeholder="placeholder"
     :editable="editable"
+    :mentions="users"
   >
     <template v-slot:editor="{ editor }">
       <EditorContent
@@ -78,6 +79,7 @@
 <script setup>
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
+import { usersStore } from '@/stores/users'
 import { TextEditorFixedMenu, TextEditor, FileUploader } from 'frappe-ui'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel } from 'vue'
@@ -117,6 +119,8 @@ const emit = defineEmits(['change'])
 const modelValue = defineModel()
 const attachments = defineModel('attachments')
 
+const { users: usersList } = usersStore()
+
 const textEditor = ref(null)
 
 const editor = computed(() => {
@@ -126,6 +130,17 @@ const editor = computed(() => {
 function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
 }
+
+const users = computed(() => {
+  return (
+    usersList.data
+      ?.filter((user) => user.enabled)
+      .map((user) => ({
+        label: user.full_name.trimEnd(),
+        value: user.name,
+      })) || []
+  )
+})
 
 defineExpose({ editor })
 

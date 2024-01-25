@@ -30,7 +30,6 @@ export const usersStore = defineStore('crm-users', () => {
       email = session.user
     }
     if (!usersByName[email]) {
-      users.reload()
       usersByName[email] = {
         name: email,
         email: email,
