@@ -163,7 +163,7 @@
               />
               <div v-else>
                 <div
-                  v-if="section.contacts"
+                  v-if="section.contacts.length"
                   v-for="(contact, i) in section.contacts"
                   :key="contact.name"
                 >
