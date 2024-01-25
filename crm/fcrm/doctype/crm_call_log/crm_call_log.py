@@ -7,20 +7,6 @@ from frappe.model.document import Document
 
 class CRMCallLog(Document):
 		@staticmethod
-		def sort_options():
-			return [
-				{ "label": 'Created', "value": 'creation' },
-				{ "label": 'Modified', "value": 'modified' },
-				{ "label": 'Status', "value": 'status' },
-				{ "label": 'Type', "value": 'type' },
-				{ "label": 'Duration', "value": 'duration' },
-				{ "label": 'From', "value": 'from' },
-				{ "label": 'To', "value": 'to' },
-				{ "label": 'Caller', "value": 'caller' },
-				{ "label": 'Receiver', "value": 'receiver' },
-			]
-
-		@staticmethod
 		def default_list_data():
 			columns = [
 				{

@@ -27,17 +27,6 @@ class CRMOrganization(Document):
 						frappe.db.set_value("CRM Deal", deal.name, "annual_revenue", self.annual_revenue)
 
 		@staticmethod
-		def sort_options():
-			return [
-				{ "label": 'Created', "value": 'creation' },
-				{ "label": 'Modified', "value": 'modified' },
-				{ "label": 'Name', "value": 'name' },
-				{ "label": 'Website', "value": 'website' },
-				{ "label": 'Amount', "value": 'annual_revenue' },
-				{ "label": 'Industry', "value": 'industry' },
-			]
-
-		@staticmethod
 		def default_list_data():
 			columns = [
 				{

@@ -8,12 +8,29 @@ from crm.api.views import get_views
 
 @frappe.whitelist()
 def sort_options(doctype: str):
-	c = get_controller(doctype)
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in no_value_fields]
+	fields = [
+		{
+			"label": field.label,
+			"value": field.fieldname,
+		}
+		for field in fields
+		if field.label and field.fieldname
+	]
 
-	if not hasattr(c, "sort_options"):
-		return []
+	standard_fields = [
+		{"label": "Name", "value": "name"},
+		{"label": "Created On", "value": "creation"},
+		{"label": "Last Modified", "value": "modified"},
+		{"label": "Modified By", "value": "modified_by"},
+		{"label": "Owner", "value": "owner"},
+	]
 
-	return c.sort_options()
+	for field in standard_fields:
+		fields.append(field)
+
+	return fields
 
 
 @frappe.whitelist()

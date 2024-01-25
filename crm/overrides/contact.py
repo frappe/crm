@@ -5,19 +5,6 @@ from frappe.contacts.doctype.contact.contact import Contact
 
 class CustomContact(Contact):
 	@staticmethod
-	def sort_options():
-		return [
-			{ "label": 'Created', "value": 'creation' },
-			{ "label": 'Modified', "value": 'modified' },
-			{ "label": 'Organization', "value": 'company_name' },
-			{ "label": 'Full Name', "value": 'full_name' },
-			{ "label": 'First Name', "value": 'first_name' },
-			{ "label": 'Last Name', "value": 'last_name' },
-			{ "label": 'Email', "value": 'email' },
-			{ "label": 'Mobile no', "value": 'mobile_no' },
-		]
-
-	@staticmethod
 	def default_list_data():
 		columns = [
 			{
