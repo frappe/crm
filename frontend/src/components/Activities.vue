@@ -383,14 +383,27 @@
                 </Button>
               </div>
             </div>
+            <div class="text-sm leading-5 text-gray-600">
+              {{ activity.data.subject }}
+            </div>
             <div class="mb-3 text-sm leading-5 text-gray-600">
-              <span class="mr-1">TO:</span>
+              <span class="mr-1 text-2xs font-bold text-gray-500">TO:</span>
               <span>{{ activity.data.recipients }}</span>
               <span v-if="activity.data.cc">, </span>
-              <span v-if="activity.data.cc" class="mr-1">CC:</span>
+              <span
+                v-if="activity.data.cc"
+                class="mr-1 text-2xs font-bold text-gray-500"
+              >
+                CC:
+              </span>
               <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
               <span v-if="activity.data.bcc">, </span>
-              <span v-if="activity.data.bcc" class="mr-1">BCC:</span>
+              <span
+                v-if="activity.data.bcc"
+                class="mr-1 text-2xs font-bold text-gray-500"
+              >
+                BCC:
+              </span>
               <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
             </div>
             <span class="prose-f" v-html="activity.data.content" />
@@ -405,7 +418,9 @@
           </div>
         </div>
         <div class="mb-4" v-else-if="activity.activity_type == 'comment'">
-          <div class="mb-0.5 py-1.5 flex items-start justify-stretch gap-2 text-base">
+          <div
+            class="mb-0.5 flex items-start justify-stretch gap-2 py-1.5 text-base"
+          >
             <div class="inline-flex flex-wrap gap-1 text-gray-600">
               <span class="font-medium text-gray-800">
                 {{ activity.owner_name }}
