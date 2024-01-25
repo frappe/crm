@@ -14,22 +14,25 @@
         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
       >
         <Tooltip
-          v-if="field.read_only"
+          v-if="field.read_only && field.type !== 'checkbox'"
           class="flex h-7 cursor-pointer items-center px-2 py-1 text-gray-600"
           :text="field.tooltip"
         >
           {{ data[field.name] }}
         </Tooltip>
         <FormControl
+          v-else-if="field.type == 'checkbox'"
+          class="form-control"
+          :type="field.type"
+          v-model="data[field.name]"
+          @change.stop="emit('update', field.name, $event.target.checked)"
+          :disabled="Boolean(field.read_only)"
+        />
+        <FormControl
           v-else-if="
-            [
-              'email',
-              'number',
-              'date',
-              'password',
-              'textarea',
-              'checkbox',
-            ].includes(field.type)
+            ['email', 'number', 'date', 'password', 'textarea'].includes(
+              field.type
+            )
           "
           class="form-control"
           :class="{
