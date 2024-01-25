@@ -467,42 +467,40 @@ const detailSections = computed(() => {
 
 function getParsedFields(sections, contacts) {
   sections.forEach((section) => {
-    section.fields.forEach((field) => {
-      if (
-        !deal.data.organization &&
-        ['website', 'territory', 'annual_revenue'].includes(field.name)
-      ) {
-        field.hidden = true
-      }
-      if (field.name == 'organization') {
-        field.create = (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
-          close()
+    if (section.name == 'contacts_tab') {
+      delete section.fields
+      section.contacts =
+        contacts?.map((contact) => {
+          return {
+            name: contact.contact,
+            is_primary: contact.is_primary,
+            opened: false,
+          }
+        }) || []
+    } else {
+      section.fields.forEach((field) => {
+        if (
+          !deal.data.organization &&
+          ['website', 'territory', 'annual_revenue'].includes(field.name)
+        ) {
+          field.hidden = true
         }
-        field.link = (org) =>
-          router.push({
-            name: 'Organization',
-            params: { organizationId: org },
-          })
-      }
-    })
+        if (field.name == 'organization') {
+          field.create = (value, close) => {
+            _organization.value.organization_name = value
+            showOrganizationModal.value = true
+            close()
+          }
+          field.link = (org) =>
+            router.push({
+              name: 'Organization',
+              params: { organizationId: org },
+            })
+        }
+      })
+    }
   })
-
-  let contactSection = {
-    label: 'Contacts',
-    opened: true,
-    contacts:
-      contacts?.map((contact) => {
-        return {
-          name: contact.contact,
-          is_primary: contact.is_primary,
-          opened: false,
-        }
-      }) || [],
-  }
-
-  return [...sections, contactSection]
+  return sections
 }
 
 const showContactModal = ref(false)

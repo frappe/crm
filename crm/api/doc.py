@@ -246,6 +246,7 @@ def get_doctype_fields(doctype):
 			last_section = field.fieldname
 			sections[field.fieldname] = {
 				"label": field.label,
+				"name": field.fieldname,
 				"opened": True,
 				"fields": [],
 			}

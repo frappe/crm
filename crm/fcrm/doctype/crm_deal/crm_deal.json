@@ -112,8 +112,7 @@
   {
    "fieldname": "contacts_tab",
    "fieldtype": "Tab Break",
-   "label": "Contacts",
-   "read_only": 1
+   "label": "Contacts"
   },
   {
    "fieldname": "email",
@@ -275,7 +274,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:43:58.940722",
+ "modified": "2024-01-25 21:00:08.216020",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
