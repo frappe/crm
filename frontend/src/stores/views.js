@@ -19,6 +19,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
     initialData: [],
     auto: true,
     transform(views) {
+      debugger
       pinnedViews.value = []
       publicViews.value = []
       for (let view of views) {
@@ -70,6 +71,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
   }
 
   return {
+    views,
     getPinnedViews,
     getPublicViews,
     getDefaultView,

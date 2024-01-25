@@ -118,15 +118,17 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const { users } = usersStore()
   const { isLoggedIn } = sessionStore()
-  const { getDefaultView } = viewsStore()
+  const { views, getDefaultView } = viewsStore()
 
   await users.promise
+  await views.promise
 
   if (from.meta?.scrollPos) {
     from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop
   }
 
   if (to.path === '/') {
+    debugger
     const defaultView = getDefaultView()
     if (defaultView?.route_name) {
       if (defaultView.is_view) {
