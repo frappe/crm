@@ -15,26 +15,28 @@
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <div>
-          <div class="mb-1.5 text-sm text-gray-600">
-            Name
-            <span class="text-red-500">*</span>
+        <div class="flex gap-4">
+          <div class="flex-1">
+            <div class="mb-1.5 text-sm text-gray-600">
+              Name
+              <span class="text-red-500">*</span>
+            </div>
+            <TextInput
+              ref="nameRef"
+              variant="outline"
+              v-model="_emailTemplate.name"
+              placeholder="Add name"
+            />
           </div>
-          <TextInput
-            ref="nameRef"
-            variant="outline"
-            v-model="_emailTemplate.name"
-            placeholder="Add name"
-          />
-        </div>
-        <div>
-          <div class="mb-1.5 text-sm text-gray-600">Doctype</div>
-          <Select
-            variant="outline"
-            v-model="_emailTemplate.reference_doctype"
-            :options="['CRM Deal', 'CRM Lead']"
-            placeholder="Select Doctype"
-          />
+          <div class="flex-1">
+            <div class="mb-1.5 text-sm text-gray-600">Doctype</div>
+            <Select
+              variant="outline"
+              v-model="_emailTemplate.reference_doctype"
+              :options="['CRM Deal', 'CRM Lead']"
+              placeholder="Select Doctype"
+            />
+          </div>
         </div>
         <div>
           <div class="mb-1.5 text-sm text-gray-600">
@@ -182,11 +184,11 @@ watch(
     editMode.value = false
     errorMessage.value = ''
     nextTick(() => {
-        if (_emailTemplate.value.name) {
-            subjectRef.value.el.focus()
-        } else {
-            nameRef.value.el.focus()
-        }
+      if (_emailTemplate.value.name) {
+        subjectRef.value.el.focus()
+      } else {
+        nameRef.value.el.focus()
+      }
       _emailTemplate.value = { ...props.emailTemplate }
       if (_emailTemplate.value.name) {
         editMode.value = true
