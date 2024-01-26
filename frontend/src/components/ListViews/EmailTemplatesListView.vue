@@ -68,6 +68,7 @@
   />
 </template>
 <script setup>
+import { globalStore } from '@/stores/global'
 import {
   ListView,
   ListHeader,
@@ -102,6 +103,8 @@ const props = defineProps({
 const emit = defineEmits(['loadMore', 'showEmailTemplate', 'reload'])
 
 const pageLengthCount = defineModel()
+
+const { $dialog } = globalStore()
 
 function deleteEmailTemplate(selections, unselectAll) {
   let title = 'Delete email template'
