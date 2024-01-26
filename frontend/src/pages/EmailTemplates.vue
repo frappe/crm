@@ -3,6 +3,11 @@
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs" />
     </template>
+    <template #right-header>
+      <Button variant="solid" label="Create" @click="showEmailTemplateModal = true">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
+    </template>
   </LayoutHeader>
   <ViewControls
     v-model="emailTemplates"
