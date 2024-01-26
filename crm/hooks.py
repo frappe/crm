@@ -76,7 +76,7 @@ after_install = "crm.install.after_install"
 # Uninstallation
 # ------------
 
-# before_uninstall = "crm.uninstall.before_uninstall"
+before_uninstall = "crm.uninstall.before_uninstall"
 # after_uninstall = "crm.uninstall.after_uninstall"
 
 # Integration Setup
