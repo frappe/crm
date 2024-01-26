@@ -83,7 +83,14 @@ const rows = computed(() => {
 
 const showEmailTemplateModal = ref(false)
 
-const emailTemplate = ref({})
+const emailTemplate = ref({
+    subject: '',
+    response: '',
+    name: '',
+    enabled: 1,
+    owner: '',
+    reference_doctype: 'CRM Deal',
+})
 
 function showEmailTemplate(name) {
   let et = rows.value?.find((row) => row.name === name)

@@ -2,7 +2,7 @@
   <Dialog
     v-model="show"
     :options="{
-      title: editMode ? 'Edit Email Template' : 'Create Email Template',
+      title: editMode ? emailTemplate.name : 'Create Email Template',
       size: 'xl',
       actions: [
         {
@@ -21,6 +21,7 @@
             <span class="text-red-500">*</span>
           </div>
           <TextInput
+            ref="nameRef"
             variant="outline"
             v-model="_emailTemplate.name"
             placeholder="Add name"
@@ -28,10 +29,11 @@
         </div>
         <div>
           <div class="mb-1.5 text-sm text-gray-600">Doctype</div>
-          <TextInput
+          <Select
             variant="outline"
             v-model="_emailTemplate.reference_doctype"
-            placeholder="Add Doctype"
+            :options="['CRM Deal', 'CRM Lead']"
+            placeholder="Select Doctype"
           />
         </div>
         <div>
@@ -40,7 +42,7 @@
             <span class="text-red-500">*</span>
           </div>
           <TextInput
-            ref="subject"
+            ref="subjectRef"
             variant="outline"
             v-model="_emailTemplate.subject"
             placeholder="Add subject"
@@ -71,7 +73,7 @@
 </template>
 
 <script setup>
-import { Checkbox, TextEditor, call } from 'frappe-ui'
+import { Checkbox, Select, TextEditor, call } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch } from 'vue'
 
 const props = defineProps({
@@ -87,7 +89,8 @@ const errorMessage = ref('')
 
 const emit = defineEmits(['after'])
 
-const subject = ref(null)
+const subjectRef = ref(null)
+const nameRef = ref(null)
 const editMode = ref(false)
 let _emailTemplate = ref({})
 
@@ -179,7 +182,11 @@ watch(
     editMode.value = false
     errorMessage.value = ''
     nextTick(() => {
-      subject.value.el.focus()
+        if (_emailTemplate.value.name) {
+            subjectRef.value.el.focus()
+        } else {
+            nameRef.value.el.focus()
+        }
       _emailTemplate.value = { ...props.emailTemplate }
       if (_emailTemplate.value.name) {
         editMode.value = true
