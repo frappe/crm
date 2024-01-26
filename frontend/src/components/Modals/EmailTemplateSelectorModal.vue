@@ -11,13 +11,13 @@
         <div
           v-for="template in filteredTemplates"
           :key="template.name"
-          class="cursor-pointer rounded-lg border p-2 hover:bg-gray-100"
+          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-gray-100"
           @click="emit('apply', template)"
         >
           <div class="border-b pb-2 text-base font-semibold">
             {{ template.name }}
           </div>
-          <div v-if="template.subject" class="my-1.5 text-sm text-gray-600">
+          <div v-if="template.subject" class="text-sm text-gray-600">
             Subject: {{ template.subject }}
           </div>
           <TextEditor
@@ -25,7 +25,7 @@
             :content="template.response"
             :editable="false"
             editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
-            class="mt-1.5 flex-1 overflow-hidden"
+            class="flex-1 overflow-hidden"
           />
         </div>
       </div>
