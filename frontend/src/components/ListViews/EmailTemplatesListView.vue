@@ -3,10 +3,7 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      getRowRoute: (row) => ({
-        name: 'Email Template',
-        params: { emailTemplateId: row.name },
-      }),
+      onRowClick: (row) => emit('showEmailTemplate', row.name),
       selectable: options.selectable,
     }"
     row-key="name"
@@ -72,6 +69,7 @@ import {
   ListRowItem,
   ListFooter,
 } from 'frappe-ui'
+import { defineModel } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -92,7 +90,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore'])
+const emit = defineEmits(['loadMore', 'showEmailTemplate'])
 
 const pageLengthCount = defineModel()
 </script>

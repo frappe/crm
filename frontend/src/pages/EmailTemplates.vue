@@ -19,6 +19,7 @@
       totalCount: emailTemplates.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @showEmailTemplate="showEmailTemplate"
   />
   <div
     v-else-if="emailTemplates.data"
@@ -27,30 +28,26 @@
     <div
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
-      <PhoneIcon class="h-10 w-10" />
-      <span>No Logs Found</span>
+      <EmailIcon class="h-10 w-10" />
+      <span>No Email Templates Found</span>
     </div>
   </div>
+  <EmailTemplateModal
+    v-model="showEmailTemplateModal"
+    v-model:reloadEmailTemplates="emailTemplates"
+    :emailTemplate="emailTemplate"
+  />
 </template>
 
 <script setup>
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import EmailTemplatesListView from '@/components/ListViews/EmailTemplatesListView.vue'
-import {
-  secondsToDuration,
-  dateFormat,
-  dateTooltipFormat,
-  timeAgo,
-} from '@/utils'
-import { usersStore } from '@/stores/users'
-import { contactsStore } from '@/stores/contacts'
+import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
+import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { Breadcrumbs } from 'frappe-ui'
 import { computed, ref } from 'vue'
-
-const { getUser } = usersStore()
-const { getContact, getLeadContact } = contactsStore()
 
 const breadcrumbs = [
   { label: 'Email Templates', route: { name: 'Email Templates' } },
@@ -67,12 +64,7 @@ const rows = computed(() => {
     emailTemplates.value?.data.rows.forEach((row) => {
       _rows[row] = emailTemplate[row]
 
-      if (row === 'status') {
-        _rows[row] = {
-          label: statusLabelMap[emailTemplate.status],
-          color: statusColorMap[emailTemplate.status],
-        }
-      } else if (['modified', 'creation'].includes(row)) {
+      if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(emailTemplate[row], dateTooltipFormat),
           timeAgo: timeAgo(emailTemplate[row]),
@@ -83,27 +75,20 @@ const rows = computed(() => {
   })
 })
 
-const statusLabelMap = {
-  Completed: 'Completed',
-  Initiated: 'Initiated',
-  Busy: 'Declined',
-  Failed: 'Failed',
-  Queued: 'Queued',
-  Cancelled: 'Cancelled',
-  Ringing: 'Ringing',
-  'No Answer': 'Missed Call',
-  'In Progress': 'In Progress',
-}
+const showEmailTemplateModal = ref(false)
 
-const statusColorMap = {
-  Completed: 'green',
-  Busy: 'orange',
-  Failed: 'red',
-  Initiated: 'gray',
-  Queued: 'gray',
-  Cancelled: 'gray',
-  Ringing: 'gray',
-  'No Answer': 'red',
-  'In Progress': 'blue',
+const emailTemplate = ref({})
+
+function showEmailTemplate(name) {
+  let et = rows.value?.find((row) => row.name === name)
+  emailTemplate.value = {
+    subject: et.subject,
+    response: et.response,
+    name: et.name,
+    enabled: et.enabled,
+    owner: et.owner,
+    reference_doctype: et.reference_doctype,
+  }
+  showEmailTemplateModal.value = true
 }
 </script>

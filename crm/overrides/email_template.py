@@ -43,6 +43,7 @@ class CustomEmailTemplate(EmailTemplate):
 			"enabled",
 			"reference_doctype",
 			"subject",
+			"response",
 			"modified",
 		]
 		return {'columns': columns, 'rows': rows}
