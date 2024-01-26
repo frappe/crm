@@ -46,7 +46,16 @@
         </ListRowItem>
       </ListRow>
     </ListRows>
-    <ListSelectBanner />
+    <ListSelectBanner>
+      <template #actions="{ selections, unselectAll }">
+        <Button
+          theme="red"
+          variant="subtle"
+          label="Delete"
+          @click="deleteEmailTemplate(selections, unselectAll)"
+        />
+      </template>
+    </ListSelectBanner>
   </ListView>
   <ListFooter
     class="border-t px-5 py-2"
@@ -60,7 +69,6 @@
 </template>
 <script setup>
 import {
-  Avatar,
   ListView,
   ListHeader,
   ListRows,
@@ -68,6 +76,7 @@ import {
   ListSelectBanner,
   ListRowItem,
   ListFooter,
+  call,
 } from 'frappe-ui'
 import { defineModel } from 'vue'
 
@@ -90,7 +99,40 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore', 'showEmailTemplate'])
+const emit = defineEmits(['loadMore', 'showEmailTemplate', 'reload'])
 
 const pageLengthCount = defineModel()
+
+function deleteEmailTemplate(selections, unselectAll) {
+  let title = 'Delete email template'
+  let message = 'Are you sure you want to delete this email template?'
+
+  if (selections.size > 1) {
+    title = 'Delete email templates'
+    message = 'Are you sure you want to delete these email templates?'
+  }
+
+  $dialog({
+    title: title,
+    message: message,
+    actions: [
+      {
+        label: 'Delete',
+        theme: 'red',
+        variant: 'solid',
+        async onClick(close) {
+          for (const selection of selections) {
+            await call('frappe.client.delete', {
+              doctype: 'Email Template',
+              name: selection,
+            })
+          }
+          close()
+          unselectAll()
+          emit('reload')
+        },
+      },
+    ],
+  })
+}
 </script>

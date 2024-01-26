@@ -25,6 +25,7 @@
     }"
     @loadMore="() => loadMore++"
     @showEmailTemplate="showEmailTemplate"
+    @reload="() => emailTemplates.reload()"
   />
   <div
     v-else-if="emailTemplates.data"
