@@ -8,7 +8,10 @@
         class="mb-2 w-full"
         placeholder="Search"
       />
-      <div class="grid max-h-[560px] grid-cols-3 gap-2 overflow-y-auto">
+      <div
+        v-if="filteredTemplates.length"
+        class="grid max-h-[560px] grid-cols-3 gap-2 overflow-y-auto"
+      >
         <div
           v-for="template in filteredTemplates"
           :key="template.name"
@@ -30,11 +33,35 @@
           />
         </div>
       </div>
+      <div v-else>
+        <div class="flex h-56 flex-col items-center justify-center">
+          <div class="text-lg text-gray-500">No templates found</div>
+          <Button
+            label="Create New"
+            class="mt-4"
+            @click="
+              () => {
+                show = false
+                emailTemplate = {
+                  reference_doctype: props.doctype,
+                  enabled: 1,
+                }
+                showEmailTemplateModal = true
+              }
+            "
+          />
+        </div>
+      </div>
     </template>
   </Dialog>
+  <EmailTemplateModal
+    v-model="showEmailTemplateModal"
+    :emailTemplate="emailTemplate"
+  />
 </template>
 
 <script setup>
+import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
 import { TextEditor, createListResource } from 'frappe-ui'
 import { defineModel, ref, computed, nextTick, watch } from 'vue'
 
@@ -47,6 +74,9 @@ const props = defineProps({
 
 const show = defineModel()
 const searchInput = ref('')
+const showEmailTemplateModal = ref(false)
+
+const emailTemplate = ref({})
 
 const emit = defineEmits(['apply'])
 
