@@ -43,8 +43,7 @@
   >
     <EmailEditor
       ref="newEmailEditor"
-      :value="newEmail"
-      @change="onNewEmailChange"
+      v-model:content="newEmail"
       :submitButtonProps="{
         variant: 'solid',
         onClick: submitEmail,
@@ -67,8 +66,7 @@
   <div v-show="showCommentBox">
     <CommentBox
       ref="newCommentEditor"
-      :value="newComment"
-      @change="onNewCommentChange"
+      v-model:content="newComment"
       :submitButtonProps="{
         variant: 'solid',
         onClick: submitComment,
@@ -158,14 +156,6 @@ const emailEmpty = computed(() => {
   return !newEmail.value || newEmail.value === '<p></p>'
 })
 
-const onNewEmailChange = (value) => {
-  newEmail.value = value
-}
-
-const onNewCommentChange = (value) => {
-  newComment.value = value
-}
-
 async function sendMail() {
   let recipients = newEmailEditor.value.toEmails
   let subject = newEmailEditor.value.subject
@@ -187,7 +177,7 @@ async function sendMail() {
 }
 
 async function sendComment() {
-  await call("frappe.desk.form.utils.add_comment", {
+  await call('frappe.desk.form.utils.add_comment', {
     reference_doctype: props.doctype,
     reference_name: doc.value.data.name,
     content: newComment.value,

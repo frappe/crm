@@ -2,8 +2,8 @@
   <TextEditor
     ref="textEditor"
     :editor-class="['prose-sm max-w-none', editable && 'min-h-[7rem]']"
-    :content="value"
-    @change="editable ? $emit('change', $event) : null"
+    :content="content"
+    @change="editable ? (content = $event) : null"
     :starterkit-options="{ heading: { levels: [2, 3, 4, 5, 6] } }"
     :placeholder="placeholder"
     :editable="editable"
@@ -85,10 +85,6 @@ import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel } from 'vue'
 
 const props = defineProps({
-  value: {
-    type: String,
-    default: '',
-  },
   placeholder: {
     type: String,
     default: null,
@@ -115,9 +111,9 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['change'])
 const modelValue = defineModel()
 const attachments = defineModel('attachments')
+const content = defineModel('content')
 
 const { users: usersList } = usersStore()
 

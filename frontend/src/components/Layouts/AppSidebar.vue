@@ -99,6 +99,7 @@
 </template>
 
 <script setup>
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -145,6 +146,11 @@ const links = [
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
+  },
+  {
+    label: 'Email Templates',
+    icon: EmailIcon,
+    to: 'Email Templates',
   },
 ]
 

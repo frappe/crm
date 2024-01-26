@@ -74,6 +74,18 @@ const routes = [
     props: true,
   },
   {
+    path: '/email-templates',
+    name: 'Email Templates',
+    component: () => import('@/pages/EmailTemplates.vue'),
+    meta: { scrollPos: { top: 0, left: 0 } },
+  },
+  {
+    path: '/email-templates/:emailTemplateId',
+    name: 'Email Template',
+    component: () => import('@/pages/EmailTemplate.vue'),
+    props: true,
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/pages/Dashboard.vue'),

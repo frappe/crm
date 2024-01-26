@@ -76,7 +76,7 @@ after_install = "crm.install.after_install"
 # Uninstallation
 # ------------
 
-# before_uninstall = "crm.uninstall.before_uninstall"
+before_uninstall = "crm.uninstall.before_uninstall"
 # after_uninstall = "crm.uninstall.after_uninstall"
 
 # Integration Setup
@@ -118,7 +118,8 @@ after_install = "crm.install.after_install"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Contact": "crm.overrides.contact.CustomContact"
+	"Contact": "crm.overrides.contact.CustomContact",
+	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
 # Document Events
