@@ -1,13 +1,14 @@
 <template>
   <Dialog v-model="show" :options="{ title: 'Email Templates', size: '4xl' }">
     <template #body-content>
-      <FormControl
+      <TextInput
+        ref="searchInput"
         v-model="search"
         type="text"
         class="mb-2 w-full"
         placeholder="Search"
       />
-      <div class="grid grid-cols-3 gap-2">
+      <div class="grid max-h-[560px] grid-cols-3 gap-2 overflow-y-auto">
         <div
           v-for="template in filteredTemplates"
           :key="template.name"
@@ -35,7 +36,7 @@
 
 <script setup>
 import { TextEditor, createListResource } from 'frappe-ui'
-import { defineModel, ref, computed } from 'vue'
+import { defineModel, ref, computed, nextTick, watch } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -45,6 +46,7 @@ const props = defineProps({
 })
 
 const show = defineModel()
+const searchInput = ref('')
 
 const emit = defineEmits(['apply'])
 
@@ -79,4 +81,6 @@ const filteredTemplates = computed(() => {
     }) ?? []
   )
 })
+
+watch(show, (value) => value && nextTick(() => searchInput.value?.el?.focus()))
 </script>
