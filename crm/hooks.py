@@ -118,7 +118,8 @@ before_uninstall = "crm.uninstall.before_uninstall"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Contact": "crm.overrides.contact.CustomContact"
+	"Contact": "crm.overrides.contact.CustomContact",
+	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
 # Document Events
