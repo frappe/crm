@@ -134,15 +134,13 @@
    "fieldname": "no_of_employees",
    "fieldtype": "Select",
    "label": "No. of Employees",
-   "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+",
-   "read_only": 1
+   "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
   },
   {
    "fetch_from": "organization.annual_revenue",
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue",
-   "read_only": 1
+   "label": "Annual Revenue"
   },
   {
    "fieldname": "lead_owner",
@@ -294,7 +292,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-22 14:33:21.980634",
+ "modified": "2024-01-28 18:35:02.604536",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
