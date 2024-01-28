@@ -175,6 +175,10 @@ function convertFilters(data, allFilters) {
         value = ['equals', value[1] ? 'Yes' : 'No']
       }
     }
+    if (value[0] === 'LIKE') {
+      value[1] = value[1].replace(/%/g, '')
+    }
+
     if (field) {
       f.push({
         field,
@@ -408,8 +412,8 @@ function apply() {
 }
 
 function parseFilters(filters) {
-  const l__ = Array.from(filters)
-  const obj = l__.map(transformIn).reduce((p, c) => {
+  const filtersArray = Array.from(filters)
+  const obj = filtersArray.map(transformIn).reduce((p, c) => {
     if (['equals', '='].includes(c.operator)) {
       p[c.fieldname] =
         c.value == 'Yes' ? true : c.value == 'No' ? false : c.value
