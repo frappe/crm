@@ -221,6 +221,7 @@ function getOperators(fieldtype, fieldname) {
         { label: '>=', value: '>=' },
         { label: 'Equals', value: 'equals' },
         { label: 'Not Equals', value: 'not equals' },
+        { label: 'Is', value: 'is' },
       ]
     )
   }
