@@ -223,11 +223,23 @@ function getOperators(fieldtype, fieldname) {
       ]
     )
   }
-  if (typeSelect.includes(fieldtype) || typeLink.includes(fieldtype)) {
+  if (typeSelect.includes(fieldtype)) {
     options.push(
       ...[
         { label: 'Equals', value: 'equals' },
         { label: 'Not Equals', value: 'not equals' },
+        { label: 'Is', value: 'is' },
+      ]
+    )
+  }
+  if (typeLink.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: 'Equals', value: 'equals' },
+        { label: 'Not Equals', value: 'not equals' },
+        { label: 'Is', value: 'is' },
+        { label: 'Like', value: 'like' },
+        { label: 'Not Like', value: 'not like' },
       ]
     )
   }
@@ -253,17 +265,7 @@ function getOperators(fieldtype, fieldname) {
 function getValSelect(f) {
   const { field, operator } = f
   const { fieldtype, options } = field
-  if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
-    const _options =
-      fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
-    return h(FormControl, {
-      type: 'select',
-      options: _options.map((o) => ({
-        label: o,
-        value: o,
-      })),
-    })
-  } else if (operator == 'is') {
+  if (operator == 'is') {
     return h(FormControl, {
       type: 'select',
       options: [
@@ -281,6 +283,18 @@ function getValSelect(f) {
     return h(FormControl, {
       type: 'select',
       options: timespanOptions,
+    })
+  } else if (operator == 'like') {
+    return h(FormControl, { type: 'text' })
+  } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
+    const _options =
+      fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
+    return h(FormControl, {
+      type: 'select',
+      options: _options.map((o) => ({
+        label: o,
+        value: o,
+      })),
     })
   } else if (typeLink.includes(fieldtype)) {
     return h(Link, { class: 'form-control', doctype: options })
@@ -309,7 +323,7 @@ function getDefaultValue(field) {
 }
 
 function getDefaultOperator(fieldtype) {
-  if (typeSelect.includes(fieldtype) || typeLink.includes(fieldtype)) {
+  if (typeSelect.includes(fieldtype)) {
     return 'equals'
   }
   if (typeCheck.includes(fieldtype) || typeNumber.includes(fieldtype)) {
@@ -391,7 +405,16 @@ function updateOperator(event, filter) {
 }
 
 function isSameTypeOperator(oldOperator, newOperator) {
-  let textOperators = ['like', 'not like', 'equals', 'not equals', '>', '<', '>=', '<=']
+  let textOperators = [
+    'like',
+    'not like',
+    'equals',
+    'not equals',
+    '>',
+    '<',
+    '>=',
+    '<=',
+  ]
   if (
     textOperators.includes(oldOperator) &&
     textOperators.includes(newOperator)
