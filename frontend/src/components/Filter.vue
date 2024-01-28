@@ -104,7 +104,7 @@ import { h, defineModel, computed } from 'vue'
 
 const typeCheck = ['Check']
 const typeLink = ['Link']
-const typeNumber = ['Float', 'Int']
+const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 const typeDate = ['Date', 'Datetime']
@@ -209,6 +209,7 @@ function getOperators(fieldtype, fieldname) {
     options = [
       { label: 'Like', value: 'like' },
       { label: 'Not Like', value: 'not like' },
+      { label: 'Is', value: 'is' },
     ]
   }
   if (typeNumber.includes(fieldtype)) {
@@ -340,6 +341,7 @@ function getSelectOptions(options) {
 }
 
 function setfilter(data) {
+  if (!data) return
   filters.value.add({
     field: {
       label: data.label,

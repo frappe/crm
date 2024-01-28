@@ -40,6 +40,7 @@ def get_filterable_fields(doctype: str):
 		"Data",
 		"Float",
 		"Int",
+		"Currency",
 		"Link",
 		"Long Text",
 		"Select",
