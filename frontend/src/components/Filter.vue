@@ -44,19 +44,10 @@
                 />
               </div>
               <div id="value" class="!min-w-[140px]">
-                <Link
-                  v-if="typeLink.includes(f.field.fieldtype)"
-                  class="form-control"
-                  :value="f.value"
-                  :doctype="f.field.options"
-                  @change="(v) => updateValue(v, f)"
-                  placeholder="Value"
-                />
                 <component
-                  v-else
-                  :is="getValSelect(f.field.fieldtype, f.field.options)"
+                  :is="getValSelect(f)"
                   :value="f.value"
-                  @change="(e) => updateValue(e.target.value, f)"
+                  @change="(v) => updateValue(v, f)"
                   placeholder="Value"
                 />
               </div>
@@ -103,6 +94,8 @@
   </NestedPopover>
 </template>
 <script setup>
+import DatePicker from '@/components/Controls/DatePicker.vue'
+import DateRangePicker from '@/components/Controls/DateRangePicker.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
@@ -111,9 +104,10 @@ import { h, defineModel, computed } from 'vue'
 
 const typeCheck = ['Check']
 const typeLink = ['Link']
-const typeNumber = ['Float', 'Int']
+const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
+const typeDate = ['Date', 'Datetime']
 
 const props = defineProps({
   doctype: {
@@ -181,6 +175,10 @@ function convertFilters(data, allFilters) {
         value = ['equals', value[1] ? 'Yes' : 'No']
       }
     }
+    if (value[0] === 'LIKE' || value[0] === 'NOT LIKE') {
+      value[1] = value[1].replace(/%/g, '')
+    }
+
     if (field) {
       f.push({
         field,
@@ -202,13 +200,16 @@ function getOperators(fieldtype, fieldname) {
         { label: 'Not Equals', value: 'not equals' },
         { label: 'Like', value: 'like' },
         { label: 'Not Like', value: 'not like' },
+        { label: 'Is', value: 'is' },
       ]
     )
   }
   if (fieldname === '_assign') {
+    // TODO: make equals and not equals work
     options = [
       { label: 'Like', value: 'like' },
       { label: 'Not Like', value: 'not like' },
+      { label: 'Is', value: 'is' },
     ]
   }
   if (typeNumber.includes(fieldtype)) {
@@ -223,22 +224,79 @@ function getOperators(fieldtype, fieldname) {
       ]
     )
   }
-  if (typeSelect.includes(fieldtype) || typeLink.includes(fieldtype)) {
+  if (typeSelect.includes(fieldtype)) {
     options.push(
       ...[
+        { label: 'Equals', value: 'equals' },
+        { label: 'Not Equals', value: 'not equals' },
         { label: 'Is', value: 'is' },
-        { label: 'Is Not', value: 'is not' },
+      ]
+    )
+  }
+  if (typeLink.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: 'Equals', value: 'equals' },
+        { label: 'Not Equals', value: 'not equals' },
+        { label: 'Is', value: 'is' },
+        { label: 'Like', value: 'like' },
+        { label: 'Not Like', value: 'not like' },
       ]
     )
   }
   if (typeCheck.includes(fieldtype)) {
     options.push(...[{ label: 'Equals', value: 'equals' }])
   }
+  if (['Duration'].includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: 'Like', value: 'like' },
+        { label: 'Not Like', value: 'not like' },
+        { label: 'Is', value: 'is' },
+      ]
+    )
+  }
+  if (typeDate.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: 'Is', value: 'is' },
+        { label: '>', value: '>' },
+        { label: '<', value: '<' },
+        { label: '>=', value: '>=' },
+        { label: '<=', value: '<=' },
+        { label: 'Between', value: 'between' },
+        { label: 'Timespan', value: 'timespan' },
+      ]
+    )
+  }
   return options
 }
 
-function getValSelect(fieldtype, options) {
-  if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
+function getValSelect(f) {
+  const { field, operator } = f
+  const { fieldtype, options } = field
+  if (operator == 'is') {
+    return h(FormControl, {
+      type: 'select',
+      options: [
+        {
+          label: 'Set',
+          value: 'set',
+        },
+        {
+          label: 'Not Set',
+          value: 'not set',
+        },
+      ],
+    })
+  } else if (operator == 'timespan') {
+    return h(FormControl, {
+      type: 'select',
+      options: timespanOptions,
+    })
+  } else if (operator == 'like') {
+    return h(FormControl, { type: 'text' })
+  } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
     return h(FormControl, {
@@ -248,6 +306,14 @@ function getValSelect(fieldtype, options) {
         value: o,
       })),
     })
+  } else if (typeLink.includes(fieldtype)) {
+    return h(Link, { class: 'form-control', doctype: options })
+  } else if (typeNumber.includes(fieldtype)) {
+    return h(FormControl, { type: 'number' })
+  } else if (typeDate.includes(fieldtype) && operator == 'between') {
+    return h(DateRangePicker)
+  } else if (typeDate.includes(fieldtype)) {
+    return h(DatePicker)
   } else {
     return h(FormControl, { type: 'text' })
   }
@@ -260,15 +326,21 @@ function getDefaultValue(field) {
   if (typeCheck.includes(field.fieldtype)) {
     return 'Yes'
   }
+  if (typeDate.includes(field.fieldtype)) {
+    return null
+  }
   return ''
 }
 
 function getDefaultOperator(fieldtype) {
-  if (typeSelect.includes(fieldtype) || typeLink.includes(fieldtype)) {
-    return 'is'
+  if (typeSelect.includes(fieldtype)) {
+    return 'equals'
   }
   if (typeCheck.includes(fieldtype) || typeNumber.includes(fieldtype)) {
     return 'equals'
+  }
+  if (typeDate.includes(fieldtype)) {
+    return 'between'
   }
   return 'like'
 }
@@ -278,6 +350,7 @@ function getSelectOptions(options) {
 }
 
 function setfilter(data) {
+  if (!data) return
   filters.value.add({
     field: {
       label: data.label,
@@ -320,13 +393,45 @@ function clearfilter(close) {
 }
 
 function updateValue(value, filter) {
-  filter.value = value
+  value = value.target ? value.target.value : value
+  if (filter.operator === 'between') {
+    filter.value = [value.split(',')[0], value.split(',')[1]]
+  } else {
+    filter.value = value
+  }
   apply()
 }
 
 function updateOperator(event, filter) {
+  let oldOperatorValue = event.target._value
+  let newOperatorValue = event.target.value
   filter.operator = event.target.value
+  if (!isSameTypeOperator(oldOperatorValue, newOperatorValue)) {
+    filter.value = getDefaultValue(filter.field)
+  }
+  if (newOperatorValue === 'is' || newOperatorValue === 'is not') {
+    filter.value = 'set'
+  }
   apply()
+}
+
+function isSameTypeOperator(oldOperator, newOperator) {
+  let textOperators = [
+    'like',
+    'not like',
+    'equals',
+    'not equals',
+    '>',
+    '<',
+    '>=',
+    '<=',
+  ]
+  if (
+    textOperators.includes(oldOperator) &&
+    textOperators.includes(newOperator)
+  )
+    return true
+  return false
 }
 
 function apply() {
@@ -342,8 +447,8 @@ function apply() {
 }
 
 function parseFilters(filters) {
-  const l__ = Array.from(filters)
-  const obj = l__.map(transformIn).reduce((p, c) => {
+  const filtersArray = Array.from(filters)
+  const obj = filtersArray.map(transformIn).reduce((p, c) => {
     if (['equals', '='].includes(c.operator)) {
       p[c.fieldname] =
         c.value == 'Yes' ? true : c.value == 'No' ? false : c.value
@@ -364,8 +469,8 @@ function transformIn(f) {
 }
 
 const operatorMap = {
-  is: '=',
-  'is not': '!=',
+  is: 'is',
+  'is not': 'is not',
   equals: '=',
   'not equals': '!=',
   yes: true,
@@ -376,12 +481,16 @@ const operatorMap = {
   '<': '<',
   '>=': '>=',
   '<=': '<=',
+  between: 'between',
+  timespan: 'timespan',
 }
 
 const oppositeOperatorMap = {
-  '=': 'is',
+  is: 'is',
+  '=': 'equals',
+  '!=': 'not equals',
   equals: 'equals',
-  '!=': 'is not',
+  'is not': 'is not',
   true: 'yes',
   false: 'no',
   LIKE: 'like',
@@ -390,5 +499,78 @@ const oppositeOperatorMap = {
   '<': '<',
   '>=': '>=',
   '<=': '<=',
+  between: 'between',
+  timespan: 'timespan',
 }
+
+const timespanOptions = [
+  {
+    label: 'Last Week',
+    value: 'last week',
+  },
+  {
+    label: 'Last Month',
+    value: 'last month',
+  },
+  {
+    label: 'Last Quarter',
+    value: 'last quarter',
+  },
+  {
+    label: 'Last 6 Months',
+    value: 'last 6 months',
+  },
+  {
+    label: 'Last Year',
+    value: 'last year',
+  },
+  {
+    label: 'Yesterday',
+    value: 'yesterday',
+  },
+  {
+    label: 'Today',
+    value: 'today',
+  },
+  {
+    label: 'Tomorrow',
+    value: 'tomorrow',
+  },
+  {
+    label: 'This Week',
+    value: 'this week',
+  },
+  {
+    label: 'This Month',
+    value: 'this month',
+  },
+  {
+    label: 'This Quarter',
+    value: 'this quarter',
+  },
+  {
+    label: 'This Year',
+    value: 'this year',
+  },
+  {
+    label: 'Next Week',
+    value: 'next week',
+  },
+  {
+    label: 'Next Month',
+    value: 'next month',
+  },
+  {
+    label: 'Next Quarter',
+    value: 'next quarter',
+  },
+  {
+    label: 'Next 6 Months',
+    value: 'next 6 months',
+  },
+  {
+    label: 'Next Year',
+    value: 'next year',
+  },
+]
 </script>
