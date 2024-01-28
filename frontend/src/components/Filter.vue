@@ -175,7 +175,7 @@ function convertFilters(data, allFilters) {
         value = ['equals', value[1] ? 'Yes' : 'No']
       }
     }
-    if (value[0] === 'LIKE') {
+    if (value[0] === 'LIKE' || value[0] === 'NOT LIKE') {
       value[1] = value[1].replace(/%/g, '')
     }
 
@@ -200,6 +200,7 @@ function getOperators(fieldtype, fieldname) {
         { label: 'Not Equals', value: 'not equals' },
         { label: 'Like', value: 'like' },
         { label: 'Not Like', value: 'not like' },
+        { label: 'Is', value: 'is' },
       ]
     )
   }
@@ -390,7 +391,7 @@ function updateOperator(event, filter) {
 }
 
 function isSameTypeOperator(oldOperator, newOperator) {
-  let textOperators = ['equals', 'not equals', '>', '<', '>=', '<=']
+  let textOperators = ['like', 'not like', 'equals', 'not equals', '>', '<', '>=', '<=']
   if (
     textOperators.includes(oldOperator) &&
     textOperators.includes(newOperator)
