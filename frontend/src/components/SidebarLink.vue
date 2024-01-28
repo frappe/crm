@@ -11,12 +11,12 @@
       <Tooltip :text="label" placement="right">
         <slot name="icon">
           <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
-            <component :is="icon" class="h-4.5 w-4.5 text-gray-700" />
+            <component :is="icon" class="h-4 w-4 text-gray-700" />
           </span>
         </slot>
       </Tooltip>
       <span
-        class="flex-shrink-0 text-base duration-300 ease-in-out"
+        class="flex-shrink-0 text-sm duration-300 ease-in-out"
         :class="
           isCollapsed
             ? 'ml-0 w-0 overflow-hidden opacity-0'

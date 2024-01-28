@@ -1,6 +1,6 @@
 <template>
-  <slot name="header" v-bind="{ opened, open, close, toggle }">
-    <div class="flex items-center justify-between">
+  <slot name="header" v-bind="{ opened, hide, open, close, toggle }">
+    <div v-if="!hide" class="flex items-center justify-between">
       <div
         class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
         @click="toggle()"
@@ -35,6 +35,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  hideLabel: {
+    type: Boolean,
+    default: false,
+  },
   isOpened: {
     type: Boolean,
     default: true,
@@ -51,5 +55,7 @@ function open() {
 function close() {
   opened.value = false
 }
+
 let opened = ref(props.isOpened)
+let hide = ref(props.hideLabel)
 </script>
