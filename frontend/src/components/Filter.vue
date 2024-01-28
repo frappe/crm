@@ -247,6 +247,15 @@ function getOperators(fieldtype, fieldname) {
   if (typeCheck.includes(fieldtype)) {
     options.push(...[{ label: 'Equals', value: 'equals' }])
   }
+  if (['Duration'].includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: 'Like', value: 'like' },
+        { label: 'Not Like', value: 'not like' },
+        { label: 'Is', value: 'is' },
+      ]
+    )
+  }
   if (typeDate.includes(fieldtype)) {
     options.push(
       ...[

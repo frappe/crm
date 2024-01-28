@@ -47,6 +47,7 @@ def get_filterable_fields(doctype: str):
 		"Small Text",
 		"Text Editor",
 		"Text",
+		"Duration",
 		"Date",
 		"Datetime",
 	]
