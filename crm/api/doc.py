@@ -46,6 +46,8 @@ def get_filterable_fields(doctype: str):
 		"Small Text",
 		"Text Editor",
 		"Text",
+		"Date",
+		"Datetime",
 	]
 
 	c = get_controller(doctype)
@@ -84,6 +86,8 @@ def get_filterable_fields(doctype: str):
 		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Liked By"},
 		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
 		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
+		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created On"},
+		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
 	]
 	for field in standard_fields:
 		if (
