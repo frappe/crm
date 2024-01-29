@@ -14,8 +14,23 @@
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
           @click="() => toggleNotificationPanel()"
-          class="mx-2 my-0.5"
-        />
+          class="relative mx-2 my-0.5"
+        >
+          <template #right>
+            <Badge
+              v-if="
+                !isSidebarCollapsed &&
+                notificationsStore().unreadNotificationsCount
+              "
+              :label="notificationsStore().unreadNotificationsCount"
+              variant="subtle"
+            />
+            <div
+              v-else-if="notificationsStore().unreadNotificationsCount"
+              class="absolute z-20 top-0 left-0 h-1.5 w-1.5 translate-x-6 translate-y-1 rounded-full bg-gray-800"
+            />
+          </template>
+        </SidebarLink>
       </div>
       <div v-for="view in allViews" :key="view.label">
         <div

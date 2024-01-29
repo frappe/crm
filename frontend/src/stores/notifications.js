@@ -22,6 +22,9 @@ export const notificationsStore = defineStore('crm-notifications', () => {
   }
 
   const allNotifications = computed(() => notifications.data || [])
+  const unreadNotificationsCount = computed(
+    () => notifications.data?.filter((n) => !n.read).length || 0
+  )
 
   function mark_comment_as_read(comment) {
     mark_as_read.params = { comment: comment }
@@ -32,6 +35,7 @@ export const notificationsStore = defineStore('crm-notifications', () => {
   return {
     visible,
     allNotifications,
+    unreadNotificationsCount,
     mark_as_read,
     mark_comment_as_read,
     toggle,
