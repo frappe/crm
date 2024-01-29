@@ -33,7 +33,9 @@
                 class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': opened }"
               />
-              {{ view.name }}
+              <span class="uppercase">
+                {{ view.name }}
+              </span>
             </div>
           </template>
           <nav class="flex flex-col">
@@ -134,12 +136,12 @@ const allViews = computed(() => {
       views: links,
     },
     {
-      name: 'PULIC VIEWS',
+      name: 'Public views',
       opened: true,
       views: parseView(getPublicViews()),
     },
     {
-      name: 'PINNED VIEWS',
+      name: 'Pinned views',
       opened: true,
       views: parseView(getPinnedViews()),
     },
