@@ -8,14 +8,15 @@ export const notificationsStore = defineStore('crm-notifications', () => {
 
   let visible = ref(false)
   let unreadNotifications = reactive([])
+  let allNotifications = reactive([])
 
   const notifications = createResource({
     url: 'crm.api.notifications.get_notifications',
-    cache: 'crm-notifications',
     initialData: [],
     auto: true,
     transform(data) {
-      unreadNotifications = data
+      allNotifications = data
+      unreadNotifications = data.filter((d) => !d.read)
       return data
     },
   })
@@ -28,9 +29,14 @@ export const notificationsStore = defineStore('crm-notifications', () => {
     return unreadNotifications || []
   }
 
+  function getAllNotifications() {
+    return allNotifications || []
+  }
+
   return {
     visible,
     toggle,
+    getAllNotifications,
     getUnreadNotifications,
   }
 })
