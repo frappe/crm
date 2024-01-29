@@ -12,7 +12,7 @@
           label="Notifications"
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
-          @click="() => {}"
+          @click="() => toggleNotificationPanel()"
           class="mx-2 my-0.5"
         />
       </div>
@@ -93,10 +93,12 @@ import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
+import { notificationsStore } from '@/stores/notifications'
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
+const { toggle: toggleNotificationPanel } = notificationsStore()
 const isSidebarCollapsed = useStorage('sidebar_is_collapsed', false)
 
 const links = [
