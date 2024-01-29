@@ -417,7 +417,11 @@
             </div>
           </div>
         </div>
-        <div class="mb-4" v-else-if="activity.activity_type == 'comment'">
+        <div
+          class="mb-4"
+          :id="activity.name"
+          v-else-if="activity.activity_type == 'comment'"
+        >
           <div
             class="mb-0.5 flex items-start justify-stretch gap-2 py-1.5 text-base"
           >
