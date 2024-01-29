@@ -44,7 +44,7 @@ def add_default_lead_statuses():
 			"position": 6,
 		},
 	}
-
+	frappe.reload_doctype("CRM Lead Status")
 	for status in statuses:
 		if frappe.db.exists("CRM Lead Status", status):
 			continue
