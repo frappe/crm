@@ -21,7 +21,7 @@
           @click="() => notificationsStore().mark_as_read.reload()"
         >
           <template #icon>
-            <FeatherIcon name="trash-2" class="h-4 w-4" />
+            <MarkAsDoneIcon class="h-4 w-4" />
           </template>
         </Button>
         <Button
@@ -68,6 +68,7 @@
   </div>
 </template>
 <script setup>
+import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
