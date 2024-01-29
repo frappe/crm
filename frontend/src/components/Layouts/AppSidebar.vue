@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
+    class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-56'"
   >
     <div>
@@ -91,6 +91,7 @@
         </span>
       </template>
     </SidebarLink>
+    <Notifications />
   </div>
 </template>
 
@@ -108,18 +109,16 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
+import Notifications from '@/components/Notifications.vue'
 import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
-import { globalStore } from '@/stores/global'
+import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
-const isSidebarCollapsed = computed({
-  get: () => globalStore().isSidebarCollapsed,
-  set: (value) => globalStore().setIsSidebarCollapsed(value),
-})
+const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 const links = [
   {
