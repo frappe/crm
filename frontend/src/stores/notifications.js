@@ -14,7 +14,10 @@ export const notificationsStore = defineStore('crm-notifications', () => {
   const mark_as_read = createResource({
     url: 'crm.api.notifications.mark_as_read',
     auto: false,
-    onSuccess: () => notifications.reload(),
+    onSuccess: () => {
+      mark_as_read.params = {}
+      notifications.reload()
+    },
   })
 
   function toggle() {
