@@ -133,6 +133,9 @@ doc_events = {
 	"ToDo": {
 		"after_insert": ["crm.api.todo.after_insert"],
 	},
+	"Comment": {
+		"on_update": ["crm.api.comment.on_update"],
+	}
 }
 
 # Scheduled Tasks

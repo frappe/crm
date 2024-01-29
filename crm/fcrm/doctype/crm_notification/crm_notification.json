@@ -60,13 +60,13 @@
   },
   {
    "fieldname": "message",
-   "fieldtype": "Text Editor",
+   "fieldtype": "HTML Editor",
    "label": "Message"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-29 19:36:19.466742",
+ "modified": "2024-01-29 20:03:40.102839",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",
