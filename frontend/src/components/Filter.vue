@@ -175,9 +175,9 @@ function convertFilters(data, allFilters) {
         value = ['equals', value[1] ? 'Yes' : 'No']
       }
     }
-    if (value[0] === 'LIKE' || value[0] === 'NOT LIKE') {
-      value[1] = value[1].replace(/%/g, '')
-    }
+    // if (value[0] === 'LIKE' || value[0] === 'NOT LIKE') {
+    //   value[1] = value[1].replace(/%/g, '')
+    // }
 
     if (field) {
       f.push({
