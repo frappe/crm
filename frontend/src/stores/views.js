@@ -45,9 +45,6 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
 
   function getView(view) {
     if (!view) return null
-    if (!viewsByName[view]) {
-      views.reload()
-    }
     return viewsByName[view]
   }
 

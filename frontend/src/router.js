@@ -140,7 +140,6 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.path === '/') {
-    debugger
     const defaultView = getDefaultView()
     if (defaultView?.route_name) {
       if (defaultView.is_view) {
