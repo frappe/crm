@@ -2,11 +2,12 @@
   <div
     v-if="notificationsStore().visible"
     ref="target"
-    class="absolute left-[102%] z-20 h-screen bg-white transition-all duration-300 ease-in-out"
+    class="absolute z-20 h-screen bg-white transition-all duration-300 ease-in-out"
     :style="{
       'box-shadow': '8px 0px 8px rgba(0, 0, 0, 0.1)',
       'max-width': '350px',
       'min-width': '350px',
+      'left': 'calc(100% + 1px)'
     }"
   >
     <div class="flex h-screen flex-col">
