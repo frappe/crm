@@ -1,42 +1,39 @@
 import { defineStore } from 'pinia'
-import { sessionStore } from '@/stores/session'
 import { createResource } from 'frappe-ui'
-import { reactive, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const notificationsStore = defineStore('crm-notifications', () => {
-  const { user } = sessionStore()
-
   let visible = ref(false)
-  let unreadNotifications = reactive([])
-  let allNotifications = reactive([])
 
   const notifications = createResource({
     url: 'crm.api.notifications.get_notifications',
     initialData: [],
     auto: true,
-    transform(data) {
-      allNotifications = data
-      unreadNotifications = data.filter((d) => !d.read)
-      return data
-    },
+  })
+
+  const mark_as_read = createResource({
+    url: 'crm.api.notifications.mark_as_read',
+    auto: false,
+    onSuccess: () => notifications.reload(),
   })
 
   function toggle() {
     visible.value = !visible.value
   }
 
-  function getUnreadNotifications() {
-    return unreadNotifications || []
-  }
+  const allNotifications = computed(() => notifications.data || [])
 
-  function getAllNotifications() {
-    return allNotifications || []
+  function mark_comment_as_read(comment) {
+    mark_as_read.params = { comment: comment }
+    mark_as_read.reload()
+    toggle()
   }
 
   return {
     visible,
+    allNotifications,
+    mark_as_read,
+    mark_comment_as_read,
     toggle,
-    getAllNotifications,
-    getUnreadNotifications,
   }
 })

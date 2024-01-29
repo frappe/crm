@@ -18,7 +18,7 @@
         <Button
           theme="blue"
           variant="ghost"
-          @click="() => notificationsStore().clear()"
+          @click="() => notificationsStore().mark_as_read.reload()"
         >
           <template #icon>
             <FeatherIcon name="trash-2" class="h-4 w-4" />
@@ -37,11 +37,11 @@
     </div>
     <div class="divide-y text-base">
       <RouterLink
-        v-for="n in allNotifications"
-        :key="n.name"
-        class="flex cursor-pointer items-start gap-3.5 px-5 py-2.5 hover:bg-gray-100"
+        v-for="n in notificationsStore().allNotifications"
+        :key="n.comment"
         :to="getRoute(n)"
-        @click="() => toggleNotificationPanel()"
+        class="flex cursor-pointer items-start gap-3.5 px-5 py-2.5 hover:bg-gray-100"
+        @click="mark_as_read(n.comment)"
       >
         <UserAvatar :user="n.from_user.name" size="md" />
         <span>
@@ -94,9 +94,9 @@ function toggleNotificationPanel() {
   notificationsStore().toggle()
 }
 
-const allNotifications = computed(() => {
-  return notificationsStore().getAllNotifications()
-})
+function mark_as_read(comment) {
+  notificationsStore().mark_comment_as_read(comment)
+}
 
 function getRoute(notification) {
   let params = {
