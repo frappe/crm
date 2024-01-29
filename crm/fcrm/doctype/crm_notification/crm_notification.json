@@ -7,6 +7,8 @@
  "field_order": [
   "from_user",
   "type",
+  "reference_doctype",
+  "reference_name",
   "column_break_dduu",
   "to_user",
   "comment",
@@ -62,11 +64,23 @@
    "fieldname": "message",
    "fieldtype": "HTML Editor",
    "label": "Message"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Doc",
+   "options": "reference_doctype"
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference Doctype",
+   "options": "DocType"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-29 20:03:40.102839",
+ "modified": "2024-01-30 01:04:27.946030",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",

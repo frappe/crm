@@ -22,10 +22,10 @@ def notify_mentions(doc):
             type="Mention",
             message=doc.content,
             comment=doc.name,
+            reference_doctype=doc.reference_doctype,
+            reference_name=doc.reference_name,
         )
-        # Why mention oneself?
-        # if values.from_user == values.to_user:
-        #     continue
+
         if frappe.db.exists("CRM Notification", values):
             return
         frappe.get_doc(values).insert()

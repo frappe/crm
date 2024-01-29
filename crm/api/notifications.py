@@ -18,9 +18,6 @@ def get_notifications():
 
     _notifications = []
     for notification in notifications:
-        reference_doc = frappe.get_value(
-            "Comment", notification.comment, ["reference_doctype", "reference_name"]
-        )
         _notifications.append(
             {
                 "creation": notification.creation,
@@ -35,10 +32,12 @@ def get_notifications():
                 "read": notification.read,
                 "comment": notification.comment,
                 "reference_doctype": "deal"
-                if reference_doc[0] == "CRM Deal"
+                if notification.reference_doctype == "CRM Deal"
                 else "lead",
-                "reference_name": reference_doc[1],
-                "route_name": "Deal" if reference_doc[0] == "CRM Deal" else "Lead",
+                "reference_name": notification.reference_name,
+                "route_name": "Deal"
+                if notification.reference_doctype == "CRM Deal"
+                else "Lead",
             }
         )
 
