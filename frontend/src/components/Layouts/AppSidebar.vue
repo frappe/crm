@@ -94,12 +94,16 @@ import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
-import { useStorage } from '@vueuse/core'
+import { globalStore } from '@/stores/global'
 import { computed } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
-const isSidebarCollapsed = useStorage('sidebar_is_collapsed', false)
+
+const isSidebarCollapsed = computed({
+  get: () => globalStore().isSidebarCollapsed,
+  set: (value) => globalStore().setIsSidebarCollapsed(value),
+})
 
 const links = [
   {

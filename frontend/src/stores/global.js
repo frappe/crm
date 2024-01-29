@@ -1,3 +1,4 @@
+import { useStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { getCurrentInstance, ref } from 'vue'
 
@@ -6,6 +7,7 @@ export const globalStore = defineStore('crm-global', () => {
   const { $dialog } = app.appContext.config.globalProperties
 
   let twilioEnabled = ref(false)
+  let isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
   let callMethod = () => {}
 
   function setTwilioEnabled(value) {
@@ -20,9 +22,15 @@ export const globalStore = defineStore('crm-global', () => {
     callMethod(number)
   }
 
+  function setIsSidebarCollapsed(value) {
+    isSidebarCollapsed.value = value
+  }
+
   return {
     $dialog,
     twilioEnabled,
+    isSidebarCollapsed,
+    setIsSidebarCollapsed,
     makeCall,
     setTwilioEnabled,
     setMakeCall,
