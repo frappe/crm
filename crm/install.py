@@ -7,9 +7,7 @@ import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
 def before_install():
-	frappe.reload_doc("fcrm", "doctype", "crm_lead_status")
-	frappe.reload_doc("fcrm", "doctype", "crm_deal_status")
-	frappe.reload_doc("fcrm", "doctype", "crm_communication_status")
+	pass
 
 def after_install():
 	add_default_lead_statuses()
