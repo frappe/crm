@@ -7,6 +7,15 @@
       <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
     </div>
     <div class="flex-1 overflow-y-auto">
+      <div class="mb-3 flex flex-col">
+        <SidebarLink
+          label="Notifications"
+          :icon="NotificationsIcon"
+          :isCollapsed="isSidebarCollapsed"
+          @click="() => {}"
+          class="mx-2 my-0.5"
+        />
+      </div>
       <div v-for="view in allViews" :key="view.label">
         <div
           v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length"
@@ -81,6 +90,7 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
+import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
 import { useStorage } from '@vueuse/core'
