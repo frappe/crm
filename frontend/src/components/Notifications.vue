@@ -72,10 +72,23 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import { notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
-import { computed } from 'vue'
-import { FeatherIcon } from 'frappe-ui'
+import { onClickOutside } from '@vueuse/core'
+import { ref, computed } from 'vue'
 
 const isSidebarCollapsed = computed(() => globalStore().isSidebarCollapsed)
+
+const target = ref(null)
+onClickOutside(
+  target,
+  () => {
+    if (notificationsStore().visible) {
+      toggleNotificationPanel()
+    }
+  },
+  {
+    ignore: ['#notifications-btn'],
+  }
+)
 
 function toggleNotificationPanel() {
   notificationsStore().toggle()
@@ -97,7 +110,7 @@ function getRoute(notification) {
   return {
     name: notification.route_name,
     params: params,
-    hash: "#" + notification.comment,
+    hash: '#' + notification.comment,
   }
 }
 </script>

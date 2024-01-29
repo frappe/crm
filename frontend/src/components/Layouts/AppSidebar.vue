@@ -9,6 +9,7 @@
     <div class="flex-1 overflow-y-auto">
       <div class="mb-3 flex flex-col">
         <SidebarLink
+          id="notifications-btn"
           label="Notifications"
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
