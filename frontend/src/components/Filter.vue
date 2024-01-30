@@ -200,6 +200,8 @@ function getOperators(fieldtype, fieldname) {
         { label: 'Not Equals', value: 'not equals' },
         { label: 'Like', value: 'like' },
         { label: 'Not Like', value: 'not like' },
+        { label: 'In', value: 'in' },
+        { label: 'Not In', value: 'not in' },
         { label: 'Is', value: 'is' },
       ]
     )
@@ -215,13 +217,17 @@ function getOperators(fieldtype, fieldname) {
   if (typeNumber.includes(fieldtype)) {
     options.push(
       ...[
+        { label: 'Equals', value: 'equals' },
+        { label: 'Not Equals', value: 'not equals' },
+        { label: 'Like', value: 'like' },
+        { label: 'Not Like', value: 'not like' },
+        { label: 'In', value: 'in' },
+        { label: 'Not In', value: 'not in' },
+        { label: 'Is', value: 'is' },
         { label: '<', value: '<' },
         { label: '>', value: '>' },
         { label: '<=', value: '<=' },
         { label: '>=', value: '>=' },
-        { label: 'Equals', value: 'equals' },
-        { label: 'Not Equals', value: 'not equals' },
-        { label: 'Is', value: 'is' },
       ]
     )
   }
@@ -230,6 +236,8 @@ function getOperators(fieldtype, fieldname) {
       ...[
         { label: 'Equals', value: 'equals' },
         { label: 'Not Equals', value: 'not equals' },
+        { label: 'In', value: 'in' },
+        { label: 'Not In', value: 'not in' },
         { label: 'Is', value: 'is' },
       ]
     )
@@ -239,9 +247,11 @@ function getOperators(fieldtype, fieldname) {
       ...[
         { label: 'Equals', value: 'equals' },
         { label: 'Not Equals', value: 'not equals' },
-        { label: 'Is', value: 'is' },
         { label: 'Like', value: 'like' },
         { label: 'Not Like', value: 'not like' },
+        { label: 'In', value: 'in' },
+        { label: 'Not In', value: 'not in' },
+        { label: 'Is', value: 'is' },
       ]
     )
   }
@@ -253,6 +263,8 @@ function getOperators(fieldtype, fieldname) {
       ...[
         { label: 'Like', value: 'like' },
         { label: 'Not Like', value: 'not like' },
+        { label: 'In', value: 'in' },
+        { label: 'Not In', value: 'not in' },
         { label: 'Is', value: 'is' },
       ]
     )
@@ -295,7 +307,7 @@ function getValSelect(f) {
       type: 'select',
       options: timespanOptions,
     })
-  } else if (operator == 'like') {
+  } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
     return h(FormControl, { type: 'text' })
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
@@ -422,6 +434,8 @@ function isSameTypeOperator(oldOperator, newOperator) {
     'not like',
     'equals',
     'not equals',
+    'in',
+    'not in',
     '>',
     '<',
     '>=',
@@ -472,6 +486,8 @@ function transformIn(f) {
 const operatorMap = {
   is: 'is',
   'is not': 'is not',
+  in: 'in',
+  'not in': 'not in',
   equals: '=',
   'not equals': '!=',
   yes: true,
@@ -496,6 +512,8 @@ const oppositeOperatorMap = {
   false: 'no',
   LIKE: 'like',
   'NOT LIKE': 'not like',
+  in: 'in',
+  'not in': 'not in',
   '>': '>',
   '<': '<',
   '>=': '>=',
