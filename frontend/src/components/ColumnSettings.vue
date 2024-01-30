@@ -1,8 +1,10 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button>
-        <SettingsIcon class="h-4" />
+      <Button label="Columns">
+        <template #prefix>
+          <ColumnsIcon class="h-4" />
+        </template>
       </Button>
     </template>
     <template #body="{ close }">
@@ -132,7 +134,7 @@
 </template>
 
 <script setup>
-import SettingsIcon from '@/components/Icons/SettingsIcon.vue'
+import ColumnsIcon from '@/components/Icons/ColumnsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'

@@ -16,6 +16,13 @@
           </Button>
         </template>
       </Dropdown>
+      <Dropdown :options="viewActions">
+        <template #default>
+          <Button>
+            <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+          </Button>
+        </template>
+      </Dropdown>
     </div>
     <div class="flex items-center gap-2">
       <div
@@ -46,13 +53,6 @@
             <RefreshIcon class="h-4 w-4" />
           </template>
         </Button>
-        <Dropdown :options="viewActions">
-          <template #default>
-            <Button>
-              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
-            </Button>
-          </template>
-        </Dropdown>
       </div>
     </div>
   </div>
