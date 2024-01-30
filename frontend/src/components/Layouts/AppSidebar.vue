@@ -27,7 +27,7 @@
             />
             <div
               v-else-if="notificationsStore().unreadNotificationsCount"
-              class="absolute z-20 top-0 left-0 h-1.5 w-1.5 translate-x-6 translate-y-1 rounded-full bg-gray-800"
+              class="absolute z-20 top-1 -left-1.5 h-[5px] w-[5px] ring-1 ring-white translate-x-6 translate-y-1 rounded-full bg-gray-800"
             />
           </template>
         </SidebarLink>

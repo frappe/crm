@@ -48,7 +48,7 @@
         >
           <div class="mt-1 flex items-center gap-2.5">
             <div
-              class="h-1.5 w-1.5 rounded-full"
+              class="h-[5px] w-[5px] rounded-full"
               :class="[n.read ? 'bg-transparent' : 'bg-gray-900']"
             />
             <UserAvatar :user="n.from_user.name" size="lg" />
