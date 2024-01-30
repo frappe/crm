@@ -5,26 +5,29 @@
     @click="handleClick"
   >
     <div
-      class="flex items-center duration-300 ease-in-out"
+      class="flex w-full justify-between items-center duration-300 ease-in-out"
       :class="isCollapsed ? 'p-1' : 'px-2 py-1'"
     >
-      <Tooltip :text="label" placement="right">
-        <slot name="icon">
-          <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
-            <component :is="icon" class="h-4 w-4 text-gray-700" />
-          </span>
-        </slot>
-      </Tooltip>
-      <span
-        class="flex-shrink-0 text-sm duration-300 ease-in-out"
-        :class="
-          isCollapsed
-            ? 'ml-0 w-0 overflow-hidden opacity-0'
-            : 'ml-2 w-auto opacity-100'
-        "
-      >
-        {{ label }}
-      </span>
+      <div class="flex items-center">
+        <Tooltip :text="label" placement="right">
+          <slot name="icon">
+            <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
+              <component :is="icon" class="h-4 w-4 text-gray-700" />
+            </span>
+          </slot>
+        </Tooltip>
+        <span
+          class="flex-1 flex-shrink-0 text-sm duration-300 ease-in-out"
+          :class="
+            isCollapsed
+              ? 'ml-0 w-0 overflow-hidden opacity-0'
+              : 'ml-2 w-auto opacity-100'
+          "
+        >
+          {{ label }}
+        </span>
+      </div>
+      <slot name="right" />
     </div>
   </button>
 </template>

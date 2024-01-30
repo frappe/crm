@@ -97,6 +97,7 @@ def get_deal_activities(name):
 
 	for comment in docinfo.comments:
 		activity = {
+			"name": comment.name,
 			"activity_type": "comment",
 			"creation": comment.creation,
 			"owner": comment.owner,
@@ -203,6 +204,7 @@ def get_lead_activities(name):
 
 	for comment in docinfo.comments:
 		activity = {
+			"name": comment.name,
 			"activity_type": "comment",
 			"creation": comment.creation,
 			"owner": comment.owner,

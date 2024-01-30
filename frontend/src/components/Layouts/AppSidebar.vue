@@ -1,12 +1,37 @@
 <template>
   <div
-    class="flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
+    class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-56'"
   >
     <div>
       <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
     </div>
     <div class="flex-1 overflow-y-auto">
+      <div class="mb-3 flex flex-col">
+        <SidebarLink
+          id="notifications-btn"
+          label="Notifications"
+          :icon="NotificationsIcon"
+          :isCollapsed="isSidebarCollapsed"
+          @click="() => toggleNotificationPanel()"
+          class="relative mx-2 my-0.5"
+        >
+          <template #right>
+            <Badge
+              v-if="
+                !isSidebarCollapsed &&
+                notificationsStore().unreadNotificationsCount
+              "
+              :label="notificationsStore().unreadNotificationsCount"
+              variant="subtle"
+            />
+            <div
+              v-else-if="notificationsStore().unreadNotificationsCount"
+              class="absolute z-20 top-0 left-0 h-1.5 w-1.5 translate-x-6 translate-y-1 rounded-full bg-gray-800"
+            />
+          </template>
+        </SidebarLink>
+      </div>
       <div v-for="view in allViews" :key="view.label">
         <div
           v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length"
@@ -66,6 +91,7 @@
         </span>
       </template>
     </SidebarLink>
+    <Notifications />
   </div>
 </template>
 
@@ -81,13 +107,18 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
+import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
+import Notifications from '@/components/Notifications.vue'
 import { viewsStore } from '@/stores/views'
+import { notificationsStore } from '@/stores/notifications'
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
-const isSidebarCollapsed = useStorage('sidebar_is_collapsed', false)
+const { toggle: toggleNotificationPanel } = notificationsStore()
+
+const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 const links = [
   {

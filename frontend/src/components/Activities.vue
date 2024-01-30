@@ -417,7 +417,11 @@
             </div>
           </div>
         </div>
-        <div class="mb-4" v-else-if="activity.activity_type == 'comment'">
+        <div
+          class="mb-4"
+          :id="activity.name"
+          v-else-if="activity.activity_type == 'comment'"
+        >
           <div
             class="mb-0.5 flex items-start justify-stretch gap-2 py-1.5 text-base"
           >
@@ -765,6 +769,7 @@ import {
 } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import { ref, computed, h, defineModel, markRaw, watch, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
@@ -1106,11 +1111,14 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   }
 })
 
-function scroll(el) {
+function scroll(hash) {
   setTimeout(() => {
-    if (!el) {
+    let el
+    if (!hash) {
       let e = document.getElementsByClassName('activity')
       el = e[e.length - 1]
+    } else {
+      el = document.getElementById(hash)
     }
     if (el && !useElementVisibility(el).value) {
       el.scrollIntoView({ behavior: 'smooth' })
@@ -1121,7 +1129,12 @@ function scroll(el) {
 
 defineExpose({ emailBox })
 
-nextTick(() => scroll())
+const route = useRoute()
+
+nextTick(() => {
+  const hash = route.hash.slice(1) || null
+  scroll(hash)
+})
 </script>
 
 <style scoped>
