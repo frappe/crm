@@ -439,8 +439,9 @@ const viewActions = computed(() => {
 })
 
 function duplicateView() {
+  let label = getView(route.query.view)?.label || 'List View'
   view.value.name = ''
-  view.value.label = getView(route.query.view).label + ' New'
+  view.value.label = label + ' (New)'
   showViewModal.value = true
 }
 
