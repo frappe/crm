@@ -21,6 +21,9 @@ def create(view):
 	view.rows = view.rows + default_rows if default_rows else view.rows
 	view.rows = remove_duplicates(view.rows)
 
+	if not view.columns:
+		view.columns = sync_default_list_columns(view.doctype)
+
 	doc = frappe.new_doc("CRM View Settings")
 	doc.name = view.label
 	doc.label = view.label
@@ -90,3 +93,57 @@ def sync_default_list_rows(doctype):
 		rows = list.default_list_data().get("rows")
 
 	return rows
+
+def sync_default_list_columns(doctype):
+	list = get_controller(doctype)
+	columns = []
+
+	if hasattr(list, "default_list_data"):
+		columns = list.default_list_data().get("columns")
+
+	return columns
+
+
+@frappe.whitelist()
+def create_or_update_default_view(view):
+	view = frappe._dict(view)
+
+	filters = parse_json(view.filters) or {}
+	columns = parse_json(view.columns or '[]')
+	rows = parse_json(view.rows or '[]')
+
+	default_rows = sync_default_list_rows(view.doctype)
+	rows = rows + default_rows if default_rows else rows
+	rows = remove_duplicates(rows)
+
+	if not columns:
+		columns = sync_default_list_columns(view.doctype)
+
+	doc = frappe.db.exists(
+		"CRM View Settings",
+		{"dt": view.doctype, "is_default": True, "user": frappe.session.user},
+	)
+	if doc:
+		doc = frappe.get_doc("CRM View Settings", doc)
+		doc.label = view.label
+		doc.route_name = view.route_name or ""
+		doc.load_default_columns = view.load_default_columns or False
+		doc.filters = json.dumps(filters)
+		doc.order_by = view.order_by
+		doc.columns = json.dumps(columns)
+		doc.rows = json.dumps(rows)
+		doc.save()
+	else:
+		doc = frappe.new_doc("CRM View Settings")
+		doc.name = view.label or 'List View'
+		doc.label = view.label or 'List View'
+		doc.dt = view.doctype
+		doc.user = frappe.session.user
+		doc.route_name = view.route_name or ""
+		doc.load_default_columns = view.load_default_columns or False
+		doc.filters = json.dumps(filters)
+		doc.order_by = view.order_by
+		doc.columns = json.dumps(columns)
+		doc.rows = json.dumps(rows)
+		doc.is_default = True
+		doc.insert()

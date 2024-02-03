@@ -26,14 +26,11 @@
     </div>
     <div class="flex items-center gap-2">
       <div
-        v-if="viewUpdated && (!view.public || isManager())"
+        v-if="viewUpdated && route.query.view && (!view.public || isManager())"
         class="flex items-center gap-2 border-r pr-2"
       >
         <Button label="Cancel" @click="cancelChanges" />
-        <Button
-          :label="view?.name ? 'Save Changes' : 'Create View'"
-          @click="saveView"
-        />
+        <Button label="Save Changes" @click="saveView" />
       </div>
       <div class="flex items-center gap-2">
         <Filter
@@ -154,7 +151,7 @@ watch(
 )
 
 function getParams() {
-  let _view = getView(route.query.view)
+  let _view = getView(route.query.view, props.doctype)
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const columns = _view?.columns || ''
@@ -266,7 +263,9 @@ const viewsDropdownOptions = computed(() => {
       }
     })
     let publicViews = list.value.data.views.filter((v) => v.public)
-    let savedViews = list.value.data.views.filter((v) => !v.pinned && !v.public)
+    let savedViews = list.value.data.views.filter(
+      (v) => !v.pinned && !v.public && !v.is_default
+    )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
     publicViews.length &&
@@ -299,6 +298,10 @@ function updateFilter(filters) {
   list.value.params.filters = filters
   view.value.filters = filters
   list.value.reload()
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
 }
 
 function updateSort(order_by) {
@@ -310,6 +313,10 @@ function updateSort(order_by) {
   list.value.params.order_by = order_by
   view.value.order_by = order_by
   list.value.reload()
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
 }
 
 function updateColumns(obj) {
@@ -329,6 +336,21 @@ function updateColumns(obj) {
     list.value.reload()
   }
   viewUpdated.value = true
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
+}
+
+function create_or_update_default_view() {
+  if (route.query.view) return
+  view.value.doctype = props.doctype
+  call(
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
+    {
+      view: view.value,
+    }
+  ).then(() => reloadView())
 }
 
 function updatePageLength(value, loadMore = false) {

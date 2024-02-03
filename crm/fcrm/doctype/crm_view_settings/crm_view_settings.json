@@ -7,6 +7,7 @@
  "field_order": [
   "label",
   "user",
+  "is_default",
   "column_break_zacm",
   "dt",
   "route_name",
@@ -104,11 +105,17 @@
    "fieldname": "public",
    "fieldtype": "Check",
    "label": "Public"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_default",
+   "fieldtype": "Check",
+   "label": "Is Default"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-03 18:22:48.406099",
+ "modified": "2024-02-03 18:38:09.412745",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

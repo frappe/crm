@@ -6,6 +6,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
   let viewsByName = reactive({})
   let pinnedViews = ref([])
   let publicViews = ref([])
+  let defaultView = ref({})
 
   // Views
   const views = createResource({
@@ -25,13 +26,18 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
         if (view.public) {
           publicViews.value?.push(view)
         }
+        if (view.is_default && view.dt) {
+          defaultView.value[view.dt] = view
+        }
       }
       return views
     },
   })
 
-  function getView(view) {
-    if (!view) return null
+  function getView(view, doctype = null) {
+    if (!view && doctype) {
+      return defaultView.value?.[doctype] || null
+    }
     return viewsByName[view]
   }
 
@@ -51,6 +57,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
 
   return {
     views,
+    defaultView,
     getPinnedViews,
     getPublicViews,
     reload,
