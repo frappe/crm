@@ -7,14 +7,11 @@
  "field_order": [
   "label",
   "user",
-  "user_list",
   "column_break_zacm",
   "dt",
   "route_name",
   "pinned",
   "public",
-  "default",
-  "is_view",
   "columns_tab",
   "load_default_columns",
   "columns",
@@ -31,7 +28,6 @@
    "label": "Columns"
   },
   {
-   "depends_on": "eval: doc.public == false",
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
@@ -108,29 +104,11 @@
    "fieldname": "public",
    "fieldtype": "Check",
    "label": "Public"
-  },
-  {
-   "default": "0",
-   "fieldname": "default",
-   "fieldtype": "Check",
-   "label": "Default"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_view",
-   "fieldtype": "Check",
-   "label": "Is View"
-  },
-  {
-   "depends_on": "eval: doc.public == true",
-   "fieldname": "user_list",
-   "fieldtype": "Text",
-   "label": "User List"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-22 21:44:41.733977",
+ "modified": "2024-02-03 18:22:48.406099",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

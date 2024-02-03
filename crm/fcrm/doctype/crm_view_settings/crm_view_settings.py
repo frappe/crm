@@ -24,7 +24,6 @@ def create(view):
 	doc = frappe.new_doc("CRM View Settings")
 	doc.name = view.label
 	doc.label = view.label
-	doc.is_view = True
 	doc.dt = view.doctype
 	doc.user = frappe.session.user
 	doc.route_name = view.route_name or ""
@@ -50,7 +49,6 @@ def update(view):
 
 	doc = frappe.get_doc("CRM View Settings", view.name)
 	doc.label = view.label
-	doc.is_view = True
 	doc.route_name = view.route_name or ""
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(filters)
@@ -80,60 +78,6 @@ def pin(name, value):
 	doc = frappe.get_doc("CRM View Settings", name)
 	doc.pinned = value
 	doc.save()
-
-@frappe.whitelist()
-def make_default(name, doctype, route_name):
-	existing_default_view = frappe.db.exists("CRM View Settings", {
-		"default": True,
-		"user": frappe.session.user
-	})
-	if existing_default_view:
-		frappe.db.set_value("CRM View Settings", existing_default_view, "default", False)
-	else:
-		public_default = frappe.db.exists("CRM View Settings", {
-			"default": True,
-			"public": True
-		})
-		if public_default:
-			public_default_view = frappe.get_doc("CRM View Settings", public_default)
-			user_list = json.loads(public_default_view.user_list)
-			if frappe.session.user in user_list:
-				updated_user_list = [user for user in user_list if user != frappe.session.user]
-				if not updated_user_list:
-					public_default_view.default = False
-					public_default_view.user_list = None
-				else:
-					public_default_view.user_list = json.dumps(updated_user_list)
-				public_default_view.save()
-
-	if not name and doctype:
-		exists = frappe.db.exists("CRM View Settings", {
-			"dt": doctype,
-			"is_view": False,
-			"user": frappe.session.user
-		})
-		if not exists:
-			doc = frappe.new_doc("CRM View Settings")
-			doc.label = "List View"
-			doc.default = True
-			doc.dt = doctype
-			doc.route_name = route_name
-			doc.user = frappe.session.user
-			doc.is_view = False
-			doc.insert()
-		else:
-			frappe.db.set_value("CRM View Settings", exists, "default", True)
-	elif frappe.db.get_value("CRM View Settings", name, "public"):
-		doc = frappe.get_doc("CRM View Settings", name)
-		doc.default = True
-		doc.user_list = (
-			json.dumps([frappe.session.user])
-			if not doc.user_list
-			else json.dumps(json.loads(doc.user_list) + [frappe.session.user])
-		)
-		doc.save()
-	else:
-		frappe.db.set_value("CRM View Settings", name, "default", True)
 
 def remove_duplicates(l):
 	return list(dict.fromkeys(l))

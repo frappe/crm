@@ -235,7 +235,7 @@ def get_list_data(
 		"page_length": page_length,
 		"page_length_count": page_length_count,
 		"is_default": is_default,
-		"views": get_views(doctype, is_view=True),
+		"views": get_views(doctype),
 		"total_count": frappe.client.get_count(doctype, filters=filters),
 		"row_count": len(data),
 	}
