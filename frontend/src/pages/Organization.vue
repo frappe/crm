@@ -236,7 +236,6 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
-import { viewsStore } from '@/stores/views'
 import {
   dateFormat,
   dateTooltipFormat,
@@ -256,7 +255,6 @@ const props = defineProps({
 const { $dialog } = globalStore()
 const { organizations, getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
-const { getDefaultView } = viewsStore()
 const showOrganizationModal = ref(false)
 const detailMode = ref(false)
 
@@ -265,12 +263,7 @@ const router = useRouter()
 const organization = computed(() => getOrganization(props.organizationId))
 
 const breadcrumbs = computed(() => {
-  let defaultView = getDefaultView()
-  let route = { name: 'Organizations' }
-  if (defaultView?.route_name == 'Organizations' && defaultView?.is_view) {
-    route = { name: 'Organizations', query: { view: defaultView.name } }
-  }
-  let items = [{ label: 'Organizations', route: route }]
+  let items = [{ label: 'Organizations', route: { name: 'Organizations' } }]
   items.push({
     label: props.organizationId,
     route: {
