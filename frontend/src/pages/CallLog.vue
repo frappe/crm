@@ -159,14 +159,12 @@ import {
 } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import { viewsStore } from '@/stores/views'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { getUser } = usersStore()
 const { contacts, getContact, getLeadContact } = contactsStore()
-const { getDefaultView } = viewsStore()
 
 const props = defineProps({
   callLogId: {
@@ -241,12 +239,7 @@ function createLead() {
 }
 
 const breadcrumbs = computed(() => {
-  let defaultView = getDefaultView()
-  let route = { name: 'Call Logs' }
-  if (defaultView?.route_name == 'Call Logs' && defaultView?.is_view) {
-    route = { name: 'Call Logs', query: { view: defaultView.name } }
-  }
-  let items = [{ label: 'Call Logs', route: route }]
+  let items = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
   items.push({
     label: callLog.data?.caller.label,
     route: { name: 'Call Log', params: { callLogId: props.callLogId } },

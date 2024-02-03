@@ -26,14 +26,11 @@
     </div>
     <div class="flex items-center gap-2">
       <div
-        v-if="viewUpdated && (!view.public || isManager())"
+        v-if="viewUpdated && route.query.view && (!view.public || isManager())"
         class="flex items-center gap-2 border-r pr-2"
       >
         <Button label="Cancel" @click="cancelChanges" />
-        <Button
-          :label="view?.name ? 'Save Changes' : 'Create View'"
-          @click="saveView"
-        />
+        <Button label="Save Changes" @click="saveView" />
       </div>
       <div class="flex items-center gap-2">
         <Filter
@@ -83,7 +80,6 @@ import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
-import { createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
@@ -104,7 +100,7 @@ const props = defineProps({
 })
 
 const { $dialog } = globalStore()
-const { reload: reloadView, getView, getDefaultView } = viewsStore()
+const { reload: reloadView, getView } = viewsStore()
 const { isManager } = usersStore()
 
 const list = defineModel()
@@ -155,7 +151,7 @@ watch(
 )
 
 function getParams() {
-  let _view = getView(route.query.view)
+  let _view = getView(route.query.view, props.doctype)
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const columns = _view?.columns || ''
@@ -267,7 +263,9 @@ const viewsDropdownOptions = computed(() => {
       }
     })
     let publicViews = list.value.data.views.filter((v) => v.public)
-    let savedViews = list.value.data.views.filter((v) => !v.pinned && !v.public)
+    let savedViews = list.value.data.views.filter(
+      (v) => !v.pinned && !v.public && !v.is_default
+    )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
     publicViews.length &&
@@ -300,6 +298,10 @@ function updateFilter(filters) {
   list.value.params.filters = filters
   view.value.filters = filters
   list.value.reload()
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
 }
 
 function updateSort(order_by) {
@@ -311,6 +313,10 @@ function updateSort(order_by) {
   list.value.params.order_by = order_by
   view.value.order_by = order_by
   list.value.reload()
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
 }
 
 function updateColumns(obj) {
@@ -330,6 +336,21 @@ function updateColumns(obj) {
     list.value.reload()
   }
   viewUpdated.value = true
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
+}
+
+function create_or_update_default_view() {
+  if (route.query.view) return
+  view.value.doctype = props.doctype
+  call(
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
+    {
+      view: view.value,
+    }
+  ).then(() => reloadView())
 }
 
 function updatePageLength(value, loadMore = false) {
@@ -361,20 +382,6 @@ const viewActions = computed(() => {
       ],
     },
   ]
-
-  let defaultView = getDefaultView()
-  if (
-    !defaultView ||
-    (route.query.view && route.query.view != defaultView.name) ||
-    (!route.query.view &&
-      (defaultView.route_name != route.name || defaultView.is_view))
-  ) {
-    actions[0].items.push({
-      label: 'Make Default',
-      icon: () => h(FeatherIcon, { name: 'star', class: 'h-4 w-4' }),
-      onClick: () => makeDefault(),
-    })
-  }
 
   if (route.query.view && (!view.value.public || isManager())) {
     actions[0].items.push(
@@ -431,24 +438,10 @@ const viewActions = computed(() => {
   return actions
 })
 
-function makeDefault() {
-  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.make_default', {
-    name: route.query.view || '',
-    doctype: props.doctype,
-    route_name: route.name,
-  }).then(() => {
-    createToast({
-      title: 'Default View Set',
-      icon: 'check',
-      iconClasses: 'text-green-600',
-    })
-    reloadView()
-  })
-}
-
 function duplicateView() {
+  let label = getView(route.query.view)?.label || 'List View'
   view.value.name = ''
-  view.value.label = getView(route.query.view).label + ' New'
+  view.value.label = label + ' (New)'
   showViewModal.value = true
 }
 

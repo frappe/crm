@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { sessionStore } from '@/stores/session'
 import { createResource } from 'frappe-ui'
 import { reactive, ref } from 'vue'
 
@@ -7,9 +6,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
   let viewsByName = reactive({})
   let pinnedViews = ref([])
   let publicViews = ref([])
-  let defaultView = ref(null)
-
-  const { user } = sessionStore()
+  let defaultView = ref({})
 
   // Views
   const views = createResource({
@@ -29,22 +26,18 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
         if (view.public) {
           publicViews.value?.push(view)
         }
-
-        if (
-          (!view.public && view.default) ||
-          (view.public &&
-            view.default &&
-            JSON.parse(view.user_list).includes(user))
-        ) {
-          defaultView.value = view
+        if (view.is_default && view.dt) {
+          defaultView.value[view.dt] = view
         }
       }
       return views
     },
   })
 
-  function getView(view) {
-    if (!view) return null
+  function getView(view, doctype = null) {
+    if (!view && doctype) {
+      return defaultView.value?.[doctype] || null
+    }
     return viewsByName[view]
   }
 
@@ -58,19 +51,15 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
     return publicViews.value
   }
 
-  function getDefaultView() {
-    return defaultView.value
-  }
-
   async function reload() {
     await views.reload()
   }
 
   return {
     views,
+    defaultView,
     getPinnedViews,
     getPublicViews,
-    getDefaultView,
     reload,
     getView,
   }
