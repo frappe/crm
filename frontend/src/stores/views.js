@@ -34,6 +34,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
           (!view.public && view.default) ||
           (view.public &&
             view.default &&
+            view.user_list &&
             JSON.parse(view.user_list).includes(user))
         ) {
           defaultView.value = view
