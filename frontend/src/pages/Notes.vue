@@ -9,12 +9,21 @@
       </Button>
     </template>
   </LayoutHeader>
+  <ViewControls
+    v-model="notes"
+    v-model:loadMore="loadMore"
+    doctype="CRM Note"
+    :options="{
+      hideColumnsButton: true,
+      defaultViewName: 'Notes View',
+    }"
+  />
   <div
-    v-if="notes.data?.length"
-    class="grid grid-cols-4 gap-4 overflow-y-auto p-5"
+    v-if="notes.data?.data?.length"
+    class="grid grid-cols-4 gap-4 overflow-y-auto px-5 pb-3"
   >
     <div
-      v-for="note in notes.data"
+      v-for="note in notes.data.data"
       class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-gray-50"
       @click="editNote(note)"
     >
@@ -61,6 +70,16 @@
       </div>
     </div>
   </div>
+  <ListFooter
+    v-if="notes.data?.data?.length"
+    class="border-t px-5 py-2"
+    v-model="notes.data.page_length_count"
+    :options="{
+      rowCount: notes.data.row_count,
+      totalCount: notes.data.total_count,
+    }"
+    @loadMore="() => loadMore++"
+  />
   <div v-else class="flex h-full items-center justify-center">
     <div
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
@@ -84,14 +103,15 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
+import ViewControls from '@/components/ViewControls.vue'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import {
-  createListResource,
   TextEditor,
   call,
   Dropdown,
   Tooltip,
   Breadcrumbs,
+  ListFooter,
 } from 'frappe-ui'
 import { ref } from 'vue'
 import { usersStore } from '@/stores/users'
@@ -109,16 +129,8 @@ const breadcrumbs = [{ label: list.title, route: { name: 'Notes' } }]
 const showNoteModal = ref(false)
 const currentNote = ref(null)
 
-const notes = createListResource({
-  type: 'list',
-  doctype: 'CRM Note',
-  cache: 'Notes',
-  fields: ['name', 'title', 'content', 'owner', 'modified'],
-  filters: {},
-  orderBy: 'modified desc',
-  pageLength: 20,
-  auto: true,
-})
+const notes = ref({})
+const loadMore = ref(1)
 
 function createNote() {
   currentNote.value = {

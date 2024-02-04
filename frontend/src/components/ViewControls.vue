@@ -41,6 +41,7 @@
         />
         <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
         <ColumnSettings
+          v-if="!options.hideColumnsButton"
           v-model="list"
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
@@ -97,6 +98,13 @@ const props = defineProps({
     type: Object,
     default: {},
   },
+  options: {
+    type: Object,
+    default: {
+      hideColumnsButton: false,
+      defaultViewName: '',
+    },
+  },
 })
 
 const { $dialog } = globalStore()
@@ -117,7 +125,7 @@ const showViewModal = ref(false)
 const currentView = computed(() => {
   let _view = getView(route.query.view)
   return {
-    label: _view?.label || 'List View',
+    label: _view?.label || props.options?.defaultViewName || 'List View',
     icon: _view?.icon || 'list',
   }
 })
@@ -232,7 +240,7 @@ function reload() {
 
 const defaultViews = [
   {
-    label: 'List View',
+    label: props.options?.defaultViewName || 'List View',
     icon: 'list',
     onClick() {
       viewUpdated.value = false
