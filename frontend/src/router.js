@@ -38,6 +38,11 @@ const routes = [
     component: () => import('@/pages/Notes.vue'),
   },
   {
+    path: '/tasks',
+    name: 'Tasks',
+    component: () => import('@/pages/Tasks.vue'),
+  },
+  {
     path: '/contacts',
     name: 'Contacts',
     component: () => import('@/pages/Contacts.vue'),

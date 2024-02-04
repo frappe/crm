@@ -13,6 +13,24 @@
       ],
     }"
   >
+    <template #body-title>
+      <div class="flex items-center gap-3">
+        <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+          {{ editMode ? 'Edit Task' : 'Create Task' }}
+        </h3>
+        <Button
+          v-if="task?.reference_docname"
+          variant="outline"
+          size="sm"
+          :label="task.reference_doctype == 'CRM Deal' ? 'Open Deal' : 'Open Lead'"
+          @click="redirect()"
+        >
+          <template #suffix>
+            <ArrowUpRightIcon class="h-4 w-4" />
+          </template>
+        </Button>
+      </div>
+    </template>
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
@@ -86,12 +104,14 @@
 <script setup>
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { TextEditor, Dropdown, Tooltip, DatePicker, call } from 'frappe-ui'
 import { ref, defineModel, watch, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   task: {
@@ -113,6 +133,7 @@ const tasks = defineModel('reloadTasks')
 
 const emit = defineEmits(['updateTask'])
 
+const router = useRouter()
 const { getUser } = usersStore()
 
 const title = ref(null)
@@ -124,6 +145,8 @@ const _task = ref({
   due_date: '',
   status: 'Backlog',
   priority: 'Low',
+  reference_doctype: props.doctype,
+  reference_docname: null,
 })
 
 function updateTaskStatus(status) {
@@ -132,6 +155,16 @@ function updateTaskStatus(status) {
 
 function updateTaskPriority(priority) {
   _task.value.priority = priority
+}
+
+function redirect() {
+  if (!props.task?.reference_docname) return
+  let name = props.task.reference_doctype == 'CRM Deal' ? 'Deal' : 'Lead'
+  let params = { leadId: props.task.reference_docname }
+  if (name == 'Deal') {
+    params = { dealId: props.task.reference_docname }
+  }
+  router.push({ name: name, params: params })
 }
 
 async function updateTask() {

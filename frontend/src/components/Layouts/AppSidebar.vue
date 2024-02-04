@@ -105,6 +105,7 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
@@ -145,6 +146,11 @@ const links = [
     label: 'Notes',
     icon: NoteIcon,
     to: 'Notes',
+  },
+  {
+    label: 'Tasks',
+    icon: TaskIcon,
+    to: 'Tasks',
   },
   {
     label: 'Call Logs',
