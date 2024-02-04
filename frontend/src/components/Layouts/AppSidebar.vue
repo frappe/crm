@@ -27,7 +27,7 @@
             />
             <div
               v-else-if="notificationsStore().unreadNotificationsCount"
-              class="absolute z-20 top-1 -left-1.5 h-[5px] w-[5px] ring-1 ring-white translate-x-6 translate-y-1 rounded-full bg-gray-800"
+              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-gray-800 ring-1 ring-white"
             />
           </template>
         </SidebarLink>
@@ -165,24 +165,30 @@ const links = [
 ]
 
 const allViews = computed(() => {
-  return [
+  let _views = [
     {
       name: 'All Views',
       hideLabel: true,
       opened: true,
       views: links,
     },
-    {
+  ]
+  if (getPublicViews().length) {
+    _views.push({
       name: 'Public views',
       opened: true,
       views: parseView(getPublicViews()),
-    },
-    {
+    })
+  }
+
+  if (getPinnedViews().length) {
+    _views.push({
       name: 'Pinned views',
       opened: true,
       views: parseView(getPinnedViews()),
-    },
-  ]
+    })
+  }
+  return _views
 })
 
 function parseView(views) {
