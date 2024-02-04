@@ -2,7 +2,6 @@
   <Dialog
     v-model="show"
     :options="{
-      title: editMode ? 'Edit Note' : 'Create Note',
       size: 'xl',
       actions: [
         {
@@ -13,6 +12,26 @@
       ],
     }"
   >
+    <template #body-title>
+      <div class="flex items-center gap-3">
+        <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+          {{ editMode ? 'Edit Note' : 'Create Note' }}
+        </h3>
+        <Button
+          v-if="_note?.reference_docname"
+          variant="outline"
+          size="sm"
+          :label="
+            _note.reference_doctype == 'CRM Deal' ? 'Open Deal' : 'Open Lead'
+          "
+          @click="redirect()"
+        >
+          <template #suffix>
+            <ArrowUpRightIcon class="h-4 w-4" />
+          </template>
+        </Button>
+      </div>
+    </template>
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
@@ -42,8 +61,10 @@
 </template>
 
 <script setup>
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import { TextEditor, call } from 'frappe-ui'
 import { ref, defineModel, nextTick, watch } from 'vue'
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   note: {
@@ -64,6 +85,8 @@ const show = defineModel()
 const notes = defineModel('reloadNotes')
 
 const emit = defineEmits(['after'])
+
+const router = useRouter()
 
 const title = ref(null)
 const editMode = ref(false)
@@ -102,6 +125,16 @@ async function updateNote() {
     }
   }
   show.value = false
+}
+
+function redirect() {
+  if (!props.note?.reference_docname) return
+  let name = props.note.reference_doctype == 'CRM Deal' ? 'Deal' : 'Lead'
+  let params = { leadId: props.note.reference_docname }
+  if (name == 'Deal') {
+    params = { dealId: props.note.reference_docname }
+  }
+  router.push({ name: name, params: params })
 }
 
 watch(

@@ -2,7 +2,6 @@
   <Dialog
     v-model="show"
     :options="{
-      title: editMode ? 'Edit Task' : 'Create Task',
       size: 'xl',
       actions: [
         {

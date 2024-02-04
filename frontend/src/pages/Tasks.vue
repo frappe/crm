@@ -4,7 +4,7 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <Button variant="solid" label="Create" @click="showTaskModal = true">
+      <Button variant="solid" label="Create" @click="createTask">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -104,6 +104,20 @@ function showTask(name) {
     priority: t.priority,
     reference_doctype: t.reference_doctype,
     reference_docname: t.reference_docname,
+  }
+  showTaskModal.value = true
+}
+
+function createTask() {
+  task.value = {
+    title: '',
+    description: '',
+    assigned_to: '',
+    due_date: '',
+    status: 'Backlog',
+    priority: 'Low',
+    reference_doctype: 'CRM Lead',
+    reference_docname: '',
   }
   showTaskModal.value = true
 }

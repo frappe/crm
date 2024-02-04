@@ -6,4 +6,14 @@ from frappe.model.document import Document
 
 
 class CRMNote(Document):
-	pass
+	@staticmethod
+	def default_list_data():
+		rows = [
+			"name",
+			"title",
+			"content",
+			"reference_doctype",
+			"reference_docname",
+			"modified",
+		]
+		return {'columns': [], 'rows': rows}
