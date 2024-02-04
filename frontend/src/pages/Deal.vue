@@ -472,12 +472,6 @@ function getParsedFields(sections, contacts) {
         }) || []
     } else {
       section.fields.forEach((field) => {
-        if (
-          !deal.data.organization &&
-          ['website', 'territory', 'annual_revenue'].includes(field.name)
-        ) {
-          field.hidden = true
-        }
         if (field.name == 'organization') {
           field.create = (value, close) => {
             _organization.value.organization_name = value

@@ -161,13 +161,33 @@ class CRMLead(Document):
 
 	def create_deal(self, contact, organization):
 		deal = frappe.new_doc("CRM Deal")
+
+		lead_deal_map = {
+			"name": "lead",
+			"lead_owner": "deal_owner",
+		}
+
+		restricted_fieldtypes = ["Tab Break", "Section Break", "Column Break", "HTML", "Button", "Attach", "Table"]
+		restricted_map_fields = ["name", "naming_series", "creation", "owner", "modified", "modified_by", "idx", "docstatus", "status", "email", "mobile_no", "phone", "sla", "sla_status", "response_by", "first_response_time", "first_responded_on", "communication_status", "sla_creation"]
+
+		for field in self.meta.fields:
+			if field.fieldtype in restricted_fieldtypes:
+				continue
+			if field.fieldname in restricted_map_fields:
+				continue
+
+			fieldname = field.fieldname
+			if field.fieldname in lead_deal_map:
+				fieldname = lead_deal_map[field.fieldname]
+
+			if hasattr(deal, fieldname):
+				if fieldname == "organization":
+					deal.update({fieldname: organization})
+				else:
+					deal.update({fieldname: self.get(field.fieldname)})
+
 		deal.update(
 			{
-				"lead": self.name,
-				"organization": organization,
-				"deal_owner": self.lead_owner,
-				"source": self.source,
-				"lead_name": self.lead_name,
 				"contacts": [{"contact": contact}],
 			}
 		)
