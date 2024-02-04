@@ -163,7 +163,6 @@ class CRMLead(Document):
 		deal = frappe.new_doc("CRM Deal")
 
 		lead_deal_map = {
-			"name": "lead",
 			"lead_owner": "deal_owner",
 		}
 
@@ -188,6 +187,7 @@ class CRMLead(Document):
 
 		deal.update(
 			{
+				"lead": self.name,
 				"contacts": [{"contact": contact}],
 			}
 		)
