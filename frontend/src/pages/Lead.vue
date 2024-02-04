@@ -51,7 +51,7 @@
     </Tabs>
     <div class="flex w-[352px] flex-col justify-between border-l">
       <div
-        class="flex h-[41px] items-center border-b px-5 py-2.5 text-lg font-semibold"
+        class="flex h-10.5 items-center border-b px-5 py-2.5 text-lg font-semibold"
       >
         About this Lead
       </div>
