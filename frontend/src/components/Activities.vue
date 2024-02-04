@@ -367,6 +367,7 @@
                 </Tooltip>
               </div>
               <div class="flex gap-0.5">
+              <Tooltip text="Reply">
                 <Button
                   variant="ghost"
                   class="text-gray-700"
@@ -374,6 +375,8 @@
                 >
                   <ReplyIcon class="h-4 w-4" />
                 </Button>
+              </Tooltip>
+              <Tooltip text="Reply All">
                 <Button
                   variant="ghost"
                   class="text-gray-700"
@@ -381,6 +384,7 @@
                 >
                   <ReplyAllIcon class="h-4 w-4" />
                 </Button>
+              </Tooltip>
               </div>
             </div>
             <div class="text-sm leading-5 text-gray-600">
@@ -1076,14 +1080,25 @@ function reply(email, reply_all = false) {
   let editor = emailBox.value.editor
   let message = email.content
   let recipients = email.recipients.split(',').map((r) => r.trim())
-  editor.toEmails = recipients
+  editor.toEmails = [email.sender]
   editor.cc = editor.bcc = false
   editor.ccEmails = []
   editor.bccEmails = []
 
+  if (!email.subject.startsWith('Re:')) {
+    editor.subject = `Re: ${email.subject}`
+  }
+
   if (reply_all) {
     let cc = email.cc?.split(',').map((r) => r.trim())
     let bcc = email.bcc?.split(',').map((r) => r.trim())
+
+    if (cc?.length) {
+      recipients = recipients.filter((r) => !cc?.includes(r))
+      cc.push(...recipients)
+    } else {
+      cc = recipients
+    }
 
     editor.cc = cc ? true : false
     editor.bcc = bcc ? true : false
