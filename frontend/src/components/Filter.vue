@@ -99,7 +99,8 @@ import DateRangePicker from '@/components/Controls/DateRangePicker.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import { FormControl, Autocomplete, createResource } from 'frappe-ui'
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { FormControl, createResource } from 'frappe-ui'
 import { h, defineModel, computed } from 'vue'
 
 const typeCheck = ['Check']
