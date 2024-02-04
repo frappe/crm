@@ -103,7 +103,7 @@ import { FormControl, Autocomplete, createResource } from 'frappe-ui'
 import { h, defineModel, computed } from 'vue'
 
 const typeCheck = ['Check']
-const typeLink = ['Link']
+const typeLink = ['Link', 'Dynamic Link']
 const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
@@ -324,6 +324,9 @@ function getValSelect(f) {
       })),
     })
   } else if (typeLink.includes(fieldtype)) {
+    if (field.fieldtype === 'Dynamic Link') {
+      return h(FormControl, { type: 'text' })
+    }
     return h(Link, { class: 'form-control', doctype: options })
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: 'number' })
