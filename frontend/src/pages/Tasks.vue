@@ -74,7 +74,7 @@ const rows = computed(() => {
           label: task.assigned_to && getUser(task.assigned_to).full_name,
           ...(task.assigned_to && getUser(task.assigned_to)),
         }
-      } 
+      }
     })
     return _rows
   })
@@ -89,6 +89,8 @@ const task = ref({
   due_date: '',
   status: 'Backlog',
   priority: 'Low',
+  reference_doctype: 'CRM Lead',
+  reference_docname: '',
 })
 
 function showTask(name) {
@@ -100,6 +102,8 @@ function showTask(name) {
     due_date: t.due_date,
     status: t.status,
     priority: t.priority,
+    reference_doctype: t.reference_doctype,
+    reference_docname: t.reference_docname,
   }
   showTaskModal.value = true
 }

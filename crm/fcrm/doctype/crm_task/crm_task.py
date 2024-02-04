@@ -13,7 +13,7 @@ class CRMTask(Document):
 				'label': 'Title',
 				'type': 'Data',
 				'key': 'title',
-				'width': '12rem',
+				'width': '16rem',
 			},
 			{
 				'label': 'Status',
@@ -55,6 +55,8 @@ class CRMTask(Document):
 			"due_date",
 			"status",
 			"priority",
+			"reference_doctype",
+			"reference_docname",
 			"modified",
 		]
 		return {'columns': columns, 'rows': rows}
