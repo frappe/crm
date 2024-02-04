@@ -324,7 +324,7 @@ function getValSelect(f) {
       })),
     })
   } else if (typeLink.includes(fieldtype)) {
-    if (field.fieldtype === 'Dynamic Link') {
+    if (fieldtype == 'Dynamic Link') {
       return h(FormControl, { type: 'text' })
     }
     return h(Link, { class: 'form-control', doctype: options })
