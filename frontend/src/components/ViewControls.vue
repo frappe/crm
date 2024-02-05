@@ -362,6 +362,7 @@ function updatePageLength(value, loadMore = false) {
   if (loadMore) {
     list.value.params.page_length += list.value.params.page_length_count
   } else {
+    if (value == list.value.params.page_length && value == list.value.params.page_length_count) return
     list.value.params.page_length = value
     list.value.params.page_length_count = value
   }

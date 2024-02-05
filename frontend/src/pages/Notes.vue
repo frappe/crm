@@ -80,7 +80,6 @@
       totalCount: notes.data.total_count,
     }"
     @loadMore="() => loadMore++"
-    @updatePageCount="(count) => (updatedPageCount = count)"
   />
   <div v-else class="flex h-full items-center justify-center">
     <div
@@ -106,6 +105,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { usersStore } from '@/stores/users'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import {
   TextEditor,
@@ -115,8 +115,7 @@ import {
   Breadcrumbs,
   ListFooter,
 } from 'frappe-ui'
-import { ref } from 'vue'
-import { usersStore } from '@/stores/users'
+import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()
 
@@ -134,6 +133,14 @@ const currentNote = ref(null)
 const notes = ref({})
 const loadMore = ref(1)
 const updatedPageCount = ref(20)
+
+watch(
+  () => notes.value?.data?.page_length_count,
+  (val, old_value) => {
+    if (!val || val === old_value) return
+    updatedPageCount.value = val
+  }
+)
 
 function createNote() {
   currentNote.value = {
