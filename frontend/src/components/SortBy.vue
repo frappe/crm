@@ -1,5 +1,5 @@
 <template>
-  <NestedPopover v-if="options">
+  <NestedPopover>
     <template #target>
       <Button label="Sort" ref="sortButtonRef">
         <template #prefix><SortIcon class="h-4" /></template>
@@ -131,7 +131,7 @@ onMounted(() => {
 const sortValues = computed({
   get: () => {
     if (!list.value?.data) return new Set()
-    let allSortValues = list.value?.params?.order_by || list.value.data?.params?.order_by
+    let allSortValues = list.value?.params?.order_by
     if (!allSortValues || !sortOptions.data) return new Set()
     if (allSortValues.trim() === 'modified desc') return new Set()
     allSortValues = allSortValues.split(', ').map((sortValue) => {
