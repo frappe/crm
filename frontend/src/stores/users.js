@@ -25,6 +25,10 @@ export const usersStore = defineStore('crm-users', () => {
     },
   })
 
+  if (!users.data?.length) {
+    users.fetch()
+  }
+
   function getUser(email) {
     if (!email || email === 'sessionUser') {
       email = session.user

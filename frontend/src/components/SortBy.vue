@@ -131,7 +131,7 @@ onMounted(() => {
 const sortValues = computed({
   get: () => {
     if (!list.value?.data) return new Set()
-    let allSortValues = list.value?.params?.order_by
+    let allSortValues = list.value.data?.params?.order_by
     if (!allSortValues || !sortOptions.data) return new Set()
     if (allSortValues.trim() === 'modified desc') return new Set()
     allSortValues = allSortValues.split(', ').map((sortValue) => {

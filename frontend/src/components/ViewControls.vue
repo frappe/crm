@@ -87,6 +87,7 @@ import { usersStore } from '@/stores/users'
 import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
 import { computed, ref, defineModel, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useDebounceFn } from '@vueuse/core'
 
 const props = defineProps({
   doctype: {
@@ -207,21 +208,34 @@ list.value = createResource({
   url: 'crm.api.doc.get_list_data',
   params: getParams(),
   cache: [props.doctype, route.query.view],
+  transform(data) {
+    return {
+      ...data,
+      params: getParams(),
+    }
+  },
   onSuccess(data) {
     let cv = getView(route.query.view)
-
+    let params = getParams()
     defaultParams.value = {
       doctype: props.doctype,
-      filters: list.value.params.filters,
-      order_by: list.value.params.order_by,
-      page_length: list.value.params.page_length,
-      page_length_count: list.value.params.page_length_count,
+      filters: params.filters,
+      order_by: params.order_by,
+      page_length: params.page_length,
+      page_length_count: params.page_length_count,
       columns: data.columns,
       rows: data.rows,
       custom_view_name: cv?.name || '',
       default_filters: props.filters,
     }
   },
+})
+
+onMounted(() => {
+  useDebounceFn(() => {
+    if (list.value?.data?.data?.length) return
+    list.value.fetch()
+  }, 100)()
 })
 
 const isLoading = computed(() => list.value?.loading)
@@ -321,6 +335,9 @@ function updateSort(order_by) {
 }
 
 function updateColumns(obj) {
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
   defaultParams.value.columns = view.value.columns = obj.isDefault
     ? ''
     : obj.columns
@@ -362,7 +379,11 @@ function updatePageLength(value, loadMore = false) {
   if (loadMore) {
     list.value.params.page_length += list.value.params.page_length_count
   } else {
-    if (value == list.value.params.page_length && value == list.value.params.page_length_count) return
+    if (
+      value == list.value.params.page_length &&
+      value == list.value.params.page_length_count
+    )
+      return
     list.value.params.page_length = value
     list.value.params.page_length_count = value
   }
