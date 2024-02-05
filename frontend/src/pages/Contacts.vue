@@ -12,6 +12,7 @@
   <ViewControls
     v-model="contacts"
     v-model:loadMore="loadMore"
+    v-model:updatedPageCount="updatedPageCount"
     doctype="Contact"
   />
   <ContactsListView
@@ -24,6 +25,7 @@
       totalCount: contacts.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @updatePageCount="(count) => (updatedPageCount = count)"
   />
   <div
     v-else-if="contacts.data"
@@ -81,6 +83,7 @@ const breadcrumbs = computed(() => {
 // contacts data is loaded in the ViewControls component
 const contacts = ref({})
 const loadMore = ref(1)
+const updatedPageCount = ref(20)
 
 const rows = computed(() => {
   if (!contacts.value?.data?.data) return []

@@ -113,6 +113,7 @@ import {
   ListSelectBanner,
   ListFooter,
 } from 'frappe-ui'
+import { watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -133,7 +134,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore'])
+const emit = defineEmits(['loadMore', 'updatePageCount'])
 
 const pageLengthCount = defineModel()
+
+watch(pageLengthCount, (val, old_value) => {
+  if (val === old_value) return
+  emit('updatePageCount', val)
+})
 </script>

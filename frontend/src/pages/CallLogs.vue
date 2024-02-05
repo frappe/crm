@@ -7,6 +7,7 @@
   <ViewControls
     v-model="callLogs"
     v-model:loadMore="loadMore"
+    v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Call Log"
   />
   <CallLogsListView
@@ -19,6 +20,7 @@
       totalCount: callLogs.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @updatePageCount="(count) => (updatedPageCount = count)"
   />
   <div
     v-else-if="callLogs.data"
@@ -57,6 +59,7 @@ const breadcrumbs = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
 // callLogs data is loaded in the ViewControls component
 const callLogs = ref({})
 const loadMore = ref(1)
+const updatedPageCount = ref(20)
 
 const rows = computed(() => {
   if (!callLogs.value?.data?.data) return []

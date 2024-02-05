@@ -79,7 +79,7 @@ import {
   ListFooter,
   call,
 } from 'frappe-ui'
-import { defineModel } from 'vue'
+import { defineModel, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -100,9 +100,14 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore', 'showEmailTemplate', 'reload'])
+const emit = defineEmits(['loadMore', 'updatePageCount', 'showEmailTemplate', 'reload'])
 
 const pageLengthCount = defineModel()
+
+watch(pageLengthCount, (val, old_value) => {
+  if (val === old_value) return
+  emit('updatePageCount', val)
+})
 
 const { $dialog } = globalStore()
 

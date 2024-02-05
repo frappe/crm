@@ -16,6 +16,7 @@
   <ViewControls
     v-model="organizations"
     v-model:loadMore="loadMore"
+    v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Organization"
   />
   <OrganizationsListView
@@ -28,6 +29,7 @@
       totalCount: organizations.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @updatePageCount="(count) => (updatedPageCount = count)"
   />
   <div
     v-else-if="organizations.data"
@@ -87,6 +89,7 @@ const breadcrumbs = computed(() => {
 // organizations data is loaded in the ViewControls component
 const organizations = ref({})
 const loadMore = ref(1)
+const updatedPageCount = ref(20)
 
 const rows = computed(() => {
   if (!organizations.value?.data?.data) return []

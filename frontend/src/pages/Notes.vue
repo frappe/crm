@@ -12,6 +12,7 @@
   <ViewControls
     v-model="notes"
     v-model:loadMore="loadMore"
+    v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Note"
     :options="{
       hideColumnsButton: true,
@@ -79,6 +80,7 @@
       totalCount: notes.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @updatePageCount="(count) => (updatedPageCount = count)"
   />
   <div v-else class="flex h-full items-center justify-center">
     <div
@@ -131,6 +133,7 @@ const currentNote = ref(null)
 
 const notes = ref({})
 const loadMore = ref(1)
+const updatedPageCount = ref(20)
 
 function createNote() {
   currentNote.value = {

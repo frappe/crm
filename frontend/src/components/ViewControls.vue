@@ -84,7 +84,6 @@ import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
-import { useDebounceFn } from '@vueuse/core'
 import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
 import { computed, ref, defineModel, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -113,6 +112,7 @@ const { isManager } = usersStore()
 
 const list = defineModel()
 const loadMore = defineModel('loadMore')
+const updatedPageCount = defineModel('updatedPageCount')
 
 const route = useRoute()
 const router = useRouter()
@@ -150,13 +150,10 @@ watch(loadMore, (value) => {
   updatePageLength(value, true)
 })
 
-watch(
-  () => list.value?.data?.page_length_count,
-  (value) => {
-    if (!value) return
-    updatePageLength(value)
-  }
-)
+watch(updatedPageCount, (value) => {
+  if (!value) return
+  updatePageLength(value)
+})
 
 function getParams() {
   let _view = getView(route.query.view, props.doctype)
@@ -225,10 +222,6 @@ list.value = createResource({
       default_filters: props.filters,
     }
   },
-})
-
-onMounted(() => {
-  useDebounceFn(() => reload(), 100)()
 })
 
 const isLoading = computed(() => list.value?.loading)

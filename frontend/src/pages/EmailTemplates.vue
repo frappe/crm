@@ -12,6 +12,7 @@
   <ViewControls
     v-model="emailTemplates"
     v-model:loadMore="loadMore"
+    v-model:updatedPageCount="updatedPageCount"
     doctype="Email Template"
   />
   <EmailTemplatesListView
@@ -24,6 +25,7 @@
       totalCount: emailTemplates.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @updatePageCount="(count) => (updatedPageCount = count)"
     @showEmailTemplate="showEmailTemplate"
     @reload="() => emailTemplates.reload()"
   />
@@ -62,6 +64,7 @@ const breadcrumbs = [
 // emailTemplates data is loaded in the ViewControls component
 const emailTemplates = ref({})
 const loadMore = ref(1)
+const updatedPageCount = ref(20)
 
 const rows = computed(() => {
   if (!emailTemplates.value?.data?.data) return []
