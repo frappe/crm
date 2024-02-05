@@ -14,6 +14,7 @@ class CRMNote(Document):
 			"content",
 			"reference_doctype",
 			"reference_docname",
+			"owner",
 			"modified",
 		]
 		return {'columns': [], 'rows': rows}
