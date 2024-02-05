@@ -325,7 +325,7 @@ import {
   Breadcrumbs,
   call,
 } from 'frappe-ui'
-import { ref, computed, h } from 'vue'
+import { ref, computed, h, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { $dialog, makeCall } = globalStore()
@@ -345,7 +345,6 @@ const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
-  auto: true,
   onSuccess: (data) => {
     setupAssignees(data)
     setupCustomActions(data, {
@@ -358,6 +357,11 @@ const deal = createResource({
       call,
     })
   },
+})
+
+onMounted(() => {
+  if (deal.data) return
+  deal.fetch()
 })
 
 const reload = ref(false)

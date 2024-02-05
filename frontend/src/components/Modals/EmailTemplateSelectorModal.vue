@@ -63,7 +63,7 @@
 <script setup>
 import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
 import { TextEditor, createListResource } from 'frappe-ui'
-import { defineModel, ref, computed, nextTick, watch } from 'vue'
+import { defineModel, ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -85,7 +85,7 @@ const search = ref('')
 const templates = createListResource({
   type: 'list',
   doctype: 'Email Template',
-  cache: ['Email Templates', props.doctype],
+  cache: ['emailTemplates', props.doctype],
   fields: [
     'name',
     'enabled',
@@ -98,7 +98,12 @@ const templates = createListResource({
   filters: { enabled: 1, reference_doctype: props.doctype },
   orderBy: 'modified desc',
   pageLength: 99999,
-  auto: true,
+})
+
+onMounted(() => {
+  if (templates.data == null) {
+    templates.fetch()
+  }
 })
 
 const filteredTemplates = computed(() => {

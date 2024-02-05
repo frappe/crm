@@ -772,7 +772,7 @@ import {
   call,
 } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
-import { ref, computed, h, defineModel, markRaw, watch, nextTick } from 'vue'
+import { ref, computed, h, defineModel, markRaw, watch, nextTick, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const { makeCall } = globalStore()
@@ -799,7 +799,21 @@ const versions = createResource({
   url: 'crm.api.activities.get_activities',
   params: { name: doc.value.data.name },
   cache: ['activity', doc.value.data.name],
-  auto: true,
+})
+
+onMounted(() => {
+  if (versions.data == null) {
+    versions.fetch()
+  }
+  if (calls.data == null) {
+    calls.fetch()
+  }
+  if (notes.data == null) {
+    notes.fetch()
+  }
+  if (tasks.data == null) {
+    tasks.fetch()
+  }
 })
 
 const calls = createListResource({
@@ -824,7 +838,6 @@ const calls = createListResource({
   filters: { reference_docname: doc.value.data.name },
   orderBy: 'creation desc',
   pageLength: 999,
-  auto: true,
   transform: (docs) => {
     docs.forEach((doc) => {
       doc.show_recording = false
@@ -869,7 +882,6 @@ const notes = createListResource({
   filters: { reference_docname: doc.value.data.name },
   orderBy: 'modified desc',
   pageLength: 999,
-  auto: true,
 })
 
 const tasks = createListResource({
@@ -890,7 +902,6 @@ const tasks = createListResource({
   filters: { reference_docname: doc.value.data.name },
   orderBy: 'modified desc',
   pageLength: 999,
-  auto: true,
 })
 
 function all_activities() {
@@ -911,15 +922,15 @@ const activities = computed(() => {
       .filter((activity) => activity.activity_type === 'communication')
       .sort((a, b) => new Date(a.creation) - new Date(b.creation))
   } else if (props.title == 'Calls') {
-    return calls.data.sort(
+    return calls.data?.sort(
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   } else if (props.title == 'Tasks') {
-    return tasks.data.sort(
+    return tasks.data?.sort(
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   } else if (props.title == 'Notes') {
-    return notes.data.sort(
+    return notes.data?.sort(
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   }
