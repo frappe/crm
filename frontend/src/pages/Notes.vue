@@ -19,55 +19,57 @@
       defaultViewName: 'Notes View',
     }"
   />
-  <div
-    v-if="notes.data?.data?.length"
-    class="grid grid-cols-4 gap-4 overflow-y-auto px-5 pb-3"
-  >
+  <div class="flex-1 overflow-y-auto">
     <div
-      v-for="note in notes.data.data"
-      class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-gray-50"
-      @click="editNote(note)"
+      v-if="notes.data?.data?.length"
+      class="grid grid-cols-4 gap-4 px-5 pb-3"
     >
-      <div class="flex items-center justify-between">
-        <div class="truncate text-lg font-medium">
-          {{ note.title }}
-        </div>
-        <Dropdown
-          :options="[
-            {
-              icon: 'trash-2',
-              label: 'Delete',
-              onClick: () => deleteNote(note.name),
-            },
-          ]"
-          @click.stop
-        >
-          <Button
-            icon="more-horizontal"
-            variant="ghosted"
-            class="hover:bg-white"
-          />
-        </Dropdown>
-      </div>
-      <TextEditor
-        v-if="note.content"
-        :content="note.content"
-        :editable="false"
-        editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
-        class="flex-1 overflow-hidden"
-      />
-      <div class="mt-2 flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <UserAvatar :user="note.owner" size="xs" />
-          <div class="text-sm text-gray-800">
-            {{ getUser(note.owner).full_name }}
+      <div
+        v-for="note in notes.data.data"
+        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-gray-50"
+        @click="editNote(note)"
+      >
+        <div class="flex items-center justify-between">
+          <div class="truncate text-lg font-medium">
+            {{ note.title }}
           </div>
+          <Dropdown
+            :options="[
+              {
+                icon: 'trash-2',
+                label: 'Delete',
+                onClick: () => deleteNote(note.name),
+              },
+            ]"
+            @click.stop
+          >
+            <Button
+              icon="more-horizontal"
+              variant="ghosted"
+              class="hover:bg-white"
+            />
+          </Dropdown>
         </div>
-        <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
-          <div class="text-sm text-gray-700">
-            {{ timeAgo(note.modified) }}
+        <TextEditor
+          v-if="note.content"
+          :content="note.content"
+          :editable="false"
+          editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
+          class="flex-1 overflow-hidden"
+        />
+        <div class="mt-2 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <UserAvatar :user="note.owner" size="xs" />
+            <div class="text-sm text-gray-800">
+              {{ getUser(note.owner).full_name }}
+            </div>
           </div>
-        </Tooltip>
+          <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
+            <div class="text-sm text-gray-700">
+              {{ timeAgo(note.modified) }}
+            </div>
+          </Tooltip>
+        </div>
       </div>
     </div>
   </div>
@@ -160,6 +162,6 @@ async function deleteNote(name) {
     doctype: 'CRM Note',
     name,
   })
-  notes.reload()
+  notes.value.reload()
 }
 </script>
