@@ -402,21 +402,22 @@ const viewActions = computed(() => {
   ]
 
   if (route.query.view && (!view.value.public || isManager())) {
-    actions[0].items.push(
-      {
-        label: 'Rename',
-        icon: () => h(EditIcon, { class: 'h-4 w-4' }),
-        onClick: () => renameView(),
-      },
-      {
+    actions[0].items.push({
+      label: 'Rename',
+      icon: () => h(EditIcon, { class: 'h-4 w-4' }),
+      onClick: () => renameView(),
+    })
+
+    if (!view.value.public) {
+      actions[0].items.push({
         label: view.value.pinned ? 'Unpin View' : 'Pin View',
         icon: () =>
           h(view.value.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
         onClick: () => pinView(),
-      }
-    )
+      })
+    }
 
-    if (route.query.view && isManager()) {
+    if (isManager()) {
       actions[0].items.push({
         label: view.value.public ? 'Make Private' : 'Make Public',
         icon: () =>
