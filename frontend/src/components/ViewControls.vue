@@ -231,12 +231,7 @@ list.value = createResource({
   },
 })
 
-onMounted(() => {
-  useDebounceFn(() => {
-    if (list.value?.data?.data?.length) return
-    list.value.fetch()
-  }, 100)()
-})
+onMounted(() => useDebounceFn(reload, 100)())
 
 const isLoading = computed(() => list.value?.loading)
 
