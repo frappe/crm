@@ -101,7 +101,7 @@ import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { FormControl, createResource } from 'frappe-ui'
-import { h, defineModel, computed } from 'vue'
+import { h, defineModel, computed, onMounted } from 'vue'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -127,7 +127,6 @@ const list = defineModel()
 
 const filterableFields = createResource({
   url: 'crm.api.doc.get_filterable_fields',
-  auto: true,
   cache: ['filterableFields', props.doctype],
   params: {
     doctype: props.doctype,
@@ -142,6 +141,11 @@ const filterableFields = createResource({
     })
     return fields
   },
+})
+
+onMounted(() => {
+  if (filterableFields.data?.length) return
+  filterableFields.fetch()
 })
 
 const filters = computed(() => {

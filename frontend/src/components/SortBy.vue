@@ -101,7 +101,7 @@ import DragIcon from '@/components/Icons/DragIcon.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { createResource } from 'frappe-ui'
-import { computed, ref, nextTick } from 'vue'
+import { computed, ref, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -117,10 +117,15 @@ const sortButtonRef = ref(null)
 
 const sortOptions = createResource({
   url: 'crm.api.doc.sort_options',
-  auto: true,
+  cache: ['sortOptions', props.doctype],
   params: {
     doctype: props.doctype,
   },
+})
+
+onMounted(() => {
+  if (sortOptions.data?.length) return
+  sortOptions.fetch()
 })
 
 const sortValues = computed({
