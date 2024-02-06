@@ -27,6 +27,7 @@
     }"
     @loadMore="() => loadMore++"
     @updatePageCount="(count) => (updatedPageCount = count)"
+    @reload="leads.reload()"
   />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
     <div

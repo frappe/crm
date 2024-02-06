@@ -48,12 +48,23 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Button
-          theme="red"
-          variant="subtle"
-          label="Delete"
-          @click="deleteEmailTemplate(selections, unselectAll)"
-        />
+        <div class="flex gap-2">
+          <Button
+            theme="red"
+            variant="subtle"
+            label="Delete"
+            @click="deleteEmailTemplate(selections, unselectAll)"
+          />
+          <Button
+            variant="subtle"
+            label="Edit"
+            @click="editValues(selections, unselectAll)"
+          >
+            <template #prefix>
+              <EditIcon class="h-3 w-3" />
+            </template>
+          </Button>
+        </div>
       </template>
     </ListSelectBanner>
   </ListView>
@@ -66,8 +77,17 @@
     }"
     @loadMore="emit('loadMore')"
   />
+  <EditValueModal
+    v-model="showEditModal"
+    v-model:unselectAll="unselectAllAction"
+    doctype="Email Template"
+    :selectedValues="selectedValues"
+    @reload="emit('reload')"
+  />
 </template>
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import { globalStore } from '@/stores/global'
 import {
   ListView,
@@ -79,7 +99,7 @@ import {
   ListFooter,
   call,
 } from 'frappe-ui'
-import { defineModel, watch } from 'vue'
+import { ref, defineModel, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -100,7 +120,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore', 'updatePageCount', 'showEmailTemplate', 'reload'])
+const emit = defineEmits([
+  'loadMore',
+  'updatePageCount',
+  'showEmailTemplate',
+  'reload',
+])
 
 const pageLengthCount = defineModel()
 
@@ -142,5 +167,15 @@ function deleteEmailTemplate(selections, unselectAll) {
       },
     ],
   })
+}
+
+const showEditModal = ref(false)
+const selectedValues = ref([])
+const unselectAllAction = ref(() => {})
+
+function editValues(selections, unselectAll) {
+  selectedValues.value = selections
+  showEditModal.value = true
+  unselectAllAction.value = unselectAll
 }
 </script>

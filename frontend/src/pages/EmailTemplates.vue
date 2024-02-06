@@ -27,7 +27,7 @@
     @loadMore="() => loadMore++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showEmailTemplate="showEmailTemplate"
-    @reload="() => emailTemplates.reload()"
+    @reload="emailTemplates.reload()"
   />
   <div
     v-else-if="emailTemplates.data"

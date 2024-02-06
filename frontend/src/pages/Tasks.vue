@@ -27,7 +27,7 @@
     @loadMore="() => loadMore++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showTask="showTask"
-    @reload="() => tasks.reload()"
+    @reload="tasks.reload()"
   />
   <div v-else-if="tasks.data" class="flex h-full items-center justify-center">
     <div

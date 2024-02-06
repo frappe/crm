@@ -21,6 +21,7 @@
     }"
     @loadMore="() => loadMore++"
     @updatePageCount="(count) => (updatedPageCount = count)"
+    @reload="callLogs.reload()"
   />
   <div
     v-else-if="callLogs.data"
