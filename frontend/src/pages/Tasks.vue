@@ -86,6 +86,7 @@ const rows = computed(() => {
 const showTaskModal = ref(false)
 
 const task = ref({
+  name: '',
   title: '',
   description: '',
   assigned_to: '',
@@ -99,6 +100,7 @@ const task = ref({
 function showTask(name) {
   let t = rows.value?.find((row) => row.name === name)
   task.value = {
+    name: t.name,
     title: t.title,
     description: t.description,
     assigned_to: t.assigned_to?.email || '',
@@ -113,6 +115,7 @@ function showTask(name) {
 
 function createTask() {
   task.value = {
+    name: '',
     title: '',
     description: '',
     assigned_to: '',
