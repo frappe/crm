@@ -87,11 +87,16 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Button variant="subtle" label="Edit" @click="editValues(selections, unselectAll)">
-          <template #prefix>
-            <EditIcon class="h-3 w-3" />
-          </template>
-        </Button>
+        <Dropdown
+          v-if="bulkActions.length"
+          :options="bulkActions(selections, unselectAll)"
+        >
+          <Button variant="ghost">
+            <template #icon>
+              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+            </template>
+          </Button>
+        </Dropdown>
       </template>
     </ListSelectBanner>
   </ListView>
@@ -110,7 +115,7 @@
     v-model:unselectAll="unselectAllAction"
     doctype="CRM Deal"
     :selectedValues="selectedValues"
-    @reload="emit('reload')"
+    @reload="list.reload()"
   />
 </template>
 
@@ -118,7 +123,6 @@
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import {
   Avatar,
@@ -129,8 +133,10 @@ import {
   ListRowItem,
   ListSelectBanner,
   ListFooter,
+  Dropdown,
 } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { setupBulkActions } from '@/utils'
+import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -151,9 +157,10 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore', 'updatePageCount', 'reload'])
+const emit = defineEmits(['loadMore', 'updatePageCount'])
 
 const pageLengthCount = defineModel()
+const list = defineModel('list')
 
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
@@ -169,4 +176,28 @@ function editValues(selections, unselectAll) {
   showEditModal.value = true
   unselectAllAction.value = unselectAll
 }
+
+const customBulkActions = ref([])
+
+function bulkActions(selections, unselectAll) {
+  let actions = [
+    {
+      label: 'Edit',
+      onClick: () => editValues(selections, unselectAll),
+    },
+  ]
+  customBulkActions.value.forEach((action) => {
+    actions.push({
+      label: action.label,
+      onClick: () => action.onClick(selections, unselectAll, list.value),
+    })
+  })
+  return actions
+}
+
+onMounted(() => {
+  if (!list.value?.data) return
+  setupBulkActions(list.value.data)
+  customBulkActions.value = list.value?.data?.bulkActions || []
+})
 </script>

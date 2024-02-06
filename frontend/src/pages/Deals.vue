@@ -18,6 +18,7 @@
   <DealsListView
     v-if="deals.data && rows.length"
     v-model="deals.data.page_length_count"
+    v-model:list="deals"
     :rows="rows"
     :columns="deals.data.columns"
     :options="{
@@ -26,7 +27,6 @@
     }"
     @loadMore="() => loadMore++"
     @updatePageCount="(count) => (updatedPageCount = count)"
-    @reload="deals.reload()"
   />
   <div v-else-if="deals.data" class="flex h-full items-center justify-center">
     <div
