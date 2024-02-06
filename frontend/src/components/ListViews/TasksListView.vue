@@ -65,12 +65,23 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Button
-          theme="red"
-          variant="subtle"
-          label="Delete"
-          @click="deleteTask(selections, unselectAll)"
-        />
+        <div class="flex gap-2">
+          <Button
+            theme="red"
+            variant="subtle"
+            label="Delete"
+            @click="deleteTask(selections, unselectAll)"
+          />
+          <Button
+            variant="subtle"
+            label="Edit"
+            @click="editValues(selections, unselectAll)"
+          >
+            <template #prefix>
+              <EditIcon class="h-3 w-3" />
+            </template>
+          </Button>
+        </div>
       </template>
     </ListSelectBanner>
   </ListView>
@@ -83,11 +94,20 @@
     }"
     @loadMore="emit('loadMore')"
   />
+  <EditValueModal
+    v-model="showEditModal"
+    v-model:unselectAll="unselectAllAction"
+    doctype="CRM Task"
+    :selectedValues="selectedValues"
+    @reload="emit('reload')"
+  />
 </template>
 <script setup>
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import { dateFormat } from '@/utils'
 import { globalStore } from '@/stores/global'
 import {
@@ -102,7 +122,7 @@ import {
   call,
   Tooltip,
 } from 'frappe-ui'
-import { defineModel, watch } from 'vue'
+import { ref, defineModel, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -165,5 +185,15 @@ function deleteTask(selections, unselectAll) {
       },
     ],
   })
+}
+
+const showEditModal = ref(false)
+const selectedValues = ref([])
+const unselectAllAction = ref(() => {})
+
+function editValues(selections, unselectAll) {
+  selectedValues.value = selections
+  showEditModal.value = true
+  unselectAllAction.value = unselectAll
 }
 </script>

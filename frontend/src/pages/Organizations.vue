@@ -30,6 +30,7 @@
     }"
     @loadMore="() => loadMore++"
     @updatePageCount="(count) => (updatedPageCount = count)"
+    @reload="organizations.reload()"
   />
   <div
     v-else-if="organizations.data"

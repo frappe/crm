@@ -26,6 +26,7 @@
     }"
     @loadMore="() => loadMore++"
     @updatePageCount="(count) => (updatedPageCount = count)"
+    @reload="contacts.reload()"
   />
   <div
     v-else-if="contacts.data"
