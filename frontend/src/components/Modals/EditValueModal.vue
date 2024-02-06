@@ -37,13 +37,14 @@
 import DatePicker from '@/components/Controls/DatePicker.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { FormControl, call, createResource } from 'frappe-ui'
+import { FormControl, call, createResource, TextEditor } from 'frappe-ui'
 import { ref, computed, defineModel, onMounted, h } from 'vue'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
 const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
+const typeEditor = ['Text Editor']
 const typeDate = ['Date', 'Datetime']
 
 const props = defineProps({
@@ -149,6 +150,14 @@ function getValueComponent(f) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(type)) {
     return h(DatePicker)
+  } else if (typeEditor.includes(type)) {
+    return h(TextEditor, {
+      variant: 'outline',
+      editorClass:
+        '!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm focus:bg-white focus:border-gray-500 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-800 transition-colors',
+      bubbleMenu: true,
+      content: newValue.value,
+    })
   } else {
     return h(FormControl, { type: 'text' })
   }
