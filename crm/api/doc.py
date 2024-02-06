@@ -4,6 +4,7 @@ from frappe.model import no_value_fields
 from pypika import Criterion
 
 from crm.api.views import get_views
+from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 
 
 @frappe.whitelist()
@@ -239,6 +240,7 @@ def get_list_data(
 		"views": get_views(doctype),
 		"total_count": len(frappe.get_all(doctype, filters=filters)),
 		"row_count": len(data),
+		"form_script": get_form_script(doctype)
 	}
 
 
