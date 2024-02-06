@@ -85,7 +85,15 @@
         </ListRowItem>
       </ListRow>
     </ListRows>
-    <ListSelectBanner />
+    <ListSelectBanner>
+      <template #actions="{ selections, unselectAll }">
+        <Button variant="subtle" label="Edit" @click="editValues(selections, unselectAll)">
+          <template #prefix>
+            <EditIcon class="h-3 w-3" />
+          </template>
+        </Button>
+      </template>
+    </ListSelectBanner>
   </ListView>
   <ListFooter
     v-if="pageLengthCount"
@@ -97,12 +105,21 @@
     }"
     @loadMore="emit('loadMore')"
   />
+  <EditValueModal
+    v-model="showEditModal"
+    v-model:unselectAll="unselectAllAction"
+    doctype="CRM Deal"
+    :selectedValues="selectedValues"
+    @reload="emit('reload')"
+  />
 </template>
 
 <script setup>
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import {
   Avatar,
   ListView,
@@ -113,7 +130,7 @@ import {
   ListSelectBanner,
   ListFooter,
 } from 'frappe-ui'
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -134,7 +151,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore', 'updatePageCount'])
+const emit = defineEmits(['loadMore', 'updatePageCount', 'reload'])
 
 const pageLengthCount = defineModel()
 
@@ -142,4 +159,14 @@ watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
   emit('updatePageCount', val)
 })
+
+const showEditModal = ref(false)
+const selectedValues = ref([])
+const unselectAllAction = ref(() => {})
+
+function editValues(selections, unselectAll) {
+  selectedValues.value = selections
+  showEditModal.value = true
+  unselectAllAction.value = unselectAll
+}
 </script>

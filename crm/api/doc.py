@@ -341,3 +341,28 @@ def get_assigned_users(doctype, name):
 	)
 
 	return list(set(assigned_users))
+
+
+@frappe.whitelist()
+def get_fields(doctype: str):
+	not_allowed_fieldtypes = list(frappe.model.no_value_fields) + ["Read Only"]
+	fields = frappe.get_meta(doctype).fields
+
+	_fields = []
+
+	for field in fields:
+		if (
+			field.fieldtype not in not_allowed_fieldtypes
+			and not field.hidden
+			and not field.read_only
+			and not field.is_virtual
+			and field.fieldname
+		):
+			_fields.append({
+				"label": field.label,
+				"type": field.fieldtype,
+				"value": field.fieldname,
+				"options": field.options,
+			})
+
+	return _fields

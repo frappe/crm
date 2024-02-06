@@ -26,6 +26,7 @@
     }"
     @loadMore="() => loadMore++"
     @updatePageCount="(count) => (updatedPageCount = count)"
+    @reload="deals.reload()"
   />
   <div v-else-if="deals.data" class="flex h-full items-center justify-center">
     <div
