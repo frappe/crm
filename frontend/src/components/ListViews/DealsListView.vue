@@ -196,6 +196,7 @@ function bulkActions(selections, unselectAll) {
 }
 
 onMounted(() => {
+  if (!list.value?.data) return
   setupBulkActions(list.value.data)
   customBulkActions.value = list.value?.data?.bulkActions || []
 })
