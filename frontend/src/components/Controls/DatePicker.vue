@@ -18,88 +18,86 @@
     </template>
     <template #body="{ togglePopover }">
       <div
-        class="my-2 w-fit select-none space-y-3 rounded border border-gray-50 bg-white p-3 text-base shadow"
+        class="mt-2 w-fit select-none divide-y rounded-lg bg-white text-base shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
-        <div class="flex items-center text-gray-700">
-          <div
-            class="flex h-6 w-6 cursor-pointer items-center justify-center rounded hover:bg-gray-100"
-          >
-            <FeatherIcon
-              @click="prevMonth"
-              name="chevron-left"
-              class="h-5 w-5"
-            />
-          </div>
-          <div class="flex-1 text-center text-lg font-medium text-blue-500">
+        <div class="flex items-center p-1 text-gray-500">
+          <Button variant="ghost" class="h-7 w-7" @click="prevMonth">
+            <FeatherIcon stroke-width="2" name="chevron-left" class="h-4 w-4" />
+          </Button>
+          <div class="flex-1 text-center text-base font-medium text-gray-700">
             {{ formatMonth }}
           </div>
-          <div
-            class="flex h-6 w-6 cursor-pointer items-center justify-center rounded hover:bg-gray-100"
-          >
+          <Button variant="ghost" class="h-7 w-7" @click="nextMonth">
             <FeatherIcon
-              @click="nextMonth"
+              stroke-width="2"
               name="chevron-right"
-              class="h-5 w-5"
+              class="h-4 w-4"
             />
-          </div>
+          </Button>
         </div>
-        <div class="flex space-x-2">
-          <Input
+        <div class="flex items-center justify-center gap-1 p-1">
+          <TextInput
+            class="text-sm"
             type="text"
             :value="value"
             @change="selectDate(getDate($event)) || togglePopover()"
-          ></Input>
-          <Button class="h-7" @click="selectDate(getDate()) || togglePopover()">
-            Today
-          </Button>
+          />
+          <Button
+            label="Today"
+            class="text-sm"
+            @click="selectDate(getDate()) || togglePopover()"
+          />
         </div>
-        <div class="mt-2 flex flex-col items-center justify-center text-base">
-          <div class="flex w-full items-center space-x-1 text-gray-600">
+        <div
+          class="flex flex-col items-center justify-center p-1 text-gray-800"
+        >
+          <div class="flex items-center text-xs uppercase">
             <div
-              class="flex h-[30px] w-[30px] items-center justify-center text-center"
-              v-for="(d, i) in ['S', 'M', 'T', 'W', 'T', 'F', 'S']"
+              class="flex h-6 w-8 items-center justify-center text-center"
+              v-for="(d, i) in ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa']"
               :key="i"
             >
               {{ d }}
             </div>
           </div>
-          <div v-for="(week, i) in datesAsWeeks" :key="i" class="mt-1">
-            <div class="flex w-full items-center">
-              <div
-                v-for="date in week"
-                :key="toValue(date)"
-                class="mr-1 flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded last:mr-0 hover:bg-blue-50 hover:text-blue-500"
-                :class="{
-                  'text-gray-600': date.getMonth() !== currentMonth - 1,
-                  'text-blue-500': toValue(date) === toValue(today),
-                  'bg-blue-50 font-semibold text-blue-500':
-                    toValue(date) === value,
-                }"
-                @click="
-                  () => {
-                    selectDate(date)
-                    togglePopover()
-                  }
-                "
-              >
-                {{ date.getDate() }}
-              </div>
+          <div
+            class="flex items-center"
+            v-for="(week, i) in datesAsWeeks"
+            :key="i"
+          >
+            <div
+              v-for="date in week"
+              :key="toValue(date)"
+              class="flex h-8 w-8 cursor-pointer items-center justify-center rounded hover:bg-gray-50"
+              :class="{
+                'text-gray-400': date.getMonth() !== currentMonth - 1,
+                'font-extrabold text-gray-900':
+                  toValue(date) === toValue(today),
+                'bg-gray-800 text-white hover:bg-gray-800':
+                  toValue(date) === value,
+              }"
+              @click="
+                () => {
+                  selectDate(date)
+                  togglePopover()
+                }
+              "
+            >
+              {{ date.getDate() }}
             </div>
           </div>
         </div>
-
-        <div class="mt-1 flex w-full justify-end">
-          <div
-            class="cursor-pointer rounded px-2 py-1 hover:bg-gray-100"
+        <div class="flex justify-end p-1">
+          <Button
+            label="Clear"
+            class="text-sm"
             @click="
               () => {
                 selectDate('')
                 togglePopover()
               }
             "
-          >
-            Clear
-          </div>
+          />
         </div>
       </div>
     </template>
