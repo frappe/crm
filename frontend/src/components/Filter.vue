@@ -95,6 +95,7 @@
 </template>
 <script setup>
 import DatePicker from '@/components/Controls/DatePicker.vue'
+import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
 import DateRangePicker from '@/components/Controls/DateRangePicker.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
@@ -150,7 +151,8 @@ onMounted(() => {
 
 const filters = computed(() => {
   if (!list.value?.data) return new Set()
-  let allFilters = list.value?.params?.filters || list.value.data?.params?.filters
+  let allFilters =
+    list.value?.params?.filters || list.value.data?.params?.filters
   if (!allFilters || !filterableFields.data) return new Set()
   // remove default filters
   if (props.default_filters) {
@@ -338,7 +340,7 @@ function getValSelect(f) {
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
     return h(DateRangePicker)
   } else if (typeDate.includes(fieldtype)) {
-    return h(DatePicker)
+    return h(fieldtype == 'Date' ? DatePicker : DatetimePicker)
   } else {
     return h(FormControl, { type: 'text' })
   }
