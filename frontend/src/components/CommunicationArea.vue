@@ -159,8 +159,8 @@ const emailEmpty = computed(() => {
 async function sendMail() {
   let recipients = newEmailEditor.value.toEmails
   let subject = newEmailEditor.value.subject
-  let cc = newEmailEditor.value.ccEmails
-  let bcc = newEmailEditor.value.bccEmails
+  let cc = newEmailEditor.value.ccEmails || []
+  let bcc = newEmailEditor.value.bccEmails || []
   await call('frappe.core.doctype.communication.email.make', {
     recipients: recipients.join(', '),
     attachments: attachments.value.map((x) => x.name),
