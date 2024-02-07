@@ -52,6 +52,12 @@
       :discardButtonProps="{
         onClick: () => {
           showEmailBox = false
+          newEmailEditor.subject = subject
+          newEmailEditor.toEmails = doc.data.email ? [doc.data.email] : []
+          newEmailEditor.ccEmails = []
+          newEmailEditor.bccEmails = []
+          newEmailEditor.cc = false
+          newEmailEditor.bcc = false
           newEmail = ''
         },
       }"
