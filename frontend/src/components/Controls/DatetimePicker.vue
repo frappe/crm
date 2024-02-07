@@ -340,6 +340,10 @@ export default {
   border-radius: 999px;
 }
 
+:deep(.slider input[type='range']:focus-visible) {
+  outline: none;
+}
+
 :deep(.slider input[type='range']::-webkit-slider-thumb) {
   width: var(--thumbRadius);
   height: var(--thumbRadius);
