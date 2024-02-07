@@ -143,9 +143,12 @@ import {
   ListRowItem,
   ListFooter,
   Dropdown,
+  call,
 } from 'frappe-ui'
-import { setupBulkActions } from '@/utils'
+import { setupBulkActions, createToast } from '@/utils'
+import { globalStore } from '@/stores/global'
 import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   rows: {
@@ -170,6 +173,10 @@ const emit = defineEmits(['loadMore', 'updatePageCount'])
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')
+
+const router = useRouter()
+
+const { $dialog } = globalStore()
 
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
@@ -198,7 +205,16 @@ function bulkActions(selections, unselectAll) {
   customBulkActions.value.forEach((action) => {
     actions.push({
       label: action.label,
-      onClick: () => action.onClick(selections, unselectAll, list.value),
+      onClick: () =>
+        action.onClick({
+          list: list.value,
+          selections,
+          unselectAll,
+          call,
+          createToast,
+          $dialog,
+          router,
+        }),
     })
   })
   return actions
