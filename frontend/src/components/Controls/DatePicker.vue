@@ -40,7 +40,7 @@
             class="text-sm"
             type="text"
             :value="value"
-            @change="selectDate(getDate($event)) || togglePopover()"
+            @change="selectDate(getDate($event.target.value)) || togglePopover()"
           />
           <Button
             label="Today"
