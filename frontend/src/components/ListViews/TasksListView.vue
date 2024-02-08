@@ -123,7 +123,7 @@ import {
   call,
   Tooltip,
 } from 'frappe-ui'
-import { ref, defineModel, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   rows: {

@@ -63,7 +63,7 @@
 <script setup>
 import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
 import { TextEditor, createListResource } from 'frappe-ui'
-import { defineModel, ref, computed, nextTick, watch, onMounted } from 'vue'
+import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
   doctype: {

@@ -132,7 +132,7 @@ import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import { organizationsStore } from '@/stores/organizations'
 import { call, FeatherIcon } from 'frappe-ui'
-import { ref, defineModel, nextTick, watch, computed, h } from 'vue'
+import { ref, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({

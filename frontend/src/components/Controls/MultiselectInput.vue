@@ -95,7 +95,7 @@ import {
 import UserAvatar from '@/components/UserAvatar.vue'
 import { contactsStore } from '@/stores/contacts'
 import { Popover, createResource } from 'frappe-ui'
-import { ref, defineModel, computed, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 
 const props = defineProps({

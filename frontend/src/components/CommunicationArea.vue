@@ -101,7 +101,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
 import { call } from 'frappe-ui'
-import { ref, watch, computed, defineModel, nextTick } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 
 const props = defineProps({
   doctype: {

@@ -141,7 +141,7 @@ import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import Draggable from 'vuedraggable'
-import { computed, defineModel, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
 
 const props = defineProps({

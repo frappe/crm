@@ -776,7 +776,7 @@ import {
   call,
 } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
-import { ref, computed, h, defineModel, markRaw, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, h, markRaw, watch, nextTick, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const { makeCall } = globalStore()

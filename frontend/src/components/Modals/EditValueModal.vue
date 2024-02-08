@@ -38,7 +38,7 @@ import DatePicker from '@/components/Controls/DatePicker.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { FormControl, call, createResource, TextEditor } from 'frappe-ui'
-import { ref, computed, defineModel, onMounted, h } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']

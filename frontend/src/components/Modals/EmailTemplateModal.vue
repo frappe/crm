@@ -76,7 +76,7 @@
 
 <script setup>
 import { Checkbox, Select, TextEditor, call } from 'frappe-ui'
-import { ref, defineModel, nextTick, watch } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 
 const props = defineProps({
   emailTemplate: {

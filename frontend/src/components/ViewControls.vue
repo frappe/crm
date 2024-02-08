@@ -85,7 +85,7 @@ import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
 import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
-import { computed, ref, defineModel, onMounted, watch, h } from 'vue'
+import { computed, ref, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 

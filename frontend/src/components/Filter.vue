@@ -102,7 +102,7 @@ import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { FormControl, createResource } from 'frappe-ui'
-import { h, defineModel, computed, onMounted } from 'vue'
+import { h, computed, onMounted } from 'vue'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']

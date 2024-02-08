@@ -111,7 +111,7 @@ import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
 import { TextEditor, Dropdown, Tooltip, call } from 'frappe-ui'
-import { ref, defineModel, watch, nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({

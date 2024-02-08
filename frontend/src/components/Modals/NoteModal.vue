@@ -63,7 +63,7 @@
 <script setup>
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import { TextEditor, call } from 'frappe-ui'
-import { ref, defineModel, nextTick, watch } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router';
 
 const props = defineProps({

@@ -159,7 +159,7 @@ import Link from '@/components/Controls/Link.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import { contactsStore } from '@/stores/contacts'
 import { call } from 'frappe-ui'
-import { ref, defineModel, nextTick, watch, computed, h } from 'vue'
+import { ref, nextTick, watch, computed, h } from 'vue'
 import { createToast } from '@/utils'
 import { useRouter } from 'vue-router'
 

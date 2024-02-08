@@ -35,7 +35,7 @@
 
 <script setup>
 import { call } from 'frappe-ui'
-import { ref, watch, defineModel, nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 
 const props = defineProps({
   doctype: {
