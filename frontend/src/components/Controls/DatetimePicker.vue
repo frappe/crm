@@ -40,7 +40,7 @@
             class="text-sm"
             type="text"
             :value="value"
-            @change="selectDate(getDate($event)) || togglePopover()"
+            @change="updateDate($event.target.value) || togglePopover()"
           />
           <Button
             label="Now"
@@ -313,6 +313,13 @@ export default {
     getDate(...args) {
       let d = new Date(...args)
       return d
+    },
+    updateDate(date) {
+      date = this.getDate(date)
+      this.hour = date.getHours()
+      this.minute = date.getMinutes()
+      this.second = date.getSeconds()
+      this.selectDate(date, true)
     },
   },
 }
