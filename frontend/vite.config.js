@@ -9,7 +9,6 @@ export default defineConfig({
     frappeui(),
     vue({
       script: {
-        defineModel: true,
         propsDestructure: true,
       },
     }),
