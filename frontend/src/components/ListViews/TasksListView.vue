@@ -17,17 +17,18 @@
         v-slot="{ column, item }"
         :row="row"
       >
-        <div
+        <Tooltip
           v-if="column.key === 'due_date'"
-          class="flex items-center gap-2 text-base"
+          class="flex items-center gap-2 truncate text-base"
+          :text="dateFormat(item, 'ddd, MMM D, YYYY | hh:mm a')"
         >
-          <CalendarIcon />
-          <div v-if="item">
-            <Tooltip :text="dateFormat(item, 'ddd, MMM D, YYYY')">
-              {{ dateFormat(item, 'D MMM') }}
-            </Tooltip>
+          <div>
+            <CalendarIcon />
           </div>
-        </div>
+          <div v-if="item" class="truncate">
+            {{ dateFormat(item, 'D MMM, hh:mm a') }}
+          </div>
+        </Tooltip>
         <ListRowItem v-else :item="item">
           <template #prefix>
             <div v-if="column.key === 'status'">

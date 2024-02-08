@@ -4,16 +4,14 @@
     class="flex w-full [&>div:first-child]:w-full"
   >
     <template #target="{ togglePopover }">
-      <input
+      <Input
         readonly
         type="text"
         :placeholder="placeholder"
         :value="value && formatter ? formatter(value) : value"
         @focus="!readonly ? togglePopover() : null"
-        :class="[
-          'form-input  block h-7 w-full cursor-pointer select-none rounded border-gray-400 text-sm placeholder-gray-500',
-          inputClass,
-        ]"
+        :class="inputClass"
+        v-bind="$attrs"
       />
     </template>
     <template #body="{ togglePopover }">

@@ -59,7 +59,7 @@
   },
   {
    "fieldname": "due_date",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "label": "Due Date"
   },
   {
@@ -87,7 +87,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:55:42.654547",
+ "modified": "2024-02-08 12:04:00.955984",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Task",

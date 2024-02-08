@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between px-5 pb-4 pt-3">
+  <div class="flex items-center justify-between px-5 py-4">
     <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">

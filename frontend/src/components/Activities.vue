@@ -154,8 +154,12 @@
               </div>
               <div v-if="task.due_date" class="flex gap-2">
                 <CalendarIcon />
-                <Tooltip :text="dateFormat(task.due_date, 'ddd, MMM D, YYYY')">
-                  {{ dateFormat(task.due_date, 'D MMM') }}
+                <Tooltip
+                  :text="
+                    dateFormat(task.due_date, 'ddd, MMM D, YYYY | hh:mm a')
+                  "
+                >
+                  {{ dateFormat(task.due_date, 'D MMM, hh:mm a') }}
                 </Tooltip>
               </div>
               <div class="flex items-center justify-center">
@@ -367,24 +371,24 @@
                 </Tooltip>
               </div>
               <div class="flex gap-0.5">
-              <Tooltip text="Reply">
-                <Button
-                  variant="ghost"
-                  class="text-gray-700"
-                  @click="reply(activity.data)"
-                >
-                  <ReplyIcon class="h-4 w-4" />
-                </Button>
-              </Tooltip>
-              <Tooltip text="Reply All">
-                <Button
-                  variant="ghost"
-                  class="text-gray-700"
-                  @click="reply(activity.data, true)"
-                >
-                  <ReplyAllIcon class="h-4 w-4" />
-                </Button>
-              </Tooltip>
+                <Tooltip text="Reply">
+                  <Button
+                    variant="ghost"
+                    class="text-gray-700"
+                    @click="reply(activity.data)"
+                  >
+                    <ReplyIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Tooltip text="Reply All">
+                  <Button
+                    variant="ghost"
+                    class="text-gray-700"
+                    @click="reply(activity.data, true)"
+                  >
+                    <ReplyAllIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
               </div>
             </div>
             <div class="text-sm leading-5 text-gray-600">

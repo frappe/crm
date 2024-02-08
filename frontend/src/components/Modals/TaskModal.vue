@@ -80,12 +80,13 @@
               </Tooltip>
             </template>
           </Link>
-          <DatePicker
+          <DatetimePicker
             class="datepicker w-36"
-            v-model="_task.due_date"
+            icon-left="calendar"
+            :value="_task.due_date"
+            @change="(val) => (_task.due_date = val)"
             placeholder="Due Date"
             input-class="border-none"
-            :formatValue="(val) => val.split('-').reverse().join('-')"
           />
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
             <Button :label="_task.priority" class="w-full justify-between">
@@ -108,7 +109,8 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { TextEditor, Dropdown, Tooltip, DatePicker, call } from 'frappe-ui'
+import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
+import { TextEditor, Dropdown, Tooltip, call } from 'frappe-ui'
 import { ref, defineModel, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
