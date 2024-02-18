@@ -717,7 +717,7 @@
   />
   <NoteModal
     v-model="showNoteModal"
-    v-model:reloadNotes="notes"
+    v-model:reloadNotes="all_activities"
     :note="note"
     :doctype="doctype"
     :doc="doc.data?.name"
@@ -804,7 +804,7 @@ const all_activities = createResource({
   params: { name: doc.value.data.name },
   cache: ['activity', doc.value.data.name],
   auto: true,
-  transform: ([versions, calls]) => {
+  transform: ([versions, calls, notes]) => {
     if (calls?.length) {
       calls.forEach((doc) => {
         doc.show_recording = false
@@ -839,18 +839,8 @@ const all_activities = createResource({
         }
       })
     }
-    return { versions, calls }
+    return { versions, calls, notes }
   },
-})
-
-const notes = createListResource({
-  type: 'list',
-  doctype: 'CRM Note',
-  cache: ['Notes', doc.value.data.name],
-  fields: ['name', 'title', 'content', 'owner', 'modified'],
-  filters: { reference_docname: doc.value.data.name },
-  orderBy: 'modified desc',
-  pageLength: 999,
 })
 
 const tasks = createListResource({
@@ -901,7 +891,8 @@ const activities = computed(() => {
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   } else if (props.title == 'Notes') {
-    return notes.data?.sort(
+    if (!all_activities.data?.notes) return []
+    return all_activities.data.notes.sort(
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   }
@@ -1018,7 +1009,7 @@ async function deleteNote(name) {
     doctype: 'CRM Note',
     name,
   })
-  notes.reload()
+  all_activities.reload()
 }
 
 // Tasks
