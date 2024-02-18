@@ -717,14 +717,14 @@
   />
   <NoteModal
     v-model="showNoteModal"
-    v-model:reloadNotes="notes"
+    v-model:reloadNotes="all_activities"
     :note="note"
     :doctype="doctype"
     :doc="doc.data?.name"
   />
   <TaskModal
     v-model="showTaskModal"
-    v-model:reloadTasks="tasks"
+    v-model:reloadTasks="all_activities"
     :task="task"
     :doctype="doctype"
     :doc="doc.data?.name"
@@ -799,119 +799,55 @@ const reload = defineModel('reload')
 
 const reload_email = ref(false)
 
-const versions = createResource({
+const all_activities = createResource({
   url: 'crm.api.activities.get_activities',
   params: { name: doc.value.data.name },
   cache: ['activity', doc.value.data.name],
-})
-
-onMounted(() => {
-  if (versions.data == null) {
-    versions.fetch()
-  }
-  if (calls.data == null) {
-    calls.fetch()
-  }
-  if (notes.data == null) {
-    notes.fetch()
-  }
-  if (tasks.data == null) {
-    tasks.fetch()
-  }
-})
-
-const calls = createListResource({
-  type: 'list',
-  doctype: 'CRM Call Log',
-  cache: ['Call Logs', doc.value.data.name],
-  fields: [
-    'name',
-    'caller',
-    'receiver',
-    'from',
-    'to',
-    'duration',
-    'start_time',
-    'end_time',
-    'status',
-    'type',
-    'recording_url',
-    'creation',
-    'note',
-  ],
-  filters: { reference_docname: doc.value.data.name },
-  orderBy: 'creation desc',
-  pageLength: 999,
-  transform: (docs) => {
-    docs.forEach((doc) => {
-      doc.show_recording = false
-      doc.activity_type =
-        doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
-      doc.duration = secondsToDuration(doc.duration)
-      if (doc.type === 'Incoming') {
-        doc.caller = {
-          label:
-            getContact(doc.from)?.full_name ||
-            getLeadContact(doc.from)?.full_name ||
-            'Unknown',
-          image: getContact(doc.from)?.image || getLeadContact(doc.from)?.image,
+  auto: true,
+  transform: ([versions, calls, notes, tasks]) => {
+    if (calls?.length) {
+      calls.forEach((doc) => {
+        doc.show_recording = false
+        doc.activity_type =
+          doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
+        doc.duration = secondsToDuration(doc.duration)
+        if (doc.type === 'Incoming') {
+          doc.caller = {
+            label:
+              getContact(doc.from)?.full_name ||
+              getLeadContact(doc.from)?.full_name ||
+              'Unknown',
+            image:
+              getContact(doc.from)?.image || getLeadContact(doc.from)?.image,
+          }
+          doc.receiver = {
+            label: getUser(doc.receiver).full_name,
+            image: getUser(doc.receiver).user_image,
+          }
+        } else {
+          doc.caller = {
+            label: getUser(doc.caller).full_name,
+            image: getUser(doc.caller).user_image,
+          }
+          doc.receiver = {
+            label:
+              getContact(doc.to)?.full_name ||
+              getLeadContact(doc.to)?.full_name ||
+              'Unknown',
+            image: getContact(doc.to)?.image || getLeadContact(doc.to)?.image,
+          }
         }
-        doc.receiver = {
-          label: getUser(doc.receiver).full_name,
-          image: getUser(doc.receiver).user_image,
-        }
-      } else {
-        doc.caller = {
-          label: getUser(doc.caller).full_name,
-          image: getUser(doc.caller).user_image,
-        }
-        doc.receiver = {
-          label:
-            getContact(doc.to)?.full_name ||
-            getLeadContact(doc.to)?.full_name ||
-            'Unknown',
-          image: getContact(doc.to)?.image || getLeadContact(doc.to)?.image,
-        }
-      }
-    })
-    return docs
+      })
+    }
+    return { versions, calls, notes, tasks }
   },
 })
 
-const notes = createListResource({
-  type: 'list',
-  doctype: 'CRM Note',
-  cache: ['Notes', doc.value.data.name],
-  fields: ['name', 'title', 'content', 'owner', 'modified'],
-  filters: { reference_docname: doc.value.data.name },
-  orderBy: 'modified desc',
-  pageLength: 999,
-})
-
-const tasks = createListResource({
-  type: 'list',
-  doctype: 'CRM Task',
-  cache: ['Tasks', doc.value.data.name],
-  fields: [
-    'name',
-    'title',
-    'description',
-    'assigned_to',
-    'assigned_to',
-    'due_date',
-    'priority',
-    'status',
-    'modified',
-  ],
-  filters: { reference_docname: doc.value.data.name },
-  orderBy: 'modified desc',
-  pageLength: 999,
-})
-
-function all_activities() {
-  if (!versions.data) return []
-  if (!calls.data) return versions.data
-  return [...versions.data, ...calls.data].sort(
+function get_activities() {
+  if (!all_activities.data?.versions) return []
+  if (!all_activities.data?.calls.length)
+    return all_activities.data.versions || []
+  return [...all_activities.data.versions, ...all_activities.data.calls].sort(
     (a, b) => new Date(a.creation) - new Date(b.creation)
   )
 }
@@ -919,22 +855,25 @@ function all_activities() {
 const activities = computed(() => {
   let activities = []
   if (props.title == 'Activity') {
-    activities = all_activities()
+    activities = get_activities()
   } else if (props.title == 'Emails') {
-    if (!versions.data) return []
-    activities = versions.data
+    if (!all_activities.data?.versions) return []
+    activities = all_activities.data.versions
       .filter((activity) => activity.activity_type === 'communication')
       .sort((a, b) => new Date(a.creation) - new Date(b.creation))
   } else if (props.title == 'Calls') {
-    return calls.data?.sort(
+    if (!all_activities.data?.calls) return []
+    return all_activities.data.calls.sort(
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   } else if (props.title == 'Tasks') {
-    return tasks.data?.sort(
+    if (!all_activities.data?.tasks) return []
+    return all_activities.data.tasks.sort(
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   } else if (props.title == 'Notes') {
-    return notes.data?.sort(
+    if (!all_activities.data?.notes) return []
+    return all_activities.data.notes.sort(
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   }
@@ -1051,7 +990,7 @@ async function deleteNote(name) {
     doctype: 'CRM Note',
     name,
   })
-  notes.reload()
+  all_activities.reload()
 }
 
 // Tasks
@@ -1075,7 +1014,7 @@ async function deleteTask(name) {
     doctype: 'CRM Task',
     name,
   })
-  tasks.reload()
+  all_activities.reload()
 }
 
 function updateTaskStatus(status, task) {
@@ -1085,7 +1024,7 @@ function updateTaskStatus(status, task) {
     fieldname: 'status',
     value: status,
   }).then(() => {
-    tasks.reload()
+    all_activities.reload()
   })
 }
 
