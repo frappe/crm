@@ -12,6 +12,7 @@ export const usersStore = defineStore('crm-users', () => {
     url: 'crm.api.session.get_users',
     cache: 'Users',
     initialData: [],
+    auto: true,
     transform(users) {
       for (let user of users) {
         usersByName[user.name] = user
@@ -24,10 +25,6 @@ export const usersStore = defineStore('crm-users', () => {
       }
     },
   })
-
-  // if (!users.data?.length) {
-  //   users.fetch()
-  // }
 
   function getUser(email) {
     if (!email || email === 'sessionUser') {
