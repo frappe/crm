@@ -32,10 +32,11 @@ def get_deal_activities(name):
 	lead = doc[2]
 
 	activities = []
+	calls = []
 	creation_text = "created this deal"
 
 	if lead:
-		activities = get_lead_activities(lead)
+		activities, calls = get_lead_activities(lead)
 		creation_text = "converted the lead to this deal"
 
 	activities.append({
@@ -125,10 +126,12 @@ def get_deal_activities(name):
 		}
 		activities.append(activity)
 
+	calls = calls + get_linked_calls(name)
+
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities
+	return activities, calls
 
 def get_lead_activities(name):
 	get_docinfo('', "CRM Lead", name)
@@ -232,10 +235,12 @@ def get_lead_activities(name):
 		}
 		activities.append(activity)
 
+	calls = get_linked_calls(name)
+
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities
+	return activities, calls
 
 @redis_cache()
 def get_attachments(name):
@@ -277,3 +282,25 @@ def parse_grouped_versions(versions):
 	other_versions = versions[1:]
 	version["other_versions"] = other_versions
 	return version
+
+def get_linked_calls(name):
+	calls = frappe.db.get_all(
+		"CRM Call Log",
+		filters={"reference_docname": name},
+		fields=[
+			"name",
+			"caller",
+			"receiver",
+			"from",
+			"to",
+			"duration",
+			"start_time",
+			"end_time",
+			"status",
+			"type",
+			"recording_url",
+			"creation",
+			"note",
+		],
+	)
+	return calls or []
