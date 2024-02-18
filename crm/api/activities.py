@@ -34,10 +34,11 @@ def get_deal_activities(name):
 	activities = []
 	calls = []
 	notes = []
+	tasks = []
 	creation_text = "created this deal"
 
 	if lead:
-		activities, calls, notes = get_lead_activities(lead)
+		activities, calls, notes, tasks = get_lead_activities(lead)
 		creation_text = "converted the lead to this deal"
 
 	activities.append({
@@ -129,11 +130,12 @@ def get_deal_activities(name):
 
 	calls = calls + get_linked_calls(name)
 	notes = notes + get_linked_notes(name)
+	tasks = tasks + get_linked_tasks(name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities, calls, notes
+	return activities, calls, notes, tasks
 
 def get_lead_activities(name):
 	get_docinfo('', "CRM Lead", name)
@@ -239,11 +241,12 @@ def get_lead_activities(name):
 
 	calls = get_linked_calls(name)
 	notes = get_linked_notes(name)
+	tasks = get_linked_tasks(name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities, calls, notes
+	return activities, calls, notes, tasks
 
 @redis_cache()
 def get_attachments(name):
@@ -315,3 +318,21 @@ def get_linked_notes(name):
 		fields=['name', 'title', 'content', 'owner', 'modified'],
 	)
 	return notes or []
+
+def get_linked_tasks(name):
+	tasks = frappe.db.get_all(
+		"CRM Task",
+		filters={"reference_docname": name},
+		fields=[
+			"name",
+			"title",
+			"description",
+			"assigned_to",
+			"assigned_to",
+			"due_date",
+			"priority",
+			"status",
+			"modified",
+		],
+	)
+	return tasks or []

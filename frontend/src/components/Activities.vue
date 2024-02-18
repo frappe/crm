@@ -724,7 +724,7 @@
   />
   <TaskModal
     v-model="showTaskModal"
-    v-model:reloadTasks="tasks"
+    v-model:reloadTasks="all_activities"
     :task="task"
     :doctype="doctype"
     :doc="doc.data?.name"
@@ -804,7 +804,7 @@ const all_activities = createResource({
   params: { name: doc.value.data.name },
   cache: ['activity', doc.value.data.name],
   auto: true,
-  transform: ([versions, calls, notes]) => {
+  transform: ([versions, calls, notes, tasks]) => {
     if (calls?.length) {
       calls.forEach((doc) => {
         doc.show_recording = false
@@ -839,28 +839,8 @@ const all_activities = createResource({
         }
       })
     }
-    return { versions, calls, notes }
+    return { versions, calls, notes, tasks }
   },
-})
-
-const tasks = createListResource({
-  type: 'list',
-  doctype: 'CRM Task',
-  cache: ['Tasks', doc.value.data.name],
-  fields: [
-    'name',
-    'title',
-    'description',
-    'assigned_to',
-    'assigned_to',
-    'due_date',
-    'priority',
-    'status',
-    'modified',
-  ],
-  filters: { reference_docname: doc.value.data.name },
-  orderBy: 'modified desc',
-  pageLength: 999,
 })
 
 function get_activities() {
@@ -887,7 +867,8 @@ const activities = computed(() => {
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   } else if (props.title == 'Tasks') {
-    return tasks.data?.sort(
+    if (!all_activities.data?.tasks) return []
+    return all_activities.data.tasks.sort(
       (a, b) => new Date(a.creation) - new Date(b.creation)
     )
   } else if (props.title == 'Notes') {
@@ -1033,7 +1014,7 @@ async function deleteTask(name) {
     doctype: 'CRM Task',
     name,
   })
-  tasks.reload()
+  all_activities.reload()
 }
 
 function updateTaskStatus(status, task) {
@@ -1043,7 +1024,7 @@ function updateTaskStatus(status, task) {
     fieldname: 'status',
     value: status,
   }).then(() => {
-    tasks.reload()
+    all_activities.reload()
   })
 }
 
