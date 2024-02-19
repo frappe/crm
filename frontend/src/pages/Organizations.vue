@@ -16,6 +16,7 @@
   <ViewControls
     v-model="organizations"
     v-model:loadMore="loadMore"
+    v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Organization"
   />
@@ -30,6 +31,7 @@
       totalCount: organizations.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @reload="organizations.reload()"
   />
@@ -91,6 +93,7 @@ const breadcrumbs = computed(() => {
 // organizations data is loaded in the ViewControls component
 const organizations = ref({})
 const loadMore = ref(1)
+const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 
 const rows = computed(() => {

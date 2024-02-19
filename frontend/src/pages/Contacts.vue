@@ -12,6 +12,7 @@
   <ViewControls
     v-model="contacts"
     v-model:loadMore="loadMore"
+    v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="Contact"
   />
@@ -26,6 +27,7 @@
       totalCount: contacts.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @reload="contacts.reload()"
   />
@@ -85,6 +87,7 @@ const breadcrumbs = computed(() => {
 // contacts data is loaded in the ViewControls component
 const contacts = ref({})
 const loadMore = ref(1)
+const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 
 const rows = computed(() => {
