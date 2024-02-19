@@ -12,6 +12,7 @@
   <ViewControls
     v-model="deals"
     v-model:loadMore="loadMore"
+    v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Deal"
   />
@@ -27,6 +28,7 @@
       totalCount: deals.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
   />
   <div v-else-if="deals.data" class="flex h-full items-center justify-center">
@@ -90,6 +92,7 @@ const router = useRouter()
 // deals data is loaded in the ViewControls component
 const deals = ref({})
 const loadMore = ref(1)
+const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 
 // Rows

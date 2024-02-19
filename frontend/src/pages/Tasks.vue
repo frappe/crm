@@ -12,6 +12,7 @@
   <ViewControls
     v-model="tasks"
     v-model:loadMore="loadMore"
+    v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Task"
   />
@@ -26,6 +27,7 @@
       totalCount: tasks.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showTask="showTask"
     @reload="tasks.reload()"
@@ -59,6 +61,7 @@ const { getUser } = usersStore()
 // tasks data is loaded in the ViewControls component
 const tasks = ref({})
 const loadMore = ref(1)
+const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 
 const rows = computed(() => {

@@ -9,7 +9,7 @@
     }"
     row-key="name"
   >
-    <ListHeader class="mx-5" />
+    <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')" />
     <ListRows id="list-rows">
       <ListRow
         class="mx-5"
@@ -129,6 +129,7 @@ const emit = defineEmits([
   'updatePageCount',
   'showEmailTemplate',
   'reload',
+  'columnWidthUpdated',
 ])
 
 const pageLengthCount = defineModel()

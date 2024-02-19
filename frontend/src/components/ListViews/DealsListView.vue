@@ -10,7 +10,7 @@
     }"
     row-key="name"
   >
-    <ListHeader class="mx-5" />
+    <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')" />
     <ListRows id="list-rows">
       <ListRow
         class="mx-5"
@@ -164,7 +164,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore', 'updatePageCount'])
+const emit = defineEmits(['loadMore', 'updatePageCount', 'columnWidthUpdated'])
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')

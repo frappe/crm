@@ -19,12 +19,30 @@
             class="list-group"
           >
             <template #item="{ element }">
-              <ColumnItem
-                :column="element"
-                @edit="editColumn"
-                @remove="removeColumn"
-                @update="apply"
-              />
+              <div
+                class="flex cursor-grab items-center justify-between gap-6 rounded px-2 py-1.5 text-base text-gray-800 hover:bg-gray-100"
+              >
+                <div class="flex items-center gap-2">
+                  <DragIcon class="h-3.5" />
+                  <div>{{ element.label }}</div>
+                </div>
+                <div class="flex cursor-pointer items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    class="!h-5 w-5 !p-1"
+                    @click="editColumn(element)"
+                  >
+                    <EditIcon class="h-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    class="!h-5 w-5 !p-1"
+                    @click="removeColumn(element)"
+                  >
+                    <FeatherIcon name="x" class="h-3.5" />
+                  </Button>
+                </div>
+              </div>
             </template>
           </Draggable>
           <div class="mt-1.5 flex flex-col gap-1 border-t pt-1.5">
@@ -117,7 +135,8 @@
 
 <script setup>
 import ColumnsIcon from '@/components/Icons/ColumnsIcon.vue'
-import ColumnItem from '@/components/ColumnItem.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'

@@ -12,6 +12,7 @@
   <ViewControls
     v-model="emailTemplates"
     v-model:loadMore="loadMore"
+    v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="Email Template"
   />
@@ -26,6 +27,7 @@
       totalCount: emailTemplates.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showEmailTemplate="showEmailTemplate"
     @reload="emailTemplates.reload()"
@@ -65,6 +67,7 @@ const breadcrumbs = [
 // emailTemplates data is loaded in the ViewControls component
 const emailTemplates = ref({})
 const loadMore = ref(1)
+const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 
 const rows = computed(() => {

@@ -113,6 +113,7 @@ const { isManager } = usersStore()
 
 const list = defineModel()
 const loadMore = defineModel('loadMore')
+const resizeColumn = defineModel('resizeColumn')
 const updatedPageCount = defineModel('updatedPageCount')
 
 const route = useRoute()
@@ -149,6 +150,11 @@ const pageLengthCount = computed(() => list.value?.data?.page_length_count)
 watch(loadMore, (value) => {
   if (!value) return
   updatePageLength(value, true)
+})
+
+watch(resizeColumn, (value) => {
+  if (!value) return
+  updateColumns()
 })
 
 watch(updatedPageCount, (value) => {
@@ -330,6 +336,14 @@ function updateSort(order_by) {
 }
 
 function updateColumns(obj) {
+  if (!obj) {
+    obj = {
+      columns: list.value.data.columns,
+      rows: list.value.data.rows,
+      isDefault: false,
+    }
+  }
+
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
@@ -363,7 +377,10 @@ function create_or_update_default_view() {
     {
       view: view.value,
     }
-  ).then(() => reloadView())
+  ).then(() => {
+    reloadView()
+    viewUpdated.value = false
+  })
 }
 
 function updatePageLength(value, loadMore = false) {

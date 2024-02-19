@@ -12,6 +12,7 @@
   <ViewControls
     v-model="leads"
     v-model:loadMore="loadMore"
+    v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Lead"
     :filters="{ converted: 0 }"
@@ -28,6 +29,7 @@
       totalCount: leads.data.total_count,
     }"
     @loadMore="() => loadMore++"
+    @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
   />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
@@ -85,6 +87,7 @@ const router = useRouter()
 // leads data is loaded in the ViewControls component
 const leads = ref({})
 const loadMore = ref(1)
+const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 
 // Rows
