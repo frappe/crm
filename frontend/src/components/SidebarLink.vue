@@ -5,7 +5,7 @@
     @click="handleClick"
   >
     <div
-      class="flex w-full justify-between items-center duration-300 ease-in-out"
+      class="flex w-full items-center justify-between duration-300 ease-in-out"
       :class="isCollapsed ? 'p-1' : 'px-2 py-1'"
     >
       <div class="flex items-center">
@@ -59,6 +59,7 @@ const props = defineProps({
 })
 
 function handleClick() {
+  if (!props.to) return
   if (typeof props.to === 'object') {
     router.push(props.to)
   } else {
