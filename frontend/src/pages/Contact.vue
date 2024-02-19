@@ -175,7 +175,7 @@
           class="mt-4"
           :rows="rows"
           :columns="columns"
-          :options="{ selectable: false }"
+          :options="{ selectable: false, showTooltip: false }"
         />
         <div
           v-if="!rows.length"

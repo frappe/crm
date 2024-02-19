@@ -184,7 +184,7 @@
           v-if="tab.label === 'Deals' && rows.length"
           :rows="rows"
           :columns="columns"
-          :options="{ selectable: false }"
+          :options="{ selectable: false, showTooltip: false }"
         />
         <ContactsListView
           class="mt-4"
