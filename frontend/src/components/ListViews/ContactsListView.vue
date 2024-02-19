@@ -9,6 +9,7 @@
         params: { contactId: row.name },
       }),
       selectable: options.selectable,
+      showTooltip: options.showTooltip,
     }"
     row-key="name"
   >
@@ -45,12 +46,13 @@
               <PhoneIcon class="h-4 w-4" />
             </div>
           </template>
-          <div
+          <Tooltip
+            :text="item.label"
             v-if="['modified', 'creation'].includes(column.key)"
             class="truncate text-base"
           >
             {{ item.timeAgo }}
-          </div>
+          </Tooltip>
           <div v-else-if="column.type === 'Check'">
             <FormControl
               type="checkbox"
@@ -64,7 +66,11 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Button variant="subtle" label="Edit" @click="editValues(selections, unselectAll)">
+        <Button
+          variant="subtle"
+          label="Edit"
+          @click="editValues(selections, unselectAll)"
+        >
           <template #prefix>
             <EditIcon class="h-3 w-3" />
           </template>
@@ -103,6 +109,7 @@ import {
   ListSelectBanner,
   ListRowItem,
   ListFooter,
+  Tooltip,
 } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
@@ -119,6 +126,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       selectable: true,
+      showTooltip: true,
       totalCount: 0,
       rowCount: 0,
     }),
