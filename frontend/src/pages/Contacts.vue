@@ -21,6 +21,7 @@
     :rows="rows"
     :columns="contacts.data.columns"
     :options="{
+      showTooltip: false,
       rowCount: contacts.data.row_count,
       totalCount: contacts.data.total_count,
     }"

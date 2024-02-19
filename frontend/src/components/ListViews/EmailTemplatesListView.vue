@@ -5,6 +5,7 @@
     :options="{
       onRowClick: (row) => emit('showEmailTemplate', row.name),
       selectable: options.selectable,
+      showTooltip: options.showTooltip,
     }"
     row-key="name"
   >
@@ -21,12 +22,13 @@
           <!-- <template #prefix>
 
           </template> -->
-          <div
+          <Tooltip
+            :text="item.label"
             v-if="['modified', 'creation'].includes(column.key)"
             class="truncate text-base"
           >
             {{ item.timeAgo }}
-          </div>
+          </Tooltip>
           <div v-else-if="column.key === 'status'" class="truncate text-base">
             <Badge
               :variant="'subtle'"
@@ -98,6 +100,7 @@ import {
   ListRowItem,
   ListFooter,
   call,
+  Tooltip,
 } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
@@ -114,6 +117,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       selectable: true,
+      showTooltip: true,
       totalCount: 0,
       rowCount: 0,
     }),

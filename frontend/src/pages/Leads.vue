@@ -23,6 +23,7 @@
     :rows="rows"
     :columns="leads.data.columns"
     :options="{
+      showTooltip: false,
       rowCount: leads.data.row_count,
       totalCount: leads.data.total_count,
     }"

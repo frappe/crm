@@ -6,6 +6,7 @@
     :options="{
       getRowRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
       selectable: options.selectable,
+      showTooltip: options.showTooltip,
     }"
     row-key="name"
   >
@@ -48,7 +49,8 @@
               <PhoneIcon class="h-4 w-4" />
             </div>
           </template>
-          <div
+          <Tooltip
+            :text="item.label"
             v-if="
               [
                 'modified',
@@ -61,7 +63,7 @@
             class="truncate text-base"
           >
             {{ item.timeAgo }}
-          </div>
+          </Tooltip>
           <div
             v-else-if="column.key === 'sla_status'"
             class="truncate text-base"
@@ -135,6 +137,7 @@ import {
   ListFooter,
   Dropdown,
   call,
+  Tooltip,
 } from 'frappe-ui'
 import { setupBulkActions, createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
@@ -154,6 +157,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       selectable: true,
+      showTooltip: true,
       totalCount: 0,
       rowCount: 0,
     }),

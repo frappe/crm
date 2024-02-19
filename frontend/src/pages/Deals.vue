@@ -22,6 +22,7 @@
     :rows="rows"
     :columns="deals.data.columns"
     :options="{
+      showTooltip: false,
       rowCount: deals.data.row_count,
       totalCount: deals.data.total_count,
     }"
