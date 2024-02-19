@@ -5,6 +5,7 @@
     :options="{
       onRowClick: (row) => emit('showTask', row.name),
       selectable: options.selectable,
+      showTooltip: options.showTooltip,
     }"
     row-key="name"
   >
@@ -47,12 +48,13 @@
               />
             </div>
           </template>
-          <div
+          <Tooltip
+            :text="item.label"
             v-if="['modified', 'creation'].includes(column.key)"
             class="truncate text-base"
           >
             {{ item.timeAgo }}
-          </div>
+          </Tooltip>
           <div v-else-if="column.type === 'Check'">
             <FormControl
               type="checkbox"
@@ -138,6 +140,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       selectable: true,
+      showTooltip: true,
       totalCount: 0,
       rowCount: 0,
     }),
