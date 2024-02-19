@@ -16,6 +16,7 @@
     :rows="rows"
     :columns="callLogs.data.columns"
     :options="{
+      showTooltip: false,
       rowCount: callLogs.data.row_count,
       totalCount: callLogs.data.total_count,
     }"
