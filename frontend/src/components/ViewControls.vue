@@ -536,6 +536,39 @@ function saveView() {
   showViewModal.value = true
 }
 
+function applyFilter({ event, idx, column, item }) {
+  let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
+  if (restrictedFieldtypes.includes(column.type) || idx === 0) return
+
+  event.stopPropagation()
+  event.preventDefault()
+
+  let filters = { ...list.value.params.filters }
+
+  let value = item.name || item.label || item
+
+  if (value) {
+    filters[column.key] = value
+  } else {
+    delete filters[column.key]
+  }
+
+  if (column.key == '_assign') {
+    if (item.length > 1) {
+      let target = e.target.closest('.user-avatar')
+      if (target) {
+        let name = target.getAttribute('data-name')
+        filters['_assign'] = ['LIKE', `%${name}%`]
+      }
+    } else {
+      filters['_assign'] = ['LIKE', `%${item[0].name}%`]
+    }
+  }
+  updateFilter(filters)
+}
+
+defineExpose({ applyFilter })
+
 // Watchers
 watch(
   () => getView(route.query.view),
