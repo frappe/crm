@@ -10,6 +10,7 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    ref="viewControls"
     v-model="contacts"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
@@ -30,6 +31,7 @@
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @reload="contacts.reload()"
+    @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div
     v-else-if="contacts.data"
@@ -89,6 +91,7 @@ const contacts = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
+const viewControls = ref(null)
 
 const rows = computed(() => {
   if (!contacts.value?.data?.data) return []

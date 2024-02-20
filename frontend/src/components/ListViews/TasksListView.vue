@@ -15,7 +15,7 @@
         class="mx-5"
         v-for="row in rows"
         :key="row.name"
-        v-slot="{ column, item }"
+        v-slot="{ idx, column, item }"
         :row="row"
       >
         <Tooltip
@@ -30,7 +30,11 @@
             {{ dateFormat(item, 'D MMM, hh:mm a') }}
           </div>
         </Tooltip>
-        <ListRowItem v-else :item="item">
+        <ListRowItem
+          v-else
+          :item="item"
+          @click="(event) => emit('applyFilter', { event, idx, column, item })"
+        >
           <template #prefix>
             <div v-if="column.key === 'status'">
               <TaskStatusIcon :status="item" />
@@ -153,6 +157,7 @@ const emit = defineEmits([
   'showTask',
   'reload',
   'columnWidthUpdated',
+  'applyFilter',
 ])
 
 const pageLengthCount = defineModel()

@@ -16,13 +16,21 @@
         class="mx-5"
         v-for="row in rows"
         :key="row.name"
-        v-slot="{ column, item }"
+        v-slot="{ idx, column, item }"
         :row="row"
       >
-        <div v-if="column.key === '_assign'" class="flex items-center">
+        <div
+          v-if="column.key === '_assign'"
+          class="flex items-center"
+          @click="(event) => emit('applyFilter', { event, idx, column, item })"
+        >
           <MultipleAvatar :avatars="item" size="sm" />
         </div>
-        <ListRowItem v-else :item="item">
+        <ListRowItem
+          v-else
+          :item="item"
+          @click="(event) => emit('applyFilter', { event, idx, column, item })"
+        >
           <template #prefix>
             <div v-if="column.key === 'status'">
               <IndicatorIcon :class="item.color" />
@@ -173,7 +181,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore', 'updatePageCount', 'columnWidthUpdated'])
+const emit = defineEmits([
+  'loadMore',
+  'updatePageCount',
+  'columnWidthUpdated',
+  'applyFilter',
+])
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')

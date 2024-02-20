@@ -24,11 +24,12 @@
       :key="avatar.name"
     >
       <Avatar
-        class="-mr-1.5 transform ring-2 ring-white transition hover:z-10 hover:scale-110"
+        class="user-avatar -mr-1.5 transform ring-2 ring-white transition hover:z-10 hover:scale-110"
         shape="circle"
         :image="avatar.image"
         :label="avatar.label"
         :size="size"
+        :data-name="avatar.name"
       />
     </Tooltip>
   </div>
