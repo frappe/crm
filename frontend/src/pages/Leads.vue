@@ -10,6 +10,7 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    ref="viewControls"
     v-model="leads"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
@@ -31,6 +32,7 @@
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
+    @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
     <div
@@ -89,6 +91,7 @@ const leads = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
+const viewControls = ref(null)
 
 // Rows
 const rows = computed(() => {

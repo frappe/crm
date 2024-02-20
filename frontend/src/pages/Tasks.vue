@@ -10,6 +10,7 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    ref="viewControls"
     v-model="tasks"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
@@ -31,6 +32,7 @@
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showTask="showTask"
     @reload="tasks.reload()"
+    @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div v-else-if="tasks.data" class="flex h-full items-center justify-center">
     <div
@@ -63,6 +65,7 @@ const tasks = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
+const viewControls = ref(null)
 
 const rows = computed(() => {
   if (!tasks.value?.data?.data) return []

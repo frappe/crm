@@ -15,10 +15,13 @@
         class="mx-5"
         v-for="row in rows"
         :key="row.name"
-        v-slot="{ column, item }"
+        v-slot="{ idx, column, item }"
         :row="row"
       >
-        <ListRowItem :item="item">
+        <ListRowItem
+          :item="item"
+          @click="(event) => emit('applyFilter', { event, idx, column, item })"
+        >
           <!-- <template #prefix>
 
           </template> -->
@@ -130,6 +133,7 @@ const emit = defineEmits([
   'showEmailTemplate',
   'reload',
   'columnWidthUpdated',
+  'applyFilter',
 ])
 
 const pageLengthCount = defineModel()

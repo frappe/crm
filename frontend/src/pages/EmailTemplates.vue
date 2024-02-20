@@ -10,6 +10,7 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    ref="viewControls"
     v-model="emailTemplates"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
@@ -31,6 +32,7 @@
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showEmailTemplate="showEmailTemplate"
     @reload="emailTemplates.reload()"
+    @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div
     v-else-if="emailTemplates.data"
@@ -69,6 +71,7 @@ const emailTemplates = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
+const viewControls = ref(null)
 
 const rows = computed(() => {
   if (!emailTemplates.value?.data?.data) return []

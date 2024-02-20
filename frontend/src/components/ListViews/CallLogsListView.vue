@@ -18,10 +18,13 @@
         class="mx-5"
         v-for="row in rows"
         :key="row.name"
-        v-slot="{ column, item }"
+        v-slot="{ idx, column, item }"
         :row="row"
       >
-        <ListRowItem :item="item">
+        <ListRowItem
+          :item="item"
+          @click="(event) => emit('applyFilter', { event, idx, column, item })"
+        >
           <template #prefix>
             <div v-if="['caller', 'receiver'].includes(column.key)">
               <Avatar
@@ -108,7 +111,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['loadMore', 'updatePageCount', 'columnWidthUpdated'])
+const emit = defineEmits([
+  'loadMore',
+  'updatePageCount',
+  'columnWidthUpdated',
+  'applyFilter',
+])
 
 const pageLengthCount = defineModel()
 

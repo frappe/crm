@@ -5,6 +5,7 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    ref="viewControls"
     v-model="callLogs"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
@@ -25,6 +26,7 @@
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @reload="callLogs.reload()"
+    @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div
     v-else-if="callLogs.data"
@@ -65,6 +67,7 @@ const callLogs = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
+const viewControls = ref(null)
 
 const rows = computed(() => {
   if (!callLogs.value?.data?.data) return []
