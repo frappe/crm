@@ -79,10 +79,10 @@
                   >
                     <template #default="{ open }">
                       <Button
-                        :label="contact[field.name]"
+                        :label="_contact[field.name]"
                         class="dropdown-button h-8 w-full justify-between truncate rounded border border-gray-300 bg-white px-2.5 py-1.5 text-base placeholder-gray-500 hover:border-gray-400 hover:bg-white hover:shadow-sm focus:border-gray-500 focus:bg-white focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400"
                       >
-                        <div class="truncate">{{ contact[field.name] }}</div>
+                        <div class="truncate">{{ _contact[field.name] }}</div>
                         <template #suffix>
                           <FeatherIcon
                             :name="open ? 'chevron-up' : 'chevron-down'"
@@ -345,7 +345,10 @@ const sections = computed(() => {
               component: h(DropdownItem, {
                 value: email.email_id,
                 selected: email.email_id === props.contact.email_id,
-                onClick: () => setAsPrimary('email', email.email_id),
+                onClick: () => {
+                  _contact.value.email_id = email.email_id
+                  setAsPrimary('email', email.email_id)
+                },
               }),
             }
           }),
@@ -375,13 +378,17 @@ const sections = computed(() => {
         {
           label: 'Mobile No.',
           type: props.contact.name ? 'dropdown' : 'data',
-          name: 'mobile_no',
+          name: 'actual_mobile_no',
           options: props.contact?.phone_nos?.map((phone) => {
             return {
               component: h(DropdownItem, {
                 value: phone.phone,
-                selected: phone.phone === props.contact.mobile_no,
-                onClick: () => setAsPrimary('mobile_no', phone.phone),
+                selected: phone.phone === props.contact.actual_mobile_no,
+                onClick: () => {
+                  _contact.value.actual_mobile_no = phone.phone
+                  _contact.value.mobile_no = phone.phone
+                  setAsPrimary('mobile_no', phone.phone)
+                },
               }),
             }
           }),

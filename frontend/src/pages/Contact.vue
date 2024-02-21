@@ -70,17 +70,17 @@
               >
                 &middot;
               </span>
-              <Tooltip text="Make Call" v-if="contact.mobile_no">
+              <Tooltip text="Make Call" v-if="contact.actual_mobile_no">
                 <div
                   class="flex cursor-pointer items-center gap-1.5"
-                  @click="makeCall(contact.mobile_no)"
+                  @click="makeCall(contact.actual_mobile_no)"
                 >
                   <PhoneIcon class="h-4 w-4" />
-                  <span class="">{{ contact.mobile_no }}</span>
+                  <span class="">{{ contact.actual_mobile_no }}</span>
                 </div>
               </Tooltip>
               <span
-                v-if="contact.mobile_no"
+                v-if="contact.actual_mobile_no"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;

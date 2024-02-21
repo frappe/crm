@@ -17,6 +17,7 @@ export const contactsStore = defineStore('crm-contacts', () => {
       for (let contact of contacts) {
         // remove special characters from phone number to make it easier to search
         // also remove spaces but keep + sign at the start
+        contact.actual_mobile_no = contact.mobile_no
         contact.mobile_no = contact.mobile_no?.replace(/[^0-9+]/g, '')
         contactsByPhone[contact.mobile_no] = contact
         contactsByName[contact.name] = contact
