@@ -439,6 +439,16 @@ function create_or_update_default_view() {
     }
   ).then(() => {
     reloadView()
+    view.value = {
+      label: view.value.label,
+      name: view.value.name,
+      filters: defaultParams.value.filters,
+      order_by: defaultParams.value.order_by,
+      columns: defaultParams.value.columns,
+      rows: defaultParams.value.rows,
+      route_name: route.name,
+      load_default_columns: view.value.load_default_columns,
+    }
     viewUpdated.value = false
   })
 }
