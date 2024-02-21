@@ -1074,7 +1074,7 @@ function reply(email, reply_all = false) {
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
-    versions.reload()
+    all_activities.reload()
     reload.value = false
     reload_email.value = false
   }
