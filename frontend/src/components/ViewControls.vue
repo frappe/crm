@@ -303,6 +303,7 @@ async function exportRows() {
   let page_length = list.value.params.page_length
 
   window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
+  showExportDialog.value = false
 }
 
 const defaultViews = [
