@@ -33,6 +33,11 @@
         <Button label="Save Changes" @click="saveView" />
       </div>
       <div class="flex items-center gap-2">
+        <Button label="Refresh" @click="reload()" :loading="isLoading">
+          <template #icon>
+            <RefreshIcon class="h-4 w-4" />
+          </template>
+        </Button>
         <Filter
           v-model="list"
           :doctype="doctype"
@@ -46,11 +51,29 @@
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
         />
-        <Button label="Refresh" @click="reload()" :loading="isLoading">
-          <template #icon>
-            <RefreshIcon class="h-4 w-4" />
+        <Dropdown
+          v-if="!options.hideColumnsButton"
+          :options="[
+            {
+              group: 'Options',
+              hideLabel: true,
+              items: [
+                {
+                  label: 'Export',
+                  icon: () =>
+                    h(FeatherIcon, { name: 'download', class: 'h-4 w-4' }),
+                  onClick: () => (showExportDialog = true),
+                },
+              ],
+            },
+          ]"
+        >
+          <template #default>
+            <Button>
+              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+            </Button>
           </template>
-        </Button>
+        </Dropdown>
       </div>
     </div>
   </div>
@@ -70,6 +93,30 @@
     v-model:view="view"
     v-model="showViewModal"
   />
+  <Dialog
+    v-model="showExportDialog"
+    :options="{
+      title: 'Export',
+      actions: [
+        {
+          label: 'Download',
+          variant: 'solid',
+          onClick: () => exportRows(),
+        },
+      ],
+    }"
+  >
+    <template #body-content>
+      <FormControl
+        variant="outline"
+        label="Export Type"
+        type="select"
+        :options="['Excel', 'CSV']"
+        v-model="export_type"
+        placeholder="Select Export Type"
+      />
+    </template>
+  </Dialog>
 </template>
 <script setup>
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
@@ -244,6 +291,19 @@ const isLoading = computed(() => list.value?.loading)
 function reload() {
   list.value.params = getParams()
   list.value.reload()
+}
+
+const showExportDialog = ref(false)
+const export_type = ref('Excel')
+
+async function exportRows() {
+  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
+  let filters = JSON.stringify(list.value.params.filters)
+  let order_by = list.value.params.order_by
+  let page_length = list.value.params.page_length
+
+  window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
+  showExportDialog.value = false
 }
 
 const defaultViews = [
