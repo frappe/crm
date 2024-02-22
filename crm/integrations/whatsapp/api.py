@@ -30,24 +30,27 @@ def get():
 def post():
     """Post."""
     data = frappe.local.form_dict
+    try:
+        frappe.get_doc({"doctype": "CRM Whatsapp Log", "data": json.dumps(data)}).insert(
+            ignore_permissions=True
+        )
 
-    frappe.get_doc({"doctype": "CRM Whatsapp Log", "data": json.dumps(data)}).insert(
-        ignore_permissions=True
-    )
+        messages = data["entry"][0]["changes"][0]["value"].get("messages", [])
 
-    messages = data["entry"][0]["changes"][0]["value"].get("messages", [])
-
-    if messages:
-        for message in messages:
-            message_type = message["type"]
-            if message_type == "text":
-                frappe.get_doc(
-                    {
-                        "doctype": "CRM Whatsapp Message",
-                        "from": message["from"],
-                        "direction": "Incoming",
-                        "message_id": message["id"],
-                        "message_type": message_type,
-                        "message": message["text"]["body"],
-                    }
-                ).insert(ignore_permissions=True)
+        if messages:
+            for message in messages:
+                message_type = message["type"]
+                if message_type == "text":
+                    frappe.get_doc(
+                        {
+                            "doctype": "CRM Whatsapp Message",
+                            "from": message["from"],
+                            "direction": "Incoming",
+                            "message_id": message["id"],
+                            "message_type": message_type,
+                            "message": message["text"]["body"],
+                        }
+                    ).insert(ignore_permissions=True)
+    except Exception as e:
+        frappe.log_error(e)
+        return Response("Error", status=500)
