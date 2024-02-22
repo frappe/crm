@@ -13,29 +13,38 @@
   "direction",
   "type",
   "section_break_bytf",
-  "message"
+  "message",
+  "section_break_rmvv",
+  "data"
  ],
  "fields": [
   {
    "fieldname": "message_id",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Message ID",
    "unique": 1
   },
   {
    "fieldname": "message_type",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Message Type",
-   "options": "\ntext\ndocument\nimage\nvideo\naudio"
+   "options": "\ntext\ndocument\nimage\nvideo\naudio\ntemplate"
   },
   {
    "fieldname": "from",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "From"
   },
   {
    "fieldname": "to",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "To"
   },
   {
@@ -45,6 +54,8 @@
   {
    "fieldname": "direction",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Direction",
    "options": "Outgoing\nIncoming"
   },
@@ -60,13 +71,24 @@
   {
    "fieldname": "type",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Type",
    "options": "Manual\nTemplate"
+  },
+  {
+   "fieldname": "section_break_rmvv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "data",
+   "fieldtype": "JSON",
+   "label": "Data"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-22 13:10:30.045413",
+ "modified": "2024-02-22 20:37:21.925693",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Whatsapp Message",
