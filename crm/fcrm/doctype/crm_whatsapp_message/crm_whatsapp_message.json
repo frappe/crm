@@ -1,7 +1,6 @@
 {
  "actions": [],
- "allow_rename": 1,
- "autoname": "field:message_id",
+ "autoname": "autoincrement",
  "creation": "2024-02-22 11:47:01.476728",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -67,11 +66,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-22 11:54:37.853812",
+ "modified": "2024-02-22 12:59:13.151887",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Whatsapp Message",
- "naming_rule": "By fieldname",
+ "naming_rule": "Autoincrement",
  "owner": "Administrator",
  "permissions": [
   {

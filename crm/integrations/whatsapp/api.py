@@ -9,7 +9,7 @@ def whatsapp_settings():
 
 
 @frappe.whitelist(allow_guest=True)
-def verify_webhook():
+def webhook():
     """Meta webhook."""
     if frappe.request.method == "GET":
         return get()
