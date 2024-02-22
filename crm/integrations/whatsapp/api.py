@@ -1,4 +1,5 @@
 import frappe
+import json
 from werkzeug.wrappers import Response
 
 
@@ -29,6 +30,11 @@ def get():
 def post():
     """Post."""
     data = frappe.local.form_dict
+
+    frappe.get_doc({"doctype": "CRM Whatsapp Log", "data": json.dumps(data)}).insert(
+        ignore_permissions=True
+    )
+
     messages = data["entry"][0]["changes"][0]["value"].get("messages", [])
 
     if messages:
