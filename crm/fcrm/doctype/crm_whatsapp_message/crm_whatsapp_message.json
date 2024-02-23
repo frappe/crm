@@ -10,8 +10,10 @@
   "from",
   "to",
   "column_break_nrqq",
+  "status",
   "direction",
   "type",
+  "conversation_id",
   "section_break_bytf",
   "message",
   "section_break_rmvv",
@@ -84,11 +86,21 @@
    "fieldname": "data",
    "fieldtype": "JSON",
    "label": "Data"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fieldname": "conversation_id",
+   "fieldtype": "Data",
+   "label": "Conversation ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-22 20:37:21.925693",
+ "modified": "2024-02-22 20:48:10.052258",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Whatsapp Message",

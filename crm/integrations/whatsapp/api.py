@@ -4,6 +4,7 @@ from werkzeug.wrappers import Response
 
 from frappe.integrations.utils import make_post_request
 
+
 def whatsapp_settings():
     """Get whatsapp settings."""
     return frappe.get_cached_doc("CRM Whatsapp Settings")
@@ -53,6 +54,12 @@ def post():
                             "data": json.dumps(message, indent=2),
                         }
                     ).insert(ignore_permissions=True)
+        else:
+            changes = data["entry"][0]["changes"][0]
+            if changes.get("field") == "message_template_status_update":
+                update_template_status(changes["value"])
+            elif changes.get("field") == "messages":
+                update_message_status(changes["value"])
     except Exception as e:
         frappe.log_error(e)
         return Response("Error", status=500)
@@ -111,3 +118,21 @@ def send_message(data, to):
     except Exception as e:
         frappe.log_error(e)
         return None
+
+
+def update_template_status(data):
+    pass
+
+def update_message_status(data):
+    """Update message status."""
+    id = data["statuses"][0]["id"]
+    status = data["statuses"][0]["status"]
+    conversation = data["statuses"][0].get("conversation", {}).get("id")
+    name = frappe.db.get_value("CRM Whatsapp Message", filters={"message_id": id})
+
+    if name:
+        doc = frappe.get_doc("CRM Whatsapp Message", name)
+        doc.status = status
+        if conversation:
+            doc.conversation_id = conversation
+        doc.save(ignore_permissions=True)
