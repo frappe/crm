@@ -22,6 +22,7 @@ class CRMLead(Document):
 		self.set_title()
 		self.validate_email()
 		if self.lead_owner and not self.is_new():
+			self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
@@ -77,6 +78,26 @@ class CRMLead(Document):
 					return
 
 		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name})
+
+	def share_with_agent(self, agent):
+		if not agent:
+			return
+
+		docshares = frappe.get_all(
+			"DocShare",
+			filters={"share_name": self.name, "share_doctype": self.doctype},
+			fields=["name", "user"],
+		)
+
+		shared_with = [d.user for d in docshares] + [agent]
+
+		for user in shared_with:
+			if user == agent and not frappe.db.exists("DocShare", {"user": agent, "share_name": self.name, "share_doctype": self.doctype}):
+				frappe.share.add_docshare(
+					self.doctype, self.name, agent, write=1, flags={"ignore_share_permission": True}
+				)
+			elif user != agent:
+				frappe.share.remove(self.doctype, self.name, user)
 
 	def create_contact(self, throw=True):
 		if not self.lead_name:
