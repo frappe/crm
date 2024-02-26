@@ -136,7 +136,7 @@ router.beforeEach(async (to, from, next) => {
   const { users } = usersStore()
   const { isLoggedIn } = sessionStore()
 
-  await users.promise
+  isLoggedIn && (await users.promise)
 
   if (from.meta?.scrollPos) {
     from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop

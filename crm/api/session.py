@@ -1,7 +1,7 @@
 import frappe
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_users():
 	if frappe.session.user == "Guest":
 		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
