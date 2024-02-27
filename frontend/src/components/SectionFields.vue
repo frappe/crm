@@ -1,7 +1,7 @@
 <template>
   <div class="flex max-h-[300px] flex-col gap-1.5 overflow-y-auto">
     <div
-      v-for="field in fields"
+      v-for="field in _fields"
       :key="field.label"
       :class="[field.hidden && 'hidden']"
       class="flex items-center gap-2 px-3 leading-5 first:mt-3"
@@ -109,7 +109,7 @@ import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
 import { Tooltip } from 'frappe-ui'
-import { defineModel } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   fields: {
@@ -123,6 +123,43 @@ const { getUser } = usersStore()
 const emit = defineEmits(['update'])
 
 const data = defineModel()
+
+const _fields = computed(() => {
+  let all_fields = []
+  props.fields?.forEach((field) => {
+    let df = field.all_properties
+    if (df.depends_on) evaluate_depends_on(df.depends_on, field)
+    all_fields.push(field)
+  })
+  return all_fields
+})
+
+function evaluate_depends_on(expression, field) {
+  if (expression.substr(0, 5) == 'eval:') {
+    try {
+      let out = evaluate(expression.substr(5), { doc: data.value })
+      if (!out) {
+        field.hidden = true
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+}
+
+function evaluate(code, context = {}) {
+  let variable_names = Object.keys(context)
+  let variables = Object.values(context)
+  code = `let out = ${code}; return out`
+  try {
+    let expression_function = new Function(...variable_names, code)
+    return expression_function(...variables)
+  } catch (error) {
+    console.log('Error evaluating the following expression:')
+    console.error(code)
+    throw error
+  }
+}
 </script>
 
 <style scoped>

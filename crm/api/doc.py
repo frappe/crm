@@ -299,6 +299,7 @@ def get_field_obj(field):
 		"hidden": field.hidden,
 		"reqd": field.reqd,
 		"read_only": field.read_only,
+		"all_properties": field,
 	}
 
 	obj["placeholder"] = "Add " + field.label + "..."
