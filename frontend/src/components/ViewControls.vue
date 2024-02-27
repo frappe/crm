@@ -625,7 +625,7 @@ function applyFilter({ event, idx, column, item }) {
 
   if (column.key == '_assign') {
     if (item.length > 1) {
-      let target = e.target.closest('.user-avatar')
+      let target = event.target.closest('.user-avatar')
       if (target) {
         let name = target.getAttribute('data-name')
         filters['_assign'] = ['LIKE', `%${name}%`]
