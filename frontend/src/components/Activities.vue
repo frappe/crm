@@ -847,9 +847,7 @@ function get_activities() {
   if (!all_activities.data?.versions) return []
   if (!all_activities.data?.calls.length)
     return all_activities.data.versions || []
-  return [...all_activities.data.versions, ...all_activities.data.calls].sort(
-    (a, b) => new Date(a.creation) - new Date(b.creation)
-  )
+  return [...all_activities.data.versions, ...all_activities.data.calls]
 }
 
 const activities = computed(() => {
@@ -858,24 +856,18 @@ const activities = computed(() => {
     activities = get_activities()
   } else if (props.title == 'Emails') {
     if (!all_activities.data?.versions) return []
-    activities = all_activities.data.versions
-      .filter((activity) => activity.activity_type === 'communication')
-      .sort((a, b) => new Date(a.creation) - new Date(b.creation))
+    activities = all_activities.data.versions.filter(
+      (activity) => activity.activity_type === 'communication'
+    )
   } else if (props.title == 'Calls') {
     if (!all_activities.data?.calls) return []
-    return all_activities.data.calls.sort(
-      (a, b) => new Date(a.creation) - new Date(b.creation)
-    )
+    return sortByCreation(all_activities.data.calls)
   } else if (props.title == 'Tasks') {
     if (!all_activities.data?.tasks) return []
-    return all_activities.data.tasks.sort(
-      (a, b) => new Date(a.creation) - new Date(b.creation)
-    )
+    return sortByCreation(all_activities.data.tasks)
   } else if (props.title == 'Notes') {
     if (!all_activities.data?.notes) return []
-    return all_activities.data.notes.sort(
-      (a, b) => new Date(a.creation) - new Date(b.creation)
-    )
+    return sortByCreation(all_activities.data.notes)
   }
   activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
@@ -896,8 +888,12 @@ const activities = computed(() => {
       })
     }
   })
-  return activities
+  return sortByCreation(activities)
 })
+
+function sortByCreation(list) {
+  return list.sort((a, b) => new Date(a.creation) - new Date(b.creation))
+}
 
 function update_activities_details(activity) {
   activity.owner_name = getUser(activity.owner).full_name
