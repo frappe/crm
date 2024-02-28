@@ -414,8 +414,8 @@
               </span>
               <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
             </div>
-            <span
-              class="email-content prose-f"
+            <div
+              class="email-content prose-f max-h-[500px] overflow-y-auto"
               v-html="activity.data.content"
             />
             <div class="flex flex-wrap gap-2">
