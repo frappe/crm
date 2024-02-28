@@ -1,39 +1,85 @@
 <template>
-  <button
-    :class="[
-      active ? 'bg-gray-100' : 'text-gray-800',
-      'group flex h-7 w-full items-center justify-between gap-3 rounded px-2 text-base',
-    ]"
-    @click="onClick"
-  >
-    <span class="whitespace-nowrap">
-      {{ value }}
-    </span>
+  <div class="flex items-center justify-between gap-7">
+    <div v-show="!editMode">{{ option.value }}</div>
+    <TextInput
+      ref="inputRef"
+      v-show="editMode"
+      v-model="option.value"
+      class="w-full"
+      :placeholder="option.placeholder"
+      @keydown.enter="saveOption"
+    />
+
+    <div class="actions flex items-center justify-center">
+      <Button
+        variant="ghost"
+        size="sm"
+        v-if="!isNew && !option.selected"
+        class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+        @click="option.onClick"
+      >
+        <SuccessIcon />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+        @click="toggleEditMode"
+      >
+        <EditIcon />
+      </Button>
+      <Button
+        variant="ghost"
+        icon="x"
+        size="sm"
+        class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+        @click="() => option.onDelete(option, isNew)"
+      />
+    </div>
+  </div>
+  <div>
     <FeatherIcon
-      v-if="selected"
+      v-if="option.selected"
       name="check"
-      class="text-primary-500 h-4 w-4"
+      class="text-primary-500 h-4 w-6"
       size="sm"
     />
-  </button>
+  </div>
 </template>
+
 <script setup>
+import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import { TextInput } from 'frappe-ui'
+import { nextTick, ref, onMounted } from 'vue'
+
 const props = defineProps({
-  value: {
-    type: String,
-    default: '',
-  },
-  onClick: {
-    type: Function,
+  option: {
+    type: Object,
     default: () => {},
   },
-  active: {
-    type: Boolean,
-    default: false,
-  },
-  selected: {
-    type: Boolean,
-    default: false,
-  },
 })
+
+const editMode = ref(false)
+const isNew = ref(false)
+const inputRef = ref(null)
+
+onMounted(() => {
+  if (!props.option?.value) {
+    editMode.value = true
+    isNew.value = true
+    nextTick(() => inputRef.value.el.focus())
+  }
+})
+
+const toggleEditMode = () => {
+  editMode.value = !editMode.value
+  editMode.value && nextTick(() => inputRef.value.el.focus())
+}
+
+const saveOption = () => {
+  toggleEditMode()
+  props.option.onSave(props.option, isNew.value)
+  isNew.value = false
+}
 </script>

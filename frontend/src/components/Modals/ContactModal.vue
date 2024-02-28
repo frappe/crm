@@ -73,11 +73,8 @@
                   <label class="block text-base text-gray-600">
                     {{ field.label }}
                   </label>
-                  <Dropdown
-                    :options="field.options"
-                    class="form-control w-full flex-1"
-                  >
-                    <template #default="{ open }">
+                  <NestedPopover>
+                    <template #target="{ open }">
                       <Button
                         :label="_contact[field.name]"
                         class="dropdown-button h-8 w-full justify-between truncate rounded border border-gray-300 bg-white px-2.5 py-1.5 text-base placeholder-gray-500 hover:border-gray-400 hover:bg-white hover:shadow-sm focus:border-gray-500 focus:bg-white focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400"
@@ -91,19 +88,40 @@
                         </template>
                       </Button>
                     </template>
-                    <template #footer>
-                      <Button
-                        variant="ghost"
-                        class="w-full !justify-start"
-                        label="Create New"
-                        @click="field.create()"
+                    <template #body>
+                      <div
+                        class="my-2 space-y-1.5 divide-y rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl"
                       >
-                        <template #prefix>
-                          <FeatherIcon name="plus" class="h-4" />
-                        </template>
-                      </Button>
+                        <div class="">
+                          <div
+                            v-if="field.options?.length"
+                            v-for="option in field.options"
+                            :key="option.value"
+                            class="group flex w-full items-center justify-between rounded bg-transparent p-1 pl-2 text-base text-gray-800 transition-colors hover:bg-gray-200 active:bg-gray-300"
+                          >
+                            <DropdownItem :option="option" />
+                          </div>
+                          <div v-else>
+                            <div class="p-1.5 px-7 text-base text-gray-500">
+                              No {{ field.label }} Available
+                            </div>
+                          </div>
+                        </div>
+                        <div class="pt-1.5">
+                          <Button
+                            variant="ghost"
+                            class="w-full !justify-start"
+                            label="Create New"
+                            @click="field.create()"
+                          >
+                            <template #prefix>
+                              <FeatherIcon name="plus" class="h-4" />
+                            </template>
+                          </Button>
+                        </div>
+                      </div>
                     </template>
-                  </Dropdown>
+                  </NestedPopover>
                 </div>
                 <FormControl
                   v-else-if="field.type === 'data'"
@@ -116,16 +134,6 @@
                 />
               </div>
             </div>
-            <Dialog v-model="_show" :options="_dialogOptions">
-              <template #body-content>
-                <FormControl
-                  :type="new_field.type"
-                  variant="outline"
-                  v-model="new_field.value"
-                  :placeholder="new_field.placeholder"
-                />
-              </template>
-            </Dialog>
           </div>
         </div>
       </div>
@@ -146,6 +154,7 @@
 </template>
 
 <script setup>
+import NestedPopover from '@/components/NestedPopover.vue'
 import DropdownItem from '@/components/DropdownItem.vue'
 import ContactIcon from '@/components/Icons/ContactIcon.vue'
 import GenderIcon from '@/components/Icons/GenderIcon.vue'
@@ -276,13 +285,11 @@ const detailFields = computed(() => {
       icon: EmailIcon,
       name: 'email_id',
       value: _contact.value.email_id,
-      ...sections.value[2].fields[0],
     },
     {
       icon: PhoneIcon,
       name: 'mobile_no',
-      value: _contact.value.mobile_no,
-      ...sections.value[3].fields[0],
+      value: _contact.value.actual_mobile_no,
     },
     {
       icon: OrganizationsIcon,
@@ -340,35 +347,39 @@ const sections = computed(() => {
           label: 'Email',
           type: props.contact.name ? 'dropdown' : 'data',
           name: 'email_id',
-          options: props.contact?.email_ids?.map((email) => {
-            return {
-              component: h(DropdownItem, {
+          options:
+            props.contact?.email_ids?.map((email) => {
+              return {
+                name: email.name,
                 value: email.email_id,
                 selected: email.email_id === props.contact.email_id,
+                placeholder: 'john@doe.com',
                 onClick: () => {
                   _contact.value.email_id = email.email_id
                   setAsPrimary('email', email.email_id)
                 },
-              }),
-            }
-          }),
-          create: (value) => {
-            new_field.value = {
-              type: 'email',
-              value,
-              placeholder: 'Add Email Address',
-            }
-            _dialogOptions.value = {
-              title: 'Add Email',
-              actions: [
-                {
-                  label: 'Add',
-                  variant: 'solid',
-                  onClick: () => createNew('email'),
+                onSave: (option, isNew) => {
+                  if (isNew) {
+                    createNew('email', option.value)
+                  } else {
+                    editOption('Contact Email', option.name, option.value)
+                  }
                 },
-              ],
-            }
-            _show.value = true
+                onDelete: (option, isNew) => {
+                  props.contact.email_ids = props.contact.email_ids.filter(
+                    (email) => email.name !== option.name
+                  )
+                  !isNew && deleteOption('Contact Email', option.name)
+                },
+              }
+            }) || [],
+          create: () => {
+            props.contact?.email_ids?.push({
+              name: 'new-1',
+              value: '',
+              selected: false,
+              isNew: true,
+            })
           },
         },
       ],
@@ -379,36 +390,40 @@ const sections = computed(() => {
           label: 'Mobile No.',
           type: props.contact.name ? 'dropdown' : 'data',
           name: 'actual_mobile_no',
-          options: props.contact?.phone_nos?.map((phone) => {
-            return {
-              component: h(DropdownItem, {
+          options:
+            props.contact?.phone_nos?.map((phone) => {
+              return {
+                name: phone.name,
                 value: phone.phone,
                 selected: phone.phone === props.contact.actual_mobile_no,
+                placeholder: '+91 1234567890',
                 onClick: () => {
                   _contact.value.actual_mobile_no = phone.phone
                   _contact.value.mobile_no = phone.phone
                   setAsPrimary('mobile_no', phone.phone)
                 },
-              }),
-            }
-          }),
-          create: (value) => {
-            new_field.value = {
-              type: 'tel',
-              value,
-              placeholder: 'Add Mobile No.',
-            }
-            _dialogOptions.value = {
-              title: 'Add Mobile No.',
-              actions: [
-                {
-                  label: 'Add',
-                  variant: 'solid',
-                  onClick: () => createNew('phone'),
+                onSave: (option, isNew) => {
+                  if (isNew) {
+                    createNew('phone', option.value)
+                  } else {
+                    editOption('Contact Phone', option.name, option.value)
+                  }
                 },
-              ],
-            }
-            _show.value = true
+                onDelete: (option, isNew) => {
+                  props.contact.phone_nos = props.contact.phone_nos.filter(
+                    (phone) => phone.name !== option.name
+                  )
+                  !isNew && deleteOption('Contact Phone', option.name)
+                },
+              }
+            }) || [],
+          create: () => {
+            props.contact?.phone_nos?.push({
+              name: 'new-1',
+              value: '',
+              selected: false,
+              isNew: true,
+            })
           },
         },
         {
@@ -469,11 +484,6 @@ const sections = computed(() => {
   ]
 })
 
-const _show = ref(false)
-const new_field = ref({})
-
-const _dialogOptions = ref({})
-
 async function setAsPrimary(field, value) {
   let d = await call('crm.api.contact.set_as_primary', {
     contact: props.contact.name,
@@ -490,11 +500,11 @@ async function setAsPrimary(field, value) {
   }
 }
 
-async function createNew(field) {
+async function createNew(field, value) {
   let d = await call('crm.api.contact.create_new', {
     contact: props.contact.name,
     field,
-    value: new_field.value?.value,
+    value,
   })
   if (d) {
     contacts.reload()
@@ -504,7 +514,38 @@ async function createNew(field) {
       iconClasses: 'text-green-600',
     })
   }
-  _show.value = false
+}
+
+async function editOption(doctype, name, value) {
+  let d = await call('frappe.client.set_value', {
+    doctype,
+    name,
+    fieldname: doctype == 'Contact Phone' ? 'phone' : 'email',
+    value,
+  })
+  if (d) {
+    contacts.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function deleteOption(doctype, name) {
+  let d = await call('frappe.client.delete', {
+    doctype,
+    name,
+  })
+  if (d) {
+    contacts.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
 }
 
 const dirty = computed(() => {
