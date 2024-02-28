@@ -11,30 +11,35 @@
     />
 
     <div class="actions flex items-center justify-center">
-      <Button
-        variant="ghost"
-        size="sm"
-        v-if="!isNew && !option.selected"
-        class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
-        @click="option.onClick"
-      >
-        <SuccessIcon />
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
-        @click="toggleEditMode"
-      >
-        <EditIcon />
-      </Button>
-      <Button
-        variant="ghost"
-        icon="x"
-        size="sm"
-        class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
-        @click="() => option.onDelete(option, isNew)"
-      />
+      <Tooltip text="Set As Primary" v-if="!isNew && !option.selected">
+        <Button
+          variant="ghost"
+          size="sm"
+          class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+          @click="option.onClick"
+        >
+          <SuccessIcon />
+        </Button>
+      </Tooltip>
+      <Tooltip text="Edit">
+        <Button
+          variant="ghost"
+          size="sm"
+          class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+          @click="toggleEditMode"
+        >
+          <EditIcon />
+        </Button>
+      </Tooltip>
+      <Tooltip text="Delete">
+        <Button
+          variant="ghost"
+          icon="x"
+          size="sm"
+          class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+          @click="() => option.onDelete(option, isNew)"
+        />
+      </Tooltip>
     </div>
   </div>
   <div>
@@ -50,7 +55,7 @@
 <script setup>
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import { TextInput } from 'frappe-ui'
+import { TextInput, Tooltip } from 'frappe-ui'
 import { nextTick, ref, onMounted } from 'vue'
 
 const props = defineProps({
