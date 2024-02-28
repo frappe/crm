@@ -53,13 +53,13 @@ def get_contacts():
 		contact["email_ids"] = frappe.get_all(
 			"Contact Email",
 			filters={"parenttype": "Contact", "parent": contact.name},
-			fields=["email_id", "is_primary"],
+			fields=["name", "email_id", "is_primary"],
 		)
 
 		contact["phone_nos"] = frappe.get_all(
 			"Contact Phone",
 			filters={"parenttype": "Contact", "parent": contact.name},
-			fields=["phone", "is_primary_phone", "is_primary_mobile_no"],
+			fields=["name", "phone", "is_primary_phone", "is_primary_mobile_no"],
 		)
 
 	return contacts
