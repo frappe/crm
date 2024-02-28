@@ -182,13 +182,6 @@ function convertFilters(data, allFilters) {
         value = ['equals', value[1] ? 'Yes' : 'No']
       }
     }
-    // if (value[0] === 'LIKE' || value[0] === 'NOT LIKE') {
-    //   value[1] = value[1].replace(/%/g, '')
-    // }
-
-    if (value[0] === 'between' && Array.isArray(value[1])) {
-      value[1] = value[1].join(',')
-    }
 
     if (field) {
       f.push({

@@ -105,8 +105,8 @@ export default {
     Popover,
   },
   data() {
-    const fromDate = this.value ? this.value.split(',')[0] : ''
-    const toDate = this.value ? this.value.split(',')[1] : ''
+    const fromDate = this.value ? this.value[0] : ''
+    const toDate = this.value ? this.value[1] : ''
     return {
       currentYear: null,
       currentMonth: null,
