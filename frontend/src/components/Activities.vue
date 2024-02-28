@@ -414,7 +414,11 @@
               </span>
               <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
             </div>
-            <span class="prose-f" v-html="activity.data.content" />
+            <span
+              class="prose-f"
+              :style="{wordBreak: 'break-word'}"
+              v-html="activity.data.content"
+            />
             <div class="flex flex-wrap gap-2">
               <AttachmentItem
                 v-for="a in activity.data.attachments"
