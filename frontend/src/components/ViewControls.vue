@@ -115,6 +115,13 @@
         v-model="export_type"
         placeholder="Select Export Type"
       />
+      <div class="mt-3">
+        <FormControl
+          type="checkbox"
+          :label="`Export All ${list.data.total_count} Records`"
+          v-model="export_all"
+        />
+      </div>
     </template>
   </Dialog>
 </template>
@@ -295,15 +302,21 @@ function reload() {
 
 const showExportDialog = ref(false)
 const export_type = ref('Excel')
+const export_all = ref(false)
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
   let filters = JSON.stringify(list.value.params.filters)
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
+  if (export_all.value) {
+    page_length = list.value.data.total_count
+  }
 
   window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
   showExportDialog.value = false
+  export_all.value = false
+  export_type.value = 'Excel'
 }
 
 const defaultViews = [
