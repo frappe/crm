@@ -67,6 +67,7 @@
             doctype="User"
             @change="(option) => (_task.assigned_to = option)"
             placeholder="Assignee"
+            :hideMe="true"
           >
             <template #prefix>
               <UserAvatar class="mr-2 !h-4 !w-4" :user="_task.assigned_to" />

@@ -35,6 +35,7 @@
             :doctype="field.doctype"
             @change="(e) => field.change(e)"
             :placeholder="field.placeholder"
+            :hideMe="true"
           >
             <template #prefix>
               <UserAvatar class="mr-2" :user="newLead[field.name]" size="sm" />

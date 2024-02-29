@@ -27,6 +27,7 @@
         value=""
         doctype="User"
         @change="(option) => addValue(option) && ($refs.input.value = '')"
+        :hideMe="true"
       >
         <template #item-prefix="{ option }">
           <UserAvatar class="mr-2" :user="option.value" size="sm" />
