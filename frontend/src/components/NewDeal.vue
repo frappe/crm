@@ -49,7 +49,12 @@
               </Tooltip>
             </template>
           </Link>
-          <FormControl v-else type="text" v-model="newDeal[field.name]" />
+          <FormControl
+            v-else
+            type="text"
+            :placeholder="field.placeholder"
+            v-model="newDeal[field.name]"
+          />
         </div>
       </div>
     </div>
@@ -97,28 +102,32 @@ const allFields = computed(() => {
           name: 'salutation',
           type: 'link',
           doctype: 'Salutation',
-          placeholder: 'Salutation',
+          placeholder: 'Mr.',
           change: (data) => (props.newDeal.salutation = data),
         },
         {
           label: 'First Name',
           name: 'first_name',
           type: 'data',
+          placeholder: 'John',
         },
         {
           label: 'Last Name',
           name: 'last_name',
           type: 'data',
+          placeholder: 'Doe',
         },
         {
           label: 'Email',
           name: 'email',
           type: 'data',
+          placeholder: 'john@doe.com',
         },
         {
           label: 'Mobile No',
           name: 'mobile_no',
           type: 'data',
+          placeholder: '+91 1234567890',
         },
       ],
     },
@@ -129,7 +138,7 @@ const allFields = computed(() => {
           label: 'Organization',
           name: 'organization',
           type: 'link',
-          placeholder: 'Organization',
+          placeholder: 'Frappé Technologies',
           doctype: 'CRM Organization',
           change: (data) => (props.newDeal.organization = data),
           create: (value, close) => {

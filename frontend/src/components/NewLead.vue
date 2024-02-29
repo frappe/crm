@@ -49,7 +49,12 @@
               </Tooltip>
             </template>
           </Link>
-          <FormControl v-else type="text" v-model="newLead[field.name]" />
+          <FormControl
+            v-else
+            type="text"
+            :placeholder="field.placeholder"
+            v-model="newLead[field.name]"
+          />
         </div>
       </div>
     </div>
@@ -96,7 +101,7 @@ const allFields = computed(() => {
           label: 'Salutation',
           name: 'salutation',
           type: 'link',
-          placeholder: 'Salutation',
+          placeholder: 'Mr.',
           doctype: 'Salutation',
           change: (data) => (props.newLead.salutation = data),
         },
@@ -104,21 +109,25 @@ const allFields = computed(() => {
           label: 'First Name',
           name: 'first_name',
           type: 'data',
+          placeholder: 'John',
         },
         {
           label: 'Last Name',
           name: 'last_name',
           type: 'data',
+          placeholder: 'Doe',
         },
         {
           label: 'Email',
           name: 'email',
           type: 'data',
+          placeholder: 'john@doe.com',
         },
         {
           label: 'Mobile No',
           name: 'mobile_no',
           type: 'data',
+          placeholder: '+91 9876543210',
         },
       ],
     },
@@ -128,15 +137,8 @@ const allFields = computed(() => {
         {
           label: 'Organization',
           name: 'organization',
-          type: 'link',
-          placeholder: 'Organization',
-          doctype: 'CRM Organization',
-          change: (data) => (props.newLead.organization = data),
-          create: (value, close) => {
-            _organization.value.organization_name = value
-            showOrganizationModal.value = true
-            close()
-          },
+          type: 'data',
+          placeholder: 'Frappé Technologies',
         },
         {
           label: 'Status',
