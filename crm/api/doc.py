@@ -244,7 +244,7 @@ def get_list_data(
 	}
 
 
-def get_doctype_fields(doctype):
+def get_doctype_fields(doctype, name):
 	not_allowed_fieldtypes = [
 		"Section Break",
 		"Column Break",
@@ -256,6 +256,12 @@ def get_doctype_fields(doctype):
 	sections = {}
 	section_fields = []
 	last_section = None
+	doc = frappe.get_cached_doc(doctype, name)
+
+	has_high_permlevel_fields = any(df.permlevel > 0 for df in fields)
+	if has_high_permlevel_fields:
+		has_read_access_to_permlevels = doc.get_permlevel_access("read")
+		has_write_access_to_permlevels = doc.get_permlevel_access("write")
 
 	for field in fields:
 		if field.fieldtype == "Tab Break" and last_section:
@@ -277,6 +283,13 @@ def get_doctype_fields(doctype):
 				"fields": [],
 			}
 		else:
+			if field.permlevel > 0:
+				field_has_write_access = field.permlevel in has_write_access_to_permlevels
+				field_has_read_access = field.permlevel in has_read_access_to_permlevels
+				if not field_has_write_access and field_has_read_access:
+					field.read_only = 1
+				if not field_has_read_access and not field_has_write_access:
+					field.hidden = 1
 			section_fields.append(get_field_obj(field))
 
 	section_fields = []
