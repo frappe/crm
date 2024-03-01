@@ -12,7 +12,7 @@
     </a>
 </p>
 
-> **Note:** I am currently not expecting any contributions to this repository. But you can always open an issue if you find any bugs, feature requests, or have any suggestions.
+> **Note:** We are currently not accepting any contributions to this repository, but you can always open an issue if you find any bugs, feature requests, or have any suggestions.
 
 <img width="1402" alt="Screenshot 2022-09-18 at 9 16 08 PM" src=".github/screenshots/Deal.png">
 
