@@ -77,7 +77,7 @@
         </Link>
         <Link
           v-else-if="field.type === 'link'"
-          class="form-control"
+          class="form-control select-text"
           :value="data[field.name]"
           :doctype="field.doctype"
           :placeholder="field.placeholder"
