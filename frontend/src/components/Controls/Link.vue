@@ -28,8 +28,8 @@
         <slot name="item-label" v-bind="{ active, selected, option }" />
       </template>
 
-      <template v-if="attrs.onCreate" #footer="{ value, close }">
-        <div>
+      <template #footer="{ value, close }">
+        <div v-if="attrs.onCreate">
           <Button
             variant="ghost"
             class="w-full !justify-start"
@@ -38,6 +38,18 @@
           >
             <template #prefix>
               <FeatherIcon name="plus" class="h-4" />
+            </template>
+          </Button>
+        </div>
+        <div>
+          <Button
+            variant="ghost"
+            class="w-full !justify-start"
+            label="Clear"
+            @click="() => clearValue(close)"
+          >
+            <template #prefix>
+              <FeatherIcon name="x" class="h-4" />
             </template>
           </Button>
         </div>
@@ -143,6 +155,11 @@ function reload(val) {
     },
   })
   options.reload()
+}
+
+function clearValue(close) {
+  emit(valuePropPassed.value ? 'change' : 'update:modelValue', '')
+  close()
 }
 
 const labelClasses = computed(() => {
