@@ -24,6 +24,7 @@
     :columns="emailTemplates.data.columns"
     :options="{
       showTooltip: false,
+      resizeColumn: true,
       rowCount: emailTemplates.data.row_count,
       totalCount: emailTemplates.data.total_count,
     }"

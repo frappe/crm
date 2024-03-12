@@ -26,6 +26,7 @@
     :columns="leads.data.columns"
     :options="{
       showTooltip: false,
+      resizeColumn: true,
       rowCount: leads.data.row_count,
       totalCount: leads.data.total_count,
     }"

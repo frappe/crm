@@ -24,6 +24,7 @@
     :columns="tasks.data.columns"
     :options="{
       showTooltip: false,
+      resizeColumn: true,
       rowCount: tasks.data.row_count,
       totalCount: tasks.data.total_count,
     }"

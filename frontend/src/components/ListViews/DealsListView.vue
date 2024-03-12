@@ -7,6 +7,7 @@
       getRowRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
+      resizeColumn: options.resizeColumn,
     }"
     row-key="name"
   >
@@ -166,6 +167,7 @@ const props = defineProps({
     default: () => ({
       selectable: true,
       showTooltip: true,
+      resizeColumn: false,
       totalCount: 0,
       rowCount: 0,
     }),

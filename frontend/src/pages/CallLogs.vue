@@ -19,6 +19,7 @@
     :columns="callLogs.data.columns"
     :options="{
       showTooltip: false,
+      resizeColumn: true,
       rowCount: callLogs.data.row_count,
       totalCount: callLogs.data.total_count,
     }"
