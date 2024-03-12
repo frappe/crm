@@ -77,7 +77,14 @@
       </template>
     </Dropdown>
   </div>
-  <div v-if="activities?.length" class="activities flex-1 overflow-y-auto">
+  <div
+    v-if="all_activities?.loading"
+    class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
+  >
+    <LoadingIndicator class="w-6 h-6" />
+    <span>Loading...</span>
+  </div>
+  <div v-else-if="activities?.length" class="activities flex-1 overflow-y-auto">
     <div
       v-if="title == 'Notes'"
       class="activity grid grid-cols-3 gap-4 px-10 pb-5"
@@ -735,10 +742,12 @@
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
+import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
@@ -920,8 +929,10 @@ function update_activities_details(activity) {
 }
 
 const emptyText = computed(() => {
-  let text = 'No Email Communications'
-  if (props.title == 'Calls') {
+  let text = 'No Activities'
+  if (props.title == 'Emails') {
+    text = 'No Email Communications'
+  } else if (props.title == 'Calls') {
     text = 'No Call Logs'
   } else if (props.title == 'Notes') {
     text = 'No Notes'
@@ -932,8 +943,10 @@ const emptyText = computed(() => {
 })
 
 const emptyTextIcon = computed(() => {
-  let icon = EmailIcon
-  if (props.title == 'Calls') {
+  let icon = ActivityIcon
+  if (props.title == 'Emails') {
+    icon = EmailIcon
+  } else if (props.title == 'Calls') {
     icon = PhoneIcon
   } else if (props.title == 'Notes') {
     icon = NoteIcon
