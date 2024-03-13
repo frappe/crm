@@ -68,7 +68,7 @@
             </template>
           </Button>
         </div>
-        <div v-else-if="calling || !onCall">
+        <div v-else-if="calling || callStatus == 'initiating'">
           <Button
             size="md"
             variant="solid"
@@ -76,7 +76,7 @@
             label="Cancel"
             @click="cancelCall"
             class="rounded-lg"
-            :disabled="!onCall && !calling"
+            :disabled="callStatus == 'initiating'"
           >
             <template #prefix>
               <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
