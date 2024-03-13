@@ -236,7 +236,7 @@ async function callInsertDoc() {
 }
 
 function handleContactUpdate(doc) {
-  props.contact.reload()
+  props.contact?.reload?.()
   if (doc.name && props.options.redirect) {
     router.push({
       name: 'Contact',
@@ -343,7 +343,7 @@ const sections = computed(() => {
       fields: [
         {
           label: 'Email',
-          type: props.contact.data.name ? 'dropdown' : 'data',
+          type: props.contact?.data?.name ? 'dropdown' : 'data',
           name: 'email_id',
           options:
             props.contact.data?.email_ids?.map((email) => {
@@ -364,9 +364,10 @@ const sections = computed(() => {
                   }
                 },
                 onDelete: (option, isNew) => {
-                  props.contact.data.email_ids = props.contact.data.email_ids.filter(
-                    (email) => email.name !== option.name
-                  )
+                  props.contact.data.email_ids =
+                    props.contact.data.email_ids.filter(
+                      (email) => email.name !== option.name
+                    )
                   !isNew && deleteOption('Contact Email', option.name)
                 },
               }
@@ -386,7 +387,7 @@ const sections = computed(() => {
       fields: [
         {
           label: 'Mobile No.',
-          type: props.contact.data.name ? 'dropdown' : 'data',
+          type: props.contact?.data?.name ? 'dropdown' : 'data',
           name: 'actual_mobile_no',
           options:
             props.contact.data?.phone_nos?.map((phone) => {
@@ -408,9 +409,10 @@ const sections = computed(() => {
                   }
                 },
                 onDelete: (option, isNew) => {
-                  props.contact.data.phone_nos = props.contact.data.phone_nos.filter(
-                    (phone) => phone.name !== option.name
-                  )
+                  props.contact.data.phone_nos =
+                    props.contact.data.phone_nos.filter(
+                      (phone) => phone.name !== option.name
+                    )
                   !isNew && deleteOption('Contact Phone', option.name)
                 },
               }
