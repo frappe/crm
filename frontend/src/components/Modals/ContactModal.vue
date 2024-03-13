@@ -359,16 +359,29 @@ const sections = computed(() => {
                 onSave: (option, isNew) => {
                   if (isNew) {
                     createNew('email', option.value)
+                    if (props.contact.data.email_ids.length === 1) {
+                      _contact.value.email_id = option.value
+                    }
                   } else {
                     editOption('Contact Email', option.name, option.value)
                   }
                 },
-                onDelete: (option, isNew) => {
+                onDelete: async (option, isNew) => {
                   props.contact.data.email_ids =
                     props.contact.data.email_ids.filter(
                       (email) => email.name !== option.name
                     )
-                  !isNew && deleteOption('Contact Email', option.name)
+                  !isNew && (await deleteOption('Contact Email', option.name))
+                  if (_contact.value.email_id === option.value) {
+                    if (props.contact.data.email_ids.length === 0) {
+                      _contact.value.email_id = ''
+                    } else {
+                      _contact.value.email_id =
+                        props.contact.data.email_ids.find(
+                          (email) => email.is_primary
+                        )?.email_id
+                    }
+                  }
                 },
               }
             }) || [],
@@ -404,16 +417,29 @@ const sections = computed(() => {
                 onSave: (option, isNew) => {
                   if (isNew) {
                     createNew('phone', option.value)
+                    if (props.contact.data.phone_nos.length === 1) {
+                      _contact.value.actual_mobile_no = option.value
+                    }
                   } else {
                     editOption('Contact Phone', option.name, option.value)
                   }
                 },
-                onDelete: (option, isNew) => {
+                onDelete: async (option, isNew) => {
                   props.contact.data.phone_nos =
                     props.contact.data.phone_nos.filter(
                       (phone) => phone.name !== option.name
                     )
-                  !isNew && deleteOption('Contact Phone', option.name)
+                  !isNew && (await deleteOption('Contact Phone', option.name))
+                  if (_contact.value.actual_mobile_no === option.value) {
+                    if (props.contact.data.phone_nos.length === 0) {
+                      _contact.value.actual_mobile_no = ''
+                    } else {
+                      _contact.value.actual_mobile_no =
+                        props.contact.data.phone_nos.find(
+                          (phone) => phone.is_primary_mobile_no
+                        )?.phone
+                    }
+                  }
                 },
               }
             }) || [],
@@ -534,18 +560,16 @@ async function editOption(doctype, name, value) {
 }
 
 async function deleteOption(doctype, name) {
-  let d = await call('frappe.client.delete', {
+  await call('frappe.client.delete', {
     doctype,
     name,
   })
-  if (d) {
-    props.contact.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-green-600',
-    })
-  }
+  await props.contact.reload()
+  createToast({
+    title: 'Contact updated',
+    icon: 'check',
+    iconClasses: 'text-green-600',
+  })
 }
 
 const dirty = computed(() => {
