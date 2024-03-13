@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 
 def validate(doc, method):
@@ -23,6 +24,31 @@ def set_primary_mobile_no(doc):
 	if len(doc.phone_nos) == 1:
 		doc.phone_nos[0].is_primary_mobile_no = 1
 
+
+@frappe.whitelist()
+def get_contact(name):
+	Contact = frappe.qb.DocType("Contact")
+
+	query = (
+		frappe.qb.from_(Contact)
+		.select("*")
+		.where(Contact.name == name)
+		.limit(1)
+	)
+
+	contact = query.run(as_dict=True)
+	if not len(contact):
+		frappe.throw(_("Contact not found"), frappe.DoesNotExistError)
+	contact = contact.pop()
+
+	contact["doctype"] = "Contact"
+	contact["email_ids"] = frappe.get_all(
+		"Contact Email", filters={"parent": name}, fields=["name", "email_id", "is_primary"]
+	)
+	contact["phone_nos"] = frappe.get_all(
+		"Contact Phone", filters={"parent": name}, fields=["name", "phone", "is_primary_mobile_no"]
+	)
+	return contact
 
 @frappe.whitelist()
 def get_linked_deals(contact):

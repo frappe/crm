@@ -1,10 +1,10 @@
 <template>
-  <LayoutHeader v-if="contact">
+  <LayoutHeader v-if="contact.data">
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs" />
     </template>
   </LayoutHeader>
-  <div class="flex h-full flex-col overflow-hidden">
+  <div v-if="contact.data" class="flex h-full flex-col overflow-hidden">
     <FileUploader @success="changeContactImage" :validateFile="validateFile">
       <template #default="{ openFileSelector, error }">
         <div class="flex items-center justify-start gap-6 p-5">
@@ -12,18 +12,18 @@
             <Avatar
               size="3xl"
               class="h-24 w-24"
-              :label="contact.full_name"
-              :image="contact.image"
+              :label="contact.data.full_name"
+              :image="contact.data.image"
             />
             <component
-              :is="contact.image ? Dropdown : 'div'"
+              :is="contact.data.image ? Dropdown : 'div'"
               v-bind="
-                contact.image
+                contact.data.image
                   ? {
                       options: [
                         {
                           icon: 'upload',
-                          label: contact.image
+                          label: contact.data.image
                             ? 'Change image'
                             : 'Upload image',
                           onClick: openFileSelector,
@@ -51,62 +51,62 @@
             </component>
           </div>
           <div class="flex flex-col gap-0.5 truncate">
-            <Tooltip :text="contact.full_name">
+            <Tooltip :text="contact.data.full_name">
               <div class="truncate text-3xl font-semibold">
-                <span v-if="contact.salutation">
-                  {{ contact.salutation + '. ' }}
+                <span v-if="contact.data.salutation">
+                  {{ contact.data.salutation + '. ' }}
                 </span>
-                <span>{{ contact.full_name }}</span>
+                <span>{{ contact.data.full_name }}</span>
               </div>
             </Tooltip>
             <div class="flex items-center gap-2 text-base text-gray-700">
-              <div v-if="contact.email_id" class="flex items-center gap-1.5">
+              <div v-if="contact.data.email_id" class="flex items-center gap-1.5">
                 <EmailIcon class="h-4 w-4" />
-                <span class="">{{ contact.email_id }}</span>
+                <span class="">{{ contact.data.email_id }}</span>
               </div>
               <span
-                v-if="contact.email_id"
+                v-if="contact.data.email_id"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
               </span>
-              <Tooltip text="Make Call" v-if="contact.actual_mobile_no">
+              <Tooltip text="Make Call" v-if="contact.data.actual_mobile_no">
                 <div
                   class="flex cursor-pointer items-center gap-1.5"
-                  @click="makeCall(contact.actual_mobile_no)"
+                  @click="makeCall(contact.data.actual_mobile_no)"
                 >
                   <PhoneIcon class="h-4 w-4" />
-                  <span class="">{{ contact.actual_mobile_no }}</span>
+                  <span class="">{{ contact.data.actual_mobile_no }}</span>
                 </div>
               </Tooltip>
               <span
-                v-if="contact.actual_mobile_no"
+                v-if="contact.data.actual_mobile_no"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
               </span>
               <div
-                v-if="contact.company_name"
+                v-if="contact.data.company_name"
                 class="flex items-center gap-1.5"
               >
                 <Avatar
                   size="xs"
-                  :label="contact.company_name"
+                  :label="contact.data.company_name"
                   :image="
-                    getOrganization(contact.company_name)?.organization_logo
+                    getOrganization(contact.data.company_name)?.organization_logo
                   "
                 />
-                <span class="">{{ contact.company_name }}</span>
+                <span class="">{{ contact.data.company_name }}</span>
               </div>
               <span
-                v-if="contact.company_name"
+                v-if="contact.data.company_name"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
               </span>
               <Button
                 v-if="
-                  contact.email_id || contact.mobile_no || contact.company_name
+                  contact.data.email_id || contact.data.mobile_no || contact.data.company_name
                 "
                 variant="ghost"
                 label="More"
@@ -223,7 +223,6 @@ import {
 } from '@/utils'
 import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
-import { contactsStore } from '@/stores/contacts.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
 import { ref, computed, h } from 'vue'
@@ -231,7 +230,6 @@ import { useRouter } from 'vue-router'
 
 const { $dialog, makeCall } = globalStore()
 
-const { getContactByName, contacts } = contactsStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
@@ -245,16 +243,14 @@ const props = defineProps({
 
 const router = useRouter()
 
-const contact = computed(() => getContactByName(props.contactId))
-
 const showContactModal = ref(false)
 const detailMode = ref(false)
 
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Contacts', route: { name: 'Contacts' } }]
   items.push({
-    label: contact.value.full_name,
-    route: { name: 'Contact', params: { contactId: contact.value.name } },
+    label: contact.data?.full_name,
+    route: { name: 'Contact', params: { contactId: props.contactId } },
   })
   return items
 })
@@ -273,7 +269,7 @@ async function changeContactImage(file) {
     fieldname: 'image',
     value: file?.file_url || '',
   })
-  contacts.reload()
+  contact.reload()
 }
 
 async function deleteContact() {
@@ -306,6 +302,22 @@ const tabs = [
     count: computed(() => deals.data?.length),
   },
 ]
+
+const contact = createResource({
+  url: 'crm.api.contact.get_contact',
+  cache: ['contact', props.contactId],
+  params: {
+    name: props.contactId,
+  },
+  auto: true,
+  transform: (data) => {
+    return {
+      ...data,
+      actual_mobile_no: data.mobile_no,
+      mobile_no: data.mobile_no,
+    }
+  },
+})
 
 const deals = createResource({
   url: 'crm.api.contact.get_linked_deals',

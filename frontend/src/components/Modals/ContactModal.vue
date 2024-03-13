@@ -40,10 +40,10 @@
                   <template #default="{ open }">
                     <Button
                       variant="ghost"
-                      :label="contact[field.name]"
+                      :label="contact.data[field.name]"
                       class="dropdown-button w-full justify-between truncate hover:bg-white"
                     >
-                      <div class="truncate">{{ contact[field.name] }}</div>
+                      <div class="truncate">{{ contact.data[field.name] }}</div>
                       <template #suffix>
                         <FeatherIcon
                           :name="open ? 'chevron-up' : 'chevron-down'"
@@ -166,7 +166,6 @@ import CertificateIcon from '@/components/Icons/CertificateIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
-import { contactsStore } from '@/stores/contacts'
 import { call } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { createToast } from '@/utils'
@@ -189,7 +188,6 @@ const props = defineProps({
 
 const router = useRouter()
 const show = defineModel()
-const { contacts } = contactsStore()
 
 const detailMode = ref(false)
 const editMode = ref(false)
@@ -211,7 +209,7 @@ async function updateContact() {
 async function callSetValue(values) {
   const d = await call('frappe.client.set_value', {
     doctype: 'Contact',
-    name: props.contact.name,
+    name: props.contact.data.name,
     fieldname: values,
   })
   return d.name
@@ -238,7 +236,7 @@ async function callInsertDoc() {
 }
 
 function handleContactUpdate(doc) {
-  contacts.reload()
+  props.contact.reload()
   if (doc.name && props.options.redirect) {
     router.push({
       name: 'Contact',
@@ -345,14 +343,14 @@ const sections = computed(() => {
       fields: [
         {
           label: 'Email',
-          type: props.contact.name ? 'dropdown' : 'data',
+          type: props.contact.data.name ? 'dropdown' : 'data',
           name: 'email_id',
           options:
-            props.contact?.email_ids?.map((email) => {
+            props.contact.data?.email_ids?.map((email) => {
               return {
                 name: email.name,
                 value: email.email_id,
-                selected: email.email_id === props.contact.email_id,
+                selected: email.email_id === props.contact.data.email_id,
                 placeholder: 'john@doe.com',
                 onClick: () => {
                   _contact.value.email_id = email.email_id
@@ -366,7 +364,7 @@ const sections = computed(() => {
                   }
                 },
                 onDelete: (option, isNew) => {
-                  props.contact.email_ids = props.contact.email_ids.filter(
+                  props.contact.data.email_ids = props.contact.data.email_ids.filter(
                     (email) => email.name !== option.name
                   )
                   !isNew && deleteOption('Contact Email', option.name)
@@ -374,7 +372,7 @@ const sections = computed(() => {
               }
             }) || [],
           create: () => {
-            props.contact?.email_ids?.push({
+            props.contact.data?.email_ids?.push({
               name: 'new-1',
               value: '',
               selected: false,
@@ -388,14 +386,14 @@ const sections = computed(() => {
       fields: [
         {
           label: 'Mobile No.',
-          type: props.contact.name ? 'dropdown' : 'data',
+          type: props.contact.data.name ? 'dropdown' : 'data',
           name: 'actual_mobile_no',
           options:
-            props.contact?.phone_nos?.map((phone) => {
+            props.contact.data?.phone_nos?.map((phone) => {
               return {
                 name: phone.name,
                 value: phone.phone,
-                selected: phone.phone === props.contact.actual_mobile_no,
+                selected: phone.phone === props.contact.data.actual_mobile_no,
                 placeholder: '+91 1234567890',
                 onClick: () => {
                   _contact.value.actual_mobile_no = phone.phone
@@ -410,7 +408,7 @@ const sections = computed(() => {
                   }
                 },
                 onDelete: (option, isNew) => {
-                  props.contact.phone_nos = props.contact.phone_nos.filter(
+                  props.contact.data.phone_nos = props.contact.data.phone_nos.filter(
                     (phone) => phone.name !== option.name
                   )
                   !isNew && deleteOption('Contact Phone', option.name)
@@ -418,7 +416,7 @@ const sections = computed(() => {
               }
             }) || [],
           create: () => {
-            props.contact?.phone_nos?.push({
+            props.contact.data?.phone_nos?.push({
               name: 'new-1',
               value: '',
               selected: false,
@@ -486,12 +484,12 @@ const sections = computed(() => {
 
 async function setAsPrimary(field, value) {
   let d = await call('crm.api.contact.set_as_primary', {
-    contact: props.contact.name,
+    contact: props.contact.data.name,
     field,
     value,
   })
   if (d) {
-    contacts.reload()
+    props.contact.reload()
     createToast({
       title: 'Contact updated',
       icon: 'check',
@@ -502,12 +500,12 @@ async function setAsPrimary(field, value) {
 
 async function createNew(field, value) {
   let d = await call('crm.api.contact.create_new', {
-    contact: props.contact.name,
+    contact: props.contact.data.name,
     field,
     value,
   })
   if (d) {
-    contacts.reload()
+    props.contact.reload()
     createToast({
       title: 'Contact updated',
       icon: 'check',
@@ -524,7 +522,7 @@ async function editOption(doctype, name, value) {
     value,
   })
   if (d) {
-    contacts.reload()
+    props.contact.reload()
     createToast({
       title: 'Contact updated',
       icon: 'check',
@@ -539,7 +537,7 @@ async function deleteOption(doctype, name) {
     name,
   })
   if (d) {
-    contacts.reload()
+    props.contact.reload()
     createToast({
       title: 'Contact updated',
       icon: 'check',
@@ -549,7 +547,7 @@ async function deleteOption(doctype, name) {
 }
 
 const dirty = computed(() => {
-  return JSON.stringify(props.contact) !== JSON.stringify(_contact.value)
+  return JSON.stringify(props.contact.data) !== JSON.stringify(_contact.value)
 })
 
 watch(
@@ -559,7 +557,7 @@ watch(
     detailMode.value = props.options.detailMode
     editMode.value = false
     nextTick(() => {
-      _contact.value = { ...props.contact }
+      _contact.value = { ...props.contact.data }
       if (_contact.value.name) {
         editMode.value = true
       }
