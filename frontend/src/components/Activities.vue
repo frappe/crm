@@ -81,13 +81,13 @@
     v-if="all_activities?.loading"
     class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
   >
-    <LoadingIndicator class="w-6 h-6" />
+    <LoadingIndicator class="h-6 w-6" />
     <span>Loading...</span>
   </div>
   <div v-else-if="activities?.length" class="activities flex-1 overflow-y-auto">
     <div
       v-if="title == 'Notes'"
-      class="activity grid grid-cols-3 gap-4 px-10 pb-5"
+      class="activity grid grid-cols-1 gap-4 px-10 pb-5 lg:grid-cols-2 xl:grid-cols-3"
     >
       <div
         v-for="note in activities"
@@ -124,14 +124,17 @@
           class="flex-1 overflow-hidden"
         />
         <div class="mt-1 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 truncate">
             <UserAvatar :user="note.owner" size="xs" />
-            <div class="text-sm text-gray-800">
+            <div
+              class="truncate text-sm text-gray-800"
+              :title="getUser(note.owner).full_name"
+            >
               {{ getUser(note.owner).full_name }}
             </div>
           </div>
           <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
-            <div class="text-sm text-gray-700">
+            <div class="truncate text-sm text-gray-700">
               {{ timeAgo(note.modified) }}
             </div>
           </Tooltip>
