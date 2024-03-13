@@ -7,7 +7,8 @@
       v-model="option.value"
       class="w-full"
       :placeholder="option.placeholder"
-      @keydown.enter="saveOption"
+      @blur.stop="saveOption"
+      @keydown.enter.stop="(e) => e.target.blur()"
     />
 
     <div class="actions flex items-center justify-center">
