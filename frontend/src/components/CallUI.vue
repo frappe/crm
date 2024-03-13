@@ -201,7 +201,7 @@ import { Avatar, call } from 'frappe-ui'
 import { onMounted, ref, watch } from 'vue'
 
 const { getContact, getLeadContact } = contactsStore()
-const { setMakeCall, setTwilioEnabled } = globalStore()
+const { setMakeCall, setTwilioEnabled, $dialog } = globalStore()
 
 let device = ''
 let log = ref('Connecting...')
@@ -378,6 +378,15 @@ function handleDisconnectedIncomingCall() {
 }
 
 async function makeOutgoingCall(number) {
+  // check if number has a country code
+  if (number.length == 10) {
+    $dialog({
+      title: 'Invalid Mobile Number',
+      message: `${number} is not a valid mobile number. Either add a country code or check the number again.`,
+    })
+    return
+  }
+
   contact.value = getContact(number)
   if (!contact.value) {
     contact.value = getLeadContact(number)
