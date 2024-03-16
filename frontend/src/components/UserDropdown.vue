@@ -63,6 +63,11 @@ const user = computed(() => getUser() || {})
 
 const userDropdownOptions = [
   {
+    icon: 'corner-up-left',
+    label: 'Switch to Desk',
+    onClick: () => window.location.replace('/app'),
+  },
+  {
     icon: 'log-out',
     label: 'Log out',
     onClick: () => logout.submit(),
