@@ -379,7 +379,7 @@ function handleDisconnectedIncomingCall() {
 
 async function makeOutgoingCall(number) {
   // check if number has a country code
-  if (number.length == 10) {
+  if (number?.replace(/[^0-9+]/g, '').length == 10) {
     $dialog({
       title: 'Invalid Mobile Number',
       message: `${number} is not a valid mobile number. Either add a country code or check the number again.`,
@@ -387,17 +387,12 @@ async function makeOutgoingCall(number) {
     return
   }
 
-  contact.value = getContact(number)
-  if (!contact.value) {
-    contact.value = getLeadContact(number)
-  }
-
   if (device) {
-    log.value = `Attempting to call ${contact.value.mobile_no} ...`
+    log.value = `Attempting to call ${number} ...`
 
     try {
       _call.value = await device.connect({
-        params: { To: contact.value.mobile_no },
+        params: { To: number },
       })
 
       showCallPopup.value = true
