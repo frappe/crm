@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestCRMNote(FrappeTestCase):
+class TestFCRMNote(FrappeTestCase):
 	pass

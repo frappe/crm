@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class CRMNote(Document):
+class FCRMNote(Document):
 	@staticmethod
 	def default_list_data():
 		rows = [
