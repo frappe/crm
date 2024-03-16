@@ -1002,7 +1002,7 @@ function showNote(n) {
 
 async function deleteNote(name) {
   await call('frappe.client.delete', {
-    doctype: 'CRM Note',
+    doctype: 'FCRM Note',
     name,
   })
   all_activities.reload()

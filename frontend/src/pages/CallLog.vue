@@ -216,7 +216,7 @@ const callLog = createResource({
 async function updateNote(_note) {
   if (_note.title || _note.content) {
     let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Note',
+      doctype: 'FCRM Note',
       name: callLog.data?.note,
       fieldname: _note,
     })

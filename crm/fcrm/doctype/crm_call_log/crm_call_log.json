@@ -95,7 +95,7 @@
    "fieldname": "note",
    "fieldtype": "Link",
    "label": "Note",
-   "options": "CRM Note"
+   "options": "FCRM Note"
   },
   {
    "depends_on": "eval:doc.type == 'Incoming'",
@@ -127,7 +127,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:51:52.173476",
+ "modified": "2024-03-16 13:23:09.201843",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Call Log",

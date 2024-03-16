@@ -80,7 +80,7 @@ def get_call_log(name):
 	if doc.lead:
 		doc.lead_name = frappe.db.get_value("CRM Lead", doc.lead, "lead_name")
 	if doc.note:
-		note = frappe.db.get_values("CRM Note", doc.note, ["title", "content"])[0]
+		note = frappe.db.get_values("FCRM Note", doc.note, ["title", "content"])[0]
 		doc.note_doc = {
 			"name": doc.note,
 			"title": note[0],
@@ -100,6 +100,6 @@ def create_lead_from_call_log(call_log):
 	frappe.db.set_value("CRM Call Log", call_log.get("name"), "lead", lead.name)
 
 	if call_log.get("note"):
-		frappe.db.set_value("CRM Note", call_log.get("note"), "lead", lead.name)
+		frappe.db.set_value("FCRM Note", call_log.get("note"), "lead", lead.name)
 
 	return lead.name

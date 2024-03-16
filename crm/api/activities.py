@@ -313,7 +313,7 @@ def get_linked_calls(name):
 
 def get_linked_notes(name):
 	notes = frappe.db.get_all(
-		"CRM Note",
+		"FCRM Note",
 		filters={"reference_docname": name},
 		fields=['name', 'title', 'content', 'owner', 'modified'],
 	)
