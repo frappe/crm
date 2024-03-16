@@ -3,14 +3,16 @@ from frappe.model.rename_doc import rename_doc
 
 
 def execute():
-	if frappe.db.exists("DocType", "FCRM Note"):
+
+	if not frappe.db.exists("DocType", "FCRM Note"):
+		frappe.flags.ignore_route_conflict_validation = True
+		rename_doc("DocType", "CRM Note", "FCRM Note")
+		frappe.flags.ignore_route_conflict_validation = False
+
+		frappe.reload_doctype("FCRM Note", force=True)
+
+	if frappe.db.exists("DocType", "FCRM Note") and frappe.db.count("FCRM Note") > 0:
 		return
-
-	frappe.flags.ignore_route_conflict_validation = True
-	rename_doc("DocType", "CRM Note", "FCRM Note")
-	frappe.flags.ignore_route_conflict_validation = False
-
-	frappe.reload_doctype("FCRM Note", force=True)
 
 	notes = frappe.db.sql("SELECT * FROM `tabCRM Note`", as_dict=True)
 	if notes:
