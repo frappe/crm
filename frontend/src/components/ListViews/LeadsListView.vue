@@ -107,10 +107,7 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Dropdown
-          v-if="bulkActions.length"
-          :options="bulkActions(selections, unselectAll)"
-        >
+        <Dropdown :options="bulkActions(selections, unselectAll)">
           <Button variant="ghost">
             <template #icon>
               <FeatherIcon name="more-horizontal" class="h-4 w-4" />
@@ -212,6 +209,38 @@ function editValues(selections, unselectAll) {
   unselectAllAction.value = unselectAll
 }
 
+function deleteValues(selections, unselectAll) {
+  $dialog({
+    title: 'Delete',
+    message: `Are you sure you want to delete ${selections.size} item${
+      selections.size > 1 ? 's' : ''
+    }?`,
+    variant: 'danger',
+    actions: [
+      {
+        label: 'Delete',
+        variant: 'solid',
+        theme: 'red',
+        onClick: (close) => {
+          call('frappe.desk.reportview.delete_items', {
+            items: JSON.stringify(Array.from(selections)),
+            doctype: 'CRM Lead',
+          }).then(() => {
+            createToast({
+              title: 'Deleted successfully',
+              icon: 'check',
+              iconClasses: 'text-green-600',
+            })
+            unselectAll()
+            list.value.reload()
+            close()
+          })
+        },
+      },
+    ],
+  })
+}
+
 const customBulkActions = ref([])
 
 function bulkActions(selections, unselectAll) {
@@ -219,6 +248,10 @@ function bulkActions(selections, unselectAll) {
     {
       label: 'Edit',
       onClick: () => editValues(selections, unselectAll),
+    },
+    {
+      label: 'Delete',
+      onClick: () => deleteValues(selections, unselectAll),
     },
   ]
   customBulkActions.value.forEach((action) => {

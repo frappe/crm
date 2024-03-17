@@ -20,6 +20,7 @@
   <EmailTemplatesListView
     v-if="emailTemplates.data && rows.length"
     v-model="emailTemplates.data.page_length_count"
+    v-model:list="emailTemplates"
     :rows="rows"
     :columns="emailTemplates.data.columns"
     :options="{
@@ -32,7 +33,6 @@
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showEmailTemplate="showEmailTemplate"
-    @reload="emailTemplates.reload()"
     @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div

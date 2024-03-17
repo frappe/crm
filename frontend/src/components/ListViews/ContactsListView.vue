@@ -70,15 +70,13 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Button
-          variant="subtle"
-          label="Edit"
-          @click="editValues(selections, unselectAll)"
-        >
-          <template #prefix>
-            <EditIcon class="h-3 w-3" />
-          </template>
-        </Button>
+        <Dropdown :options="bulkActions(selections, unselectAll)">
+          <Button variant="ghost">
+            <template #icon>
+              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+            </template>
+          </Button>
+        </Dropdown>
       </template>
     </ListSelectBanner>
   </ListView>
@@ -97,13 +95,14 @@
     v-model:unselectAll="unselectAllAction"
     doctype="Contact"
     :selectedValues="selectedValues"
-    @reload="emit('reload')"
+    @reload="list.reload()"
   />
 </template>
 <script setup>
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
+import { globalStore } from '@/stores/global'
+import { createToast } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -114,6 +113,8 @@ import {
   ListRowItem,
   ListFooter,
   Tooltip,
+  Dropdown,
+  call,
 } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
@@ -141,12 +142,14 @@ const props = defineProps({
 const emit = defineEmits([
   'loadMore',
   'updatePageCount',
-  'reload',
   'columnWidthUpdated',
   'applyFilter',
 ])
 
 const pageLengthCount = defineModel()
+const list = defineModel('list')
+
+const { $dialog } = globalStore()
 
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
@@ -161,5 +164,51 @@ function editValues(selections, unselectAll) {
   selectedValues.value = selections
   showEditModal.value = true
   unselectAllAction.value = unselectAll
+}
+
+function deleteValues(selections, unselectAll) {
+  $dialog({
+    title: 'Delete',
+    message: `Are you sure you want to delete ${selections.size} item${
+      selections.size > 1 ? 's' : ''
+    }?`,
+    variant: 'danger',
+    actions: [
+      {
+        label: 'Delete',
+        variant: 'solid',
+        theme: 'red',
+        onClick: (close) => {
+          call('frappe.desk.reportview.delete_items', {
+            items: JSON.stringify(Array.from(selections)),
+            doctype: 'Contact',
+          }).then(() => {
+            createToast({
+              title: 'Deleted successfully',
+              icon: 'check',
+              iconClasses: 'text-green-600',
+            })
+            unselectAll()
+            list.value.reload()
+            close()
+          })
+        },
+      },
+    ],
+  })
+}
+
+function bulkActions(selections, unselectAll) {
+  let actions = [
+    {
+      label: 'Edit',
+      onClick: () => editValues(selections, unselectAll),
+    },
+    {
+      label: 'Delete',
+      onClick: () => deleteValues(selections, unselectAll),
+    },
+  ]
+  return actions
 }
 </script>

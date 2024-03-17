@@ -20,6 +20,7 @@
   <TasksListView
     v-if="tasks.data && rows.length"
     v-model="tasks.data.page_length_count"
+    v-model:list="tasks"
     :rows="rows"
     :columns="tasks.data.columns"
     :options="{
@@ -32,7 +33,6 @@
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showTask="showTask"
-    @reload="tasks.reload()"
     @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div v-else-if="tasks.data" class="flex h-full items-center justify-center">

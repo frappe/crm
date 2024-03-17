@@ -24,6 +24,7 @@
   <OrganizationsListView
     v-if="organizations.data && rows.length"
     v-model="organizations.data.page_length_count"
+    v-model:list="organizations"
     :rows="rows"
     :columns="organizations.data.columns"
     :options="{
@@ -35,7 +36,6 @@
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
-    @reload="organizations.reload()"
     @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div

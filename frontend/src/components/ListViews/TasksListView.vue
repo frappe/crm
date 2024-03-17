@@ -73,23 +73,13 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <div class="flex gap-2">
-          <Button
-            theme="red"
-            variant="subtle"
-            label="Delete"
-            @click="deleteTask(selections, unselectAll)"
-          />
-          <Button
-            variant="subtle"
-            label="Edit"
-            @click="editValues(selections, unselectAll)"
-          >
-            <template #prefix>
-              <EditIcon class="h-3 w-3" />
+        <Dropdown :options="bulkActions(selections, unselectAll)">
+          <Button variant="ghost">
+            <template #icon>
+              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
             </template>
           </Button>
-        </div>
+        </Dropdown>
       </template>
     </ListSelectBanner>
   </ListView>
@@ -107,17 +97,17 @@
     v-model:unselectAll="unselectAllAction"
     doctype="CRM Task"
     :selectedValues="selectedValues"
-    @reload="emit('reload')"
+    @reload="list.reload()"
   />
 </template>
 <script setup>
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import { dateFormat } from '@/utils'
 import { globalStore } from '@/stores/global'
+import { createToast } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -127,6 +117,7 @@ import {
   ListSelectBanner,
   ListRowItem,
   ListFooter,
+  Dropdown,
   call,
   Tooltip,
 } from 'frappe-ui'
@@ -157,52 +148,19 @@ const emit = defineEmits([
   'loadMore',
   'updatePageCount',
   'showTask',
-  'reload',
   'columnWidthUpdated',
   'applyFilter',
 ])
 
 const pageLengthCount = defineModel()
+const list = defineModel('list')
+
+const { $dialog } = globalStore()
 
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
   emit('updatePageCount', val)
 })
-
-const { $dialog } = globalStore()
-
-function deleteTask(selections, unselectAll) {
-  let title = 'Delete task'
-  let message = 'Are you sure you want to delete this task?'
-
-  if (selections.size > 1) {
-    title = 'Delete tasks'
-    message = 'Are you sure you want to delete these tasks?'
-  }
-
-  $dialog({
-    title: title,
-    message: message,
-    actions: [
-      {
-        label: 'Delete',
-        theme: 'red',
-        variant: 'solid',
-        async onClick(close) {
-          for (const selection of selections) {
-            await call('frappe.client.delete', {
-              doctype: 'CRM Task',
-              name: selection,
-            })
-          }
-          close()
-          unselectAll()
-          emit('reload')
-        },
-      },
-    ],
-  })
-}
 
 const showEditModal = ref(false)
 const selectedValues = ref([])
@@ -212,5 +170,51 @@ function editValues(selections, unselectAll) {
   selectedValues.value = selections
   showEditModal.value = true
   unselectAllAction.value = unselectAll
+}
+
+function deleteValues(selections, unselectAll) {
+  $dialog({
+    title: 'Delete',
+    message: `Are you sure you want to delete ${selections.size} item${
+      selections.size > 1 ? 's' : ''
+    }?`,
+    variant: 'danger',
+    actions: [
+      {
+        label: 'Delete',
+        variant: 'solid',
+        theme: 'red',
+        onClick: (close) => {
+          call('frappe.desk.reportview.delete_items', {
+            items: JSON.stringify(Array.from(selections)),
+            doctype: 'CRM Task',
+          }).then(() => {
+            createToast({
+              title: 'Deleted successfully',
+              icon: 'check',
+              iconClasses: 'text-green-600',
+            })
+            unselectAll()
+            list.value.reload()
+            close()
+          })
+        },
+      },
+    ],
+  })
+}
+
+function bulkActions(selections, unselectAll) {
+  let actions = [
+    {
+      label: 'Edit',
+      onClick: () => editValues(selections, unselectAll),
+    },
+    {
+      label: 'Delete',
+      onClick: () => deleteValues(selections, unselectAll),
+    },
+  ]
+  return actions
 }
 </script>

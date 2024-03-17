@@ -20,6 +20,7 @@
   <ContactsListView
     v-if="contacts.data && rows.length"
     v-model="contacts.data.page_length_count"
+    v-model:list="contacts"
     :rows="rows"
     :columns="contacts.data.columns"
     :options="{
@@ -31,7 +32,6 @@
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
-    @reload="contacts.reload()"
     @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div
