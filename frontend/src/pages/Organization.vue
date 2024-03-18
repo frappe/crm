@@ -1,10 +1,10 @@
 <template>
-  <LayoutHeader v-if="organization">
+  <LayoutHeader v-if="organization.doc">
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs" />
     </template>
   </LayoutHeader>
-  <div v-if="organization" class="flex flex-1 flex-col overflow-hidden">
+  <div v-if="organization.doc" class="flex flex-1 flex-col overflow-hidden">
     <FileUploader
       @success="changeOrganizationImage"
       :validateFile="validateFile"
@@ -14,19 +14,19 @@
           <div class="group relative h-24 w-24">
             <Avatar
               size="3xl"
-              :image="organization.organization_logo"
-              :label="organization.name"
+              :image="organization.doc.organization_logo"
+              :label="organization.doc.name"
               class="!h-24 !w-24"
             />
             <component
-              :is="organization.organization_logo ? Dropdown : 'div'"
+              :is="organization.doc.organization_logo ? Dropdown : 'div'"
               v-bind="
-                organization.organization_logo
+                organization.doc.organization_logo
                   ? {
                       options: [
                         {
                           icon: 'upload',
-                          label: organization.organization_logo
+                          label: organization.doc.organization_logo
                             ? 'Change image'
                             : 'Upload image',
                           onClick: openFileSelector,
@@ -55,67 +55,67 @@
           </div>
           <div class="flex flex-col justify-center gap-0.5">
             <div class="text-3xl font-semibold text-gray-900">
-              {{ organization.name }}
+              {{ organization.doc.name }}
             </div>
             <div class="flex items-center gap-2 text-base text-gray-700">
               <div
-                v-if="organization.website"
+                v-if="organization.doc.website"
                 class="flex items-center gap-1.5"
               >
                 <WebsiteIcon class="h-4 w-4" />
-                <span class="">{{ website(organization.website) }}</span>
+                <span class="">{{ website(organization.doc.website) }}</span>
               </div>
               <span
-                v-if="organization.website"
+                v-if="organization.doc.website"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
               </span>
               <div
-                v-if="organization.industry"
+                v-if="organization.doc.industry"
                 class="flex items-center gap-1.5"
               >
                 <FeatherIcon name="briefcase" class="h-4 w-4" />
-                <span class="">{{ organization.industry }}</span>
+                <span class="">{{ organization.doc.industry }}</span>
               </div>
               <span
-                v-if="organization.industry"
+                v-if="organization.doc.industry"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
               </span>
               <div
-                v-if="organization.territory"
+                v-if="organization.doc.territory"
                 class="flex items-center gap-1.5"
               >
                 <TerritoryIcon class="h-4 w-4" />
-                <span class="">{{ organization.territory }}</span>
+                <span class="">{{ organization.doc.territory }}</span>
               </div>
               <span
-                v-if="organization.territory"
+                v-if="organization.doc.territory"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
               </span>
               <div
-                v-if="organization.annual_revenue"
+                v-if="organization.doc.annual_revenue"
                 class="flex items-center gap-1.5"
               >
                 <FeatherIcon name="dollar-sign" class="h-4 w-4" />
-                <span class="">{{ organization.annual_revenue }}</span>
+                <span class="">{{ organization.doc.annual_revenue }}</span>
               </div>
               <span
-                v-if="organization.annual_revenue"
+                v-if="organization.doc.annual_revenue"
                 class="text-3xl leading-[0] text-gray-600"
               >
                 &middot;
               </span>
               <Button
                 v-if="
-                  organization.website ||
-                  organization.industry ||
-                  organization.territory ||
-                  organization.annual_revenue
+                  organization.doc.website ||
+                  organization.doc.industry ||
+                  organization.doc.territory ||
+                  organization.doc.annual_revenue
                 "
                 variant="ghost"
                 label="More"
@@ -191,7 +191,7 @@
           v-if="tab.label === 'Contacts' && rows.length"
           :rows="rows"
           :columns="columns"
-          :options="{ selectable: false, showTooltip: false, }"
+          :options="{ selectable: false, showTooltip: false }"
         />
         <div
           v-if="!rows.length"
@@ -207,7 +207,7 @@
   </div>
   <OrganizationModal
     v-model="showOrganizationModal"
-    :organization="organization"
+    v-model:organization="organization"
     :options="{ detailMode }"
   />
 </template>
@@ -221,6 +221,7 @@ import {
   Tabs,
   call,
   createListResource,
+  createDocumentResource,
 } from 'frappe-ui'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
@@ -234,7 +235,6 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
 import {
   dateFormat,
@@ -253,14 +253,19 @@ const props = defineProps({
 })
 
 const { $dialog } = globalStore()
-const { organizations, getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
 const showOrganizationModal = ref(false)
 const detailMode = ref(false)
 
 const router = useRouter()
 
-const organization = computed(() => getOrganization(props.organizationId))
+const organization = createDocumentResource({
+  doctype: 'CRM Organization',
+  name: props.organizationId,
+  cache: ['organization', props.organizationId],
+  fields: ['*'],
+  auto: true,
+})
 
 const breadcrumbs = computed(() => {
   let items = [{ label: 'Organizations', route: { name: 'Organizations' } }]
@@ -288,7 +293,7 @@ async function changeOrganizationImage(file) {
     fieldname: 'organization_logo',
     value: file?.file_url || '',
   })
-  organizations.reload()
+  organization.reload()
 }
 
 async function deleteOrganization() {

@@ -52,7 +52,7 @@
       </Button>
     </div>
   </div>
-  <OrganizationModal v-model="showOrganizationModal" :organization="{}" />
+  <OrganizationModal v-model="showOrganizationModal" />
 </template>
 <script setup>
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'

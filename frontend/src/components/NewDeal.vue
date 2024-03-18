@@ -61,10 +61,10 @@
   </div>
   <OrganizationModal
     v-model="showOrganizationModal"
-    :organization="_organization"
+    v-model:organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => (newLead.organization = doc.name),
+      afterInsert: (doc) => (newDeal.organization = doc.name),
     }"
   />
 </template>

@@ -115,9 +115,9 @@
             v-for="action in dialogOptions.actions"
             :key="action.label"
             v-bind="action"
-          >
-            {{ action.label }}
-          </Button>
+            :label="action.label"
+            :loading="loading"
+          />
         </div>
       </div>
     </template>
@@ -130,16 +130,11 @@ import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import { organizationsStore } from '@/stores/organizations'
 import { call, FeatherIcon } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  organization: {
-    type: Object,
-    default: {},
-  },
   options: {
     type: Object,
     default: {
@@ -152,8 +147,9 @@ const props = defineProps({
 
 const router = useRouter()
 const show = defineModel()
-const { organizations } = organizationsStore()
+const organization = defineModel('organization')
 
+const loading = ref(false)
 const title = ref(null)
 const detailMode = ref(false)
 const editMode = ref(false)
@@ -165,13 +161,15 @@ let _organization = ref({
   industry: '',
 })
 
+let doc = ref({})
+
 async function updateOrganization() {
-  const old = { ...props.organization }
+  const old = { ...doc.value }
   const newOrg = { ..._organization.value }
 
-  const nameChanged = old.name !== newOrg.name
-  delete old.name
-  delete newOrg.name
+  const nameChanged = old.organization_name !== newOrg.organization_name
+  delete old.organization_name
+  delete newOrg.organization_name
 
   const otherFieldChanged = JSON.stringify(old) !== JSON.stringify(newOrg)
   const values = newOrg
@@ -182,21 +180,23 @@ async function updateOrganization() {
   }
 
   let name
+  loading.value = true
   if (nameChanged) {
     name = await callRenameDoc()
   }
   if (otherFieldChanged) {
     name = await callSetValue(values)
   }
-  handleOrganizationUpdate({ name })
+  handleOrganizationUpdate({ name }, nameChanged)
 }
 
 async function callRenameDoc() {
   const d = await call('frappe.client.rename_doc', {
     doctype: 'CRM Organization',
-    old_name: props.organization.name,
-    new_name: _organization.value.name,
+    old_name: doc.value?.organization_name,
+    new_name: _organization.value.organization_name,
   })
+  loading.value = false
   return d
 }
 
@@ -206,6 +206,7 @@ async function callSetValue(values) {
     name: _organization.value.name,
     fieldname: values,
   })
+  loading.value = false
   return d.name
 }
 
@@ -216,16 +217,18 @@ async function callInsertDoc() {
       ..._organization.value,
     },
   })
+  loading.value = false
   doc.name && handleOrganizationUpdate(doc)
 }
 
-function handleOrganizationUpdate(doc) {
-  organizations.reload()
-  if (doc.name && props.options.redirect) {
+function handleOrganizationUpdate(doc, renamed = false) {
+  if (doc.name && (props.options.redirect || renamed)) {
     router.push({
       name: 'Organization',
       params: { organizationId: doc.name },
     })
+  } else {
+    organization.value.reload?.()
   }
   show.value = false
   props.options.afterInsert && props.options.afterInsert(doc)
@@ -296,7 +299,8 @@ watch(
     nextTick(() => {
       // TODO: Issue with FormControl
       // title.value.el.focus()
-      _organization.value = { ...props.organization }
+      doc.value = organization.value?.doc || organization.value || {}
+      _organization.value = { ...doc.value }
       if (_organization.value.name) {
         editMode.value = true
       }

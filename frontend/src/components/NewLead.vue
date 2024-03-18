@@ -59,20 +59,11 @@
       </div>
     </div>
   </div>
-  <OrganizationModal
-    v-model="showOrganizationModal"
-    :organization="_organization"
-    :options="{
-      redirect: false,
-      afterInsert: (doc) => (newLead.organization = doc.name),
-    }"
-  />
 </template>
 
 <script setup>
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
@@ -88,9 +79,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-const showOrganizationModal = ref(false)
-const _organization = ref({})
 
 const allFields = computed(() => {
   return [
