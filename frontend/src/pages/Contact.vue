@@ -60,7 +60,10 @@
               </div>
             </Tooltip>
             <div class="flex items-center gap-2 text-base text-gray-700">
-              <div v-if="contact.data.email_id" class="flex items-center gap-1.5">
+              <div
+                v-if="contact.data.email_id"
+                class="flex items-center gap-1.5"
+              >
                 <EmailIcon class="h-4 w-4" />
                 <span class="">{{ contact.data.email_id }}</span>
               </div>
@@ -93,7 +96,8 @@
                   size="xs"
                   :label="contact.data.company_name"
                   :image="
-                    getOrganization(contact.data.company_name)?.organization_logo
+                    getOrganization(contact.data.company_name)
+                      ?.organization_logo
                   "
                 />
                 <span class="">{{ contact.data.company_name }}</span>
@@ -106,7 +110,9 @@
               </span>
               <Button
                 v-if="
-                  contact.data.email_id || contact.data.mobile_no || contact.data.company_name
+                  contact.data.email_id ||
+                  contact.data.mobile_no ||
+                  contact.data.company_name
                 "
                 variant="ghost"
                 label="More"

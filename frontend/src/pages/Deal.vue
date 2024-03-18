@@ -70,15 +70,7 @@
           </Tooltip>
           <div class="flex gap-1.5">
             <Tooltip text="Make a call...">
-              <Button
-                class="h-7 w-7"
-                @click="
-                  () =>
-                    deal.data.mobile_no
-                      ? makeCall(deal.data.mobile_no)
-                      : errorMessage('No mobile number set')
-                "
-              >
+              <Button class="h-7 w-7" @click="triggerCall">
                 <PhoneIcon class="h-4 w-4" />
               </Button>
             </Tooltip>
@@ -561,6 +553,18 @@ async function setPrimaryContact(contact) {
       iconClasses: 'text-green-600',
     })
   }
+}
+
+function triggerCall() {
+  let primaryContact = deal.data.contacts.find((c) => c.is_primary)
+  let contact = primaryContact
+    ? getContactByName(primaryContact.contact)
+    : deal.data.contacts[0]
+    ? getContactByName(deal.data.contacts[0].contact)
+    : null
+  primaryContact
+    ? makeCall(contact.mobile_no)
+    : errorMessage('No primary contact set')
 }
 
 function updateField(name, value, callback) {
