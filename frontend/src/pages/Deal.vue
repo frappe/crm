@@ -155,7 +155,14 @@
               />
               <div v-else>
                 <div
-                  v-if="section.contacts.length"
+                  v-if="deal_contacts?.loading"
+                  class="flex min-h-10 flex-1 items-center justify-center gap-3 text-base text-gray-500"
+                >
+                  <LoadingIndicator class="h-4 w-4" />
+                  <span>Loading...</span>
+                </div>
+                <div
+                  v-else-if="section.contacts.length"
                   v-for="(contact, i) in section.contacts"
                   :key="contact.name"
                 >
@@ -173,12 +180,12 @@
                             @click="toggle()"
                           >
                             <Avatar
-                              :label="getContactByName(contact.name).full_name"
-                              :image="getContactByName(contact.name).image"
+                              :label="contact.full_name"
+                              :image="contact.image"
                               size="md"
                             />
                             <div class="truncate">
-                              {{ getContactByName(contact.name).full_name }}
+                              {{ contact.full_name }}
                             </div>
                             <Badge
                               v-if="contact.is_primary"
@@ -189,7 +196,7 @@
                             />
                           </div>
                           <div class="flex items-center">
-                            <Dropdown :options="contactOptions(contact)">
+                            <Dropdown :options="contactOptions(contact.name)">
                               <Button variant="ghost">
                                 <FeatherIcon
                                   name="more-horizontal"
@@ -223,11 +230,11 @@
                       >
                         <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
                           <EmailIcon class="h-4 w-4" />
-                          {{ getContactByName(contact.name).email_id }}
+                          {{ contact.email }}
                         </div>
                         <div class="flex items-center gap-3 p-1 py-1.5">
                           <PhoneIcon class="h-4 w-4" />
-                          {{ getContactByName(contact.name).mobile_no }}
+                          {{ contact.mobile_no }}
                         </div>
                       </div>
                     </Section>
@@ -277,6 +284,7 @@
   />
 </template>
 <script setup>
+import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -305,7 +313,6 @@ import {
   errorMessage,
 } from '@/utils'
 import { globalStore } from '@/stores/global'
-import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import {
@@ -321,7 +328,6 @@ import { ref, computed, h, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { $dialog, makeCall } = globalStore()
-const { getContactByName, contacts } = contactsStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const router = useRouter()
@@ -381,7 +387,6 @@ function updateDeal(fieldname, value, callback) {
     auto: true,
     onSuccess: () => {
       deal.reload()
-      contacts.reload()
       reload.value = true
       createToast({
         title: 'Deal updated',
@@ -451,7 +456,7 @@ const tabs = [
 const detailSections = computed(() => {
   let data = deal.data
   if (!data) return []
-  return getParsedFields(data.doctype_fields, data.contacts)
+  return getParsedFields(data.doctype_fields, deal_contacts.data)
 })
 
 function getParsedFields(sections, contacts) {
@@ -461,7 +466,11 @@ function getParsedFields(sections, contacts) {
       section.contacts =
         contacts?.map((contact) => {
           return {
-            name: contact.contact,
+            name: contact.name,
+            full_name: contact.full_name,
+            email: contact.email,
+            mobile_no: contact.mobile_no,
+            image: contact.image,
             is_primary: contact.is_primary,
             opened: false,
           }
@@ -494,7 +503,7 @@ function contactOptions(contact) {
     {
       label: 'Delete',
       icon: 'trash-2',
-      onClick: () => removeContact(contact.name),
+      onClick: () => removeContact(contact),
     },
   ]
 
@@ -502,7 +511,7 @@ function contactOptions(contact) {
     options.push({
       label: 'Set as Primary Contact',
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
-      onClick: () => setPrimaryContact(contact.name),
+      onClick: () => setPrimaryContact(contact),
     })
   }
 
@@ -515,7 +524,7 @@ async function addContact(contact) {
     contact,
   })
   if (d) {
-    deal.reload()
+    deal_contacts.reload()
     createToast({
       title: 'Contact added',
       icon: 'check',
@@ -530,7 +539,7 @@ async function removeContact(contact) {
     contact,
   })
   if (d) {
-    deal.reload()
+    deal_contacts.reload()
     createToast({
       title: 'Contact removed',
       icon: 'check',
@@ -545,8 +554,7 @@ async function setPrimaryContact(contact) {
     contact,
   })
   if (d) {
-    await contacts.reload()
-    deal.reload()
+    deal_contacts.reload()
     createToast({
       title: 'Primary contact set',
       icon: 'check',
@@ -555,16 +563,28 @@ async function setPrimaryContact(contact) {
   }
 }
 
+const deal_contacts = createResource({
+  url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
+  params: { name: props.dealId },
+  cache: ['deal_contacts', props.dealId],
+  auto: true,
+})
+
 function triggerCall() {
-  let primaryContact = deal.data.contacts.find((c) => c.is_primary)
-  let contact = primaryContact
-    ? getContactByName(primaryContact.contact)
-    : deal.data.contacts[0]
-    ? getContactByName(deal.data.contacts[0].contact)
-    : null
-  primaryContact
-    ? makeCall(contact.mobile_no)
-    : errorMessage('No primary contact set')
+  let primaryContact = deal_contacts.data?.find((c) => c.is_primary)
+  let mobile_no = primaryContact.mobile_no || null
+
+  if (!primaryContact) {
+    errorMessage('No primary contact set')
+    return
+  }
+
+  if (!mobile_no) {
+    errorMessage('No mobile number set')
+    return
+  }
+
+  makeCall(mobile_no)
 }
 
 function updateField(name, value, callback) {
