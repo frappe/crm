@@ -5,8 +5,6 @@ from frappe.utils.safe_exec import get_safe_globals
 from frappe.utils import now_datetime
 from pypika import Criterion
 
-DOCTYPE = "CRM Service Level Agreement"
-
 def get_sla(doc: Document) -> Document:
 	"""
 	Get Service Level Agreement for `doc`
@@ -14,8 +12,7 @@ def get_sla(doc: Document) -> Document:
 	:param doc: Lead/Deal to use
 	:return: Applicable SLA
 	"""
-	check_permissions(DOCTYPE, None)
-	SLA = frappe.qb.DocType(DOCTYPE)
+	SLA = frappe.qb.DocType("CRM Service Level Agreement")
 	Priority = frappe.qb.DocType("CRM Service Level Priority")
 	now = now_datetime()
 	priority = doc.communication_status
@@ -49,17 +46,6 @@ def get_sla(doc: Document) -> Document:
 			res = sla
 			break
 	return res
-
-def check_permissions(doctype, parent):
-	user = frappe.session.user
-	permissions = ("select", "read")
-	has_select_permission, has_read_permission = [
-		frappe.has_permission(doctype, perm, user=user, parent_doctype=parent)
-		for perm in permissions
-	]
-
-	if not has_select_permission and not has_read_permission:
-		frappe.throw(f"Insufficient Permission for {doctype}", frappe.PermissionError)
 
 def get_context(d: Document) -> dict:
 	"""
