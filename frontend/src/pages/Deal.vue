@@ -155,8 +155,8 @@
               />
               <div v-else>
                 <div
-                  v-if="deal_contacts?.loading"
-                  class="flex min-h-10 flex-1 items-center justify-center gap-3 text-base text-gray-500"
+                  v-if="deal_contacts?.loading && deal_contacts?.data?.length == 0"
+                  class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-gray-500"
                 >
                   <LoadingIndicator class="h-4 w-4" />
                   <span>Loading...</span>
