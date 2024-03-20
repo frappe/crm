@@ -15,7 +15,7 @@ def get_lead(name):
 		frappe.throw(_("Lead not found"), frappe.DoesNotExistError)
 	lead = lead.pop()
 
-	lead["doctype_fields"], lead["all_fields"] = get_doctype_fields("CRM Lead")
+	lead["doctype_fields"], lead["all_fields"] = get_doctype_fields("CRM Lead", name)
 	lead["doctype"] = "CRM Lead"
 	lead["_form_script"] = get_form_script('CRM Lead')
 	lead["_assign"] = get_assigned_users("CRM Lead", lead.name)
