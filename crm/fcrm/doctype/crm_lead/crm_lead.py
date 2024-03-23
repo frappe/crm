@@ -247,6 +247,9 @@ class CRMLead(Document):
 		if sla:
 			sla.apply(self)
 
+	def convert_to_deal(self):
+		return convert_to_deal(lead=self.name, doc=self)
+
 	@staticmethod
 	def get_non_filterable_fields():
 		return ["converted"]
@@ -317,12 +320,9 @@ class CRMLead(Document):
 		]
 		return {'columns': columns, 'rows': rows}
 
-@frappe.whitelist(allow_guest=True)
-def convert_to_deal(lead, allow_guest=False):
-	if not allow_guest and frappe.session.user == "Guest":
-		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.AuthenticationError)
-
-	if not frappe.has_permission("CRM Lead", "write", lead) and not allow_guest:
+@frappe.whitelist()
+def convert_to_deal(lead, doc=None):
+	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission("CRM Lead", "write", lead):
 		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
 
 	lead = frappe.get_cached_doc("CRM Lead", lead)
