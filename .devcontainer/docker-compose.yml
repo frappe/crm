@@ -1,0 +1,46 @@
+version: "3.7"
+services:
+  mariadb:
+    image: mariadb:10.6
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed # Temporary fix for MariaDB 10.6
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+    volumes:
+      - mariadb-data:/var/lib/mysql
+
+  # Enable PostgreSQL only if you use it, see development/README.md for more information.
+  # postgresql:
+  #   image: postgres:11.8
+  #   environment:
+  #     POSTGRES_PASSWORD: 123
+  #   volumes:
+  #     - postgresql-data:/var/lib/postgresql/data
+
+  redis-cache:
+    image: redis:alpine
+
+  redis-queue:
+    image: redis:alpine
+
+  redis-socketio:
+    image: redis:alpine
+
+  frappe:
+    image: frappe/bench:latest
+    command: sleep infinity
+    environment:
+      - SHELL=/bin/bash
+    volumes:
+      - ..:/workspace:cached
+    working_dir: /workspace/frappe-bench
+    ports:
+      - 8000-8005:8000-8005
+      - 9000-9005:9000-9005
+
+volumes:
+  mariadb-data:
+  postgresql-data:
