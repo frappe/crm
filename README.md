@@ -1,21 +1,23 @@
 <div align="center">
-    <picture>
-        <source media="(prefers-color-scheme: light)" srcset="https://crmdocs.frappe.cloud/files/Group%201344CRMLogoWhite.png">
-        <img src="https://crmdocs.frappe.cloud/files/Group%201342CRMLogo.png" height="50">
-    </picture>
-    <p align="center" style="font-weight: bold;">Modern, open-source, CRM solution to supercharge your sales operations.</p>
-    
-<img width="1402" alt="Screenshot 2022-09-18 at 9 16 08 PM" src=".github/screenshots/Deal.png">
-<img width="1402" alt="Screenshot 2022-09-18 at 9 18 17 PM" src=".github/screenshots/Leads.png">
-<img width="1402" alt="Screenshot 2022-09-18 at 11 47 06 PM" src=".github/screenshots/Lead.png">
-<img width="1402" alt="Screenshot 2022-09-18 at 9 18 47 PM" src=".github/screenshots/Notes.png">
-<img width="1402" alt="Screenshot 2022-09-18 at 9 18 47 PM" src=".github/screenshots/Call Logs.png">
-
+    <img width="1402" alt="Screenshot 2022-09-18 at 9 16 08 PM" src=".github/screenshots/MainDealPage.png">
 </div>
 
-# Frappe CRM
+<p align="center">
+    <a href="https://img.shields.io/github/issues/frappe/crm">
+        <img alt="issues" src="https://img.shields.io/github/issues/frappe/crm">
+    </a>
+    <a href="https://img.shields.io/github/license/frappe/crm">
+        <img alt="license" src="https://img.shields.io/github/license/frappe/crm">
+    </a>
+</p>
 
-Frappe CRM is modern, open-source, CRM solution to supercharge your sales operations.
+<details>
+    <summary>Show more screenshots</summary>
+    <img width="1402" alt="Screenshot 2022-09-18 at 9 18 17 PM" src=".github/screenshots/DealsList.png">
+    <img width="1402" alt="Screenshot 2022-09-18 at 11 47 06 PM" src=".github/screenshots/LeadPage.png">
+    <img width="1402" alt="Screenshot 2022-09-18 at 9 18 47 PM" src=".github/screenshots/Emailtemplates.png">
+    <img width="1402" alt="Screenshot 2022-09-18 at 9 18 47 PM" src=".github/screenshots/CallLogs.png">
+</details>
 
 ## Key Features
 
@@ -44,7 +46,7 @@ If you prefer self-hosting, follow the official [Frappe Bench Installation](http
 
 ### Codespaces
 
-1. Open [this link](https://github.com/codespaces/new?hide_repo_select=true&ref=master&repo=587413812&skip_quickstart=true&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=SoutheastAsia) and click on "Create Codespace".
+1. Open [this link](https://github.com/codespaces/new?hide_repo_select=true&ref=master&repo=668199241&skip_quickstart=true&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=SoutheastAsia) and click on "Create Codespace".
 2. Wait for initialization (~15 mins).
 3. Run `bench start` from the terminal tab.
 4. Click on the link beside "8000" port under "Ports" tab.
