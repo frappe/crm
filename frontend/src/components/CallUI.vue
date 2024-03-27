@@ -2,7 +2,7 @@
   <div v-show="showCallPopup">
     <div
       ref="callPopup"
-      class="fixed z-10 flex w-60 cursor-move select-none flex-col rounded-lg bg-gray-900 p-4 text-gray-300 shadow-2xl"
+      class="fixed z-12 flex w-60 cursor-move select-none flex-col rounded-lg bg-gray-900 p-4 text-gray-300 shadow-2xl"
       :style="style"
     >
       <div class="flex flex-row-reverse items-center gap-1">
