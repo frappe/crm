@@ -16,6 +16,7 @@
     <img width="1402" alt="Screenshot 2022-09-18 at 9 18 17 PM" src=".github/screenshots/DealsList.png">
     <img width="1402" alt="Screenshot 2022-09-18 at 11 47 06 PM" src=".github/screenshots/LeadPage.png">
     <img width="1402" alt="Screenshot 2022-09-18 at 9 18 47 PM" src=".github/screenshots/Emailtemplates.png">
+    <img width="1402" alt="Screenshot 2022-09-18 at 9 18 47 PM" src=".github/screenshots/CallUI.png">
     <img width="1402" alt="Screenshot 2022-09-18 at 9 18 47 PM" src=".github/screenshots/CallLogs.png">
 </details>
 
