@@ -387,6 +387,11 @@ async function makeOutgoingCall(number) {
   //   return
   // }
 
+  contact.value = getContact(number)
+  if (!contact.value) {
+    contact.value = getLeadContact(number)
+  }
+
   if (device) {
     log.value = `Attempting to call ${number} ...`
 
