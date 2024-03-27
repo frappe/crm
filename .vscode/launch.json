@@ -1,0 +1,71 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Bench Web",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
+            "args": [
+                "frappe", "serve", "--port", "8000", "--noreload", "--nothreading"
+            ],
+            "cwd": "${workspaceFolder}/frappe-bench/sites",
+            "env": {
+                "DEV_SERVER": "1"
+            }
+        },
+        {
+            "name": "Bench Default Worker",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
+            "args": [
+                "frappe", "worker", "--queue", "default"
+            ],
+            "cwd": "${workspaceFolder}/frappe-bench/sites",
+            "env": {
+                "DEV_SERVER": "1"
+            }
+        },
+        {
+            "name": "Bench Short Worker",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
+            "args": [
+                "frappe", "worker", "--queue", "short"
+            ],
+            "cwd": "${workspaceFolder}/frappe-bench/sites",
+            "env": {
+                "DEV_SERVER": "1"
+            }
+        },
+        {
+            "name": "Bench Long Worker",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
+            "args": [
+                "frappe", "worker", "--queue", "long"
+            ],
+            "cwd": "${workspaceFolder}/frappe-bench/sites",
+            "env": {
+                "DEV_SERVER": "1"
+            }
+        },
+        {
+            "name": "Honcho SocketIO Watch Schedule Worker",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/frappe/.local/bin/honcho",
+            "cwd": "${workspaceFolder}/frappe-bench",
+            "console": "internalConsole",
+            "args": [
+                "start", "socketio", "watch", "schedule", "worker_short", "worker_long", "worker_default"
+            ]
+        }
+    ]
+}
