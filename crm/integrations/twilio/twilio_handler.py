@@ -69,11 +69,11 @@ class Twilio:
 		return identity.replace('(at)', '@')
 	
 	def get_recording_status_callback_url(self):
-		url_path = "/api/method/crm.twilio.api.update_recording_info"
+		url_path = "/api/method/crm.integrations.twilio.api.update_recording_info"
 		return get_public_url(url_path)
 
 	def get_update_call_status_callback_url(self):
-		url_path = "/api/method/crm.twilio.api.update_call_status_info"
+		url_path = "/api/method/crm.integrations.twilio.api.update_call_status_info"
 		return get_public_url(url_path)
 
 	def generate_twilio_dial_response(self, from_number: str, to_number: str):
