@@ -79,6 +79,7 @@ def get_lead_contacts():
 			"image",
 			"modified"
 		],
+		filters={"converted": 0},
 		order_by="lead_name asc",
 		distinct=True,
 	)
