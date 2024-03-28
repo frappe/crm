@@ -999,10 +999,10 @@
   resolved "https://registry.yarnpkg.com/@twilio/voice-errors/-/voice-errors-1.4.0.tgz#0ab954085a32a00442814e56c95936908871ff6e"
   integrity sha512-7BCg9MPz+KQ0JJ6Rl5W3Zw3E+i3Tt77VZw3/2i3Z+IPZITmCOQLu1nKx/0Nlj505Xtfr7eY9Mcern5PfIoBW0w==
 
-"@twilio/voice-sdk@^2.7.1":
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/@twilio/voice-sdk/-/voice-sdk-2.9.0.tgz#57b5097bfc43089e63eeeec1b9be545b607c9a8d"
-  integrity sha512-e7Z3o9VMJ3M5fVf4kPBFrS5D6PqDEX82Sp9RhTBLl/+l2oPAHDcJumNM4pmMCvqdIpgIYg9miq+TiQ65uGko2Q==
+"@twilio/voice-sdk@^2.10.2":
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/@twilio/voice-sdk/-/voice-sdk-2.10.2.tgz#99c668f1af9ea135c026c43a2f293678bd68afc3"
+  integrity sha512-+isGRUI5nkjD0fxl6UeO1hfUYx0SnynFePSmw186QxCHiWqToxnA6hg9SGiC9I4RDJKBDmnKlxA/4egupPQ7wg==
   dependencies:
     "@twilio/voice-errors" "1.4.0"
     "@types/md5" "2.3.2"

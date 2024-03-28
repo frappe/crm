@@ -9,7 +9,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@twilio/voice-sdk": "^2.7.1",
+    "@twilio/voice-sdk": "^2.10.2",
     "@vueuse/core": "^10.3.0",
     "@vueuse/integrations": "^10.3.0",
     "feather-icons": "^4.28.0",
