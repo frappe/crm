@@ -141,7 +141,7 @@ class IncomingCall:
 		"""
 		twilio = Twilio.connect()
 		owners = get_twilio_number_owners(self.to_number)
-		attender = get_the_call_attender(owners)
+		attender = get_the_call_attender(owners, self.from_number)
 
 		if not attender:
 			resp = VoiceResponse()
@@ -190,11 +190,20 @@ def get_active_loggedin_users(users):
 		""", {'users': users})
 	return [row[0] for row in set(rows)]
 
-def get_the_call_attender(owners):
+def get_the_call_attender(owners, caller=None):
 	"""Get attender details from list of owners
 	"""
 	if not owners: return
 	current_loggedin_users = get_active_loggedin_users(list(owners.keys()))
+
+	if len(current_loggedin_users) > 1 and caller:
+		deal_owner = frappe.db.get_value('CRM Deal', {'mobile_no': caller}, 'deal_owner')
+		if not deal_owner:
+			deal_owner = frappe.db.get_value('CRM Lead', {'mobile_no': caller}, 'lead_owner')
+		for user in current_loggedin_users:
+			if user == deal_owner:
+				current_loggedin_users = [user]
+
 	for name, details in owners.items():
 		if ((details['call_receiving_device'] == 'Phone' and details['mobile_no']) or
 			(details['call_receiving_device'] == 'Computer' and name in current_loggedin_users)):
@@ -244,7 +253,7 @@ class TwilioCallDetails:
 			caller = Twilio.emailid_from_identity(identity) if identity else ''
 		else:
 			owners = get_twilio_number_owners(to_number)
-			attender = get_the_call_attender(owners)
+			attender = get_the_call_attender(owners, from_number)
 			receiver = attender['name'] if attender else ''
 
 		return {
