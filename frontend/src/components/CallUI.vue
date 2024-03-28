@@ -2,7 +2,7 @@
   <div v-show="showCallPopup">
     <div
       ref="callPopup"
-      class="fixed z-12 flex w-60 cursor-move select-none flex-col rounded-lg bg-gray-900 p-4 text-gray-300 shadow-2xl"
+      class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-lg bg-gray-900 p-4 text-gray-300 shadow-2xl"
       :style="style"
     >
       <div class="flex flex-row-reverse items-center gap-1">
@@ -205,7 +205,7 @@ const { setMakeCall, setTwilioEnabled, $dialog } = globalStore()
 
 let device = ''
 let log = ref('Connecting...')
-let _call = ref(null)
+let _call = null
 const contact = ref({
   full_name: '',
   mobile_no: '',
@@ -228,8 +228,8 @@ const note = ref({
 async function updateNote(_note, insert_mode = false) {
   note.value = _note
   if (insert_mode && _note.name) {
-    await call('crm.twilio.api.add_note_to_call_log', {
-      call_sid: _call.value.parameters.CallSid,
+    await call('crm.integrations.twilio.api.add_note_to_call_log', {
+      call_sid: _call.parameters.CallSid,
       note: _note.name,
     })
   }
@@ -243,14 +243,14 @@ let { style } = useDraggable(callPopup, {
 })
 
 async function is_twilio_enabled() {
-  return await call('crm.twilio.api.is_enabled')
+  return await call('crm.integrations.twilio.api.is_enabled')
 }
 
 async function startupClient() {
   log.value = 'Requesting Access Token...'
 
   try {
-    const data = await call('crm.twilio.api.generate_access_token')
+    const data = await call('crm.integrations.twilio.api.generate_access_token')
     log.value = 'Got a token.'
     intitializeDevice(data.token)
   } catch (err) {
@@ -286,17 +286,17 @@ function addDeviceListeners() {
   device.on('incoming', handleIncomingCall)
 
   device.on('tokenWillExpire', async () => {
-    const data = await call('crm.twilio.api.generate_access_token')
+    const data = await call('crm.integrations.twilio.api.generate_access_token')
     device.updateToken(data.token)
   })
 }
 
 function toggleMute() {
-  if (_call.value.isMuted()) {
-    _call.value.mute(false)
+  if (_call.isMuted()) {
+    _call.mute(false)
     muted.value = false
   } else {
-    _call.value.mute()
+    _call.mute()
     muted.value = true
   }
 }
@@ -318,9 +318,9 @@ function handleIncomingCall(call) {
   }
 
   showCallPopup.value = true
-  _call.value = call
+  _call = call
 
-  _call.value.on('accept', (conn) => {
+  _call.on('accept', (conn) => {
     console.log('conn', conn)
   })
 
@@ -333,12 +333,12 @@ function handleIncomingCall(call) {
 async function acceptIncomingCall() {
   log.value = 'Accepted incoming call.'
   onCall.value = true
-  await _call.value.accept()
+  await _call.accept()
   counterUp.value.start()
 }
 
 function rejectIncomingCall() {
-  _call.value.reject()
+  _call.reject()
   log.value = 'Rejected incoming call'
   showCallPopup.value = false
   if (showSmallCallWindow.value == undefined) {
@@ -351,7 +351,7 @@ function rejectIncomingCall() {
 }
 
 function hangUpCall() {
-  _call.value.disconnect()
+  _call.disconnect()
   log.value = 'Hanging up incoming call'
   onCall.value = false
   callStatus.value = ''
@@ -371,7 +371,7 @@ function handleDisconnectedIncomingCall() {
   } else {
     showSmallCallWindow.value = false
   }
-  _call.value = null
+  _call = null
   muted.value = false
   onCall.value = false
   counterUp.value.stop()
@@ -396,14 +396,14 @@ async function makeOutgoingCall(number) {
     log.value = `Attempting to call ${number} ...`
 
     try {
-      _call.value = await device.connect({
+      _call = await device.connect({
         params: { To: number },
       })
 
       showCallPopup.value = true
       callStatus.value = 'initiating'
 
-      _call.value.on('messageReceived', (message) => {
+      _call.on('messageReceived', (message) => {
         let info = message.content
         callStatus.value = info.CallStatus
 
@@ -417,19 +417,19 @@ async function makeOutgoingCall(number) {
         }
       })
 
-      _call.value.on('accept', () => {
+      _call.on('accept', () => {
         log.value = `Initiated call!`
         showCallPopup.value = true
         calling.value = true
         onCall.value = false
       })
-      _call.value.on('disconnect', (conn) => {
+      _call.on('disconnect', (conn) => {
         log.value = `Call ended from makeOutgoing call disconnect.`
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
         showSmallCallWindow = false
-        _call.value = null
+        _call = null
         callStatus.value = ''
         muted.value = false
         counterUp.value.stop()
@@ -438,13 +438,13 @@ async function makeOutgoingCall(number) {
           content: '',
         }
       })
-      _call.value.on('cancel', () => {
+      _call.on('cancel', () => {
         log.value = `Call ended from makeOutgoing call cancel.`
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
         showSmallCallWindow = false
-        _call.value = null
+        _call = null
         callStatus.value = ''
         muted.value = false
         note.value = {
@@ -462,7 +462,7 @@ async function makeOutgoingCall(number) {
 }
 
 function cancelCall() {
-  _call.value.disconnect()
+  _call.disconnect()
   showCallPopup.value = false
   if (showSmallCallWindow.value == undefined) {
     showSmallCallWindow = false

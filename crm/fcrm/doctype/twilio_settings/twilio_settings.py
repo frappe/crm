@@ -62,7 +62,7 @@ class TwilioSettings(Document):
 			frappe.throw(_("Twilio API credential creation error."))
 
 	def get_twilio_voice_url(self):
-		url_path = "/api/method/crm.twilio.api.voice"
+		url_path = "/api/method/crm.integrations.twilio.api.voice"
 		return get_public_url(url_path)
 
 	def get_application(self, twilio, friendly_name=None):
