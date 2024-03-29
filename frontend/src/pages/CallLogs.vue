@@ -15,6 +15,7 @@
   <CallLogsListView
     v-if="callLogs.data && rows.length"
     v-model="callLogs.data.page_length_count"
+    v-model:list="callLogs"
     :rows="rows"
     :columns="callLogs.data.columns"
     :options="{
@@ -26,7 +27,6 @@
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
-    @reload="callLogs.reload()"
     @applyFilter="(data) => viewControls.applyFilter(data)"
   />
   <div

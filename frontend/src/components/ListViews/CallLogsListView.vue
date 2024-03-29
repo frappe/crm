@@ -66,7 +66,17 @@
         </ListRowItem>
       </ListRow>
     </ListRows>
-    <ListSelectBanner />
+    <ListSelectBanner>
+      <template #actions="{ selections, unselectAll }">
+        <Dropdown :options="bulkActions(selections, unselectAll)">
+          <Button variant="ghost">
+            <template #icon>
+              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
+            </template>
+          </Button>
+        </Dropdown>
+      </template>
+    </ListSelectBanner>
   </ListView>
   <ListFooter
     class="border-t px-5 py-2"
@@ -89,8 +99,13 @@ import {
   ListRowItem,
   ListFooter,
   Tooltip,
+  Dropdown,
+  call,
 } from 'frappe-ui'
-import { watch } from 'vue'
+import { setupBulkActions, createToast } from '@/utils'
+import { globalStore } from '@/stores/global'
+import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   rows: {
@@ -121,9 +136,79 @@ const emit = defineEmits([
 ])
 
 const pageLengthCount = defineModel()
+const list = defineModel('list')
+
+const router = useRouter()
+
+const { $dialog } = globalStore()
 
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
   emit('updatePageCount', val)
+})
+
+function deleteValues(selections, unselectAll) {
+  $dialog({
+    title: 'Delete',
+    message: `Are you sure you want to delete ${selections.size} item${
+      selections.size > 1 ? 's' : ''
+    }?`,
+    variant: 'danger',
+    actions: [
+      {
+        label: 'Delete',
+        variant: 'solid',
+        theme: 'red',
+        onClick: (close) => {
+          call('frappe.desk.reportview.delete_items', {
+            items: JSON.stringify(Array.from(selections)),
+            doctype: 'CRM Call Log',
+          }).then(() => {
+            createToast({
+              title: 'Deleted successfully',
+              icon: 'check',
+              iconClasses: 'text-green-600',
+            })
+            unselectAll()
+            list.value.reload()
+            close()
+          })
+        },
+      },
+    ],
+  })
+}
+
+const customBulkActions = ref([])
+
+function bulkActions(selections, unselectAll) {
+  let actions = [
+    {
+      label: 'Delete',
+      onClick: () => deleteValues(selections, unselectAll),
+    },
+  ]
+  customBulkActions.value.forEach((action) => {
+    actions.push({
+      label: action.label,
+      onClick: () =>
+        action.onClick({
+          list: list.value,
+          selections,
+          unselectAll,
+          call,
+          createToast,
+          $dialog,
+          router,
+        }),
+    })
+  })
+  return actions
+}
+
+onMounted(() => {
+  if (!list.value?.data) return
+  setupBulkActions(list.value.data)
+  customBulkActions.value = list.value?.data?.bulkActions || []
 })
 </script>
