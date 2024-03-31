@@ -12,7 +12,8 @@
         <Tooltip :text="label" placement="right">
           <slot name="icon">
             <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
-              <component :is="icon" class="h-4 w-4 text-gray-700" />
+              <FeatherIcon v-if="typeof icon == 'string'" :name="icon" class="h-4 w-4 text-gray-700" />
+              <component v-else :is="icon" class="h-4 w-4 text-gray-700" />
             </span>
           </slot>
         </Tooltip>

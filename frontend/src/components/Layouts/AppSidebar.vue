@@ -76,21 +76,29 @@
         </Section>
       </div>
     </div>
-    <SidebarLink
-      :label="isSidebarCollapsed ? 'Expand' : 'Collapse'"
-      :isCollapsed="isSidebarCollapsed"
-      @click="isSidebarCollapsed = !isSidebarCollapsed"
-      class="m-2"
-    >
-      <template #icon>
-        <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
-          <CollapseSidebar
-            class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
-            :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
-          />
-        </span>
-      </template>
-    </SidebarLink>
+    <div class="m-2 flex flex-col gap-1">
+      <SidebarLink
+        label="Docs"
+        :isCollapsed="isSidebarCollapsed"
+        icon="book-open"
+        @click="() => openDocs()"
+      />
+      <SidebarLink
+        :label="isSidebarCollapsed ? 'Expand' : 'Collapse'"
+        :isCollapsed="isSidebarCollapsed"
+        @click="isSidebarCollapsed = !isSidebarCollapsed"
+        class=""
+      >
+        <template #icon>
+          <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
+            <CollapseSidebar
+              class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
+              :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
+            />
+          </span>
+        </template>
+      </SidebarLink>
+    </div>
     <Notifications />
   </div>
 </template>
@@ -113,6 +121,7 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
+import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 
@@ -221,5 +230,9 @@ function getIcon(routeName) {
     default:
       return PinIcon
   }
+}
+
+function openDocs() {
+  window.open('https://docs.frappe.io/crm', '_blank')
 }
 </script>
