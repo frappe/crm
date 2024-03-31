@@ -7,6 +7,7 @@
           <FormControl
             v-if="field.type === 'select'"
             type="select"
+            class="form-control"
             :options="field.options"
             v-model="newLead[field.name]"
           >
@@ -160,3 +161,9 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+:deep(.form-control select) {
+  padding-left: 2rem;
+}
+</style>

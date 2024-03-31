@@ -38,7 +38,7 @@
               <FormControl
                 class="!w-32"
                 type="select"
-                :value="sort.direction"
+                v-model="sort.direction"
                 :options="[
                   { label: 'Ascending', value: 'asc' },
                   { label: 'Descending', value: 'desc' },

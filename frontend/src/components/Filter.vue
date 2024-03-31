@@ -37,7 +37,7 @@
               <div id="operator">
                 <FormControl
                   type="select"
-                  :value="f.operator"
+                  v-model="f.operator"
                   @change="(e) => updateOperator(e, f)"
                   :options="getOperators(f.field.fieldtype, f.field.fieldname)"
                   placeholder="Operator"
