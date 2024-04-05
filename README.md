@@ -41,6 +41,10 @@
 
 ## Getting Started
 
+### Cloud Hosting
+
+Get started with your personal or business site with a few clicks on [Frappe Cloud](https://frappecloud.com/marketplace/apps/crm).
+
 ### Self-hosting
 
 If you prefer self-hosting, follow the official [Frappe Bench Installation](https://github.com/frappe/bench#installation) instructions.
@@ -76,6 +80,10 @@ If you prefer self-hosting, follow the official [Frappe Bench Installation](http
 ## Need help?
 
 Join our [telegram group](https://t.me/frappecrm) for instant help.
+
+## Documentation
+
+Check out the [official documentation](https://docs.frappe.io/crm) for more details.
 
 ## License
 
