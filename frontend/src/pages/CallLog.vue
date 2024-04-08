@@ -157,14 +157,10 @@ import {
   createResource,
   Breadcrumbs,
 } from 'frappe-ui'
-import { usersStore } from '@/stores/users'
-import { contactsStore } from '@/stores/contacts'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const { getUser } = usersStore()
-const { contacts, getContact, getLeadContact } = contactsStore()
 
 const props = defineProps({
   callLogId: {
@@ -184,31 +180,6 @@ const callLog = createResource({
   },
   transform: (doc) => {
     doc.duration = secondsToDuration(doc.duration)
-    if (doc.type === 'Incoming') {
-      doc.caller = {
-        label:
-          getContact(doc.from)?.full_name ||
-          getLeadContact(doc.from)?.full_name ||
-          'Unknown',
-        image: getContact(doc.from)?.image || getLeadContact(doc.from)?.image,
-      }
-      doc.receiver = {
-        label: getUser(doc.receiver).full_name,
-        image: getUser(doc.receiver).user_image,
-      }
-    } else {
-      doc.caller = {
-        label: getUser(doc.caller).full_name,
-        image: getUser(doc.caller).user_image,
-      }
-      doc.receiver = {
-        label:
-          getContact(doc.to)?.full_name ||
-          getLeadContact(doc.to)?.full_name ||
-          'Unknown',
-        image: getContact(doc.to)?.image || getLeadContact(doc.to)?.image,
-      }
-    }
     return doc
   },
 })
@@ -232,7 +203,6 @@ function createLead() {
   }).then((d) => {
     if (d) {
       callLog.reload()
-      contacts.reload()
       router.push({ name: 'Lead', params: { leadId: d } })
     }
   })

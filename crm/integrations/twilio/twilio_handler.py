@@ -262,6 +262,6 @@ class TwilioCallDetails:
 			'id': self.call_sid,
 			'from': from_number,
 			'to': to_number,
-			'reciever': receiver,
+			'receiver': receiver,
 			'caller': caller,
 		}
