@@ -88,6 +88,43 @@ def get_call_log(name):
 			"content": note[1]
 		}
 
+	def get_contact(number):
+		c = frappe.db.get_value("Contact", {"mobile_no": number}, ["full_name", "image"], as_dict=True)
+		if c:
+			return [c.full_name, c.image]
+		return [None, None]
+	
+	def get_lead_contact(number):
+		l = frappe.db.get_value("CRM Lead", {"mobile_no": number, "converted": 0}, ["lead_name", "image"], as_dict=True)
+		if l:
+			return [l.lead_name, l.image]
+		return [None, None]
+
+	def get_user(user):
+		u = frappe.db.get_value("User", user, ["full_name", "user_image"], as_dict=True)
+		if u:
+			return [u.full_name, u.user_image]
+		return [None, None]
+
+	if doc.type == "Incoming":
+		doc.caller = {
+			"label": get_contact(doc.get("from"))[0] or get_lead_contact(doc.get("from"))[0] or "Unknown",
+			"image": get_contact(doc.get("from"))[1] or get_lead_contact(doc.get("from"))[1]
+		}
+		doc.receiver = {
+			"label": get_user(doc.get("receiver"))[0],
+			"image": get_user(doc.get("receiver"))[1]
+		}
+	else:
+		doc.caller = {
+			"label": get_user(doc.get("caller"))[0],
+			"image": get_user(doc.get("caller"))[1]
+		}
+		doc.receiver = {
+			"label": get_contact(doc.get("to"))[0] or get_lead_contact(doc.get("to"))[0] or "Unknown",
+			"image": get_contact(doc.get("to"))[1] or get_lead_contact(doc.get("to"))[1]
+	}
+
 	return doc
 
 @frappe.whitelist()
