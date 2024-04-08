@@ -46,7 +46,7 @@
               <div id="value" class="!min-w-[140px]">
                 <component
                   :is="getValSelect(f)"
-                  :value="f.value"
+                  v-model="f.value"
                   @change="(v) => updateValue(v, f)"
                   placeholder="Value"
                 />
