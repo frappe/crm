@@ -14,9 +14,9 @@
       <div
         class="z-20 flex items-center justify-between border-b bg-white px-5 py-2.5"
       >
-        <div class="text-base font-medium">Notifications</div>
+        <div class="text-base font-medium">{{ __('Notifications') }}</div>
         <div class="flex gap-1">
-          <Tooltip text="Mark all as read">
+          <Tooltip :text="__('Mark all as read')">
             <div>
               <Button
                 variant="ghost"
@@ -28,7 +28,7 @@
               </Button>
             </div>
           </Tooltip>
-          <Tooltip text="Close">
+          <Tooltip :text="__('Close')">
             <div>
               <Button variant="ghost" @click="() => toggleNotificationPanel()">
                 <template #icon>
@@ -58,11 +58,11 @@
             <UserAvatar :user="n.from_user.name" size="lg" />
           </div>
           <div>
-            <div class="mb-2 space-x-1 leading-5 text-gray-700">
+            <div class="mb-2 space-x-1 leading-5 text-gray-600">
               <span class="font-medium text-gray-900">
                 {{ n.from_user.full_name }}
               </span>
-              <span>mentioned you in {{ n.reference_doctype }}</span>
+              <span>{{ __('mentioned you in ') + n.reference_doctype }}</span>
               <span class="font-medium text-gray-900">
                 {{ n.reference_name }}
               </span>
@@ -79,7 +79,7 @@
       >
         <NotificationsIcon class="h-20 w-20 text-gray-300" />
         <div class="text-lg font-medium text-gray-500">
-          No new notifications
+          {{ __('No new notifications') }}
         </div>
       </div>
     </div>
@@ -90,7 +90,6 @@ import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { notificationsStore } from '@/stores/notifications'
-import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { Tooltip } from 'frappe-ui'
