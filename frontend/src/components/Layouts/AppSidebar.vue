@@ -10,7 +10,7 @@
       <div class="mb-3 flex flex-col">
         <SidebarLink
           id="notifications-btn"
-          label="Notifications"
+          :label="__('Notifications')"
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
           @click="() => toggleNotificationPanel()"
@@ -59,7 +59,7 @@
                 :class="{ 'rotate-90': opened }"
               />
               <span class="uppercase">
-                {{ view.name }}
+                {{ __(view.name) }}
               </span>
             </div>
           </template>
@@ -67,7 +67,7 @@
             <SidebarLink
               v-for="link in view.views"
               :icon="link.icon"
-              :label="link.label"
+              :label="__(link.label)"
               :to="link.to"
               :isCollapsed="isSidebarCollapsed"
               class="mx-2 my-0.5"
@@ -78,13 +78,13 @@
     </div>
     <div class="m-2 flex flex-col gap-1">
       <SidebarLink
-        label="Docs"
+        :label="__('Docs')"
         :isCollapsed="isSidebarCollapsed"
         icon="book-open"
         @click="() => openDocs()"
       />
       <SidebarLink
-        :label="isSidebarCollapsed ? 'Expand' : 'Collapse'"
+        :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
         @click="isSidebarCollapsed = !isSidebarCollapsed"
         class=""
