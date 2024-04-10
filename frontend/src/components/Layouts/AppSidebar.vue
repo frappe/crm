@@ -45,7 +45,7 @@
           <template #header="{ opened, hide, toggle }">
             <div
               v-if="!hide"
-              class="flex cursor-pointer gap-1.5 px-1 text-sm font-medium text-gray-600 transition-all duration-300 ease-in-out"
+              class="flex cursor-pointer gap-1.5 px-1 text-base font-medium text-gray-600 transition-all duration-300 ease-in-out"
               :class="
                 isSidebarCollapsed
                   ? 'ml-0 h-0 overflow-hidden opacity-0'
@@ -90,7 +90,7 @@
         class=""
       >
         <template #icon>
-          <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
+          <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
             <CollapseSidebar
               class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
               :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"

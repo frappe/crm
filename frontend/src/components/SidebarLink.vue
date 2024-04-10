@@ -1,28 +1,28 @@
 <template>
   <button
-    class="flex h-7 cursor-pointer items-center rounded text-gray-800 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-gray-400"
+    class="flex h-7 cursor-pointer items-center rounded text-gray-700 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-gray-400"
     :class="isActive ? 'bg-white shadow-sm' : 'hover:bg-gray-100'"
     @click="handleClick"
   >
     <div
       class="flex w-full items-center justify-between duration-300 ease-in-out"
-      :class="isCollapsed ? 'p-1' : 'px-2 py-1'"
+      :class="isCollapsed ? 'ml-[3px] p-1' : 'px-2 py-1'"
     >
       <div class="flex items-center">
         <Tooltip :text="label" placement="right" :disabled="!isCollapsed">
           <slot name="icon">
-            <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
+            <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
               <FeatherIcon
                 v-if="typeof icon == 'string'"
                 :name="icon"
-                class="h-4 w-4 text-gray-700"
+                class="h-4.5 w-4.5 text-gray-700"
               />
-              <component v-else :is="icon" class="h-4 w-4 text-gray-700" />
+              <component v-else :is="icon" class="h-4.5 w-4.5 text-gray-700" />
             </span>
           </slot>
         </Tooltip>
         <span
-          class="flex-1 flex-shrink-0 text-sm duration-300 ease-in-out"
+          class="flex-1 flex-shrink-0 text-base duration-300 ease-in-out"
           :class="
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
