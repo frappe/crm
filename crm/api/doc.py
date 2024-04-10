@@ -240,7 +240,8 @@ def get_list_data(
 		"views": get_views(doctype),
 		"total_count": len(frappe.get_list(doctype, filters=filters)),
 		"row_count": len(data),
-		"form_script": get_form_script(doctype)
+		"form_script": get_form_script(doctype),
+		"list_script": get_form_script(doctype, "List"),
 	}
 
 
