@@ -1,29 +1,29 @@
 <template>
-  <Dropdown :options="userDropdownOptions">
+  <Dropdown :options="dropdownOptions">
     <template v-slot="{ open }">
       <button
-        class="flex h-12 py-2 items-center rounded-md duration-300 ease-in-out"
+        class="flex h-12 items-center rounded-md py-2 duration-300 ease-in-out"
         :class="
           isCollapsed
-            ? 'px-0 w-auto'
+            ? 'w-auto px-0'
             : open
-            ? 'bg-white shadow-sm px-2 w-52'
-            : 'hover:bg-gray-200 px-2 w-52'
+            ? 'w-52 bg-white px-2 shadow-sm'
+            : 'w-52 px-2 hover:bg-gray-200'
         "
       >
-        <CRMLogo class="w-8 h-8 rounded flex-shrink-0" />
+        <CRMLogo class="size-8 flex-shrink-0 rounded" />
         <div
           class="flex flex-1 flex-col text-left duration-300 ease-in-out"
           :class="
             isCollapsed
-              ? 'opacity-0 ml-0 w-0 overflow-hidden'
-              : 'opacity-100 ml-2 w-auto'
+              ? 'ml-0 w-0 overflow-hidden opacity-0'
+              : 'ml-2 w-auto opacity-100'
           "
         >
-          <div class="text-base font-medium text-gray-900 leading-none">
-            CRM
+          <div class="text-base font-medium leading-none text-gray-900">
+            {{ __('CRM') }}
           </div>
-          <div class="mt-1 text-sm text-gray-700 leading-none">
+          <div class="mt-1 text-sm leading-none text-gray-700">
             {{ user.full_name }}
           </div>
         </div>
@@ -31,11 +31,15 @@
           class="duration-300 ease-in-out"
           :class="
             isCollapsed
-              ? 'opacity-0 ml-0 w-0 overflow-hidden'
-              : 'opacity-100 ml-2 w-auto'
+              ? 'ml-0 w-0 overflow-hidden opacity-0'
+              : 'ml-2 w-auto opacity-100'
           "
         >
-          <FeatherIcon name="chevron-down" class="h-4 w-4 text-gray-600" aria-hidden="true" />
+          <FeatherIcon
+            name="chevron-down"
+            class="size-4 text-gray-600"
+            aria-hidden="true"
+          />
         </div>
       </button>
     </template>
@@ -47,7 +51,7 @@ import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { Dropdown } from 'frappe-ui'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -61,16 +65,16 @@ const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
-const userDropdownOptions = [
+let dropdownOptions = ref([
   {
     icon: 'corner-up-left',
-    label: 'Switch to Desk',
+    label: computed(() => __('Switch to Desk')),
     onClick: () => window.location.replace('/app'),
   },
   {
     icon: 'log-out',
-    label: 'Log out',
+    label: computed(() => __('Log out')),
     onClick: () => logout.submit(),
   },
-]
+])
 </script>
