@@ -4,6 +4,10 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <CustomActions
+        v-if="dealsListView?.customListActions"
+        :actions="dealsListView.customListActions"
+      />
       <Button variant="solid" label="Create" @click="showNewDialog = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -18,6 +22,7 @@
     doctype="CRM Deal"
   />
   <DealsListView
+    ref="dealsListView"
     v-if="deals.data && rows.length"
     v-model="deals.data.page_length_count"
     v-model:list="deals"
@@ -65,6 +70,7 @@
 </template>
 
 <script setup>
+import CustomActions from '@/components/CustomActions.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
@@ -91,6 +97,8 @@ const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
 
 const router = useRouter()
+
+const dealsListView = ref(null)
 
 // deals data is loaded in the ViewControls component
 const deals = ref({})
