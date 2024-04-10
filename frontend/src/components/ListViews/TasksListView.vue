@@ -19,18 +19,16 @@
         v-slot="{ idx, column, item }"
         :row="row"
       >
-        <Tooltip
-          v-if="column.key === 'due_date'"
-          class="flex items-center gap-2 truncate text-base"
-          :text="dateFormat(item, 'ddd, MMM D, YYYY | hh:mm a')"
-        >
-          <div>
-            <CalendarIcon />
-          </div>
-          <div v-if="item" class="truncate">
-            {{ dateFormat(item, 'D MMM, hh:mm a') }}
-          </div>
-        </Tooltip>
+        <div v-if="column.key === 'due_date'">
+          <Tooltip :text="dateFormat(item, 'ddd, MMM D, YYYY | hh:mm a')">
+            <div class="flex items-center gap-2 truncate text-base">
+              <CalendarIcon />
+              <div v-if="item" class="truncate">
+                {{ dateFormat(item, 'D MMM, hh:mm a') }}
+              </div>
+            </div>
+          </Tooltip>
+        </div>
         <ListRowItem
           v-else
           :item="item"
@@ -53,13 +51,14 @@
               />
             </div>
           </template>
-          <Tooltip
-            :text="item.label"
+          <div
             v-if="['modified', 'creation'].includes(column.key)"
             class="truncate text-base"
           >
-            {{ item.timeAgo }}
-          </Tooltip>
+            <Tooltip :text="item.label">
+              <div>{{ item.timeAgo }}</div>
+            </Tooltip>
+          </div>
           <div v-else-if="column.type === 'Check'">
             <FormControl
               type="checkbox"

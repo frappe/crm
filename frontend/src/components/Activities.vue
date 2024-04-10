@@ -162,14 +162,16 @@
               >
                 <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
               </div>
-              <div v-if="task.due_date" class="flex gap-2">
-                <CalendarIcon />
+              <div v-if="task.due_date">
                 <Tooltip
                   :text="
                     dateFormat(task.due_date, 'ddd, MMM D, YYYY | hh:mm a')
                   "
                 >
-                  {{ dateFormat(task.due_date, 'D MMM, hh:mm a') }}
+                  <div class="flex gap-2">
+                    <CalendarIcon />
+                    <div>{{ dateFormat(task.due_date, 'D MMM, hh:mm a') }}</div>
+                  </div>
                 </Tooltip>
               </div>
               <div class="flex items-center justify-center">
@@ -258,11 +260,10 @@
                 {{ call.type == 'Incoming' ? 'Inbound' : 'Outbound' }} Call
               </div>
               <div>
-                <Tooltip
-                  class="text-sm text-gray-600"
-                  :text="dateFormat(call.creation, dateTooltipFormat)"
-                >
-                  {{ timeAgo(call.creation) }}
+                <Tooltip :text="dateFormat(call.creation, dateTooltipFormat)">
+                  <div class="text-sm text-gray-600">
+                    {{ timeAgo(call.creation) }}
+                  </div>
                 </Tooltip>
               </div>
             </div>
@@ -374,10 +375,11 @@
                 <span>{{ activity.data.sender_full_name }}</span>
                 <span>&middot;</span>
                 <Tooltip
-                  class="text-sm text-gray-600"
                   :text="dateFormat(activity.creation, dateTooltipFormat)"
                 >
-                  {{ timeAgo(activity.creation) }}
+                  <div class="text-sm text-gray-600">
+                    {{ timeAgo(activity.creation) }}
+                  </div>
                 </Tooltip>
               </div>
               <div class="flex gap-0.5">
@@ -456,11 +458,10 @@
               </span>
             </div>
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip
-                :text="dateFormat(activity.creation, dateTooltipFormat)"
-                class="text-gray-600"
-              >
-                {{ timeAgo(activity.creation) }}
+              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+                <div class="text-gray-600">
+                  {{ timeAgo(activity.creation) }}
+                </div>
               </Tooltip>
             </div>
           </div>
@@ -481,11 +482,10 @@
               {{ activity.type == 'Incoming' ? 'Inbound' : 'Outbound' }} Call
             </div>
             <div>
-              <Tooltip
-                class="text-sm text-gray-600"
-                :text="dateFormat(activity.creation, dateTooltipFormat)"
-              >
-                {{ timeAgo(activity.creation) }}
+              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+                <div class="text-sm text-gray-600">
+                  {{ timeAgo(activity.creation) }}
+                </div>
               </Tooltip>
             </div>
           </div>
@@ -602,11 +602,10 @@
             </div>
 
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip
-                :text="dateFormat(activity.creation, dateTooltipFormat)"
-                class="text-gray-600"
-              >
-                {{ timeAgo(activity.creation) }}
+              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+                <div class="text-gray-600">
+                  {{ timeAgo(activity.creation) }}
+                </div>
               </Tooltip>
             </div>
           </div>
@@ -665,11 +664,10 @@
             </div>
 
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip
-                :text="dateFormat(activity.creation, dateTooltipFormat)"
-                class="text-gray-600"
-              >
-                {{ timeAgo(activity.creation) }}
+              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+                <div class="text-gray-600">
+                  {{ timeAgo(activity.creation) }}
+                </div>
               </Tooltip>
             </div>
           </div>

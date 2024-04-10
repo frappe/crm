@@ -37,13 +37,14 @@
               />
             </div>
           </template>
-          <Tooltip
-            :text="item.label"
+          <div
             v-if="['modified', 'creation'].includes(column.key)"
             class="truncate text-base"
           >
-            {{ item.timeAgo }}
-          </Tooltip>
+            <Tooltip :text="item.label">
+              <div>{{ item.timeAgo }}</div>
+            </Tooltip>
+          </div>
           <div v-else-if="column.type === 'Check'">
             <FormControl
               type="checkbox"

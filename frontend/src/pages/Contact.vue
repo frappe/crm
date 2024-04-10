@@ -51,14 +51,12 @@
             </component>
           </div>
           <div class="flex flex-col gap-0.5 truncate">
-            <Tooltip :text="contact.data.full_name">
-              <div class="truncate text-3xl font-semibold">
-                <span v-if="contact.data.salutation">
-                  {{ contact.data.salutation + '. ' }}
-                </span>
-                <span>{{ contact.data.full_name }}</span>
-              </div>
-            </Tooltip>
+            <div class="truncate text-3xl font-semibold">
+              <span v-if="contact.data.salutation">
+                {{ contact.data.salutation + '. ' }}
+              </span>
+              <span>{{ contact.data.full_name }}</span>
+            </div>
             <div class="flex items-center gap-2 text-base text-gray-700">
               <div
                 v-if="contact.data.email_id"

@@ -58,8 +58,7 @@
               <PhoneIcon class="h-4 w-4" />
             </div>
           </template>
-          <Tooltip
-            :text="item.label"
+          <div
             v-if="
               [
                 'modified',
@@ -71,8 +70,10 @@
             "
             class="truncate text-base"
           >
-            {{ item.timeAgo }}
-          </Tooltip>
+            <Tooltip :text="item.label">
+              <div>{{ item.timeAgo }}</div>
+            </Tooltip>
+          </div>
           <div
             v-else-if="column.key === 'sla_status'"
             class="truncate text-base"

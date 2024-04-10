@@ -51,16 +51,15 @@
         About this Deal
       </div>
       <div class="flex items-center justify-start gap-5 border-b p-5">
-        <Tooltip
-          text="Organization logo"
-          class="group relative h-[88px] w-[88px]"
-        >
-          <Avatar
-            size="3xl"
-            class="h-[88px] w-[88px]"
-            :label="organization?.name"
-            :image="organization?.organization_logo"
-          />
+        <Tooltip text="Organization logo">
+          <div class="group relative h-[88px] w-[88px]">
+            <Avatar
+              size="3xl"
+              class="h-[88px] w-[88px]"
+              :label="organization?.name"
+              :image="organization?.organization_logo"
+            />
+          </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate">
           <Tooltip :text="organization?.name">
@@ -69,22 +68,24 @@
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
-            <Tooltip text="Make a call...">
+            <Tooltip text="Make a call">
               <Button class="h-7 w-7" @click="triggerCall">
                 <PhoneIcon class="h-4 w-4" />
               </Button>
             </Tooltip>
-            <Button class="h-7 w-7">
-              <EmailIcon
-                class="h-4 w-4"
-                @click="
-                  deal.data.email
-                    ? openEmailBox()
-                    : errorMessage('No email set')
-                "
-              />
-            </Button>
-            <Tooltip text="Go to website...">
+            <Tooltip text="Send an email">
+              <Button class="h-7 w-7">
+                <EmailIcon
+                  class="h-4 w-4"
+                  @click="
+                    deal.data.email
+                      ? openEmailBox()
+                      : errorMessage('No email set')
+                  "
+                />
+              </Button>
+            </Tooltip>
+            <Tooltip text="Go to website">
               <Button class="h-7 w-7">
                 <LinkIcon
                   class="h-4 w-4"
@@ -155,7 +156,9 @@
               />
               <div v-else>
                 <div
-                  v-if="deal_contacts?.loading && deal_contacts?.data?.length == 0"
+                  v-if="
+                    deal_contacts?.loading && deal_contacts?.data?.length == 0
+                  "
                   class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-gray-500"
                 >
                   <LoadingIndicator class="h-4 w-4" />

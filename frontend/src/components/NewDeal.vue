@@ -46,7 +46,9 @@
             </template>
             <template #item-label="{ option }">
               <Tooltip :text="option.value">
-                {{ getUser(option.value).full_name }}
+                <div class="cursor-pointer">
+                  {{ getUser(option.value).full_name }}
+                </div>
               </Tooltip>
             </template>
           </Link>

@@ -92,15 +92,13 @@
                       <div
                         class="my-2 space-y-1.5 divide-y rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl"
                       >
-                        <div class="">
-                          <div
+                        <div>
+                          <DropdownItem
                             v-if="field.options?.length"
                             v-for="option in field.options"
-                            :key="option.value"
-                            class="group flex w-full items-center justify-between rounded bg-transparent p-1 pl-2 text-base text-gray-800 transition-colors hover:bg-gray-200 active:bg-gray-300"
-                          >
-                            <DropdownItem :option="option" />
-                          </div>
+                            :key="option.name"
+                            :option="option"
+                          />
                           <div v-else>
                             <div class="p-1.5 px-7 text-base text-gray-500">
                               No {{ field.label }} Available
@@ -166,7 +164,7 @@ import CertificateIcon from '@/components/Icons/CertificateIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
-import { call } from 'frappe-ui'
+import { Tooltip, call } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { createToast } from '@/utils'
 import { useRouter } from 'vue-router'

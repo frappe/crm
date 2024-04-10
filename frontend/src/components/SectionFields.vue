@@ -13,13 +13,14 @@
       <div
         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
       >
-        <Tooltip
+        <div
           v-if="field.read_only && field.type !== 'checkbox'"
           class="flex h-7 cursor-pointer items-center px-2 py-1 text-gray-600"
-          :text="field.tooltip"
         >
-          {{ data[field.name] }}
-        </Tooltip>
+          <Tooltip :text="field.tooltip">
+            <div>{{ data[field.name] }}</div>
+          </Tooltip>
+        </div>
         <FormControl
           v-else-if="field.type == 'checkbox'"
           class="form-control"
@@ -71,7 +72,9 @@
           </template>
           <template #item-label="{ option }">
             <Tooltip :text="option.value">
-              {{ getUser(option.value).full_name }}
+              <div class="cursor-pointer">
+                {{ getUser(option.value).full_name }}
+              </div>
             </Tooltip>
           </template>
         </Link>

@@ -7,7 +7,7 @@
       'box-shadow': '8px 0px 8px rgba(0, 0, 0, 0.1)',
       'max-width': '350px',
       'min-width': '350px',
-      'left': 'calc(100% + 1px)'
+      left: 'calc(100% + 1px)',
     }"
   >
     <div class="flex h-screen flex-col">
@@ -17,21 +17,25 @@
         <div class="text-base font-medium">Notifications</div>
         <div class="flex gap-1">
           <Tooltip text="Mark all as read">
-            <Button
-              variant="ghost"
-              @click="() => notificationsStore().mark_as_read.reload()"
-            >
-              <template #icon>
-                <MarkAsDoneIcon class="h-4 w-4" />
-              </template>
-            </Button>
+            <div>
+              <Button
+                variant="ghost"
+                @click="() => notificationsStore().mark_as_read.reload()"
+              >
+                <template #icon>
+                  <MarkAsDoneIcon class="h-4 w-4" />
+                </template>
+              </Button>
+            </div>
           </Tooltip>
           <Tooltip text="Close">
-            <Button variant="ghost" @click="() => toggleNotificationPanel()">
-              <template #icon>
-                <FeatherIcon name="x" class="h-4 w-4" />
-              </template>
-            </Button>
+            <div>
+              <Button variant="ghost" @click="() => toggleNotificationPanel()">
+                <template #icon>
+                  <FeatherIcon name="x" class="h-4 w-4" />
+                </template>
+              </Button>
+            </div>
           </Tooltip>
         </div>
       </div>
