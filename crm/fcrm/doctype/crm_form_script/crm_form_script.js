@@ -27,7 +27,7 @@ function setupForm({ doc }) {
 		}
 		if (frm.doc.view == "List" && !has_list_boilerplate) {
 			frm.doc.script = `
-function setupList({ docs }) {
+function setupList({ list }) {
 	return {
 		actions: [],
 		bulk_actions: [],
