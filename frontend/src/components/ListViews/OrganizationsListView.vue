@@ -37,13 +37,14 @@
               />
             </div>
           </template>
-          <Tooltip
-            :text="item.label"
+          <div
             v-if="['modified', 'creation'].includes(column.key)"
             class="truncate text-base"
           >
-            {{ item.timeAgo }}
-          </Tooltip>
+            <Tooltip :text="item.label">
+              <div>{{ item.timeAgo }}</div>
+            </Tooltip>
+          </div>
           <div v-else-if="column.type === 'Check'">
             <FormControl
               type="checkbox"
@@ -87,7 +88,7 @@
 <script setup>
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import { globalStore } from '@/stores/global'
-import { createToast } from '@/utils'
+import { setupListActions, createToast } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -101,7 +102,8 @@ import {
   Dropdown,
   call,
 } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   rows: {
@@ -133,6 +135,8 @@ const emit = defineEmits([
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')
+
+const router = useRouter()
 
 const { $dialog } = globalStore()
 
@@ -183,6 +187,8 @@ function deleteValues(selections, unselectAll) {
   })
 }
 
+const customListActions = ref([])
+
 function bulkActions(selections, unselectAll) {
   let actions = [
     {
@@ -196,4 +202,21 @@ function bulkActions(selections, unselectAll) {
   ]
   return actions
 }
+
+onMounted(() => {
+  if (!list.value?.data) return
+  setupListActions(list.value.data, {
+    list: list.value,
+    call,
+    createToast,
+    $dialog,
+    router,
+  })
+  // customBulkActions.value = list.value?.data?.bulkActions || []
+  customListActions.value = list.value?.data?.listActions || []
+})
+
+defineExpose({
+  customListActions,
+})
 </script>

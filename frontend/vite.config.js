@@ -32,6 +32,7 @@ export default defineConfig({
       'showdown',
       'tailwind.config.js',
       'engine.io-client',
+      'prosemirror-state',
     ],
   },
 })

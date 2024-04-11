@@ -7,19 +7,17 @@
     >
       <div class="w-[106px] text-sm text-gray-600">{{ s.label }}</div>
       <div class="grid min-h-[28px] items-center">
-        <Tooltip
-          v-if="s.tooltipText"
-          :text="s.tooltipText"
-          class="ml-2 cursor-pointer"
-        >
-          <Badge
-            v-if="s.type == 'Badge'"
-            class="-ml-1"
-            :label="s.value"
-            variant="subtle"
-            :theme="s.color"
-          />
-          <div v-else>{{ s.value }}</div>
+        <Tooltip v-if="s.tooltipText" :text="s.tooltipText">
+          <div class="ml-2 cursor-pointer">
+            <Badge
+              v-if="s.type == 'Badge'"
+              class="-ml-1"
+              :label="s.value"
+              variant="subtle"
+              :theme="s.color"
+            />
+            <div v-else>{{ s.value }}</div>
+          </div>
         </Tooltip>
         <Dropdown
           class="form-control"
@@ -75,8 +73,8 @@ let slaSection = computed(() => {
         status = 'less than a minute ago'
       }
     }
-  } else if (["Fulfilled", "Failed"].includes(status)) {
-    status = status + " in " + formatTime(data.value.first_response_time)
+  } else if (['Fulfilled', 'Failed'].includes(status)) {
+    status = status + ' in ' + formatTime(data.value.first_response_time)
     tooltipText = dateFormat(data.value.first_responded_on, dateTooltipFormat)
   }
 

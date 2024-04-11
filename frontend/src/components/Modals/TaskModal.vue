@@ -21,7 +21,9 @@
           v-if="task?.reference_docname"
           variant="outline"
           size="sm"
-          :label="task.reference_doctype == 'CRM Deal' ? 'Open Deal' : 'Open Lead'"
+          :label="
+            task.reference_doctype == 'CRM Deal' ? 'Open Deal' : 'Open Lead'
+          "
           @click="redirect()"
         >
           <template #suffix>
@@ -77,7 +79,9 @@
             </template>
             <template #item-label="{ option }">
               <Tooltip :text="option.value">
-                {{ getUser(option.value).full_name }}
+                <div class="cursor-pointer">
+                  {{ getUser(option.value).full_name }}
+                </div>
               </Tooltip>
             </template>
           </Link>

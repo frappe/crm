@@ -110,7 +110,7 @@
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
-                <Tooltip text="Make a call...">
+                <Tooltip text="Make a call">
                   <Button
                     class="h-7 w-7"
                     @click="
@@ -123,17 +123,19 @@
                     <PhoneIcon class="h-4 w-4" />
                   </Button>
                 </Tooltip>
-                <Button class="h-7 w-7">
-                  <EmailIcon
-                    class="h-4 w-4"
-                    @click="
-                      lead.data.email
-                        ? openEmailBox()
-                        : errorMessage('No email set')
-                    "
-                  />
-                </Button>
-                <Tooltip text="Go to website...">
+                <Tooltip text="Send an email">
+                  <Button class="h-7 w-7">
+                    <EmailIcon
+                      class="h-4 w-4"
+                      @click="
+                        lead.data.email
+                          ? openEmailBox()
+                          : errorMessage('No email set')
+                      "
+                    />
+                  </Button>
+                </Tooltip>
+                <Tooltip text="Go to website">
                   <Button class="h-7 w-7">
                     <LinkIcon
                       class="h-4 w-4"

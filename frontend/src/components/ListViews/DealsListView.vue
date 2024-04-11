@@ -58,8 +58,7 @@
               <PhoneIcon class="h-4 w-4" />
             </div>
           </template>
-          <Tooltip
-            :text="item.label"
+          <div
             v-if="
               [
                 'modified',
@@ -71,8 +70,10 @@
             "
             class="truncate text-base"
           >
-            {{ item.timeAgo }}
-          </Tooltip>
+            <Tooltip :text="item.label">
+              <div>{{ item.timeAgo }}</div>
+            </Tooltip>
+          </div>
           <div
             v-else-if="column.key === 'sla_status'"
             class="truncate text-base"
@@ -145,7 +146,7 @@ import {
   call,
   Tooltip,
 } from 'frappe-ui'
-import { setupBulkActions, createToast } from '@/utils'
+import { setupListActions, createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -233,6 +234,7 @@ function deleteValues(selections, unselectAll) {
 }
 
 const customBulkActions = ref([])
+const customListActions = ref([])
 
 function bulkActions(selections, unselectAll) {
   let actions = [
@@ -265,7 +267,18 @@ function bulkActions(selections, unselectAll) {
 
 onMounted(() => {
   if (!list.value?.data) return
-  setupBulkActions(list.value.data)
+  setupListActions(list.value.data, {
+    list: list.value,
+    call,
+    createToast,
+    $dialog,
+    router,
+  })
   customBulkActions.value = list.value?.data?.bulkActions || []
+  customListActions.value = list.value?.data?.listActions || []
+})
+
+defineExpose({
+  customListActions,
 })
 </script>

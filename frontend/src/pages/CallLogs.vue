@@ -3,6 +3,12 @@
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs" />
     </template>
+    <template #right-header>
+      <CustomActions
+        v-if="callLogsListView?.customListActions"
+        :actions="callLogsListView.customListActions"
+      />
+    </template>
   </LayoutHeader>
   <ViewControls
     ref="viewControls"
@@ -13,6 +19,7 @@
     doctype="CRM Call Log"
   />
   <CallLogsListView
+    ref="callLogsListView"
     v-if="callLogs.data && rows.length"
     v-model="callLogs.data.page_length_count"
     v-model:list="callLogs"
@@ -43,6 +50,7 @@
 </template>
 
 <script setup>
+import CustomActions from '@/components/CustomActions.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
@@ -62,6 +70,8 @@ const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
 const breadcrumbs = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
+
+const callLogsListView = ref(null)
 
 // callLogs data is loaded in the ViewControls component
 const callLogs = ref({})

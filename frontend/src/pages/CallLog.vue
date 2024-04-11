@@ -78,14 +78,11 @@
           <div class="text-sm text-gray-600">Duration</div>
           <div class="text-sm">{{ callLog.data.duration }}</div>
         </div>
-        <div>
-          <Tooltip
-            class="text-sm text-gray-600"
-            :text="dateFormat(callLog.data.creation, dateTooltipFormat)"
-          >
+        <Tooltip :text="dateFormat(callLog.data.creation, dateTooltipFormat)">
+          <div class="text-sm text-gray-600">
             {{ timeAgo(callLog.data.creation) }}
-          </Tooltip>
-        </div>
+          </div>
+        </Tooltip>
       </div>
     </div>
 

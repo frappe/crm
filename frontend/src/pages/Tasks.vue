@@ -4,6 +4,10 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <CustomActions
+        v-if="tasksListView?.customListActions"
+        :actions="tasksListView.customListActions"
+      />
       <Button variant="solid" label="Create" @click="createTask">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -18,6 +22,7 @@
     doctype="CRM Task"
   />
   <TasksListView
+    ref="tasksListView"
     v-if="tasks.data && rows.length"
     v-model="tasks.data.page_length_count"
     v-model:list="tasks"
@@ -47,6 +52,7 @@
 </template>
 
 <script setup>
+import CustomActions from '@/components/CustomActions.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
@@ -60,6 +66,8 @@ import { computed, ref } from 'vue'
 const breadcrumbs = [{ label: 'Tasks', route: { name: 'Tasks' } }]
 
 const { getUser } = usersStore()
+
+const tasksListView = ref(null)
 
 // tasks data is loaded in the ViewControls component
 const tasks = ref({})

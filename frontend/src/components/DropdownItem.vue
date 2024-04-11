@@ -1,55 +1,65 @@
 <template>
-  <div class="flex items-center justify-between gap-7">
-    <div v-show="!editMode">{{ option.value }}</div>
-    <TextInput
-      ref="inputRef"
-      v-show="editMode"
-      v-model="option.value"
-      class="w-full"
-      :placeholder="option.placeholder"
-      @blur.stop="saveOption"
-      @keydown.enter.stop="(e) => e.target.blur()"
-    />
+  <div
+    class="group flex w-full items-center justify-between rounded bg-transparent p-1 pl-2 text-base text-gray-800 transition-colors hover:bg-gray-200 active:bg-gray-300"
+  >
+    <div class="flex items-center justify-between gap-7">
+      <div v-show="!editMode">{{ option.value }}</div>
+      <TextInput
+        ref="inputRef"
+        v-show="editMode"
+        v-model="option.value"
+        class="w-full"
+        :placeholder="option.placeholder"
+        @blur.stop="saveOption"
+        @keydown.enter.stop="(e) => e.target.blur()"
+      />
 
-    <div class="actions flex items-center justify-center">
-      <Tooltip text="Set As Primary" v-if="!isNew && !option.selected">
-        <Button
-          variant="ghost"
-          size="sm"
-          class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
-          @click="option.onClick"
-        >
-          <SuccessIcon />
-        </Button>
-      </Tooltip>
-      <Tooltip text="Edit">
-        <Button
-          variant="ghost"
-          size="sm"
-          class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
-          @click="toggleEditMode"
-        >
-          <EditIcon />
-        </Button>
-      </Tooltip>
-      <Tooltip text="Delete">
-        <Button
-          variant="ghost"
-          icon="x"
-          size="sm"
-          class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
-          @click="() => option.onDelete(option, isNew)"
-        />
-      </Tooltip>
+      <div class="actions flex items-center justify-center">
+        <Tooltip text="Set As Primary" v-if="!isNew && !option.selected">
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+              @click="option.onClick"
+            >
+              <SuccessIcon />
+            </Button>
+          </div>
+        </Tooltip>
+        <Tooltip text="Edit">
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+              @click="toggleEditMode"
+            >
+              <EditIcon />
+            </Button>
+          </div>
+        </Tooltip>
+        <Tooltip text="Delete">
+          <div>
+            <Button
+              variant="ghost"
+              icon="x"
+              size="sm"
+              class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+              @click="() => option.onDelete(option, isNew)"
+            />
+          </div>
+        </Tooltip>
+      </div>
     </div>
-  </div>
-  <div>
-    <FeatherIcon
-      v-if="option.selected"
-      name="check"
-      class="text-primary-500 h-4 w-6"
-      size="sm"
-    />
+    <div>
+      <FeatherIcon
+        v-if="option.selected"
+        name="check"
+        class="text-primary-500 h-4 w-6"
+        size="sm"
+      />
+    </div>
   </div>
 </template>
 

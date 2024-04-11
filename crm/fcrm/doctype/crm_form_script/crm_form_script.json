@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "dt",
+  "view",
   "column_break_gboh",
   "enabled",
   "section_break_xeox",
@@ -36,16 +37,26 @@
    "label": "Enabled"
   },
   {
-   "default": "function setupForm({ doc }) {\n    return {\n        actions: []\n    }\n}",
+   "default": "function setupForm({ doc }) {\n    return {\n        actions: [],\n    }\n}",
+   "documentation_url": "https://docs.frappe.io/crm/custom-actions",
    "fieldname": "script",
    "fieldtype": "Code",
    "label": "Script",
    "options": "JS"
+  },
+  {
+   "default": "Form",
+   "fieldname": "view",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Apply To",
+   "options": "Form\nList",
+   "set_only_once": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:52:46.078626",
+ "modified": "2024-04-10 18:27:17.617602",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Form Script",

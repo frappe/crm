@@ -4,6 +4,10 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <CustomActions
+        v-if="contactsListView?.customListActions"
+        :actions="contactsListView.customListActions"
+      />
       <Button variant="solid" label="Create" @click="showContactModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -18,6 +22,7 @@
     doctype="Contact"
   />
   <ContactsListView
+    ref="contactsListView"
     v-if="contacts.data && rows.length"
     v-model="contacts.data.page_length_count"
     v-model:list="contacts"
@@ -52,6 +57,7 @@
 </template>
 
 <script setup>
+import CustomActions from '@/components/CustomActions.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
@@ -86,6 +92,8 @@ const breadcrumbs = computed(() => {
   })
   return items
 })
+
+const contactsListView = ref(null)
 
 // contacts data is loaded in the ViewControls component
 const contacts = ref({})
