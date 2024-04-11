@@ -131,11 +131,12 @@ export function setupCustomActions(data, obj) {
   data._customActions = formScript?.actions || []
 }
 
-export function setupBulkActions(data, obj = {}) {
-  if (!data.form_script) return []
-  let script = new Function(data.form_script + '\nreturn setupForm')()
-  let formScript = script(obj)
-  data.bulkActions = formScript?.bulk_actions || []
+export function setupListActions(data, obj = {}) {
+  if (!data.list_script) return []
+  let script = new Function(data.list_script + '\nreturn setupList')()
+  let listScript = script(obj)
+  data.listActions = listScript?.actions || []
+  data.bulkActions = listScript?.bulk_actions || []
 }
 
 export function errorMessage(title, message) {

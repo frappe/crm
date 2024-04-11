@@ -4,6 +4,10 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <CustomActions
+        v-if="emailTemplatesListView?.customListActions"
+        :actions="emailTemplatesListView.customListActions"
+      />
       <Button variant="solid" label="Create" @click="showEmailTemplateModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -18,6 +22,7 @@
     doctype="Email Template"
   />
   <EmailTemplatesListView
+    ref="emailTemplatesListView"
     v-if="emailTemplates.data && rows.length"
     v-model="emailTemplates.data.page_length_count"
     v-model:list="emailTemplates"
@@ -54,6 +59,7 @@
 </template>
 
 <script setup>
+import CustomActions from '@/components/CustomActions.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
@@ -66,6 +72,8 @@ import { computed, ref } from 'vue'
 const breadcrumbs = [
   { label: 'Email Templates', route: { name: 'Email Templates' } },
 ]
+
+const emailTemplatesListView = ref(null)
 
 // emailTemplates data is loaded in the ViewControls component
 const emailTemplates = ref({})
