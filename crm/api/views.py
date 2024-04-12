@@ -4,9 +4,6 @@ from pypika import Criterion
 
 @frappe.whitelist()
 def get_views(doctype):
-	if frappe.session.user == "Guest":
-		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
-
 	View = frappe.qb.DocType("CRM View Settings")
 	query = (
 		frappe.qb.from_(View)
