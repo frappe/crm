@@ -4,9 +4,6 @@ from frappe.query_builder import Order
 
 @frappe.whitelist()
 def get_notifications():
-    if frappe.session.user == "Guest":
-        frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
-
     Notification = frappe.qb.DocType("CRM Notification")
     query = (
         frappe.qb.from_(Notification)
@@ -46,9 +43,6 @@ def get_notifications():
 
 @frappe.whitelist()
 def mark_as_read(user=None, comment=None):
-    if frappe.session.user == "Guest":
-        frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
-
     user = user or frappe.session.user
     filters = {"to_user": user, "read": False}
     if comment:
