@@ -53,7 +53,7 @@
               :variant="'subtle'"
               :theme="item.color"
               size="md"
-              :label="item.label"
+              :label="__(item.label)"
             />
           </div>
           <div v-else-if="column.type === 'Check'">
