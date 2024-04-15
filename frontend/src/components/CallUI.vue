@@ -32,12 +32,12 @@
         <div v-if="!onCall" class="my-1 text-base">
           {{
             callStatus == 'initiating'
-              ? 'Initiating call...'
+              ? __('Initiating call...')
               : callStatus == 'ringing'
-              ? 'Ringing...'
+              ? __('Ringing...')
               : calling
-              ? 'Calling...'
-              : 'Incoming call...'
+              ? __('Calling...')
+              : __('Incoming call...')
           }}
         </div>
         <div v-if="onCall" class="flex gap-2">
@@ -73,7 +73,7 @@
             size="md"
             variant="solid"
             theme="red"
-            label="Cancel"
+            :label="__('Cancel')"
             @click="cancelCall"
             class="rounded-lg"
             :disabled="callStatus == 'initiating'"
@@ -88,7 +88,7 @@
             size="md"
             variant="solid"
             theme="green"
-            label="Accept"
+            :label="__('Accept')"
             class="rounded-lg"
             @click="acceptIncomingCall"
           >
@@ -100,7 +100,7 @@
             size="md"
             variant="solid"
             theme="red"
-            label="Reject"
+            :label="__('Reject')"
             class="rounded-lg"
             @click="rejectIncomingCall"
           >
@@ -142,7 +142,7 @@
     </div>
     <div v-else-if="calling" class="flex items-center gap-3">
       <div class="my-1">
-        {{ callStatus == 'ringing' ? 'Ringing...' : 'Calling...' }}
+        {{ callStatus == 'ringing' ? __('Ringing...') : __('Calling...') }}
       </div>
       <Button
         variant="solid"
@@ -312,7 +312,7 @@ function handleIncomingCall(call) {
 
   if (!contact.value) {
     contact.value = {
-      full_name: 'Unknown',
+      full_name: __('Unknown'),
       mobile_no: call.parameters.From,
     }
   }
