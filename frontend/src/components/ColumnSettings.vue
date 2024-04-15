@@ -24,7 +24,7 @@
               >
                 <div class="flex items-center gap-2">
                   <DragIcon class="h-3.5" />
-                  <div>{{ element.label }}</div>
+                  <div>{{ __(element.label) }}</div>
                 </div>
                 <div class="flex cursor-pointer items-center gap-1">
                   <Button
@@ -56,7 +56,7 @@
                   class="w-full !justify-start !text-gray-600"
                   variant="ghost"
                   @click="togglePopover()"
-                  label="Add Column"
+                  :label="__('Add Column')"
                 >
                   <template #prefix>
                     <FeatherIcon name="plus" class="h-4" />
@@ -69,7 +69,7 @@
               class="w-full !justify-start !text-gray-600"
               variant="ghost"
               @click="reset(close)"
-              label="Reset Changes"
+              :label="__('Reset Changes')"
             >
               <template #prefix>
                 <ReloadIcon class="h-4" />
@@ -80,7 +80,7 @@
               class="w-full !justify-start !text-gray-600"
               variant="ghost"
               @click="resetToDefault(close)"
-              label="Reset to Default"
+              :label="__('Reset to Default')"
             >
               <template #prefix>
                 <ReloadIcon class="h-4" />
@@ -96,32 +96,32 @@
               <FormControl
                 type="text"
                 size="md"
-                label="Label"
+                :label="__('Label')"
                 v-model="column.label"
                 class="w-full"
-                placeholder="Column Label"
+                :placeholder="__('First Name')"
               />
               <FormControl
                 type="text"
                 size="md"
-                label="Width"
+                :label="__('Width')"
                 class="w-full"
                 v-model="column.width"
-                placeholder="Column Width"
-                description="Width can be in number, pixel or rem (eg. 3, 30px, 10rem)"
+                placeholder="10rem"
+                :description="__('Width can be in number, pixel or rem (eg. 3, 30px, 10rem)')"
                 :debounce="500"
               />
             </div>
             <div class="flex w-full gap-2 border-t pt-2">
               <Button
                 variant="subtle"
-                label="Cancel"
+                :label="__('Cancel')"
                 class="w-full flex-1"
                 @click="cancelUpdate"
               />
               <Button
                 variant="solid"
-                label="Update"
+                :label="__('Update')"
                 class="w-full flex-1"
                 @click="updateColumn(column)"
               />
