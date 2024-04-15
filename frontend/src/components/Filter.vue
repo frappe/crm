@@ -40,7 +40,7 @@
                   v-model="f.operator"
                   @change="(e) => updateOperator(e, f)"
                   :options="getOperators(f.field.fieldtype, f.field.fieldname)"
-                  placeholder="Equals"
+                  :placeholder="__('Equals')"
                 />
               </div>
               <div id="value" class="!min-w-[140px]">
@@ -48,7 +48,7 @@
                   :is="getValSelect(f)"
                   v-model="f.value"
                   @change="(v) => updateValue(v, f)"
-                  placeholder="John Doe"
+                  :placeholder="__('John Doe')"
                 />
               </div>
             </div>
@@ -200,89 +200,89 @@ function getOperators(fieldtype, fieldname) {
   if (typeString.includes(fieldtype)) {
     options.push(
       ...[
-        { label: 'Equals', value: 'equals' },
-        { label: 'Not Equals', value: 'not equals' },
-        { label: 'Like', value: 'like' },
-        { label: 'Not Like', value: 'not like' },
-        { label: 'In', value: 'in' },
-        { label: 'Not In', value: 'not in' },
-        { label: 'Is', value: 'is' },
+        { label: __('Equals'), value: 'equals' },
+        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('Like'), value: 'like' },
+        { label: __('Not Like'), value: 'not like' },
+        { label: __('In'), value: 'in' },
+        { label: __('Not In'), value: 'not in' },
+        { label: __('Is'), value: 'is' },
       ]
     )
   }
   if (fieldname === '_assign') {
     // TODO: make equals and not equals work
     options = [
-      { label: 'Like', value: 'like' },
-      { label: 'Not Like', value: 'not like' },
-      { label: 'Is', value: 'is' },
+      { label: __('Like'), value: 'like' },
+      { label: __('Not Like'), value: 'not like' },
+      { label: __('Is'), value: 'is' },
     ]
   }
   if (typeNumber.includes(fieldtype)) {
     options.push(
       ...[
-        { label: 'Equals', value: 'equals' },
-        { label: 'Not Equals', value: 'not equals' },
-        { label: 'Like', value: 'like' },
-        { label: 'Not Like', value: 'not like' },
-        { label: 'In', value: 'in' },
-        { label: 'Not In', value: 'not in' },
-        { label: 'Is', value: 'is' },
-        { label: '<', value: '<' },
-        { label: '>', value: '>' },
-        { label: '<=', value: '<=' },
-        { label: '>=', value: '>=' },
+        { label: __('Equals'), value: 'equals' },
+        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('Like'), value: 'like' },
+        { label: __('Not Like'), value: 'not like' },
+        { label: __('In'), value: 'in' },
+        { label: __('Not In'), value: 'not in' },
+        { label: __('Is'), value: 'is' },
+        { label: __('<'), value: '<' },
+        { label: __('>'), value: '>' },
+        { label: __('<='), value: '<=' },
+        { label: __('>='), value: '>=' },
       ]
     )
   }
   if (typeSelect.includes(fieldtype)) {
     options.push(
       ...[
-        { label: 'Equals', value: 'equals' },
-        { label: 'Not Equals', value: 'not equals' },
-        { label: 'In', value: 'in' },
-        { label: 'Not In', value: 'not in' },
-        { label: 'Is', value: 'is' },
+        { label: __('Equals'), value: 'equals' },
+        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('In'), value: 'in' },
+        { label: __('Not In'), value: 'not in' },
+        { label: __('Is'), value: 'is' },
       ]
     )
   }
   if (typeLink.includes(fieldtype)) {
     options.push(
       ...[
-        { label: 'Equals', value: 'equals' },
-        { label: 'Not Equals', value: 'not equals' },
-        { label: 'Like', value: 'like' },
-        { label: 'Not Like', value: 'not like' },
-        { label: 'In', value: 'in' },
-        { label: 'Not In', value: 'not in' },
-        { label: 'Is', value: 'is' },
+        { label: __('Equals'), value: 'equals' },
+        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('Like'), value: 'like' },
+        { label: __('Not Like'), value: 'not like' },
+        { label: __('In'), value: 'in' },
+        { label: __('Not In'), value: 'not in' },
+        { label: __('Is'), value: 'is' },
       ]
     )
   }
   if (typeCheck.includes(fieldtype)) {
-    options.push(...[{ label: 'Equals', value: 'equals' }])
+    options.push(...[{ label: __('Equals'), value: 'equals' }])
   }
   if (['Duration'].includes(fieldtype)) {
     options.push(
       ...[
-        { label: 'Like', value: 'like' },
-        { label: 'Not Like', value: 'not like' },
-        { label: 'In', value: 'in' },
-        { label: 'Not In', value: 'not in' },
-        { label: 'Is', value: 'is' },
+        { label: __('Like'), value: 'like' },
+        { label: __('Not Like'), value: 'not like' },
+        { label: __('In'), value: 'in' },
+        { label: __('Not In'), value: 'not in' },
+        { label: __('Is'), value: 'is' },
       ]
     )
   }
   if (typeDate.includes(fieldtype)) {
     options.push(
       ...[
-        { label: 'Is', value: 'is' },
-        { label: '>', value: '>' },
-        { label: '<', value: '<' },
-        { label: '>=', value: '>=' },
-        { label: '<=', value: '<=' },
-        { label: 'Between', value: 'between' },
-        { label: 'Timespan', value: 'timespan' },
+        { label: __('Is'), value: 'is' },
+        { label: __('>'), value: '>' },
+        { label: __('<'), value: '<' },
+        { label: __('>='), value: '>=' },
+        { label: __('<='), value: '<=' },
+        { label: __('Between'), value: 'between' },
+        { label: __('Timespan'), value: 'timespan' },
       ]
     )
   }
