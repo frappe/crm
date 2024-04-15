@@ -327,7 +327,7 @@ function getValSelect(f) {
     if (fieldtype == 'Dynamic Link') {
       return h(FormControl, { type: 'text' })
     }
-    return h(Link, { class: 'form-control', doctype: options })
+    return h(Link, { class: 'form-control', doctype: options, value: f.value })
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
@@ -437,8 +437,6 @@ function updateOperator(event, filter) {
 
 function isSameTypeOperator(oldOperator, newOperator) {
   let textOperators = [
-    'like',
-    'not like',
     'equals',
     'not equals',
     'in',
