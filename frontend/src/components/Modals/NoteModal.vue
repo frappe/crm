@@ -5,7 +5,7 @@
       size: 'xl',
       actions: [
         {
-          label: editMode ? 'Update' : 'Create',
+          label: editMode ? __('Update') : __('Create'),
           variant: 'solid',
           onClick: () => updateNote(),
         },
@@ -15,14 +15,16 @@
     <template #body-title>
       <div class="flex items-center gap-3">
         <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-          {{ editMode ? 'Edit Note' : 'Create Note' }}
+          {{ editMode ? __('Edit Note') : __('Create Note') }}
         </h3>
         <Button
           v-if="_note?.reference_docname"
           variant="outline"
           size="sm"
           :label="
-            _note.reference_doctype == 'CRM Deal' ? 'Open Deal' : 'Open Lead'
+            _note.reference_doctype == 'CRM Deal'
+              ? __('Open Deal')
+              : __('Open Lead')
           "
           @click="redirect()"
         >
@@ -35,16 +37,16 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">Title</div>
+          <div class="mb-1.5 text-sm text-gray-600">{{ __('Title') }}</div>
           <TextInput
             ref="title"
             variant="outline"
             v-model="_note.title"
-            placeholder="Add title"
+            :placeholder="__('Call with John Doe')"
           />
         </div>
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">Content</div>
+          <div class="mb-1.5 text-sm text-gray-600">{{ __('Content') }}</div>
           <TextEditor
             variant="outline"
             ref="content"
@@ -52,7 +54,9 @@
             :bubbleMenu="true"
             :content="_note.content"
             @change="(val) => (_note.content = val)"
-            placeholder="Type a Content"
+            :placeholder="
+              __('Took a call with John Doe and discussed the new project.')
+            "
           />
         </div>
       </div>
@@ -64,7 +68,7 @@
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import { TextEditor, call } from 'frappe-ui'
 import { ref, nextTick, watch } from 'vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   note: {
