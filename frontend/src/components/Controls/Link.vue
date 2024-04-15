@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-1.5">
     <label class="block" :class="labelClasses" v-if="attrs.label">
-      {{ attrs.label }}
+      {{ __(attrs.label) }}
     </label>
     <Autocomplete
       ref="autocomplete"
@@ -33,7 +33,7 @@
           <Button
             variant="ghost"
             class="w-full !justify-start"
-            label="Create New"
+            :label="__('Create New')"
             @click="attrs.onCreate(value, close)"
           >
             <template #prefix>
@@ -45,7 +45,7 @@
           <Button
             variant="ghost"
             class="w-full !justify-start"
-            label="Clear"
+            :label="__('Clear')"
             @click="() => clearValue(close)"
           >
             <template #prefix>

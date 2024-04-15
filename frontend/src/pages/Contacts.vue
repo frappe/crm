@@ -8,7 +8,11 @@
         v-if="contactsListView?.customListActions"
         :actions="contactsListView.customListActions"
       />
-      <Button variant="solid" label="Create" @click="showContactModal = true">
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        @click="showContactModal = true"
+      >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -47,8 +51,8 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <ContactsIcon class="h-10 w-10" />
-      <span>No Contacts Found</span>
-      <Button label="Create" @click="showContactModal = true">
+      <span>{{ __('No Contacts Found') }}</span>
+      <Button :label="__('Create')" @click="showContactModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
@@ -81,10 +85,10 @@ const currentContact = computed(() => {
 })
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Contacts', route: { name: 'Contacts' } }]
+  let items = [{ label: __('Contacts'), route: { name: 'Contacts' } }]
   if (!currentContact.value) return items
   items.push({
-    label: currentContact.value.full_name,
+    label: __(currentContact.value.full_name),
     route: {
       name: 'Contact',
       params: { contactId: currentContact.value.name },
@@ -123,7 +127,7 @@ const rows = computed(() => {
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(contact[row], dateTooltipFormat),
-          timeAgo: timeAgo(contact[row]),
+          timeAgo: __(timeAgo(contact[row])),
         }
       }
     })

@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-              {{ dialogOptions.title || 'Untitled' }}
+              {{ __(dialogOptions.title) || __('Untitled') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -41,67 +41,68 @@
                 type="text"
                 ref="title"
                 size="md"
-                label="Organization Name"
+                :label="__('Organization Name')"
                 variant="outline"
                 v-model="_organization.organization_name"
-                placeholder="Add Organization Name"
+                placeholder="Frappé Technologies"
               />
               <div class="flex gap-4">
                 <FormControl
                   class="flex-1"
                   type="text"
                   size="md"
-                  label="Website"
+                  :label="__('Website')"
                   variant="outline"
                   v-model="_organization.website"
-                  placeholder="Add Website"
+                  placeholder="https://example.com"
                 />
                 <FormControl
                   class="flex-1"
                   type="text"
                   size="md"
-                  label="Annual Revenue"
+                  :label="__('Annual Revenue')"
                   variant="outline"
                   v-model="_organization.annual_revenue"
-                  placeholder="Add Annual Revenue"
+                  :placeholder="__('9,999,999')"
                 />
               </div>
               <Link
                 class="flex-1"
                 size="md"
-                label="Territory"
+                :label="__('Territory')"
                 variant="outline"
                 v-model="_organization.territory"
                 doctype="CRM Territory"
-                placeholder="Add Territory"
+                placeholder="India"
               />
               <div class="flex gap-4">
                 <FormControl
                   class="flex-1"
                   type="select"
                   :options="[
-                    '1-10',
-                    '11-50',
-                    '51-200',
-                    '201-500',
-                    '501-1000',
-                    '1001-5000',
-                    '5001-10000',
-                    '10001+',
+                    { label: __('1-10'), value: '1-10' },
+                    { label: __('11-50'), value: '11-50' },
+                    { label: __('51-200'), value: '51-200' },
+                    { label: __('201-500'), value: '201-500' },
+                    { label: __('501-1000'), value: '501-1000' },
+                    { label: __('1001-5000'), value: '1001-5000' },
+                    { label: __('5001-10000'), value: '5001-10000' },
+                    { label: __('10001+'), value: '10001+' },
                   ]"
                   size="md"
-                  label="No. of Employees"
+                  :label="__('No of Employees')"
                   variant="outline"
+                  :placeholder="__('1-10')"
                   v-model="_organization.no_of_employees"
                 />
                 <Link
                   class="flex-1"
                   size="md"
-                  label="Industry"
+                  :label="__('Industry')"
                   variant="outline"
                   v-model="_organization.industry"
                   doctype="CRM Industry"
-                  placeholder="Add Industry"
+                  :placeholder="__('Technology')"
                 />
               </div>
             </div>
@@ -115,7 +116,7 @@
             v-for="action in dialogOptions.actions"
             :key="action.label"
             v-bind="action"
-            :label="action.label"
+            :label="__(action.label)"
             :loading="loading"
           />
         </div>
@@ -236,14 +237,14 @@ function handleOrganizationUpdate(doc, renamed = false) {
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
-    ? 'New Organization'
-    : _organization.value.organization_name
+    ? __('New Organization')
+    : __(_organization.value.organization_name)
   let size = detailMode.value ? '' : 'xl'
   let actions = detailMode.value
     ? []
     : [
         {
-          label: editMode.value ? 'Save' : 'Create',
+          label: editMode.value ? __('Save') : __('Create'),
           variant: 'solid',
           onClick: () =>
             editMode.value ? updateOrganization() : callInsertDoc(),

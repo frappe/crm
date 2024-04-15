@@ -64,11 +64,11 @@
             </FileUploader>
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
-            <Button v-bind="discardButtonProps || {}" label="Discard" />
+            <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />
             <Button
               variant="solid"
               v-bind="submitButtonProps || {}"
-              label="Submit"
+              :label="__('Comment')"
             />
           </div>
         </div>

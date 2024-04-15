@@ -2,11 +2,11 @@
   <Dialog
     v-model="show"
     :options="{
-      title: editMode ? emailTemplate.name : 'Create Email Template',
+      title: editMode ? __(emailTemplate.name) : __('Create Email Template'),
       size: 'xl',
       actions: [
         {
-          label: editMode ? 'Update' : 'Create',
+          label: editMode ? __('Update') : __('Create'),
           variant: 'solid',
           onClick: () => (editMode ? updateEmailTemplate() : callInsertDoc()),
         },
@@ -18,41 +18,41 @@
         <div class="flex gap-4">
           <div class="flex-1">
             <div class="mb-1.5 text-sm text-gray-600">
-              Name
+              {{ __('Name') }}
               <span class="text-red-500">*</span>
             </div>
             <TextInput
               ref="nameRef"
               variant="outline"
               v-model="_emailTemplate.name"
-              placeholder="Add name"
+              :placeholder="__('Payment Reminder')"
             />
           </div>
           <div class="flex-1">
-            <div class="mb-1.5 text-sm text-gray-600">Doctype</div>
+            <div class="mb-1.5 text-sm text-gray-600">{{ __('Doctype') }}</div>
             <Select
               variant="outline"
               v-model="_emailTemplate.reference_doctype"
               :options="['CRM Deal', 'CRM Lead']"
-              placeholder="Select Doctype"
+              :placeholder="__('CRM Deal')"
             />
           </div>
         </div>
         <div>
           <div class="mb-1.5 text-sm text-gray-600">
-            Subject
+            {{ __('Subject') }}
             <span class="text-red-500">*</span>
           </div>
           <TextInput
             ref="subjectRef"
             variant="outline"
             v-model="_emailTemplate.subject"
-            placeholder="Add subject"
+            :placeholder="__('Payment Reminder from Frappé - (#{{ name }})')"
           />
         </div>
         <div>
           <div class="mb-1.5 text-sm text-gray-600">
-            Content
+            {{ __('Content') }}
             <span class="text-red-500">*</span>
           </div>
           <TextEditor
@@ -62,13 +62,13 @@
             :bubbleMenu="true"
             :content="_emailTemplate.response"
             @change="(val) => (_emailTemplate.response = val)"
-            placeholder="Type a Content"
+            :placeholder="__('Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé')"
           />
         </div>
         <div>
-          <Checkbox v-model="_emailTemplate.enabled" label="Enabled" />
+          <Checkbox v-model="_emailTemplate.enabled" :label="__('Enabled')" />
         </div>
-        <ErrorMessage :message="errorMessage" />
+        <ErrorMessage :message="__(errorMessage)" />
       </div>
     </template>
   </Dialog>

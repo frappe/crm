@@ -8,7 +8,7 @@
         v-if="tasksListView?.customListActions"
         :actions="tasksListView.customListActions"
       />
-      <Button variant="solid" label="Create" @click="createTask">
+      <Button variant="solid" :label="__('Create')" @click="createTask">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -45,7 +45,10 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <EmailIcon class="h-10 w-10" />
-      <span>No Tasks Found</span>
+      <span>{{ __('No Tasks Found') }}</span>
+      <Button :label="__('Create')" @click="showTaskModal = true">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
     </div>
   </div>
   <TaskModal v-model="showTaskModal" v-model:reloadTasks="tasks" :task="task" />
@@ -63,7 +66,7 @@ import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { Breadcrumbs } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
-const breadcrumbs = [{ label: 'Tasks', route: { name: 'Tasks' } }]
+const breadcrumbs = [{ label: __('Tasks'), route: { name: 'Tasks' } }]
 
 const { getUser } = usersStore()
 
@@ -86,7 +89,7 @@ const rows = computed(() => {
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(task[row], dateTooltipFormat),
-          timeAgo: timeAgo(task[row]),
+          timeAgo: __(timeAgo(task[row])),
         }
       } else if (row == 'assigned_to') {
         _rows[row] = {

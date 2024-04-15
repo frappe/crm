@@ -5,7 +5,7 @@
       size: 'xl',
       actions: [
         {
-          label: editMode ? 'Update' : 'Create',
+          label: editMode ? __('Update') : __('Create'),
           variant: 'solid',
           onClick: () => updateTask(),
         },
@@ -15,14 +15,14 @@
     <template #body-title>
       <div class="flex items-center gap-3">
         <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-          {{ editMode ? 'Edit Task' : 'Create Task' }}
+          {{ editMode ? __('Edit Task') : __('Create Task') }}
         </h3>
         <Button
           v-if="task?.reference_docname"
           variant="outline"
           size="sm"
           :label="
-            task.reference_doctype == 'CRM Deal' ? 'Open Deal' : 'Open Lead'
+            task.reference_doctype == 'CRM Deal' ? __('Open Deal') : __('Open Lead')
           "
           @click="redirect()"
         >
@@ -35,16 +35,16 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">Title</div>
+          <div class="mb-1.5 text-sm text-gray-600">{{ __('Title') }}</div>
           <TextInput
             ref="title"
             variant="outline"
             v-model="_task.title"
-            placeholder="Add Title"
+            :placeholder="__('Call with John Doe')"
           />
         </div>
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">Description</div>
+          <div class="mb-1.5 text-sm text-gray-600">{{ __('Description') }}</div>
           <TextEditor
             variant="outline"
             ref="description"
@@ -52,7 +52,7 @@
             :bubbleMenu="true"
             :content="_task.description"
             @change="(val) => (_task.description = val)"
-            placeholder="Type a Description"
+            :placeholder="__('Took a call with John Doe and discussed the new project.')"
           />
         </div>
         <div class="flex items-center gap-2">
@@ -68,7 +68,7 @@
             :value="getUser(_task.assigned_to).full_name"
             doctype="User"
             @change="(option) => (_task.assigned_to = option)"
-            placeholder="Assignee"
+            :placeholder="__('John Doe')"
             :hideMe="true"
           >
             <template #prefix>
@@ -90,7 +90,7 @@
             icon-left="calendar"
             :value="_task.due_date"
             @change="(val) => (_task.due_date = val)"
-            placeholder="Due Date"
+            :placeholder="__('01/04/2024 11:30 PM')"
             input-class="border-none"
           />
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">

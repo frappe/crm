@@ -10,7 +10,7 @@
       <div class="mb-3 flex flex-col">
         <SidebarLink
           id="notifications-btn"
-          label="Notifications"
+          :label="__('Notifications')"
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
           @click="() => toggleNotificationPanel()"
@@ -45,7 +45,7 @@
           <template #header="{ opened, hide, toggle }">
             <div
               v-if="!hide"
-              class="flex cursor-pointer gap-1.5 px-1 text-sm font-medium text-gray-600 transition-all duration-300 ease-in-out"
+              class="flex cursor-pointer gap-1.5 px-1 text-base font-medium text-gray-600 transition-all duration-300 ease-in-out"
               :class="
                 isSidebarCollapsed
                   ? 'ml-0 h-0 overflow-hidden opacity-0'
@@ -59,7 +59,7 @@
                 :class="{ 'rotate-90': opened }"
               />
               <span class="uppercase">
-                {{ view.name }}
+                {{ __(view.name) }}
               </span>
             </div>
           </template>
@@ -67,7 +67,7 @@
             <SidebarLink
               v-for="link in view.views"
               :icon="link.icon"
-              :label="link.label"
+              :label="__(link.label)"
               :to="link.to"
               :isCollapsed="isSidebarCollapsed"
               class="mx-2 my-0.5"
@@ -78,19 +78,19 @@
     </div>
     <div class="m-2 flex flex-col gap-1">
       <SidebarLink
-        label="Docs"
+        :label="__('Docs')"
         :isCollapsed="isSidebarCollapsed"
         icon="book-open"
         @click="() => openDocs()"
       />
       <SidebarLink
-        :label="isSidebarCollapsed ? 'Expand' : 'Collapse'"
+        :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
         @click="isSidebarCollapsed = !isSidebarCollapsed"
         class=""
       >
         <template #icon>
-          <span class="grid h-5 w-6 flex-shrink-0 place-items-center">
+          <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
             <CollapseSidebar
               class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
               :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"

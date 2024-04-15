@@ -3,17 +3,17 @@
     v-model="show"
     :options="{
       title: editMode
-        ? 'Edit View'
+        ? __('Edit View')
         : duplicateMode
-        ? 'Duplicate View'
-        : 'Create View',
+        ? __('Duplicate View')
+        : __('Create View'),
       actions: [
         {
           label: editMode
-            ? 'Save Changes'
+            ? __('Save Changes')
             : duplicateMode
-            ? 'Duplicate'
-            : 'Create',
+            ? __('Duplicate')
+            : __('Create'),
           variant: 'solid',
           onClick: () => (editMode ? update() : create()),
         },
@@ -25,8 +25,8 @@
         variant="outline"
         size="md"
         type="text"
-        label="View Name"
-        placeholder="View Name"
+        :label="__('View Name')"
+        :placeholder="__('My Open Deals')"
         v-model="view.label"
       />
     </template>
@@ -50,7 +50,6 @@ const props = defineProps({
     },
   },
 })
-
 
 const show = defineModel()
 const view = defineModel('view')

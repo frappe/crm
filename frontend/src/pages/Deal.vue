@@ -39,7 +39,7 @@
       <Activities
         ref="activities"
         doctype="CRM Deal"
-        :title="tab.label"
+        :title="tab.name"
         v-model:reload="reload"
         v-model="deal"
       />
@@ -48,10 +48,10 @@
       <div
         class="flex h-10.5 items-center border-b px-5 py-2.5 text-lg font-semibold"
       >
-        About this Deal
+        {{ __('About this Deal') }}
       </div>
       <div class="flex items-center justify-start gap-5 border-b p-5">
-        <Tooltip text="Organization logo">
+        <Tooltip :text="__('Organization logo')">
           <div class="group relative h-[88px] w-[88px]">
             <Avatar
               size="3xl"
@@ -68,31 +68,31 @@
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
-            <Tooltip text="Make a call">
+            <Tooltip :text="__('Make a call')">
               <Button class="h-7 w-7" @click="triggerCall">
                 <PhoneIcon class="h-4 w-4" />
               </Button>
             </Tooltip>
-            <Tooltip text="Send an email">
+            <Tooltip :text="__('Send an email')">
               <Button class="h-7 w-7">
                 <EmailIcon
                   class="h-4 w-4"
                   @click="
                     deal.data.email
                       ? openEmailBox()
-                      : errorMessage('No email set')
+                      : errorMessage(__('No email set'))
                   "
                 />
               </Button>
             </Tooltip>
-            <Tooltip text="Go to website">
+            <Tooltip :text="__('Go to website')">
               <Button class="h-7 w-7">
                 <LinkIcon
                   class="h-4 w-4"
                   @click="
                     deal.data.website
                       ? openWebsite(deal.data.website)
-                      : errorMessage('No website set')
+                      : errorMessage(__('No website set'))
                   "
                 />
               </Button>
@@ -137,7 +137,7 @@
                     <template #target="{ togglePopover }">
                       <Button
                         class="h-7 px-3"
-                        label="Add Contact"
+                        :label="__('Add Contact')"
                         @click="togglePopover()"
                       >
                         <template #prefix>
@@ -162,7 +162,7 @@
                   class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-gray-500"
                 >
                   <LoadingIndicator class="h-4 w-4" />
-                  <span>Loading...</span>
+                  <span>{{ __('Loading...') }}</span>
                 </div>
                 <div
                   v-else-if="section.contacts.length"
@@ -194,7 +194,7 @@
                               v-if="contact.is_primary"
                               class="ml-2"
                               variant="outline"
-                              label="Primary"
+                              :label="__('Primary')"
                               theme="green"
                             />
                           </div>
@@ -251,7 +251,7 @@
                   v-else
                   class="flex h-20 items-center justify-center text-base text-gray-600"
                 >
-                  No contacts added
+                  {{ __('No contacts added') }}
                 </div>
               </div>
             </Section>
@@ -392,7 +392,7 @@ function updateDeal(fieldname, value, callback) {
       deal.reload()
       reload.value = true
       createToast({
-        title: 'Deal updated',
+        title: __('Deal updated'),
         icon: 'check',
         iconClasses: 'text-green-600',
       })
@@ -400,8 +400,8 @@ function updateDeal(fieldname, value, callback) {
     },
     onError: (err) => {
       createToast({
-        title: 'Error updating deal',
-        text: err.messages?.[0],
+        title: __('Error updating deal'),
+        text: __(err.messages?.[0]),
         icon: 'x',
         iconClasses: 'text-red-600',
       })
@@ -413,8 +413,8 @@ function validateRequired(fieldname, value) {
   let meta = deal.data.all_fields || {}
   if (meta[fieldname]?.reqd && !value) {
     createToast({
-      title: 'Error Updating Deal',
-      text: `${meta[fieldname].label} is a required field`,
+      title: __('Error Updating Deal'),
+      text: __('{0} is a required field', [meta[fieldname].label]),
       icon: 'x',
       iconClasses: 'text-red-600',
     })
@@ -424,7 +424,7 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Deals', route: { name: 'Deals' } }]
+  let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
   items.push({
     label: organization.value?.name,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
@@ -435,22 +435,27 @@ const breadcrumbs = computed(() => {
 const tabIndex = ref(0)
 const tabs = [
   {
+    name: 'Activity',
     label: 'Activity',
     icon: ActivityIcon,
   },
   {
+    name: 'Emails',
     label: 'Emails',
     icon: EmailIcon,
   },
   {
+    name: 'Calls',
     label: 'Calls',
     icon: PhoneIcon,
   },
   {
+    name: 'Tasks',
     label: 'Tasks',
     icon: TaskIcon,
   },
   {
+    name: 'Notes',
     label: 'Notes',
     icon: NoteIcon,
   },
@@ -504,7 +509,7 @@ const _contact = ref({})
 function contactOptions(contact) {
   let options = [
     {
-      label: 'Delete',
+      label: __('Delete'),
       icon: 'trash-2',
       onClick: () => removeContact(contact),
     },
@@ -512,7 +517,7 @@ function contactOptions(contact) {
 
   if (!contact.is_primary) {
     options.push({
-      label: 'Set as Primary Contact',
+      label: __('Set as Primary Contact'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
       onClick: () => setPrimaryContact(contact),
     })
@@ -529,7 +534,7 @@ async function addContact(contact) {
   if (d) {
     deal_contacts.reload()
     createToast({
-      title: 'Contact added',
+      title: __('Contact added'),
       icon: 'check',
       iconClasses: 'text-green-600',
     })
@@ -544,7 +549,7 @@ async function removeContact(contact) {
   if (d) {
     deal_contacts.reload()
     createToast({
-      title: 'Contact removed',
+      title: __('Contact removed'),
       icon: 'check',
       iconClasses: 'text-green-600',
     })
@@ -559,7 +564,7 @@ async function setPrimaryContact(contact) {
   if (d) {
     deal_contacts.reload()
     createToast({
-      title: 'Primary contact set',
+      title: __('Primary contact set'),
       icon: 'check',
       iconClasses: 'text-green-600',
     })
@@ -578,12 +583,12 @@ function triggerCall() {
   let mobile_no = primaryContact.mobile_no || null
 
   if (!primaryContact) {
-    errorMessage('No primary contact set')
+    errorMessage(__('No primary contact set'))
     return
   }
 
   if (!mobile_no) {
-    errorMessage('No mobile number set')
+    errorMessage(__('No mobile number set'))
     return
   }
 

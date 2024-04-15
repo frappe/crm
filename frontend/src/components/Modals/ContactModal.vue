@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-              {{ dialogOptions.title || 'Untitled' }}
+              {{ __(dialogOptions.title) || __('Untitled') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -64,14 +64,14 @@
                   v-if="field.type === 'link'"
                   variant="outline"
                   size="md"
-                  :label="field.label"
+                  :label="__(field.label)"
                   v-model="_contact[field.name]"
                   :doctype="field.doctype"
                   :placeholder="field.placeholder"
                 />
                 <div class="space-y-1.5" v-if="field.type === 'dropdown'">
                   <label class="block text-base text-gray-600">
-                    {{ field.label }}
+                    {{ __(field.label) }}
                   </label>
                   <NestedPopover>
                     <template #target="{ open }">
@@ -101,7 +101,7 @@
                           />
                           <div v-else>
                             <div class="p-1.5 px-7 text-base text-gray-500">
-                              No {{ field.label }} Available
+                              {{ __('No {0} Available', [field.label]) }}
                             </div>
                           </div>
                         </div>
@@ -109,7 +109,7 @@
                           <Button
                             variant="ghost"
                             class="w-full !justify-start"
-                            label="Create New"
+                            :label="__('Create New')"
                             @click="field.create()"
                           >
                             <template #prefix>
@@ -126,7 +126,7 @@
                   variant="outline"
                   size="md"
                   type="text"
-                  :label="field.label"
+                  :label="__(field.label)"
                   :placeholder="field.placeholder"
                   v-model="_contact[field.name]"
                 />
@@ -143,7 +143,7 @@
             :key="action.label"
             v-bind="action"
           >
-            {{ action.label }}
+            {{ __(action.label) }}
           </Button>
         </div>
       </div>

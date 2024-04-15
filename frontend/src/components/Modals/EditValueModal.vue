@@ -1,23 +1,23 @@
 <template>
-  <Dialog v-model="show" :options="{ title: 'Bulk Edit' }">
+  <Dialog v-model="show" :options="{ title: __('Bulk Edit') }">
     <template #body-content>
       <div class="mb-4">
-        <div class="mb-1.5 text-sm text-gray-600">Field</div>
+        <div class="mb-1.5 text-sm text-gray-600">{{ __('Field') }}</div>
         <Autocomplete
           :value="field.label"
           :options="fields.data"
           @change="(e) => changeField(e)"
-          placeholder="Select Field..."
+          :placeholder="__('Source')"
         />
       </div>
       <div>
-        <div class="mb-1.5 text-sm text-gray-600">Value</div>
+        <div class="mb-1.5 text-sm text-gray-600">{{ __('Value') }}</div>
         <component
           :is="getValueComponent(field)"
           :value="newValue"
           size="md"
           @change="(v) => updateValue(v)"
-          placeholder="Value"
+          :placeholder="__('Contact Us')"
         />
       </div>
     </template>
@@ -27,7 +27,7 @@
         variant="solid"
         @click="updateValues"
         :loading="loading"
-        :label="`Update ${recordCount} Records`"
+        :label="__('Update {0} Records', [recordCount])"
       />
     </template>
   </Dialog>

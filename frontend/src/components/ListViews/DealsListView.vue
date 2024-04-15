@@ -203,14 +203,12 @@ function editValues(selections, unselectAll) {
 
 function deleteValues(selections, unselectAll) {
   $dialog({
-    title: 'Delete',
-    message: `Are you sure you want to delete ${selections.size} item${
-      selections.size > 1 ? 's' : ''
-    }?`,
+    title: __('Delete'),
+    message: __('Are you sure you want to delete {0} item(s)?', [selections.size]),
     variant: 'danger',
     actions: [
       {
-        label: 'Delete',
+        label: __('Delete'),
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
@@ -219,7 +217,7 @@ function deleteValues(selections, unselectAll) {
             doctype: 'CRM Deal',
           }).then(() => {
             createToast({
-              title: 'Deleted successfully',
+              title: __('Deleted successfully'),
               icon: 'check',
               iconClasses: 'text-green-600',
             })
@@ -239,17 +237,17 @@ const customListActions = ref([])
 function bulkActions(selections, unselectAll) {
   let actions = [
     {
-      label: 'Edit',
+      label: __('Edit'),
       onClick: () => editValues(selections, unselectAll),
     },
     {
-      label: 'Delete',
+      label: __('Delete'),
       onClick: () => deleteValues(selections, unselectAll),
     },
   ]
   customBulkActions.value.forEach((action) => {
     actions.push({
-      label: action.label,
+      label: __(action.label),
       onClick: () =>
         action.onClick({
           list: list.value,

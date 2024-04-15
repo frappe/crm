@@ -3,7 +3,7 @@
     <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
-          <Button :label="currentView.label">
+          <Button :label="__(currentView.label)">
             <template #prefix>
               <FeatherIcon :name="currentView.icon" class="h-4" />
             </template>
@@ -29,11 +29,11 @@
         v-if="viewUpdated && route.query.view && (!view.public || isManager())"
         class="flex items-center gap-2 border-r pr-2"
       >
-        <Button label="Cancel" @click="cancelChanges" />
-        <Button label="Save Changes" @click="saveView" />
+        <Button :label="__('Cancel')" @click="cancelChanges" />
+        <Button :label="__('Save Changes')" @click="saveView" />
       </div>
       <div class="flex items-center gap-2">
-        <Button label="Refresh" @click="reload()" :loading="isLoading">
+        <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
           <template #icon>
             <RefreshIcon class="h-4 w-4" />
           </template>
@@ -55,11 +55,11 @@
           v-if="!options.hideColumnsButton"
           :options="[
             {
-              group: 'Options',
+              group: __('Options'),
               hideLabel: true,
               items: [
                 {
-                  label: 'Export',
+                  label: __('Export'),
                   icon: () =>
                     h(FeatherIcon, { name: 'download', class: 'h-4 w-4' }),
                   onClick: () => (showExportDialog = true),
@@ -96,10 +96,10 @@
   <Dialog
     v-model="showExportDialog"
     :options="{
-      title: 'Export',
+      title: __('Export'),
       actions: [
         {
-          label: 'Download',
+          label: __('Download'),
           variant: 'solid',
           onClick: () => exportRows(),
         },
@@ -109,16 +109,25 @@
     <template #body-content>
       <FormControl
         variant="outline"
-        label="Export Type"
+        :label="__('Export Type')"
         type="select"
-        :options="['Excel', 'CSV']"
+        :options="[
+          {
+            label: __('Excel'),
+            value: 'Excel',
+          },
+          {
+            label: __('CSV'),
+            value: 'CSV',
+          },
+        ]"
         v-model="export_type"
-        placeholder="Select Export Type"
+        :placeholder="__('Excel')"
       />
       <div class="mt-3">
         <FormControl
           type="checkbox"
-          :label="`Export All ${list.data.total_count} Records`"
+          :label="__('Export All {0} Record(s)', [list.data.total_count])"
           v-model="export_all"
         />
       </div>
@@ -321,7 +330,7 @@ async function exportRows() {
 
 const defaultViews = [
   {
-    label: props.options?.defaultViewName || 'List View',
+    label: __(props.options?.defaultViewName) || __('List View'),
     icon: 'list',
     onClick() {
       viewUpdated.value = false
@@ -333,7 +342,7 @@ const defaultViews = [
 const viewsDropdownOptions = computed(() => {
   let _views = [
     {
-      group: 'Default Views',
+      group: __('Default Views'),
       hideLabel: true,
       items: defaultViews,
     },
@@ -341,6 +350,7 @@ const viewsDropdownOptions = computed(() => {
 
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
+      view.label = __(view.label)
       view.icon = view.icon || 'list'
       view.filters =
         typeof view.filters == 'string'
@@ -359,18 +369,18 @@ const viewsDropdownOptions = computed(() => {
 
     publicViews.length &&
       _views.push({
-        group: 'Public Views',
+        group: __('Public Views'),
         items: publicViews,
       })
 
     savedViews.length &&
       _views.push({
-        group: 'Saved Views',
+        group: __('Saved Views'),
         items: savedViews,
       })
     pinnedViews.length &&
       _views.push({
-        group: 'Pinned Views',
+        group: __('Pinned Views'),
         items: pinnedViews,
       })
   }
@@ -489,11 +499,11 @@ function updatePageLength(value, loadMore = false) {
 const viewActions = computed(() => {
   let actions = [
     {
-      group: 'Default Views',
+      group: __('Default Views'),
       hideLabel: true,
       items: [
         {
-          label: 'Duplicate',
+          label: __('Duplicate'),
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
           onClick: () => duplicateView(),
         },
@@ -503,14 +513,14 @@ const viewActions = computed(() => {
 
   if (route.query.view && (!view.value.public || isManager())) {
     actions[0].items.push({
-      label: 'Rename',
+      label: __('Rename'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
       onClick: () => renameView(),
     })
 
     if (!view.value.public) {
       actions[0].items.push({
-        label: view.value.pinned ? 'Unpin View' : 'Pin View',
+        label: view.value.pinned ? __('Unpin View') : __('Pin View'),
         icon: () =>
           h(view.value.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
         onClick: () => pinView(),
@@ -519,7 +529,7 @@ const viewActions = computed(() => {
 
     if (isManager()) {
       actions[0].items.push({
-        label: view.value.public ? 'Make Private' : 'Make Public',
+        label: view.value.public ? __('Make Private') : __('Make Public'),
         icon: () =>
           h(FeatherIcon, {
             name: view.value.public ? 'lock' : 'unlock',
@@ -530,20 +540,20 @@ const viewActions = computed(() => {
     }
 
     actions.push({
-      group: 'Delete View',
+      group: __('Delete View'),
       hideLabel: true,
       items: [
         {
-          label: 'Delete',
+          label: __('Delete'),
           icon: 'trash-2',
           onClick: () =>
             $dialog({
-              title: 'Delete View',
-              message: 'Are you sure you want to delete this view?',
+              title: __('Delete View'),
+              message: __('Are you sure you want to delete this view?'),
               variant: 'danger',
               actions: [
                 {
-                  label: 'Delete',
+                  label: __('Delete'),
                   variant: 'solid',
                   theme: 'red',
                   onClick: (close) => deleteView(close),
@@ -558,15 +568,15 @@ const viewActions = computed(() => {
 })
 
 function duplicateView() {
-  let label = getView(route.query.view)?.label || 'List View'
+  let label = __(getView(route.query.view)?.label) || __('List View')
   view.value.name = ''
-  view.value.label = label + ' (New)'
+  view.value.label = label + __(' (New)')
   showViewModal.value = true
 }
 
 function renameView() {
   view.value.name = route.query.view
-  view.value.label = getView(route.query.view).label
+  view.value.label = __(getView(route.query.view).label)
   showViewModal.value = true
 }
 
