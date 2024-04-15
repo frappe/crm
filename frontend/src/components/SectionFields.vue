@@ -7,7 +7,7 @@
       class="flex items-center gap-2 px-3 leading-5 first:mt-3"
     >
       <div class="w-[106px] shrink-0 text-sm text-gray-600">
-        {{ field.label }}
+        {{ __(field.label) }}
         <span class="text-red-500">{{ field.reqd ? ' *' : '' }}</span>
       </div>
       <div
@@ -17,7 +17,7 @@
           v-if="field.read_only && field.type !== 'checkbox'"
           class="flex h-7 cursor-pointer items-center px-2 py-1 text-gray-600"
         >
-          <Tooltip :text="field.tooltip">
+          <Tooltip :text="__(field.tooltip)">
             <div>{{ data[field.name] }}</div>
           </Tooltip>
         </div>

@@ -10,7 +10,7 @@
           class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
           :class="{ 'rotate-90': opened }"
         />
-        {{ label || 'Untitled' }}
+        {{ __(label) || __('Untitled') }}
       </div>
       <slot name="actions"></slot>
     </div>

@@ -8,7 +8,11 @@
         v-if="leadsListView?.customListActions"
         :actions="leadsListView.customListActions"
       />
-      <Button variant="solid" label="Create" @click="showNewDialog = true">
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        @click="showNewDialog = true"
+      >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -45,8 +49,8 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <LeadsIcon class="h-10 w-10" />
-      <span>No Leads Found</span>
-      <Button label="Create" @click="showNewDialog = true">
+      <span>{{ __('No Leads Found') }}</span>
+      <Button :label="__('Create')" @click="showNewDialog = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
@@ -55,8 +59,7 @@
     v-model="showNewDialog"
     :options="{
       size: '3xl',
-      title: 'New Lead',
-      actions: [{ label: 'Save', variant: 'solid' }],
+      title: __('New Lead'),
     }"
   >
     <template #body-content>
@@ -64,7 +67,11 @@
     </template>
     <template #actions="{ close }">
       <div class="flex flex-row-reverse gap-2">
-        <Button variant="solid" label="Save" @click="createNewLead(close)" />
+        <Button
+          variant="solid"
+          :label="__('Save')"
+          @click="createNewLead(close)"
+        />
       </div>
     </template>
   </Dialog>
@@ -80,12 +87,18 @@ import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
+import {
+  dateFormat,
+  dateTooltipFormat,
+  timeAgo,
+  formatTime,
+  createToast,
+} from '@/utils'
 import { createResource, Breadcrumbs } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
 
-const breadcrumbs = [{ label: 'Leads', route: { name: 'Leads' } }]
+const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
@@ -136,7 +149,7 @@ const rows = computed(() => {
             ? 'green'
             : 'orange'
         if (value == 'First Response Due') {
-          value = timeAgo(lead.response_by)
+          value = __(timeAgo(lead.response_by))
           tooltipText = dateFormat(lead.response_by, dateTooltipFormat)
           if (new Date(lead.response_by) < new Date()) {
             color = 'red'
@@ -165,7 +178,7 @@ const rows = computed(() => {
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(lead[row], dateTooltipFormat),
-          timeAgo: timeAgo(lead[row]),
+          timeAgo: __(timeAgo(lead[row])),
         }
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
@@ -178,7 +191,7 @@ const rows = computed(() => {
           timeAgo: lead[row]
             ? row == 'first_response_time'
               ? formatTime(lead[row])
-              : timeAgo(lead[row])
+              : __(timeAgo(lead[row]))
             : '',
         }
       }
@@ -219,7 +232,13 @@ function createNewLead(close) {
     .submit(newLead, {
       validate() {
         if (!newLead.first_name) {
-          return 'First name is required'
+          createToast({
+            title: __('Error creating lead'),
+            text: __('First name is required'),
+            icon: 'x',
+            iconClasses: 'text-red-600',
+          })
+          return __('First name is required')
         }
       },
       onSuccess(data) {

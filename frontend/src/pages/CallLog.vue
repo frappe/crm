@@ -7,16 +7,15 @@
       <Button
         v-if="callLog.data.type == 'Incoming' && !callLog.data.lead"
         variant="solid"
-        label="Create lead"
+        :label="__('Create lead')"
         @click="createLead"
       >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
   </LayoutHeader>
-  <div class="border-b"></div>
   <div v-if="callLog.data" class="max-w-lg p-6">
-    <div class="pb-3 text-base font-medium">Call details</div>
+    <div class="pb-3 text-base font-medium">{{ __('Call details') }}</div>
     <div class="mb-3 flex flex-col gap-4 rounded-lg border p-4 shadow-sm">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -29,7 +28,11 @@
             class="h-4 w-4 text-gray-600"
           />
           <div class="font-medium">
-            {{ callLog.data.type == 'Incoming' ? 'Inbound' : 'Outbound' }} call
+            {{
+              callLog.data.type == 'Incoming'
+                ? __('Inbound Call')
+                : __('Outbound Call')
+            }}
           </div>
         </div>
         <div>
@@ -37,7 +40,7 @@
             :variant="'subtle'"
             :theme="statusColorMap[callLog.data.status]"
             size="md"
-            :label="statusLabelMap[callLog.data.status]"
+            :label="__(statusLabelMap[callLog.data.status])"
           />
         </div>
       </div>
@@ -50,7 +53,7 @@
           />
           <div class="ml-1 flex flex-col gap-1">
             <div class="text-base font-medium">
-              {{ callLog.data.caller.label }}
+              {{ __(callLog.data.caller.label) }}
             </div>
             <div class="text-xs text-gray-600">
               {{ callLog.data.from }}
@@ -64,7 +67,7 @@
           />
           <div class="ml-1 flex flex-col gap-1">
             <div class="text-base font-medium">
-              {{ callLog.data.receiver.label }}
+              {{ __(callLog.data.receiver.label) }}
             </div>
             <div class="text-xs text-gray-600">
               {{ callLog.data.to }}
@@ -75,19 +78,19 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1">
           <DurationIcon class="h-4 w-4 text-gray-600" />
-          <div class="text-sm text-gray-600">Duration</div>
+          <div class="text-sm text-gray-600">{{ __('Duration') }}</div>
           <div class="text-sm">{{ callLog.data.duration }}</div>
         </div>
         <Tooltip :text="dateFormat(callLog.data.creation, dateTooltipFormat)">
           <div class="text-sm text-gray-600">
-            {{ timeAgo(callLog.data.creation) }}
+            {{ __(timeAgo(callLog.data.creation)) }}
           </div>
         </Tooltip>
       </div>
     </div>
 
     <div v-if="callLog.data.recording_url" class="mt-6">
-      <div class="mb-3 text-base font-medium">Call recording</div>
+      <div class="mb-3 text-base font-medium">{{ __('Call recording') }}</div>
       <div class="flex items-center justify-between rounded border shadow-sm">
         <audio
           class="audio-control"
@@ -98,7 +101,7 @@
     </div>
 
     <div v-if="callLog.data.note" class="mt-6">
-      <div class="mb-3 text-base font-medium">Call note</div>
+      <div class="mb-3 text-base font-medium">{{ __('Call note') }}</div>
       <div
         class="flex h-56 cursor-pointer flex-col gap-3 rounded border p-4 shadow-sm"
         @click="showNoteModal = true"
@@ -117,7 +120,7 @@
     </div>
 
     <div v-if="callLog.data.lead" class="mt-6">
-      <div class="mb-3 text-base font-medium">Lead</div>
+      <div class="mb-3 text-base font-medium">{{ __('Lead') }}</div>
 
       <Button
         variant="outline"
@@ -206,7 +209,7 @@ function createLead() {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
+  let items = [{ label: __('Call Logs'), route: { name: 'Call Logs' } }]
   items.push({
     label: callLog.data?.caller.label,
     route: { name: 'Call Log', params: { callLogId: props.callLogId } },

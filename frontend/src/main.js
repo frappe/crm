@@ -19,6 +19,7 @@ import {
   frappeRequest,
   FeatherIcon,
 } from 'frappe-ui'
+import translationPlugin from './translation'
 import { createDialog } from './utils/dialogs'
 import socket from './socket'
 import { getCachedListResource } from 'frappe-ui/src/resources/listResource'
@@ -45,6 +46,7 @@ setConfig('resourceFetcher', frappeRequest)
 app.use(FrappeUI)
 app.use(pinia)
 app.use(router)
+app.use(translationPlugin)
 for (let key in globalComponents) {
   app.component(key, globalComponents[key])
 }

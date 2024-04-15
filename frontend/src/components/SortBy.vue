@@ -1,7 +1,7 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button label="Sort" ref="sortButtonRef">
+      <Button :label="__('Sort')" ref="sortButtonRef">
         <template #prefix><SortIcon class="h-4" /></template>
         <template v-if="sortValues?.size" #suffix>
           <div
@@ -33,15 +33,15 @@
                 :value="sort.fieldname"
                 :options="sortOptions.data"
                 @change="(e) => updateSort(e, i)"
-                placeholder="Sort by"
+                :placeholder="__('First Name')"
               />
               <FormControl
                 class="!w-32"
                 type="select"
                 v-model="sort.direction"
                 :options="[
-                  { label: 'Ascending', value: 'asc' },
-                  { label: 'Descending', value: 'desc' },
+                  { label: __('Ascending'), value: 'asc' },
+                  { label: __('Descending'), value: 'desc' },
                 ]"
                 @change="
                   (e) => {
@@ -49,7 +49,7 @@
                     apply()
                   }
                 "
-                placeholder="Sort by"
+                :placeholder="__('Ascending')"
               />
               <Button variant="ghost" icon="x" @click="removeSort(i)" />
             </div>
@@ -58,13 +58,13 @@
             v-else
             class="mb-3 flex h-7 items-center px-3 text-sm text-gray-600"
           >
-            Empty - Choose a field to sort by
+            {{ __('Empty - Choose a field to sort by') }}
           </div>
           <div class="flex items-center justify-between gap-2">
             <Autocomplete
               :options="options"
               value=""
-              placeholder="Sort by"
+              :placeholder="__('First Name')"
               @change="(e) => setSort(e)"
             >
               <template #target="{ togglePopover }">
@@ -72,7 +72,7 @@
                   class="!text-gray-600"
                   variant="ghost"
                   @click="togglePopover()"
-                  label="Add Sort"
+                  :label="__('Add Sort')"
                 >
                   <template #prefix>
                     <FeatherIcon name="plus" class="h-4" />
@@ -84,7 +84,7 @@
               v-if="sortValues?.size"
               class="!text-gray-600"
               variant="ghost"
-              label="Clear Sort"
+              :label="__('Clear Sort')"
               @click="clearSort(close)"
             />
           </div>

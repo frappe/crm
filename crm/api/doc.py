@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from frappe.model.document import get_controller
 from frappe.model import no_value_fields
 from pypika import Criterion
@@ -13,7 +14,7 @@ def sort_options(doctype: str):
 	fields = [field for field in fields if field.fieldtype not in no_value_fields]
 	fields = [
 		{
-			"label": field.label,
+			"label": _(field.label),
 			"value": field.fieldname,
 		}
 		for field in fields
@@ -29,6 +30,7 @@ def sort_options(doctype: str):
 	]
 
 	for field in standard_fields:
+		field["label"] = _(field["label"])
 		fields.append(field)
 
 	return fields
@@ -100,6 +102,9 @@ def get_filterable_fields(doctype: str):
 		):
 			field["name"] = field.get("fieldname")
 			res.append(field)
+
+	for field in res:
+		field["label"] = _(field.get("label"))
 
 	return res
 
@@ -184,6 +189,7 @@ def get_list_data(
 	for column in columns:
 		if column.get("key") not in rows:
 			rows.append(column.get("key"))
+		column["label"] = _(column.get("label"))
 
 	data = frappe.get_list(
 		doctype,
@@ -197,7 +203,7 @@ def get_list_data(
 	fields = [field for field in fields if field.fieldtype not in no_value_fields]
 	fields = [
 		{
-			"label": field.label,
+			"label": _(field.label),
 			"type": field.fieldtype,
 			"value": field.fieldname,
 			"options": field.options,
@@ -224,6 +230,7 @@ def get_list_data(
 		if field.get('value') not in rows:
 			rows.append(field.get('value'))
 		if field not in fields:
+			field["label"] = _(field["label"])
 			fields.append(field)
 
 	if not is_default and custom_view_name:

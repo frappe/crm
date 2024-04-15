@@ -1,16 +1,22 @@
 <template>
-  <Dialog v-model="show" :options="{ title: 'Email Templates', size: '4xl' }">
+  <Dialog
+    v-model="show"
+    :options="{ title: __('Email Templates'), size: '4xl' }"
+  >
     <template #body-content>
       <TextInput
         ref="searchInput"
         v-model="search"
         type="text"
-        class="mb-2 w-full"
-        placeholder="Search"
-      />
+        :placeholder="__('Payment Reminder')"
+      >
+        <template #prefix>
+          <FeatherIcon name="search" class="h-4 w-4 text-gray-500" />
+        </template>
+      </TextInput>
       <div
         v-if="filteredTemplates.length"
-        class="grid max-h-[560px] grid-cols-3 gap-2 overflow-y-auto"
+        class="mt-2 grid max-h-[560px] grid-cols-3 gap-2 overflow-y-auto"
       >
         <div
           v-for="template in filteredTemplates"
@@ -22,7 +28,7 @@
             {{ template.name }}
           </div>
           <div v-if="template.subject" class="text-sm text-gray-600">
-            Subject: {{ template.subject }}
+            {{ __('Subject: {0}', [template.subject]) }}
           </div>
           <TextEditor
             v-if="template.response"
@@ -33,11 +39,13 @@
           />
         </div>
       </div>
-      <div v-else>
+      <div v-else class="mt-2">
         <div class="flex h-56 flex-col items-center justify-center">
-          <div class="text-lg text-gray-500">No templates found</div>
+          <div class="text-lg text-gray-500">
+            {{ __('No templates found') }}
+          </div>
           <Button
-            label="Create New"
+            :label="__('Create New')"
             class="mt-4"
             @click="
               () => {

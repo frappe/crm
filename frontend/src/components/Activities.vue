@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-between px-10 py-5 text-lg font-medium">
     <div class="flex h-7 items-center text-xl font-semibold text-gray-800">
-      {{ title }}
+      {{ __(title) }}
     </div>
     <Button
       v-if="title == 'Emails'"
@@ -11,7 +11,7 @@
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>New Email</span>
+      <span>{{ __('New Email') }}</span>
     </Button>
     <Button
       v-else-if="title == 'Calls'"
@@ -21,41 +21,41 @@
       <template #prefix>
         <PhoneIcon class="h-4 w-4" />
       </template>
-      <span>Make a Call</span>
+      <span>{{ __('Make a Call') }}</span>
     </Button>
     <Button v-else-if="title == 'Notes'" variant="solid" @click="showNote()">
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>New Note</span>
+      <span>{{ __('New Note') }}</span>
     </Button>
     <Button v-else-if="title == 'Tasks'" variant="solid" @click="showTask()">
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>New Task</span>
+      <span>{{ __('New Task') }}</span>
     </Button>
     <Dropdown
       v-else
       :options="[
         {
           icon: h(EmailIcon, { class: 'h-4 w-4' }),
-          label: 'New Email',
+          label: __('New Email'),
           onClick: () => ($refs.emailBox.show = true),
         },
         {
           icon: h(PhoneIcon, { class: 'h-4 w-4' }),
-          label: 'Make a Call',
+          label: __('Make a Call'),
           onClick: () => makeCall(doc.data.mobile_no),
         },
         {
           icon: h(NoteIcon, { class: 'h-4 w-4' }),
-          label: 'New Note',
+          label: __('New Note'),
           onClick: () => showNote(),
         },
         {
           icon: h(TaskIcon, { class: 'h-4 w-4' }),
-          label: 'New Task',
+          label: __('New Task'),
           onClick: () => showTask(),
         },
       ]"
@@ -66,7 +66,7 @@
           <template #prefix>
             <FeatherIcon name="plus" class="h-4 w-4" />
           </template>
-          <span>New</span>
+          <span>{{ __('New') }}</span>
           <template #suffix>
             <FeatherIcon
               :name="open ? 'chevron-up' : 'chevron-down'"
@@ -82,7 +82,7 @@
     class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
   >
     <LoadingIndicator class="h-6 w-6" />
-    <span>Loading...</span>
+    <span>{{ __('Loading...') }}</span>
   </div>
   <div v-else-if="activities?.length" class="activities flex-1 overflow-y-auto">
     <div
@@ -101,8 +101,8 @@
           <Dropdown
             :options="[
               {
+                label: __('Delete'),
                 icon: 'trash-2',
-                label: 'Delete',
                 onClick: () => deleteNote(note.name),
               },
             ]"
@@ -135,7 +135,7 @@
           </div>
           <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
             <div class="truncate text-sm text-gray-700">
-              {{ timeAgo(note.modified) }}
+              {{ __(timeAgo(note.modified)) }}
             </div>
           </Tooltip>
         </div>
@@ -188,7 +188,7 @@
               :options="taskStatusOptions(updateTaskStatus, task)"
               @click.stop
             >
-              <Tooltip text="Change Status">
+              <Tooltip :text="__('Change Status')">
                 <Button variant="ghosted" class="hover:bg-gray-300">
                   <TaskStatusIcon :status="task.status" />
                 </Button>
@@ -197,15 +197,15 @@
             <Dropdown
               :options="[
                 {
+                  label: __('Delete'),
                   icon: 'trash-2',
-                  label: 'Delete',
                   onClick: () => {
                     $dialog({
-                      title: 'Delete Task',
-                      message: 'Are you sure you want to delete this task?',
+                      title: __('Delete Task'),
+                      message: __('Are you sure you want to delete this task?'),
                       actions: [
                         {
-                          label: 'Delete',
+                          label: __('Delete'),
                           theme: 'red',
                           variant: 'solid',
                           onClick(close) {
@@ -257,12 +257,16 @@
           >
             <div class="flex items-center justify-between">
               <div>
-                {{ call.type == 'Incoming' ? 'Inbound' : 'Outbound' }} Call
+                {{
+                  call.type == 'Incoming'
+                    ? __('Inbound Call')
+                    : __('Outbound Call')
+                }}
               </div>
               <div>
                 <Tooltip :text="dateFormat(call.creation, dateTooltipFormat)">
                   <div class="text-sm text-gray-600">
-                    {{ timeAgo(call.creation) }}
+                    {{ __(timeAgo(call.creation)) }}
                   </div>
                 </Tooltip>
               </div>
@@ -270,25 +274,28 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
                 <DurationIcon class="h-4 w-4 text-gray-600" />
-                <div class="text-sm text-gray-600">Duration</div>
+                <div class="text-sm text-gray-600">{{ __('Duration') }}</div>
                 <div class="text-sm">
                   {{ call.duration }}
                 </div>
               </div>
               <div
+                v-if="call.recording_url"
                 class="flex cursor-pointer select-none items-center gap-1"
                 @click="call.show_recording = !call.show_recording"
               >
                 <PlayIcon class="h-4 w-4 text-gray-600" />
                 <div class="text-sm text-gray-600">
                   {{
-                    call.show_recording ? 'Hide Recording' : 'Listen to Call'
+                    call.show_recording
+                      ? __('Hide Recording')
+                      : __('Listen to Call')
                   }}
                 </div>
               </div>
             </div>
             <div
-              v-if="call.show_recording"
+              v-if="call.show_recording && call.recording_url"
               class="flex items-center justify-between rounded border"
             >
               <audio class="audio-control" controls :src="call.recording_url" />
@@ -302,7 +309,7 @@
                 />
                 <div class="ml-1 flex flex-col gap-1">
                   <div class="text-base font-medium">
-                    {{ call.caller.label }}
+                    {{ __(call.caller.label) }}
                   </div>
                   <div class="text-xs text-gray-600">
                     {{ call.from }}
@@ -319,7 +326,7 @@
                 />
                 <div class="ml-1 flex flex-col gap-1">
                   <div class="text-base font-medium">
-                    {{ call.receiver.label }}
+                    {{ __(call.receiver.label) }}
                   </div>
                   <div class="text-xs text-gray-600">
                     {{ call.to }}
@@ -378,12 +385,12 @@
                   :text="dateFormat(activity.creation, dateTooltipFormat)"
                 >
                   <div class="text-sm text-gray-600">
-                    {{ timeAgo(activity.creation) }}
+                    {{ __(timeAgo(activity.creation)) }}
                   </div>
                 </Tooltip>
               </div>
               <div class="flex gap-0.5">
-                <Tooltip text="Reply">
+                <Tooltip :text="__('Reply')">
                   <Button
                     variant="ghost"
                     class="text-gray-700"
@@ -392,7 +399,7 @@
                     <ReplyIcon class="h-4 w-4" />
                   </Button>
                 </Tooltip>
-                <Tooltip text="Reply All">
+                <Tooltip :text="__('Reply All')">
                   <Button
                     variant="ghost"
                     class="text-gray-700"
@@ -407,14 +414,16 @@
               {{ activity.data.subject }}
             </div>
             <div class="mb-3 text-sm leading-5 text-gray-600">
-              <span class="mr-1 text-2xs font-bold text-gray-500">TO:</span>
+              <span class="mr-1 text-2xs font-bold text-gray-500">
+                {{ __('TO') }}:
+              </span>
               <span>{{ activity.data.recipients }}</span>
               <span v-if="activity.data.cc">, </span>
               <span
                 v-if="activity.data.cc"
                 class="mr-1 text-2xs font-bold text-gray-500"
               >
-                CC:
+                {{ __('CC') }}:
               </span>
               <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
               <span v-if="activity.data.bcc">, </span>
@@ -422,7 +431,7 @@
                 v-if="activity.data.bcc"
                 class="mr-1 text-2xs font-bold text-gray-500"
               >
-                BCC:
+                {{ __('BCC') }}:
               </span>
               <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
             </div>
@@ -452,15 +461,15 @@
               <span class="font-medium text-gray-800">
                 {{ activity.owner_name }}
               </span>
-              <span>added a</span>
+              <span>{{ __('added a') }}</span>
               <span class="max-w-xs truncate font-medium text-gray-800">
-                comment
+                {{ __('comment') }}
               </span>
             </div>
             <div class="ml-auto whitespace-nowrap">
               <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
                 <div class="text-gray-600">
-                  {{ timeAgo(activity.creation) }}
+                  {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
             </div>
@@ -479,12 +488,16 @@
         >
           <div class="flex items-center justify-between">
             <div>
-              {{ activity.type == 'Incoming' ? 'Inbound' : 'Outbound' }} Call
+              {{
+                activity.type == 'Incoming'
+                  ? __('Inbound Call')
+                  : __('Outbound Call')
+              }}
             </div>
             <div>
               <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
                 <div class="text-sm text-gray-600">
-                  {{ timeAgo(activity.creation) }}
+                  {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
             </div>
@@ -492,25 +505,28 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1">
               <DurationIcon class="h-4 w-4 text-gray-600" />
-              <div class="text-sm text-gray-600">Duration</div>
+              <div class="text-sm text-gray-600">{{ __('Duration') }}</div>
               <div class="text-sm">
                 {{ activity.duration }}
               </div>
             </div>
             <div
+              v-if="activity.recording_url"
               class="flex cursor-pointer select-none items-center gap-1"
               @click="activity.show_recording = !activity.show_recording"
             >
               <PlayIcon class="h-4 w-4 text-gray-600" />
               <div class="text-sm text-gray-600">
                 {{
-                  activity.show_recording ? 'Hide Recording' : 'Listen to Call'
+                  activity.show_recording
+                    ? __('Hide Recording')
+                    : __('Listen to Call')
                 }}
               </div>
             </div>
           </div>
           <div
-            v-if="activity.show_recording"
+            v-if="activity.show_recording && activity.recording_url"
             class="flex items-center justify-between rounded border"
           >
             <audio
@@ -528,7 +544,7 @@
               />
               <div class="ml-1 flex flex-col gap-1">
                 <div class="text-base font-medium">
-                  {{ activity.caller.label }}
+                  {{ __(activity.caller.label) }}
                 </div>
                 <div class="text-xs text-gray-600">
                   {{ activity.from }}
@@ -545,7 +561,7 @@
               />
               <div class="ml-1 flex flex-col gap-1">
                 <div class="text-base font-medium">
-                  {{ activity.receiver.label }}
+                  {{ __(activity.receiver.label) }}
                 </div>
                 <div class="text-xs text-gray-600">
                   {{ activity.to }}
@@ -557,17 +573,17 @@
         <div v-else class="mb-4 flex flex-col gap-5 py-1.5">
           <div class="flex items-start justify-stretch gap-2 text-base">
             <div class="inline-flex flex-wrap gap-1 text-gray-600">
-              <span class="font-medium text-gray-800">{{
-                activity.owner_name
-              }}</span>
-              <span v-if="activity.type">{{ activity.type }}</span>
+              <span class="font-medium text-gray-800">
+                {{ activity.owner_name }}
+              </span>
+              <span v-if="activity.type">{{ __(activity.type) }}</span>
               <span
                 v-if="activity.data.field_label"
                 class="max-w-xs truncate font-medium text-gray-800"
               >
-                {{ activity.data.field_label }}
+                {{ __(activity.data.field_label) }}
               </span>
-              <span v-if="activity.value">{{ activity.value }}</span>
+              <span v-if="activity.value">{{ __(activity.value) }}</span>
               <span
                 v-if="activity.data.old_value"
                 class="max-w-xs font-medium text-gray-800"
@@ -583,7 +599,7 @@
                   {{ activity.data.old_value }}
                 </div>
               </span>
-              <span v-if="activity.to">to</span>
+              <span v-if="activity.to">{{ __('to') }}</span>
               <span
                 v-if="activity.data.value"
                 class="max-w-xs font-medium text-gray-800"
@@ -604,7 +620,7 @@
             <div class="ml-auto whitespace-nowrap">
               <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
                 <div class="text-gray-600">
-                  {{ timeAgo(activity.creation) }}
+                  {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
             </div>
@@ -620,7 +636,7 @@
                   v-if="activity.data.field_label"
                   class="max-w-xs truncate text-gray-600"
                 >
-                  {{ activity.data.field_label }}
+                  {{ __(activity.data.field_label) }}
                 </span>
                 <FeatherIcon
                   name="arrow-right"
@@ -628,7 +644,9 @@
                 />
               </div>
               <div class="flex flex-wrap items-center gap-1">
-                <span v-if="activity.type">{{ startCase(activity.type) }}</span>
+                <span v-if="activity.type">{{
+                  startCase(__(activity.type))
+                }}</span>
                 <span
                   v-if="activity.data.old_value"
                   class="max-w-xs font-medium text-gray-800"
@@ -644,7 +662,7 @@
                     {{ activity.data.old_value }}
                   </div>
                 </span>
-                <span v-if="activity.to">to</span>
+                <span v-if="activity.to">{{ __('to') }}</span>
                 <span
                   v-if="activity.data.value"
                   class="max-w-xs font-medium text-gray-800"
@@ -666,7 +684,7 @@
             <div class="ml-auto whitespace-nowrap">
               <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
                 <div class="text-gray-600">
-                  {{ timeAgo(activity.creation) }}
+                  {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
             </div>
@@ -674,7 +692,9 @@
           <div v-if="activity.other_versions">
             <Button
               :label="
-                activity.show_others ? 'Hide all Changes' : 'Show all Changes'
+                activity.show_others
+                  ? __('Hide all Changes')
+                  : __('Show all Changes')
               "
               variant="outline"
               @click="activity.show_others = !activity.show_others"
@@ -696,25 +716,25 @@
     class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
   >
     <component :is="emptyTextIcon" class="h-10 w-10" />
-    <span>{{ emptyText }}</span>
+    <span>{{ __(emptyText) }}</span>
     <Button
       v-if="title == 'Calls'"
-      label="Make a Call"
+      :label="__('Make a Call')"
       @click="makeCall(doc.data.mobile_no)"
     />
     <Button
       v-else-if="title == 'Notes'"
-      label="Create Note"
+      :label="__('Create Note')"
       @click="showNote()"
     />
     <Button
       v-else-if="title == 'Emails'"
-      label="New Email"
+      :label="__('New Email')"
       @click="$refs.emailBox.show = true"
     />
     <Button
       v-else-if="title == 'Tasks'"
-      label="Create Task"
+      :label="__('Create Task')"
       @click="showTask()"
     />
   </div>
@@ -785,11 +805,10 @@ import {
   TextEditor,
   Avatar,
   createResource,
-  createListResource,
   call,
 } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
-import { ref, computed, h, markRaw, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, h, markRaw, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 
 const { makeCall } = globalStore()

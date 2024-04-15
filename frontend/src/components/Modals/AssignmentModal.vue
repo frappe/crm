@@ -2,11 +2,11 @@
   <Dialog
     v-model="show"
     :options="{
-      title: 'Assign To',
+      title: __('Assign To'),
       size: 'xl',
       actions: [
         {
-          label: 'Cancel',
+          label: __('Cancel'),
           variant: 'subtle',
           onClick: () => {
             assignees = oldAssignees
@@ -14,7 +14,7 @@
           },
         },
         {
-          label: 'Update',
+          label: __('Update'),
           variant: 'solid',
           onClick: () => updateAssignees(),
         },
@@ -65,7 +65,7 @@
           </Button>
         </Tooltip>
       </div>
-      <ErrorMessage class="mt-2" v-if="error" :message="error" />
+      <ErrorMessage class="mt-2" v-if="error" :message="__(error)" />
     </template>
   </Dialog>
 </template>

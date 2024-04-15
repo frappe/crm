@@ -10,7 +10,7 @@
   >
     <template #top>
       <div class="mx-10 flex items-center gap-2 border-t py-2.5">
-        <span class="text-xs text-gray-500">SUBJECT:</span>
+        <span class="text-xs text-gray-500">{{ __('SUBJECT') }}:</span>
         <TextInput
           class="flex-1 border-none bg-white hover:bg-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
           v-model="subject"
@@ -20,12 +20,14 @@
         class="mx-10 flex items-center gap-2 border-t py-2.5"
         :class="[cc || bcc ? 'border-b' : '']"
       >
-        <span class="text-xs text-gray-500">TO:</span>
+        <span class="text-xs text-gray-500">{{ __('TO') }}:</span>
         <MultiselectInput
           class="flex-1"
           v-model="toEmails"
           :validate="validateEmail"
-          :error-message="(value) => `${value} is an invalid email address`"
+          :error-message="
+            (value) => __('{0} is an invalid email address', [value])
+          "
         />
       </div>
       <div
@@ -33,23 +35,27 @@
         class="mx-10 flex items-center gap-2 py-2.5"
         :class="bcc ? 'border-b' : ''"
       >
-        <span class="text-xs text-gray-500">CC:</span>
+        <span class="text-xs text-gray-500">{{ __('CC') }}:</span>
         <MultiselectInput
           ref="ccInput"
           class="flex-1"
           v-model="ccEmails"
           :validate="validateEmail"
-          :error-message="(value) => `${value} is an invalid email address`"
+          :error-message="
+            (value) => __('{0} is an invalid email address', [value])
+          "
         />
       </div>
       <div v-if="bcc" class="mx-10 flex items-center gap-2 py-2.5">
-        <span class="text-xs text-gray-500">BCC:</span>
+        <span class="text-xs text-gray-500">{{ __('BCC') }}:</span>
         <MultiselectInput
           ref="bccInput"
           class="flex-1"
           v-model="bccEmails"
           :validate="validateEmail"
-          :error-message="(value) => `${value} is an invalid email address`"
+          :error-message="
+            (value) => __('{0} is an invalid email address', [value])
+          "
         />
       </div>
     </template>
@@ -114,11 +120,11 @@
             </div>
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
-            <Button v-bind="discardButtonProps || {}" label="Discard" />
+            <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />
             <Button
               variant="solid"
               v-bind="submitButtonProps || {}"
-              label="Submit"
+              :label="__('Send')"
             />
           </div>
         </div>
@@ -158,7 +164,7 @@ const props = defineProps({
   },
   subject: {
     type: String,
-    default: 'Email from Lead',
+    default: __('Email from Lead'),
   },
   editorProps: {
     type: Object,

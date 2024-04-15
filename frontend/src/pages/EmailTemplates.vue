@@ -8,7 +8,11 @@
         v-if="emailTemplatesListView?.customListActions"
         :actions="emailTemplatesListView.customListActions"
       />
-      <Button variant="solid" label="Create" @click="showEmailTemplateModal = true">
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        @click="showEmailTemplateModal = true"
+      >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -48,7 +52,10 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <EmailIcon class="h-10 w-10" />
-      <span>No Email Templates Found</span>
+      <span>{{ __('No Email Templates Found') }}</span>
+      <Button :label="__('Create')" @click="showEmailTemplateModal = true">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
     </div>
   </div>
   <EmailTemplateModal
@@ -70,7 +77,7 @@ import { Breadcrumbs } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const breadcrumbs = [
-  { label: 'Email Templates', route: { name: 'Email Templates' } },
+  { label: __('Email Templates'), route: { name: 'Email Templates' } },
 ]
 
 const emailTemplatesListView = ref(null)
@@ -103,12 +110,12 @@ const rows = computed(() => {
 const showEmailTemplateModal = ref(false)
 
 const emailTemplate = ref({
-    subject: '',
-    response: '',
-    name: '',
-    enabled: 1,
-    owner: '',
-    reference_doctype: 'CRM Deal',
+  subject: '',
+  response: '',
+  name: '',
+  enabled: 1,
+  owner: '',
+  reference_doctype: 'CRM Deal',
 })
 
 function showEmailTemplate(name) {

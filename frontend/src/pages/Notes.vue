@@ -4,7 +4,7 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <Button variant="solid" label="Create" @click="createNote">
+      <Button variant="solid" :label="__('Create')" @click="createNote">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -16,7 +16,7 @@
     doctype="FCRM Note"
     :options="{
       hideColumnsButton: true,
-      defaultViewName: 'Notes View',
+      defaultViewName: __('Notes View'),
     }"
   />
   <div class="flex-1 overflow-y-auto">
@@ -36,8 +36,8 @@
           <Dropdown
             :options="[
               {
+                label: __('Delete'),
                 icon: 'trash-2',
-                label: 'Delete',
                 onClick: () => deleteNote(note.name),
               },
             ]"
@@ -66,7 +66,7 @@
           </div>
           <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
             <div class="text-sm text-gray-700">
-              {{ timeAgo(note.modified) }}
+              {{ __(timeAgo(note.modified)) }}
             </div>
           </Tooltip>
         </div>
@@ -88,8 +88,8 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <NoteIcon class="h-10 w-10" />
-      <span>No Notes Found</span>
-      <Button label="Create" @click="createNote">
+      <span>{{ __('No Notes Found') }}</span>
+      <Button :label="__('Create')" @click="createNote">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
@@ -121,13 +121,7 @@ import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()
 
-const list = {
-  title: 'Notes',
-  plural_label: 'Notes',
-  singular_label: 'Note',
-}
-
-const breadcrumbs = [{ label: list.title, route: { name: 'Notes' } }]
+const breadcrumbs = [{ label: __('Notes'), route: { name: 'Notes' } }]
 
 const showNoteModal = ref(false)
 const currentNote = ref(null)
