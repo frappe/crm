@@ -44,7 +44,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <PhoneIcon class="h-10 w-10" />
-      <span>No Logs Found</span>
+      <span>{{ __('No Logs Found') }}</span>
     </div>
   </div>
 </template>
@@ -69,7 +69,7 @@ import { computed, ref } from 'vue'
 const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
-const breadcrumbs = [{ label: 'Call Logs', route: { name: 'Call Logs' } }]
+const breadcrumbs = [{ label: __('Call Logs'), route: { name: 'Call Logs' } }]
 
 const callLogsListView = ref(null)
 

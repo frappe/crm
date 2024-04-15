@@ -10,7 +10,7 @@
       />
       <Button
         variant="solid"
-        label="Create"
+        :label="__('Create')"
         @click="showOrganizationModal = true"
       >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
@@ -51,8 +51,8 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <OrganizationsIcon class="h-10 w-10" />
-      <span>No Organizations Found</span>
-      <Button label="Create" @click="showOrganizationModal = true">
+      <span>{{ __('No Organizations Found') }}</span>
+      <Button :label="__('Create')" @click="showOrganizationModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
@@ -88,10 +88,10 @@ const currentOrganization = computed(() => {
 })
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Organizations', route: { name: 'Organizations' } }]
+  let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
   if (!currentOrganization.value) return items
   items.push({
-    label: currentOrganization.value.name,
+    label: __(currentOrganization.value.name),
     route: {
       name: 'Organization',
       params: { organizationId: currentOrganization.value.name },

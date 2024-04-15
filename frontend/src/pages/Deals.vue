@@ -8,7 +8,11 @@
         v-if="dealsListView?.customListActions"
         :actions="dealsListView.customListActions"
       />
-      <Button variant="solid" label="Create" @click="showNewDialog = true">
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        @click="showNewDialog = true"
+      >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -44,8 +48,8 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <DealsIcon class="h-10 w-10" />
-      <span>No Deals Found</span>
-      <Button label="Create" @click="showNewDialog = true">
+      <span>{{ __('No Deals Found') }}</span>
+      <Button :label="__('Create')" @click="showNewDialog = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
@@ -54,8 +58,7 @@
     v-model="showNewDialog"
     :options="{
       size: '3xl',
-      title: 'New Deal',
-      actions: [{ label: 'Save', variant: 'solid' }],
+      title: __('New Deal'),
     }"
   >
     <template #body-content>
@@ -63,7 +66,11 @@
     </template>
     <template #actions="{ close }">
       <div class="flex flex-row-reverse gap-2">
-        <Button variant="solid" label="Save" @click="createNewDeal(close)" />
+        <Button
+          variant="solid"
+          :label="__('Save')"
+          @click="createNewDeal(close)"
+        />
       </div>
     </template>
   </Dialog>
@@ -85,12 +92,13 @@ import {
   timeAgo,
   formatNumberIntoCurrency,
   formatTime,
+  createToast,
 } from '@/utils'
 import { createResource, Breadcrumbs } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
 
-const breadcrumbs = [{ label: 'Deals', route: { name: 'Deals' } }]
+const breadcrumbs = [{ label: __('Deals'), route: { name: 'Deals' } }]
 
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
@@ -218,7 +226,13 @@ function createNewDeal(close) {
     .submit(newDeal, {
       validate() {
         if (!newDeal.first_name) {
-          return 'First name is required'
+          createToast({
+            title: __('Error creating deal'),
+            text: __('First name is required'),
+            icon: 'x',
+            iconClasses: 'text-red-600',
+          })
+          return __('First name is required')
         }
       },
       onSuccess(data) {
