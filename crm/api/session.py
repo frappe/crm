@@ -1,11 +1,8 @@
 import frappe
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_users():
-	if frappe.session.user == "Guest":
-		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
-
 	users = frappe.qb.get_query(
 		"User",
 		fields=["name", "email", "enabled", "user_image", "full_name", "user_type"],
@@ -24,9 +21,6 @@ def get_users():
 
 @frappe.whitelist()
 def get_contacts():
-	if frappe.session.user == "Guest":
-		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
-
 	contacts = frappe.get_all(
 		"Contact",
 		fields=[
@@ -66,9 +60,6 @@ def get_contacts():
 
 @frappe.whitelist()
 def get_lead_contacts():
-	if frappe.session.user == "Guest":
-		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
-
 	lead_contacts = frappe.get_all(
 		"CRM Lead",
 		fields=[
@@ -88,9 +79,6 @@ def get_lead_contacts():
 
 @frappe.whitelist()
 def get_organizations():
-	if frappe.session.user == "Guest":
-		frappe.throw("Authentication failed", exc=frappe.AuthenticationError)
-
 	organizations = frappe.qb.get_query(
 		"CRM Organization",
 		fields=['*'],

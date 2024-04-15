@@ -106,7 +106,7 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import { dateFormat } from '@/utils'
 import { globalStore } from '@/stores/global'
-import { createToast } from '@/utils'
+import { setupListActions, createToast } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -120,7 +120,8 @@ import {
   call,
   Tooltip,
 } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   rows: {
@@ -153,6 +154,8 @@ const emit = defineEmits([
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')
+
+const router = useRouter()
 
 const { $dialog } = globalStore()
 
@@ -203,6 +206,8 @@ function deleteValues(selections, unselectAll) {
   })
 }
 
+const customListActions = ref([])
+
 function bulkActions(selections, unselectAll) {
   let actions = [
     {
@@ -216,4 +221,21 @@ function bulkActions(selections, unselectAll) {
   ]
   return actions
 }
+
+onMounted(() => {
+  if (!list.value?.data) return
+  setupListActions(list.value.data, {
+    list: list.value,
+    call,
+    createToast,
+    $dialog,
+    router,
+  })
+  // customBulkActions.value = list.value?.data?.bulkActions || []
+  customListActions.value = list.value?.data?.listActions || []
+})
+
+defineExpose({
+  customListActions,
+})
 </script>

@@ -93,7 +93,7 @@ def get_call_log(name):
 		if c:
 			return [c.full_name, c.image]
 		return [None, None]
-	
+
 	def get_lead_contact(number):
 		l = frappe.db.get_value("CRM Lead", {"mobile_no": number, "converted": 0}, ["lead_name", "image"], as_dict=True)
 		if l:

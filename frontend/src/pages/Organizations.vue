@@ -4,6 +4,10 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <CustomActions
+        v-if="organizationsListView?.customListActions"
+        :actions="organizationsListView.customListActions"
+      />
       <Button
         variant="solid"
         label="Create"
@@ -22,6 +26,7 @@
     doctype="CRM Organization"
   />
   <OrganizationsListView
+    ref="organizationsListView"
     v-if="organizations.data && rows.length"
     v-model="organizations.data.page_length_count"
     v-model:list="organizations"
@@ -55,6 +60,7 @@
   <OrganizationModal v-model="showOrganizationModal" />
 </template>
 <script setup>
+import CustomActions from '@/components/CustomActions.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
@@ -72,6 +78,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
+const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
 
 const currentOrganization = computed(() => {

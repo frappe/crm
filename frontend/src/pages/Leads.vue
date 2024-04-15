@@ -4,6 +4,10 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
+      <CustomActions
+        v-if="leadsListView?.customListActions"
+        :actions="leadsListView.customListActions"
+      />
       <Button variant="solid" label="Create" @click="showNewDialog = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -19,6 +23,7 @@
     :filters="{ converted: 0 }"
   />
   <LeadsListView
+    ref="leadsListView"
     v-if="leads.data && rows.length"
     v-model="leads.data.page_length_count"
     v-model:list="leads"
@@ -66,6 +71,7 @@
 </template>
 
 <script setup>
+import CustomActions from '@/components/CustomActions.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
@@ -86,6 +92,8 @@ const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
 
 const router = useRouter()
+
+const leadsListView = ref(null)
 
 // leads data is loaded in the ViewControls component
 const leads = ref({})

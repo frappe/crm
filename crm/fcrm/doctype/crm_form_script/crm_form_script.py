@@ -14,6 +14,7 @@ class CRMFormScript(Document):
 		if self.dt and self.enabled:
 			filters = {
 				"dt": self.dt,
+				"view": self.view,
 				"enabled": 1,
 			}
 			if self.name:
@@ -27,13 +28,14 @@ class CRMFormScript(Document):
 					frappe.DuplicateEntryError,
 				)
 
-def get_form_script(dt):
-	"""Returns the script for the given doctype"""
+def get_form_script(dt, view="Form"):
+	"""Returns the form script for the given doctype"""
 	FormScript = frappe.qb.DocType("CRM Form Script")
 	query = (
 		frappe.qb.from_(FormScript)
 		.select("script")
 		.where(FormScript.dt == dt)
+		.where(FormScript.view == view)
 		.where(FormScript.enabled == 1)
 		.limit(1)
 	)
