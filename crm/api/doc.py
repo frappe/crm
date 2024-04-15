@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from frappe.model.document import get_controller
 from frappe.model import no_value_fields
 from pypika import Criterion
@@ -184,6 +185,7 @@ def get_list_data(
 	for column in columns:
 		if column.get("key") not in rows:
 			rows.append(column.get("key"))
+		column["label"] = _(column.get("label"))
 
 	data = frappe.get_list(
 		doctype,
