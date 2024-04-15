@@ -363,7 +363,7 @@ function getDealRowObject(deal) {
     },
     modified: {
       label: dateFormat(deal.modified, dateTooltipFormat),
-      timeAgo: timeAgo(deal.modified),
+      timeAgo: __(timeAgo(deal.modified)),
     },
   }
 }

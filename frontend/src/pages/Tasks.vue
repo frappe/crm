@@ -89,7 +89,7 @@ const rows = computed(() => {
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(task[row], dateTooltipFormat),
-          timeAgo: timeAgo(task[row]),
+          timeAgo: __(timeAgo(task[row])),
         }
       } else if (row == 'assigned_to') {
         _rows[row] = {

@@ -147,7 +147,7 @@ const rows = computed(() => {
             ? 'green'
             : 'orange'
         if (value == 'First Response Due') {
-          value = timeAgo(deal.response_by)
+          value = __(timeAgo(deal.response_by))
           tooltipText = dateFormat(deal.response_by, dateTooltipFormat)
           if (new Date(deal.response_by) < new Date()) {
             color = 'red'
@@ -176,7 +176,7 @@ const rows = computed(() => {
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(deal[row], dateTooltipFormat),
-          timeAgo: timeAgo(deal[row]),
+          timeAgo: __(timeAgo(deal[row])),
         }
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
@@ -189,7 +189,7 @@ const rows = computed(() => {
           timeAgo: deal[row]
             ? row == 'first_response_time'
               ? formatTime(deal[row])
-              : timeAgo(deal[row])
+              : __(timeAgo(deal[row]))
             : '',
         }
       }

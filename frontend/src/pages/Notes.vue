@@ -66,7 +66,7 @@
           </div>
           <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
             <div class="text-sm text-gray-700">
-              {{ timeAgo(note.modified) }}
+              {{ __(timeAgo(note.modified)) }}
             </div>
           </Tooltip>
         </div>

@@ -416,7 +416,7 @@ function getDealRowObject(deal) {
     },
     modified: {
       label: dateFormat(deal.modified, dateTooltipFormat),
-      timeAgo: timeAgo(deal.modified),
+      timeAgo: __(timeAgo(deal.modified)),
     },
   }
 }
@@ -437,7 +437,7 @@ function getContactRowObject(contact) {
     },
     modified: {
       label: dateFormat(contact.modified, dateTooltipFormat),
-      timeAgo: timeAgo(contact.modified),
+      timeAgo: __(timeAgo(contact.modified)),
     },
   }
 }

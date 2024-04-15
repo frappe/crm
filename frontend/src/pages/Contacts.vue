@@ -127,7 +127,7 @@ const rows = computed(() => {
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(contact[row], dateTooltipFormat),
-          timeAgo: timeAgo(contact[row]),
+          timeAgo: __(timeAgo(contact[row])),
         }
       }
     })

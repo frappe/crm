@@ -68,7 +68,7 @@
               </span>
             </div>
             <div class="text-sm text-gray-600">
-              {{ timeAgo(n.creation) }}
+              {{ __(timeAgo(n.creation)) }}
             </div>
           </div>
         </RouterLink>
