@@ -33,7 +33,7 @@
         </template>
       </Dropdown>
       <Button
-        label="Convert to Deal"
+        :label="__('Convert to Deal')"
         variant="solid"
         @click="showConvertToDealModal = true"
       />
@@ -44,7 +44,7 @@
       <Activities
         ref="activities"
         doctype="CRM Lead"
-        :title="tab.label"
+        :title="tab.name"
         v-model:reload="reload"
         v-model="lead"
       />
@@ -53,7 +53,7 @@
       <div
         class="flex h-10.5 items-center border-b px-5 py-2.5 text-lg font-semibold"
       >
-        About this Lead
+        {{ __('About this Lead') }}
       </div>
       <FileUploader
         @success="(file) => updateField('image', file.file_url)"
@@ -77,13 +77,13 @@
                           {
                             icon: 'upload',
                             label: lead.data.image
-                              ? 'Change image'
-                              : 'Upload image',
+                              ? __('Change image')
+                              : __('Upload image'),
                             onClick: openFileSelector,
                           },
                           {
                             icon: 'trash-2',
-                            label: 'Remove image',
+                            label: __('Remove image'),
                             onClick: () => updateField('image', ''),
                           },
                         ],
@@ -110,45 +110,45 @@
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
-                <Tooltip text="Make a call">
+                <Tooltip :text="__('Make a call')">
                   <Button
                     class="h-7 w-7"
                     @click="
                       () =>
                         lead.data.mobile_no
                           ? makeCall(lead.data.mobile_no)
-                          : errorMessage('No phone number set')
+                          : errorMessage(__('No phone number set'))
                     "
                   >
                     <PhoneIcon class="h-4 w-4" />
                   </Button>
                 </Tooltip>
-                <Tooltip text="Send an email">
+                <Tooltip :text="__('Send an email')">
                   <Button class="h-7 w-7">
                     <EmailIcon
                       class="h-4 w-4"
                       @click="
                         lead.data.email
                           ? openEmailBox()
-                          : errorMessage('No email set')
+                          : errorMessage(__('No email set'))
                       "
                     />
                   </Button>
                 </Tooltip>
-                <Tooltip text="Go to website">
+                <Tooltip :text="__('Go to website')">
                   <Button class="h-7 w-7">
                     <LinkIcon
                       class="h-4 w-4"
                       @click="
                         lead.data.website
                           ? openWebsite(lead.data.website)
-                          : errorMessage('No website set')
+                          : errorMessage(__('No website set'))
                       "
                     />
                   </Button>
                 </Tooltip>
               </div>
-              <ErrorMessage :message="error" />
+              <ErrorMessage :message="__(error)" />
             </div>
           </div>
         </template>
@@ -190,11 +190,11 @@
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
-      title: 'Convert to Deal',
+      title: __('Convert to Deal'),
       size: 'xl',
       actions: [
         {
-          label: 'Convert',
+          label: __('Convert'),
           variant: 'solid',
           onClick: convertToDeal,
         },
@@ -204,11 +204,11 @@
     <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-gray-600">
         <OrganizationsIcon class="h-4 w-4" />
-        <label class="block text-base"> Organization </label>
+        <label class="block text-base">{{ __('Organization') }}</label>
       </div>
       <div class="ml-6">
         <div class="flex items-center justify-between text-base">
-          <div>Choose Existing</div>
+          <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
         </div>
         <Link
@@ -221,17 +221,21 @@
           @change="(data) => (existingOrganization = data)"
         />
         <div v-else class="mt-2.5 text-base">
-          New organization will be created based on the data in details section
+          {{
+            __(
+              'New organization will be created based on the data in details section'
+            )
+          }}
         </div>
       </div>
 
       <div class="mb-4 mt-6 flex items-center gap-2 text-gray-600">
         <ContactsIcon class="h-4 w-4" />
-        <label class="block text-base"> Contact </label>
+        <label class="block text-base">{{ __('Contact') }}</label>
       </div>
       <div class="ml-6">
         <div class="flex items-center justify-between text-base">
-          <div>Choose Existing</div>
+          <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingContactChecked" />
         </div>
         <Link
@@ -244,7 +248,7 @@
           @change="(data) => (existingContact = data)"
         />
         <div v-else class="mt-2.5 text-base">
-          New contact will be created based on the person's details
+          {{ __("New contact will be created based on the person's details") }}
         </div>
       </div>
     </template>
@@ -352,7 +356,7 @@ function updateLead(fieldname, value, callback) {
       lead.reload()
       reload.value = true
       createToast({
-        title: 'Lead updated',
+        title: __('Lead updated'),
         icon: 'check',
         iconClasses: 'text-green-600',
       })
@@ -360,8 +364,8 @@ function updateLead(fieldname, value, callback) {
     },
     onError: (err) => {
       createToast({
-        title: 'Error updating lead',
-        text: err.messages?.[0],
+        title: __('Error updating lead'),
+        text: __(err.messages?.[0]),
         icon: 'x',
         iconClasses: 'text-red-600',
       })
@@ -373,8 +377,8 @@ function validateRequired(fieldname, value) {
   let meta = lead.data.all_fields || {}
   if (meta[fieldname]?.reqd && !value) {
     createToast({
-      title: 'Error Updating Lead',
-      text: `${meta[fieldname].label} is a required field`,
+      title: __('Error Updating Lead'),
+      text: __('{0} is a required field', [meta[fieldname].label]),
       icon: 'x',
       iconClasses: 'text-red-600',
     })
@@ -384,9 +388,9 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Leads', route: { name: 'Leads' } }]
+  let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
   items.push({
-    label: lead.data.lead_name,
+    label: __(lead.data.lead_name),
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
@@ -395,23 +399,28 @@ const breadcrumbs = computed(() => {
 const tabIndex = ref(0)
 const tabs = [
   {
-    label: 'Activity',
+    name: 'Activity',
+    label: __('Activity'),
     icon: ActivityIcon,
   },
   {
-    label: 'Emails',
+    name: 'Emails',
+    label: __('Emails'),
     icon: EmailIcon,
   },
   {
-    label: 'Calls',
+    name: 'Calls',
+    label: __('Calls'),
     icon: PhoneIcon,
   },
   {
-    label: 'Tasks',
+    name: 'Tasks',
+    label: __('Tasks'),
     icon: TaskIcon,
   },
   {
-    label: 'Notes',
+    name: 'Notes',
+    label: __('Notes'),
     icon: NoteIcon,
   },
 ]
@@ -419,7 +428,7 @@ const tabs = [
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
   if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return 'Only PNG and JPG images are allowed'
+    return __('Only PNG and JPG images are allowed')
   }
 }
 
@@ -457,8 +466,8 @@ async function convertToDeal(updated) {
 
   if (existingContactChecked.value && !existingContact.value) {
     createToast({
-      title: 'Error',
-      text: 'Please select an existing contact',
+      title: __('Error'),
+      text: __('Please select an existing contact'),
       icon: 'x',
       iconClasses: 'text-red-600',
     })
@@ -467,8 +476,8 @@ async function convertToDeal(updated) {
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
     createToast({
-      title: 'Error',
-      text: 'Please select an existing organization',
+      title: __('Error'),
+      text: __('Please select an existing organization'),
       icon: 'x',
       iconClasses: 'text-red-600',
     })
