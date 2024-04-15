@@ -1,7 +1,7 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button label="Sort" ref="sortButtonRef">
+      <Button :label="__('Sort')" ref="sortButtonRef">
         <template #prefix><SortIcon class="h-4" /></template>
         <template v-if="sortValues?.size" #suffix>
           <div

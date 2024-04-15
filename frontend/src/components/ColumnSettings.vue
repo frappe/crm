@@ -1,7 +1,7 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button label="Columns">
+      <Button :label="__('Columns')">
         <template #prefix>
           <ColumnsIcon class="h-4" />
         </template>

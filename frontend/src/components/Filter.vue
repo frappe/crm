@@ -1,7 +1,7 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button label="Filter">
+      <Button :label="__('Filter')">
         <template #prefix><FilterIcon class="h-4" /></template>
         <template v-if="filters?.size" #suffix>
           <div
