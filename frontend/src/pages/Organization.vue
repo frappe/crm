@@ -27,13 +27,13 @@
                         {
                           icon: 'upload',
                           label: organization.doc.organization_logo
-                            ? 'Change image'
-                            : 'Upload image',
+                            ? __('Change image')
+                            : __('Upload image'),
                           onClick: openFileSelector,
                         },
                         {
                           icon: 'trash-2',
-                          label: 'Remove image',
+                          label: __('Remove image'),
                           onClick: () => changeOrganizationImage(''),
                         },
                       ],
@@ -118,7 +118,7 @@
                   organization.doc.annual_revenue
                 "
                 variant="ghost"
-                label="More"
+                :label="__('More')"
                 class="-ml-1 cursor-pointer hover:text-gray-900"
                 @click="
                   () => {
@@ -130,7 +130,7 @@
             </div>
             <div class="mt-2 flex gap-1.5">
               <Button
-                label="Edit"
+                :label="__('Edit')"
                 size="sm"
                 @click="
                   () => {
@@ -144,7 +144,7 @@
                 </template>
               </Button>
               <Button
-                label="Delete"
+                :label="__('Delete')"
                 theme="red"
                 size="sm"
                 @click="deleteOrganization"
@@ -154,7 +154,7 @@
                 </template>
               </Button>
             </div>
-            <ErrorMessage class="mt-2" :message="error" />
+            <ErrorMessage class="mt-2" :message="__(error)" />
           </div>
         </div>
       </template>
@@ -166,7 +166,7 @@
           :class="{ 'text-gray-900': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
-          {{ tab.label }}
+          {{ __(tab.label) }}
           <Badge
             class="group-hover:bg-gray-900"
             :class="[selected ? 'bg-gray-900' : 'bg-gray-600']"
@@ -199,7 +199,7 @@
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
-            <div>No {{ tab.label }} Found</div>
+            <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
           </div>
         </div>
       </template>
@@ -268,7 +268,7 @@ const organization = createDocumentResource({
 })
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: 'Organizations', route: { name: 'Organizations' } }]
+  let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
   items.push({
     label: props.organizationId,
     route: {
@@ -282,7 +282,7 @@ const breadcrumbs = computed(() => {
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
   if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return 'Only PNG and JPG images are allowed'
+    return __('Only PNG and JPG images are allowed')
   }
 }
 
@@ -298,11 +298,11 @@ async function changeOrganizationImage(file) {
 
 async function deleteOrganization() {
   $dialog({
-    title: 'Delete organization',
-    message: 'Are you sure you want to delete this organization?',
+    title: __('Delete organization'),
+    message: __('Are you sure you want to delete this organization?'),
     actions: [
       {
-        label: 'Delete',
+        label: __('Delete'),
         theme: 'red',
         variant: 'solid',
         async onClick(close) {
@@ -444,37 +444,37 @@ function getContactRowObject(contact) {
 
 const dealColumns = [
   {
-    label: 'Organization',
+    label: __('Organization'),
     key: 'organization',
     width: '11rem',
   },
   {
-    label: 'Amount',
+    label: __('Amount'),
     key: 'annual_revenue',
     width: '9rem',
   },
   {
-    label: 'Status',
+    label: __('Status'),
     key: 'status',
     width: '10rem',
   },
   {
-    label: 'Email',
+    label: __('Email'),
     key: 'email',
     width: '12rem',
   },
   {
-    label: 'Mobile no',
+    label: __('Mobile no'),
     key: 'mobile_no',
     width: '11rem',
   },
   {
-    label: 'Deal owner',
+    label: __('Deal owner'),
     key: 'deal_owner',
     width: '10rem',
   },
   {
-    label: 'Last modified',
+    label: __('Last modified'),
     key: 'modified',
     width: '8rem',
   },
@@ -482,27 +482,27 @@ const dealColumns = [
 
 const contactColumns = [
   {
-    label: 'Name',
+    label: __('Name'),
     key: 'full_name',
     width: '17rem',
   },
   {
-    label: 'Email',
+    label: __('Email'),
     key: 'email',
     width: '12rem',
   },
   {
-    label: 'Phone',
+    label: __('Phone'),
     key: 'mobile_no',
     width: '12rem',
   },
   {
-    label: 'Organization',
+    label: __('Organization'),
     key: 'company_name',
     width: '12rem',
   },
   {
-    label: 'Last modified',
+    label: __('Last modified'),
     key: 'modified',
     width: '8rem',
   },
