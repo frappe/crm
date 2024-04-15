@@ -331,9 +331,11 @@ function getValSelect(f) {
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
-    return h(DateRangePicker)
+    return h(DateRangePicker, { value: f.value })
   } else if (typeDate.includes(fieldtype)) {
-    return h(fieldtype == 'Date' ? DatePicker : DatetimePicker)
+    return h(fieldtype == 'Date' ? DatePicker : DatetimePicker, {
+      value: f.value,
+    })
   } else {
     return h(FormControl, { type: 'text' })
   }
