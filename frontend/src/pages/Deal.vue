@@ -436,27 +436,27 @@ const tabIndex = ref(0)
 const tabs = [
   {
     name: 'Activity',
-    label: 'Activity',
+    label: __('Activity'),
     icon: ActivityIcon,
   },
   {
     name: 'Emails',
-    label: 'Emails',
+    label: __('Emails'),
     icon: EmailIcon,
   },
   {
     name: 'Calls',
-    label: 'Calls',
+    label: __('Calls'),
     icon: PhoneIcon,
   },
   {
     name: 'Tasks',
-    label: 'Tasks',
+    label: __('Tasks'),
     icon: TaskIcon,
   },
   {
     name: 'Notes',
-    label: 'Notes',
+    label: __('Notes'),
     icon: NoteIcon,
   },
 ]
