@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        @click="showNewDialog = true"
+        @click="showLeadModal = true"
       >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -50,31 +50,12 @@
     >
       <LeadsIcon class="h-10 w-10" />
       <span>{{ __('No Leads Found') }}</span>
-      <Button :label="__('Create')" @click="showNewDialog = true">
+      <Button :label="__('Create')" @click="showLeadModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
   </div>
-  <Dialog
-    v-model="showNewDialog"
-    :options="{
-      size: '3xl',
-      title: __('New Lead'),
-    }"
-  >
-    <template #body-content>
-      <NewLead :newLead="newLead" />
-    </template>
-    <template #actions="{ close }">
-      <div class="flex flex-row-reverse gap-2">
-        <Button
-          variant="solid"
-          :label="__('Save')"
-          @click="createNewLead(close)"
-        />
-      </div>
-    </template>
-  </Dialog>
+  <LeadModal v-model="showLeadModal" />
 </template>
 
 <script setup>
@@ -82,7 +63,7 @@ import CustomActions from '@/components/CustomActions.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
-import NewLead from '@/components/NewLead.vue'
+import LeadModal from '@/components/Modals/LeadModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
@@ -107,6 +88,7 @@ const { getLeadStatus } = statusesStore()
 const router = useRouter()
 
 const leadsListView = ref(null)
+const showLeadModal = ref(false)
 
 // leads data is loaded in the ViewControls component
 const leads = ref({})
@@ -199,9 +181,6 @@ const rows = computed(() => {
     return _rows
   })
 })
-
-// New Lead
-const showNewDialog = ref(false)
 
 let newLead = reactive({
   salutation: '',
