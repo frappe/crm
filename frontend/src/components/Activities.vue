@@ -35,6 +35,16 @@
       </template>
       <span>{{ __('New Task') }}</span>
     </Button>
+    <Button
+      v-else-if="title == 'WhatsApp'"
+      variant="solid"
+      @click="$refs.whatsappBox.show = true"
+    >
+      <template #prefix>
+        <FeatherIcon name="plus" class="h-4 w-4" />
+      </template>
+      <span>{{ __('New WhatsApp Message') }}</span>
+    </Button>
     <Dropdown
       v-else
       :options="[
@@ -57,6 +67,11 @@
           icon: h(TaskIcon, { class: 'h-4 w-4' }),
           label: __('New Task'),
           onClick: () => showTask(),
+        },
+        {
+          icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
+          label: __('New WhatsApp Message'),
+          onClick: () => ($refs.emailBox.show = true),
         },
       ]"
       @click.stop
@@ -338,6 +353,11 @@
         </div>
       </div>
     </div>
+    <WhatsAppArea
+      v-else-if="title == 'WhatsApp'"
+      class="px-10"
+      :messages="activities"
+    />
     <div v-else v-for="(activity, i) in activities" class="activity">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
         <div
@@ -768,6 +788,8 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import WhatsAppArea from '@/components/WhatsAppArea.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
@@ -875,6 +897,13 @@ const all_activities = createResource({
   },
 })
 
+const whatsappMessages = createResource({
+  url: 'crm.api.activities.get_whatsapp_messages',
+  params: { name: doc.value.data.name },
+  cache: ['whatsapp', doc.value.data.name],
+  auto: true,
+})
+
 function get_activities() {
   if (!all_activities.data?.versions) return []
   if (!all_activities.data?.calls.length)
@@ -900,6 +929,9 @@ const activities = computed(() => {
   } else if (props.title == 'Notes') {
     if (!all_activities.data?.notes) return []
     return sortByCreation(all_activities.data.notes)
+  } else if (props.title == 'WhatsApp') {
+    if (!whatsappMessages.data) return []
+    return sortByCreation(whatsappMessages.data)
   }
   activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
@@ -958,6 +990,8 @@ const emptyText = computed(() => {
     text = 'No Notes'
   } else if (props.title == 'Tasks') {
     text = 'No Tasks'
+  } else if (props.title == 'WhatsApp') {
+    text = 'No WhatsApp Messages'
   }
   return text
 })
@@ -972,6 +1006,8 @@ const emptyTextIcon = computed(() => {
     icon = NoteIcon
   } else if (props.title == 'Tasks') {
     icon = TaskIcon
+  } else if (props.title == 'WhatsApp') {
+    icon = WhatsAppIcon
   }
   return h(icon, { class: 'text-gray-500' })
 })

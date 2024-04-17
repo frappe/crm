@@ -260,6 +260,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
@@ -422,6 +423,11 @@ const tabs = [
     name: 'Notes',
     label: __('Notes'),
     icon: NoteIcon,
+  },
+  {
+    name: 'WhatsApp',
+    label: __('WhatsApp'),
+    icon: WhatsAppIcon,
   },
 ]
 

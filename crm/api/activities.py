@@ -336,3 +336,12 @@ def get_linked_tasks(name):
 		],
 	)
 	return tasks or []
+
+@frappe.whitelist()
+def get_whatsapp_messages(name):
+	whatsapp_messages = frappe.db.get_all(
+		"WhatsApp Message",
+		filters={"reference_doctype": "CRM Lead", "reference_name": name, "status": ("not in", ["failed", "Success"])},
+		fields=["name", "type", "to", "from", "content_type", "creation", "message", "status"],
+	)
+	return whatsapp_messages or []
