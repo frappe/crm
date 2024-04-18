@@ -341,7 +341,20 @@ def get_linked_tasks(name):
 def get_whatsapp_messages(name):
 	whatsapp_messages = frappe.db.get_all(
 		"WhatsApp Message",
-		filters={"reference_doctype": "CRM Lead", "reference_name": name, "status": ("not in", ["failed", "Success"])},
+		filters={"reference_doctype": "CRM Lead", "reference_name": name, "status": ("not in", ["failed"])},
 		fields=["name", "type", "to", "from", "content_type", "creation", "message", "status"],
 	)
 	return whatsapp_messages or []
+
+@frappe.whitelist()
+def create_whatsapp_message(reference_doctype, reference_name, to, message, content_type="text"):
+	doc = frappe.new_doc("WhatsApp Message")
+	doc.update({
+		"reference_doctype": reference_doctype,
+		"reference_name": reference_name,
+		"to": to,
+		"message": message,
+		"content_type": content_type,
+	})
+	doc.insert(ignore_permissions=True)
+	return doc.name

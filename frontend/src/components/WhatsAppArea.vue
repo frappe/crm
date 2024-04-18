@@ -3,19 +3,24 @@
     <div
       v-for="whatsapp in messages"
       :key="whatsapp.name"
-      class="flex"
+      class="activity flex"
       :class="{ 'justify-end': whatsapp.type == 'Outgoing' }"
     >
       <div
-        class="mb-3 inline-flex max-w-[90%] gap-2 rounded-md bg-gray-50 p-2 text-base shadow-sm"
+        class="mb-3 inline-flex max-w-[90%] gap-2 rounded-md bg-gray-50 p-1.5 pl-2 text-base shadow-sm"
       >
-        <div>{{ whatsapp.message }}</div>
-        <div class="-mb-1 flex items-end gap-1 text-gray-600 shrink-0">
+        <div v-html="formatWhatsAppMessage(whatsapp.message)"></div>
+        <div class="-mb-1 flex shrink-0 items-end gap-1 text-gray-600">
           <Tooltip :text="dateFormat(whatsapp.creation, 'ddd, MMM D, YYYY')">
-            <div class="text-2xs">{{ dateFormat(whatsapp.creation, 'hh:mm a') }}</div>
+            <div class="text-2xs">
+              {{ dateFormat(whatsapp.creation, 'hh:mm a') }}
+            </div>
           </Tooltip>
           <div v-if="whatsapp.type == 'Outgoing'">
-            <CheckIcon v-if="whatsapp.status == 'sent'" class="size-4" />
+            <CheckIcon
+              v-if="['sent', 'Success'].includes(whatsapp.status)"
+              class="size-4"
+            />
             <DoubleCheckIcon
               v-else-if="['read', 'delivered'].includes(whatsapp.status)"
               class="size-4"
@@ -37,4 +42,28 @@ import { dateFormat } from '@/utils'
 const props = defineProps({
   messages: Array,
 })
+
+function formatWhatsAppMessage(message) {
+  // if message contains _text_, make it italic
+  message = message.replace(/_(.*?)_/g, '<i>$1</i>')
+  // if message contains *text*, make it bold
+  message = message.replace(/\*(.*?)\*/g, '<b>$1</b>')
+  // if message contains ~text~, make it strikethrough
+  message = message.replace(/~(.*?)~/g, '<s>$1</s>')
+  // if message contains ```text```, make it monospace
+  message = message.replace(/```(.*?)```/g, '<code>$1</code>')
+  // if message contains `text`, make it inline code
+  message = message.replace(/`(.*?)`/g, '<code>$1</code>')
+  // if message contains > text, make it a blockquote
+  message = message.replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
+  // if contain /n, make it a new line
+  message = message.replace(/\n/g, '<br>')
+  // if contains *<space>text, make it a bullet point
+  message = message.replace(/\* (.*?)(?=\s*\*|$)/g, '<li>$1</li>')
+  message = message.replace(/- (.*?)(?=\s*-|$)/g, '<li>$1</li>')
+  message = message.replace(/(\d+)\. (.*?)(?=\s*(\d+)\.|$)/g, '<li>$2</li>')
+
+  return message
+
+}
 </script>

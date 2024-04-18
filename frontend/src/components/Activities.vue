@@ -35,16 +35,23 @@
       </template>
       <span>{{ __('New Task') }}</span>
     </Button>
-    <Button
-      v-else-if="title == 'WhatsApp'"
-      variant="solid"
-      @click="$refs.whatsappBox.show = true"
-    >
-      <template #prefix>
-        <FeatherIcon name="plus" class="h-4 w-4" />
-      </template>
-      <span>{{ __('New WhatsApp Message') }}</span>
-    </Button>
+    <div class="flex gap-2" v-else-if="title == 'WhatsApp'">
+      <Button
+        :label="__('Refresh')"
+        @click="whatsappMessages.reload()"
+        :loading="whatsappMessages.loading"
+      >
+        <template #icon>
+          <RefreshIcon class="h-4 w-4" />
+        </template>
+      </Button>
+      <Button variant="solid" @click="$refs.whatsappBox.show = true">
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4 w-4" />
+        </template>
+        <span>{{ __('New WhatsApp Message') }}</span>
+      </Button>
+    </div>
     <Dropdown
       v-else
       :options="[
@@ -99,7 +106,16 @@
     <LoadingIndicator class="h-6 w-6" />
     <span>{{ __('Loading...') }}</span>
   </div>
-  <div v-else-if="activities?.length" class="activities flex-1 overflow-y-auto">
+  <div
+    v-else-if="title == 'WhatsApp' && whatsappMessages.data?.length"
+    class="activities flex-1 overflow-y-auto"
+  >
+    <WhatsAppArea class="px-10" :messages="whatsappMessages.data" />
+  </div>
+  <div
+    v-else-if="activities?.length"
+    class="activities flex-1 overflow-y-auto"
+  >
     <div
       v-if="title == 'Notes'"
       class="activity grid grid-cols-1 gap-4 px-10 pb-5 lg:grid-cols-2 xl:grid-cols-3"
@@ -353,11 +369,6 @@
         </div>
       </div>
     </div>
-    <WhatsAppArea
-      v-else-if="title == 'WhatsApp'"
-      class="px-10"
-      :messages="activities"
-    />
     <div v-else v-for="(activity, i) in activities" class="activity">
       <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
         <div
@@ -766,6 +777,14 @@
     :doctype="doctype"
     @scroll="scroll"
   />
+  <WhatsAppBox
+    ref="whatsappBox"
+    v-if="title == 'WhatsApp'"
+    v-model="doc"
+    v-model:whatsapp="whatsappMessages"
+    :doctype="doctype"
+    @scroll="scroll"
+  />
   <NoteModal
     v-model="showNoteModal"
     v-model:reloadNotes="all_activities"
@@ -790,6 +809,8 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/WhatsAppArea.vue'
+import WhatsAppBox from '@/components/WhatsAppBox.vue'
+import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
@@ -902,6 +923,7 @@ const whatsappMessages = createResource({
   params: { name: doc.value.data.name },
   cache: ['whatsapp', doc.value.data.name],
   auto: true,
+  onSuccess: () => nextTick(() => scroll()),
 })
 
 function get_activities() {
@@ -929,10 +951,8 @@ const activities = computed(() => {
   } else if (props.title == 'Notes') {
     if (!all_activities.data?.notes) return []
     return sortByCreation(all_activities.data.notes)
-  } else if (props.title == 'WhatsApp') {
-    if (!whatsappMessages.data) return []
-    return sortByCreation(whatsappMessages.data)
   }
+
   activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
 
