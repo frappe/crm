@@ -64,6 +64,5 @@ function formatWhatsAppMessage(message) {
   message = message.replace(/(\d+)\. (.*?)(?=\s*(\d+)\.|$)/g, '<li>$2</li>')
 
   return message
-
 }
 </script>

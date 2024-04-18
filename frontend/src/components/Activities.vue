@@ -112,10 +112,7 @@
   >
     <WhatsAppArea class="px-10" :messages="whatsappMessages.data" />
   </div>
-  <div
-    v-else-if="activities?.length"
-    class="activities flex-1 overflow-y-auto"
-  >
+  <div v-else-if="activities?.length" class="activities flex-1 overflow-y-auto">
     <div
       v-if="title == 'Notes'"
       class="activity grid grid-cols-1 gap-4 px-10 pb-5 lg:grid-cols-2 xl:grid-cols-3"
@@ -920,9 +917,10 @@ const all_activities = createResource({
 
 const whatsappMessages = createResource({
   url: 'crm.api.activities.get_whatsapp_messages',
-  params: { name: doc.value.data.name },
+  params: { doctype: props.doctype, name: doc.value.data.name },
   cache: ['whatsapp', doc.value.data.name],
   auto: true,
+  transform: (data) => sortByCreation(data),
   onSuccess: () => nextTick(() => scroll()),
 })
 
