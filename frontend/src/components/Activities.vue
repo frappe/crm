@@ -45,7 +45,7 @@
           <RefreshIcon class="h-4 w-4" />
         </template>
       </Button>
-      <Button variant="solid" @click="$refs.whatsappBox.show = true">
+      <Button variant="solid" @click="$refs.whatsappBox.show()">
         <template #prefix>
           <FeatherIcon name="plus" class="h-4 w-4" />
         </template>
@@ -78,7 +78,7 @@
         {
           icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
           label: __('New WhatsApp Message'),
-          onClick: () => ($refs.emailBox.show = true),
+          onClick: () => (tabIndex = 5),
         },
       ]"
       @click.stop
@@ -845,6 +845,7 @@ import {
   TextEditor,
   Avatar,
   createResource,
+  createListResource,
   call,
 } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
@@ -868,6 +869,7 @@ const props = defineProps({
 
 const doc = defineModel()
 const reload = defineModel('reload')
+const tabIndex = defineModel('tabIndex')
 
 const reload_email = ref(false)
 
@@ -915,10 +917,27 @@ const all_activities = createResource({
   },
 })
 
-const whatsappMessages = createResource({
-  url: 'crm.api.activities.get_whatsapp_messages',
-  params: { doctype: props.doctype, name: doc.value.data.name },
-  cache: ['whatsapp', doc.value.data.name],
+const whatsappMessages = createListResource({
+  type: 'list',
+  doctype: 'WhatsApp Message',
+  cache: ['whatsapp_message', doc.value.data.name],
+  fields: [
+    'name',
+    'type',
+    'to',
+    'from',
+    'content_type',
+    'creation',
+    'message',
+    'status',
+  ],
+  filters: {
+    reference_doctype: props.doctype,
+    reference_name: doc.value.data.name,
+    status: ['!=', 'failed'],
+  },
+  orderBy: 'modified desc',
+  pageLength: 99999,
   auto: true,
   transform: (data) => sortByCreation(data),
   onSuccess: () => nextTick(() => scroll()),

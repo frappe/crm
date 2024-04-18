@@ -135,7 +135,10 @@ doc_events = {
 	},
 	"Comment": {
 		"on_update": ["crm.api.comment.on_update"],
-	}
+	},
+	"WhatsApp Message": {
+		"validate": ["crm.api.whatsapp.validate"],
+	},
 }
 
 # Scheduled Tasks

@@ -41,6 +41,7 @@
         doctype="CRM Deal"
         :title="tab.name"
         v-model:reload="reload"
+        v-model:tabIndex="tabIndex"
         v-model="deal"
       />
     </Tabs>

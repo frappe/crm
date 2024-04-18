@@ -46,6 +46,7 @@
         doctype="CRM Lead"
         :title="tab.name"
         v-model:reload="reload"
+        v-model:tabIndex="tabIndex"
         v-model="lead"
       />
     </Tabs>
