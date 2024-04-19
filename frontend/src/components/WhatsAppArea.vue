@@ -7,9 +7,56 @@
       :class="{ 'justify-end': whatsapp.type == 'Outgoing' }"
     >
       <div
+        :id="whatsapp.name"
         class="mb-3 inline-flex max-w-[90%] gap-2 rounded-md bg-gray-50 p-1.5 pl-2 text-base shadow-sm"
       >
-        <div v-html="formatWhatsAppMessage(whatsapp.message)"></div>
+        <div
+          v-if="whatsapp.content_type == 'text'"
+          v-html="formatWhatsAppMessage(whatsapp.message)"
+        />
+        <div v-else-if="whatsapp.content_type == 'image'">
+          <img
+            :src="whatsapp.attach"
+            class="h-40 cursor-pointer rounded-md"
+            @click="() => openFileInAnotherTab(whatsapp.attach)"
+          />
+          <div
+            v-if="!whatsapp.message.startsWith('/files/')"
+            class="mt-1.5"
+            v-html="formatWhatsAppMessage(whatsapp.message)"
+          />
+        </div>
+        <div
+          v-else-if="whatsapp.content_type == 'document'"
+          class="flex items-center gap-2"
+        >
+          <DocumentIcon
+            class="size-10 cursor-pointer rounded-md text-gray-500"
+            @click="() => openFileInAnotherTab(whatsapp.attach)"
+          />
+          <div class="text-gray-600">Document</div>
+        </div>
+        <div
+          v-else-if="whatsapp.content_type == 'audio'"
+          class="flex items-center gap-2"
+        >
+          <audio :src="whatsapp.attach" controls class="cursor-pointer" />
+        </div>
+        <div
+          v-else-if="whatsapp.content_type == 'video'"
+          class="flex-col items-center gap-2"
+        >
+          <video
+            :src="whatsapp.attach"
+            controls
+            class="h-40 cursor-pointer rounded-md"
+          />
+          <div
+            v-if="!whatsapp.message.startsWith('/files/')"
+            class="mt-1.5"
+            v-html="formatWhatsAppMessage(whatsapp.message)"
+          />
+        </div>
         <div class="-mb-1 flex shrink-0 items-end gap-1 text-gray-600">
           <Tooltip :text="dateFormat(whatsapp.creation, 'ddd, MMM D, YYYY')">
             <div class="text-2xs">
@@ -36,12 +83,17 @@
 <script setup>
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
 import DoubleCheckIcon from '@/components/Icons/DoubleCheckIcon.vue'
+import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
 import { Tooltip } from 'frappe-ui'
 import { dateFormat } from '@/utils'
 
 const props = defineProps({
   messages: Array,
 })
+
+function openFileInAnotherTab(url) {
+  window.open(url, '_blank')
+}
 
 function formatWhatsAppMessage(message) {
   // if message contains _text_, make it italic
