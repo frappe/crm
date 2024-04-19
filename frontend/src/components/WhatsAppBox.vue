@@ -26,7 +26,7 @@
       :placeholder="placeholder"
       @focus="rows = 6"
       @blur="rows = 1"
-      @keydown.meta.enter="sendWhatsAppMessage"
+      @keydown.enter="(e) => sendTextMessage(e)"
     />
     <div class="flex justify-end gap-2">
       <Button
@@ -70,6 +70,13 @@ function uploadFile(file) {
   whatsapp.value.attach = file.file_url
   whatsapp.value.content_type = fileType.value
   sendWhatsAppMessage()
+}
+
+function sendTextMessage(event) {
+  if (event.shiftKey) return
+  sendWhatsAppMessage()
+  textarea.value.$el.blur()
+  content.value = ''
 }
 
 async function sendWhatsAppMessage() {
