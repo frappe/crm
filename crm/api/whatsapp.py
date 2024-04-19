@@ -41,13 +41,14 @@ def parse_mobile_no(mobile_no: str):
 	return ''.join([c for c in mobile_no if c.isdigit() or c == '+'])
 
 @frappe.whitelist()
-def create_whatsapp_message(reference_doctype, reference_name, to, message, content_type="text"):
+def create_whatsapp_message(reference_doctype, reference_name, message, to, attach, content_type="text"):
 	doc = frappe.new_doc("WhatsApp Message")
 	doc.update({
 		"reference_doctype": reference_doctype,
 		"reference_name": reference_name,
+		"message": message or attach,
 		"to": to,
-		"message": message,
+		"attach": attach,
 		"content_type": content_type,
 	})
 	doc.insert(ignore_permissions=True)

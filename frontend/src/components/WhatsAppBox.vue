@@ -1,5 +1,22 @@
 <template>
   <div class="flex items-end gap-2 px-10 py-2.5">
+    <div class="flex h-8 items-center">
+      <FileUploader @success="(file) => uploadFile(file)">
+        <template v-slot="{ file, progress, uploading, openFileSelector }">
+          <div class="flex items-center space-x-2">
+            <Dropdown
+              v-bind="{ open }"
+              :options="uploadOptions(openFileSelector)"
+            >
+              <FeatherIcon
+                name="plus"
+                class="size-4.5 cursor-pointer text-gray-600"
+              />
+            </Dropdown>
+          </div>
+        </template>
+      </FileUploader>
+    </div>
     <Textarea
       ref="textarea"
       type="textarea"
@@ -24,7 +41,8 @@
 </template>
 
 <script setup>
-import { createResource, Textarea } from 'frappe-ui'
+import { createResource, Textarea, FileUploader, Dropdown } from 'frappe-ui'
+import FeatherIcon from 'frappe-ui/src/components/FeatherIcon.vue'
 import { ref, computed, nextTick } from 'vue'
 
 const props = defineProps({
@@ -38,6 +56,7 @@ const textarea = ref(null)
 
 const content = ref('')
 const placeholder = ref(__('Type your message here...'))
+const fileType = ref('')
 
 const isEmpty = computed(() => {
   return !content.value || content.value === '<p></p>'
@@ -47,21 +66,60 @@ function show() {
   nextTick(() => textarea.value.$el.focus())
 }
 
+function uploadFile(file) {
+  whatsapp.value.attach = file.file_url
+  whatsapp.value.content_type = fileType.value
+  sendWhatsAppMessage()
+}
+
 async function sendWhatsAppMessage() {
   let args = {
     reference_doctype: props.doctype,
     reference_name: doc.value.data.name,
     message: content.value,
     to: doc.value.data.mobile_no,
-    content_type: 'text',
+    attach: whatsapp.value.attach || '',
+    content_type: whatsapp.value.content_type,
   }
   content.value = ''
+  fileType.value = ''
+  whatsapp.value.attach = ''
+  whatsapp.value.content_type = 'text'
   createResource({
     url: 'crm.api.whatsapp.create_whatsapp_message',
     params: args,
     auto: true,
     onSuccess: () => nextTick(() => whatsapp.value?.reload()),
   })
+}
+
+function uploadOptions(openFileSelector) {
+  return [
+    {
+      label: __('Upload Document'),
+      icon: 'file',
+      onClick: () => {
+        fileType.value = 'document'
+        openFileSelector()
+      },
+    },
+    {
+      label: __('Upload Image'),
+      icon: 'image',
+      onClick: () => {
+        fileType.value = 'image'
+        openFileSelector('image/*')
+      },
+    },
+    {
+      label: __('Upload Video'),
+      icon: 'video',
+      onClick: () => {
+        fileType.value = 'video'
+        openFileSelector('video/*')
+      },
+    },
+  ]
 }
 
 defineExpose({ show })
