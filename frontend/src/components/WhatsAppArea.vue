@@ -3,13 +3,22 @@
     <div
       v-for="whatsapp in messages"
       :key="whatsapp.name"
-      class="activity flex"
-      :class="{ 'justify-end': whatsapp.type == 'Outgoing' }"
+      class="activity group mb-3 flex gap-2"
+      :class="[whatsapp.type == 'Outgoing' ? 'flex-row-reverse' : '']"
     >
       <div
         :id="whatsapp.name"
-        class="mb-3 inline-flex max-w-[90%] gap-2 rounded-md bg-gray-50 p-1.5 pl-2 text-base shadow-sm"
+        :class="[whatsapp.reaction ? 'mb-4' : '']"
+        class="relative inline-flex max-w-[90%] gap-2 rounded-md bg-gray-50 p-1.5 pl-2 text-base shadow-sm"
       >
+        <div
+          class="absolute -bottom-5 flex gap-1 rounded-full border bg-white p-1 pb-[3px] shadow-sm"
+          v-if="whatsapp.reaction"
+        >
+          <div class="flex size-4 items-center justify-center">
+            {{ whatsapp.reaction }}
+          </div>
+        </div>
         <div
           v-if="whatsapp.content_type == 'text'"
           v-html="formatWhatsAppMessage(whatsapp.message)"
@@ -76,20 +85,42 @@
           </div>
         </div>
       </div>
+      <div
+        class="flex items-center justify-center opacity-0 transition-all ease-in group-hover:opacity-100"
+      >
+        <IconPicker
+          v-model="emoji"
+          v-model:reaction="reaction"
+          v-slot="{ togglePopover }"
+          @update:modelValue="() => reactOnMessage(whatsapp.name, emoji)"
+        >
+          <Button
+            @click="() => (reaction = true) && togglePopover()"
+            class="rounded-full"
+          >
+            <ReactIcon class="text-gray-400" />
+          </Button>
+        </IconPicker>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import IconPicker from '@/components/IconPicker.vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
 import DoubleCheckIcon from '@/components/Icons/DoubleCheckIcon.vue'
 import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
-import { Tooltip } from 'frappe-ui'
+import ReactIcon from '@/components/Icons/ReactIcon.vue'
 import { dateFormat } from '@/utils'
+import { Tooltip, createResource } from 'frappe-ui'
+import { ref } from 'vue'
 
 const props = defineProps({
   messages: Array,
 })
+
+const list = defineModel()
 
 function openFileInAnotherTab(url) {
   window.open(url, '_blank')
@@ -116,5 +147,22 @@ function formatWhatsAppMessage(message) {
   message = message.replace(/(\d+)\. (.*?)(?=\s*(\d+)\.|$)/g, '<li>$2</li>')
 
   return message
+}
+
+const emoji = ref('')
+const reaction = ref(true)
+
+function reactOnMessage(name, emoji) {
+  createResource({
+    url: 'crm.api.whatsapp.react_on_whatsapp_message',
+    params: {
+      emoji,
+      reply_to_name: name,
+    },
+    auto: true,
+    onSuccess() {
+      list.value.reload()
+    },
+  })
 }
 </script>

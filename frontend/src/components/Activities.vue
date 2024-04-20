@@ -110,7 +110,11 @@
     v-else-if="title == 'WhatsApp' && whatsappMessages.data?.length"
     class="activities flex-1 overflow-y-auto"
   >
-    <WhatsAppArea class="px-10" :messages="whatsappMessages.data" />
+    <WhatsAppArea
+      class="px-10"
+      v-model="whatsappMessages"
+      :messages="whatsappMessages.data"
+    />
   </div>
   <div v-else-if="activities?.length" class="activities flex-1 overflow-y-auto">
     <div
@@ -930,6 +934,8 @@ const whatsappMessages = createListResource({
     'attach',
     'template',
     'use_template',
+    'message_id',
+    'reply_to_message_id',
     'creation',
     'message',
     'status',
@@ -942,7 +948,23 @@ const whatsappMessages = createListResource({
   orderBy: 'modified desc',
   pageLength: 99999,
   auto: true,
-  transform: (data) => sortByCreation(data),
+  transform: (data) => {
+    data = sortByCreation(data)
+    // loop on filtered data where message.content_type == 'reaction'
+    data
+      .filter((message) => message.content_type == 'reaction')
+      .forEach((message) => {
+        // find the message that this reaction is reacting to
+        const reactedMessage = data.find(
+          (m) => m.message_id == message.reply_to_message_id
+        )
+        // if the reacted message is found, add the reaction to it
+        if (reactedMessage) {
+          reactedMessage.reaction = message.message
+        }
+      })
+    return data.filter((message) => message.content_type != 'reaction')
+  },
   onSuccess: () => nextTick(() => scroll()),
 })
 
