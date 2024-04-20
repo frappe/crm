@@ -5,8 +5,28 @@
         <span class="text-base"> {{ modelValue || '' }} </span>
       </slot>
     </template>
-    <template #body>
-      <div class="my-3 max-w-max transform bg-white px-4 sm:px-0">
+    <template #body="{ togglePopover }">
+      <div
+        v-if="reaction"
+        class="flex items-center justify-center gap-2 rounded-full bg-white px-2 py-1 shadow-sm"
+      >
+        <div
+          class="size-5 cursor-pointer rounded-full bg-white text-xl"
+          v-for="r in reactionEmojis"
+          :key="r"
+          @click="() => (emoji = r) && togglePopover()"
+        >
+          <button>
+            {{ r }}
+          </button>
+        </div>
+        <Button
+          class="rounded-full"
+          icon="plus"
+          @click.stop="() => (reaction = false)"
+        />
+      </div>
+      <div v-else class="my-3 max-w-max transform bg-white px-4 sm:px-0">
         <div
           class="relative max-h-96 overflow-y-auto rounded-lg pb-3 shadow-2xl ring-1 ring-black ring-opacity-5"
         >
@@ -31,7 +51,7 @@
                 class="h-8 w-8 rounded-md p-1 text-2xl hover:bg-gray-100 focus:outline-none focus:ring focus:ring-blue-200"
                 v-for="_emoji in emojis"
                 :key="_emoji.description"
-                @click="emoji = _emoji.emoji"
+                @click="() => (emoji = _emoji.emoji) && togglePopover()"
                 :title="_emoji.description"
               >
                 {{ _emoji.emoji }}
@@ -50,6 +70,9 @@ import { ref, computed } from 'vue'
 
 const search = ref('')
 const emoji = defineModel()
+const reaction = defineModel('reaction')
+
+const reactionEmojis = ref(['👍', '❤️', '😂', '😮', '😢', '🙏'])
 
 const emojiGroups = computed(() => {
   let groups = {}
