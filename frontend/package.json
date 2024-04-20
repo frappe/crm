@@ -14,6 +14,7 @@
     "@vueuse/integrations": "^10.3.0",
     "feather-icons": "^4.28.0",
     "frappe-ui": "^0.1.52",
+    "gemoji": "^8.1.0",
     "mime": "^4.0.1",
     "pinia": "^2.0.33",
     "socket.io-client": "^4.7.2",

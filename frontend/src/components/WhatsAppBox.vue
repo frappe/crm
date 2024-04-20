@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-end gap-2 px-10 py-2.5">
-    <div class="flex h-8 items-center">
+    <div class="flex h-8 items-center gap-2">
       <FileUploader @success="(file) => uploadFile(file)">
         <template v-slot="{ file, progress, uploading, openFileSelector }">
           <div class="flex items-center space-x-2">
@@ -16,6 +16,21 @@
           </div>
         </template>
       </FileUploader>
+      <IconPicker
+        v-model="emoji"
+        v-slot="{ togglePopover }"
+        @update:modelValue="
+          () => {
+            content += emoji
+            $refs.textarea.$el.focus()
+          }
+        "
+      >
+        <SmileIcon
+          @click="togglePopover"
+          class="flex size-4.5 rounded-sm text-xl leading-none text-gray-500 cursor-pointer"
+        />
+      </IconPicker>
     </div>
     <Textarea
       ref="textarea"
@@ -41,6 +56,8 @@
 </template>
 
 <script setup>
+import IconPicker from '@/components/IconPicker.vue'
+import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import { createResource, Textarea, FileUploader, Dropdown } from 'frappe-ui'
 import FeatherIcon from 'frappe-ui/src/components/FeatherIcon.vue'
 import { ref, computed, nextTick } from 'vue'
@@ -53,6 +70,7 @@ const doc = defineModel()
 const whatsapp = defineModel('whatsapp')
 const rows = ref(1)
 const textarea = ref(null)
+const emoji = ref('')
 
 const content = ref('')
 const placeholder = ref(__('Type your message here...'))
