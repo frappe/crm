@@ -53,3 +53,19 @@ def create_whatsapp_message(reference_doctype, reference_name, message, to, atta
 	})
 	doc.insert(ignore_permissions=True)
 	return doc.name
+
+@frappe.whitelist()
+def react_on_whatsapp_message(emoji, reply_to_name):
+	reply_to_doc = frappe.get_doc("WhatsApp Message", reply_to_name)
+	to = reply_to_doc.type == "Incoming" and reply_to_doc.get("from") or reply_to_doc.to
+	doc = frappe.new_doc("WhatsApp Message")
+	doc.update({
+		"reference_doctype": reply_to_doc.reference_doctype,
+		"reference_name": reply_to_doc.reference_name,
+		"message": emoji,
+		"to": to,
+		"reply_to_message_id": reply_to_doc.message_id,
+		"content_type": "reaction",
+	})
+	doc.insert(ignore_permissions=True)
+	return doc.name
