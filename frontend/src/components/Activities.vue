@@ -937,6 +937,7 @@ const whatsappMessages = createListResource({
     'template',
     'use_template',
     'message_id',
+    'is_reply',
     'reply_to_message_id',
     'creation',
     'message',
@@ -965,10 +966,28 @@ const whatsappMessages = createListResource({
           reactedMessage.reaction = message.message
         }
       })
+
+    // loop on filtered data where message.is_reply == 1
+    data
+      .filter((message) => message.is_reply)
+      .forEach((message) => {
+        // find the message that this message is replying to
+        const repliedMessage = data.find(
+          (m) => m.message_id == message.reply_to_message_id
+        )
+        // if the replied message is found, add the reply to it
+        if (repliedMessage) {
+          message.reply_message = repliedMessage.message
+          message.reply_to = repliedMessage.name
+        }
+      })
+
     return data.filter((message) => message.content_type != 'reaction')
   },
   onSuccess: () => nextTick(() => scroll()),
 })
+
+const replyMessage = ref({})
 
 function get_activities() {
   if (!all_activities.data?.versions) return []

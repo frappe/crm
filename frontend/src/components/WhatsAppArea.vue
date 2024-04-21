@@ -14,9 +14,9 @@
         class="group/message relative max-w-[90%] rounded-md bg-gray-50 p-1.5 pl-2 text-base shadow-sm"
       >
         <div
-          v-if="whatsapp.reply_to_message_id"
+          v-if="whatsapp.is_reply"
           class="mb-1 cursor-pointer rounded-md border-0 border-l-4 border-green-500 bg-gray-200 px-2 py-4"
-          v-html="formatWhatsAppMessage(whatsapp.reply_to_message_id)"
+          v-html="formatWhatsAppMessage(whatsapp.reply_message)"
         />
         <div class="inline-flex gap-2">
           <div
