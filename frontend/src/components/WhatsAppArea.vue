@@ -15,6 +15,7 @@
       >
         <div
           v-if="whatsapp.is_reply"
+          @click="() => scrollToMessage(whatsapp.reply_to)"
           class="mb-1 cursor-pointer rounded-md border-0 border-l-4 border-green-500 bg-gray-200 px-2 py-4"
           v-html="formatWhatsAppMessage(whatsapp.reply_message)"
         />
@@ -208,5 +209,16 @@ function messageOptions(message) {
     //   onClick: () => console.log('Delete'),
     // },
   ]
+}
+
+function scrollToMessage(name) {
+  const element = document.getElementById(name)
+  element.scrollIntoView({ behavior: 'smooth' })
+
+  // Highlight the message
+  element.classList.add('bg-yellow-100')
+  setTimeout(() => {
+    element.classList.remove('bg-yellow-100')
+  }, 1000)
 }
 </script>
