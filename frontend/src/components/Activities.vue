@@ -113,6 +113,7 @@
     <WhatsAppArea
       class="px-10"
       v-model="whatsappMessages"
+      v-model:reply="replyMessage"
       :messages="whatsappMessages.data"
     />
   </div>
@@ -782,6 +783,7 @@
     ref="whatsappBox"
     v-if="title == 'WhatsApp'"
     v-model="doc"
+    v-model:reply="replyMessage"
     v-model:whatsapp="whatsappMessages"
     :doctype="doctype"
     @scroll="scroll"

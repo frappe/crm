@@ -1,4 +1,12 @@
 <template>
+  <div v-if="reply?.message" class="flex justify-around items-center gap-2 px-10 pt-2">
+    <div
+      class="rounded-md flex-1 border-0 border-l-4 border-green-500 bg-gray-50 px-2 py-4 ml-13"
+    >
+      {{ reply.message }}
+    </div>
+    <Button class="mx-[11px]" variant="ghost" icon="x" @click="reply = {}" />
+  </div>
   <div class="flex items-end gap-2 px-10 py-2.5">
     <div class="flex h-8 items-center gap-2">
       <FileUploader @success="(file) => uploadFile(file)">
@@ -28,7 +36,7 @@
       >
         <SmileIcon
           @click="togglePopover"
-          class="flex size-4.5 rounded-sm text-xl leading-none text-gray-500 cursor-pointer"
+          class="flex size-4.5 cursor-pointer rounded-sm text-xl leading-none text-gray-500"
         />
       </IconPicker>
     </div>
@@ -68,6 +76,7 @@ const props = defineProps({
 
 const doc = defineModel()
 const whatsapp = defineModel('whatsapp')
+const reply = defineModel('reply')
 const rows = ref(1)
 const textarea = ref(null)
 const emoji = ref('')
@@ -104,12 +113,14 @@ async function sendWhatsAppMessage() {
     message: content.value,
     to: doc.value.data.mobile_no,
     attach: whatsapp.value.attach || '',
+    reply_to: reply.value?.name || '',
     content_type: whatsapp.value.content_type,
   }
   content.value = ''
   fileType.value = ''
   whatsapp.value.attach = ''
   whatsapp.value.content_type = 'text'
+  reply.value = {}
   createResource({
     url: 'crm.api.whatsapp.create_whatsapp_message',
     params: args,
