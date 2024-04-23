@@ -7,6 +7,12 @@ def validate(doc, method):
 		doc.reference_doctype = doctype
 		doc.reference_name = name
 
+def on_update(doc, method):
+	frappe.publish_realtime("whatsapp_message", {
+		'reference_doctype': doc.reference_doctype,
+		'reference_name': doc.reference_name,
+	})
+
 def get_lead_or_deal_from_number(number):
 	"""Get lead/deal from the given number.
 	"""

@@ -138,6 +138,7 @@ doc_events = {
 	},
 	"WhatsApp Message": {
 		"validate": ["crm.api.whatsapp.validate"],
+		"on_update": ["crm.api.whatsapp.on_update"],
 	},
 }
 

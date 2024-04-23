@@ -864,10 +864,19 @@ import {
   call,
 } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
-import { ref, computed, h, markRaw, watch, nextTick } from 'vue'
+import {
+  ref,
+  computed,
+  h,
+  markRaw,
+  watch,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue'
 import { useRoute } from 'vue-router'
 
-const { makeCall } = globalStore()
+const { makeCall, $socket } = globalStore()
 const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
@@ -944,6 +953,21 @@ const whatsappMessages = createResource({
   auto: true,
   transform: (data) => sortByCreation(data),
   onSuccess: () => nextTick(() => scroll()),
+})
+
+onBeforeUnmount(() => {
+  $socket.off('whatsapp_message')
+})
+
+onMounted(() => {
+  $socket.on('whatsapp_message', (data) => {
+    if (
+      data.reference_doctype === props.doctype &&
+      data.reference_name === doc.value.data.name
+    ) {
+      whatsappMessages.reload()
+    }
+  })
 })
 
 function sendTemplate(template) {
