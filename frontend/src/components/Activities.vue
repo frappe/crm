@@ -45,6 +45,10 @@
           <RefreshIcon class="h-4 w-4" />
         </template>
       </Button>
+      <Button
+        :label="__('Select Template')"
+        @click="showWhatsappTemplates = true"
+      />
       <Button variant="solid" @click="$refs.whatsappBox.show()">
         <template #prefix>
           <FeatherIcon name="plus" class="h-4 w-4" />
@@ -802,6 +806,10 @@
     :doctype="doctype"
     :doc="doc.data?.name"
   />
+  <WhatsappTemplateSelectorModal
+    v-model="showWhatsappTemplates"
+    @send="(t) => sendTemplate(t)"
+  />
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -833,6 +841,7 @@ import AttachmentItem from '@/components/AttachmentItem.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
+import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import {
   timeAgo,
   dateFormat,
@@ -923,6 +932,8 @@ const all_activities = createResource({
   },
 })
 
+const showWhatsappTemplates = ref(false)
+
 const whatsappMessages = createListResource({
   type: 'list',
   doctype: 'WhatsApp Message',
@@ -992,6 +1003,23 @@ const whatsappMessages = createListResource({
   },
   onSuccess: () => nextTick(() => scroll()),
 })
+
+function sendTemplate(template) {
+  showWhatsappTemplates.value = false
+  createResource({
+    url: 'crm.api.whatsapp.send_whatsapp_template',
+    params: {
+      reference_doctype: props.doctype,
+      reference_name: doc.value.data.name,
+      to: doc.value.data.mobile_no,
+      template,
+    },
+    auto: true,
+    onSuccess() {
+      whatsappMessages.reload()
+    },
+  })
+}
 
 const replyMessage = ref({})
 
