@@ -123,9 +123,13 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 		# If the replied message is found, add the reply details to the reply message
 		doc = frappe.get_doc(reply_message['reference_doctype'], reply_message['reference_name'])
 		from_name = replied_message['from']
-		for c in doc.contacts:
-			if c.is_primary:
-				from_name = c.full_name or c.mobile_no
+		if doc.get("contacts"):
+			for c in doc.get("contacts"):
+				if c.is_primary:
+					from_name = c.full_name or c.mobile_no
+					break
+		else:
+			from_name = doc.get("first_name") + " " + doc.get("last_name")
 		if replied_message:
 			message = replied_message['message']
 			if replied_message['message_type'] == 'Template':
