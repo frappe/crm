@@ -934,73 +934,15 @@ const all_activities = createResource({
 
 const showWhatsappTemplates = ref(false)
 
-const whatsappMessages = createListResource({
-  type: 'list',
-  doctype: 'WhatsApp Message',
-  cache: ['whatsapp_message', doc.value.data.name],
-  fields: [
-    'name',
-    'type',
-    'to',
-    'from',
-    'content_type',
-    'attach',
-    'template',
-    'use_template',
-    'message_id',
-    'is_reply',
-    'reply_to_message_id',
-    'creation',
-    'message',
-    'status',
-  ],
-  filters: {
+const whatsappMessages = createResource({
+  url: 'crm.api.whatsapp.get_whatsapp_messages',
+  cache: ['whatsapp_messages', doc.value.data.name],
+  params: {
     reference_doctype: props.doctype,
     reference_name: doc.value.data.name,
-    status: ['!=', 'failed'],
   },
-  orderBy: 'modified desc',
-  pageLength: 99999,
   auto: true,
-  transform: (data) => {
-    data = sortByCreation(data)
-    // loop on filtered data where message.content_type == 'reaction'
-    data
-      .filter((message) => message.content_type == 'reaction')
-      .forEach((message) => {
-        // find the message that this reaction is reacting to
-        const reactedMessage = data.find(
-          (m) => m.message_id == message.reply_to_message_id
-        )
-        // if the reacted message is found, add the reaction to it
-        if (reactedMessage) {
-          reactedMessage.reaction = message.message
-        }
-      })
-
-    // loop on filtered data where message.is_reply == 1
-    data
-      .filter((message) => message.is_reply)
-      .forEach((message) => {
-        // find the message that this message is replying to
-        const repliedMessage = data.find(
-          (m) => m.message_id == message.reply_to_message_id
-        )
-        // if the replied message is found, add the reply to it
-        if (repliedMessage) {
-          message.reply_message = repliedMessage.message
-          message.reply_to = repliedMessage.name
-          message.reply_to_type = repliedMessage.type
-          message.reply_to_from =
-            (repliedMessage.from &&
-              getContact(doc.value.data.mobile_no)?.full_name) ||
-            getLeadContact(doc.value.data.mobile_no)?.full_name ||
-            repliedMessage.from
-        }
-      })
-
-    return data.filter((message) => message.content_type != 'reaction')
-  },
+  transform: (data) => sortByCreation(data),
   onSuccess: () => nextTick(() => scroll()),
 })
 
