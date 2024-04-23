@@ -33,7 +33,15 @@
           >
             {{ whatsapp.reply_to_from || __('You') }}
           </div>
-          {{ formatWhatsAppMessage(whatsapp.reply_message) }}
+          <div class="flex flex-col gap-2 max-h-12 overflow-hidden">
+            <div v-if="whatsapp.header" class="text-base font-semibold">
+              {{ whatsapp.header }}
+            </div>
+            <div v-html="formatWhatsAppMessage(whatsapp.reply_message)" />
+            <div v-if="whatsapp.footer" class="text-xs text-gray-600">
+              {{ whatsapp.footer }}
+            </div>
+          </div>
         </div>
         <div class="inline-flex gap-2">
           <div
@@ -56,7 +64,19 @@
             </div>
           </div>
           <div
-            v-if="whatsapp.content_type == 'text'"
+            class="flex flex-col gap-2"
+            v-if="whatsapp.message_type == 'Template'"
+          >
+            <div v-if="whatsapp.header" class="text-base font-semibold">
+              {{ whatsapp.header }}
+            </div>
+            <div v-html="formatWhatsAppMessage(whatsapp.template)" />
+            <div v-if="whatsapp.footer" class="text-xs text-gray-600">
+              {{ whatsapp.footer }}
+            </div>
+          </div>
+          <div
+            v-else-if="whatsapp.content_type == 'text'"
             v-html="formatWhatsAppMessage(whatsapp.message)"
           />
           <div v-else-if="whatsapp.content_type == 'image'">
