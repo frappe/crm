@@ -16,9 +16,25 @@
         <div
           v-if="whatsapp.is_reply"
           @click="() => scrollToMessage(whatsapp.reply_to)"
-          class="mb-1 cursor-pointer rounded-md border-0 border-l-4 border-green-500 bg-gray-200 px-2 py-4"
-          v-html="formatWhatsAppMessage(whatsapp.reply_message)"
-        />
+          class="mb-1 cursor-pointer rounded border-0 border-l-4 bg-gray-200 p-2 text-gray-600"
+          :class="
+            whatsapp.reply_to_type == 'Incoming'
+              ? 'border-green-500'
+              : 'border-blue-400'
+          "
+        >
+          <div
+            class="mb-1 text-sm font-bold"
+            :class="
+              whatsapp.reply_to_type == 'Incoming'
+                ? 'text-green-500'
+                : 'text-blue-400'
+            "
+          >
+            {{ whatsapp.reply_to_from || __('You') }}
+          </div>
+          {{ formatWhatsAppMessage(whatsapp.reply_message) }}
+        </div>
         <div class="inline-flex gap-2">
           <div
             class="absolute -right-0.5 -top-0.5 flex cursor-pointer gap-1 rounded-full bg-white pb-2 pl-2 pr-1.5 pt-1.5 opacity-0 group-hover/message:opacity-100"

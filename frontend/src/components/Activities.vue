@@ -979,6 +979,12 @@ const whatsappMessages = createListResource({
         if (repliedMessage) {
           message.reply_message = repliedMessage.message
           message.reply_to = repliedMessage.name
+          message.reply_to_type = repliedMessage.type
+          message.reply_to_from =
+            (repliedMessage.from &&
+              getContact(doc.value.data.mobile_no)?.full_name) ||
+            getLeadContact(doc.value.data.mobile_no)?.full_name ||
+            repliedMessage.from
         }
       })
 
