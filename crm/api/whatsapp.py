@@ -1,4 +1,5 @@
 import frappe
+import json
 
 def validate(doc, method):
 	if doc.type == "Incoming" and doc.get("from"):
@@ -66,6 +67,8 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 			'status',
 			'reference_doctype',
 			'reference_name',
+			'template_parameters',
+			'template_header_parameters',
 		],
 	)
 
@@ -80,7 +83,14 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 		# If the template is found, add the template details to the template message
 		if template:
 			template_message['template_name'] = template.template_name
+			if template_message['template_parameters']:
+				parameters = json.loads(template_message['template_parameters'])
+				template.template = parse_template_parameters(template.template, parameters)
+
 			template_message['template'] = template.template
+			if template_message['template_header_parameters']:
+				header_parameters = json.loads(template_message['template_header_parameters'])
+				template.header = parse_template_parameters(template.header, header_parameters)
 			template_message['header'] = template.header
 			template_message['footer'] = template.footer
 
@@ -111,7 +121,10 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 			if c.is_primary:
 				from_name = c.full_name or c.mobile_no
 		if replied_message:
-			reply_message['reply_message'] = replied_message['template'] if replied_message['message_type'] == 'Template' else replied_message['message']
+			message = replied_message['message']
+			if replied_message['message_type'] == 'Template':
+				message = replied_message['template']
+			reply_message['reply_message'] = message
 			reply_message['header'] = replied_message.get('header') or ''
 			reply_message['footer'] = replied_message.get('footer') or ''
 			reply_message['reply_to'] = replied_message['name']
@@ -173,3 +186,10 @@ def react_on_whatsapp_message(emoji, reply_to_name):
 	})
 	doc.insert(ignore_permissions=True)
 	return doc.name
+
+def parse_template_parameters(string, parameters):
+	for i, parameter in enumerate(parameters, start=1):
+		placeholder = "{{" + str(i) + "}}"
+		string = string.replace(placeholder, parameter)
+
+	return string
