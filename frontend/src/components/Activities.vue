@@ -814,7 +814,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import { whatsappEnabled } from '@/stores/settings'
+import { whatsappEnabled, twilioEnabled } from '@/stores/settings'
 import {
   Button,
   Tooltip,
@@ -958,6 +958,7 @@ const defaultActions = computed(() => {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
       label: __('Make a Call'),
       onClick: () => makeCall(doc.value.data.mobile_no),
+      condition: () => Boolean(twilioEnabled.value),
     },
     {
       icon: h(NoteIcon, { class: 'h-4 w-4' }),

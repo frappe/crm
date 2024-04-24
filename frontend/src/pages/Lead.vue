@@ -111,7 +111,7 @@
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
-                <Tooltip :text="__('Make a call')">
+                <Tooltip v-if="twilioEnabled" :text="__('Make a call')">
                   <Button
                     class="h-7 w-7"
                     @click="
@@ -287,7 +287,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { whatsappEnabled } from '@/stores/settings'
+import { whatsappEnabled, twilioEnabled } from '@/stores/settings'
 import {
   createResource,
   FileUploader,
@@ -417,6 +417,7 @@ const tabs = computed(() => {
       name: 'Calls',
       label: __('Calls'),
       icon: PhoneIcon,
+      condition: () => Boolean(twilioEnabled.value),
     },
     {
       name: 'Tasks',

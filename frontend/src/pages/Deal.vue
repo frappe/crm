@@ -69,7 +69,7 @@
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
-            <Tooltip :text="__('Make a call')">
+            <Tooltip v-if="twilioEnabled" :text="__('Make a call')">
               <Button class="h-7 w-7" @click="triggerCall">
                 <PhoneIcon class="h-4 w-4" />
               </Button>
@@ -320,7 +320,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { whatsappEnabled } from '@/stores/settings'
+import { whatsappEnabled, twilioEnabled } from '@/stores/settings'
 import {
   createResource,
   Dropdown,
@@ -452,6 +452,7 @@ const tabs = computed(() => {
       name: 'Calls',
       label: __('Calls'),
       icon: PhoneIcon,
+      condition: () => Boolean(twilioEnabled.value),
     },
     {
       name: 'Tasks',
