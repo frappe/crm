@@ -37,15 +37,6 @@
     </Button>
     <div class="flex gap-2" v-else-if="title == 'WhatsApp'">
       <Button
-        :label="__('Refresh')"
-        @click="whatsappMessages.reload()"
-        :loading="whatsappMessages.loading"
-      >
-        <template #icon>
-          <RefreshIcon class="h-4 w-4" />
-        </template>
-      </Button>
-      <Button
         :label="__('Send Template')"
         @click="showWhatsappTemplates = true"
       />
@@ -981,9 +972,6 @@ function sendTemplate(template) {
       template,
     },
     auto: true,
-    onSuccess() {
-      whatsappMessages.reload()
-    },
   })
 }
 

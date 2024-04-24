@@ -123,7 +123,6 @@ async function sendWhatsAppMessage() {
     url: 'crm.api.whatsapp.create_whatsapp_message',
     params: args,
     auto: true,
-    onSuccess: () => nextTick(() => whatsapp.value?.reload()),
   })
 }
 
