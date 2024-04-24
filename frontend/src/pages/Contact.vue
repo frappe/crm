@@ -71,18 +71,20 @@
               >
                 &middot;
               </span>
-              <Tooltip
+              <component
+                :is="callEnabled ? Tooltip : 'div'"
                 :text="__('Make Call')"
                 v-if="contact.data.actual_mobile_no"
               >
                 <div
-                  class="flex cursor-pointer items-center gap-1.5"
-                  @click="makeCall(contact.data.actual_mobile_no)"
+                  class="flex items-center gap-1.5"
+                  :class="callEnabled ? 'cursor-pointer' : ''"
+                  @click="callEnabled && makeCall(contact.data.actual_mobile_no)"
                 >
                   <PhoneIcon class="h-4 w-4" />
                   <span class="">{{ contact.data.actual_mobile_no }}</span>
                 </div>
-              </Tooltip>
+              </component>
               <span
                 v-if="contact.data.actual_mobile_no"
                 class="text-3xl leading-[0] text-gray-600"
@@ -232,6 +234,7 @@ import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
+import { callEnabled } from '@/stores/settings'
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
