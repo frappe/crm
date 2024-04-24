@@ -21,12 +21,9 @@
   <div class="flex items-end gap-2 px-10 py-2.5">
     <div class="flex h-8 items-center gap-2">
       <FileUploader @success="(file) => uploadFile(file)">
-        <template v-slot="{ file, progress, uploading, openFileSelector }">
+        <template v-slot="{ openFileSelector }">
           <div class="flex items-center space-x-2">
-            <Dropdown
-              v-bind="{ open }"
-              :options="uploadOptions(openFileSelector)"
-            >
+            <Dropdown :options="uploadOptions(openFileSelector)">
               <FeatherIcon
                 name="plus"
                 class="size-4.5 cursor-pointer text-gray-600"

@@ -51,7 +51,7 @@
                 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 35%, rgba(238, 130, 238, 0) 100%)',
             }"
           >
-            <Dropdown v-bind="{ open }" :options="messageOptions(whatsapp)">
+            <Dropdown :options="messageOptions(whatsapp)">
               <FeatherIcon name="chevron-down" class="size-4 text-gray-600" />
             </Dropdown>
           </div>
