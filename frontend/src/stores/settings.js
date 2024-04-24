@@ -11,12 +11,12 @@ createResource({
   },
 })
 
-export const twilioEnabled = ref(false)
+export const callEnabled = ref(false)
 createResource({
   url: 'crm.integrations.twilio.api.is_enabled',
   cache: 'Is Twilio Enabled',
   auto: true,
   onSuccess: (data) => {
-    twilioEnabled.value = data
+    callEnabled.value = data
   },
 })
