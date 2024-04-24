@@ -1,5 +1,6 @@
 import frappe
 import json
+from frappe import _
 
 def validate(doc, method):
 	if doc.type == "Incoming" and doc.get("from"):
@@ -112,6 +113,9 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 		if reacted_message:
 			reacted_message['reaction'] = reaction_message['message']
 
+	for message in messages:
+		from_name = get_from_name(message) if message['from'] else _('You')
+		message['from_name'] = from_name
 	# Filter messages to get only replies
 	reply_messages = [message for message in messages if message['is_reply']]
 
@@ -121,15 +125,7 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 		replied_message = next((m for m in messages if m['message_id'] == reply_message['reply_to_message_id']), None)
 		
 		# If the replied message is found, add the reply details to the reply message
-		doc = frappe.get_doc(reply_message['reference_doctype'], reply_message['reference_name'])
-		from_name = replied_message['from']
-		if doc.get("contacts"):
-			for c in doc.get("contacts"):
-				if c.is_primary:
-					from_name = c.full_name or c.mobile_no
-					break
-		else:
-			from_name = doc.get("first_name") + " " + doc.get("last_name")
+		from_name = get_from_name(reply_message) if replied_message['from'] else _('You')
 		if replied_message:
 			message = replied_message['message']
 			if replied_message['message_type'] == 'Template':
@@ -203,3 +199,18 @@ def parse_template_parameters(string, parameters):
 		string = string.replace(placeholder, parameter)
 
 	return string
+
+def get_from_name(message):
+	doc = frappe.get_doc(message['reference_doctype'], message['reference_name'])
+	from_name = ''
+	if message['reference_doctype'] == "CRM Deal":
+		if doc.get("contacts"):
+			for c in doc.get("contacts"):
+				if c.is_primary:
+					from_name = c.full_name or c.mobile_no
+					break
+		else:
+			from_name = doc.get("lead_name")
+	else:
+		from_name = doc.get("first_name") + " " + doc.get("last_name")
+	return from_name

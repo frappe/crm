@@ -1,11 +1,22 @@
 <template>
-  <div v-if="reply?.message" class="flex justify-around items-center gap-2 px-10 pt-2">
+  <div
+    v-if="reply?.message"
+    class="flex items-center justify-around gap-2 px-10 pt-2"
+  >
     <div
-      class="rounded-md flex-1 border-0 border-l-4 border-green-500 bg-gray-50 px-2 py-4 ml-13"
+      class="mb-1 ml-13 flex-1 cursor-pointer rounded border-0 border-l-4 border-green-500 bg-gray-100 p-2 text-base text-gray-600"
+      :class="reply.type == 'Incoming' ? 'border-green-500' : 'border-blue-400'"
     >
-      {{ reply.message }}
+      <div
+        class="mb-1 text-sm font-bold"
+        :class="reply.type == 'Incoming' ? 'text-green-500' : 'text-blue-400'"
+      >
+        {{ reply.from_name || __('You') }}
+      </div>
+      <div class="max-h-12 overflow-hidden" v-html="reply.message" />
     </div>
-    <Button class="mx-[11px]" variant="ghost" icon="x" @click="reply = {}" />
+
+    <Button variant="ghost" icon="x" @click="reply = {}" />
   </div>
   <div class="flex items-end gap-2 px-10 py-2.5">
     <div class="flex h-8 items-center gap-2">
@@ -51,15 +62,6 @@
       @blur="rows = 1"
       @keydown.enter="(e) => sendTextMessage(e)"
     />
-    <div class="flex justify-end gap-2">
-      <Button
-        class="min-h-8"
-        variant="solid"
-        :label="__('Send')"
-        @click="sendWhatsAppMessage"
-        :disabled="isEmpty"
-      />
-    </div>
   </div>
 </template>
 
@@ -84,10 +86,6 @@ const emoji = ref('')
 const content = ref('')
 const placeholder = ref(__('Type your message here...'))
 const fileType = ref('')
-
-const isEmpty = computed(() => {
-  return !content.value || content.value === '<p></p>'
-})
 
 function show() {
   nextTick(() => textarea.value.$el.focus())
@@ -158,7 +156,7 @@ function uploadOptions(openFileSelector) {
   ]
 }
 
-watch(() => reply.value, (value) => {
+watch(reply, (value) => {
   if (value?.message) {
     show()
   }

@@ -153,7 +153,7 @@
         >
           <Button
             @click="() => (reaction = true) && togglePopover()"
-            class="rounded-full"
+            class="rounded-full !size-6 mt-0.5"
           >
             <ReactIcon class="text-gray-400" />
           </Button>
@@ -233,7 +233,10 @@ function messageOptions(message) {
       label: 'Reply',
       onClick: () => {
         replyMode.value = true
-        reply.value = message
+        reply.value = {
+          ...message,
+          message: formatWhatsAppMessage(message.message)
+        }
       },
     },
     // {
