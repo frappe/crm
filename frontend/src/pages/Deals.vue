@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        @click="showNewDialog = true"
+        @click="showDealModal = true"
       >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -49,31 +49,12 @@
     >
       <DealsIcon class="h-10 w-10" />
       <span>{{ __('No Deals Found') }}</span>
-      <Button :label="__('Create')" @click="showNewDialog = true">
+      <Button :label="__('Create')" @click="showDealModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
   </div>
-  <Dialog
-    v-model="showNewDialog"
-    :options="{
-      size: '3xl',
-      title: __('New Deal'),
-    }"
-  >
-    <template #body-content>
-      <NewDeal :newDeal="newDeal" />
-    </template>
-    <template #actions="{ close }">
-      <div class="flex flex-row-reverse gap-2">
-        <Button
-          variant="solid"
-          :label="__('Save')"
-          @click="createNewDeal(close)"
-        />
-      </div>
-    </template>
-  </Dialog>
+  <DealModal v-model="showDealModal" />
 </template>
 
 <script setup>
@@ -81,7 +62,7 @@ import CustomActions from '@/components/CustomActions.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-import NewDeal from '@/components/NewDeal.vue'
+import DealModal from '@/components/Modals/DealModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
@@ -92,11 +73,9 @@ import {
   timeAgo,
   formatNumberIntoCurrency,
   formatTime,
-  createToast,
 } from '@/utils'
-import { createResource, Breadcrumbs } from 'frappe-ui'
-import { useRouter } from 'vue-router'
-import { ref, computed, reactive } from 'vue'
+import { Breadcrumbs } from 'frappe-ui'
+import { ref, computed } from 'vue'
 
 const breadcrumbs = [{ label: __('Deals'), route: { name: 'Deals' } }]
 
@@ -104,9 +83,8 @@ const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
 
-const router = useRouter()
-
 const dealsListView = ref(null)
+const showDealModal = ref(false)
 
 // deals data is loaded in the ViewControls component
 const deals = ref({})
@@ -123,15 +101,13 @@ const rows = computed(() => {
     deals.value.data.rows.forEach((row) => {
       _rows[row] = deal[row]
 
-      let org = getOrganization(deal.organization)
-
       if (row == 'organization') {
         _rows[row] = {
           label: deal.organization,
-          logo: org?.organization_logo,
+          logo: getOrganization(deal.organization)?.organization_logo,
         }
       } else if (row == 'annual_revenue') {
-        _rows[row] = formatNumberIntoCurrency(org?.annual_revenue)
+        _rows[row] = formatNumberIntoCurrency(deal.annual_revenue)
       } else if (row == 'status') {
         _rows[row] = {
           label: deal.status,
@@ -197,53 +173,4 @@ const rows = computed(() => {
     return _rows
   })
 })
-
-// New Deal
-const showNewDialog = ref(false)
-
-let newDeal = reactive({
-  organization: '',
-  status: '',
-  email: '',
-  mobile_no: '',
-  deal_owner: '',
-})
-
-const createDeal = createResource({
-  url: 'frappe.client.insert',
-  makeParams(values) {
-    return {
-      doc: {
-        doctype: 'CRM Deal',
-        ...values,
-      },
-    }
-  },
-})
-
-function createNewDeal(close) {
-  createDeal
-    .submit(newDeal, {
-      validate() {
-        if (!newDeal.first_name) {
-          createToast({
-            title: __('Error creating deal'),
-            text: __('First name is required'),
-            icon: 'x',
-            iconClasses: 'text-red-600',
-          })
-          return __('First name is required')
-        }
-      },
-      onSuccess(data) {
-        router.push({
-          name: 'Deal',
-          params: {
-            dealId: data.name,
-          },
-        })
-      },
-    })
-    .then(close)
-}
 </script>

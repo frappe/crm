@@ -18,7 +18,6 @@ class CRMDeal(Document):
 	def validate(self):
 		self.set_primary_contact()
 		self.set_primary_email_mobile_no()
-		self.update_organization()
 		if self.deal_owner and not self.is_new():
 			self.share_with_agent(self.deal_owner)
 			self.assign_agent(self.deal_owner)
@@ -68,20 +67,6 @@ class CRMDeal(Document):
 			self.email = ""
 			self.mobile_no = ""
 			self.phone = ""
-
-	def update_organization(self):
-		if self.organization:
-			if self.has_value_changed("organization"):
-				organization = frappe.get_cached_doc("CRM Organization", self.organization)
-				self.website = organization.website
-				self.territory = organization.territory
-				self.annual_revenue = organization.annual_revenue
-			if self.has_value_changed("website"):
-				frappe.db.set_value("CRM Organization", self.organization, "website", self.website)
-			if self.has_value_changed("territory"):
-				frappe.db.set_value("CRM Organization", self.organization, "territory", self.territory)
-			if self.has_value_changed("annual_revenue"):
-				frappe.db.set_value("CRM Organization", self.organization, "annual_revenue", self.annual_revenue)
 
 	def assign_agent(self, agent):
 		if not agent:
@@ -230,3 +215,78 @@ def set_primary_contact(deal, contact):
 	deal.save()
 	return True
 
+def create_organization(doc):
+	if not doc.get("organization_name"):
+		return
+
+	existing_organization = frappe.db.exists("CRM Organization", {"organization_name": doc.get("organization_name")})
+	if existing_organization:
+		return existing_organization
+
+	organization = frappe.new_doc("CRM Organization")
+	organization.update(
+		{
+			"organization_name": doc.get("organization_name"),
+			"website": doc.get("website"),
+			"territory": doc.get("territory"),
+			"industry": doc.get("industry"),
+			"annual_revenue": doc.get("annual_revenue"),
+		}
+	)
+	organization.insert(ignore_permissions=True)
+	return organization.name
+
+def contact_exists(doc):
+	email_exist = frappe.db.exists("Contact Email", {"email_id": doc.get("email")})
+	mobile_exist = frappe.db.exists("Contact Phone", {"phone": doc.get("mobile_no")})
+
+	doctype = "Contact Email" if email_exist else "Contact Phone"
+	name = email_exist or mobile_exist
+
+	if name:
+		return frappe.db.get_value(doctype, name, "parent")
+
+	return False
+
+def create_contact(doc):
+	existing_contact = contact_exists(doc)
+	if existing_contact:
+		return existing_contact
+
+	contact = frappe.new_doc("Contact")
+	contact.update(
+		{
+			"first_name": doc.get("first_name"),
+			"last_name": doc.get("last_name"),
+			"salutation": doc.get("salutation"),
+			"company_name": doc.get("organization") or doc.get("organization_name"),
+		}
+	)
+
+	if doc.get("email"):
+		contact.append("email_ids", {"email_id": doc.get("email"), "is_primary": 1})
+
+	if doc.get("mobile_no"):
+		contact.append("phone_nos", {"phone": doc.get("mobile_no"), "is_primary_mobile_no": 1})
+
+	contact.insert(ignore_permissions=True)
+	contact.reload()  # load changes by hooks on contact
+
+	return contact.name
+
+@frappe.whitelist()
+def create_deal(args):
+	deal = frappe.new_doc("CRM Deal")
+
+	contact = args.get("contact")
+	if not contact and (args.get("first_name") or args.get("last_name") or args.get("email") or args.get("mobile_no")):
+		contact = create_contact(args)
+
+	deal.update({
+		"organization": args.get("organization") or create_organization(args),
+		"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
+		"deal_owner": args.get("deal_owner"),
+		"status": args.get("status"),
+	})
+	deal.insert(ignore_permissions=True)
+	return deal.name
