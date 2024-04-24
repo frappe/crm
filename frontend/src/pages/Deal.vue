@@ -452,7 +452,7 @@ const tabs = computed(() => {
       name: 'Calls',
       label: __('Calls'),
       icon: PhoneIcon,
-      condition: () => Boolean(callEnabled.value),
+      condition: () => callEnabled.value,
     },
     {
       name: 'Tasks',
@@ -468,7 +468,7 @@ const tabs = computed(() => {
       name: 'WhatsApp',
       label: __('WhatsApp'),
       icon: WhatsAppIcon,
-      condition: () => Boolean(whatsappEnabled.value),
+      condition: () => whatsappEnabled.value,
     },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))

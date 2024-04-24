@@ -958,7 +958,7 @@ const defaultActions = computed(() => {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
       label: __('Make a Call'),
       onClick: () => makeCall(doc.value.data.mobile_no),
-      condition: () => Boolean(callEnabled.value),
+      condition: () => callEnabled.value,
     },
     {
       icon: h(NoteIcon, { class: 'h-4 w-4' }),
@@ -974,7 +974,7 @@ const defaultActions = computed(() => {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
       label: __('New WhatsApp Message'),
       onClick: () => (tabIndex.value = 5),
-      condition: () => Boolean(whatsappEnabled.value),
+      condition: () => whatsappEnabled.value,
     },
   ]
   return actions.filter((action) =>
