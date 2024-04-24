@@ -47,37 +47,7 @@
         <span>{{ __('New WhatsApp Message') }}</span>
       </Button>
     </div>
-    <Dropdown
-      v-else
-      :options="[
-        {
-          icon: h(EmailIcon, { class: 'h-4 w-4' }),
-          label: __('New Email'),
-          onClick: () => ($refs.emailBox.show = true),
-        },
-        {
-          icon: h(PhoneIcon, { class: 'h-4 w-4' }),
-          label: __('Make a Call'),
-          onClick: () => makeCall(doc.data.mobile_no),
-        },
-        {
-          icon: h(NoteIcon, { class: 'h-4 w-4' }),
-          label: __('New Note'),
-          onClick: () => showNote(),
-        },
-        {
-          icon: h(TaskIcon, { class: 'h-4 w-4' }),
-          label: __('New Task'),
-          onClick: () => showTask(),
-        },
-        {
-          icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
-          label: __('New WhatsApp Message'),
-          onClick: () => (tabIndex = 5),
-        },
-      ]"
-      @click.stop
-    >
+    <Dropdown v-else :options="defaultActions" @click.stop>
       <template v-slot="{ open }">
         <Button variant="solid" class="flex items-center gap-1">
           <template #prefix>
@@ -844,6 +814,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
+import { whatsappEnabled } from '@/stores/settings'
 import {
   Button,
   Tooltip,
@@ -851,7 +822,6 @@ import {
   TextEditor,
   Avatar,
   createResource,
-  createListResource,
   call,
 } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
@@ -976,6 +946,40 @@ function sendTemplate(template) {
 }
 
 const replyMessage = ref({})
+
+const defaultActions = computed(() => {
+  let actions = [
+    {
+      icon: h(EmailIcon, { class: 'h-4 w-4' }),
+      label: __('New Email'),
+      onClick: () => (emailBox.value.show = true),
+    },
+    {
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      label: __('Make a Call'),
+      onClick: () => makeCall(doc.value.data.mobile_no),
+    },
+    {
+      icon: h(NoteIcon, { class: 'h-4 w-4' }),
+      label: __('New Note'),
+      onClick: () => showNote(),
+    },
+    {
+      icon: h(TaskIcon, { class: 'h-4 w-4' }),
+      label: __('New Task'),
+      onClick: () => showTask(),
+    },
+    {
+      icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
+      label: __('New WhatsApp Message'),
+      onClick: () => (tabIndex.value = 5),
+      condition: () => Boolean(whatsappEnabled.value),
+    },
+  ]
+  return actions.filter((action) =>
+    action.condition ? action.condition() : true
+  )
+})
 
 function get_activities() {
   if (!all_activities.data?.versions) return []

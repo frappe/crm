@@ -287,6 +287,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { whatsappEnabled } from '@/stores/settings'
 import {
   createResource,
   FileUploader,
@@ -399,38 +400,43 @@ const breadcrumbs = computed(() => {
 })
 
 const tabIndex = ref(0)
-const tabs = [
-  {
-    name: 'Activity',
-    label: __('Activity'),
-    icon: ActivityIcon,
-  },
-  {
-    name: 'Emails',
-    label: __('Emails'),
-    icon: EmailIcon,
-  },
-  {
-    name: 'Calls',
-    label: __('Calls'),
-    icon: PhoneIcon,
-  },
-  {
-    name: 'Tasks',
-    label: __('Tasks'),
-    icon: TaskIcon,
-  },
-  {
-    name: 'Notes',
-    label: __('Notes'),
-    icon: NoteIcon,
-  },
-  {
-    name: 'WhatsApp',
-    label: __('WhatsApp'),
-    icon: WhatsAppIcon,
-  },
-]
+
+const tabs = computed(() => {
+  let tabOptions = [
+    {
+      name: 'Activity',
+      label: __('Activity'),
+      icon: ActivityIcon,
+    },
+    {
+      name: 'Emails',
+      label: __('Emails'),
+      icon: EmailIcon,
+    },
+    {
+      name: 'Calls',
+      label: __('Calls'),
+      icon: PhoneIcon,
+    },
+    {
+      name: 'Tasks',
+      label: __('Tasks'),
+      icon: TaskIcon,
+    },
+    {
+      name: 'Notes',
+      label: __('Notes'),
+      icon: NoteIcon,
+    },
+    {
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => Boolean(whatsappEnabled.value),
+    }
+  ]
+  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+})
 
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
