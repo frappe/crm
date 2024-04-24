@@ -46,7 +46,7 @@
         </template>
       </Button>
       <Button
-        :label="__('Select Template')"
+        :label="__('Send Template')"
         @click="showWhatsappTemplates = true"
       />
       <Button variant="solid" @click="$refs.whatsappBox.show()">
