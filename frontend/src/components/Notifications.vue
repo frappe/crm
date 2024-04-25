@@ -98,10 +98,13 @@ import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { notificationsStore } from '@/stores/notifications'
+import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { Tooltip } from 'frappe-ui'
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+const { $socket } = globalStore()
 
 const target = ref(null)
 onClickOutside(
@@ -124,6 +127,16 @@ function mark_as_read(doc) {
   notificationsStore().mark_doc_as_read(doc)
 }
 
+onBeforeUnmount(() => {
+  $socket.off('crm_notification')
+})
+
+onMounted(() => {
+  $socket.on('crm_notification', () => {
+    notificationsStore().notifications.reload()
+  })
+})
+
 function getRoute(notification) {
   let params = {
     leadId: notification.reference_name,
@@ -139,4 +152,6 @@ function getRoute(notification) {
     hash: '#' + notification.comment || notification.notification_type_doc,
   }
 }
+
+onMounted(() => {})
 </script>

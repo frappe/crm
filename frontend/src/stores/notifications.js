@@ -36,6 +36,7 @@ export const notificationsStore = defineStore('crm-notifications', () => {
   }
 
   return {
+    notifications,
     visible,
     allNotifications,
     unreadNotificationsCount,
