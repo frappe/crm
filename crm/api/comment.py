@@ -21,14 +21,10 @@ def notify_mentions(doc):
         if doctype.startswith("CRM "):
             doctype = doctype[4:].lower()
         notification_text = f"""
-            <div class="mb-2 space-x-1 leading-5 text-gray-600">
-                <span class="font-medium text-gray-900">
-                { owner }
-                </span>
+            <div class="mb-2 leading-5 text-gray-600">
+                <span class="font-medium text-gray-900">{ owner }</span>
                 <span>{ _('mentioned you in {0}').format(doctype) }</span>
-                <span class="font-medium text-gray-900">
-                { doc.reference_name }
-                </span>
+                <span class="font-medium text-gray-900">{ doc.reference_name }</span>
             </div>
         """
         values = frappe._dict(

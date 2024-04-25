@@ -69,6 +69,7 @@
   {
    "fieldname": "message",
    "fieldtype": "HTML Editor",
+   "in_list_view": 1,
    "label": "Message"
   },
   {
@@ -115,7 +116,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-25 13:55:23.014268",
+ "modified": "2024-04-25 16:26:07.484857",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",
