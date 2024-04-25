@@ -120,6 +120,26 @@ const allFields = computed(() => {
           type: 'data',
           placeholder: '+91 9876543210',
         },
+        {
+          label: 'Territory',
+          name: 'territory',
+          type: 'link',
+          doctype: 'CRM Territory',
+          placeholder: 'India',
+          change: (data) => (props.newLead.territory = data),
+        },
+        {
+          label: 'Source',
+          name: 'source',
+          type: 'link',
+          doctype: 'CRM Lead Source',
+          change: (data) => (props.newLead.source = data),
+        },
+        {
+          label: 'Remarks',
+          name: 'remarks',
+          type: 'long_text',
+        },
       ],
     },
     {

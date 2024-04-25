@@ -490,6 +490,9 @@ async function convertToDeal(updated) {
     lead.data.last_name = getContactByName(existingContact.value).last_name
     lead.data.email_id = getContactByName(existingContact.value).email_id
     lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
+    lead.data.territory = getContactByName(existingContact.value).territory
+    lead.data.source = getContactByName(existingContact.value).source
+    lead.data.remarks = getContactByName(existingContact.value).remarks
     existingContactChecked.value = false
     valueUpdated = true
   }
@@ -509,6 +512,9 @@ async function convertToDeal(updated) {
         email_id: lead.data.email_id,
         mobile_no: lead.data.mobile_no,
         organization: lead.data.organization,
+        territory: lead.data.territory,
+        source: lead.data.source,
+        remarks: lead.data.remarks,
       },
       '',
       () => convertToDeal(true)
