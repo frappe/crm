@@ -768,6 +768,7 @@
     :doc="doc.data?.name"
   />
   <WhatsappTemplateSelectorModal
+    v-if="whatsappEnabled"
     v-model="showWhatsappTemplates"
     @send="(t) => sendTemplate(t)"
   />
