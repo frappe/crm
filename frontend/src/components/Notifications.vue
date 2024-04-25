@@ -48,7 +48,7 @@
           :key="n.comment"
           :to="getRoute(n)"
           class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-gray-100"
-          @click="mark_as_read(n.comment)"
+          @click="mark_as_read(n.comment || n.notification_type_doc)"
         >
           <div class="mt-1 flex items-center gap-2.5">
             <div
@@ -120,8 +120,8 @@ function toggleNotificationPanel() {
   notificationsStore().toggle()
 }
 
-function mark_as_read(comment) {
-  notificationsStore().mark_comment_as_read(comment)
+function mark_as_read(doc) {
+  notificationsStore().mark_doc_as_read(doc)
 }
 
 function getRoute(notification) {
