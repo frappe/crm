@@ -58,11 +58,14 @@
             <UserAvatar :user="n.from_user.name" size="lg" />
           </div>
           <div>
-            <div class="mb-2 space-x-1 leading-5 text-gray-600">
+            <div v-if="n.notification_text" v-html="n.notification_text" />
+            <div v-else class="mb-2 space-x-1 leading-5 text-gray-600">
               <span class="font-medium text-gray-900">
                 {{ n.from_user.full_name }}
               </span>
-              <span>{{ __('mentioned you in {0}', [n.reference_doctype]) }}</span>
+              <span>
+                {{ __('mentioned you in {0}', [n.reference_doctype]) }}
+              </span>
               <span class="font-medium text-gray-900">
                 {{ n.reference_name }}
               </span>
@@ -128,7 +131,7 @@ function getRoute(notification) {
   return {
     name: notification.route_name,
     params: params,
-    hash: '#' + notification.comment,
+    hash: '#' + notification.comment || notification.notification_type_doc,
   }
 }
 </script>

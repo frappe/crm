@@ -28,6 +28,9 @@ def get_notifications():
                 "to_user": notification.to_user,
                 "read": notification.read,
                 "comment": notification.comment,
+                "notification_text": notification.notification_text,
+                "notification_type_doctype": notification.notification_type_doctype,
+                "notification_type_doc": notification.notification_type_doc,
                 "reference_doctype": "deal"
                 if notification.reference_doctype == "CRM Deal"
                 else "lead",
