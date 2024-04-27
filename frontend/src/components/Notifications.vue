@@ -48,21 +48,28 @@
           :key="n.comment"
           :to="getRoute(n)"
           class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-gray-100"
-          @click="mark_as_read(n.comment)"
+          @click="mark_as_read(n.comment || n.notification_type_doc)"
         >
           <div class="mt-1 flex items-center gap-2.5">
             <div
               class="h-[5px] w-[5px] rounded-full"
               :class="[n.read ? 'bg-transparent' : 'bg-gray-900']"
             />
-            <UserAvatar :user="n.from_user.name" size="lg" />
+            <WhatsAppIcon
+              v-if="n.type == 'WhatsApp'"
+              class="size-7 rounded-full"
+            />
+            <UserAvatar v-else :user="n.from_user.name" size="lg" />
           </div>
           <div>
-            <div class="mb-2 space-x-1 leading-5 text-gray-600">
+            <div v-if="n.notification_text" v-html="n.notification_text" />
+            <div v-else class="mb-2 space-x-1 leading-5 text-gray-600">
               <span class="font-medium text-gray-900">
                 {{ n.from_user.full_name }}
               </span>
-              <span>{{ __('mentioned you in {0}', [n.reference_doctype]) }}</span>
+              <span>
+                {{ __('mentioned you in {0}', [n.reference_doctype]) }}
+              </span>
               <span class="font-medium text-gray-900">
                 {{ n.reference_name }}
               </span>
@@ -86,14 +93,18 @@
   </div>
 </template>
 <script setup>
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { notificationsStore } from '@/stores/notifications'
+import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { Tooltip } from 'frappe-ui'
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+const { $socket } = globalStore()
 
 const target = ref(null)
 onClickOutside(
@@ -112,9 +123,19 @@ function toggleNotificationPanel() {
   notificationsStore().toggle()
 }
 
-function mark_as_read(comment) {
-  notificationsStore().mark_comment_as_read(comment)
+function mark_as_read(doc) {
+  notificationsStore().mark_doc_as_read(doc)
 }
+
+onBeforeUnmount(() => {
+  $socket.off('crm_notification')
+})
+
+onMounted(() => {
+  $socket.on('crm_notification', () => {
+    notificationsStore().notifications.reload()
+  })
+})
 
 function getRoute(notification) {
   let params = {
@@ -128,7 +149,9 @@ function getRoute(notification) {
   return {
     name: notification.route_name,
     params: params,
-    hash: '#' + notification.comment,
+    hash: '#' + notification.comment || notification.notification_type_doc,
   }
 }
+
+onMounted(() => {})
 </script>

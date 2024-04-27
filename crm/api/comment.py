@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from bs4 import BeautifulSoup
 
 def on_update(self, method):
@@ -15,13 +16,26 @@ def notify_mentions(doc):
         return
     mentions = extract_mentions(content)
     for mention in mentions:
+        owner = frappe.get_cached_value("User", doc.owner, "full_name")
+        doctype = doc.reference_doctype
+        if doctype.startswith("CRM "):
+            doctype = doctype[4:].lower()
+        notification_text = f"""
+            <div class="mb-2 leading-5 text-gray-600">
+                <span class="font-medium text-gray-900">{ owner }</span>
+                <span>{ _('mentioned you in {0}').format(doctype) }</span>
+                <span class="font-medium text-gray-900">{ doc.reference_name }</span>
+            </div>
+        """
         values = frappe._dict(
             doctype="CRM Notification",
             from_user=doc.owner,
             to_user=mention.email,
             type="Mention",
             message=doc.content,
-            comment=doc.name,
+            notification_text=notification_text,
+            notification_type_doctype="Comment",
+            notification_type_doc=doc.name,
             reference_doctype=doc.reference_doctype,
             reference_name=doc.reference_name,
         )

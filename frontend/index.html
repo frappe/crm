@@ -16,7 +16,11 @@
     <div id="modals"></div>
     <div id="popovers"></div>
 
-    <script> window.csrf_token = '{{ csrf_token }}'; </script>
+    <script>
+      {% for key in boot %}
+        window["{{ key }}"] = {{ boot[key] | tojson }};
+      {% endfor %}
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
