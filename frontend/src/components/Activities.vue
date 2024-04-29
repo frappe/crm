@@ -35,32 +35,19 @@
       </template>
       <span>{{ __('New Task') }}</span>
     </Button>
-    <Dropdown
-      v-else
-      :options="[
-        {
-          icon: h(EmailIcon, { class: 'h-4 w-4' }),
-          label: __('New Email'),
-          onClick: () => ($refs.emailBox.show = true),
-        },
-        {
-          icon: h(PhoneIcon, { class: 'h-4 w-4' }),
-          label: __('Make a Call'),
-          onClick: () => makeCall(doc.data.mobile_no),
-        },
-        {
-          icon: h(NoteIcon, { class: 'h-4 w-4' }),
-          label: __('New Note'),
-          onClick: () => showNote(),
-        },
-        {
-          icon: h(TaskIcon, { class: 'h-4 w-4' }),
-          label: __('New Task'),
-          onClick: () => showTask(),
-        },
-      ]"
-      @click.stop
-    >
+    <div class="flex gap-2" v-else-if="title == 'WhatsApp'">
+      <Button
+        :label="__('Send Template')"
+        @click="showWhatsappTemplates = true"
+      />
+      <Button variant="solid" @click="$refs.whatsappBox.show()">
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4 w-4" />
+        </template>
+        <span>{{ __('New WhatsApp Message') }}</span>
+      </Button>
+    </div>
+    <Dropdown v-else :options="defaultActions" @click.stop>
       <template v-slot="{ open }">
         <Button variant="solid" class="flex items-center gap-1">
           <template #prefix>
@@ -83,6 +70,17 @@
   >
     <LoadingIndicator class="h-6 w-6" />
     <span>{{ __('Loading...') }}</span>
+  </div>
+  <div
+    v-else-if="title == 'WhatsApp' && whatsappMessages.data?.length"
+    class="activities flex-1 overflow-y-auto"
+  >
+    <WhatsAppArea
+      class="px-10"
+      v-model="whatsappMessages"
+      v-model:reply="replyMessage"
+      :messages="whatsappMessages.data"
+    />
   </div>
   <div v-else-if="activities?.length" class="activities flex-1 overflow-y-auto">
     <div
@@ -746,6 +744,15 @@
     :doctype="doctype"
     @scroll="scroll"
   />
+  <WhatsAppBox
+    ref="whatsappBox"
+    v-if="title == 'WhatsApp'"
+    v-model="doc"
+    v-model:reply="replyMessage"
+    v-model:whatsapp="whatsappMessages"
+    :doctype="doctype"
+    @scroll="scroll"
+  />
   <NoteModal
     v-model="showNoteModal"
     v-model:reloadNotes="all_activities"
@@ -760,6 +767,11 @@
     :doctype="doctype"
     :doc="doc.data?.name"
   />
+  <WhatsappTemplateSelectorModal
+    v-if="whatsappEnabled"
+    v-model="showWhatsappTemplates"
+    @send="(t) => sendTemplate(t)"
+  />
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -768,6 +780,10 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import WhatsAppArea from '@/components/WhatsAppArea.vue'
+import WhatsAppBox from '@/components/WhatsAppBox.vue'
+import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
@@ -787,6 +803,7 @@ import AttachmentItem from '@/components/AttachmentItem.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
+import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import {
   timeAgo,
   dateFormat,
@@ -798,6 +815,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
+import { whatsappEnabled, callEnabled } from '@/stores/settings'
 import {
   Button,
   Tooltip,
@@ -808,10 +826,19 @@ import {
   call,
 } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
-import { ref, computed, h, markRaw, watch, nextTick } from 'vue'
+import {
+  ref,
+  computed,
+  h,
+  markRaw,
+  watch,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue'
 import { useRoute } from 'vue-router'
 
-const { makeCall } = globalStore()
+const { makeCall, $socket } = globalStore()
 const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
@@ -828,6 +855,7 @@ const props = defineProps({
 
 const doc = defineModel()
 const reload = defineModel('reload')
+const tabIndex = defineModel('tabIndex')
 
 const reload_email = ref(false)
 
@@ -875,6 +903,86 @@ const all_activities = createResource({
   },
 })
 
+const showWhatsappTemplates = ref(false)
+
+const whatsappMessages = createResource({
+  url: 'crm.api.whatsapp.get_whatsapp_messages',
+  cache: ['whatsapp_messages', doc.value.data.name],
+  params: {
+    reference_doctype: props.doctype,
+    reference_name: doc.value.data.name,
+  },
+  auto: true,
+  transform: (data) => sortByCreation(data),
+  onSuccess: () => nextTick(() => scroll()),
+})
+
+onBeforeUnmount(() => {
+  $socket.off('whatsapp_message')
+})
+
+onMounted(() => {
+  $socket.on('whatsapp_message', (data) => {
+    if (
+      data.reference_doctype === props.doctype &&
+      data.reference_name === doc.value.data.name
+    ) {
+      whatsappMessages.reload()
+    }
+  })
+})
+
+function sendTemplate(template) {
+  showWhatsappTemplates.value = false
+  createResource({
+    url: 'crm.api.whatsapp.send_whatsapp_template',
+    params: {
+      reference_doctype: props.doctype,
+      reference_name: doc.value.data.name,
+      to: doc.value.data.mobile_no,
+      template,
+    },
+    auto: true,
+  })
+}
+
+const replyMessage = ref({})
+
+const defaultActions = computed(() => {
+  let actions = [
+    {
+      icon: h(EmailIcon, { class: 'h-4 w-4' }),
+      label: __('New Email'),
+      onClick: () => (emailBox.value.show = true),
+    },
+    {
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      label: __('Make a Call'),
+      onClick: () => makeCall(doc.value.data.mobile_no),
+      condition: () => callEnabled.value,
+    },
+    {
+      icon: h(NoteIcon, { class: 'h-4 w-4' }),
+      label: __('New Note'),
+      onClick: () => showNote(),
+    },
+    {
+      icon: h(TaskIcon, { class: 'h-4 w-4' }),
+      label: __('New Task'),
+      onClick: () => showTask(),
+    },
+    {
+      icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
+      label: __('New WhatsApp Message'),
+      onClick: () => (tabIndex.value = 5),
+      condition: () => whatsappEnabled.value,
+    },
+  ]
+  return actions.filter((action) =>
+    action.condition ? action.condition() : true
+  )
+})
+
 function get_activities() {
   if (!all_activities.data?.versions) return []
   if (!all_activities.data?.calls.length)
@@ -901,6 +1009,7 @@ const activities = computed(() => {
     if (!all_activities.data?.notes) return []
     return sortByCreation(all_activities.data.notes)
   }
+
   activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
 
@@ -958,6 +1067,8 @@ const emptyText = computed(() => {
     text = 'No Notes'
   } else if (props.title == 'Tasks') {
     text = 'No Tasks'
+  } else if (props.title == 'WhatsApp') {
+    text = 'No WhatsApp Messages'
   }
   return text
 })
@@ -972,6 +1083,8 @@ const emptyTextIcon = computed(() => {
     icon = NoteIcon
   } else if (props.title == 'Tasks') {
     icon = TaskIcon
+  } else if (props.title == 'WhatsApp') {
+    icon = WhatsAppIcon
   }
   return h(icon, { class: 'text-gray-500' })
 })

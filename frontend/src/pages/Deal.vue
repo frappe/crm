@@ -41,6 +41,7 @@
         doctype="CRM Deal"
         :title="tab.name"
         v-model:reload="reload"
+        v-model:tabIndex="tabIndex"
         v-model="deal"
       />
     </Tabs>
@@ -68,7 +69,7 @@
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
-            <Tooltip :text="__('Make a call')">
+            <Tooltip v-if="callEnabled" :text="__('Make a call')">
               <Button class="h-7 w-7" @click="triggerCall">
                 <PhoneIcon class="h-4 w-4" />
               </Button>
@@ -293,6 +294,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
@@ -318,6 +320,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { whatsappEnabled, callEnabled } from '@/stores/settings'
 import {
   createResource,
   Dropdown,
@@ -433,33 +436,43 @@ const breadcrumbs = computed(() => {
 })
 
 const tabIndex = ref(0)
-const tabs = [
-  {
-    name: 'Activity',
-    label: __('Activity'),
-    icon: ActivityIcon,
-  },
-  {
-    name: 'Emails',
-    label: __('Emails'),
-    icon: EmailIcon,
-  },
-  {
-    name: 'Calls',
-    label: __('Calls'),
-    icon: PhoneIcon,
-  },
-  {
-    name: 'Tasks',
-    label: __('Tasks'),
-    icon: TaskIcon,
-  },
-  {
-    name: 'Notes',
-    label: __('Notes'),
-    icon: NoteIcon,
-  },
-]
+const tabs = computed(() => {
+  let tabOptions = [
+    {
+      name: 'Activity',
+      label: __('Activity'),
+      icon: ActivityIcon,
+    },
+    {
+      name: 'Emails',
+      label: __('Emails'),
+      icon: EmailIcon,
+    },
+    {
+      name: 'Calls',
+      label: __('Calls'),
+      icon: PhoneIcon,
+      condition: () => callEnabled.value,
+    },
+    {
+      name: 'Tasks',
+      label: __('Tasks'),
+      icon: TaskIcon,
+    },
+    {
+      name: 'Notes',
+      label: __('Notes'),
+      icon: NoteIcon,
+    },
+    {
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => whatsappEnabled.value,
+    },
+  ]
+  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+})
 
 const detailSections = computed(() => {
   let data = deal.data

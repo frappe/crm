@@ -46,6 +46,7 @@
         doctype="CRM Lead"
         :title="tab.name"
         v-model:reload="reload"
+        v-model:tabIndex="tabIndex"
         v-model="lead"
       />
     </Tabs>
@@ -110,7 +111,7 @@
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
-                <Tooltip :text="__('Make a call')">
+                <Tooltip v-if="callEnabled" :text="__('Make a call')">
                   <Button
                     class="h-7 w-7"
                     @click="
@@ -260,6 +261,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
@@ -285,6 +287,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { whatsappEnabled, callEnabled } from '@/stores/settings'
 import {
   createResource,
   FileUploader,
@@ -397,33 +400,44 @@ const breadcrumbs = computed(() => {
 })
 
 const tabIndex = ref(0)
-const tabs = [
-  {
-    name: 'Activity',
-    label: __('Activity'),
-    icon: ActivityIcon,
-  },
-  {
-    name: 'Emails',
-    label: __('Emails'),
-    icon: EmailIcon,
-  },
-  {
-    name: 'Calls',
-    label: __('Calls'),
-    icon: PhoneIcon,
-  },
-  {
-    name: 'Tasks',
-    label: __('Tasks'),
-    icon: TaskIcon,
-  },
-  {
-    name: 'Notes',
-    label: __('Notes'),
-    icon: NoteIcon,
-  },
-]
+
+const tabs = computed(() => {
+  let tabOptions = [
+    {
+      name: 'Activity',
+      label: __('Activity'),
+      icon: ActivityIcon,
+    },
+    {
+      name: 'Emails',
+      label: __('Emails'),
+      icon: EmailIcon,
+    },
+    {
+      name: 'Calls',
+      label: __('Calls'),
+      icon: PhoneIcon,
+      condition: () => callEnabled.value,
+    },
+    {
+      name: 'Tasks',
+      label: __('Tasks'),
+      icon: TaskIcon,
+    },
+    {
+      name: 'Notes',
+      label: __('Notes'),
+      icon: NoteIcon,
+    },
+    {
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => whatsappEnabled.value,
+    },
+  ]
+  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+})
 
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()

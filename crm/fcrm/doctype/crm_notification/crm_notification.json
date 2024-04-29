@@ -5,14 +5,20 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "notification_text",
+  "section_break_hace",
   "from_user",
   "type",
-  "reference_doctype",
-  "reference_name",
   "column_break_dduu",
   "to_user",
-  "comment",
   "read",
+  "section_break_pbvx",
+  "reference_doctype",
+  "reference_name",
+  "column_break_eant",
+  "notification_type_doctype",
+  "notification_type_doc",
+  "comment",
   "section_break_vpwa",
   "message"
  ],
@@ -28,7 +34,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Mention",
+   "options": "Mention\nWhatsApp",
    "reqd": 1
   },
   {
@@ -46,8 +52,8 @@
   {
    "fieldname": "comment",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Comment",
-   "link_filters": "[[{\"fieldname\":\"comment\",\"field_option\":\"Comment\"},\"comment_type\",\"=\",\"Comment\"]]",
    "options": "Comment"
   },
   {
@@ -63,6 +69,7 @@
   {
    "fieldname": "message",
    "fieldtype": "HTML Editor",
+   "in_list_view": 1,
    "label": "Message"
   },
   {
@@ -76,11 +83,40 @@
    "fieldtype": "Link",
    "label": "Reference Doctype",
    "options": "DocType"
+  },
+  {
+   "fieldname": "section_break_pbvx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_eant",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "notification_type_doctype",
+   "fieldtype": "Link",
+   "label": "Notification Type Doctype",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "notification_type_doc",
+   "fieldtype": "Dynamic Link",
+   "label": "Notification Type Doc",
+   "options": "notification_type_doctype"
+  },
+  {
+   "fieldname": "notification_text",
+   "fieldtype": "Text",
+   "label": "Notification Text"
+  },
+  {
+   "fieldname": "section_break_hace",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-30 01:04:27.946030",
+ "modified": "2024-04-25 16:26:07.484857",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",
