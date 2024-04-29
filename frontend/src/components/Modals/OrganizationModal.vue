@@ -35,78 +35,7 @@
               <div>{{ field.value }}</div>
             </div>
           </div>
-          <div v-else>
-            <div class="flex flex-col gap-4">
-              <FormControl
-                type="text"
-                ref="title"
-                size="md"
-                :label="__('Organization Name')"
-                variant="outline"
-                v-model="_organization.organization_name"
-                placeholder="Frappé Technologies"
-              />
-              <div class="flex gap-4">
-                <FormControl
-                  class="flex-1"
-                  type="text"
-                  size="md"
-                  :label="__('Website')"
-                  variant="outline"
-                  v-model="_organization.website"
-                  placeholder="https://example.com"
-                />
-                <FormControl
-                  class="flex-1"
-                  type="text"
-                  size="md"
-                  :label="__('Annual Revenue')"
-                  variant="outline"
-                  v-model="_organization.annual_revenue"
-                  :placeholder="__('9,999,999')"
-                />
-              </div>
-              <Link
-                class="flex-1"
-                size="md"
-                :label="__('Territory')"
-                variant="outline"
-                v-model="_organization.territory"
-                doctype="CRM Territory"
-                placeholder="India"
-              />
-              <div class="flex gap-4">
-                <FormControl
-                  class="flex-1"
-                  type="select"
-                  :options="[
-                    { label: __('1-10'), value: '1-10' },
-                    { label: __('11-50'), value: '11-50' },
-                    { label: __('51-200'), value: '51-200' },
-                    { label: __('201-500'), value: '201-500' },
-                    { label: __('501-1000'), value: '501-1000' },
-                    { label: __('1001-5000'), value: '1001-5000' },
-                    { label: __('5001-10000'), value: '5001-10000' },
-                    { label: __('10001+'), value: '10001+' },
-                  ]"
-                  size="md"
-                  :label="__('No of Employees')"
-                  variant="outline"
-                  :placeholder="__('1-10')"
-                  v-model="_organization.no_of_employees"
-                />
-                <Link
-                  class="flex-1"
-                  size="md"
-                  :label="__('Industry')"
-                  variant="outline"
-                  v-model="_organization.industry"
-                  doctype="CRM Industry"
-                  :placeholder="__('Technology')"
-                />
-              </div>
-            </div>
-          </div>
+          <Fields v-else :sections="sections" :data="_organization" />
         </div>
       </div>
       <div v-if="!detailMode" class="px-4 pb-7 pt-4 sm:px-6">
@@ -126,11 +55,11 @@
 </template>
 
 <script setup>
+import Fields from '@/components/Fields.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
-import Link from '@/components/Controls/Link.vue'
 import { call, FeatherIcon } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
@@ -289,6 +218,85 @@ const fields = computed(() => {
   ]
 
   return details.filter((field) => field.value)
+})
+
+const sections = computed(() => {
+  return [
+    {
+      section: 'Organization Name',
+      columns: 1,
+      fields: [
+        {
+          label: 'Organization Name',
+          name: 'organization_name',
+          type: 'data',
+          placeholder: 'Frappé Technologies',
+        },
+      ],
+    },
+    {
+      section: 'Website & Revenue',
+      columns: 2,
+      hideBorder: true,
+      fields: [
+        {
+          label: 'Website',
+          name: 'website',
+          type: 'data',
+          placeholder: 'https://example.com',
+        },
+        {
+          label: 'Annual Revenue',
+          name: 'annual_revenue',
+          type: 'data',
+          placeholder: '9,999,999',
+        },
+      ],
+    },
+    {
+      section: 'Territory',
+      columns: 1,
+      hideBorder: true,
+      fields: [
+        {
+          label: 'Territory',
+          name: 'territory',
+          type: 'link',
+          doctype: 'CRM Territory',
+          placeholder: 'India',
+        },
+      ],
+    },
+    {
+      section: 'No of Employees & Industry',
+      columns: 2,
+      hideBorder: true,
+      fields: [
+        {
+          label: 'No of Employees',
+          name: 'no_of_employees',
+          type: 'select',
+          options: [
+            { label: __('1-10'), value: '1-10' },
+            { label: __('11-50'), value: '11-50' },
+            { label: __('51-200'), value: '51-200' },
+            { label: __('201-500'), value: '201-500' },
+            { label: __('501-1000'), value: '501-1000' },
+            { label: __('1001-5000'), value: '1001-5000' },
+            { label: __('5001-10000'), value: '5001-10000' },
+            { label: __('10001+'), value: '10001+' },
+          ],
+        },
+        {
+          label: 'Industry',
+          name: 'industry',
+          type: 'link',
+          doctype: 'CRM Industry',
+          placeholder: 'Technology',
+        },
+      ],
+    },
+  ]
 })
 
 watch(

@@ -17,71 +17,7 @@
           <Switch v-model="chooseExistingContact" />
         </div>
       </div>
-      <div class="flex flex-col gap-4">
-        <div
-          v-for="section in allFields"
-          :key="section.section"
-          class="border-t pt-4"
-        >
-          <div class="grid grid-cols-3 gap-4">
-            <div v-for="field in section.fields" :key="field.name">
-              <div class="mb-2 text-sm text-gray-600">
-                {{ __(field.label) }}
-              </div>
-              <FormControl
-                v-if="field.type === 'select'"
-                type="select"
-                class="form-control"
-                :options="field.options"
-                v-model="deal[field.name]"
-                :placeholder="__(field.placeholder)"
-              >
-                <template v-if="field.prefix" #prefix>
-                  <IndicatorIcon :class="field.prefix" />
-                </template>
-              </FormControl>
-              <Link
-                v-else-if="field.type === 'link'"
-                class="form-control"
-                :value="deal[field.name]"
-                :doctype="field.doctype"
-                @change="(v) => (deal[field.name] = v)"
-                :placeholder="__(field.placeholder)"
-                :onCreate="field.create"
-              />
-              <Link
-                v-else-if="field.type === 'user'"
-                class="form-control"
-                :value="getUser(deal[field.name]).full_name"
-                :doctype="field.doctype"
-                @change="(v) => (deal[field.name] = v)"
-                :placeholder="__(field.placeholder)"
-                :hideMe="true"
-              >
-                <template #prefix>
-                  <UserAvatar class="mr-2" :user="deal[field.name]" size="sm" />
-                </template>
-                <template #item-prefix="{ option }">
-                  <UserAvatar class="mr-2" :user="option.value" size="sm" />
-                </template>
-                <template #item-label="{ option }">
-                  <Tooltip :text="option.value">
-                    <div class="cursor-pointer">
-                      {{ getUser(option.value).full_name }}
-                    </div>
-                  </Tooltip>
-                </template>
-              </Link>
-              <FormControl
-                v-else
-                type="text"
-                :placeholder="__(field.placeholder)"
-                v-model="deal[field.name]"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      <Fields class="border-t" :sections="sections" :data="deal" />
       <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
     </template>
     <template #actions>
@@ -98,12 +34,10 @@
 </template>
 
 <script setup>
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
-import Link from '@/components/Controls/Link.vue'
+import Fields from '@/components/Fields.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
-import { Tooltip, Switch, createResource } from 'frappe-ui'
+import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -137,7 +71,7 @@ const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 
-const allFields = computed(() => {
+const sections = computed(() => {
   let fields = []
   if (chooseExistingOrganization.value) {
     fields.push({
@@ -267,12 +201,13 @@ const allFields = computed(() => {
   }
   fields.push({
     section: 'Deal Details',
+    columns: 2,
     fields: [
       {
         label: 'Status',
         name: 'status',
         type: 'select',
-        options: statusOptions('deal', (field, value) => (deal[field] = value)),
+        options: statusOptions('deal'),
         prefix: getDealStatus(deal.status).iconColorClass,
       },
       {
@@ -328,9 +263,3 @@ onMounted(() => {
   }
 })
 </script>
-
-<style scoped>
-:deep(.form-control select) {
-  padding-left: 2rem;
-}
-</style>
