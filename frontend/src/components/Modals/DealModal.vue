@@ -323,9 +323,6 @@ function createDeal() {
 }
 
 onMounted(() => {
-  if (!deal.status) {
-    deal.status = computed(() => getDealStatus().name)
-  }
   if (!deal.deal_owner) {
     deal.deal_owner = getUser().email
   }

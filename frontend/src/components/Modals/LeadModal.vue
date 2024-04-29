@@ -291,9 +291,6 @@ function createNewLead() {
 }
 
 onMounted(() => {
-  if (!lead.status) {
-    lead.status = computed(() => getLeadStatus().name)
-  }
   if (!lead.lead_owner) {
     lead.lead_owner = getUser().email
   }
