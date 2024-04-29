@@ -7,72 +7,7 @@
     }"
   >
     <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div
-          v-for="section in allFields"
-          :key="section.section"
-          class="border-t pt-4 first:border-t-0"
-        >
-          <div class="grid grid-cols-3 gap-4">
-            <div v-for="field in section.fields" :key="field.name">
-              <div class="mb-2 text-sm text-gray-600">
-                {{ __(field.label) }}
-                <span class="text-red-500" v-if="field.mandatory">*</span>
-              </div>
-              <FormControl
-                v-if="field.type === 'select'"
-                type="select"
-                class="form-control"
-                :options="field.options"
-                v-model="lead[field.name]"
-                :placeholder="__(field.placeholder)"
-              >
-                <template v-if="field.prefix" #prefix>
-                  <IndicatorIcon :class="field.prefix" />
-                </template>
-              </FormControl>
-              <Link
-                v-else-if="field.type === 'link'"
-                class="form-control"
-                :value="lead[field.name]"
-                :doctype="field.doctype"
-                @change="(v) => (lead[field.name] = v)"
-                :placeholder="__(field.placeholder)"
-                :onCreate="field.create"
-              />
-              <Link
-                v-else-if="field.type === 'user'"
-                class="form-control"
-                :value="getUser(lead[field.name]).full_name"
-                :doctype="field.doctype"
-                @change="(v) => (lead[field.name] = v)"
-                :placeholder="__(field.placeholder)"
-                :hideMe="true"
-              >
-                <template #prefix>
-                  <UserAvatar class="mr-2" :user="lead[field.name]" size="sm" />
-                </template>
-                <template #item-prefix="{ option }">
-                  <UserAvatar class="mr-2" :user="option.value" size="sm" />
-                </template>
-                <template #item-label="{ option }">
-                  <Tooltip :text="option.value">
-                    <div class="cursor-pointer">
-                      {{ getUser(option.value).full_name }}
-                    </div>
-                  </Tooltip>
-                </template>
-              </Link>
-              <FormControl
-                v-else
-                type="text"
-                :placeholder="__(field.placeholder)"
-                v-model="lead[field.name]"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      <Fields :sections="sections" :data="lead" />
       <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
     </template>
     <template #actions>
@@ -84,12 +19,10 @@
 </template>
 
 <script setup>
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
-import Link from '@/components/Controls/Link.vue'
+import Fields from '@/components/Fields.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
-import { Tooltip, createResource } from 'frappe-ui'
+import { createResource } from 'frappe-ui'
 import { computed, onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -118,7 +51,7 @@ const lead = reactive({
   lead_owner: '',
 })
 
-const allFields = computed(() => {
+const sections = computed(() => {
   return [
     {
       section: 'Contact Details',
@@ -219,15 +152,13 @@ const allFields = computed(() => {
     },
     {
       section: 'Other Details',
+      columns: 2,
       fields: [
         {
           label: 'Status',
           name: 'status',
           type: 'select',
-          options: statusOptions(
-            'lead',
-            (field, value) => (lead[field] = value)
-          ),
+          options: statusOptions('lead'),
           prefix: getLeadStatus(lead.status).iconColorClass,
         },
         {
@@ -291,17 +222,8 @@ function createNewLead() {
 }
 
 onMounted(() => {
-  if (!lead.status) {
-    lead.status = computed(() => getLeadStatus().name)
-  }
   if (!lead.lead_owner) {
     lead.lead_owner = getUser().email
   }
 })
 </script>
-
-<style scoped>
-:deep(.form-control select) {
-  padding-left: 2rem;
-}
-</style>

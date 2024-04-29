@@ -57,82 +57,7 @@
               <div v-else>{{ field.value }}</div>
             </div>
           </div>
-          <div class="flex flex-col gap-4" v-else>
-            <div class="flex gap-4" v-for="(section, i) in sections" :key="i">
-              <div v-for="(field, j) in section.fields" :key="j" class="flex-1">
-                <Link
-                  v-if="field.type === 'link'"
-                  variant="outline"
-                  size="md"
-                  :label="__(field.label)"
-                  v-model="_contact[field.name]"
-                  :doctype="field.doctype"
-                  :placeholder="field.placeholder"
-                />
-                <div class="space-y-1.5" v-if="field.type === 'dropdown'">
-                  <label class="block text-base text-gray-600">
-                    {{ __(field.label) }}
-                  </label>
-                  <NestedPopover>
-                    <template #target="{ open }">
-                      <Button
-                        :label="_contact[field.name]"
-                        class="dropdown-button h-8 w-full justify-between truncate rounded border border-gray-300 bg-white px-2.5 py-1.5 text-base placeholder-gray-500 hover:border-gray-400 hover:bg-white hover:shadow-sm focus:border-gray-500 focus:bg-white focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400"
-                      >
-                        <div class="truncate">{{ _contact[field.name] }}</div>
-                        <template #suffix>
-                          <FeatherIcon
-                            :name="open ? 'chevron-up' : 'chevron-down'"
-                            class="h-4 text-gray-600"
-                          />
-                        </template>
-                      </Button>
-                    </template>
-                    <template #body>
-                      <div
-                        class="my-2 space-y-1.5 divide-y rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl"
-                      >
-                        <div>
-                          <DropdownItem
-                            v-if="field.options?.length"
-                            v-for="option in field.options"
-                            :key="option.name"
-                            :option="option"
-                          />
-                          <div v-else>
-                            <div class="p-1.5 px-7 text-base text-gray-500">
-                              {{ __('No {0} Available', [field.label]) }}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="pt-1.5">
-                          <Button
-                            variant="ghost"
-                            class="w-full !justify-start"
-                            :label="__('Create New')"
-                            @click="field.create()"
-                          >
-                            <template #prefix>
-                              <FeatherIcon name="plus" class="h-4" />
-                            </template>
-                          </Button>
-                        </div>
-                      </div>
-                    </template>
-                  </NestedPopover>
-                </div>
-                <FormControl
-                  v-else-if="field.type === 'data'"
-                  variant="outline"
-                  size="md"
-                  type="text"
-                  :label="__(field.label)"
-                  :placeholder="field.placeholder"
-                  v-model="_contact[field.name]"
-                />
-              </div>
-            </div>
-          </div>
+          <Fields v-else :sections="sections" :data="_contact" />
         </div>
       </div>
       <div v-if="!detailMode" class="px-4 pb-7 pt-4 sm:px-6">
@@ -152,8 +77,7 @@
 </template>
 
 <script setup>
-import NestedPopover from '@/components/NestedPopover.vue'
-import DropdownItem from '@/components/DropdownItem.vue'
+import Fields from '@/components/Fields.vue'
 import ContactIcon from '@/components/Icons/ContactIcon.vue'
 import GenderIcon from '@/components/Icons/GenderIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
@@ -162,9 +86,8 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import AddressIcon from '@/components/Icons/AddressIcon.vue'
 import CertificateIcon from '@/components/Icons/CertificateIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Link from '@/components/Controls/Link.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
-import { Tooltip, call } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { createToast } from '@/utils'
 import { useRouter } from 'vue-router'
@@ -219,9 +142,9 @@ async function callInsertDoc() {
     delete _contact.value.email_id
   }
 
-  if (_contact.value.mobile_no) {
-    _contact.value.phone_nos = [{ phone: _contact.value.mobile_no }]
-    delete _contact.value.mobile_no
+  if (_contact.value.actual_mobile_no) {
+    _contact.value.phone_nos = [{ phone: _contact.value.actual_mobile_no }]
+    delete _contact.value.actual_mobile_no
   }
 
   const doc = await call('frappe.client.insert', {
@@ -310,39 +233,48 @@ const detailFields = computed(() => {
 const sections = computed(() => {
   return [
     {
+      section: 'Salutation',
+      columns: 1,
       fields: [
         {
           label: 'Salutation',
-          type: 'link',
           name: 'salutation',
-          placeholder: 'Mr./Mrs./Ms...',
+          type: 'link',
+          placeholder: 'Mr',
           doctype: 'Salutation',
-          change: (value) => {
-            _contact.value.salutation = value
-          },
         },
       ],
     },
     {
+      section: 'Full Name',
+      columns: 2,
+      hideBorder: true,
       fields: [
         {
           label: 'First Name',
-          type: 'data',
           name: 'first_name',
+          type: 'data',
+          mandatory: true,
+          placeholder: 'John',
         },
         {
           label: 'Last Name',
-          type: 'data',
           name: 'last_name',
+          type: 'data',
+          placeholder: 'Doe',
         },
       ],
     },
     {
+      section: 'Email',
+      columns: 1,
+      hideBorder: true,
       fields: [
         {
           label: 'Email',
-          type: props.contact?.data?.name ? 'dropdown' : 'data',
           name: 'email_id',
+          type: props.contact?.data?.name ? 'dropdown' : 'data',
+          placeholder: 'john@doe.com',
           options:
             props.contact.data?.email_ids?.map((email) => {
               return {
@@ -395,11 +327,15 @@ const sections = computed(() => {
       ],
     },
     {
+      section: 'Mobile No. & Gender',
+      columns: 2,
+      hideBorder: true,
       fields: [
         {
           label: 'Mobile No.',
-          type: props.contact?.data?.name ? 'dropdown' : 'data',
           name: 'actual_mobile_no',
+          type: props.contact?.data?.name ? 'dropdown' : 'data',
+          placeholder: '+91 9876543210',
           options:
             props.contact.data?.phone_nos?.map((phone) => {
               return {
@@ -452,56 +388,37 @@ const sections = computed(() => {
         },
         {
           label: 'Gender',
-          type: 'link',
           name: 'gender',
-          placeholder: 'Select Gender',
+          type: 'link',
           doctype: 'Gender',
-          change: (value) => {
-            _contact.value.gender = value
-          },
+          placeholder: 'Male',
         },
       ],
     },
     {
+      section: 'Organization',
+      columns: 1,
+      hideBorder: true,
       fields: [
         {
           label: 'Organization',
-          type: 'link',
           name: 'company_name',
-          placeholder: 'Select Organization',
+          type: 'link',
           doctype: 'CRM Organization',
-          change: (value) => {
-            _contact.value.company_name = value
-          },
-          link: (data) => {
-            router.push({
-              name: 'Organization',
-              params: { organizationId: data },
-            })
-          },
+          placeholder: 'Frappé Technologies',
         },
       ],
     },
     {
+      section: 'Designation',
+      columns: 1,
+      hideBorder: true,
       fields: [
         {
           label: 'Designation',
-          type: 'data',
           name: 'designation',
-        },
-      ],
-    },
-    {
-      fields: [
-        {
-          label: 'Address',
-          type: 'link',
-          name: 'address',
-          placeholder: 'Select Address',
-          doctype: 'Address',
-          change: (value) => {
-            _contact.value.address = value
-          },
+          type: 'data',
+          placeholder: 'CEO',
         },
       ],
     },

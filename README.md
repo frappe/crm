@@ -37,7 +37,11 @@
 -   **Tasks:** Create tasks for leads and deals.
 -   **Notes:** Add notes to leads and deals.
 -   **Call Logs:** See the call logs with call details and recordings.
--   **Twilio Integration:** Integrate Twilio to make and receive calls from the CRM.
+
+## Integrations
+
+-   **Twilio:** Integrate Twilio to make and receive calls from the CRM. You can also record calls. It is a built-in integration.
+-   **WhatsApp:** Integrate WhatsApp to send and receive messages from the CRM. [Frappe WhatsApp](https://github.com/shridarpatil/frappe_whatsapp) is used for this integration.
 
 ## Getting Started
 
