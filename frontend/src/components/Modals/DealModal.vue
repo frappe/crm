@@ -17,7 +17,7 @@
           <Switch v-model="chooseExistingContact" />
         </div>
       </div>
-      <Fields class="border-t" :sections="sections" :data="deal" />
+      <Fields class="border-t pt-4" :sections="sections" :data="deal" />
       <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
     </template>
     <template #actions>
