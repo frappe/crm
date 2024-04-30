@@ -97,6 +97,7 @@ export const statusesStore = defineStore('crm-statuses', () => {
     for (const status in statusesByName) {
       options.push({
         label: statusesByName[status].name,
+        value: statusesByName[status].name,
         icon: () =>
           h(IndicatorIcon, {
             class: statusesByName[status].iconColorClass,

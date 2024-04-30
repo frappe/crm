@@ -12,7 +12,12 @@
     </template>
     <template #actions>
       <div class="flex flex-row-reverse gap-2">
-        <Button variant="solid" :label="__('Save')" @click="createNewLead" />
+        <Button
+          variant="solid"
+          :label="__('Create')"
+          :loading="isLeadCreating"
+          @click="createNewLead"
+        />
       </div>
     </template>
   </Dialog>
@@ -158,7 +163,7 @@ const sections = computed(() => {
           label: 'Status',
           name: 'status',
           type: 'select',
-          options: statusOptions('lead'),
+          options: leadStatuses.value,
           prefix: getLeadStatus(lead.status).iconColorClass,
         },
         {
@@ -183,6 +188,14 @@ const createLead = createResource({
       },
     }
   },
+})
+
+const leadStatuses = computed(() => {
+  let statuses = statusOptions('lead')
+  if (!lead.status) {
+    lead.status = statuses[0].value
+  }
+  return statuses
 })
 
 function createNewLead() {
