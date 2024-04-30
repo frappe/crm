@@ -185,13 +185,19 @@ async function sendMail() {
 }
 
 async function sendComment() {
-  await call('frappe.desk.form.utils.add_comment', {
+  let comment = await call('frappe.desk.form.utils.add_comment', {
     reference_doctype: props.doctype,
     reference_name: doc.value.data.name,
     content: newComment.value,
     comment_email: getUser().name,
     comment_by: getUser()?.full_name || undefined,
   })
+  if (comment && attachments.value.length) {
+    await call('crm.api.comment.add_attachments', {
+      name: comment.name,
+      attachments: attachments.value.map((x) => x.name),
+    })
+  }
 }
 
 async function submitEmail() {
