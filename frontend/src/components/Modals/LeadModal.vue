@@ -12,7 +12,12 @@
     </template>
     <template #actions>
       <div class="flex flex-row-reverse gap-2">
-        <Button variant="solid" :label="__('Save')" @click="createNewLead" />
+        <Button
+          variant="solid"
+          :label="__('Create')"
+          :loading="isLeadCreating"
+          @click="createNewLead"
+        />
       </div>
     </template>
   </Dialog>
