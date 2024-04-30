@@ -158,7 +158,7 @@ const sections = computed(() => {
           label: 'Status',
           name: 'status',
           type: 'select',
-          options: statusOptions('lead'),
+          options: leadStatuses.value,
           prefix: getLeadStatus(lead.status).iconColorClass,
         },
         {
@@ -183,6 +183,14 @@ const createLead = createResource({
       },
     }
   },
+})
+
+const leadStatuses = computed(() => {
+  let statuses = statusOptions('lead')
+  if (!lead.status) {
+    lead.status = statuses[0].value
+  }
+  return statuses
 })
 
 function createNewLead() {
