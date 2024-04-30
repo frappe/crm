@@ -23,10 +23,7 @@
         v-slot="{ idx, column, item }"
         :row="row"
       >
-        <ListRowItem
-          :item="item"
-          @click="(event) => emit('applyFilter', { event, idx, column, item })"
-        >
+        <ListRowItem :item="item">
           <template #prefix>
             <div v-if="column.key === 'full_name'">
               <Avatar
@@ -50,22 +47,36 @@
               <PhoneIcon class="h-4 w-4" />
             </div>
           </template>
-          <div
-            v-if="['modified', 'creation'].includes(column.key)"
-            class="truncate text-base"
-          >
-            <Tooltip :text="item.label">
-              <div>{{ item.timeAgo }}</div>
-            </Tooltip>
-          </div>
-          <div v-else-if="column.type === 'Check'">
-            <FormControl
-              type="checkbox"
-              :modelValue="item"
-              :disabled="true"
-              class="text-gray-900"
-            />
-          </div>
+          <template #default="{ label }">
+            <div
+              v-if="['modified', 'creation'].includes(column.key)"
+              class="truncate text-base"
+              @click="
+                (event) => emit('applyFilter', { event, idx, column, item })
+              "
+            >
+              <Tooltip :text="item.label">
+                <div>{{ item.timeAgo }}</div>
+              </Tooltip>
+            </div>
+            <div v-else-if="column.type === 'Check'">
+              <FormControl
+                type="checkbox"
+                :modelValue="item"
+                :disabled="true"
+                class="text-gray-900"
+              />
+            </div>
+            <div
+              v-else
+              class="truncate text-base"
+              @click="
+                (event) => emit('applyFilter', { event, idx, column, item })
+              "
+            >
+              {{ label }}
+            </div>
+          </template>
         </ListRowItem>
       </ListRow>
     </ListRows>

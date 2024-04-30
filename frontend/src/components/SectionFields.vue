@@ -6,10 +6,12 @@
       :class="[field.hidden && 'hidden']"
       class="flex items-center gap-2 px-3 leading-5 first:mt-3"
     >
-      <div class="w-[106px] shrink-0 text-sm text-gray-600">
-        {{ __(field.label) }}
-        <span class="text-red-500">{{ field.reqd ? ' *' : '' }}</span>
-      </div>
+      <Tooltip :text="__(field.label)" hoverDelay="1">
+        <div class="w-[106px] shrink-0 truncate text-sm text-gray-600">
+          <span>{{ __(field.label) }}</span>
+          <span class="text-red-500">{{ field.reqd ? ' *' : '' }}</span>
+        </div>
+      </Tooltip>
       <div
         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
       >

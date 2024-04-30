@@ -29,11 +29,7 @@
             </div>
           </Tooltip>
         </div>
-        <ListRowItem
-          v-else
-          :item="item"
-          @click="(event) => emit('applyFilter', { event, idx, column, item })"
-        >
+        <ListRowItem v-else :item="item">
           <template #prefix>
             <div v-if="column.key === 'status'">
               <TaskStatusIcon :status="item" />
@@ -51,22 +47,36 @@
               />
             </div>
           </template>
-          <div
-            v-if="['modified', 'creation'].includes(column.key)"
-            class="truncate text-base"
-          >
-            <Tooltip :text="item.label">
-              <div>{{ item.timeAgo }}</div>
-            </Tooltip>
-          </div>
-          <div v-else-if="column.type === 'Check'">
-            <FormControl
-              type="checkbox"
-              :modelValue="item"
-              :disabled="true"
-              class="text-gray-900"
-            />
-          </div>
+          <template #default="{ label }">
+            <div
+              v-if="['modified', 'creation'].includes(column.key)"
+              class="truncate text-base"
+              @click="
+                (event) => emit('applyFilter', { event, idx, column, item })
+              "
+            >
+              <Tooltip :text="item.label">
+                <div>{{ item.timeAgo }}</div>
+              </Tooltip>
+            </div>
+            <div v-else-if="column.type === 'Check'">
+              <FormControl
+                type="checkbox"
+                :modelValue="item"
+                :disabled="true"
+                class="text-gray-900"
+              />
+            </div>
+            <div
+              v-else
+              class="truncate text-base"
+              @click="
+                (event) => emit('applyFilter', { event, idx, column, item })
+              "
+            >
+              {{ label }}
+            </div>
+          </template>
         </ListRowItem>
       </ListRow>
     </ListRows>
@@ -177,7 +187,9 @@ function editValues(selections, unselectAll) {
 function deleteValues(selections, unselectAll) {
   $dialog({
     title: __('Delete'),
-    message: __('Are you sure you want to delete {0} item(s)?'),
+    message: __('Are you sure you want to delete {0} item(s)?', [
+      selections.size,
+    ]),
     variant: 'danger',
     actions: [
       {
