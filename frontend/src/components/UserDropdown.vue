@@ -67,14 +67,36 @@ const user = computed(() => getUser() || {})
 
 let dropdownOptions = ref([
   {
-    icon: 'corner-up-left',
-    label: computed(() => __('Switch to Desk')),
-    onClick: () => window.location.replace('/app'),
+    group: 'Manage',
+    hideLabel: true,
+    items: [
+      {
+        icon: 'corner-up-left',
+        label: computed(() => __('Switch to Desk')),
+        onClick: () => window.location.replace('/app'),
+      },
+      {
+        icon: 'life-buoy',
+        label: computed(() => __('Support')),
+        onClick: () => window.open('https://t.me/frappecrm', '_blank'),
+      },
+      {
+        icon: 'book-open',
+        label: computed(() => __('Docs')),
+        onClick: () => window.open('https://docs.frappe.io/crm', '_blank'),
+      },
+    ],
   },
   {
-    icon: 'log-out',
-    label: computed(() => __('Log out')),
-    onClick: () => logout.submit(),
+    group: 'Logout',
+    hideLabel: true,
+    items: [
+      {
+        icon: 'log-out',
+        label: computed(() => __('Log out')),
+        onClick: () => logout.submit(),
+      },
+    ],
   },
 ])
 </script>
