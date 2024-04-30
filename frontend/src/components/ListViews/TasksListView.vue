@@ -177,7 +177,9 @@ function editValues(selections, unselectAll) {
 function deleteValues(selections, unselectAll) {
   $dialog({
     title: __('Delete'),
-    message: __('Are you sure you want to delete {0} item(s)?'),
+    message: __('Are you sure you want to delete {0} item(s)?', [
+      selections.size,
+    ]),
     variant: 'danger',
     actions: [
       {
