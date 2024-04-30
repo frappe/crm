@@ -207,7 +207,7 @@ const sections = computed(() => {
         label: 'Status',
         name: 'status',
         type: 'select',
-        options: statusOptions('deal'),
+        options: dealStatuses.value,
         prefix: getDealStatus(deal.status).iconColorClass,
       },
       {
@@ -220,6 +220,14 @@ const sections = computed(() => {
     ],
   })
   return fields
+})
+
+const dealStatuses = computed(() => {
+  let statuses = statusOptions('deal')
+  if (!deal.status) {
+    deal.status = statuses[0].value
+  }
+  return statuses
 })
 
 function createDeal() {
