@@ -69,6 +69,10 @@ class CRMCallLog(Document):
 				"duration",
 				"from",
 				"to",
+				"note",
+				"recording_url",
+				"reference_doctype",
+				"reference_docname",
 				"creation",
 			]
 			return {'columns': columns, 'rows': rows}
