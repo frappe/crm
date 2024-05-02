@@ -42,8 +42,8 @@
           <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
             {{ field.value }}
           </Tooltip>
-          <div v-else-if="field.name == 'recording_url'">
-            <audio class="audio-control" controls :src="field.value"></audio>
+          <div class="w-full" v-else-if="field.name == 'recording_url'">
+            <audio class="audio-control w-full" controls :src="field.value"></audio>
           </div>
           <div v-else :class="field.color ? `text-${field.color}-600` : ''">
             {{ field.value }}
@@ -140,8 +140,8 @@ const detailFields = computed(() => {
     },
     {
       icon: h(FeatherIcon, {
-        name: 'play',
-        class: 'h-3.5 w-3.5',
+        name: 'play-circle',
+        class: 'h-4 w-4',
       }),
       name: 'recording_url',
       value: props.callLog.recording_url,
@@ -175,8 +175,12 @@ async function updateNote(_note) {
   height: 40px;
   outline: none;
   border-radius: 10px;
-  border: 1px solid gray;
   cursor: pointer;
+  background-color: rgb(237, 237, 237);
+}
+
+audio::-webkit-media-controls-panel {
+  background-color: rgb(237, 237, 237) !important;
 }
 
 .audio-control::-webkit-media-controls-panel {
