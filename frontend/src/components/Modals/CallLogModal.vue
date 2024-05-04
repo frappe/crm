@@ -78,6 +78,17 @@
         </div>
       </div>
     </template>
+    <template
+      v-if="callLog.type.label == 'Incoming' && !callLog.reference_docname"
+      #actions
+    >
+      <Button
+        class="w-full"
+        variant="solid"
+        :label="__('Create lead')"
+        @click="createLead"
+      />
+    </template>
   </Dialog>
   <NoteModal v-model="showNoteModal" :note="callNoteDoc?.doc" />
 </template>
@@ -92,7 +103,7 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
-import { FeatherIcon, Avatar, Tooltip, createDocumentResource } from 'frappe-ui'
+import { FeatherIcon, Avatar, Tooltip, createDocumentResource, call } from 'frappe-ui'
 import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -179,6 +190,16 @@ const detailFields = computed(() => {
 
   return details.filter((detail) => detail.value)
 })
+
+function createLead() {
+  call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
+    call_log: props.callLog,
+  }).then((d) => {
+    if (d) {
+      router.push({ name: 'Lead', params: { leadId: d } })
+    }
+  })
+}
 
 watch(show, (val) => {
   if (val) {
