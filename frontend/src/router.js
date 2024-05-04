@@ -73,12 +73,6 @@ const routes = [
     meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
-    path: '/call-logs/:callLogId',
-    name: 'Call Log',
-    component: () => import('@/pages/CallLog.vue'),
-    props: true,
-  },
-  {
     path: '/email-templates',
     name: 'Email Templates',
     component: () => import('@/pages/EmailTemplates.vue'),

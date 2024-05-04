@@ -3,10 +3,7 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      getRowRoute: (row) => ({
-        name: 'Call Log',
-        params: { callLogId: row.name },
-      }),
+      onRowClick: (row) => emit('showCallLog', row.name),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
       resizeColumn: options.resizeColumn,
