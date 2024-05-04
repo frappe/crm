@@ -12,52 +12,74 @@
         <div
           v-for="field in detailFields"
           :key="field.name"
-          class="flex h-7 items-center gap-2 text-base text-gray-800"
+          class="flex gap-2 text-base text-gray-800"
         >
-          <div class="grid w-7 place-content-center">
+          <div class="grid size-7 place-content-center">
             <component :is="field.icon" />
           </div>
-          <div v-if="field.name == 'receiver'" class="flex items-center gap-1">
-            <Avatar
-              :image="field.value.caller.image"
-              :label="field.value.caller.label"
-              size="sm"
-            />
-            <div class="ml-1 flex flex-col gap-1">
-              {{ field.value.caller.label }}
+          <div class="flex min-h-7 w-full items-center gap-2">
+            <div
+              v-if="field.name == 'receiver'"
+              class="flex items-center gap-1"
+            >
+              <Avatar
+                :image="field.value.caller.image"
+                :label="field.value.caller.label"
+                size="sm"
+              />
+              <div class="ml-1 flex flex-col gap-1">
+                {{ field.value.caller.label }}
+              </div>
+              <FeatherIcon
+                name="arrow-right"
+                class="mx-1 h-4 w-4 text-gray-600"
+              />
+              <Avatar
+                :image="field.value.receiver.image"
+                :label="field.value.receiver.label"
+                size="sm"
+              />
+              <div class="ml-1 flex flex-col gap-1">
+                {{ field.value.receiver.label }}
+              </div>
             </div>
-            <FeatherIcon
-              name="arrow-right"
-              class="mx-1 h-4 w-4 text-gray-600"
-            />
-            <Avatar
-              :image="field.value.receiver.image"
-              :label="field.value.receiver.label"
-              size="sm"
-            />
-            <div class="ml-1 flex flex-col gap-1">
-              {{ field.value.receiver.label }}
+            <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
+              {{ field.value }}
+            </Tooltip>
+            <div class="w-full" v-else-if="field.name == 'recording_url'">
+              <audio
+                class="audio-control w-full"
+                controls
+                :src="field.value"
+              ></audio>
             </div>
-          </div>
-          <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
-            {{ field.value }}
-          </Tooltip>
-          <div class="w-full" v-else-if="field.name == 'recording_url'">
-            <audio class="audio-control w-full" controls :src="field.value"></audio>
-          </div>
-          <div v-else :class="field.color ? `text-${field.color}-600` : ''">
-            {{ field.value }}
-          </div>
-          <div v-if="field.link">
-            <ArrowUpRightIcon
-              class="h-4 w-4 shrink-0 cursor-pointer text-gray-600 hover:text-gray-800"
-              @click="() => field.link()"
-            />
+            <div
+              class="max-h-30 min-h-16 w-full cursor-pointer overflow-hidden rounded border px-2 py-1.5 text-base text-gray-700"
+              v-else-if="field.name == 'note'"
+              @click="() => (showNoteModal = true)"
+            >
+              <div
+                v-if="field.value?.title"
+                :class="[field.value?.content ? 'mb-1 font-bold' : '']"
+                v-html="field.value?.title"
+              />
+              <div v-if="field.value?.content" v-html="field.value?.content" />
+            </div>
+            <div v-else :class="field.color ? `text-${field.color}-600` : ''">
+              {{ field.value }}
+            </div>
+            <div v-if="field.link">
+              <ArrowUpRightIcon
+                class="h-4 w-4 shrink-0 cursor-pointer text-gray-600 hover:text-gray-800"
+                @click="() => field.link()"
+              />
+            </div>
           </div>
         </div>
       </div>
     </template>
   </Dialog>
+  <NoteModal v-model="showNoteModal" :note="callNoteDoc?.doc" />
 </template>
 
 <script setup>
@@ -69,9 +91,9 @@ import Dealsicon from '@/components/Icons/DealsIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
-// import NoteModal from '@/components/Modals/NoteModal.vue'
-import { FeatherIcon, Avatar, Tooltip, createResource } from 'frappe-ui'
-import { ref, computed, h } from 'vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
+import { FeatherIcon, Avatar, Tooltip, createDocumentResource } from 'frappe-ui'
+import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -82,7 +104,9 @@ const props = defineProps({
 })
 
 const show = defineModel()
+const showNoteModal = ref(false)
 const router = useRouter()
+const callNoteDoc = ref(null)
 
 const detailFields = computed(() => {
   let details = [
@@ -141,7 +165,7 @@ const detailFields = computed(() => {
     {
       icon: h(FeatherIcon, {
         name: 'play-circle',
-        class: 'h-4 w-4',
+        class: 'h-4 w-4 mt-2',
       }),
       name: 'recording_url',
       value: props.callLog.recording_url,
@@ -149,30 +173,29 @@ const detailFields = computed(() => {
     {
       icon: NoteIcon,
       name: 'note',
-      value: props.callLog.note,
+      value: callNoteDoc.value?.doc,
     },
   ]
 
   return details.filter((detail) => detail.value)
 })
 
-async function updateNote(_note) {
-  if (_note.title || _note.content) {
-    let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Note',
-      name: _callLog.data?.note,
-      fieldname: _note,
+watch(show, (val) => {
+  if (val) {
+    callNoteDoc.value = createDocumentResource({
+      doctype: 'FCRM Note',
+      name: props.callLog.note,
+      fields: ['title', 'content'],
+      cache: ['note', props.callLog.note],
+      auto: true,
     })
-    if (d.name) {
-      _callLog.reload()
-    }
   }
-}
+})
 </script>
 
 <style scoped>
 .audio-control {
-  height: 40px;
+  height: 36px;
   outline: none;
   border-radius: 10px;
   cursor: pointer;
