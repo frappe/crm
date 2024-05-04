@@ -475,8 +475,11 @@
           <div
             class="cursor-pointer rounded bg-gray-50 px-4 py-3 text-base leading-6 transition-all duration-300 ease-in-out"
           >
-            <div v-html="activity.content" />
-            <div v-if="activity.attachments.length" class="flex flex-wrap gap-2 mt-2">
+            <div class="prose-f" v-html="activity.content" />
+            <div
+              v-if="activity.attachments.length"
+              class="mt-2 flex flex-wrap gap-2"
+            >
               <AttachmentItem
                 v-for="a in activity.attachments"
                 :key="a.file_url"
