@@ -31,6 +31,7 @@
       rowCount: callLogs.data.row_count,
       totalCount: callLogs.data.total_count,
     }"
+    @showCallLog="showCallLog"
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
@@ -47,6 +48,11 @@
       <span>{{ __('No Logs Found') }}</span>
     </div>
   </div>
+  <CallLogModal
+    v-model="showCallLogModal"
+    v-model:reloadCallLogs="callLogs"
+    :callLog="callLog"
+  />
 </template>
 
 <script setup>
@@ -55,6 +61,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import CallLogsListView from '@/components/ListViews/CallLogsListView.vue'
+import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import {
   secondsToDuration,
   dateFormat,
@@ -138,6 +145,44 @@ const rows = computed(() => {
     return _rows
   })
 })
+
+const showCallLogModal = ref(false)
+
+const callLog = ref({
+  name: '',
+  caller: '',
+  receiver: '',
+  duration: '',
+  type: '',
+  status: '',
+  from: '',
+  to: '',
+  note: '',
+  recording_url: '',
+  reference_doctype: '',
+  reference_docname: '',
+  creation: '',
+})
+
+function showCallLog(name) {
+  let d = rows.value?.find((row) => row.name === name)
+  callLog.value = {
+    name: d.name,
+    caller: d.caller,
+    receiver: d.receiver,
+    duration: d.duration,
+    type: d.type,
+    status: d.status,
+    from: d.from,
+    to: d.to,
+    note: d.note,
+    recording_url: d.recording_url,
+    reference_doctype: d.reference_doctype,
+    reference_docname: d.reference_docname,
+    creation: d.creation,
+  }
+  showCallLogModal.value = true
+}
 
 const statusLabelMap = {
   Completed: 'Completed',

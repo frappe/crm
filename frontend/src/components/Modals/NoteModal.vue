@@ -149,7 +149,7 @@ watch(
     nextTick(() => {
       title.value.el.focus()
       _note.value = { ...props.note }
-      if (_note.value.title) {
+      if (_note.value.title || _note.value.content) {
         editMode.value = true
       }
     })
