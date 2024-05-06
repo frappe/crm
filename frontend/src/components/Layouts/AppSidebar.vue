@@ -1,7 +1,7 @@
 <template>
   <div
     class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
-    :class="isSidebarCollapsed ? 'w-12' : 'w-56'"
+    :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
   >
     <div>
       <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
