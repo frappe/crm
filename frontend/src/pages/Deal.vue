@@ -199,12 +199,11 @@
                           </div>
                           <div class="flex items-center">
                             <Dropdown :options="contactOptions(contact.name)">
-                              <Button variant="ghost">
-                                <FeatherIcon
-                                  name="more-horizontal"
-                                  class="h-4 text-gray-600"
-                                />
-                              </Button>
+                              <Button
+                                icon="more-horizontal"
+                                class="text-gray-600"
+                                variant="ghost"
+                              />
                             </Dropdown>
                             <Button
                               variant="ghost"
