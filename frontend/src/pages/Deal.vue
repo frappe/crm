@@ -139,13 +139,10 @@
                     <template #target="{ togglePopover }">
                       <Button
                         class="h-7 px-3"
-                        :label="__('Add Contact')"
+                        variant="ghost"
+                        icon="plus"
                         @click="togglePopover()"
-                      >
-                        <template #prefix>
-                          <FeatherIcon name="plus" class="h-4" />
-                        </template>
-                      </Button>
+                      />
                     </template>
                   </Link>
                 </div>
