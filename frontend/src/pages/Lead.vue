@@ -52,9 +52,10 @@
     </Tabs>
     <div class="flex w-[352px] flex-col justify-between border-l">
       <div
-        class="flex h-10.5 items-center border-b px-5 py-2.5 text-lg font-semibold"
+        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-semibold"
+        @click="copyToClipboard(lead.data.name)"
       >
-        {{ __('About this Lead') }}
+        {{ __(lead.data.name) }}
       </div>
       <FileUploader
         @success="(file) => updateField('image', file.file_url)"
@@ -282,6 +283,7 @@ import {
   setupAssignees,
   setupCustomActions,
   errorMessage,
+  copyToClipboard,
 } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'

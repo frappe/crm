@@ -47,9 +47,10 @@
     </Tabs>
     <div class="flex w-[352px] flex-col justify-between border-l">
       <div
-        class="flex h-10.5 items-center border-b px-5 py-2.5 text-lg font-semibold"
+        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-semibold"
+        @click="copyToClipboard(deal.data.name)"
       >
-        {{ __('About this Deal') }}
+        {{ __(deal.data.name) }}
       </div>
       <div class="flex items-center justify-start gap-5 border-b p-5">
         <Tooltip :text="__('Organization logo')">
@@ -316,6 +317,7 @@ import {
   setupAssignees,
   setupCustomActions,
   errorMessage,
+  copyToClipboard,
 } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
