@@ -1,6 +1,6 @@
 <template>
-  <div class="flex items-center justify-between px-10 py-5 text-lg font-medium">
-    <div class="flex h-7 items-center text-xl font-semibold text-gray-800">
+  <div class="flex items-center justify-between mx-10 mt-8 mb-4 text-lg font-medium">
+    <div class="flex h-8 items-center text-xl font-semibold text-gray-800">
       {{ __(title) }}
     </div>
     <Button
@@ -240,7 +240,7 @@
             :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
           >
             <div
-              class="z-10 mt-[15px] flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
+              class="z-10 mt-[15px] flex h-7 w-7 items-center justify-center rounded bg-gray-100"
             >
               <component
                 :is="
@@ -348,7 +348,7 @@
           ]"
         >
           <div
-            class="z-10 flex h-7 w-7 items-center justify-center rounded-full bg-gray-100"
+            class="z-10 flex h-7 w-7 items-center justify-center rounded bg-gray-100"
             :class="{
               'mt-3': [
                 'communication',
@@ -364,7 +364,7 @@
               :is="activity.icon"
               :class="
                 ['added', 'removed', 'changed'].includes(activity.activity_type)
-                  ? 'text-gray-600'
+                  ? 'text-gray-500'
                   : 'text-gray-800'
               "
             />
