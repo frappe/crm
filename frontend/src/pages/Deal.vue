@@ -45,7 +45,7 @@
         v-model="deal"
       />
     </Tabs>
-    <div class="flex w-[352px] flex-col justify-between border-l">
+    <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
         class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
         @click="copyToClipboard(deal.data.name)"
@@ -256,7 +256,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </Resizer>
   </div>
   <OrganizationModal
     v-model="showOrganizationModal"
@@ -285,6 +285,7 @@
   />
 </template>
 <script setup>
+import Resizer from '@/components/Resizer.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'

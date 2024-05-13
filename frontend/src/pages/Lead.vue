@@ -50,7 +50,7 @@
         v-model="lead"
       />
     </Tabs>
-    <div class="flex w-[352px] flex-col justify-between border-l">
+    <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
         class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
         @click="copyToClipboard(lead.data.name)"
@@ -181,7 +181,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </Resizer>
   </div>
   <AssignmentModal
     v-if="lead.data"
@@ -257,6 +257,7 @@
   </Dialog>
 </template>
 <script setup>
+import Resizer from '@/components/Resizer.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
