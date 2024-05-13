@@ -63,10 +63,10 @@
       >
         <template #default="{ openFileSelector, error }">
           <div class="flex items-center justify-start gap-5 border-b p-5">
-            <div class="group relative h-[88px] w-[88px]">
+            <div class="group relative size-12">
               <Avatar
                 size="3xl"
-                class="h-[88px] w-[88px]"
+                class="size-12"
                 :label="lead.data.first_name"
                 :image="lead.data.image"
               />
@@ -95,13 +95,13 @@
                 class="!absolute bottom-0 left-0 right-0"
               >
                 <div
-                  class="z-1 absolute bottom-0 left-0 right-0 flex h-13 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                  class="z-1 absolute bottom-0 left-0 right-0 flex h-9 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
                   style="
                     -webkit-clip-path: inset(12px 0 0 0);
                     clip-path: inset(12px 0 0 0);
                   "
                 >
-                  <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
+                  <CameraIcon class="size-4 cursor-pointer text-white" />
                 </div>
               </component>
             </div>

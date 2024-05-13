@@ -54,10 +54,10 @@
       </div>
       <div class="flex items-center justify-start gap-5 border-b p-5">
         <Tooltip :text="__('Organization logo')">
-          <div class="group relative h-[88px] w-[88px]">
+          <div class="group relative size-12">
             <Avatar
               size="3xl"
-              class="h-[88px] w-[88px]"
+              class="size-12"
               :label="organization?.name"
               :image="organization?.organization_logo"
             />
