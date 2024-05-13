@@ -1,5 +1,7 @@
 <template>
-  <div class="flex max-h-[300px] flex-col gap-1.5 overflow-y-auto">
+  <FadedScrollableDiv
+    class="flex max-h-[300px] flex-col gap-1.5 overflow-y-auto"
+  >
     <div
       v-for="field in _fields"
       :key="field.label"
@@ -105,10 +107,11 @@
         @click="field.link(data[field.name])"
       />
     </div>
-  </div>
+  </FadedScrollableDiv>
 </template>
 
 <script setup>
+import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'

@@ -1,5 +1,7 @@
 <template>
-  <div class="flex items-center justify-between mx-10 mt-8 mb-4 text-lg font-medium">
+  <div
+    class="mx-10 mb-4 mt-8 flex items-center justify-between text-lg font-medium"
+  >
     <div class="flex h-8 items-center text-xl font-semibold text-gray-800">
       {{ __(title) }}
     </div>
@@ -71,8 +73,9 @@
     <LoadingIndicator class="h-6 w-6" />
     <span>{{ __('Loading...') }}</span>
   </div>
-  <div
+  <FadedScrollableDiv
     v-else-if="title == 'WhatsApp' && whatsappMessages.data?.length"
+    :maskHeight="30"
     class="activities flex-1 overflow-y-auto"
   >
     <WhatsAppArea
@@ -81,8 +84,12 @@
       v-model:reply="replyMessage"
       :messages="whatsappMessages.data"
     />
-  </div>
-  <div v-else-if="activities?.length" class="activities flex-1 overflow-y-auto">
+  </FadedScrollableDiv>
+  <FadedScrollableDiv
+    v-else-if="activities?.length"
+    :maskHeight="30"
+    class="activities flex-1 overflow-y-auto"
+  >
     <div
       v-if="title == 'Notes'"
       class="activity grid grid-cols-1 gap-4 px-10 pb-5 lg:grid-cols-2 xl:grid-cols-3"
@@ -439,7 +446,8 @@
               </span>
               <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
             </div>
-            <div
+            <FadedScrollableDiv
+              :maskHeight="30"
               class="email-content prose-f max-h-[500px] overflow-y-auto"
               v-html="activity.data.content"
             />
@@ -726,7 +734,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </FadedScrollableDiv>
   <div
     v-else
     class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
@@ -818,6 +826,7 @@ import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
 import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
+import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
