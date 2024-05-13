@@ -150,7 +150,7 @@ export function errorMessage(title, message) {
 
 export function copyToClipboard(text) {
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(string).then(show_success_alert)
+    navigator.clipboard.writeText(text).then(show_success_alert)
   } else {
     let input = document.createElement('textarea')
     document.body.appendChild(input)
