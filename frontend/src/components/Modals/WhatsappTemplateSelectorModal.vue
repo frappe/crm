@@ -52,6 +52,10 @@
 import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
+const props = defineProps({
+  doctype: String,
+})
+
 const show = defineModel()
 const searchInput = ref('')
 
@@ -64,7 +68,7 @@ const templates = createListResource({
   doctype: 'WhatsApp Templates',
   cache: ['whatsappTemplates'],
   fields: ['name', 'template', 'footer'],
-  filters: { status: 'APPROVED' },
+  filters: { status: 'APPROVED', for_doctype: ['in', [props.doctype, '']]},
   orderBy: 'modified desc',
   pageLength: 99999,
   auto: true,
