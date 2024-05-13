@@ -58,7 +58,7 @@
             <Avatar
               size="3xl"
               class="size-12"
-              :label="organization?.name"
+              :label="organization?.name || __('Untitled')"
               :image="organization?.organization_logo"
             />
           </div>

@@ -67,7 +67,7 @@
               <Avatar
                 size="3xl"
                 class="size-12"
-                :label="lead.data.first_name"
+                :label="lead.data.first_name || __('Untitled')"
                 :image="lead.data.image"
               />
               <component
