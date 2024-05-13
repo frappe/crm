@@ -110,26 +110,7 @@ def get_deal_activities(name):
 		}
 		activities.append(activity)
 
-	for communication in docinfo.communications:
-		activity = {
-			"activity_type": "communication",
-			"creation": communication.creation,
-			"data": {
-				"subject": communication.subject,
-				"content": communication.content,
-				"sender_full_name": communication.sender_full_name,
-				"sender": communication.sender,
-				"recipients": communication.recipients,
-				"cc": communication.cc,
-				"bcc": communication.bcc,
-				"attachments": get_attachments('Communication', communication.name),
-				"read_by_recipient": communication.read_by_recipient,
-			},
-			"is_lead": False,
-		}
-		activities.append(activity)
-
-	for communication in docinfo.automated_messages:
+	for communication in docinfo.communications + docinfo.automated_messages:
 		activity = {
 			"activity_type": "communication",
 			"creation": communication.creation,
@@ -241,26 +222,7 @@ def get_lead_activities(name):
 		}
 		activities.append(activity)
 
-	for communication in docinfo.communications:
-		activity = {
-			"activity_type": "communication",
-			"creation": communication.creation,
-			"data": {
-				"subject": communication.subject,
-				"content": communication.content,
-				"sender_full_name": communication.sender_full_name,
-				"sender": communication.sender,
-				"recipients": communication.recipients,
-				"cc": communication.cc,
-				"bcc": communication.bcc,
-				"attachments": get_attachments('Communication', communication.name),
-				"read_by_recipient": communication.read_by_recipient,
-			},
-			"is_lead": True,
-		}
-		activities.append(activity)
-
-	for communication in docinfo.automated_messages:
+	for communication in docinfo.communications + docinfo.automated_messages:
 		activity = {
 			"activity_type": "communication",
 			"creation": communication.creation,
