@@ -124,11 +124,7 @@
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
         <Dropdown :options="bulkActions(selections, unselectAll)">
-          <Button variant="ghost">
-            <template #icon>
-              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
-            </template>
-          </Button>
+          <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
     </ListSelectBanner>

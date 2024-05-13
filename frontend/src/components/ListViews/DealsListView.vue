@@ -115,11 +115,7 @@
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
         <Dropdown :options="bulkActions(selections, unselectAll)">
-          <Button variant="ghost">
-            <template #icon>
-              <FeatherIcon name="more-horizontal" class="h-4 w-4" />
-            </template>
-          </Button>
+          <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
     </ListSelectBanner>
@@ -219,7 +215,9 @@ function editValues(selections, unselectAll) {
 function deleteValues(selections, unselectAll) {
   $dialog({
     title: __('Delete'),
-    message: __('Are you sure you want to delete {0} item(s)?', [selections.size]),
+    message: __('Are you sure you want to delete {0} item(s)?', [
+      selections.size,
+    ]),
     variant: 'danger',
     actions: [
       {

@@ -147,3 +147,25 @@ export function errorMessage(title, message) {
     iconClasses: 'text-red-600',
   })
 }
+
+export function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(string).then(show_success_alert)
+  } else {
+    let input = document.createElement('textarea')
+    document.body.appendChild(input)
+    input.value = text
+    input.select()
+    document.execCommand('copy')
+    show_success_alert()
+    document.body.removeChild(input)
+  }
+  function show_success_alert() {
+    createToast({
+      title: 'Copied to clipboard',
+      text: text,
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
