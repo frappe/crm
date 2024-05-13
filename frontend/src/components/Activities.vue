@@ -466,7 +466,7 @@
             </div>
             <div class="ml-auto whitespace-nowrap">
               <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-gray-600">
+                <div class="text-sm text-gray-600">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
@@ -629,7 +629,7 @@
 
             <div class="ml-auto whitespace-nowrap">
               <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-gray-600">
+                <div class="text-sm text-gray-600">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
@@ -693,7 +693,7 @@
 
             <div class="ml-auto whitespace-nowrap">
               <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-gray-600">
+                <div class="text-sm text-gray-600">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
@@ -795,7 +795,6 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/WhatsAppBox.vue'
-import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
