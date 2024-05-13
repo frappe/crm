@@ -110,9 +110,10 @@ def get_deal_activities(name):
 		}
 		activities.append(activity)
 
-	for communication in docinfo.communications:
+	for communication in docinfo.communications + docinfo.automated_messages:
 		activity = {
 			"activity_type": "communication",
+			"communication_type": communication.communication_type,
 			"creation": communication.creation,
 			"data": {
 				"subject": communication.subject,
@@ -222,9 +223,10 @@ def get_lead_activities(name):
 		}
 		activities.append(activity)
 
-	for communication in docinfo.communications:
+	for communication in docinfo.communications + docinfo.automated_messages:
 		activity = {
 			"activity_type": "communication",
+			"communication_type": communication.communication_type,
 			"creation": communication.creation,
 			"data": {
 				"subject": communication.subject,
