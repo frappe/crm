@@ -106,7 +106,7 @@
               </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
-              <Tooltip :text="lead.data.lead_name">
+              <Tooltip :text="lead.data.lead_name || __('Set first name')">
                 <div class="truncate text-2xl font-medium">
                   {{ lead.data.lead_name || __('Untitled') }}
                 </div>
