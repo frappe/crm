@@ -52,7 +52,7 @@
     </Tabs>
     <div class="flex w-[352px] flex-col justify-between border-l">
       <div
-        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-semibold"
+        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
         @click="copyToClipboard(lead.data.name)"
       >
         {{ __(lead.data.name) }}
@@ -108,7 +108,7 @@
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="lead.data.lead_name">
                 <div class="truncate text-2xl font-medium">
-                  {{ lead.data.lead_name }}
+                  {{ lead.data.lead_name || __('Untitled') }}
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
@@ -395,7 +395,7 @@ function validateRequired(fieldname, value) {
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
   items.push({
-    label: lead.data.lead_name,
+    label: lead.data.lead_name || __('Untitled'),
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
