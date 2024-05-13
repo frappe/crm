@@ -386,6 +386,12 @@
                     {{ __(timeAgo(activity.creation)) }}
                   </div>
                 </Tooltip>
+                <Badge
+                  v-if="activity.communication_type == 'Automated Message'"
+                  :label="__('Notification')"
+                  variant="subtle"
+                  theme="green"
+                />
               </div>
               <div class="flex gap-0.5">
                 <Tooltip :text="__('Reply')">
@@ -834,6 +840,7 @@ import {
   Dropdown,
   TextEditor,
   Avatar,
+  Badge,
   createResource,
   call,
 } from 'frappe-ui'
