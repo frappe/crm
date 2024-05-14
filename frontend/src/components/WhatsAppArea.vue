@@ -43,7 +43,7 @@
             </div>
           </div>
         </div>
-        <div class="inline-flex gap-2">
+        <div class="flex gap-2 justify-between">
           <div
             class="absolute -right-0.5 -top-0.5 flex cursor-pointer gap-1 rounded-full bg-white pb-2 pl-2 pr-1.5 pt-1.5 opacity-0 group-hover/message:opacity-100"
             :style="{
