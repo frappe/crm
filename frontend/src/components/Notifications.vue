@@ -52,13 +52,10 @@
         >
           <div class="mt-1 flex items-center gap-2.5">
             <div
-              class="h-[5px] w-[5px] rounded-full"
+              class="size-[5px] rounded-full"
               :class="[n.read ? 'bg-transparent' : 'bg-gray-900']"
             />
-            <WhatsAppIcon
-              v-if="n.type == 'WhatsApp'"
-              class="size-7 rounded-full"
-            />
+            <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
             <UserAvatar v-else :user="n.from_user.name" size="lg" />
           </div>
           <div>
