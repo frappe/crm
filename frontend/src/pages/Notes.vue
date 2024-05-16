@@ -88,7 +88,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <NoteIcon class="h-10 w-10" />
-      <span>{{ __('No Notes Found') }}</span>
+      <span>{{ __('No {0} Found', [__('Notes')]) }}</span>
       <Button :label="__('Create')" @click="createNote">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>

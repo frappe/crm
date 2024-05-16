@@ -52,7 +52,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <EmailIcon class="h-10 w-10" />
-      <span>{{ __('No Email Templates Found') }}</span>
+      <span>{{ __('No {0} Found', [__('Email Templates')]) }}</span>
       <Button :label="__('Create')" @click="showEmailTemplateModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
