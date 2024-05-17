@@ -1,7 +1,10 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button :label="__('Filter')">
+      <Button
+        :label="__('Filter')"
+        :class="filters?.size ? 'rounded-r-none' : ''"
+      >
         <template #prefix><FilterIcon class="h-4" /></template>
         <template v-if="filters?.size" #suffix>
           <div
@@ -11,6 +14,13 @@
           </div>
         </template>
       </Button>
+      <Tooltip v-if="filters?.size" :text="__('Clear all Filter')">
+        <Button
+          class="rounded-l-none border-l"
+          icon="x"
+          @click.stop="clearfilter"
+        />
+      </Tooltip>
     </template>
     <template #body="{ close }">
       <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
@@ -101,7 +111,7 @@ import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { FormControl, createResource } from 'frappe-ui'
+import { FormControl, createResource, Tooltip } from 'frappe-ui'
 import { h, computed, onMounted } from 'vue'
 
 const typeCheck = ['Check']
