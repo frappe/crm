@@ -22,8 +22,24 @@
         </template>
       </Dropdown>
     </div>
-    <div class="flex items-center flex-1 gap-2 border-l pl-2">
-      <div v-for="filter in quickFilters.data" :key="filter.name">
+    <div class="-mr-2 h-[70%] border-l" />
+    <div
+      class="flex flex-1 items-center overflow-x-auto px-1"
+      style="
+        mask-image: linear-gradient(
+          to right,
+          black calc(100% - 20px),
+          transparent 100%
+        );
+      "
+    >
+      <div
+        v-for="filter in quickFilters.data || [
+          { name: 'name', label: __('ID') },
+        ]"
+        :key="filter.name"
+        class="min-w-36 m-1"
+      >
         <FormControl
           v-if="filter.type == 'Check'"
           :label="filter.label"
@@ -50,6 +66,7 @@
         />
       </div>
     </div>
+    <div class="-ml-2 h-[70%] border-l" />
     <div class="flex items-center gap-2">
       <div
         v-if="viewUpdated && route.query.view && (!view.public || isManager())"
