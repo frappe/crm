@@ -38,6 +38,10 @@ function startResize() {
   document.addEventListener('mouseup', () => {
     document.body.classList.remove('select-none')
     document.body.classList.remove('cursor-col-resize')
+    document.querySelectorAll('.select-text1').forEach((el) => {
+      el.classList.remove('select-text1')
+      el.classList.add('select-text')
+    })
     localStorage.setItem('sidebarWidth', sidebarWidth.value)
     sidebarResizing.value = false
     document.removeEventListener('mousemove', resize)
@@ -47,6 +51,10 @@ function resize(e) {
   sidebarResizing.value = true
   document.body.classList.add('select-none')
   document.body.classList.add('cursor-col-resize')
+  document.querySelectorAll('.select-text').forEach((el) => {
+    el.classList.remove('select-text')
+    el.classList.add('select-text1')
+  })
   sidebarWidth.value =
     props.side == 'left' ? e.clientX : window.innerWidth - e.clientX
 

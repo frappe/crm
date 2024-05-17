@@ -95,7 +95,7 @@
                 class="!absolute bottom-0 left-0 right-0"
               >
                 <div
-                  class="z-1 absolute bottom-0 left-0 right-0 flex h-9 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                  class="z-1 absolute bottom-0.5 left-0 right-0.5 flex h-9 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
                   style="
                     -webkit-clip-path: inset(12px 0 0 0);
                     clip-path: inset(12px 0 0 0);
@@ -106,7 +106,7 @@
               </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
-              <Tooltip :text="lead.data.lead_name">
+              <Tooltip :text="lead.data.lead_name || __('Set first name')">
                 <div class="truncate text-2xl font-medium">
                   {{ lead.data.lead_name || __('Untitled') }}
                 </div>
