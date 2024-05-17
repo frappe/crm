@@ -178,7 +178,7 @@ function convertFilters(data, allFilters) {
     let field = data.find((f) => f.fieldname === key)
     if (typeof value !== 'object') {
       value = ['=', value]
-      if (field.fieldtype === 'Check') {
+      if (field?.fieldtype === 'Check') {
         value = ['equals', value[1] ? 'Yes' : 'No']
       }
     }

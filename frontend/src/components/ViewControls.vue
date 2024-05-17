@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between px-5 py-4">
+  <div class="flex items-center justify-between gap-2 px-5 py-4">
     <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
@@ -21,6 +21,34 @@
           <Button icon="more-horizontal" />
         </template>
       </Dropdown>
+    </div>
+    <div class="flex items-center flex-1 gap-2 border-l pl-2">
+      <div v-for="filter in quickFilters.data" :key="filter.name">
+        <FormControl
+          v-if="filter.type == 'Check'"
+          :label="filter.label"
+          type="checkbox"
+          v-model="filter.value"
+          @change.stop="applyQuickFilter(filter, $event.target.value)"
+        />
+        <FormControl
+          v-else-if="filter.type === 'Select'"
+          class="form-control cursor-pointer [&_select]:cursor-pointer"
+          type="select"
+          v-model="filter.value"
+          :options="filter.options"
+          :placeholder="filter.label"
+          @change.stop="applyQuickFilter(filter, $event.target.value)"
+        />
+        <FormControl
+          v-else
+          :value="filter.value"
+          type="text"
+          :placeholder="filter.label"
+          :debounce="500"
+          @change.stop="applyQuickFilter(filter, $event.target.value)"
+        />
+      </div>
     </div>
     <div class="flex items-center gap-2">
       <div
@@ -383,6 +411,29 @@ const viewsDropdownOptions = computed(() => {
 
   return _views
 })
+
+const quickFilters = createResource({
+  url: 'crm.api.doc.get_quick_filters',
+  params: { doctype: props.doctype },
+  auto: true,
+})
+
+function applyQuickFilter(filter, value) {
+  let filters = { ...list.value.params.filters }
+  let field = filter.name
+  if (value) {
+    if (['Check', 'Select'].includes(filter.type)) {
+      filters[field] = value
+    } else {
+      filters[field] = ['LIKE', `%${value}%`]
+    }
+    filter['value'] = value
+  } else {
+    delete filters[field]
+    filter['value'] = ''
+  }
+  updateFilter(filters)
+}
 
 function updateFilter(filters) {
   viewUpdated.value = true
