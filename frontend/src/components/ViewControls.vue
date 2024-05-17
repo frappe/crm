@@ -54,6 +54,13 @@
           :placeholder="filter.label"
           @change.stop="applyQuickFilter(filter, $event.target.value)"
         />
+        <Link
+          v-else-if="filter.type === 'Link'"
+          :value="filter.value"
+          :doctype="filter.options"
+          :placeholder="filter.label"
+          @change="(data) => applyQuickFilter(filter, data)"
+        />
         <FormControl
           v-else
           :value="filter.value"
@@ -174,6 +181,7 @@
   </Dialog>
 </template>
 <script setup>
+import Link from '@/components/Controls/Link.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
