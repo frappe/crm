@@ -130,7 +130,7 @@ def get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
 def get_quick_filters(doctype: str):
 	meta = frappe.get_meta(doctype)
 	fields = [field for field in meta.fields if field.in_standard_filter]
-	quick_filters = [{"label": _("ID"), "name": "name", "type": "Link", "options": doctype}]
+	quick_filters = []
 
 	for field in fields:
 

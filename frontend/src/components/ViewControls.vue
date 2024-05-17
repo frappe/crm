@@ -34,11 +34,9 @@
       "
     >
       <div
-        v-for="filter in quickFilters.data || [
-          { name: 'name', label: __('ID') },
-        ]"
+        v-for="filter in quickFilterList"
         :key="filter.name"
-        class="min-w-36 m-1"
+        class="m-1 min-w-36"
       >
         <FormControl
           v-if="filter.type == 'Check'"
@@ -429,9 +427,31 @@ const viewsDropdownOptions = computed(() => {
   return _views
 })
 
+const quickFilterList = computed(() => {
+  let filters = [{ name: 'name', label: __('ID') }]
+  if (quickFilters.data) {
+    filters.push(...quickFilters.data)
+  }
+
+  filters.forEach((filter) => {
+    filter['value'] = ''
+    if (list.value.params?.filters[filter.name]) {
+      if (['Check', 'Select'].includes(filter.type)) {
+        filter['value'] = list.value.params.filters[filter.name]
+      } else {
+        let value = list.value.params.filters[filter.name]
+        filter['value'] = value[1].replace(/%/g, '')
+      }
+    }
+  })
+
+  return filters
+})
+
 const quickFilters = createResource({
   url: 'crm.api.doc.get_quick_filters',
   params: { doctype: props.doctype },
+  cache: ['Quick Filters', props.doctype],
   auto: true,
 })
 
