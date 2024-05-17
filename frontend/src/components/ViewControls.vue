@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between px-5 py-4">
+  <div class="flex items-center justify-between gap-2 px-5 py-4">
     <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
@@ -22,6 +22,64 @@
         </template>
       </Dropdown>
     </div>
+    <div class="-mr-2 h-[70%] border-l" />
+    <div
+      class="flex flex-1 items-center overflow-x-auto px-1"
+      style="
+        mask-image: linear-gradient(
+          to right,
+          black calc(100% - 20px),
+          transparent 100%
+        );
+      "
+    >
+      <div
+        v-for="filter in quickFilterList"
+        :key="filter.name"
+        class="m-1 min-w-36"
+      >
+        <FormControl
+          v-if="filter.type == 'Check'"
+          :label="filter.label"
+          type="checkbox"
+          v-model="filter.value"
+          @change.stop="applyQuickFilter(filter, $event.target.checked)"
+        />
+        <FormControl
+          v-else-if="filter.type === 'Select'"
+          class="form-control cursor-pointer [&_select]:cursor-pointer"
+          type="select"
+          v-model="filter.value"
+          :options="filter.options"
+          :placeholder="filter.label"
+          @change.stop="applyQuickFilter(filter, $event.target.value)"
+        />
+        <Link
+          v-else-if="filter.type === 'Link'"
+          :value="filter.value"
+          :doctype="filter.options"
+          :placeholder="filter.label"
+          @change="(data) => applyQuickFilter(filter, data)"
+        />
+        <component
+          v-else-if="['Date', 'Datetime'].includes(filter.type)"
+          class="border-none"
+          :is="filter.type === 'Date' ? DatePicker : DatetimePicker"
+          :value="filter.value"
+          @change="(v) => applyQuickFilter(filter, v)"
+          :placeholder="filter.label"
+        />
+        <FormControl
+          v-else
+          :value="filter.value"
+          type="text"
+          :placeholder="filter.label"
+          :debounce="500"
+          @change.stop="applyQuickFilter(filter, $event.target.value)"
+        />
+      </div>
+    </div>
+    <div class="-ml-2 h-[70%] border-l" />
     <div class="flex items-center gap-2">
       <div
         v-if="viewUpdated && route.query.view && (!view.public || isManager())"
@@ -131,6 +189,9 @@
   </Dialog>
 </template>
 <script setup>
+import DatePicker from '@/components/Controls/DatePicker.vue'
+import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
+import Link from '@/components/Controls/Link.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
@@ -383,6 +444,51 @@ const viewsDropdownOptions = computed(() => {
 
   return _views
 })
+
+const quickFilterList = computed(() => {
+  let filters = [{ name: 'name', label: __('ID') }]
+  if (quickFilters.data) {
+    filters.push(...quickFilters.data)
+  }
+
+  filters.forEach((filter) => {
+    filter['value'] = filter.type == 'Check' ? false : ''
+    if (list.value.params?.filters[filter.name]) {
+      let value = list.value.params.filters[filter.name]
+      if (Array.isArray(value)) {
+        filter['value'] = value[1].replace(/%/g, '')
+      } else {
+        filter['value'] = value.replace(/%/g, '')
+      }
+    }
+  })
+
+  return filters
+})
+
+const quickFilters = createResource({
+  url: 'crm.api.doc.get_quick_filters',
+  params: { doctype: props.doctype },
+  cache: ['Quick Filters', props.doctype],
+  auto: true,
+})
+
+function applyQuickFilter(filter, value) {
+  let filters = { ...list.value.params.filters }
+  let field = filter.name
+  if (value) {
+    if (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.type)) {
+      filters[field] = value
+    } else {
+      filters[field] = ['LIKE', `%${value}%`]
+    }
+    filter['value'] = value
+  } else {
+    delete filters[field]
+    filter['value'] = ''
+  }
+  updateFilter(filters)
+}
 
 function updateFilter(filters) {
   viewUpdated.value = true

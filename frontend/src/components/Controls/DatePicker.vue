@@ -14,6 +14,7 @@
           'form-input  block h-7 w-full cursor-pointer select-none rounded border-gray-400 text-sm placeholder-gray-500',
           inputClass,
         ]"
+        v-bind="$attrs"
       />
     </template>
     <template #body="{ togglePopover }">
