@@ -1,7 +1,10 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button :label="__('Filter')">
+      <Button
+        :label="__('Filter')"
+        :class="filters?.size ? 'rounded-r-none' : ''"
+      >
         <template #prefix><FilterIcon class="h-4" /></template>
         <template v-if="filters?.size" #suffix>
           <div
@@ -11,6 +14,12 @@
           </div>
         </template>
       </Button>
+      <Button
+        v-if="filters?.size"
+        class="rounded-l-none border-l"
+        icon="x"
+        @click.stop="clearfilter"
+      />
     </template>
     <template #body="{ close }">
       <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
