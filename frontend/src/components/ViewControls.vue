@@ -458,7 +458,12 @@ const quickFilterList = computed(() => {
         filter['value'] = list.value.params.filters[filter.name]
       } else {
         let value = list.value.params.filters[filter.name]
-        filter['value'] = value[1].replace(/%/g, '')
+
+        if (Array.isArray(value)) {
+          filter['value'] = value[1].replace(/%/g, '')
+        } else {
+          filter['value'] = value.replace(/%/g, '')
+        }
       }
     }
   })
