@@ -127,6 +127,30 @@ def get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
 	)
 
 @frappe.whitelist()
+def get_quick_filters(doctype: str):
+	meta = frappe.get_meta(doctype)
+	fields = [field for field in meta.fields if field.in_standard_filter]
+	quick_filters = [{"label": _("ID"), "name": "name", "type": "Link", "options": doctype}]
+
+	for field in fields:
+
+		if field.fieldtype == "Select":
+			field.options = field.options.split("\n")
+			field.options = [{"label": option, "value": option} for option in field.options]
+			field.options.insert(0, {"label": "", "value": ""})
+		quick_filters.append({
+			"label": _(field.label),
+			"name": field.fieldname,
+			"type": field.fieldtype,
+			"options": field.options,
+		})
+
+	if doctype == "CRM Lead":
+		quick_filters = [filter for filter in quick_filters if filter.get("name") != "converted"]
+
+	return quick_filters
+
+@frappe.whitelist()
 def get_list_data(
 	doctype: str,
 	filters: dict,
