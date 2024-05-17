@@ -43,7 +43,7 @@
           :label="filter.label"
           type="checkbox"
           v-model="filter.value"
-          @change.stop="applyQuickFilter(filter, $event.target.value)"
+          @change.stop="applyQuickFilter(filter, $event.target.checked)"
         />
         <FormControl
           v-else-if="filter.type === 'Select'"
@@ -434,7 +434,7 @@ const quickFilterList = computed(() => {
   }
 
   filters.forEach((filter) => {
-    filter['value'] = ''
+    filter['value'] = filter.type == 'Check' ? false : ''
     if (list.value.params?.filters[filter.name]) {
       if (['Check', 'Select'].includes(filter.type)) {
         filter['value'] = list.value.params.filters[filter.name]
