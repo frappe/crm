@@ -171,6 +171,10 @@ function evaluate(code, context = {}) {
 </script>
 
 <style scoped>
+.form-control {
+  margin: 2px;
+}
+
 :deep(.form-control input:not([type='checkbox'])),
 :deep(.form-control select),
 :deep(.form-control textarea),
