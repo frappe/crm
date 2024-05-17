@@ -276,6 +276,8 @@ function getOperators(fieldtype, fieldname) {
   if (typeDate.includes(fieldtype)) {
     options.push(
       ...[
+        { label: __('Equals'), value: 'equals' },
+        { label: __('Not Equals'), value: 'not equals' },
         { label: __('Is'), value: 'is' },
         { label: __('>'), value: '>' },
         { label: __('<'), value: '<' },

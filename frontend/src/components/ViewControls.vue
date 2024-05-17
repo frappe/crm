@@ -61,6 +61,14 @@
           :placeholder="filter.label"
           @change="(data) => applyQuickFilter(filter, data)"
         />
+        <component
+          v-else-if="['Date', 'Datetime'].includes(filter.type)"
+          class="border-none"
+          :is="filter.type === 'Date' ? DatePicker : DatetimePicker"
+          :value="filter.value"
+          @change="(v) => applyQuickFilter(filter, v)"
+          :placeholder="filter.label"
+        />
         <FormControl
           v-else
           :value="filter.value"
@@ -181,6 +189,8 @@
   </Dialog>
 </template>
 <script setup>
+import DatePicker from '@/components/Controls/DatePicker.vue'
+import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
 import Link from '@/components/Controls/Link.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -444,7 +454,7 @@ const quickFilterList = computed(() => {
   filters.forEach((filter) => {
     filter['value'] = filter.type == 'Check' ? false : ''
     if (list.value.params?.filters[filter.name]) {
-      if (['Check', 'Select'].includes(filter.type)) {
+      if (['Check', 'Select', 'Date', 'Datetime'].includes(filter.type)) {
         filter['value'] = list.value.params.filters[filter.name]
       } else {
         let value = list.value.params.filters[filter.name]
@@ -467,7 +477,7 @@ function applyQuickFilter(filter, value) {
   let filters = { ...list.value.params.filters }
   let field = filter.name
   if (value) {
-    if (['Check', 'Select'].includes(filter.type)) {
+    if (['Check', 'Select', 'Date', 'Datetime'].includes(filter.type)) {
       filters[field] = value
     } else {
       filters[field] = ['LIKE', `%${value}%`]
