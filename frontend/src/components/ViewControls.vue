@@ -23,15 +23,9 @@
       </Dropdown>
     </div>
     <div class="-mr-2 h-[70%] border-l" />
-    <div
+    <FadedScrollableDiv
       class="flex flex-1 items-center overflow-x-auto px-1"
-      style="
-        mask-image: linear-gradient(
-          to right,
-          black calc(100% - 20px),
-          transparent 100%
-        );
-      "
+      orientation="horizontal"
     >
       <div
         v-for="filter in quickFilterList"
@@ -78,7 +72,7 @@
           @change.stop="applyQuickFilter(filter, $event.target.value)"
         />
       </div>
-    </div>
+    </FadedScrollableDiv>
     <div class="-ml-2 h-[70%] border-l" />
     <div class="flex items-center gap-2">
       <div
@@ -200,6 +194,7 @@ import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
