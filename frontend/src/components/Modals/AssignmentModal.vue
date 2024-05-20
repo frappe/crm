@@ -27,6 +27,7 @@
         value=""
         doctype="User"
         @change="(option) => addValue(option) && ($refs.input.value = '')"
+        :placeholder="__('John Doe')"
         :hideMe="true"
       >
         <template #item-prefix="{ option }">
@@ -83,6 +84,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  doctype: {
+    type: String,
+    default: '',
+  },
 })
 
 const show = defineModel()
@@ -101,7 +106,7 @@ const removeValue = (value) => {
 
 const owner = computed(() => {
   if (!props.doc) return ''
-  if (props.doc.doctype == 'CRM Lead') return props.doc.lead_owner
+  if (props.doctype == 'CRM Lead') return props.doc.lead_owner
   return props.doc.deal_owner
 })
 
@@ -137,7 +142,7 @@ function updateAssignees() {
   if (removedAssignees.length) {
     for (let a of removedAssignees) {
       call('frappe.desk.form.assign_to.remove', {
-        doctype: props.doc.doctype,
+        doctype: props.doctype,
         name: props.doc.name,
         assign_to: a,
       })
@@ -146,7 +151,7 @@ function updateAssignees() {
 
   if (addedAssignees.length) {
     call('frappe.desk.form.assign_to.add', {
-      doctype: props.doc.doctype,
+      doctype: props.doctype,
       name: props.doc.name,
       assign_to: addedAssignees,
     })
