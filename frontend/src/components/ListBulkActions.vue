@@ -29,6 +29,14 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  options: {
+    type: Object,
+    default: () => ({
+      hideEdit: false,
+      hideDelete: false,
+      hideAssign: false,
+    }),
+  },
 })
 
 const list = defineModel()
@@ -126,24 +134,33 @@ const customBulkActions = ref([])
 const customListActions = ref([])
 
 function bulkActions(selections, unselectAll) {
-  let actions = [
-    {
+  let actions = []
+  debugger
+  if (!props.options.hideEdit) {
+    actions.push({
       label: __('Edit'),
       onClick: () => editValues(selections, unselectAll),
-    },
-    {
+    })
+  }
+
+  if (!props.options.hideDelete) {
+    actions.push({
       label: __('Delete'),
       onClick: () => deleteValues(selections, unselectAll),
-    },
-    {
+    })
+  }
+
+  if (!props.options.hideAssign) {
+    actions.push({
       label: __('Assign To'),
       onClick: () => assignValues(selections, unselectAll),
-    },
-    {
+    })
+    actions.push({
       label: __('Clear Assignment'),
       onClick: () => clearAssignemnts(selections, unselectAll),
-    },
-  ]
+    })
+  }
+
   customBulkActions.value.forEach((action) => {
     actions.push({
       label: __(action.label),
