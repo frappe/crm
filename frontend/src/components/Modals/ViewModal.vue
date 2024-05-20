@@ -21,20 +21,37 @@
     }"
   >
     <template #body-content>
-      <FormControl
-        variant="outline"
-        size="md"
-        type="text"
-        :label="__('View Name')"
-        :placeholder="__('My Open Deals')"
-        v-model="view.label"
-      />
+      <div class="mb-1.5 block text-base text-gray-600">
+        {{ __('View Name') }}
+      </div>
+      <div class="flex gap-2">
+        <IconPicker v-model="view.icon" v-slot="{ isOpen, togglePopover }">
+          <Button
+            variant="outline"
+            size="md"
+            class="flex size-8 text-2xl leading-none"
+            :class="isOpen ? 'bg-gray-200' : 'hover:bg-gray-100'"
+            @click="togglePopover"
+          >
+            {{ view.icon }}
+          </Button>
+        </IconPicker>
+        <TextInput
+          class="flex-1"
+          variant="outline"
+          size="md"
+          type="text"
+          :placeholder="__('My Open Deals')"
+          v-model="view.label"
+        />
+      </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
-import { call } from 'frappe-ui'
+import IconPicker from '@/components/IconPicker.vue'
+import { call, TextInput } from 'frappe-ui'
 import { ref, watch, nextTick } from 'vue'
 
 const props = defineProps({
@@ -60,6 +77,7 @@ const duplicateMode = ref(false)
 const _view = ref({
   name: '',
   label: '',
+  icon: '',
   filters: {},
   order_by: 'modified desc',
   columns: '',
