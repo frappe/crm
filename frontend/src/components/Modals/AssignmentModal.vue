@@ -84,11 +84,17 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  docs: {
+    type: Array,
+    default: () => [],
+  },
   doctype: {
     type: String,
     default: '',
   },
 })
+
+const emit = defineEmits(['reload'])
 
 const show = defineModel()
 const assignees = defineModel('assignees')
@@ -150,11 +156,23 @@ function updateAssignees() {
   }
 
   if (addedAssignees.length) {
-    call('frappe.desk.form.assign_to.add', {
-      doctype: props.doctype,
-      name: props.doc.name,
-      assign_to: addedAssignees,
-    })
+    if (props.docs.size) {
+      call('frappe.desk.form.assign_to.add_multiple', {
+        doctype: props.doctype,
+        name: JSON.stringify(Array.from(props.docs)),
+        assign_to: addedAssignees,
+        bulk_assign: true,
+        re_assign: true,
+      }).then(() => {
+        emit('reload')
+      })
+    } else {
+      call('frappe.desk.form.assign_to.add', {
+        doctype: props.doctype,
+        name: props.doc.name,
+        assign_to: addedAssignees,
+      })
+    }
   }
   show.value = false
 }

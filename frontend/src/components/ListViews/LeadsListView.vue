@@ -145,6 +145,14 @@
     :selectedValues="selectedValues"
     @reload="reload"
   />
+  <AssignmentModal
+    v-if="selectedValues"
+    :docs="selectedValues"
+    doctype="CRM Lead"
+    v-model="showAssignmentModal"
+    v-model:assignees="bulkAssignees"
+    @reload="reload"
+  />
 </template>
 
 <script setup>
@@ -152,6 +160,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
+import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import {
   Avatar,
   ListView,
@@ -252,6 +261,15 @@ function deleteValues(selections, unselectAll) {
   })
 }
 
+const showAssignmentModal = ref(false)
+const bulkAssignees = ref([])
+
+function assignValues(selections, unselectAll) {
+  showAssignmentModal.value = true
+  selectedValues.value = selections
+  unselectAllAction.value = unselectAll
+}
+
 const customBulkActions = ref([])
 const customListActions = ref([])
 
@@ -264,6 +282,10 @@ function bulkActions(selections, unselectAll) {
     {
       label: __('Delete'),
       onClick: () => deleteValues(selections, unselectAll),
+    },
+    {
+      label: __('Assign To'),
+      onClick: () => assignValues(selections, unselectAll),
     },
   ]
   customBulkActions.value.forEach((action) => {
