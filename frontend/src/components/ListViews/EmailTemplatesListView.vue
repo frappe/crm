@@ -69,7 +69,7 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Dropdown :options="bulkActions(selections, unselectAll)">
+        <Dropdown :options="listBulkActionsRef.bulkActions(selections, unselectAll)">
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
@@ -84,18 +84,17 @@
     }"
     @loadMore="emit('loadMore')"
   />
-  <EditValueModal
-    v-model="showEditModal"
-    v-model:unselectAll="unselectAllAction"
+  <ListBulkActions
+    ref="listBulkActionsRef"
+    v-model="list"
     doctype="Email Template"
-    :selectedValues="selectedValues"
-    @reload="list.reload()"
+    :options="{
+      hideAssign: true,
+    }"
   />
 </template>
 <script setup>
-import EditValueModal from '@/components/Modals/EditValueModal.vue'
-import { globalStore } from '@/stores/global'
-import { setupListActions, createToast } from '@/utils'
+import ListBulkActions from '@/components/ListBulkActions.vue'
 import {
   ListView,
   ListHeader,
@@ -105,11 +104,9 @@ import {
   ListRowItem,
   ListFooter,
   Dropdown,
-  call,
   Tooltip,
 } from 'frappe-ui'
-import { ref, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -143,87 +140,14 @@ const emit = defineEmits([
 const pageLengthCount = defineModel()
 const list = defineModel('list')
 
-const router = useRouter()
-
-const { $dialog } = globalStore()
-
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
   emit('updatePageCount', val)
 })
 
-const showEditModal = ref(false)
-const selectedValues = ref([])
-const unselectAllAction = ref(() => {})
-
-function editValues(selections, unselectAll) {
-  selectedValues.value = selections
-  showEditModal.value = true
-  unselectAllAction.value = unselectAll
-}
-
-function deleteValues(selections, unselectAll) {
-  $dialog({
-    title: __('Delete'),
-    message: __('Are you sure you want to delete {0} item(s)?', [
-      selections.size,
-    ]),
-    variant: 'danger',
-    actions: [
-      {
-        label: __('Delete'),
-        variant: 'solid',
-        theme: 'red',
-        onClick: (close) => {
-          call('frappe.desk.reportview.delete_items', {
-            items: JSON.stringify(Array.from(selections)),
-            doctype: 'Email Template',
-          }).then(() => {
-            createToast({
-              title: __('Deleted successfully'),
-              icon: 'check',
-              iconClasses: 'text-green-600',
-            })
-            unselectAll()
-            list.value.reload()
-            close()
-          })
-        },
-      },
-    ],
-  })
-}
-
-const customListActions = ref([])
-
-function bulkActions(selections, unselectAll) {
-  let actions = [
-    {
-      label: __('Edit'),
-      onClick: () => editValues(selections, unselectAll),
-    },
-    {
-      label: __('Delete'),
-      onClick: () => deleteValues(selections, unselectAll),
-    },
-  ]
-  return actions
-}
-
-onMounted(() => {
-  if (!list.value?.data) return
-  setupListActions(list.value.data, {
-    list: list.value,
-    call,
-    createToast,
-    $dialog,
-    router,
-  })
-  // customBulkActions.value = list.value?.data?.bulkActions || []
-  customListActions.value = list.value?.data?.listActions || []
-})
+const listBulkActionsRef = ref(null)
 
 defineExpose({
-  customListActions,
+  customListActions: listBulkActionsRef.value?.customListActions,
 })
 </script>

@@ -186,6 +186,7 @@
   <AssignmentModal
     v-if="lead.data"
     :doc="lead.data"
+    doctype="CRM Lead"
     v-model="showAssignmentModal"
     v-model:assignees="lead.data._assignedTo"
   />
