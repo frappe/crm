@@ -128,6 +128,10 @@ function updateValue(v) {
   newValue.value = value
 }
 
+function getSelectOptions(options) {
+  return options.split('\n')
+}
+
 function getValueComponent(f) {
   const { type, options } = f
   if (typeSelect.includes(type) || typeCheck.includes(type)) {
@@ -138,6 +142,7 @@ function getValueComponent(f) {
         label: o,
         value: o,
       })),
+      modelValue: newValue.value,
     })
   } else if (typeLink.includes(type)) {
     if (type == 'Dynamic Link') {
