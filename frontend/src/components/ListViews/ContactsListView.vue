@@ -100,10 +100,9 @@
   />
   <EditValueModal
     v-model="showEditModal"
-    v-model:unselectAll="unselectAllAction"
     doctype="Contact"
     :selectedValues="selectedValues"
-    @reload="list.reload()"
+    @reload="reload"
   />
 </template>
 <script setup>
@@ -223,6 +222,11 @@ function bulkActions(selections, unselectAll) {
     },
   ]
   return actions
+}
+
+function reload() {
+  unselectAllAction.value?.()
+  list.value?.reload()
 }
 
 onMounted(() => {

@@ -132,10 +132,9 @@
   />
   <EditValueModal
     v-model="showEditModal"
-    v-model:unselectAll="unselectAllAction"
     doctype="CRM Deal"
     :selectedValues="selectedValues"
-    @reload="list.reload()"
+    @reload="reload"
   />
 </template>
 
@@ -274,6 +273,11 @@ function bulkActions(selections, unselectAll) {
     })
   })
   return actions
+}
+
+function reload() {
+  unselectAllAction.value?.()
+  list.value?.reload()
 }
 
 onMounted(() => {
