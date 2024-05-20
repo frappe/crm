@@ -270,6 +270,39 @@ function assignValues(selections, unselectAll) {
   unselectAllAction.value = unselectAll
 }
 
+function clearAssignemnts(selections, unselectAll) {
+  $dialog({
+    title: __('Clear Assignment'),
+    message: __('Are you sure you want to clear assignment for {0} item(s)?', [
+      selections.size,
+    ]),
+    variant: 'solid',
+    theme: 'red',
+    actions: [
+      {
+        label: __('Clear Assignment'),
+        variant: 'solid',
+        theme: 'red',
+        onClick: (close) => {
+          call('frappe.desk.form.assign_to.remove_multiple', {
+            doctype: 'CRM Lead',
+            names: JSON.stringify(Array.from(selections)),
+            ignore_permissions: true,
+          }).then(() => {
+            createToast({
+              title: __('Assignment cleared successfully'),
+              icon: 'check',
+              iconClasses: 'text-green-600',
+            })
+            reload(unselectAll)
+            close()
+          })
+        },
+      },
+    ],
+  })
+}
+
 const customBulkActions = ref([])
 const customListActions = ref([])
 
@@ -286,6 +319,10 @@ function bulkActions(selections, unselectAll) {
     {
       label: __('Assign To'),
       onClick: () => assignValues(selections, unselectAll),
+    },
+    {
+      label: __('Clear Assignment'),
+      onClick: () => clearAssignemnts(selections, unselectAll),
     },
   ]
   customBulkActions.value.forEach((action) => {
@@ -306,8 +343,9 @@ function bulkActions(selections, unselectAll) {
   return actions
 }
 
-function reload() {
+function reload(unselectAll) {
   unselectAllAction.value?.()
+  unselectAll?.()
   list.value?.reload()
 }
 
