@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "label",
+  "icon",
   "user",
   "is_default",
   "column_break_zacm",
@@ -111,11 +112,16 @@
    "fieldname": "is_default",
    "fieldtype": "Check",
    "label": "Is Default"
+  },
+  {
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-03 18:38:09.412745",
+ "modified": "2024-05-20 17:24:18.662389",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
