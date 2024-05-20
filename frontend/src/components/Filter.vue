@@ -18,7 +18,7 @@
         <Button
           class="rounded-l-none border-l"
           icon="x"
-          @click.stop="clearfilter"
+          @click.stop="clearfilter(false)"
         />
       </Tooltip>
     </template>
@@ -423,7 +423,7 @@ function removeFilter(index) {
 function clearfilter(close) {
   filters.value.clear()
   apply()
-  close()
+  close && close()
 }
 
 function updateValue(value, filter) {
