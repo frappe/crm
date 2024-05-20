@@ -123,7 +123,7 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Dropdown :options="bulkActions(selections, unselectAll)">
+        <Dropdown :options="listBulkActionsRef.bulkActions(selections, unselectAll)">
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
@@ -139,28 +139,14 @@
     }"
     @loadMore="emit('loadMore')"
   />
-  <EditValueModal
-    v-model="showEditModal"
-    doctype="CRM Lead"
-    :selectedValues="selectedValues"
-    @reload="reload"
-  />
-  <AssignmentModal
-    v-if="selectedValues"
-    :docs="selectedValues"
-    doctype="CRM Lead"
-    v-model="showAssignmentModal"
-    v-model:assignees="bulkAssignees"
-    @reload="reload"
-  />
+  <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="CRM Lead" />
 </template>
 
 <script setup>
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
-import EditValueModal from '@/components/Modals/EditValueModal.vue'
-import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import ListBulkActions from '@/components/ListBulkActions.vue'
 import {
   Avatar,
   ListView,
@@ -171,13 +157,9 @@ import {
   ListRowItem,
   ListFooter,
   Dropdown,
-  call,
   Tooltip,
 } from 'frappe-ui'
-import { setupListActions, createToast } from '@/utils'
-import { globalStore } from '@/stores/global'
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -210,159 +192,14 @@ const emit = defineEmits([
 const pageLengthCount = defineModel()
 const list = defineModel('list')
 
-const router = useRouter()
-
-const { $dialog } = globalStore()
-
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
   emit('updatePageCount', val)
 })
 
-const showEditModal = ref(false)
-const selectedValues = ref([])
-const unselectAllAction = ref(() => {})
-
-function editValues(selections, unselectAll) {
-  selectedValues.value = selections
-  showEditModal.value = true
-  unselectAllAction.value = unselectAll
-}
-
-function deleteValues(selections, unselectAll) {
-  $dialog({
-    title: __('Delete'),
-    message: __('Are you sure you want to delete {0} item(s)?', [
-      selections.size,
-    ]),
-    variant: 'danger',
-    actions: [
-      {
-        label: __('Delete'),
-        variant: 'solid',
-        theme: 'red',
-        onClick: (close) => {
-          call('frappe.desk.reportview.delete_items', {
-            items: JSON.stringify(Array.from(selections)),
-            doctype: 'CRM Lead',
-          }).then(() => {
-            createToast({
-              title: __('Deleted successfully'),
-              icon: 'check',
-              iconClasses: 'text-green-600',
-            })
-            unselectAll()
-            list.value.reload()
-            close()
-          })
-        },
-      },
-    ],
-  })
-}
-
-const showAssignmentModal = ref(false)
-const bulkAssignees = ref([])
-
-function assignValues(selections, unselectAll) {
-  showAssignmentModal.value = true
-  selectedValues.value = selections
-  unselectAllAction.value = unselectAll
-}
-
-function clearAssignemnts(selections, unselectAll) {
-  $dialog({
-    title: __('Clear Assignment'),
-    message: __('Are you sure you want to clear assignment for {0} item(s)?', [
-      selections.size,
-    ]),
-    variant: 'solid',
-    theme: 'red',
-    actions: [
-      {
-        label: __('Clear Assignment'),
-        variant: 'solid',
-        theme: 'red',
-        onClick: (close) => {
-          call('frappe.desk.form.assign_to.remove_multiple', {
-            doctype: 'CRM Lead',
-            names: JSON.stringify(Array.from(selections)),
-            ignore_permissions: true,
-          }).then(() => {
-            createToast({
-              title: __('Assignment cleared successfully'),
-              icon: 'check',
-              iconClasses: 'text-green-600',
-            })
-            reload(unselectAll)
-            close()
-          })
-        },
-      },
-    ],
-  })
-}
-
-const customBulkActions = ref([])
-const customListActions = ref([])
-
-function bulkActions(selections, unselectAll) {
-  let actions = [
-    {
-      label: __('Edit'),
-      onClick: () => editValues(selections, unselectAll),
-    },
-    {
-      label: __('Delete'),
-      onClick: () => deleteValues(selections, unselectAll),
-    },
-    {
-      label: __('Assign To'),
-      onClick: () => assignValues(selections, unselectAll),
-    },
-    {
-      label: __('Clear Assignment'),
-      onClick: () => clearAssignemnts(selections, unselectAll),
-    },
-  ]
-  customBulkActions.value.forEach((action) => {
-    actions.push({
-      label: __(action.label),
-      onClick: () =>
-        action.onClick({
-          list: list.value,
-          selections,
-          unselectAll,
-          call,
-          createToast,
-          $dialog,
-          router,
-        }),
-    })
-  })
-  return actions
-}
-
-function reload(unselectAll) {
-  unselectAllAction.value?.()
-  unselectAll?.()
-  list.value?.reload()
-}
-
-onMounted(() => {
-  if (!list.value?.data) return
-  setupListActions(list.value.data, {
-    list: list.value,
-    call,
-    createToast,
-    $dialog,
-    router,
-  })
-  customBulkActions.value = list.value?.data?.bulkActions || []
-  customListActions.value = list.value?.data?.listActions || []
-})
+const listBulkActionsRef = ref(null)
 
 defineExpose({
-  customListActions,
+  customListActions: listBulkActionsRef.value?.customListActions,
 })
 </script>
