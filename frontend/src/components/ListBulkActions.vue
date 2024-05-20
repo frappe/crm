@@ -135,7 +135,7 @@ const customListActions = ref([])
 
 function bulkActions(selections, unselectAll) {
   let actions = []
-  debugger
+
   if (!props.options.hideEdit) {
     actions.push({
       label: __('Edit'),
