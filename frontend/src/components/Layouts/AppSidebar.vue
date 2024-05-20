@@ -206,7 +206,7 @@ function parseView(views) {
 }
 
 function getIcon(routeName, icon) {
-  if (icon) return h('div', icon)
+  if (icon) return h('div', { class: 'size-auto' }, icon)
 
   switch (routeName) {
     case 'Leads':
