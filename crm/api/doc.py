@@ -376,7 +376,7 @@ def get_type(field):
 		return "read_only"
 	return field.fieldtype.lower()
 
-def get_assigned_users(doctype, name):
+def get_assigned_users(doctype, name, default_assigned_to=None):
 	assigned_users = frappe.get_all(
 		"ToDo",
 		fields=["allocated_to"],
@@ -388,7 +388,12 @@ def get_assigned_users(doctype, name):
 		pluck="allocated_to",
 	)
 
-	return list(set(assigned_users))
+	users = list(set(assigned_users))
+
+	# if users is empty, add default_assigned_to
+	if not users and default_assigned_to:
+		users = [default_assigned_to]
+	return users
 
 
 @frappe.whitelist()
