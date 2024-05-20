@@ -200,11 +200,11 @@ import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
+import { isEmoji } from '@/utils'
 import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
-import { gemoji } from 'gemoji'
 
 const props = defineProps({
   doctype: {
@@ -248,11 +248,6 @@ const currentView = computed(() => {
     icon: _view?.icon || 'list',
   }
 })
-
-function isEmoji(str) {
-  const emojiList = gemoji.map((emoji) => emoji.emoji)
-  return emojiList.includes(str)
-}
 
 const view = ref({
   name: '',

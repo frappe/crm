@@ -2,6 +2,7 @@ import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { useDateFormat, useTimeAgo } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
+import { gemoji } from 'gemoji'
 import { toast } from 'frappe-ui'
 import { h } from 'vue'
 
@@ -168,4 +169,9 @@ export function copyToClipboard(text) {
       iconClasses: 'text-green-600',
     })
   }
+}
+
+export function isEmoji(str) {
+  const emojiList = gemoji.map((emoji) => emoji.emoji)
+  return emojiList.includes(str)
 }
