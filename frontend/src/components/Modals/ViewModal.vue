@@ -25,16 +25,14 @@
         {{ __('View Name') }}
       </div>
       <div class="flex gap-2">
-        <IconPicker v-model="view.icon" v-slot="{ isOpen, togglePopover }">
+        <IconPicker v-model="view.icon" v-slot="{ togglePopover }">
           <Button
             variant="outline"
             size="md"
             class="flex size-8 text-2xl leading-none"
-            :class="isOpen ? 'bg-gray-200' : 'hover:bg-gray-100'"
+            :label="view.icon"
             @click="togglePopover"
-          >
-            {{ view.icon }}
-          </Button>
+          />
         </IconPicker>
         <TextInput
           class="flex-1"

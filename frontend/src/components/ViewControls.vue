@@ -127,6 +127,8 @@
     </div>
   </div>
   <ViewModal
+    v-model="showViewModal"
+    v-model:view="viewModalObj"
     :doctype="doctype"
     :options="{
       afterCreate: async (v) => {
@@ -139,8 +141,6 @@
         reloadView()
       },
     }"
-    v-model:view="view"
-    v-model="showViewModal"
   />
   <Dialog
     v-model="showExportDialog"
@@ -574,6 +574,7 @@ function create_or_update_default_view() {
     reloadView()
     view.value = {
       label: view.value.label,
+      icon: view.value.icon,
       name: view.value.name,
       filters: defaultParams.value.filters,
       order_by: defaultParams.value.order_by,
@@ -677,16 +678,22 @@ const viewActions = computed(() => {
   return actions
 })
 
+const viewModalObj = ref({})
+
 function duplicateView() {
   let label = __(getView(route.query.view)?.label) || __('List View')
   view.value.name = ''
   view.value.label = label + __(' (New)')
+  viewModalObj.value = view.value
   showViewModal.value = true
 }
 
 function editView() {
+  let cView = getView(route.query.view)
   view.value.name = route.query.view
-  view.value.label = __(getView(route.query.view).label)
+  view.value.label = __(cView?.label) || __('List View')
+  view.value.icon = cView?.icon || ''
+  viewModalObj.value = view.value
   showViewModal.value = true
 }
 
@@ -728,6 +735,7 @@ function cancelChanges() {
 function saveView() {
   view.value = {
     label: view.value.label,
+    icon: view.value.icon,
     name: view.value.name,
     filters: defaultParams.value.filters,
     order_by: defaultParams.value.order_by,
@@ -736,6 +744,7 @@ function saveView() {
     route_name: route.name,
     load_default_columns: view.value.load_default_columns,
   }
+  viewModalObj.value = view.value
   showViewModal.value = true
 }
 
