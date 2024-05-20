@@ -59,7 +59,6 @@ const props = defineProps({
 })
 
 const show = defineModel()
-const unselectAll = defineModel('unselectAll')
 
 const emit = defineEmits(['reload'])
 
@@ -114,7 +113,6 @@ function updateValues() {
     newValue.value = ''
     loading.value = false
     show.value = false
-    unselectAll.value()
     emit('reload')
   })
 }
