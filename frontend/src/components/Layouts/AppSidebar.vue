@@ -115,7 +115,7 @@ import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
 import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
-import { computed } from 'vue'
+import { computed, h } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -196,7 +196,7 @@ function parseView(views) {
   return views.map((view) => {
     return {
       label: view.label,
-      icon: getIcon(view.route_name),
+      icon: getIcon(view.route_name, view.icon),
       to: {
         name: view.route_name,
         query: { view: view.name },
@@ -205,7 +205,9 @@ function parseView(views) {
   })
 }
 
-function getIcon(routeName) {
+function getIcon(routeName, icon) {
+  if (icon) return h('div', { class: 'size-auto' }, icon)
+
   switch (routeName) {
     case 'Leads':
       return LeadsIcon

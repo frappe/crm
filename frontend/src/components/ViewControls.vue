@@ -5,7 +5,8 @@
         <template #default="{ open }">
           <Button :label="__(currentView.label)">
             <template #prefix>
-              <FeatherIcon :name="currentView.icon" class="h-4" />
+              <div v-if="isEmoji(currentView.icon)">{{ currentView.icon }}</div>
+              <FeatherIcon v-else :name="currentView.icon" class="h-4" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -23,15 +24,9 @@
       </Dropdown>
     </div>
     <div class="-mr-2 h-[70%] border-l" />
-    <div
+    <FadedScrollableDiv
       class="flex flex-1 items-center overflow-x-auto px-1"
-      style="
-        mask-image: linear-gradient(
-          to right,
-          black calc(100% - 20px),
-          transparent 100%
-        );
-      "
+      orientation="horizontal"
     >
       <div
         v-for="filter in quickFilterList"
@@ -78,7 +73,7 @@
           @change.stop="applyQuickFilter(filter, $event.target.value)"
         />
       </div>
-    </div>
+    </FadedScrollableDiv>
     <div class="-ml-2 h-[70%] border-l" />
     <div class="flex items-center gap-2">
       <div
@@ -132,6 +127,8 @@
     </div>
   </div>
   <ViewModal
+    v-model="showViewModal"
+    v-model:view="viewModalObj"
     :doctype="doctype"
     :options="{
       afterCreate: async (v) => {
@@ -144,8 +141,6 @@
         reloadView()
       },
     }"
-    v-model:view="view"
-    v-model="showViewModal"
   />
   <Dialog
     v-model="showExportDialog"
@@ -200,10 +195,12 @@ import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
+import { isEmoji } from '@/utils'
 import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -255,6 +252,7 @@ const currentView = computed(() => {
 const view = ref({
   name: '',
   label: '',
+  icon: '',
   filters: {},
   order_by: 'modified desc',
   columns: '',
@@ -293,6 +291,7 @@ function getParams() {
     view.value = {
       name: _view.name,
       label: _view.label,
+      icon: _view.icon,
       filters: _view.filters,
       order_by: _view.order_by,
       columns: _view.columns,
@@ -306,6 +305,7 @@ function getParams() {
     view.value = {
       name: '',
       label: '',
+      icon: '',
       filters: {},
       order_by: 'modified desc',
       columns: '',
@@ -396,6 +396,14 @@ const defaultViews = [
   },
 ]
 
+function getIcon(icon) {
+  if (isEmoji(icon)) {
+    return h('div', icon)
+  } else {
+    return icon || 'list'
+  }
+}
+
 const viewsDropdownOptions = computed(() => {
   let _views = [
     {
@@ -408,7 +416,7 @@ const viewsDropdownOptions = computed(() => {
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
       view.label = __(view.label)
-      view.icon = view.icon || 'list'
+      view.icon = getIcon(view.icon)
       view.filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
@@ -566,6 +574,7 @@ function create_or_update_default_view() {
     reloadView()
     view.value = {
       label: view.value.label,
+      icon: view.value.icon,
       name: view.value.name,
       filters: defaultParams.value.filters,
       order_by: defaultParams.value.order_by,
@@ -615,9 +624,9 @@ const viewActions = computed(() => {
 
   if (route.query.view && (!view.value.public || isManager())) {
     actions[0].items.push({
-      label: __('Rename'),
+      label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
-      onClick: () => renameView(),
+      onClick: () => editView(),
     })
 
     if (!view.value.public) {
@@ -669,16 +678,22 @@ const viewActions = computed(() => {
   return actions
 })
 
+const viewModalObj = ref({})
+
 function duplicateView() {
   let label = __(getView(route.query.view)?.label) || __('List View')
   view.value.name = ''
   view.value.label = label + __(' (New)')
+  viewModalObj.value = view.value
   showViewModal.value = true
 }
 
-function renameView() {
+function editView() {
+  let cView = getView(route.query.view)
   view.value.name = route.query.view
-  view.value.label = __(getView(route.query.view).label)
+  view.value.label = __(cView?.label) || __('List View')
+  view.value.icon = cView?.icon || ''
+  viewModalObj.value = view.value
   showViewModal.value = true
 }
 
@@ -720,6 +735,7 @@ function cancelChanges() {
 function saveView() {
   view.value = {
     label: view.value.label,
+    icon: view.value.icon,
     name: view.value.name,
     filters: defaultParams.value.filters,
     order_by: defaultParams.value.order_by,
@@ -728,6 +744,7 @@ function saveView() {
     route_name: route.name,
     load_default_columns: view.value.load_default_columns,
   }
+  viewModalObj.value = view.value
   showViewModal.value = true
 }
 
