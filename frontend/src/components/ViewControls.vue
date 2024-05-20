@@ -5,7 +5,8 @@
         <template #default="{ open }">
           <Button :label="__(currentView.label)">
             <template #prefix>
-              <FeatherIcon :name="currentView.icon" class="h-4" />
+              <div v-if="isEmoji(currentView.icon)">{{ currentView.icon }}</div>
+              <FeatherIcon v-else :name="currentView.icon" class="h-4" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -203,6 +204,7 @@ import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
+import { gemoji } from 'gemoji'
 
 const props = defineProps({
   doctype: {
@@ -247,9 +249,15 @@ const currentView = computed(() => {
   }
 })
 
+function isEmoji(str) {
+  const emojiList = gemoji.map((emoji) => emoji.emoji)
+  return emojiList.includes(str)
+}
+
 const view = ref({
   name: '',
   label: '',
+  icon: '',
   filters: {},
   order_by: 'modified desc',
   columns: '',
@@ -288,6 +296,7 @@ function getParams() {
     view.value = {
       name: _view.name,
       label: _view.label,
+      icon: _view.icon,
       filters: _view.filters,
       order_by: _view.order_by,
       columns: _view.columns,
@@ -301,6 +310,7 @@ function getParams() {
     view.value = {
       name: '',
       label: '',
+      icon: '',
       filters: {},
       order_by: 'modified desc',
       columns: '',
@@ -391,6 +401,14 @@ const defaultViews = [
   },
 ]
 
+function getIcon(icon) {
+  if (isEmoji(icon)) {
+    return h('div', icon)
+  } else {
+    return icon || 'list'
+  }
+}
+
 const viewsDropdownOptions = computed(() => {
   let _views = [
     {
@@ -403,7 +421,7 @@ const viewsDropdownOptions = computed(() => {
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
       view.label = __(view.label)
-      view.icon = view.icon || 'list'
+      view.icon = getIcon(view.icon)
       view.filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
@@ -610,9 +628,9 @@ const viewActions = computed(() => {
 
   if (route.query.view && (!view.value.public || isManager())) {
     actions[0].items.push({
-      label: __('Rename'),
+      label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
-      onClick: () => renameView(),
+      onClick: () => editView(),
     })
 
     if (!view.value.public) {
@@ -671,7 +689,7 @@ function duplicateView() {
   showViewModal.value = true
 }
 
-function renameView() {
+function editView() {
   view.value.name = route.query.view
   view.value.label = __(getView(route.query.view).label)
   showViewModal.value = true
