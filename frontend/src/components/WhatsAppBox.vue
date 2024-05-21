@@ -67,7 +67,7 @@ import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import { createResource, Textarea, FileUploader, Dropdown } from 'frappe-ui'
 import FeatherIcon from 'frappe-ui/src/components/FeatherIcon.vue'
-import { ref, computed, nextTick, watch } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 
 const props = defineProps({
   doctype: String,

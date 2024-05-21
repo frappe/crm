@@ -80,7 +80,9 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Dropdown :options="bulkActions(selections, unselectAll)">
+        <Dropdown
+          :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
+        >
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
@@ -95,8 +97,18 @@
     }"
     @loadMore="emit('loadMore')"
   />
+  <ListBulkActions
+    ref="listBulkActionsRef"
+    v-model="list"
+    doctype="CRM Call Log"
+    :options="{
+      hideEdit: true,
+      hideAssign: true,
+    }"
+  />
 </template>
 <script setup>
+import ListBulkActions from '@/components/ListBulkActions.vue'
 import {
   Avatar,
   ListView,
@@ -108,12 +120,8 @@ import {
   ListFooter,
   Tooltip,
   Dropdown,
-  call,
 } from 'frappe-ui'
-import { setupListActions, createToast } from '@/utils'
-import { globalStore } from '@/stores/global'
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -146,89 +154,14 @@ const emit = defineEmits([
 const pageLengthCount = defineModel()
 const list = defineModel('list')
 
-const router = useRouter()
-
-const { $dialog } = globalStore()
-
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
   emit('updatePageCount', val)
 })
 
-function deleteValues(selections, unselectAll) {
-  $dialog({
-    title: 'Delete',
-    message: `Are you sure you want to delete ${selections.size} item${
-      selections.size > 1 ? 's' : ''
-    }?`,
-    variant: 'danger',
-    actions: [
-      {
-        label: 'Delete',
-        variant: 'solid',
-        theme: 'red',
-        onClick: (close) => {
-          call('frappe.desk.reportview.delete_items', {
-            items: JSON.stringify(Array.from(selections)),
-            doctype: 'CRM Call Log',
-          }).then(() => {
-            createToast({
-              title: 'Deleted successfully',
-              icon: 'check',
-              iconClasses: 'text-green-600',
-            })
-            unselectAll()
-            list.value.reload()
-            close()
-          })
-        },
-      },
-    ],
-  })
-}
-
-const customBulkActions = ref([])
-const customListActions = ref([])
-
-function bulkActions(selections, unselectAll) {
-  let actions = [
-    {
-      label: 'Delete',
-      onClick: () => deleteValues(selections, unselectAll),
-    },
-  ]
-  customBulkActions.value.forEach((action) => {
-    actions.push({
-      label: action.label,
-      onClick: () =>
-        action.onClick({
-          list: list.value,
-          selections,
-          unselectAll,
-          call,
-          createToast,
-          $dialog,
-          router,
-        }),
-    })
-  })
-  return actions
-}
-
-onMounted(() => {
-  if (!list.value?.data) return
-  setupListActions(list.value.data, {
-    list: list.value,
-    call,
-    createToast,
-    $dialog,
-    router,
-  })
-  customBulkActions.value = list.value?.data?.bulkActions || []
-  customListActions.value = list.value?.data?.listActions || []
-})
+const listBulkActionsRef = ref(null)
 
 defineExpose({
-  customListActions,
+  customListActions: listBulkActionsRef.value?.customListActions,
 })
 </script>

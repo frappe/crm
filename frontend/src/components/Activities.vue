@@ -16,6 +16,16 @@
       <span>{{ __('New Email') }}</span>
     </Button>
     <Button
+      v-else-if="title == 'Comments'"
+      variant="solid"
+      @click="$refs.emailBox.showComment = true"
+    >
+      <template #prefix>
+        <FeatherIcon name="plus" class="h-4 w-4" />
+      </template>
+      <span>{{ __('New Comment') }}</span>
+    </Button>
+    <Button
       v-else-if="title == 'Calls'"
       variant="solid"
       @click="makeCall(doc.data.mobile_no)"
@@ -143,6 +153,62 @@
               {{ __(timeAgo(note.modified)) }}
             </div>
           </Tooltip>
+        </div>
+      </div>
+    </div>
+    <div v-else-if="title == 'Comments'" class="activity pb-5">
+      <div v-for="(comment, i) in activities">
+        <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
+          <div
+            class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
+            :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
+          >
+            <div
+              class="z-10 flex h-7 w-7 items-center justify-center rounded bg-gray-100"
+            >
+              <CommentIcon class="text-gray-800" />
+            </div>
+          </div>
+          <div class="mb-4" :id="comment.name">
+            <div
+              class="mb-0.5 flex items-start justify-stretch gap-2 py-1.5 text-base"
+            >
+              <div class="inline-flex flex-wrap gap-1 text-gray-600">
+                <span class="font-medium text-gray-800">
+                  {{ comment.owner_name }}
+                </span>
+                <span>{{ __('added a') }}</span>
+                <span class="max-w-xs truncate font-medium text-gray-800">
+                  {{ __('comment') }}
+                </span>
+              </div>
+              <div class="ml-auto whitespace-nowrap">
+                <Tooltip
+                  :text="dateFormat(comment.creation, dateTooltipFormat)"
+                >
+                  <div class="text-sm text-gray-600">
+                    {{ __(timeAgo(comment.creation)) }}
+                  </div>
+                </Tooltip>
+              </div>
+            </div>
+            <div
+              class="cursor-pointer rounded bg-gray-50 px-4 py-3 text-base leading-6 transition-all duration-300 ease-in-out"
+            >
+              <div class="prose-f" v-html="comment.content" />
+              <div
+                v-if="comment.attachments.length"
+                class="mt-2 flex flex-wrap gap-2"
+              >
+                <AttachmentItem
+                  v-for="a in comment.attachments"
+                  :key="a.file_url"
+                  :label="a.file_name"
+                  :url="a.file_url"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -757,6 +823,11 @@
       @click="$refs.emailBox.show = true"
     />
     <Button
+      v-else-if="title == 'Comments'"
+      :label="__('New Comment')"
+      @click="$refs.emailBox.showComment = true"
+    />
+    <Button
       v-else-if="title == 'Tasks'"
       :label="__('Create Task')"
       @click="showTask()"
@@ -764,7 +835,7 @@
   </div>
   <CommunicationArea
     ref="emailBox"
-    v-if="['Emails', 'Activity'].includes(title)"
+    v-if="['Emails', 'Comments', 'Activity'].includes(title)"
     v-model="doc"
     v-model:reload="reload_email"
     :doctype="doctype"
@@ -984,6 +1055,11 @@ const defaultActions = computed(() => {
       onClick: () => (emailBox.value.show = true),
     },
     {
+      icon: h(CommentIcon, { class: 'h-4 w-4' }),
+      label: __('New Comment'),
+      onClick: () => (emailBox.value.showComment = true),
+    },
+    {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
       label: __('Make a Call'),
       onClick: () => makeCall(doc.value.data.mobile_no),
@@ -1026,6 +1102,11 @@ const activities = computed(() => {
     if (!all_activities.data?.versions) return []
     activities = all_activities.data.versions.filter(
       (activity) => activity.activity_type === 'communication'
+    )
+  } else if (props.title == 'Comments') {
+    if (!all_activities.data?.versions) return []
+    activities = all_activities.data.versions.filter(
+      (activity) => activity.activity_type === 'comment'
     )
   } else if (props.title == 'Calls') {
     if (!all_activities.data?.calls) return []
@@ -1089,6 +1170,8 @@ const emptyText = computed(() => {
   let text = 'No Activities'
   if (props.title == 'Emails') {
     text = 'No Email Communications'
+  } else if (props.title == 'Comments') {
+    text = 'No Comments'
   } else if (props.title == 'Calls') {
     text = 'No Call Logs'
   } else if (props.title == 'Notes') {
@@ -1105,6 +1188,8 @@ const emptyTextIcon = computed(() => {
   let icon = ActivityIcon
   if (props.title == 'Emails') {
     icon = EmailIcon
+  } else if (props.title == 'Comments') {
+    icon = CommentIcon
   } else if (props.title == 'Calls') {
     icon = PhoneIcon
   } else if (props.title == 'Notes') {

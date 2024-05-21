@@ -27,6 +27,7 @@
         value=""
         doctype="User"
         @change="(option) => addValue(option) && ($refs.input.value = '')"
+        :placeholder="__('John Doe')"
         :hideMe="true"
       >
         <template #item-prefix="{ option }">
@@ -83,7 +84,17 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  docs: {
+    type: Array,
+    default: () => [],
+  },
+  doctype: {
+    type: String,
+    default: '',
+  },
 })
+
+const emit = defineEmits(['reload'])
 
 const show = defineModel()
 const assignees = defineModel('assignees')
@@ -101,7 +112,7 @@ const removeValue = (value) => {
 
 const owner = computed(() => {
   if (!props.doc) return ''
-  if (props.doc.doctype == 'CRM Lead') return props.doc.lead_owner
+  if (props.doctype == 'CRM Lead') return props.doc.lead_owner
   return props.doc.deal_owner
 })
 
@@ -137,7 +148,7 @@ function updateAssignees() {
   if (removedAssignees.length) {
     for (let a of removedAssignees) {
       call('frappe.desk.form.assign_to.remove', {
-        doctype: props.doc.doctype,
+        doctype: props.doctype,
         name: props.doc.name,
         assign_to: a,
       })
@@ -145,11 +156,23 @@ function updateAssignees() {
   }
 
   if (addedAssignees.length) {
-    call('frappe.desk.form.assign_to.add', {
-      doctype: props.doc.doctype,
-      name: props.doc.name,
-      assign_to: addedAssignees,
-    })
+    if (props.docs.size) {
+      call('frappe.desk.form.assign_to.add_multiple', {
+        doctype: props.doctype,
+        name: JSON.stringify(Array.from(props.docs)),
+        assign_to: addedAssignees,
+        bulk_assign: true,
+        re_assign: true,
+      }).then(() => {
+        emit('reload')
+      })
+    } else {
+      call('frappe.desk.form.assign_to.add', {
+        doctype: props.doctype,
+        name: props.doc.name,
+        assign_to: addedAssignees,
+      })
+    }
   }
   show.value = false
 }
