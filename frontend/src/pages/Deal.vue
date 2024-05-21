@@ -290,6 +290,7 @@ import Resizer from '@/components/Resizer.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -447,6 +448,11 @@ const tabs = computed(() => {
       name: 'Emails',
       label: __('Emails'),
       icon: EmailIcon,
+    },
+    {
+      name: 'Comments',
+      label: __('Comments'),
+      icon: CommentIcon,
     },
     {
       name: 'Calls',

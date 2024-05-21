@@ -248,5 +248,5 @@ function toggleCommentBox() {
   showCommentBox.value = !showCommentBox.value
 }
 
-defineExpose({ show: showEmailBox, editor: newEmailEditor })
+defineExpose({ show: showEmailBox, showComment: showCommentBox, editor: newEmailEditor })
 </script>
