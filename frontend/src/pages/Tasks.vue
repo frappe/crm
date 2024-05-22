@@ -39,6 +39,8 @@
     @updatePageCount="(count) => (updatedPageCount = count)"
     @showTask="showTask"
     @applyFilter="(data) => viewControls.applyFilter(data)"
+    @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
+    @likeDoc="(data) => viewControls.likeDoc(data)"
   />
   <div v-else-if="tasks.data" class="flex h-full items-center justify-center">
     <div

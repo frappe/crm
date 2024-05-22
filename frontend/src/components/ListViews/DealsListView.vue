@@ -11,7 +11,24 @@
     }"
     row-key="name"
   >
-    <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')" />
+    <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')">
+      <ListHeaderItem
+        v-for="column in columns"
+        :key="column.key"
+        :item="column"
+        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+      >
+        <Button
+          v-if="column.key == '_liked_by'"
+          variant="ghosted"
+          class="!h-4"
+          :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
+          @click="() => emit('applyLikeFilter')"
+        >
+          <HeartIcon class="h-4 w-4" />
+        </Button>
+      </ListHeaderItem>
+    </ListHeader>
     <ListRows id="list-rows">
       <ListRow
         class="mx-5"
@@ -61,6 +78,19 @@
             </div>
             <div v-else-if="column.key === 'mobile_no'">
               <PhoneIcon class="h-4 w-4" />
+            </div>
+            <div v-else-if="column.key === '_liked_by'">
+              <Button
+                v-if="column.key == '_liked_by'"
+                variant="ghosted"
+                :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
+                @click.stop.prevent="
+                  () =>
+                    emit('likeDoc', { name: row.name, liked: isLiked(item) })
+                "
+              >
+                <HeartIcon class="h-4 w-4" />
+              </Button>
             </div>
           </template>
           <template #default="{ label }">
@@ -164,6 +194,7 @@
 </template>
 
 <script setup>
+import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -172,6 +203,7 @@ import {
   Avatar,
   ListView,
   ListHeader,
+  ListHeaderItem,
   ListRows,
   ListRow,
   ListRowItem,
@@ -180,7 +212,8 @@ import {
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { sessionStore } from '@/stores/session'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -208,10 +241,25 @@ const emit = defineEmits([
   'updatePageCount',
   'columnWidthUpdated',
   'applyFilter',
+  'applyLikeFilter',
+  'likeDoc',
 ])
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')
+
+const isLikeFilterApplied = computed(() => {
+  return list.value.params?.filters?._liked_by ? true : false
+})
+
+const { user } = sessionStore()
+
+function isLiked(item) {
+  if (item) {
+    let likedByMe = JSON.parse(item)
+    return likedByMe.includes(user)
+  }
+}
 
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
