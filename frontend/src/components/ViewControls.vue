@@ -748,9 +748,10 @@ function saveView() {
   showViewModal.value = true
 }
 
-function applyFilter({ event, idx, column, item }) {
+function applyFilter({ event, idx, column, item, firstColumn }) {
   let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type) || idx === 0) return
+  if (idx === 1 && firstColumn.key == '_liked_by') return
 
   event.stopPropagation()
   event.preventDefault()

@@ -52,7 +52,14 @@
               v-if="['modified', 'creation'].includes(column.key)"
               class="truncate text-base"
               @click="
-                (event) => emit('applyFilter', { event, idx, column, item })
+                (event) =>
+                  emit('applyFilter', {
+                    event,
+                    idx,
+                    column,
+                    item,
+                    firstColumn: columns[0],
+                  })
               "
             >
               <Tooltip :text="item.label">
@@ -71,7 +78,14 @@
               v-else
               class="truncate text-base"
               @click="
-                (event) => emit('applyFilter', { event, idx, column, item })
+                (event) =>
+                  emit('applyFilter', {
+                    event,
+                    idx,
+                    column,
+                    item,
+                    firstColumn: columns[0],
+                  })
               "
             >
               {{ label }}

@@ -25,7 +25,14 @@
             :avatars="item"
             size="sm"
             @click="
-              (event) => emit('applyFilter', { event, idx, column, item })
+              (event) =>
+                emit('applyFilter', {
+                  event,
+                  idx,
+                  column,
+                  item,
+                  firstColumn: columns[0],
+                })
             "
           />
         </div>
@@ -69,7 +76,14 @@
               "
               class="truncate text-base"
               @click="
-                (event) => emit('applyFilter', { event, idx, column, item })
+                (event) =>
+                  emit('applyFilter', {
+                    event,
+                    idx,
+                    column,
+                    item,
+                    firstColumn: columns[0],
+                  })
               "
             >
               <Tooltip :text="item.label">
@@ -87,7 +101,14 @@
                 size="md"
                 :label="item.value"
                 @click="
-                  (event) => emit('applyFilter', { event, idx, column, item })
+                  (event) =>
+                    emit('applyFilter', {
+                      event,
+                      idx,
+                      column,
+                      item,
+                      firstColumn: columns[0],
+                    })
                 "
               />
             </div>
@@ -103,7 +124,14 @@
               v-else
               class="truncate text-base"
               @click="
-                (event) => emit('applyFilter', { event, idx, column, item })
+                (event) =>
+                  emit('applyFilter', {
+                    event,
+                    idx,
+                    column,
+                    item,
+                    firstColumn: columns[0],
+                  })
               "
             >
               {{ label }}
