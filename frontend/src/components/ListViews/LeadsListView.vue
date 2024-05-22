@@ -21,7 +21,8 @@
         <Button
           v-if="column.key == '_liked_by'"
           variant="ghosted"
-          class="!h-4 fill-white"
+          class="!h-4"
+          :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
         >
           <HeartIcon class="h-4 w-4" />
         </Button>
@@ -104,7 +105,7 @@
               <Button
                 v-if="column.key == '_liked_by'"
                 variant="ghosted"
-                class="fill-white"
+                :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
               >
                 <HeartIcon class="h-4 w-4" />
               </Button>
@@ -187,7 +188,8 @@ import {
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { sessionStore } from '@/stores/session'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
   rows: {
@@ -219,6 +221,19 @@ const emit = defineEmits([
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')
+
+const isLikeFilterApplied = computed(() => {
+  return list.value.params?.filters?._liked_by ? true : false
+})
+
+const { user } = sessionStore()
+
+function isLiked(item) {
+  if (item) {
+    let likedByMe = JSON.parse(item)
+    return likedByMe.includes(user)
+  }
+}
 
 watch(pageLengthCount, (val, old_value) => {
   if (val === old_value) return
