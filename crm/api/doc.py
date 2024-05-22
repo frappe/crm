@@ -248,6 +248,7 @@ def get_list_data(
 		},
 		{"label": "Assigned To", "type": "Text", "value": "_assign"},
 		{"label": "Owner", "type": "Link", "value": "owner", "options": "User"},
+		{"label": "Liked By", "type": "Data", "value": "_liked_by"},
 	]
 
 	for field in std_fields:
