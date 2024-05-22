@@ -950,6 +950,10 @@ const props = defineProps({
     type: String,
     default: 'CRM Lead',
   },
+  tabs: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const doc = defineModel()
@@ -1078,7 +1082,7 @@ const defaultActions = computed(() => {
     {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
       label: __('New WhatsApp Message'),
-      onClick: () => (tabIndex.value = 5),
+      onClick: () => (tabIndex.value = getTabIndex('WhatsApp')),
       condition: () => whatsappEnabled.value,
     },
   ]
@@ -1352,6 +1356,10 @@ function scroll(hash) {
       el.focus()
     }
   }, 500)
+}
+
+function getTabIndex(name) {
+  return props.tabs.findIndex((tab) => tab.name === name)
 }
 
 defineExpose({ emailBox })

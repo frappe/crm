@@ -45,6 +45,7 @@
         ref="activities"
         doctype="CRM Lead"
         :title="tab.name"
+        :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
         v-model="lead"
@@ -304,13 +305,14 @@ import {
   Breadcrumbs,
   call,
 } from 'frappe-ui'
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const { $dialog, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
+const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
@@ -447,6 +449,17 @@ const tabs = computed(() => {
     },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+})
+
+watch(tabs, (value) => {
+  if (value && route.params.tabName) {
+    let index = value.findIndex(
+      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase()
+    )
+    if (index !== -1) {
+      tabIndex.value = index
+    }
+  }
 })
 
 function validateFile(file) {
