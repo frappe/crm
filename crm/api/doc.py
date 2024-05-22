@@ -215,6 +215,9 @@ def get_list_data(
 			rows.append(column.get("key"))
 		column["label"] = _(column.get("label"))
 
+		if column.get("key") == "_liked_by" and column.get("width") == "10rem":
+			column["width"] = "50px"
+
 	data = frappe.get_list(
 		doctype,
 		fields=rows,
@@ -248,6 +251,7 @@ def get_list_data(
 		},
 		{"label": "Assigned To", "type": "Text", "value": "_assign"},
 		{"label": "Owner", "type": "Link", "value": "owner", "options": "User"},
+		{"label": "Liked By", "type": "Data", "value": "_liked_by"},
 	]
 
 	for field in std_fields:

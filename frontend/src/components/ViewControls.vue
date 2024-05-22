@@ -748,9 +748,10 @@ function saveView() {
   showViewModal.value = true
 }
 
-function applyFilter({ event, idx, column, item }) {
+function applyFilter({ event, idx, column, item, firstColumn }) {
   let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type) || idx === 0) return
+  if (idx === 1 && firstColumn.key == '_liked_by') return
 
   event.stopPropagation()
   event.preventDefault()
@@ -779,7 +780,26 @@ function applyFilter({ event, idx, column, item }) {
   updateFilter(filters)
 }
 
-defineExpose({ applyFilter })
+function applyLikeFilter() {
+  let filters = { ...list.value.params.filters }
+  if (!filters._liked_by) {
+    filters['_liked_by'] = ['LIKE', '%@me%']
+  } else {
+    delete filters['_liked_by']
+  }
+  updateFilter(filters)
+}
+
+function likeDoc({ name, liked }) {
+  createResource({
+    url: 'frappe.desk.like.toggle_like',
+    params: { doctype: props.doctype, name: name, add: liked ? 'No' : 'Yes' },
+    auto: true,
+    onSuccess: () => reload(),
+  })
+}
+
+defineExpose({ applyFilter, applyLikeFilter, likeDoc })
 
 // Watchers
 watch(
