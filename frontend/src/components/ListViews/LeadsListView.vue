@@ -11,7 +11,22 @@
     }"
     row-key="name"
   >
-    <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')" />
+    <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')">
+      <ListHeaderItem
+        v-for="column in columns"
+        :key="column.key"
+        :item="column"
+        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+      >
+        <Button
+          v-if="column.key == '_liked_by'"
+          variant="ghosted"
+          class="!h-4 fill-white"
+        >
+          <HeartIcon class="h-4 w-4" />
+        </Button>
+      </ListHeaderItem>
+    </ListHeader>
     <ListRows id="list-rows">
       <ListRow
         class="mx-5"
@@ -85,6 +100,15 @@
                 <div>{{ item.timeAgo }}</div>
               </Tooltip>
             </div>
+            <div v-else-if="column.key === '_liked_by'">
+              <Button
+                v-if="column.key == '_liked_by'"
+                variant="ghosted"
+                class="fill-white"
+              >
+                <HeartIcon class="h-4 w-4" />
+              </Button>
+            </div>
             <div
               v-else-if="column.key === 'sla_status'"
               class="truncate text-base"
@@ -123,7 +147,9 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Dropdown :options="listBulkActionsRef.bulkActions(selections, unselectAll)">
+        <Dropdown
+          :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
+        >
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
@@ -143,6 +169,7 @@
 </template>
 
 <script setup>
+import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
@@ -151,6 +178,7 @@ import {
   Avatar,
   ListView,
   ListHeader,
+  ListHeaderItem,
   ListRows,
   ListRow,
   ListSelectBanner,
