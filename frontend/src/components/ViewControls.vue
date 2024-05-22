@@ -779,7 +779,17 @@ function applyFilter({ event, idx, column, item }) {
   updateFilter(filters)
 }
 
-defineExpose({ applyFilter })
+function applyLikeFilter() {
+  let filters = { ...list.value.params.filters }
+  if (!filters._liked_by) {
+    filters['_liked_by'] = ['LIKE', '%@me%']
+  } else {
+    delete filters['_liked_by']
+  }
+  updateFilter(filters)
+}
+
+defineExpose({ applyFilter, applyLikeFilter })
 
 // Watchers
 watch(

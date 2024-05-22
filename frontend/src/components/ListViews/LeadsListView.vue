@@ -23,6 +23,7 @@
           variant="ghosted"
           class="!h-4"
           :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
+          @click="() => emit('applyLikeFilter')"
         >
           <HeartIcon class="h-4 w-4" />
         </Button>
@@ -217,6 +218,7 @@ const emit = defineEmits([
   'updatePageCount',
   'columnWidthUpdated',
   'applyFilter',
+  'applyLikeFilter',
 ])
 
 const pageLengthCount = defineModel()
