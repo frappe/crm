@@ -789,7 +789,16 @@ function applyLikeFilter() {
   updateFilter(filters)
 }
 
-defineExpose({ applyFilter, applyLikeFilter })
+function likeDoc({ name, liked }) {
+  createResource({
+    url: 'frappe.desk.like.toggle_like',
+    params: { doctype: props.doctype, name: name, add: liked ? 'No' : 'Yes' },
+    auto: true,
+    onSuccess: () => reload(),
+  })
+}
+
+defineExpose({ applyFilter, applyLikeFilter, likeDoc })
 
 // Watchers
 watch(

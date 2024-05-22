@@ -107,6 +107,10 @@
                 v-if="column.key == '_liked_by'"
                 variant="ghosted"
                 :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
+                @click.stop.prevent="
+                  () =>
+                    emit('likeDoc', { name: row.name, liked: isLiked(item) })
+                "
               >
                 <HeartIcon class="h-4 w-4" />
               </Button>
@@ -219,6 +223,7 @@ const emit = defineEmits([
   'columnWidthUpdated',
   'applyFilter',
   'applyLikeFilter',
+  'likeDoc',
 ])
 
 const pageLengthCount = defineModel()
