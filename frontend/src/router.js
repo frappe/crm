@@ -15,7 +15,7 @@ const routes = [
     meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
-    path: '/leads/:leadId',
+    path: '/leads/:leadId/:tabName?',
     name: 'Lead',
     component: () => import('@/pages/Lead.vue'),
     props: true,
@@ -27,7 +27,7 @@ const routes = [
     meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
-    path: '/deals/:dealId',
+    path: '/deals/:dealId/:tabName?',
     name: 'Deal',
     component: () => import('@/pages/Deal.vue'),
     props: true,
