@@ -215,6 +215,9 @@ def get_list_data(
 			rows.append(column.get("key"))
 		column["label"] = _(column.get("label"))
 
+		if column.get("key") == "_liked_by" and column.get("width") == "10rem":
+			column["width"] = "50px"
+
 	data = frappe.get_list(
 		doctype,
 		fields=rows,
