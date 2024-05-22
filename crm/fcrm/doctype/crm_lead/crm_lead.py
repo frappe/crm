@@ -234,8 +234,8 @@ class CRMLead(Document):
 		"""
 		sla = get_sla(self)
 		if not sla:
-			# self.first_responded_on = None
-			# self.first_response_time = None
+			self.first_responded_on = None
+			self.first_response_time = None
 			return
 		self.sla = sla.name
 
