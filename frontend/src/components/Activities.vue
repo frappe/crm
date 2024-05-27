@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mx-10 mb-4 mt-8 flex items-center justify-between text-lg font-medium"
+    class="mx-4 my-3 flex items-center justify-between text-lg font-medium sm:mx-10 sm:mb-4 sm:mt-8"
   >
     <div class="flex h-8 items-center text-xl font-semibold text-gray-800">
       {{ __(title) }}
@@ -56,7 +56,7 @@
         <template #prefix>
           <FeatherIcon name="plus" class="h-4 w-4" />
         </template>
-        <span>{{ __('New WhatsApp Message') }}</span>
+        <span>{{ __('New Message') }}</span>
       </Button>
     </div>
     <Dropdown v-else :options="defaultActions" @click.stop>
@@ -89,7 +89,7 @@
     class="activities flex-1 overflow-y-auto"
   >
     <WhatsAppArea
-      class="px-10"
+      class="px-4 sm:px-10"
       v-model="whatsappMessages"
       v-model:reply="replyMessage"
       :messages="whatsappMessages.data"
@@ -102,7 +102,7 @@
   >
     <div
       v-if="title == 'Notes'"
-      class="activity grid grid-cols-1 gap-4 px-10 pb-5 lg:grid-cols-2 xl:grid-cols-3"
+      class="activity grid grid-cols-1 gap-4 px-4 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
     >
       <div
         v-for="note in activities"
@@ -158,7 +158,9 @@
     </div>
     <div v-else-if="title == 'Comments'" class="activity pb-5">
       <div v-for="(comment, i) in activities">
-        <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
+        <div
+          class="grid grid-cols-[30px_minmax(auto,_1fr)] sm:gap-4 gap-2 px-4 sm:px-10"
+        >
           <div
             class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
             :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
@@ -212,7 +214,10 @@
         </div>
       </div>
     </div>
-    <div v-else-if="title == 'Tasks'" class="activity px-10 pb-5">
+    <div
+      v-else-if="title == 'Tasks'"
+      class="activity px-4 pb-3 sm:px-10 sm:pb-5"
+    >
       <div v-for="(task, i) in activities">
         <div
           class="flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
@@ -307,7 +312,9 @@
     </div>
     <div v-else-if="title == 'Calls'" class="activity">
       <div v-for="(call, i) in activities">
-        <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
+        <div
+          class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-4 sm:px-10"
+        >
           <div
             class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
             :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
@@ -324,7 +331,7 @@
             </div>
           </div>
           <div
-            class="mb-3 flex max-w-[70%] flex-col gap-3 rounded-md bg-gray-50 p-4"
+            class="mb-3 flex flex-col gap-3 rounded-md bg-gray-50 p-4 sm:max-w-[70%]"
           >
             <div class="flex items-center justify-between">
               <div>
@@ -410,8 +417,16 @@
       </div>
     </div>
     <div v-else v-for="(activity, i) in activities" class="activity">
-      <div class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-10">
+      <div
+        class="px-4 sm:px-10"
+        :class="
+          title == 'Activity'
+            ? 'grid grid-cols-[30px_minmax(auto,_1fr)] sm:gap-4 gap-2'
+            : ''
+        "
+      >
         <div
+          v-if="title == 'Activity'"
           class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
           :class="[
             i != activities.length - 1 ? 'before:h-full' : 'before:h-4',
@@ -574,7 +589,7 @@
             activity.activity_type == 'incoming_call' ||
             activity.activity_type == 'outgoing_call'
           "
-          class="mb-3 flex max-w-[70%] flex-col gap-3 rounded-md bg-gray-50 p-4"
+          class="mb-3 flex flex-col gap-3 rounded-md bg-gray-50 p-4 sm:max-w-[70%]"
         >
           <div class="flex items-center justify-between">
             <div>
@@ -625,35 +640,39 @@
               :src="activity.recording_url"
             ></audio>
           </div>
-          <div class="flex items-center justify-between">
+          <div
+            class="flex items-center justify-between sm:justify-start sm:gap-1"
+          >
             <div class="flex items-center gap-1">
               <Avatar
                 :image="activity.caller.image"
                 :label="activity.caller.label"
-                size="xl"
+                class="sm:h-8 sm:w-8"
               />
               <div class="ml-1 flex flex-col gap-1">
-                <div class="text-base font-medium">
+                <div class="text-xs font-medium sm:text-base">
                   {{ __(activity.caller.label) }}
                 </div>
-                <div class="text-xs text-gray-600">
+                <div class="text-2xs text-gray-600 sm:text-xs">
                   {{ activity.from }}
                 </div>
               </div>
-              <FeatherIcon
-                name="arrow-right"
-                class="mx-2 h-5 w-5 text-gray-600"
-              />
+            </div>
+            <FeatherIcon
+              name="arrow-right"
+              class="size-4 text-gray-600 sm:mx-2 sm:size-5"
+            />
+            <div class="flex items-center gap-1">
               <Avatar
                 :image="activity.receiver.image"
                 :label="activity.receiver.label"
-                size="xl"
+                class="sm:h-8 sm:w-8"
               />
               <div class="ml-1 flex flex-col gap-1">
-                <div class="text-base font-medium">
+                <div class="text-xs font-medium sm:text-base">
                   {{ __(activity.receiver.label) }}
                 </div>
-                <div class="text-xs text-gray-600">
+                <div class="text-2xs text-gray-600 sm:text-xs">
                   {{ activity.to }}
                 </div>
               </div>
