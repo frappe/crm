@@ -4,34 +4,36 @@
     class="flex flex-col justify-between gap-2 px-5 py-4"
   >
     <div class="flex items-center justify-between gap-2">
-      <Dropdown :options="viewsDropdownOptions">
-        <template #default="{ open }">
-          <Button :label="__(currentView.label)">
-            <template #prefix>
-              <div v-if="isEmoji(currentView.icon)">{{ currentView.icon }}</div>
-              <FeatherIcon v-else :name="currentView.icon" class="h-4" />
-            </template>
-            <template #suffix>
-              <FeatherIcon
-                :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4 text-gray-600"
-              />
-            </template>
-          </Button>
-        </template>
-      </Dropdown>
       <div class="flex gap-2">
-        <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
-          <template #icon>
-            <RefreshIcon class="h-4 w-4" />
+        <Dropdown :options="viewsDropdownOptions">
+          <template #default="{ open }">
+            <Button :label="__(currentView.label)">
+              <template #prefix>
+                <div v-if="isEmoji(currentView.icon)">
+                  {{ currentView.icon }}
+                </div>
+                <FeatherIcon v-else :name="currentView.icon" class="h-4" />
+              </template>
+              <template #suffix>
+                <FeatherIcon
+                  :name="open ? 'chevron-up' : 'chevron-down'"
+                  class="h-4 text-gray-600"
+                />
+              </template>
+            </Button>
           </template>
-        </Button>
+        </Dropdown>
         <Dropdown :options="viewActions">
           <template #default>
             <Button icon="more-horizontal" />
           </template>
         </Dropdown>
       </div>
+      <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
+        <template #icon>
+          <RefreshIcon class="h-4 w-4" />
+        </template>
+      </Button>
     </div>
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between gap-2">
