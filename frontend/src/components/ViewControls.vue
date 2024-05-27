@@ -1,5 +1,68 @@
 <template>
-  <div class="flex items-center justify-between gap-2 px-5 py-4">
+  <div
+    v-if="isMobileView"
+    class="flex flex-col justify-between gap-2 px-5 py-4"
+  >
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex gap-2">
+        <Dropdown :options="viewsDropdownOptions">
+          <template #default="{ open }">
+            <Button :label="__(currentView.label)">
+              <template #prefix>
+                <div v-if="isEmoji(currentView.icon)">
+                  {{ currentView.icon }}
+                </div>
+                <FeatherIcon v-else :name="currentView.icon" class="h-4" />
+              </template>
+              <template #suffix>
+                <FeatherIcon
+                  :name="open ? 'chevron-up' : 'chevron-down'"
+                  class="h-4 text-gray-600"
+                />
+              </template>
+            </Button>
+          </template>
+        </Dropdown>
+        <Dropdown :options="viewActions">
+          <template #default>
+            <Button icon="more-horizontal" />
+          </template>
+        </Dropdown>
+      </div>
+      <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
+        <template #icon>
+          <RefreshIcon class="h-4 w-4" />
+        </template>
+      </Button>
+    </div>
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center justify-between gap-2">
+        <Filter
+          v-model="list"
+          :doctype="doctype"
+          :default_filters="filters"
+          @update="updateFilter"
+        />
+        <div class="flex gap-2">
+          <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
+          <ColumnSettings
+            v-if="!options.hideColumnsButton"
+            v-model="list"
+            :doctype="doctype"
+            @update="(isDefault) => updateColumns(isDefault)"
+          />
+        </div>
+      </div>
+      <div
+        v-if="viewUpdated && route.query.view && (!view.public || isManager())"
+        class="flex flex-row-reverse items-center gap-2 border-r pr-2"
+      >
+        <Button :label="__('Cancel')" @click="cancelChanges" />
+        <Button :label="__('Save Changes')" @click="saveView" />
+      </div>
+    </div>
+  </div>
+  <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
     <div class="flex items-center gap-2">
       <Dropdown :options="viewsDropdownOptions">
         <template #default="{ open }">
@@ -205,6 +268,7 @@ import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
+import { isMobileView } from '@/stores/settings'
 
 const props = defineProps({
   doctype: {

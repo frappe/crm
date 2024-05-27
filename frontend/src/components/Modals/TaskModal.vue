@@ -55,7 +55,7 @@
             :placeholder="__('Took a call with John Doe and discussed the new project.')"
           />
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 overflow-x-auto">
           <Dropdown :options="taskStatusOptions(updateTaskStatus)">
             <Button :label="_task.status" class="w-full justify-between">
               <template #prefix>

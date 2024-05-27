@@ -14,8 +14,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, h } from 'vue'
 import { Dropdown } from 'frappe-ui'
+import { isMobileView } from '@/stores/settings'
 
 const props = defineProps({
   actions: {
@@ -25,10 +26,30 @@ const props = defineProps({
 })
 
 const groupedActions = computed(() => {
-  return props.actions.filter((action) => action.group)
+  let _actions = []
+  let _normalActions = props.actions.filter((action) => !action.group)
+  if (isMobileView.value && _normalActions.length) {
+    _actions.push({
+      group: __('Actions'),
+      hideLabel: true,
+      items: _normalActions.map((action) => ({
+        label: action.label,
+        onClick: action.onClick,
+        icon: action.icon,
+      })),
+    })
+  }
+  _actions = _actions.concat(
+    props.actions.filter((action) => action.group)
+  )
+  return _actions
 })
 
 const normalActions = computed(() => {
-  return props.actions.filter((action) => !action.group)
+  let _actions = props.actions.filter((action) => !action.group)
+  if (isMobileView.value && _actions.length) {
+    return []
+  }
+  return _actions
 })
 </script>

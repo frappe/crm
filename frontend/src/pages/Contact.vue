@@ -7,7 +7,7 @@
   <div v-if="contact.data" class="flex h-full flex-col overflow-hidden">
     <FileUploader @success="changeContactImage" :validateFile="validateFile">
       <template #default="{ openFileSelector, error }">
-        <div class="flex items-center justify-start gap-6 p-5">
+        <div class="flex items-start justify-start gap-6 p-5 sm:items-center">
           <div class="group relative h-24 w-24">
             <Avatar
               size="3xl"
@@ -50,14 +50,16 @@
               </div>
             </component>
           </div>
-          <div class="flex flex-col gap-0.5 truncate">
+          <div class="flex flex-col gap-2 truncate sm:gap-0.5">
             <div class="truncate text-3xl font-semibold">
               <span v-if="contact.data.salutation">
                 {{ contact.data.salutation + '. ' }}
               </span>
               <span>{{ contact.data.full_name }}</span>
             </div>
-            <div class="flex items-center gap-2 text-base text-gray-700">
+            <div
+              class="flex flex-col flex-wrap gap-3 text-base text-gray-700 sm:flex-row sm:items-center sm:gap-2"
+            >
               <div
                 v-if="contact.data.email_id"
                 class="flex items-center gap-1.5"
@@ -67,7 +69,7 @@
               </div>
               <span
                 v-if="contact.data.email_id"
-                class="text-3xl leading-[0] text-gray-600"
+                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
               >
                 &middot;
               </span>
@@ -79,7 +81,9 @@
                 <div
                   class="flex items-center gap-1.5"
                   :class="callEnabled ? 'cursor-pointer' : ''"
-                  @click="callEnabled && makeCall(contact.data.actual_mobile_no)"
+                  @click="
+                    callEnabled && makeCall(contact.data.actual_mobile_no)
+                  "
                 >
                   <PhoneIcon class="h-4 w-4" />
                   <span class="">{{ contact.data.actual_mobile_no }}</span>
@@ -87,7 +91,7 @@
               </component>
               <span
                 v-if="contact.data.actual_mobile_no"
-                class="text-3xl leading-[0] text-gray-600"
+                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
               >
                 &middot;
               </span>
@@ -107,7 +111,7 @@
               </div>
               <span
                 v-if="contact.data.company_name"
-                class="text-3xl leading-[0] text-gray-600"
+                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
               >
                 &middot;
               </span>
@@ -119,7 +123,7 @@
                 "
                 variant="ghost"
                 :label="__('More')"
-                class="-ml-1 cursor-pointer hover:text-gray-900"
+                class="w-fit cursor-pointer hover:text-gray-900 sm:-ml-1"
                 @click="
                   () => {
                     detailMode = true

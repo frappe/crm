@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-col gap-1.5 border-b px-6 py-3">
+  <div class="flex flex-col gap-1.5 border-b sm:px-6 py-3 px-4">
     <div
       v-for="s in slaSection"
       :key="s.label"
       class="flex items-center gap-2 text-base leading-5"
     >
-      <div class="w-[106px] text-sm text-gray-600">{{ __(s.label) }}</div>
+      <div class="sm:w-[106px] w-36 text-sm text-gray-600">{{ __(s.label) }}</div>
       <div class="grid min-h-[28px] items-center">
         <Tooltip v-if="s.tooltipText" :text="__(s.tooltipText)">
           <div class="ml-2 cursor-pointer">

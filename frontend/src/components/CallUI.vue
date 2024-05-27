@@ -1,5 +1,5 @@
 <template>
-  <div v-show="showCallPopup">
+  <div v-show="showCallPopup" v-bind="$attrs">
     <div
       ref="callPopup"
       class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-lg bg-gray-900 p-4 text-gray-300 shadow-2xl"
@@ -116,6 +116,7 @@
     v-show="showSmallCallWindow"
     class="ml-2 flex cursor-pointer select-none items-center justify-between gap-3 rounded-lg bg-gray-900 px-2 py-[7px] text-base text-gray-300"
     @click="toggleCallWindow"
+    v-bind="$attrs"
   >
     <div class="flex items-center gap-2">
       <Avatar

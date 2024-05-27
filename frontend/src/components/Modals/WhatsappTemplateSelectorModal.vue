@@ -16,7 +16,7 @@
       </TextInput>
       <div
         v-if="filteredTemplates.length"
-        class="mt-2 grid max-h-[560px] grid-cols-3 gap-2 overflow-y-auto"
+        class="mt-2 grid max-h-[560px] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-3"
       >
         <div
           v-for="template in filteredTemplates"
@@ -41,7 +41,11 @@
           <div class="text-lg text-gray-500">
             {{ __('No templates found') }}
           </div>
-          <Button :label="__('Create New')" class="mt-4" />
+          <Button
+            :label="__('Create New')"
+            class="mt-4"
+            @click="newWhatsappTemplate"
+          />
         </div>
       </div>
     </template>
@@ -68,7 +72,7 @@ const templates = createListResource({
   doctype: 'WhatsApp Templates',
   cache: ['whatsappTemplates'],
   fields: ['name', 'template', 'footer'],
-  filters: { status: 'APPROVED', for_doctype: ['in', [props.doctype, '']]},
+  filters: { status: 'APPROVED', for_doctype: ['in', [props.doctype, '']] },
   orderBy: 'modified desc',
   pageLength: 99999,
   auto: true,
@@ -87,6 +91,11 @@ const filteredTemplates = computed(() => {
     }) ?? []
   )
 })
+
+function newWhatsappTemplate() {
+  show.value = false
+  window.open('/app/whatsapp-templates/new')
+}
 
 watch(show, (value) => value && nextTick(() => searchInput.value?.el?.focus()))
 </script>
