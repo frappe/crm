@@ -5,11 +5,9 @@
         <FeatherIcon name="menu" class="size-4" />
       </Button>
     </div>
-    <div id="app-header" class="flex-1"></div>
-    <div class="flex items-center justify-center">
-      <CallUI />
-    </div>
+    <div id="app-header" class="flex-1" />
   </div>
+  <CallUI class="mr-3 mt-2" />
 </template>
 
 <script setup>
