@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between gap-3 border-t px-10 py-2.5">
+  <div class="flex justify-between gap-3 border-t sm:px-10 px-4 py-2.5">
     <div class="flex gap-1.5">
       <Button
         ref="sendEmailRef"

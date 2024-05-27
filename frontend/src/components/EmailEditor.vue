@@ -9,7 +9,7 @@
     :editable="editable"
   >
     <template #top>
-      <div class="mx-10 flex items-center gap-2 border-t py-2.5">
+      <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t py-2.5">
         <span class="text-xs text-gray-500">{{ __('SUBJECT') }}:</span>
         <TextInput
           class="flex-1 border-none bg-white hover:bg-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
@@ -17,7 +17,7 @@
         />
       </div>
       <div
-        class="mx-10 flex items-center gap-2 border-t py-2.5"
+        class="sm:mx-10 mx-4 flex items-center gap-2 border-t py-2.5"
         :class="[cc || bcc ? 'border-b' : '']"
       >
         <span class="text-xs text-gray-500">{{ __('TO') }}:</span>
@@ -32,7 +32,7 @@
       </div>
       <div
         v-if="cc"
-        class="mx-10 flex items-center gap-2 py-2.5"
+        class="sm:mx-10 mx-4 flex items-center gap-2 py-2.5"
         :class="bcc ? 'border-b' : ''"
       >
         <span class="text-xs text-gray-500">{{ __('CC') }}:</span>
@@ -46,7 +46,7 @@
           "
         />
       </div>
-      <div v-if="bcc" class="mx-10 flex items-center gap-2 py-2.5">
+      <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2 py-2.5">
         <span class="text-xs text-gray-500">{{ __('BCC') }}:</span>
         <MultiselectInput
           ref="bccInput"
@@ -62,14 +62,14 @@
     <template v-slot:editor="{ editor }">
       <EditorContent
         :class="[
-          editable && 'mx-10 max-h-[50vh] overflow-y-auto border-t py-3',
+          editable && 'sm:mx-10 mx-4 max-h-[50vh] overflow-y-auto border-t py-3',
         ]"
         :editor="editor"
       />
     </template>
     <template v-slot:bottom>
       <div v-if="editable" class="flex flex-col gap-2">
-        <div class="flex flex-wrap gap-2 px-10">
+        <div class="flex flex-wrap gap-2 sm:px-10 px-4">
           <AttachmentItem
             v-for="a in attachments"
             :key="a.file_url"
@@ -85,7 +85,7 @@
           </AttachmentItem>
         </div>
         <div
-          class="flex justify-between gap-2 overflow-hidden border-t px-10 py-2.5"
+          class="flex justify-between gap-2 overflow-hidden border-t sm:px-10 px-4 py-2.5"
         >
           <div class="flex items-center overflow-x-auto">
             <TextEditorFixedMenu
