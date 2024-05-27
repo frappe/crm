@@ -12,6 +12,5 @@
 
 <script setup>
 import CallUI from '@/components/CallUI.vue'
-import { Button, FeatherIcon } from 'frappe-ui'
 import { mobileSidebarOpened as sidebarOpened } from '@/stores/settings'
 </script>

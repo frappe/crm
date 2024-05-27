@@ -102,7 +102,6 @@ import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
-import { FeatherIcon } from 'frappe-ui'
 import { computed, h } from 'vue'
 import { mobileSidebarOpened as sidebarOpened } from '@/stores/settings'
 
