@@ -22,7 +22,7 @@
       </Tooltip>
     </template>
   </LayoutHeader>
-  <div class="flex h-screen flex-col">
+  <div class="flex flex-col overflow-hidden">
     <div
       v-if="notificationsStore().allNotifications?.length"
       class="divide-y overflow-y-auto text-base"
