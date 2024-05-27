@@ -19,3 +19,5 @@ createResource({
     callEnabled.value = Boolean(data)
   },
 })
+
+export const mobileSidebarOpened = ref(false)
