@@ -74,7 +74,7 @@
         </Section>
       </div>
     </div>
-    <div class="m-2 flex flex-col gap-1">
+    <div v-if="!isMobileView" class="m-2 flex flex-col gap-1">
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
@@ -116,6 +116,7 @@ import { notificationsStore } from '@/stores/notifications'
 import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
+import { isMobileView } from '@/stores/settings'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()

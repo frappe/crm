@@ -1,13 +1,15 @@
 <template>
   <Teleport to="#app-header" v-if="showHeader">
-    <header class="flex justify-between items-center pl-5 py-2.5 h-12">
-      <div class="flex items-center gap-2">
-        <slot name="left-header" />
-      </div>
-      <div class="flex items-center gap-2">
-        <slot name="right-header" class="flex items-center gap-2" />
-      </div>
-    </header>
+    <slot>
+      <header class="flex h-12 items-center justify-between py-2.5 pl-5">
+        <div class="flex items-center gap-2">
+          <slot name="left-header" />
+        </div>
+        <div class="flex items-center gap-2">
+          <slot name="right-header" class="flex items-center gap-2" />
+        </div>
+      </header>
+    </slot>
   </Teleport>
 </template>
 <script setup>

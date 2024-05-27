@@ -43,6 +43,7 @@
 import { Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { isMobileView, mobileSidebarOpened } from '@/stores/settings'
 
 const router = useRouter()
 const route = useRoute()
@@ -71,6 +72,9 @@ function handleClick() {
     router.push(props.to)
   } else {
     router.push({ name: props.to })
+  }
+  if (isMobileView.value) {
+    mobileSidebarOpened.value = false
   }
 }
 

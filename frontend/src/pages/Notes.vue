@@ -22,7 +22,7 @@
   <div class="flex-1 overflow-y-auto">
     <div
       v-if="notes.data?.data?.length"
-      class="grid grid-cols-4 gap-4 px-5 pb-3"
+      class="grid sm:grid-cols-4 grid-cols-1 gap-4 px-5 pb-3"
     >
       <div
         v-for="note in notes.data.data"

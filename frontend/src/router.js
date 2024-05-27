@@ -9,6 +9,11 @@ const routes = [
     name: 'Home',
   },
   {
+    path: '/notifications',
+    name: 'Notifications',
+    component: () => import('@/pages/MobileNotification.vue'),
+  },
+  {
     path: '/leads',
     name: 'Leads',
     component: () => import('@/pages/Leads.vue'),
@@ -17,7 +22,7 @@ const routes = [
   {
     path: '/leads/:leadId/:tabName?',
     name: 'Lead',
-    component: () => import('@/pages/Lead.vue'),
+    component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
     props: true,
   },
   {
@@ -29,7 +34,7 @@ const routes = [
   {
     path: '/deals/:dealId/:tabName?',
     name: 'Deal',
-    component: () => import('@/pages/Deal.vue'),
+    component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
     props: true,
   },
   {
@@ -100,6 +105,10 @@ const routes = [
     component: () => import('@/pages/Login.vue'),
   },
 ]
+
+const handleMobileView = (componentName) => {
+  return window.innerWidth < 768 ? `Mobile${componentName}` : componentName
+}
 
 const scrollBehavior = (to, from, savedPosition) => {
   if (to.name === from.name) {
