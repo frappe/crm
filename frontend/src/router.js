@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
+import { isMobileView } from '@/stores/settings'
 
 const routes = [
   {
@@ -17,7 +18,8 @@ const routes = [
   {
     path: '/leads/:leadId/:tabName?',
     name: 'Lead',
-    component: () => import('@/pages/Lead.vue'),
+    component: () =>
+      import(`@/pages/${handleMobileView('Lead')}.vue`),
     props: true,
   },
   {
@@ -29,7 +31,7 @@ const routes = [
   {
     path: '/deals/:dealId/:tabName?',
     name: 'Deal',
-    component: () => import('@/pages/Deal.vue'),
+    component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
     props: true,
   },
   {
@@ -100,6 +102,10 @@ const routes = [
     component: () => import('@/pages/Login.vue'),
   },
 ]
+
+const handleMobileView = (componentName) => {
+  return isMobileView.value ? `Mobile${componentName}` : componentName
+}
 
 const scrollBehavior = (to, from, savedPosition) => {
   if (to.name === from.name) {
