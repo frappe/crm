@@ -41,9 +41,11 @@ class CustomEmailTemplate(EmailTemplate):
 		rows = [
 			"name",
 			"enabled",
+			"use_html",
 			"reference_doctype",
 			"subject",
 			"response",
+			"response_html",
 			"modified",
 		]
 		return {'columns': columns, 'rows': rows}
