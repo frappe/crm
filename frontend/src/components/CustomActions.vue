@@ -55,7 +55,9 @@ const groupedActions = computed(() => {
       })),
     })
   }
-  _actions = _actions.concat(props.actions.filter((action) => action.group))
+  _actions = _actions.concat(
+    props.actions.filter((action) => action.group && !action.buttonLabel)
+  )
   return _actions
 })
 
