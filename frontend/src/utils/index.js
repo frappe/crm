@@ -125,19 +125,56 @@ export function setupAssignees(data) {
   }))
 }
 
+function getActionsFromScript(script, obj) {
+  let scriptFn = new Function(script + '\nreturn setupForm')()
+  let formScript = scriptFn(obj)
+  return formScript?.actions || []
+}
+
 export function setupCustomActions(data, obj) {
   if (!data._form_script) return []
-  let script = new Function(data._form_script + '\nreturn setupForm')()
-  let formScript = script(obj)
-  data._customActions = formScript?.actions || []
+
+  let actions = []
+  if (Array.isArray(data._form_script)) {
+    data._form_script.forEach((script) => {
+      actions = actions.concat(getActionsFromScript(script, obj))
+    })
+  } else {
+    actions = getActionsFromScript(data._form_script, obj)
+  }
+
+  data._customActions = actions
+}
+
+function getActionsFromListScript(script, obj) {
+  let scriptFn = new Function(script + '\nreturn setupList')()
+  let listScript = scriptFn(obj)
+  return {
+    actions: listScript?.actions || [],
+    bulk_actions: listScript?.bulk_actions || [],
+  }
 }
 
 export function setupListActions(data, obj = {}) {
   if (!data.list_script) return []
-  let script = new Function(data.list_script + '\nreturn setupList')()
-  let listScript = script(obj)
-  data.listActions = listScript?.actions || []
-  data.bulkActions = listScript?.bulk_actions || []
+
+  let actions = []
+  let bulkActions = []
+
+  if (Array.isArray(data.list_script)) {
+    data.list_script.forEach((script) => {
+      let _actions = getActionsFromListScript(script, obj)
+      actions = actions.concat(_actions.actions)
+      bulkActions = bulkActions.concat(_actions.bulk_actions)
+    })
+  } else {
+    let _actions = getActionsFromListScript(data.list_script, obj)
+    actions = _actions.actions
+    bulkActions = _actions.bulk_actions
+  }
+
+  data.listActions = actions
+  data.bulkActions = bulkActions
 }
 
 export function errorMessage(title, message) {
