@@ -227,6 +227,8 @@ watch(pageLengthCount, (val, old_value) => {
 const listBulkActionsRef = ref(null)
 
 defineExpose({
-  customListActions: listBulkActionsRef.value?.customListActions,
+  customListActions: computed(
+    () => listBulkActionsRef.value?.customListActions
+  ),
 })
 </script>
