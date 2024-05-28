@@ -1,5 +1,6 @@
 <template>
   <Button
+    v-if="normalActions.length && !isMobileView"
     v-for="action in normalActions"
     :label="action.label"
     @click="action.onClick()"
@@ -12,7 +13,7 @@
     <Button icon="more-horizontal" />
   </Dropdown>
   <div
-    v-if="groupedWithLabelActions.length"
+    v-if="groupedWithLabelActions.length && !isMobileView"
     v-for="g in groupedWithLabelActions"
     :key="g.label"
   >
@@ -41,24 +42,8 @@ const props = defineProps({
   },
 })
 
-const groupedActions = computed(() => {
-  let _actions = []
-  let _normalActions = props.actions.filter((action) => !action.group)
-  if (isMobileView.value && _normalActions.length) {
-    _actions.push({
-      group: __('Actions'),
-      hideLabel: true,
-      items: _normalActions.map((action) => ({
-        label: action.label,
-        onClick: action.onClick,
-        icon: action.icon,
-      })),
-    })
-  }
-  _actions = _actions.concat(
-    props.actions.filter((action) => action.group && !action.buttonLabel)
-  )
-  return _actions
+const normalActions = computed(() => {
+  return props.actions.filter((action) => !action.group)
 })
 
 const groupedWithLabelActions = computed(() => {
@@ -80,11 +65,28 @@ const groupedWithLabelActions = computed(() => {
   return _actions
 })
 
-const normalActions = computed(() => {
-  let _actions = props.actions.filter((action) => !action.group)
-  if (isMobileView.value && _actions.length) {
-    return []
+const groupedActions = computed(() => {
+  let _actions = []
+  let _normalActions = normalActions.value
+  if (isMobileView.value && _normalActions.length) {
+    _actions.push({
+      group: __('Actions'),
+      hideLabel: true,
+      items: _normalActions.map((action) => ({
+        label: action.label,
+        onClick: action.onClick,
+        icon: action.icon,
+      })),
+    })
   }
+  if (isMobileView.value && groupedWithLabelActions.value.length) {
+    groupedWithLabelActions.value.map((group) => {
+      group.action.forEach((action) => _actions.push(action))
+    })
+  }
+  _actions = _actions.concat(
+    props.actions.filter((action) => action.group && !action.buttonLabel)
+  )
   return _actions
 })
 </script>
