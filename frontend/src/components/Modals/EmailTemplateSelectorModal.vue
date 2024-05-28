@@ -31,7 +31,14 @@
             {{ __('Subject: {0}', [template.subject]) }}
           </div>
           <TextEditor
-            v-if="template.response"
+            v-if="template.use_html && template.response_html"
+            :content="template.response_html"
+            :editable="false"
+            editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
+            class="flex-1 overflow-hidden"
+          />
+          <TextEditor
+            v-else-if="template.response"
             :content="template.response"
             :editable="false"
             editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
@@ -97,9 +104,11 @@ const templates = createListResource({
   fields: [
     'name',
     'enabled',
+    'use_html',
     'reference_doctype',
     'subject',
     'response',
+    'response_html',
     'modified',
     'owner',
   ],
