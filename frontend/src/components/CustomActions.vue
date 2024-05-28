@@ -11,6 +11,22 @@
   <Dropdown v-if="groupedActions.length" :options="groupedActions">
     <Button icon="more-horizontal" />
   </Dropdown>
+  <div
+    v-if="groupedWithLabelActions.length"
+    v-for="g in groupedWithLabelActions"
+    :key="g.label"
+  >
+    <Dropdown :options="g.action" v-slot="{ open }">
+      <Button :label="g.label">
+        <template #suffix>
+          <FeatherIcon
+            :name="open ? 'chevron-up' : 'chevron-down'"
+            class="h-4"
+          />
+        </template>
+      </Button>
+    </Dropdown>
+  </div>
 </template>
 
 <script setup>
@@ -39,9 +55,26 @@ const groupedActions = computed(() => {
       })),
     })
   }
-  _actions = _actions.concat(
-    props.actions.filter((action) => action.group)
-  )
+  _actions = _actions.concat(props.actions.filter((action) => action.group))
+  return _actions
+})
+
+const groupedWithLabelActions = computed(() => {
+  let _actions = []
+
+  props.actions
+    .filter((action) => action.buttonLabel && action.group)
+    .forEach((action) => {
+      let groupIndex = _actions.findIndex((a) => a.label === action.buttonLabel)
+      if (groupIndex > -1) {
+        _actions[groupIndex].action.push(action)
+      } else {
+        _actions.push({
+          label: action.buttonLabel,
+          action: [action],
+        })
+      }
+    })
   return _actions
 })
 
