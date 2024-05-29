@@ -232,8 +232,12 @@ class CRMLead(Document):
 		"""
 		Find an SLA to apply to the lead.
 		"""
+		if self.sla: return
+
 		sla = get_sla(self)
 		if not sla:
+			self.first_responded_on = None
+			self.first_response_time = None
 			return
 		self.sla = sla.name
 
