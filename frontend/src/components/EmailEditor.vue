@@ -62,7 +62,7 @@
     <template v-slot:editor="{ editor }">
       <EditorContent
         :class="[
-          editable && 'sm:mx-10 mx-4 max-h-[50vh] overflow-y-auto border-t py-3',
+          editable && 'sm:mx-10 mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
         ]"
         :editor="editor"
       />
