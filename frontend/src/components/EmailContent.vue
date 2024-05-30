@@ -1,7 +1,8 @@
 <template>
   <iframe
+    ref="iframeRef"
     :srcdoc="htmlContent"
-    class="h-screen max-h-[500px] w-full"
+    class="prose-f block h-screen max-h-[500px] w-full"
     style="
       mask-image: linear-gradient(
         to bottom,
@@ -13,6 +14,8 @@
 </template>
 
 <script setup>
+import { ref, watch } from 'vue'
+
 const props = defineProps({
   content: {
     type: String,
@@ -20,12 +23,24 @@ const props = defineProps({
   },
 })
 
+const iframeRef = ref(null)
+
 const htmlContent = `
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="/src/index.css" rel="stylesheet">
   <style>
+
+    .prose-f {
+      --tw-prose-body: #383838;
+      color: var(--tw-prose-body);
+      font-weight: 420;
+      letter-spacing: 0.02em;
+      max-width: none;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
     .email-content {
         word-break: break-word;
     }
@@ -101,8 +116,35 @@ const htmlContent = `
   </style>
 </head>
 <body>
-    <div class="email-content prose-f">${props.content}</div>
+    <div ref="emailContentRef" class="email-content prose-f">${props.content}</div>
 </body>
 </html>
 `
+
+watch(iframeRef, (iframe) => {
+  if (iframe) {
+    iframe.onload = () => {
+      const emailContent =
+        iframe.contentWindow.document.querySelector('.email-content')
+      iframe.style.height = emailContent.offsetHeight + 25 + 'px'
+
+      let fileName = ''
+      // read file name on path /src and get the file name of the css file to inject in the iframe
+      // /assets/crm/frontend/assets/*.css
+      const files = import.meta.globEager('/*/*')
+      for (const file in files) {
+        debugger
+        fileName = file
+      }
+
+
+      // inject link in head of iframe
+      const head = iframe.contentWindow.document.head
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = '/src/index.css'
+      head.appendChild(link)
+    }
+  }
+})
 </script>
