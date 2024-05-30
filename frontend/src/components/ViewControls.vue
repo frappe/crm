@@ -127,13 +127,13 @@
           @change="(v) => applyQuickFilter(filter, v)"
           :placeholder="filter.label"
         />
-        <FormControl
+        <TextInput
           v-else
           :value="filter.value"
           type="text"
           :placeholder="filter.label"
           :debounce="500"
-          @change.stop="applyQuickFilter(filter, $event.target.value)"
+          @input.stop="applyQuickFilter(filter, $event.target.value)"
         />
       </div>
     </FadedScrollableDiv>
@@ -264,7 +264,13 @@ import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
 import { isEmoji } from '@/utils'
-import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
+import {
+  createResource,
+  Dropdown,
+  call,
+  FeatherIcon,
+  TextInput,
+} from 'frappe-ui'
 import { computed, ref, onMounted, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
