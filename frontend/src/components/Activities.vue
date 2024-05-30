@@ -523,11 +523,7 @@
             </span>
             <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
           </div>
-          <FadedScrollableDiv
-            :maskHeight="30"
-            class="email-content prose-f max-h-[500px] overflow-y-auto"
-            v-html="activity.data.content"
-          />
+          <EmailContent :content="activity.data.content" />
           <div class="flex flex-wrap gap-2">
             <AttachmentItem
               v-for="a in activity.data.attachments"
@@ -886,6 +882,7 @@
   />
 </template>
 <script setup>
+import EmailContent from '@/components/EmailContent.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
@@ -1398,80 +1395,5 @@ nextTick(() => {
 
 .audio-control::-webkit-media-controls-panel {
   background-color: white;
-}
-
-/* email content */
-
-.email-content {
-  word-break: break-word;
-}
-:deep(.email-content
-    :is(:where(table):not(:where([class~='not-prose'], [class~='not-prose']
-          *)))) {
-  table-layout: auto;
-}
-
-:deep(.email-content
-    :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *))) {
-  width: unset;
-  table-layout: auto;
-  text-align: unset;
-  margin-top: unset;
-  margin-bottom: unset;
-  font-size: unset;
-  line-height: unset;
-}
-
-/* tr */
-
-:deep(.email-content
-    :where(tbody tr):not(:where([class~='not-prose'], [class~='not-prose']
-        *))) {
-  border-bottom-width: 0;
-  border-bottom-color: transparent;
-}
-
-/* td */
-
-:deep(.email-content
-    :is(:where(td):not(:where([class~='not-prose'], [class~='not-prose'] *)))) {
-  position: unset;
-  border-width: 0;
-  border-color: transparent;
-  padding: 0;
-}
-
-:deep(.email-content
-    :where(tbody td):not(:where([class~='not-prose'], [class~='not-prose']
-        *))) {
-  vertical-align: revert;
-}
-
-/* image */
-:deep(.email-content
-    :is(:where(img):not(:where([class~='not-prose'], [class~='not-prose']
-          *)))) {
-  border-width: 0;
-}
-
-:deep(.email-content
-    :where(img):not(:where([class~='not-prose'], [class~='not-prose'] *))) {
-  margin: 0;
-}
-
-/* before & after */
-
-:deep(.email-content
-    :where(blockquote
-      p:first-of-type):not(:where([class~='not-prose'], [class~='not-prose']
-        *))::before) {
-  content: none;
-}
-
-:deep(.email-content
-    :where(blockquote
-      p:last-of-type):not(:where([class~='not-prose'], [class~='not-prose']
-        *))::after) {
-  content: none;
 }
 </style>
