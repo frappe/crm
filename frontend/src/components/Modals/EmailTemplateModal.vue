@@ -55,18 +55,39 @@
             {{ __('Content') }}
             <span class="text-red-500">*</span>
           </div>
+          <FormControl
+            v-if="_emailTemplate.use_html"
+            type="textarea"
+            variant="outline"
+            ref="content"
+            rows="10"
+            v-model="_emailTemplate.response_html"
+            :placeholder="
+              __(
+                '<p>Dear {{ lead_name }},</p>\n\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\n\n<p>Thanks,</p>\n<p>Frappé</p>'
+              )
+            "
+          />
           <TextEditor
+            v-else
             variant="outline"
             ref="content"
             editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm focus:bg-white focus:border-gray-500 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-800 transition-colors"
             :bubbleMenu="true"
             :content="_emailTemplate.response"
             @change="(val) => (_emailTemplate.response = val)"
-            :placeholder="__('Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé')"
+            :placeholder="
+              __(
+                'Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé'
+              )
+            "
           />
         </div>
         <div>
           <Checkbox v-model="_emailTemplate.enabled" :label="__('Enabled')" />
+        </div>
+        <div>
+          <Checkbox v-model="_emailTemplate.use_html" :label="__('Use HTML')" />
         </div>
         <ErrorMessage :message="__(errorMessage)" />
       </div>

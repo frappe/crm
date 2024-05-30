@@ -106,6 +106,8 @@ class CRMDeal(Document):
 		"""
 		Find an SLA to apply to the deal.
 		"""
+		if self.sla: return
+
 		sla = get_sla(self)
 		if not sla:
 			self.first_responded_on = None

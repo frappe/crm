@@ -102,11 +102,11 @@
   >
     <div
       v-if="title == 'Notes'"
-      class="activity grid grid-cols-1 gap-4 px-4 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
+      class="grid grid-cols-1 gap-4 px-4 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
     >
       <div
         v-for="note in activities"
-        class="group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
+        class="activity group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
         @click="showNote(note)"
       >
         <div class="flex items-center justify-between">
@@ -156,10 +156,10 @@
         </div>
       </div>
     </div>
-    <div v-else-if="title == 'Comments'" class="activity pb-5">
+    <div v-else-if="title == 'Comments'" class="pb-5">
       <div v-for="(comment, i) in activities">
         <div
-          class="grid grid-cols-[30px_minmax(auto,_1fr)] sm:gap-4 gap-2 px-4 sm:px-10"
+          class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 px-4 sm:gap-4 sm:px-10"
         >
           <div
             class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
@@ -214,13 +214,10 @@
         </div>
       </div>
     </div>
-    <div
-      v-else-if="title == 'Tasks'"
-      class="activity px-4 pb-3 sm:px-10 sm:pb-5"
-    >
+    <div v-else-if="title == 'Tasks'" class="px-4 pb-3 sm:px-10 sm:pb-5">
       <div v-for="(task, i) in activities">
         <div
-          class="flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
+          class="activity flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
           @click="showTask(task)"
         >
           <div class="flex flex-1 flex-col gap-1.5 text-base">
@@ -313,7 +310,7 @@
     <div v-else-if="title == 'Calls'" class="activity">
       <div v-for="(call, i) in activities">
         <div
-          class="grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-4 sm:px-10"
+          class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-4 sm:px-10"
         >
           <div
             class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
@@ -416,283 +413,341 @@
         </div>
       </div>
     </div>
-    <div v-else v-for="(activity, i) in activities" class="activity">
+    <div
+      v-else
+      v-for="(activity, i) in activities"
+      class="activity px-4 sm:px-10"
+      :class="
+        title == 'Activity'
+          ? 'grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 sm:gap-4'
+          : ''
+      "
+    >
       <div
-        class="px-4 sm:px-10"
-        :class="
-          title == 'Activity'
-            ? 'grid grid-cols-[30px_minmax(auto,_1fr)] sm:gap-4 gap-2'
-            : ''
-        "
+        v-if="title == 'Activity'"
+        class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
+        :class="[
+          i != activities.length - 1 ? 'before:h-full' : 'before:h-4',
+          activity.other_versions
+            ? 'after:translate-y-[calc(-50% - 4px)] after:absolute after:bottom-9 after:left-[50%] after:top-0 after:-z-10 after:w-8 after:rounded-bl-xl after:border-b after:border-l after:border-gray-200'
+            : '',
+        ]"
       >
         <div
-          v-if="title == 'Activity'"
-          class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
-          :class="[
-            i != activities.length - 1 ? 'before:h-full' : 'before:h-4',
-            activity.other_versions
-              ? 'after:translate-y-[calc(-50% - 4px)] after:absolute after:bottom-9 after:left-[50%] after:top-0 after:-z-10 after:w-8 after:rounded-bl-xl after:border-b after:border-l after:border-gray-200'
-              : '',
-          ]"
+          class="z-10 flex h-7 w-7 items-center justify-center rounded bg-gray-100"
+          :class="{
+            'mt-3': [
+              'communication',
+              'incoming_call',
+              'outgoing_call',
+            ].includes(activity.activity_type),
+            'bg-white': ['added', 'removed', 'changed'].includes(
+              activity.activity_type
+            ),
+          }"
         >
-          <div
-            class="z-10 flex h-7 w-7 items-center justify-center rounded bg-gray-100"
-            :class="{
-              'mt-3': [
-                'communication',
-                'incoming_call',
-                'outgoing_call',
-              ].includes(activity.activity_type),
-              'bg-white': ['added', 'removed', 'changed'].includes(
-                activity.activity_type
-              ),
-            }"
-          >
-            <component
-              :is="activity.icon"
-              :class="
-                ['added', 'removed', 'changed'].includes(activity.activity_type)
-                  ? 'text-gray-500'
-                  : 'text-gray-800'
-              "
-            />
-          </div>
+          <component
+            :is="activity.icon"
+            :class="
+              ['added', 'removed', 'changed'].includes(activity.activity_type)
+                ? 'text-gray-500'
+                : 'text-gray-800'
+            "
+          />
         </div>
-        <div v-if="activity.activity_type == 'communication'" class="pb-6">
-          <div
-            class="cursor-pointer rounded-md bg-gray-50 p-3 text-base leading-6 transition-all duration-300 ease-in-out"
-          >
-            <div class="mb-1 flex items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <UserAvatar :user="activity.data.sender" size="md" />
-                <span>{{ activity.data.sender_full_name }}</span>
-                <span>&middot;</span>
-                <Tooltip
-                  :text="dateFormat(activity.creation, dateTooltipFormat)"
-                >
-                  <div class="text-sm text-gray-600">
-                    {{ __(timeAgo(activity.creation)) }}
-                  </div>
-                </Tooltip>
-                <Badge
-                  v-if="activity.communication_type == 'Automated Message'"
-                  :label="__('Notification')"
-                  variant="subtle"
-                  theme="green"
-                />
-              </div>
-              <div class="flex gap-0.5">
-                <Tooltip :text="__('Reply')">
-                  <Button
-                    variant="ghost"
-                    class="text-gray-700"
-                    @click="reply(activity.data)"
-                  >
-                    <ReplyIcon class="h-4 w-4" />
-                  </Button>
-                </Tooltip>
-                <Tooltip :text="__('Reply All')">
-                  <Button
-                    variant="ghost"
-                    class="text-gray-700"
-                    @click="reply(activity.data, true)"
-                  >
-                    <ReplyAllIcon class="h-4 w-4" />
-                  </Button>
-                </Tooltip>
-              </div>
-            </div>
-            <div class="text-sm leading-5 text-gray-600">
-              {{ activity.data.subject }}
-            </div>
-            <div class="mb-3 text-sm leading-5 text-gray-600">
-              <span class="mr-1 text-2xs font-bold text-gray-500">
-                {{ __('TO') }}:
-              </span>
-              <span>{{ activity.data.recipients }}</span>
-              <span v-if="activity.data.cc">, </span>
-              <span
-                v-if="activity.data.cc"
-                class="mr-1 text-2xs font-bold text-gray-500"
-              >
-                {{ __('CC') }}:
-              </span>
-              <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
-              <span v-if="activity.data.bcc">, </span>
-              <span
-                v-if="activity.data.bcc"
-                class="mr-1 text-2xs font-bold text-gray-500"
-              >
-                {{ __('BCC') }}:
-              </span>
-              <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
-            </div>
-            <FadedScrollableDiv
-              :maskHeight="30"
-              class="email-content prose-f max-h-[500px] overflow-y-auto"
-              v-html="activity.data.content"
-            />
-            <div class="flex flex-wrap gap-2">
-              <AttachmentItem
-                v-for="a in activity.data.attachments"
-                :key="a.file_url"
-                :label="a.file_name"
-                :url="a.file_url"
-              />
-            </div>
-          </div>
-        </div>
+      </div>
+      <div v-if="activity.activity_type == 'communication'" class="pb-6">
         <div
-          class="mb-4"
-          :id="activity.name"
-          v-else-if="activity.activity_type == 'comment'"
+          class="cursor-pointer rounded-md bg-gray-50 p-3 text-base leading-6 transition-all duration-300 ease-in-out"
         >
-          <div
-            class="mb-0.5 flex items-start justify-stretch gap-2 py-1.5 text-base"
-          >
-            <div class="inline-flex flex-wrap gap-1 text-gray-600">
-              <span class="font-medium text-gray-800">
-                {{ activity.owner_name }}
-              </span>
-              <span>{{ __('added a') }}</span>
-              <span class="max-w-xs truncate font-medium text-gray-800">
-                {{ __('comment') }}
-              </span>
-            </div>
-            <div class="ml-auto whitespace-nowrap">
+          <div class="mb-1 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <UserAvatar :user="activity.data.sender" size="md" />
+              <span>{{ activity.data.sender_full_name }}</span>
+              <span>&middot;</span>
               <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
                 <div class="text-sm text-gray-600">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
-            </div>
-          </div>
-          <div
-            class="cursor-pointer rounded bg-gray-50 px-4 py-3 text-base leading-6 transition-all duration-300 ease-in-out"
-          >
-            <div class="prose-f" v-html="activity.content" />
-            <div
-              v-if="activity.attachments.length"
-              class="mt-2 flex flex-wrap gap-2"
-            >
-              <AttachmentItem
-                v-for="a in activity.attachments"
-                :key="a.file_url"
-                :label="a.file_name"
-                :url="a.file_url"
+              <Badge
+                v-if="activity.communication_type == 'Automated Message'"
+                :label="__('Notification')"
+                variant="subtle"
+                theme="green"
               />
             </div>
+            <div class="flex gap-0.5">
+              <Tooltip :text="__('Reply')">
+                <Button
+                  variant="ghost"
+                  class="text-gray-700"
+                  @click="reply(activity.data)"
+                >
+                  <ReplyIcon class="h-4 w-4" />
+                </Button>
+              </Tooltip>
+              <Tooltip :text="__('Reply All')">
+                <Button
+                  variant="ghost"
+                  class="text-gray-700"
+                  @click="reply(activity.data, true)"
+                >
+                  <ReplyAllIcon class="h-4 w-4" />
+                </Button>
+              </Tooltip>
+            </div>
+          </div>
+          <div class="text-sm leading-5 text-gray-600">
+            {{ activity.data.subject }}
+          </div>
+          <div class="mb-3 text-sm leading-5 text-gray-600">
+            <span class="mr-1 text-2xs font-bold text-gray-500">
+              {{ __('TO') }}:
+            </span>
+            <span>{{ activity.data.recipients }}</span>
+            <span v-if="activity.data.cc">, </span>
+            <span
+              v-if="activity.data.cc"
+              class="mr-1 text-2xs font-bold text-gray-500"
+            >
+              {{ __('CC') }}:
+            </span>
+            <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
+            <span v-if="activity.data.bcc">, </span>
+            <span
+              v-if="activity.data.bcc"
+              class="mr-1 text-2xs font-bold text-gray-500"
+            >
+              {{ __('BCC') }}:
+            </span>
+            <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
+          </div>
+          <EmailContent :content="activity.data.content" />
+          <div class="flex flex-wrap gap-2">
+            <AttachmentItem
+              v-for="a in activity.data.attachments"
+              :key="a.file_url"
+              :label="a.file_name"
+              :url="a.file_url"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="mb-4"
+        :id="activity.name"
+        v-else-if="activity.activity_type == 'comment'"
+      >
+        <div
+          class="mb-0.5 flex items-start justify-stretch gap-2 py-1.5 text-base"
+        >
+          <div class="inline-flex flex-wrap gap-1 text-gray-600">
+            <span class="font-medium text-gray-800">
+              {{ activity.owner_name }}
+            </span>
+            <span>{{ __('added a') }}</span>
+            <span class="max-w-xs truncate font-medium text-gray-800">
+              {{ __('comment') }}
+            </span>
+          </div>
+          <div class="ml-auto whitespace-nowrap">
+            <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+              <div class="text-sm text-gray-600">
+                {{ __(timeAgo(activity.creation)) }}
+              </div>
+            </Tooltip>
           </div>
         </div>
         <div
-          v-else-if="
-            activity.activity_type == 'incoming_call' ||
-            activity.activity_type == 'outgoing_call'
-          "
-          class="mb-3 flex flex-col gap-3 rounded-md bg-gray-50 p-4 sm:max-w-[70%]"
+          class="cursor-pointer rounded bg-gray-50 px-4 py-3 text-base leading-6 transition-all duration-300 ease-in-out"
         >
-          <div class="flex items-center justify-between">
-            <div>
+          <div class="prose-f" v-html="activity.content" />
+          <div
+            v-if="activity.attachments.length"
+            class="mt-2 flex flex-wrap gap-2"
+          >
+            <AttachmentItem
+              v-for="a in activity.attachments"
+              :key="a.file_url"
+              :label="a.file_name"
+              :url="a.file_url"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        v-else-if="
+          activity.activity_type == 'incoming_call' ||
+          activity.activity_type == 'outgoing_call'
+        "
+        class="mb-3 flex flex-col gap-3 rounded-md bg-gray-50 p-4 sm:max-w-[70%]"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            {{
+              activity.type == 'Incoming'
+                ? __('Inbound Call')
+                : __('Outbound Call')
+            }}
+          </div>
+          <div>
+            <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+              <div class="text-sm text-gray-600">
+                {{ __(timeAgo(activity.creation)) }}
+              </div>
+            </Tooltip>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1">
+            <DurationIcon class="h-4 w-4 text-gray-600" />
+            <div class="text-sm text-gray-600">{{ __('Duration') }}</div>
+            <div class="text-sm">
+              {{ activity.duration }}
+            </div>
+          </div>
+          <div
+            v-if="activity.recording_url"
+            class="flex cursor-pointer select-none items-center gap-1"
+            @click="activity.show_recording = !activity.show_recording"
+          >
+            <PlayIcon class="h-4 w-4 text-gray-600" />
+            <div class="text-sm text-gray-600">
               {{
-                activity.type == 'Incoming'
-                  ? __('Inbound Call')
-                  : __('Outbound Call')
+                activity.show_recording
+                  ? __('Hide Recording')
+                  : __('Listen to Call')
               }}
             </div>
-            <div>
-              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-sm text-gray-600">
-                  {{ __(timeAgo(activity.creation)) }}
-                </div>
-              </Tooltip>
-            </div>
           </div>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1">
-              <DurationIcon class="h-4 w-4 text-gray-600" />
-              <div class="text-sm text-gray-600">{{ __('Duration') }}</div>
-              <div class="text-sm">
-                {{ activity.duration }}
-              </div>
-            </div>
-            <div
-              v-if="activity.recording_url"
-              class="flex cursor-pointer select-none items-center gap-1"
-              @click="activity.show_recording = !activity.show_recording"
-            >
-              <PlayIcon class="h-4 w-4 text-gray-600" />
-              <div class="text-sm text-gray-600">
-                {{
-                  activity.show_recording
-                    ? __('Hide Recording')
-                    : __('Listen to Call')
-                }}
-              </div>
-            </div>
-          </div>
-          <div
-            v-if="activity.show_recording && activity.recording_url"
-            class="flex items-center justify-between rounded border"
-          >
-            <audio
-              class="audio-control"
-              controls
-              :src="activity.recording_url"
-            ></audio>
-          </div>
-          <div
-            class="flex items-center justify-between sm:justify-start sm:gap-1"
-          >
-            <div class="flex items-center gap-1">
-              <Avatar
-                :image="activity.caller.image"
-                :label="activity.caller.label"
-                class="sm:h-8 sm:w-8"
-              />
-              <div class="ml-1 flex flex-col gap-1">
-                <div class="text-xs font-medium sm:text-base">
-                  {{ __(activity.caller.label) }}
-                </div>
-                <div class="text-2xs text-gray-600 sm:text-xs">
-                  {{ activity.from }}
-                </div>
-              </div>
-            </div>
-            <FeatherIcon
-              name="arrow-right"
-              class="size-4 text-gray-600 sm:mx-2 sm:size-5"
+        </div>
+        <div
+          v-if="activity.show_recording && activity.recording_url"
+          class="flex items-center justify-between rounded border"
+        >
+          <audio
+            class="audio-control"
+            controls
+            :src="activity.recording_url"
+          ></audio>
+        </div>
+        <div
+          class="flex items-center justify-between sm:justify-start sm:gap-1"
+        >
+          <div class="flex items-center gap-1">
+            <Avatar
+              :image="activity.caller.image"
+              :label="activity.caller.label"
+              class="sm:h-8 sm:w-8"
             />
-            <div class="flex items-center gap-1">
-              <Avatar
-                :image="activity.receiver.image"
-                :label="activity.receiver.label"
-                class="sm:h-8 sm:w-8"
-              />
-              <div class="ml-1 flex flex-col gap-1">
-                <div class="text-xs font-medium sm:text-base">
-                  {{ __(activity.receiver.label) }}
-                </div>
-                <div class="text-2xs text-gray-600 sm:text-xs">
-                  {{ activity.to }}
-                </div>
+            <div class="ml-1 flex flex-col gap-1">
+              <div class="text-xs font-medium sm:text-base">
+                {{ __(activity.caller.label) }}
+              </div>
+              <div class="text-2xs text-gray-600 sm:text-xs">
+                {{ activity.from }}
+              </div>
+            </div>
+          </div>
+          <FeatherIcon
+            name="arrow-right"
+            class="size-4 text-gray-600 sm:mx-2 sm:size-5"
+          />
+          <div class="flex items-center gap-1">
+            <Avatar
+              :image="activity.receiver.image"
+              :label="activity.receiver.label"
+              class="sm:h-8 sm:w-8"
+            />
+            <div class="ml-1 flex flex-col gap-1">
+              <div class="text-xs font-medium sm:text-base">
+                {{ __(activity.receiver.label) }}
+              </div>
+              <div class="text-2xs text-gray-600 sm:text-xs">
+                {{ activity.to }}
               </div>
             </div>
           </div>
         </div>
-        <div v-else class="mb-4 flex flex-col gap-5 py-1.5">
-          <div class="flex items-start justify-stretch gap-2 text-base">
-            <div class="inline-flex flex-wrap gap-1 text-gray-600">
-              <span class="font-medium text-gray-800">
-                {{ activity.owner_name }}
-              </span>
-              <span v-if="activity.type">{{ __(activity.type) }}</span>
+      </div>
+      <div v-else class="mb-4 flex flex-col gap-5 py-1.5">
+        <div class="flex items-start justify-stretch gap-2 text-base">
+          <div class="inline-flex flex-wrap gap-1 text-gray-600">
+            <span class="font-medium text-gray-800">
+              {{ activity.owner_name }}
+            </span>
+            <span v-if="activity.type">{{ __(activity.type) }}</span>
+            <span
+              v-if="activity.data.field_label"
+              class="max-w-xs truncate font-medium text-gray-800"
+            >
+              {{ __(activity.data.field_label) }}
+            </span>
+            <span v-if="activity.value">{{ __(activity.value) }}</span>
+            <span
+              v-if="activity.data.old_value"
+              class="max-w-xs font-medium text-gray-800"
+            >
+              <div
+                class="flex items-center gap-1"
+                v-if="activity.options == 'User'"
+              >
+                <UserAvatar :user="activity.data.old_value" size="xs" />
+                {{ getUser(activity.data.old_value).full_name }}
+              </div>
+              <div class="truncate" v-else>
+                {{ activity.data.old_value }}
+              </div>
+            </span>
+            <span v-if="activity.to">{{ __('to') }}</span>
+            <span
+              v-if="activity.data.value"
+              class="max-w-xs font-medium text-gray-800"
+            >
+              <div
+                class="flex items-center gap-1"
+                v-if="activity.options == 'User'"
+              >
+                <UserAvatar :user="activity.data.value" size="xs" />
+                {{ getUser(activity.data.value).full_name }}
+              </div>
+              <div class="truncate" v-else>
+                {{ activity.data.value }}
+              </div>
+            </span>
+          </div>
+
+          <div class="ml-auto whitespace-nowrap">
+            <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+              <div class="text-sm text-gray-600">
+                {{ __(timeAgo(activity.creation)) }}
+              </div>
+            </Tooltip>
+          </div>
+        </div>
+        <div
+          v-if="activity.other_versions && activity.show_others"
+          v-for="activity in activity.other_versions"
+          class="flex items-start justify-stretch gap-2 text-base"
+        >
+          <div class="flex items-start gap-1 text-gray-600">
+            <div class="flex flex-1 items-center gap-1">
               <span
                 v-if="activity.data.field_label"
-                class="max-w-xs truncate font-medium text-gray-800"
+                class="max-w-xs truncate text-gray-600"
               >
                 {{ __(activity.data.field_label) }}
               </span>
-              <span v-if="activity.value">{{ __(activity.value) }}</span>
+              <FeatherIcon
+                name="arrow-right"
+                class="mx-1 h-4 w-4 text-gray-600"
+              />
+            </div>
+            <div class="flex flex-wrap items-center gap-1">
+              <span v-if="activity.type">{{
+                startCase(__(activity.type))
+              }}</span>
               <span
                 v-if="activity.data.old_value"
                 class="max-w-xs font-medium text-gray-800"
@@ -725,97 +780,33 @@
                 </div>
               </span>
             </div>
-
-            <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-sm text-gray-600">
-                  {{ __(timeAgo(activity.creation)) }}
-                </div>
-              </Tooltip>
-            </div>
           </div>
-          <div
-            v-if="activity.other_versions && activity.show_others"
-            v-for="activity in activity.other_versions"
-            class="flex items-start justify-stretch gap-2 text-base"
+
+          <div class="ml-auto whitespace-nowrap">
+            <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+              <div class="text-sm text-gray-600">
+                {{ __(timeAgo(activity.creation)) }}
+              </div>
+            </Tooltip>
+          </div>
+        </div>
+        <div v-if="activity.other_versions">
+          <Button
+            :label="
+              activity.show_others
+                ? __('Hide all Changes')
+                : __('Show all Changes')
+            "
+            variant="outline"
+            @click="activity.show_others = !activity.show_others"
           >
-            <div class="flex items-start gap-1 text-gray-600">
-              <div class="flex flex-1 items-center gap-1">
-                <span
-                  v-if="activity.data.field_label"
-                  class="max-w-xs truncate text-gray-600"
-                >
-                  {{ __(activity.data.field_label) }}
-                </span>
-                <FeatherIcon
-                  name="arrow-right"
-                  class="mx-1 h-4 w-4 text-gray-600"
-                />
-              </div>
-              <div class="flex flex-wrap items-center gap-1">
-                <span v-if="activity.type">{{
-                  startCase(__(activity.type))
-                }}</span>
-                <span
-                  v-if="activity.data.old_value"
-                  class="max-w-xs font-medium text-gray-800"
-                >
-                  <div
-                    class="flex items-center gap-1"
-                    v-if="activity.options == 'User'"
-                  >
-                    <UserAvatar :user="activity.data.old_value" size="xs" />
-                    {{ getUser(activity.data.old_value).full_name }}
-                  </div>
-                  <div class="truncate" v-else>
-                    {{ activity.data.old_value }}
-                  </div>
-                </span>
-                <span v-if="activity.to">{{ __('to') }}</span>
-                <span
-                  v-if="activity.data.value"
-                  class="max-w-xs font-medium text-gray-800"
-                >
-                  <div
-                    class="flex items-center gap-1"
-                    v-if="activity.options == 'User'"
-                  >
-                    <UserAvatar :user="activity.data.value" size="xs" />
-                    {{ getUser(activity.data.value).full_name }}
-                  </div>
-                  <div class="truncate" v-else>
-                    {{ activity.data.value }}
-                  </div>
-                </span>
-              </div>
-            </div>
-
-            <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-sm text-gray-600">
-                  {{ __(timeAgo(activity.creation)) }}
-                </div>
-              </Tooltip>
-            </div>
-          </div>
-          <div v-if="activity.other_versions">
-            <Button
-              :label="
-                activity.show_others
-                  ? __('Hide all Changes')
-                  : __('Show all Changes')
-              "
-              variant="outline"
-              @click="activity.show_others = !activity.show_others"
-            >
-              <template #suffix>
-                <FeatherIcon
-                  :name="activity.show_others ? 'chevron-up' : 'chevron-down'"
-                  class="h-4 text-gray-600"
-                />
-              </template>
-            </Button>
-          </div>
+            <template #suffix>
+              <FeatherIcon
+                :name="activity.show_others ? 'chevron-up' : 'chevron-down'"
+                class="h-4 text-gray-600"
+              />
+            </template>
+          </Button>
         </div>
       </div>
     </div>
@@ -891,6 +882,7 @@
   />
 </template>
 <script setup>
+import EmailContent from '@/components/EmailContent.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
@@ -1403,80 +1395,5 @@ nextTick(() => {
 
 .audio-control::-webkit-media-controls-panel {
   background-color: white;
-}
-
-/* email content */
-
-.email-content {
-  word-break: break-word;
-}
-:deep(.email-content
-    :is(:where(table):not(:where([class~='not-prose'], [class~='not-prose']
-          *)))) {
-  table-layout: auto;
-}
-
-:deep(.email-content
-    :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *))) {
-  width: unset;
-  table-layout: auto;
-  text-align: unset;
-  margin-top: unset;
-  margin-bottom: unset;
-  font-size: unset;
-  line-height: unset;
-}
-
-/* tr */
-
-:deep(.email-content
-    :where(tbody tr):not(:where([class~='not-prose'], [class~='not-prose']
-        *))) {
-  border-bottom-width: 0;
-  border-bottom-color: transparent;
-}
-
-/* td */
-
-:deep(.email-content
-    :is(:where(td):not(:where([class~='not-prose'], [class~='not-prose'] *)))) {
-  position: unset;
-  border-width: 0;
-  border-color: transparent;
-  padding: 0;
-}
-
-:deep(.email-content
-    :where(tbody td):not(:where([class~='not-prose'], [class~='not-prose']
-        *))) {
-  vertical-align: revert;
-}
-
-/* image */
-:deep(.email-content
-    :is(:where(img):not(:where([class~='not-prose'], [class~='not-prose']
-          *)))) {
-  border-width: 0;
-}
-
-:deep(.email-content
-    :where(img):not(:where([class~='not-prose'], [class~='not-prose'] *))) {
-  margin: 0;
-}
-
-/* before & after */
-
-:deep(.email-content
-    :where(blockquote
-      p:first-of-type):not(:where([class~='not-prose'], [class~='not-prose']
-        *))::before) {
-  content: none;
-}
-
-:deep(.email-content
-    :where(blockquote
-      p:last-of-type):not(:where([class~='not-prose'], [class~='not-prose']
-        *))::after) {
-  content: none;
 }
 </style>

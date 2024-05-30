@@ -96,44 +96,9 @@
         :key="filter.name"
         class="m-1 min-w-36"
       >
-        <FormControl
-          v-if="filter.type == 'Check'"
-          :label="filter.label"
-          type="checkbox"
-          v-model="filter.value"
-          @change.stop="applyQuickFilter(filter, $event.target.checked)"
-        />
-        <FormControl
-          v-else-if="filter.type === 'Select'"
-          class="form-control cursor-pointer [&_select]:cursor-pointer"
-          type="select"
-          v-model="filter.value"
-          :options="filter.options"
-          :placeholder="filter.label"
-          @change.stop="applyQuickFilter(filter, $event.target.value)"
-        />
-        <Link
-          v-else-if="filter.type === 'Link'"
-          :value="filter.value"
-          :doctype="filter.options"
-          :placeholder="filter.label"
-          @change="(data) => applyQuickFilter(filter, data)"
-        />
-        <component
-          v-else-if="['Date', 'Datetime'].includes(filter.type)"
-          class="border-none"
-          :is="filter.type === 'Date' ? DatePicker : DatetimePicker"
-          :value="filter.value"
-          @change="(v) => applyQuickFilter(filter, v)"
-          :placeholder="filter.label"
-        />
-        <FormControl
-          v-else
-          :value="filter.value"
-          type="text"
-          :placeholder="filter.label"
-          :debounce="500"
-          @change.stop="applyQuickFilter(filter, $event.target.value)"
+        <QuickFilterField
+          :filter="filter"
+          @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
         />
       </div>
     </FadedScrollableDiv>
@@ -247,9 +212,7 @@
   </Dialog>
 </template>
 <script setup>
-import DatePicker from '@/components/Controls/DatePicker.vue'
-import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
-import Link from '@/components/Controls/Link.vue'
+import QuickFilterField from '@/components/QuickFilterField.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'

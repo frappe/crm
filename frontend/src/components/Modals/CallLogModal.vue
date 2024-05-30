@@ -84,7 +84,9 @@
       </div>
     </template>
     <template
-      v-if="callLog.type.label == 'Incoming' && !callLog.reference_docname"
+      v-if="
+        callLog.doc?.type.label == 'Incoming' && !callLog.doc?.reference_docname
+      "
       #actions
     >
       <Button
@@ -116,11 +118,12 @@ import {
   createDocumentResource,
   call,
 } from 'frappe-ui'
+import { getCallLogDetail } from '@/utils/callLog'
 import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  callLog: {
+  name: {
     type: Object,
     default: {},
   },
@@ -130,60 +133,66 @@ const show = defineModel()
 const showNoteModal = ref(false)
 const router = useRouter()
 const callNoteDoc = ref(null)
+const callLog = ref({})
 
 const detailFields = computed(() => {
+  if (!callLog.value.doc) return []
   let details = [
     {
       icon: h(FeatherIcon, {
-        name: props.callLog.type.icon,
+        name: callLog.value.doc.type.icon,
         class: 'h-3.5 w-3.5',
       }),
       name: 'type',
-      value: props.callLog.type.label + ' Call',
+      value: callLog.value.doc.type.label + ' Call',
     },
     {
       icon: ContactsIcon,
       name: 'receiver',
       value: {
-        receiver: props.callLog.receiver,
-        caller: props.callLog.caller,
+        receiver: callLog.value.doc.receiver,
+        caller: callLog.value.doc.caller,
       },
     },
     {
       icon:
-        props.callLog.reference_doctype == 'CRM Lead' ? LeadsIcon : Dealsicon,
+        callLog.value.doc.reference_doctype == 'CRM Lead'
+          ? LeadsIcon
+          : Dealsicon,
       name: 'reference_doctype',
-      value: props.callLog.reference_doctype == 'CRM Lead' ? 'Lead' : 'Deal',
+      value:
+        callLog.value.doc.reference_doctype == 'CRM Lead' ? 'Lead' : 'Deal',
       link: () => {
-        if (props.callLog.reference_doctype == 'CRM Lead') {
+        if (callLog.value.doc.reference_doctype == 'CRM Lead') {
           router.push({
             name: 'Lead',
-            params: { leadId: props.callLog.reference_docname },
+            params: { leadId: callLog.value.doc.reference_docname },
           })
         } else {
           router.push({
             name: 'Deal',
-            params: { dealId: props.callLog.reference_docname },
+            params: { dealId: callLog.value.doc.reference_docname },
           })
         }
       },
+      condition: () => callLog.value.doc.reference_docname,
     },
     {
       icon: CalendarIcon,
       name: 'creation',
-      value: props.callLog.creation.label,
-      tooltip: props.callLog.creation.label,
+      value: callLog.value.doc.creation.label,
+      tooltip: callLog.value.doc.creation.label,
     },
     {
       icon: DurationIcon,
       name: 'duration',
-      value: props.callLog.duration.label,
+      value: callLog.value.doc.duration.label,
     },
     {
       icon: CheckCircleIcon,
       name: 'status',
-      value: props.callLog.status.label,
-      color: props.callLog.status.color,
+      value: callLog.value.doc.status.label,
+      color: callLog.value.doc.status.color,
     },
     {
       icon: h(FeatherIcon, {
@@ -191,7 +200,7 @@ const detailFields = computed(() => {
         class: 'h-4 w-4 mt-2',
       }),
       name: 'recording_url',
-      value: props.callLog.recording_url,
+      value: callLog.value.doc.recording_url,
     },
     {
       icon: NoteIcon,
@@ -200,12 +209,14 @@ const detailFields = computed(() => {
     },
   ]
 
-  return details.filter((detail) => detail.value)
+  return details
+    .filter((detail) => detail.value)
+    .filter((detail) => (detail.condition ? detail.condition() : true))
 })
 
 function createLead() {
   call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
-    call_log: props.callLog,
+    call_log: callLog.value.doc,
   }).then((d) => {
     if (d) {
       router.push({ name: 'Lead', params: { leadId: d } })
@@ -215,12 +226,45 @@ function createLead() {
 
 watch(show, (val) => {
   if (val) {
-    callNoteDoc.value = createDocumentResource({
-      doctype: 'FCRM Note',
-      name: props.callLog.note,
-      fields: ['title', 'content'],
-      cache: ['note', props.callLog.note],
+    callLog.value = createDocumentResource({
+      doctype: 'CRM Call Log',
+      name: props.name,
+      fields: [
+        'name',
+        'caller',
+        'receiver',
+        'duration',
+        'type',
+        'status',
+        'from',
+        'to',
+        'note',
+        'recording_url',
+        'reference_doctype',
+        'reference_docname',
+        'creation',
+      ],
+      cache: ['call_log', props.name],
       auto: true,
+      transform: (doc) => {
+        for (const key in doc) {
+          doc[key] = getCallLogDetail(key, doc)
+        }
+        return doc
+      },
+      onSuccess: (doc) => {
+        if (!doc.note) {
+          callNoteDoc.value = null
+          return
+        }
+        callNoteDoc.value = createDocumentResource({
+          doctype: 'FCRM Note',
+          name: doc.note,
+          fields: ['title', 'content'],
+          cache: ['note', doc.note],
+          auto: true,
+        })
+      },
     })
   }
 })
