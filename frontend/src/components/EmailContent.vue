@@ -23,6 +23,9 @@ const props = defineProps({
   },
 })
 
+const files = import.meta.globEager('/src/index.css')
+const css = files['/src/index.css'].default
+
 const iframeRef = ref(null)
 
 const htmlContent = `
@@ -30,16 +33,7 @@ const htmlContent = `
 <html>
 <head>
   <style>
-
-    .prose-f {
-      --tw-prose-body: #383838;
-      color: var(--tw-prose-body);
-      font-weight: 420;
-      letter-spacing: 0.02em;
-      max-width: none;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+    ${css}
 
     .email-content {
         word-break: break-word;
@@ -127,23 +121,6 @@ watch(iframeRef, (iframe) => {
       const emailContent =
         iframe.contentWindow.document.querySelector('.email-content')
       iframe.style.height = emailContent.offsetHeight + 25 + 'px'
-
-      let fileName = ''
-      // read file name on path /src and get the file name of the css file to inject in the iframe
-      // /assets/crm/frontend/assets/*.css
-      const files = import.meta.globEager('/*/*')
-      for (const file in files) {
-        debugger
-        fileName = file
-      }
-
-
-      // inject link in head of iframe
-      const head = iframe.contentWindow.document.head
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = '/src/index.css'
-      head.appendChild(link)
     }
   }
 })
