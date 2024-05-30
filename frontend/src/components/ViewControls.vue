@@ -69,7 +69,16 @@
           <Button :label="__(currentView.label)">
             <template #prefix>
               <div v-if="isEmoji(currentView.icon)">{{ currentView.icon }}</div>
-              <FeatherIcon v-else :name="currentView.icon" class="h-4" />
+              <FeatherIcon
+                v-else-if="typeof currentView.icon == 'string'"
+                :name="currentView.icon"
+                class="h-4"
+              />
+              <component
+                v-else
+                :is="currentView.icon"
+                class="h-4"
+              />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -250,6 +259,7 @@
 import DatePicker from '@/components/Controls/DatePicker.vue'
 import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
 import Link from '@/components/Controls/Link.vue'
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
@@ -305,11 +315,28 @@ const defaultParams = ref('')
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
+function getViewType() {
+  let type = route.params.viewType || 'list'
+  let types = {
+    group_by: {
+      label: __('Group By View'),
+      icon: h(DetailsIcon, { class: 'size-4' }),
+    },
+    list: {
+      label: __('List View'),
+      icon: 'list',
+    },
+  }
+
+  return types[type]
+}
+
 const currentView = computed(() => {
   let _view = getView(route.query.view)
   return {
-    label: _view?.label || props.options?.defaultViewName || 'List View',
-    icon: _view?.icon || 'list',
+    label:
+      _view?.label || props.options?.defaultViewName || getViewType().label,
+    icon: _view?.icon || getViewType().icon,
   }
 })
 
@@ -456,6 +483,14 @@ const defaultViews = [
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name })
+    },
+  },
+  {
+    label: __(props.options?.defaultViewName) || __('Group By View'),
+    icon: h(DetailsIcon, { class: 'size-4' }),
+    onClick() {
+      viewUpdated.value = false
+      router.push({ name: route.name, params: { viewType: 'group_by' } })
     },
   },
 ]
