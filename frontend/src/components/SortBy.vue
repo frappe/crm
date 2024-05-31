@@ -2,7 +2,10 @@
   <NestedPopover>
     <template #target>
       <Button :label="__('Sort')" ref="sortButtonRef">
-        <template #prefix><SortIcon class="h-4" /></template>
+        <template v-if="hideLabel">
+          <SortIcon class="h-4" />
+        </template>
+        <template v-if="!hideLabel" #prefix><SortIcon class="h-4" /></template>
         <template v-if="sortValues?.size" #suffix>
           <div
             class="flex h-5 w-5 items-center justify-center rounded bg-gray-900 pt-[1px] text-2xs font-medium text-white"
@@ -107,6 +110,10 @@ const props = defineProps({
   doctype: {
     type: String,
     required: true,
+  },
+  hideLabel: {
+    type: Boolean,
+    default: false,
   },
 })
 

@@ -12,7 +12,12 @@
                 <div v-if="isEmoji(currentView.icon)">
                   {{ currentView.icon }}
                 </div>
-                <FeatherIcon v-else :name="currentView.icon" class="h-4" />
+                <FeatherIcon
+                  v-else-if="typeof currentView.icon == 'string'"
+                  :name="currentView.icon"
+                  class="h-4"
+                />
+                <component v-else :is="currentView.icon" class="h-4" />
               </template>
               <template #suffix>
                 <FeatherIcon
@@ -43,12 +48,26 @@
           :default_filters="filters"
           @update="updateFilter"
         />
+
         <div class="flex gap-2">
-          <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
+          <GroupBy
+            v-if="currentViewType === 'group_by'"
+            v-model="list"
+            :doctype="doctype"
+            :hideLabel="isMobileView"
+            @update="updateGroupBy"
+          />
+          <SortBy
+            v-model="list"
+            :doctype="doctype"
+            @update="updateSort"
+            :hideLabel="isMobileView"
+          />
           <ColumnSettings
             v-if="!options.hideColumnsButton"
             v-model="list"
             :doctype="doctype"
+            :hideLabel="isMobileView"
             @update="(isDefault) => updateColumns(isDefault)"
           />
         </div>

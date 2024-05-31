@@ -1,7 +1,7 @@
 <template>
   <Dropdown :options="options">
     <template #default="{ open }">
-      <Button :label="__('Group By: Status')">
+      <Button :label="hideLabel ? __('Status') : __('Group By: Status')">
         <template #prefix>
           <DetailsIcon />
         </template>
@@ -17,13 +17,17 @@
 </template>
 <script setup>
 import DetailsIcon from '@/components/icons/DetailsIcon.vue'
-import { Dropdown } from 'frappe-ui';
+import { Dropdown } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
   doctype: {
     type: String,
     required: true,
+  },
+  hideLabel: {
+    type: Boolean,
+    default: false,
   },
 })
 

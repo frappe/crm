@@ -2,7 +2,10 @@
   <NestedPopover>
     <template #target>
       <Button :label="__('Columns')">
-        <template #prefix>
+        <template v-if="hideLabel">
+          <ColumnsIcon class="h-4" />
+        </template>
+        <template v-if="!hideLabel" #prefix>
           <ColumnsIcon class="h-4" />
         </template>
       </Button>
@@ -108,7 +111,11 @@
                 class="w-full"
                 v-model="column.width"
                 placeholder="10rem"
-                :description="__('Width can be in number, pixel or rem (eg. 3, 30px, 10rem)')"
+                :description="
+                  __(
+                    'Width can be in number, pixel or rem (eg. 3, 30px, 10rem)'
+                  )
+                "
                 :debounce="500"
               />
             </div>
@@ -148,6 +155,10 @@ const props = defineProps({
   doctype: {
     type: String,
     required: true,
+  },
+  hideLabel: {
+    type: Boolean,
+    default: false,
   },
 })
 
