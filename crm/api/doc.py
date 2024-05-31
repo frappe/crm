@@ -89,7 +89,7 @@ def get_filterable_fields(doctype: str):
 			"options": "User",
 		},
 		{"fieldname": "_user_tags", "fieldtype": "Data", "label": "Tags"},
-		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Liked By"},
+		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Like"},
 		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
 		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
 		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created On"},
@@ -251,7 +251,7 @@ def get_list_data(
 		},
 		{"label": "Assigned To", "type": "Text", "value": "_assign"},
 		{"label": "Owner", "type": "Link", "value": "owner", "options": "User"},
-		{"label": "Liked By", "type": "Data", "value": "_liked_by"},
+		{"label": "Like", "type": "Data", "value": "_liked_by"},
 	]
 
 	for field in std_fields:
