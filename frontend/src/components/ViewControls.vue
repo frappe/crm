@@ -74,11 +74,7 @@
                 :name="currentView.icon"
                 class="h-4"
               />
-              <component
-                v-else
-                :is="currentView.icon"
-                class="h-4"
-              />
+              <component v-else :is="currentView.icon" class="h-4" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -161,6 +157,12 @@
             <RefreshIcon class="h-4 w-4" />
           </template>
         </Button>
+        <GroupBy
+          v-if="currentViewType === 'group_by'"
+          v-model="list"
+          :doctype="doctype"
+          @update="updateGroupBy"
+        />
         <Filter
           v-model="list"
           :doctype="doctype"
@@ -268,6 +270,7 @@ import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
@@ -315,8 +318,9 @@ const defaultParams = ref('')
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
+const currentViewType = computed(() => route.params.viewType || 'list')
+
 function getViewType() {
-  let type = route.params.viewType || 'list'
   let types = {
     group_by: {
       label: __('Group By View'),
@@ -328,7 +332,7 @@ function getViewType() {
     },
   }
 
-  return types[type]
+  return types[currentViewType.value]
 }
 
 const currentView = computed(() => {
