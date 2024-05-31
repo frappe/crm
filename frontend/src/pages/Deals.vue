@@ -77,6 +77,7 @@ import {
   formatTime,
 } from '@/utils'
 import { Breadcrumbs } from 'frappe-ui'
+import { useRoute } from 'vue-router'
 import { ref, computed } from 'vue'
 
 const breadcrumbs = [{ label: __('Deals'), route: { name: 'Deals' } }]
@@ -84,6 +85,8 @@ const breadcrumbs = [{ label: __('Deals'), route: { name: 'Deals' } }]
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
+
+const route = useRoute()
 
 const dealsListView = ref(null)
 const showDealModal = ref(false)
@@ -98,7 +101,7 @@ const viewControls = ref(null)
 // Rows
 const rows = computed(() => {
   if (!deals.value?.data?.data) return []
-  return deals.value.data.data.map((deal) => {
+  let listRows = deals.value.data.data.map((deal) => {
     let _rows = {}
     deals.value.data.rows.forEach((row) => {
       _rows[row] = deal[row]
@@ -174,5 +177,31 @@ const rows = computed(() => {
     })
     return _rows
   })
+
+  if (route.params.viewType === 'group_by') {
+    return getGroupedByRows(listRows)
+  }
+  return listRows
 })
+
+function getGroupedByRows(listRows) {
+  let groupedRows = []
+
+  listRows.forEach((row) => {
+    if (!groupedRows.some((group) => group.group === row.status.label)) {
+      groupedRows.push({
+        group: row.status.label,
+        color: getDealStatus(row.status.label)?.iconColorClass,
+        collapsed: false,
+        rows: [],
+      })
+    }
+    groupedRows.filter((group) => {
+      if (group.group === row.status.label) {
+        group.rows.push(row)
+      }
+    })
+  })
+  return groupedRows || listRows
+}
 </script>

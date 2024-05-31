@@ -78,7 +78,7 @@ import {
   createToast,
 } from '@/utils'
 import { createResource, Breadcrumbs } from 'frappe-ui'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
 
 const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
@@ -88,6 +88,7 @@ const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
 
 const router = useRouter()
+const route = useRoute()
 
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
@@ -102,7 +103,7 @@ const viewControls = ref(null)
 // Rows
 const rows = computed(() => {
   if (!leads.value?.data?.data) return []
-  return leads.value?.data.data.map((lead) => {
+  let listRows = leads.value?.data.data.map((lead) => {
     let _rows = {}
     leads.value?.data.rows.forEach((row) => {
       _rows[row] = lead[row]
@@ -182,7 +183,32 @@ const rows = computed(() => {
     })
     return _rows
   })
+  if (route.params.viewType === 'group_by') {
+    return getGroupedByRows(listRows)
+  }
+  return listRows
 })
+
+function getGroupedByRows(listRows) {
+  let groupedRows = []
+
+  listRows.forEach((row) => {
+    if (!groupedRows.some((group) => group.group === row.status.label)) {
+      groupedRows.push({
+        group: row.status.label,
+        color: getLeadStatus(row.status.label)?.iconColorClass,
+        collapsed: false,
+        rows: [],
+      })
+    }
+    groupedRows.filter((group) => {
+      if (group.group === row.status.label) {
+        group.rows.push(row)
+      }
+    })
+  })
+  return groupedRows || listRows
+}
 
 let newLead = reactive({
   salutation: '',
