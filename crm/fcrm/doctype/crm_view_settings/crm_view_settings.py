@@ -123,7 +123,12 @@ def create_or_update_default_view(view):
 
 	doc = frappe.db.exists(
 		"CRM View Settings",
-		{"dt": view.doctype, "is_default": True, "user": frappe.session.user},
+		{
+			"dt": view.doctype,
+			"type": view.type,
+			"is_default": True,
+			"user": frappe.session.user
+		},
 	)
 	if doc:
 		doc = frappe.get_doc("CRM View Settings", doc)
@@ -137,8 +142,10 @@ def create_or_update_default_view(view):
 		doc.save()
 	else:
 		doc = frappe.new_doc("CRM View Settings")
-		doc.name = view.label or 'List View'
-		doc.label = view.label or 'List View'
+		label = 'Group By View' if view.type == 'group_by' else 'List View'
+		doc.name = view.label or label
+		doc.label = view.label or label
+		doc.type = view.type or 'list'
 		doc.dt = view.doctype
 		doc.user = frappe.session.user
 		doc.route_name = view.route_name or ""
