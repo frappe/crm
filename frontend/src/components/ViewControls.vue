@@ -543,7 +543,7 @@ function getIcon(icon, type) {
   if (isEmoji(icon)) {
     return h('div', icon)
   } else if (!icon && type === 'group_by') {
-    return h(DetailsIcon, { class: 'size-4' })
+    return DetailsIcon
   }
   return icon || 'list'
 }
