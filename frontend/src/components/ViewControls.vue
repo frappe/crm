@@ -424,14 +424,14 @@ function getParams() {
   } else {
     view.value = {
       name: '',
-      label: '',
+      label: getViewType().label,
       type: currentViewType.value || 'list',
       icon: '',
       filters: {},
       order_by: 'modified desc',
       columns: '',
       rows: '',
-      route_name: '',
+      route_name: route.name,
       load_default_columns: true,
       pinned: false,
       public: false,
