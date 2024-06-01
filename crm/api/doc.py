@@ -167,6 +167,7 @@ def get_list_data(
 
 	custom_view_name = view.get('custom_view_name') if view else None
 	view_type = view.get('view_type') if view else None
+	group_by_field = view.get('group_by_field') if view else None
 
 	for key in filters:
 		value = filters[key]
@@ -221,6 +222,10 @@ def get_list_data(
 		if column.get("key") == "_liked_by" and column.get("width") == "10rem":
 			column["width"] = "50px"
 
+	# check if rows has group_by_field if not add it
+	if group_by_field and group_by_field not in rows:
+		rows.append(group_by_field)
+
 	data = frappe.get_list(
 		doctype,
 		fields=rows,
@@ -267,11 +272,34 @@ def get_list_data(
 	if not is_default and custom_view_name:
 		is_default = frappe.db.get_value("CRM View Settings", custom_view_name, "load_default_columns")
 
+	if group_by_field and view_type == "group_by":
+		def get_options(type, options):
+			if type == "Select":
+				return [option for option in options.split("\n")]
+			else:
+				has_empty_values = any([not d.get(group_by_field) for d in data])
+				options = list(set([d.get(group_by_field) for d in data]))
+				options = [u for u in options if u]
+				if has_empty_values:
+					options.append("")
+				options.sort()
+				return options
+
+		for field in fields:
+			if field.get("value") == group_by_field:
+				group_by_field = {
+					"label": field.get("label"),
+					"name": field.get("value"),
+					"type": field.get("type"),
+					"options": get_options(field.get("type"), field.get("options")),
+				}
+
 	return {
 		"data": data,
 		"columns": columns,
 		"rows": rows,
 		"fields": fields,
+		"group_by_field": group_by_field,
 		"page_length": page_length,
 		"page_length_count": page_length_count,
 		"is_default": is_default,

@@ -450,6 +450,7 @@ function getParams() {
     view: {
       custom_view_name: _view?.name || '',
       view_type: _view?.type || currentViewType.value || 'list',
+      group_by_field: _view?.group_by_field || 'owner',
     },
     default_filters: props.filters,
   }
@@ -458,7 +459,7 @@ function getParams() {
 list.value = createResource({
   url: 'crm.api.doc.get_list_data',
   params: getParams(),
-  cache: [props.doctype, route.query.view],
+  cache: [props.doctype, route.query.view, route.params.viewType],
   transform(data) {
     return {
       ...data,
@@ -479,6 +480,7 @@ list.value = createResource({
       view: {
         custom_view_name: cv?.name || '',
         view_type: cv?.type || currentViewType.value || 'list',
+        group_by_field: cv?.group_by_field || 'owner',
       },
       default_filters: props.filters,
     }
