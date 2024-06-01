@@ -227,7 +227,11 @@
       afterCreate: async (v) => {
         await reloadView()
         viewUpdated = false
-        router.push({ name: route.name, query: { view: v.name } })
+        router.push({
+          name: route.name,
+          params: { viewType: v.type || 'list' },
+          query: { view: v.name },
+        })
       },
       afterUpdate: () => {
         viewUpdated = false

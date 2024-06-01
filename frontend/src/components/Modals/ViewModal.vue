@@ -75,6 +75,7 @@ const duplicateMode = ref(false)
 const _view = ref({
   name: '',
   label: '',
+  type: 'list',
   icon: '',
   filters: {},
   order_by: 'modified desc',
