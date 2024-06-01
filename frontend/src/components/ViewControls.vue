@@ -537,12 +537,13 @@ if (allowedViews.includes('group_by')) {
   })
 }
 
-function getIcon(icon) {
+function getIcon(icon, type) {
   if (isEmoji(icon)) {
     return h('div', icon)
-  } else {
-    return icon || 'list'
+  } else if (!icon && type === 'group_by') {
+    return h(DetailsIcon, { class: 'size-4' })
   }
+  return icon || 'list'
 }
 
 const viewsDropdownOptions = computed(() => {
@@ -557,7 +558,7 @@ const viewsDropdownOptions = computed(() => {
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
       view.label = __(view.label)
-      view.icon = getIcon(view.icon)
+      view.icon = getIcon(view.icon, view.type)
       view.filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
