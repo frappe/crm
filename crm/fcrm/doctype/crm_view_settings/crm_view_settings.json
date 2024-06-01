@@ -10,6 +10,7 @@
   "user",
   "is_default",
   "column_break_zacm",
+  "type",
   "dt",
   "route_name",
   "pinned",
@@ -117,11 +118,18 @@
    "fieldname": "icon",
    "fieldtype": "Data",
    "label": "Icon"
+  },
+  {
+   "default": "list",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "list\ngroup_by"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-20 17:24:18.662389",
+ "modified": "2024-06-01 13:08:23.421438",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
