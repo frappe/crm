@@ -44,8 +44,8 @@ const emit = defineEmits(['update'])
 const list = defineModel()
 
 const groupByValue = ref({
-  label: 'Owner',
-  value: 'owner',
+  label: '',
+  value: '',
 })
 
 const groupByOptions = createResource({
