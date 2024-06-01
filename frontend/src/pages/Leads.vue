@@ -65,6 +65,7 @@
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
@@ -82,7 +83,7 @@ import {
 } from '@/utils'
 import { createResource, Breadcrumbs } from 'frappe-ui'
 import { useRouter, useRoute } from 'vue-router'
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, h } from 'vue'
 
 const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
@@ -106,7 +107,49 @@ const viewControls = ref(null)
 // Rows
 const rows = computed(() => {
   if (!leads.value?.data?.data) return []
-  let listRows = leads.value?.data.data.map((lead) => {
+  if (route.params.viewType === 'group_by') {
+    if (!leads.value?.data.group_by_field?.name) return []
+    return getGroupedByRows(
+      leads.value?.data.data,
+      leads.value?.data.group_by_field
+    )
+  } else {
+    return parseRows(leads.value?.data.data)
+  }
+})
+
+function getGroupedByRows(listRows, groupByField) {
+  let groupedRows = []
+
+  groupByField.options?.forEach((option) => {
+    let filteredRows = []
+
+    if (!option) {
+      filteredRows = listRows.filter((row) => !row[groupByField.name])
+    } else {
+      filteredRows = listRows.filter((row) => row[groupByField.name] == option)
+    }
+
+    let groupDetail = {
+      label: groupByField.label,
+      group: option || __(' '),
+      collapsed: false,
+      rows: parseRows(filteredRows),
+    }
+    if (groupByField.name == 'status') {
+      groupDetail.icon = () =>
+        h(IndicatorIcon, {
+          class: getLeadStatus(option)?.iconColorClass,
+        })
+    }
+    groupedRows.push(groupDetail)
+  })
+
+  return groupedRows || listRows
+}
+
+function parseRows(rows) {
+  return rows.map((lead) => {
     let _rows = {}
     leads.value?.data.rows.forEach((row) => {
       _rows[row] = lead[row]
@@ -186,31 +229,6 @@ const rows = computed(() => {
     })
     return _rows
   })
-  if (route.params.viewType === 'group_by') {
-    return getGroupedByRows(listRows)
-  }
-  return listRows
-})
-
-function getGroupedByRows(listRows) {
-  let groupedRows = []
-
-  listRows.forEach((row) => {
-    if (!groupedRows.some((group) => group.group === row.status.label)) {
-      groupedRows.push({
-        group: row.status.label,
-        color: getLeadStatus(row.status.label)?.iconColorClass,
-        collapsed: false,
-        rows: [],
-      })
-    }
-    groupedRows.filter((group) => {
-      if (group.group === row.status.label) {
-        group.rows.push(row)
-      }
-    })
-  })
-  return groupedRows || listRows
 }
 
 let newLead = reactive({

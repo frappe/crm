@@ -5,10 +5,13 @@
         <div
           class="my-2 flex items-center gap-2 text-base font-medium text-gray-800"
         >
-          <div>{{ __('Status') }} -</div>
+          <div>{{ __(group.label) }} -</div>
           <div class="flex items-center gap-1">
-            <IndicatorIcon :class="group.color" />
-            <div>{{ group.group }}</div>
+            <component v-if="group.icon" :is="group.icon" />
+            <div v-if="group.group == ' '" class="text-gray-500">
+              {{ __('Empty') }}
+            </div>
+            <div v-else>{{ group.group }}</div>
           </div>
         </div>
       </ListGroupHeader>
@@ -37,7 +40,6 @@
 </template>
 
 <script setup>
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { ListRows, ListRow, ListGroupHeader, ListGroupRows } from 'frappe-ui'
 
 import { ref, computed, watch } from 'vue'

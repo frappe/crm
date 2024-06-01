@@ -64,6 +64,7 @@
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
@@ -81,7 +82,7 @@ import {
 } from '@/utils'
 import { Breadcrumbs } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, computed } from 'vue'
+import { ref, computed, h } from 'vue'
 
 const breadcrumbs = [{ label: __('Deals'), route: { name: 'Deals' } }]
 
@@ -104,7 +105,49 @@ const viewControls = ref(null)
 // Rows
 const rows = computed(() => {
   if (!deals.value?.data?.data) return []
-  let listRows = deals.value.data.data.map((deal) => {
+  if (route.params.viewType === 'group_by') {
+    if (!deals.value?.data.group_by_field?.name) return []
+    return getGroupedByRows(
+      deals.value?.data.data,
+      deals.value?.data.group_by_field
+    )
+  } else {
+    return parseRows(deals.value?.data.data)
+  }
+})
+
+function getGroupedByRows(listRows, groupByField) {
+  let groupedRows = []
+
+  groupByField.options?.forEach((option) => {
+    let filteredRows = []
+
+    if (!option) {
+      filteredRows = listRows.filter((row) => !row[groupByField.name])
+    } else {
+      filteredRows = listRows.filter((row) => row[groupByField.name] == option)
+    }
+
+    let groupDetail = {
+      label: groupByField.label,
+      group: option || __(' '),
+      collapsed: false,
+      rows: parseRows(filteredRows),
+    }
+    if (groupByField.name == 'status') {
+      groupDetail.icon = () =>
+        h(IndicatorIcon, {
+          class: getDealStatus(option)?.iconColorClass,
+        })
+    }
+    groupedRows.push(groupDetail)
+  })
+
+  return groupedRows || listRows
+}
+
+function parseRows(rows) {
+  return rows.map((deal) => {
     let _rows = {}
     deals.value.data.rows.forEach((row) => {
       _rows[row] = deal[row]
@@ -180,31 +223,5 @@ const rows = computed(() => {
     })
     return _rows
   })
-
-  if (route.params.viewType === 'group_by') {
-    return getGroupedByRows(listRows)
-  }
-  return listRows
-})
-
-function getGroupedByRows(listRows) {
-  let groupedRows = []
-
-  listRows.forEach((row) => {
-    if (!groupedRows.some((group) => group.group === row.status.label)) {
-      groupedRows.push({
-        group: row.status.label,
-        color: getDealStatus(row.status.label)?.iconColorClass,
-        collapsed: false,
-        rows: [],
-      })
-    }
-    groupedRows.filter((group) => {
-      if (group.group === row.status.label) {
-        group.rows.push(row)
-      }
-    })
-  })
-  return groupedRows || listRows
 }
 </script>
