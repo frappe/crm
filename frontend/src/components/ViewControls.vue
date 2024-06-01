@@ -554,7 +554,11 @@ const viewsDropdownOptions = computed(() => {
           : view.filters
       view.onClick = () => {
         viewUpdated.value = false
-        router.push({ ...route, query: { view: view.name } })
+        router.push({
+          name: route.name,
+          params: { viewType: view.type || 'list' },
+          query: { view: view.name },
+        })
       }
     })
     let publicViews = list.value.data.views.filter((v) => v.public)
