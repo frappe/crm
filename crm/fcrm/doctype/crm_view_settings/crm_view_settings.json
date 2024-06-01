@@ -22,7 +22,9 @@
   "filters_tab",
   "filters",
   "order_by_tab",
-  "order_by"
+  "order_by",
+  "group_by_tab",
+  "group_by_field"
  ],
  "fields": [
   {
@@ -125,11 +127,21 @@
    "fieldtype": "Select",
    "label": "Type",
    "options": "list\ngroup_by"
+  },
+  {
+   "fieldname": "group_by_tab",
+   "fieldtype": "Tab Break",
+   "label": "Group By"
+  },
+  {
+   "fieldname": "group_by_field",
+   "fieldtype": "Data",
+   "label": "Group By Field"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-01 13:08:23.421438",
+ "modified": "2024-06-01 16:58:34.952945",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
