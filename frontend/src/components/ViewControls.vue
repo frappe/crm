@@ -320,6 +320,7 @@ const props = defineProps({
     default: {
       hideColumnsButton: false,
       defaultViewName: '',
+      allowedViews: ['list'],
     },
   },
 })
@@ -345,13 +346,13 @@ const currentViewType = computed(() => route.params.viewType || 'list')
 
 function getViewType() {
   let types = {
-    group_by: {
-      label: __('Group By View'),
-      icon: h(DetailsIcon, { class: 'size-4' }),
-    },
     list: {
       label: __('List View'),
       icon: 'list',
+    },
+    group_by: {
+      label: __('Group By View'),
+      icon: h(DetailsIcon, { class: 'size-4' }),
     },
   }
 
@@ -512,24 +513,29 @@ async function exportRows() {
   export_type.value = 'Excel'
 }
 
-const defaultViews = [
-  {
+let defaultViews = []
+let allowedViews = props.options.allowedViews || ['list']
+
+if (allowedViews.includes('list')) {
+  defaultViews.push({
     label: __(props.options?.defaultViewName) || __('List View'),
     icon: 'list',
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name })
     },
-  },
-  {
+  })
+}
+if (allowedViews.includes('group_by')) {
+  defaultViews.push({
     label: __(props.options?.defaultViewName) || __('Group By View'),
     icon: h(DetailsIcon, { class: 'size-4' }),
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name, params: { viewType: 'group_by' } })
     },
-  },
-]
+  })
+}
 
 function getIcon(icon) {
   if (isEmoji(icon)) {

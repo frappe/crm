@@ -24,6 +24,9 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Deal"
+    :options="{
+      allowedViews: ['list', 'group_by'],
+    }"
   />
   <DealsListView
     ref="dealsListView"
