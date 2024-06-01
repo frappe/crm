@@ -1,16 +1,21 @@
 <template>
-  <div
+  <component
+    :is="props.as || 'div'"
     ref="scrollableDiv"
     :style="`maskImage: ${maskStyle}`"
     @scroll="updateMaskStyle"
   >
     <slot></slot>
-  </div>
+  </component>
 </template>
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
+  as: {
+    type: String,
+    default: 'div',
+  },
   maskLength: {
     type: Number,
     default: 30,

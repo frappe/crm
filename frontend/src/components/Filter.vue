@@ -15,11 +15,13 @@
         </template>
       </Button>
       <Tooltip v-if="filters?.size" :text="__('Clear all Filter')">
-        <Button
-          class="rounded-l-none border-l"
-          icon="x"
-          @click.stop="clearfilter(false)"
-        />
+        <span>
+          <Button
+            class="rounded-l-none border-l"
+            icon="x"
+            @click.stop="clearfilter(false)"
+          />
+        </span>
       </Tooltip>
     </template>
     <template #body="{ close }">
