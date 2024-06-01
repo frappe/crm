@@ -108,6 +108,54 @@ def get_filterable_fields(doctype: str):
 
 	return res
 
+
+@frappe.whitelist()
+def get_group_by_fields(doctype: str):
+	allowed_fieldtypes = [
+		"Check",
+		"Data",
+		"Float",
+		"Int",
+		"Currency",
+		"Dynamic Link",
+		"Link",
+		"Select",
+		"Duration",
+		"Date",
+		"Datetime",
+	]
+
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in no_value_fields and field.fieldtype in allowed_fieldtypes]
+	fields = [
+		{
+			"label": _(field.label),
+			"value": field.fieldname,
+		}
+		for field in fields
+		if field.label and field.fieldname
+	]
+
+	standard_fields = [
+		{"label": "Name", "value": "name"},
+		{"label": "Created On", "value": "creation"},
+		{"label": "Last Modified", "value": "modified"},
+		{"label": "Modified By", "value": "modified_by"},
+		{"label": "Owner", "value": "owner"},
+		{"label": "Liked By", "value": "_liked_by"},
+		{"label": "Assigned To", "value": "_assign"},
+		{"label": "Comments", "value": "_comments"},
+		{"label": "Created On", "value": "creation"},
+		{"label": "Modified On", "value": "modified"},
+	]
+
+	for field in standard_fields:
+		field["label"] = _(field["label"])
+		fields.append(field)
+
+	return fields
+
+
 def get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
 	parent = "parent" if DocField._table_name == "tabDocField" else "dt"
 	return (
