@@ -24,7 +24,7 @@
 </template>
 <script setup>
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import DetailsIcon from '@/components/icons/DetailsIcon.vue'
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import { createResource } from 'frappe-ui'
 import { ref, computed, onMounted, nextTick } from 'vue'
 
