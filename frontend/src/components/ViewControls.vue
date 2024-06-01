@@ -360,7 +360,7 @@ function getViewType() {
 }
 
 const currentView = computed(() => {
-  let _view = getView(route.query.view, currentViewType.value)
+  let _view = getView(route.query.view, currentViewType.value, props.doctype)
   return {
     label:
       _view?.label || props.options?.defaultViewName || getViewType().label,
@@ -467,7 +467,7 @@ list.value = createResource({
     }
   },
   onSuccess(data) {
-    let cv = getView(route.query.view, currentViewType.value)
+    let cv = getView(route.query.view, currentViewType.value, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
     defaultParams.value = {
       doctype: props.doctype,
@@ -831,7 +831,7 @@ const viewModalObj = ref({})
 
 function duplicateView() {
   let label =
-    __(getView(route.query.view, currentViewType.type)?.label) ||
+    __(getView(route.query.view, currentViewType.type, props.doctype)?.label) ||
     getViewType().label
   view.value.name = ''
   view.value.label = label + __(' (New)')
@@ -840,7 +840,7 @@ function duplicateView() {
 }
 
 function editView() {
-  let cView = getView(route.query.view, currentViewType.type)
+  let cView = getView(route.query.view, currentViewType.type, props.doctype)
   view.value.name = route.query.view
   view.value.label = __(cView?.label) || getViewType().label
   view.value.icon = cView?.icon || ''
@@ -955,7 +955,7 @@ defineExpose({ applyFilter, applyLikeFilter, likeDoc })
 
 // Watchers
 watch(
-  () => getView(route.query.view, currentViewType.value),
+  () => getView(route.query.view, route.params.viewType, props.doctype),
   (value, old_value) => {
     if (JSON.stringify(value) === JSON.stringify(old_value)) return
     reload()

@@ -35,7 +35,8 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
   })
 
   function getView(view, type, doctype = null) {
-    if (!view && doctype && type) {
+    type = type || 'list'
+    if (!view && doctype) {
       return defaultView.value[doctype + ' ' + type] || null
     }
     return viewsByName[view]
