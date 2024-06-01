@@ -26,8 +26,8 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
         if (view.public) {
           publicViews.value?.push(view)
         }
-        if (view.is_default && view.dt) {
-          defaultView.value[view.dt] = view
+        if (view.is_default && view.dt && view.type) {
+          defaultView.value[view.dt + ' ' + view.type] = view
         }
       }
       return views
@@ -35,12 +35,8 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
   })
 
   function getView(view, type, doctype = null) {
-    if (!view && doctype) {
-      let _view = defaultView.value[doctype] || null
-      if (_view && _view['type'] !== type) {
-        _view = null
-      }
-      return _view
+    if (!view && doctype && type) {
+      return defaultView.value[doctype + ' ' + type] || null
     }
     return viewsByName[view]
   }
