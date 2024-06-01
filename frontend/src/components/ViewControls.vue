@@ -819,7 +819,7 @@ const viewModalObj = ref({})
 function duplicateView() {
   let label =
     __(getView(route.query.view, currentViewType.type)?.label) ||
-    __('List View')
+    getViewType().label
   view.value.name = ''
   view.value.label = label + __(' (New)')
   viewModalObj.value = view.value
@@ -829,7 +829,7 @@ function duplicateView() {
 function editView() {
   let cView = getView(route.query.view, currentViewType.type)
   view.value.name = route.query.view
-  view.value.label = __(cView?.label) || __('List View')
+  view.value.label = __(cView?.label) || getViewType().label
   view.value.icon = cView?.icon || ''
   viewModalObj.value = view.value
   showViewModal.value = true
