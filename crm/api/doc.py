@@ -159,11 +159,14 @@ def get_list_data(
 	page_length_count=20,
 	columns=None,
 	rows=None,
-	custom_view_name=None,
+	view=None,
 	default_filters=None,
 ):
 	custom_view = False
 	filters = frappe._dict(filters)
+
+	custom_view_name = view.get('custom_view_name') if view else None
+	view_type = view.get('view_type') if view else None
 
 	for key in filters:
 		value = filters[key]
@@ -197,8 +200,8 @@ def get_list_data(
 	if not rows:
 		rows = ["name"]
 
-	if not custom_view and frappe.db.exists("CRM View Settings", doctype):
-		list_view_settings = frappe.get_doc("CRM View Settings", doctype)
+	if not custom_view and frappe.db.exists("CRM View Settings", {"dt": doctype, "type": view_type}):
+		list_view_settings = frappe.get_doc("CRM View Settings", {"dt": doctype, "type": view_type})
 		columns = frappe.parse_json(list_view_settings.columns)
 		rows = frappe.parse_json(list_view_settings.rows)
 		is_default = False

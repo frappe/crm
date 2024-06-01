@@ -355,7 +355,7 @@ function getViewType() {
 }
 
 const currentView = computed(() => {
-  let _view = getView(route.query.view)
+  let _view = getView(route.query.view, currentViewType.value)
   return {
     label:
       _view?.label || props.options?.defaultViewName || getViewType().label,
@@ -366,6 +366,7 @@ const currentView = computed(() => {
 const view = ref({
   name: '',
   label: '',
+  type: 'list',
   icon: '',
   filters: {},
   order_by: 'modified desc',
@@ -395,7 +396,7 @@ watch(updatedPageCount, (value) => {
 })
 
 function getParams() {
-  let _view = getView(route.query.view, props.doctype)
+  let _view = getView(route.query.view, currentViewType.value, props.doctype)
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const columns = _view?.columns || ''
@@ -405,6 +406,7 @@ function getParams() {
     view.value = {
       name: _view.name,
       label: _view.label,
+      type: _view.type || 'list',
       icon: _view.icon,
       filters: _view.filters,
       order_by: _view.order_by,
@@ -419,6 +421,7 @@ function getParams() {
     view.value = {
       name: '',
       label: '',
+      type: currentViewType.value || 'list',
       icon: '',
       filters: {},
       order_by: 'modified desc',
@@ -439,7 +442,10 @@ function getParams() {
     rows: rows,
     page_length: pageLength.value,
     page_length_count: pageLengthCount.value,
-    custom_view_name: _view?.name || '',
+    view: {
+      custom_view_name: _view?.name || '',
+      view_type: _view?.type || currentViewType.value || 'list',
+    },
     default_filters: props.filters,
   }
 }
@@ -455,7 +461,7 @@ list.value = createResource({
     }
   },
   onSuccess(data) {
-    let cv = getView(route.query.view)
+    let cv = getView(route.query.view, currentViewType.value)
     let params = list.value.params ? list.value.params : getParams()
     defaultParams.value = {
       doctype: props.doctype,
@@ -465,7 +471,10 @@ list.value = createResource({
       page_length_count: params.page_length_count,
       columns: data.columns,
       rows: data.rows,
-      custom_view_name: cv?.name || '',
+      view: {
+        custom_view_name: cv?.name || '',
+        view_type: cv?.type || currentViewType.value || 'list',
+      },
       default_filters: props.filters,
     }
   },
@@ -696,6 +705,7 @@ function create_or_update_default_view() {
     reloadView()
     view.value = {
       label: view.value.label,
+      type: view.value.type || 'list',
       icon: view.value.icon,
       name: view.value.name,
       filters: defaultParams.value.filters,
@@ -803,7 +813,9 @@ const viewActions = computed(() => {
 const viewModalObj = ref({})
 
 function duplicateView() {
-  let label = __(getView(route.query.view)?.label) || __('List View')
+  let label =
+    __(getView(route.query.view, currentViewType.type)?.label) ||
+    __('List View')
   view.value.name = ''
   view.value.label = label + __(' (New)')
   viewModalObj.value = view.value
@@ -811,7 +823,7 @@ function duplicateView() {
 }
 
 function editView() {
-  let cView = getView(route.query.view)
+  let cView = getView(route.query.view, currentViewType.type)
   view.value.name = route.query.view
   view.value.label = __(cView?.label) || __('List View')
   view.value.icon = cView?.icon || ''
@@ -857,6 +869,7 @@ function cancelChanges() {
 function saveView() {
   view.value = {
     label: view.value.label,
+    type: view.value.type || 'list',
     icon: view.value.icon,
     name: view.value.name,
     filters: defaultParams.value.filters,
@@ -925,7 +938,7 @@ defineExpose({ applyFilter, applyLikeFilter, likeDoc })
 
 // Watchers
 watch(
-  () => getView(route.query.view),
+  () => getView(route.query.view, currentViewType.value),
   (value, old_value) => {
     if (JSON.stringify(value) === JSON.stringify(old_value)) return
     reload()
@@ -933,11 +946,8 @@ watch(
   { deep: true }
 )
 
-watch(
-  () => route,
-  (value, old_value) => {
-    if (value === old_value) return
-    reload()
-  }
-)
+watch([() => route, () => route.params.viewType], (value, old_value) => {
+  if (value[0] === old_value[0] && value[1] === value[0]) return
+  reload()
+})
 </script>
