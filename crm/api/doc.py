@@ -282,7 +282,16 @@ def get_list_data(
 				options = [u for u in options if u]
 				if has_empty_values:
 					options.append("")
-				options.sort()
+
+				if order_by and group_by_field in order_by:
+					order_by_fields = order_by.split(",")
+					order_by_fields = [(field.split(" ")[0], field.split(" ")[1]) for field in order_by_fields]
+					if (group_by_field, "asc") in order_by_fields:
+						options.sort()
+					elif (group_by_field, "desc") in order_by_fields:
+						options.sort(reverse=True)
+				else:
+					options.sort()
 				return options
 
 		for field in fields:
