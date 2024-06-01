@@ -1,7 +1,14 @@
 <template>
-  <Dropdown :options="options">
-    <template #default="{ open }">
-      <Button :label="hideLabel ? __('Status') : __('Group By: Status')">
+  <Autocomplete :options="options" value="" @change="(e) => setGroupBy(e)">
+    <template #target="{ togglePopover }">
+      <Button
+        :label="
+          hideLabel
+            ? groupByValue?.label
+            : __('Group By: ') + groupByValue?.label
+        "
+        @click="togglePopover()"
+      >
         <template #prefix>
           <DetailsIcon />
         </template>
@@ -13,12 +20,13 @@
         </template>
       </Button>
     </template>
-  </Dropdown>
+  </Autocomplete>
 </template>
 <script setup>
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DetailsIcon from '@/components/icons/DetailsIcon.vue'
-import { Dropdown } from 'frappe-ui'
-import { ref } from 'vue'
+import { createResource } from 'frappe-ui'
+import { ref, computed, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -31,14 +39,39 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['update'])
+
 const list = defineModel()
 
-const selected = ref('Status')
+const groupByValue = ref({
+  label: 'Owner',
+  value: 'owner',
+})
 
-const options = ref([
-  { label: 'Status', value: 'status' },
-  { label: 'Source', value: 'source' },
-  { label: 'Owner', value: 'owner' },
-  { label: 'Created At', value: 'created_at' },
-])
+const groupByOptions = createResource({
+  url: 'crm.api.doc.get_group_by_fields',
+  cache: ['groupByOptions', props.doctype],
+  params: {
+    doctype: props.doctype,
+  },
+})
+
+onMounted(() => {
+  if (groupByOptions.data?.length) return
+  groupByOptions.fetch()
+})
+
+function setGroupBy(data) {
+  groupByValue.value = data
+  nextTick(() => emit('update', data.value))
+}
+
+const options = computed(() => {
+  if (!groupByOptions.data) return []
+  if (!list.value?.data?.group_by_field) return groupByOptions.data
+  groupByValue.value = list.value.data.group_by_field
+  return groupByOptions.data.filter(
+    (option) => option !== groupByValue.value.value
+  )
+})
 </script>

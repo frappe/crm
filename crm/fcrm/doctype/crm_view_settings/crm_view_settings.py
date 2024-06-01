@@ -35,6 +35,7 @@ def create(view):
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(view.filters)
 	doc.order_by = view.order_by
+	doc.group_by_field = view.group_by_field
 	doc.columns = json.dumps(view.columns)
 	doc.rows = json.dumps(view.rows)
 	doc.insert()
@@ -60,6 +61,7 @@ def update(view):
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by
+	doc.group_by_field = view.group_by_field
 	doc.columns = json.dumps(columns)
 	doc.rows = json.dumps(rows)
 	doc.save()
@@ -139,6 +141,7 @@ def create_or_update_default_view(view):
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by
+		doc.group_by_field = view.group_by_field
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.save()
@@ -154,6 +157,7 @@ def create_or_update_default_view(view):
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by
+		doc.group_by_field = view.group_by_field
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.is_default = True

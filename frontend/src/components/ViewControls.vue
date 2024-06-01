@@ -415,6 +415,7 @@ function getParams() {
       icon: _view.icon,
       filters: _view.filters,
       order_by: _view.order_by,
+      group_by_field: _view.group_by_field,
       columns: _view.columns,
       rows: _view.rows,
       route_name: _view.route_name,
@@ -430,6 +431,7 @@ function getParams() {
       icon: '',
       filters: {},
       order_by: 'modified desc',
+      group_by_field: 'owner',
       columns: '',
       rows: '',
       route_name: route.name,
@@ -676,6 +678,21 @@ function updateSort(order_by) {
   }
 }
 
+function updateGroupBy(group_by_field) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  list.value.params.view.group_by_field = group_by_field
+  view.value.group_by_field = group_by_field
+  list.value.reload()
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
+}
+
 function updateColumns(obj) {
   if (!obj) {
     obj = {
@@ -727,6 +744,7 @@ function create_or_update_default_view() {
       name: view.value.name,
       filters: defaultParams.value.filters,
       order_by: defaultParams.value.order_by,
+      group_by_field: defaultParams.value.view.group_by_field,
       columns: defaultParams.value.columns,
       rows: defaultParams.value.rows,
       route_name: route.name,
@@ -891,6 +909,7 @@ function saveView() {
     name: view.value.name,
     filters: defaultParams.value.filters,
     order_by: defaultParams.value.order_by,
+    group_by_field: defaultParams.value.view.group_by_field,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,
