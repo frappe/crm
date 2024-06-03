@@ -444,7 +444,7 @@ list.value = createResource({
       view: {
         custom_view_name: cv?.name || '',
         view_type: cv?.type || route.params.viewType || 'list',
-        group_by_field: cv?.group_by_field || 'owner',
+        group_by_field: params?.view?.group_by_field || 'owner',
       },
       default_filters: props.filters,
     }
