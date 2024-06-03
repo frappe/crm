@@ -1,5 +1,4 @@
 import { createResource } from 'frappe-ui'
-import { useScreenSize } from '@/composables'
 import { computed, ref } from 'vue'
 
 export const whatsappEnabled = ref(false)
@@ -23,5 +22,4 @@ createResource({
 
 export const mobileSidebarOpened = ref(false)
 
-const screenSize = useScreenSize()
-export const isMobileView = computed(() => screenSize.width < 768)
+export const isMobileView = computed(() => window.innerWidth < 768)
