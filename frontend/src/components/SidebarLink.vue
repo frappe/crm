@@ -21,7 +21,7 @@
             </span>
           </slot>
         </Tooltip>
-        <Tooltip :text="label" placement="right" :disabled="isCollapsed" hoverDelay="1.5">
+        <Tooltip :text="label" placement="right" :disabled="isCollapsed" :hoverDelay="1.5">
           <span
             class="flex-1 flex-shrink-0 truncate text-base duration-300 ease-in-out"
             :class="

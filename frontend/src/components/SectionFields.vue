@@ -8,7 +8,7 @@
       :class="[field.hidden && 'hidden']"
       class="flex items-center gap-2 px-3 leading-5 first:mt-3"
     >
-      <Tooltip :text="__(field.label)" hoverDelay="1">
+      <Tooltip :text="__(field.label)" :hoverDelay="1">
         <div class="sm:w-[106px] w-36 shrink-0 truncate text-sm text-gray-600">
           <span>{{ __(field.label) }}</span>
           <span class="text-red-500">{{ field.reqd ? ' *' : '' }}</span>
