@@ -23,7 +23,7 @@ const props = defineProps({
   },
 })
 
-const files = import.meta.globEager('/src/index.css')
+const files = import.meta.globEager('/src/index.css', { query: '?inline' })
 const css = files['/src/index.css'].default
 
 const iframeRef = ref(null)
