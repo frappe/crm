@@ -20,6 +20,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
       publicViews.value = []
       for (let view of views) {
         viewsByName[view.name] = view
+        view.type = view.type || 'list'
         if (view.pinned) {
           pinnedViews.value?.push(view)
         }
@@ -27,16 +28,17 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
           publicViews.value?.push(view)
         }
         if (view.is_default && view.dt) {
-          defaultView.value[view.dt] = view
+          defaultView.value[view.dt + ' ' + view.type] = view
         }
       }
       return views
     },
   })
 
-  function getView(view, doctype = null) {
+  function getView(view, type, doctype = null) {
+    type = type || 'list'
     if (!view && doctype) {
-      return defaultView.value?.[doctype] || null
+      return defaultView.value[doctype + ' ' + type] || null
     }
     return viewsByName[view]
   }

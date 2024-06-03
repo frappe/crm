@@ -12,7 +12,12 @@
                 <div v-if="isEmoji(currentView.icon)">
                   {{ currentView.icon }}
                 </div>
-                <FeatherIcon v-else :name="currentView.icon" class="h-4" />
+                <FeatherIcon
+                  v-else-if="typeof currentView.icon == 'string'"
+                  :name="currentView.icon"
+                  class="h-4"
+                />
+                <component v-else :is="currentView.icon" class="h-4" />
               </template>
               <template #suffix>
                 <FeatherIcon
@@ -43,12 +48,26 @@
           :default_filters="filters"
           @update="updateFilter"
         />
+
         <div class="flex gap-2">
-          <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
+          <GroupBy
+            v-if="route.params.viewType === 'group_by'"
+            v-model="list"
+            :doctype="doctype"
+            :hideLabel="isMobileView"
+            @update="updateGroupBy"
+          />
+          <SortBy
+            v-model="list"
+            :doctype="doctype"
+            @update="updateSort"
+            :hideLabel="isMobileView"
+          />
           <ColumnSettings
             v-if="!options.hideColumnsButton"
             v-model="list"
             :doctype="doctype"
+            :hideLabel="isMobileView"
             @update="(isDefault) => updateColumns(isDefault)"
           />
         </div>
@@ -69,7 +88,12 @@
           <Button :label="__(currentView.label)">
             <template #prefix>
               <div v-if="isEmoji(currentView.icon)">{{ currentView.icon }}</div>
-              <FeatherIcon v-else :name="currentView.icon" class="h-4" />
+              <FeatherIcon
+                v-else-if="typeof currentView.icon == 'string'"
+                :name="currentView.icon"
+                class="h-4"
+              />
+              <component v-else :is="currentView.icon" class="h-4" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -117,6 +141,12 @@
             <RefreshIcon class="h-4 w-4" />
           </template>
         </Button>
+        <GroupBy
+          v-if="route.params.viewType === 'group_by'"
+          v-model="list"
+          :doctype="doctype"
+          @update="updateGroupBy"
+        />
         <Filter
           v-model="list"
           :doctype="doctype"
@@ -162,7 +192,11 @@
       afterCreate: async (v) => {
         await reloadView()
         viewUpdated = false
-        router.push({ name: route.name, query: { view: v.name } })
+        router.push({
+          name: route.name,
+          params: { viewType: v.type || 'list' },
+          query: { view: v.name },
+        })
       },
       afterUpdate: () => {
         viewUpdated = false
@@ -212,6 +246,7 @@
   </Dialog>
 </template>
 <script setup>
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -221,6 +256,7 @@ import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
+import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import { globalStore } from '@/stores/global'
@@ -247,6 +283,7 @@ const props = defineProps({
     default: {
       hideColumnsButton: false,
       defaultViewName: '',
+      allowedViews: ['list'],
     },
   },
 })
@@ -268,17 +305,35 @@ const defaultParams = ref('')
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
+function getViewType() {
+  let viewType = route.params.viewType || 'list'
+  let types = {
+    list: {
+      label: __('List View'),
+      icon: 'list',
+    },
+    group_by: {
+      label: __('Group By View'),
+      icon: DetailsIcon,
+    },
+  }
+
+  return types[viewType]
+}
+
 const currentView = computed(() => {
-  let _view = getView(route.query.view)
+  let _view = getView(route.query.view, route.params.viewType, props.doctype)
   return {
-    label: _view?.label || props.options?.defaultViewName || 'List View',
-    icon: _view?.icon || 'list',
+    label:
+      _view?.label || props.options?.defaultViewName || getViewType().label,
+    icon: _view?.icon || getViewType().icon,
   }
 })
 
 const view = ref({
   name: '',
   label: '',
+  type: 'list',
   icon: '',
   filters: {},
   order_by: 'modified desc',
@@ -308,7 +363,7 @@ watch(updatedPageCount, (value) => {
 })
 
 function getParams() {
-  let _view = getView(route.query.view, props.doctype)
+  let _view = getView(route.query.view, route.params.viewType, props.doctype)
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const columns = _view?.columns || ''
@@ -318,9 +373,11 @@ function getParams() {
     view.value = {
       name: _view.name,
       label: _view.label,
+      type: _view.type || 'list',
       icon: _view.icon,
       filters: _view.filters,
       order_by: _view.order_by,
+      group_by_field: _view.group_by_field,
       columns: _view.columns,
       rows: _view.rows,
       route_name: _view.route_name,
@@ -331,13 +388,15 @@ function getParams() {
   } else {
     view.value = {
       name: '',
-      label: '',
+      label: getViewType().label,
+      type: route.params.viewType || 'list',
       icon: '',
       filters: {},
       order_by: 'modified desc',
+      group_by_field: 'owner',
       columns: '',
       rows: '',
-      route_name: '',
+      route_name: route.name,
       load_default_columns: true,
       pinned: false,
       public: false,
@@ -352,7 +411,11 @@ function getParams() {
     rows: rows,
     page_length: pageLength.value,
     page_length_count: pageLengthCount.value,
-    custom_view_name: _view?.name || '',
+    view: {
+      custom_view_name: _view?.name || '',
+      view_type: _view?.type || route.params.viewType || 'list',
+      group_by_field: _view?.group_by_field || 'owner',
+    },
     default_filters: props.filters,
   }
 }
@@ -360,7 +423,7 @@ function getParams() {
 list.value = createResource({
   url: 'crm.api.doc.get_list_data',
   params: getParams(),
-  cache: [props.doctype, route.query.view],
+  cache: [props.doctype, route.query.view, route.params.viewType],
   transform(data) {
     return {
       ...data,
@@ -368,7 +431,7 @@ list.value = createResource({
     }
   },
   onSuccess(data) {
-    let cv = getView(route.query.view)
+    let cv = getView(route.query.view, route.params.viewType, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
     defaultParams.value = {
       doctype: props.doctype,
@@ -378,7 +441,11 @@ list.value = createResource({
       page_length_count: params.page_length_count,
       columns: data.columns,
       rows: data.rows,
-      custom_view_name: cv?.name || '',
+      view: {
+        custom_view_name: cv?.name || '',
+        view_type: cv?.type || route.params.viewType || 'list',
+        group_by_field: params?.view?.group_by_field || 'owner',
+      },
       default_filters: props.filters,
     }
   },
@@ -412,23 +479,37 @@ async function exportRows() {
   export_type.value = 'Excel'
 }
 
-const defaultViews = [
-  {
+let defaultViews = []
+let allowedViews = props.options.allowedViews || ['list']
+
+if (allowedViews.includes('list')) {
+  defaultViews.push({
     label: __(props.options?.defaultViewName) || __('List View'),
     icon: 'list',
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name })
     },
-  },
-]
+  })
+}
+if (allowedViews.includes('group_by')) {
+  defaultViews.push({
+    label: __(props.options?.defaultViewName) || __('Group By View'),
+    icon: h(DetailsIcon, { class: 'size-4' }),
+    onClick() {
+      viewUpdated.value = false
+      router.push({ name: route.name, params: { viewType: 'group_by' } })
+    },
+  })
+}
 
-function getIcon(icon) {
+function getIcon(icon, type) {
   if (isEmoji(icon)) {
     return h('div', icon)
-  } else {
-    return icon || 'list'
+  } else if (!icon && type === 'group_by') {
+    return DetailsIcon
   }
+  return icon || 'list'
 }
 
 const viewsDropdownOptions = computed(() => {
@@ -443,14 +524,19 @@ const viewsDropdownOptions = computed(() => {
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
       view.label = __(view.label)
-      view.icon = getIcon(view.icon)
+      view.type = view.type || 'list'
+      view.icon = getIcon(view.icon, view.type)
       view.filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
           : view.filters
       view.onClick = () => {
         viewUpdated.value = false
-        router.push({ ...route, query: { view: view.name } })
+        router.push({
+          name: route.name,
+          params: { viewType: view.type },
+          query: { view: view.name },
+        })
       }
     })
     let publicViews = list.value.data.views.filter((v) => v.public)
@@ -555,6 +641,21 @@ function updateSort(order_by) {
   }
 }
 
+function updateGroupBy(group_by_field) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  list.value.params.view.group_by_field = group_by_field
+  view.value.group_by_field = group_by_field
+  list.value.reload()
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
+}
+
 function updateColumns(obj) {
   if (!obj) {
     obj = {
@@ -601,10 +702,12 @@ function create_or_update_default_view() {
     reloadView()
     view.value = {
       label: view.value.label,
+      type: view.value.type || 'list',
       icon: view.value.icon,
       name: view.value.name,
       filters: defaultParams.value.filters,
       order_by: defaultParams.value.order_by,
+      group_by_field: defaultParams.value.view.group_by_field,
       columns: defaultParams.value.columns,
       rows: defaultParams.value.rows,
       route_name: route.name,
@@ -708,7 +811,9 @@ const viewActions = computed(() => {
 const viewModalObj = ref({})
 
 function duplicateView() {
-  let label = __(getView(route.query.view)?.label) || __('List View')
+  let label =
+    __(getView(route.query.view, route.params.viewType, props.doctype)?.label) ||
+    getViewType().label
   view.value.name = ''
   view.value.label = label + __(' (New)')
   viewModalObj.value = view.value
@@ -716,9 +821,9 @@ function duplicateView() {
 }
 
 function editView() {
-  let cView = getView(route.query.view)
+  let cView = getView(route.query.view, route.params.viewType, props.doctype)
   view.value.name = route.query.view
-  view.value.label = __(cView?.label) || __('List View')
+  view.value.label = __(cView?.label) || getViewType().label
   view.value.icon = cView?.icon || ''
   viewModalObj.value = view.value
   showViewModal.value = true
@@ -762,10 +867,12 @@ function cancelChanges() {
 function saveView() {
   view.value = {
     label: view.value.label,
+    type: view.value.type || 'list',
     icon: view.value.icon,
     name: view.value.name,
     filters: defaultParams.value.filters,
     order_by: defaultParams.value.order_by,
+    group_by_field: defaultParams.value.view.group_by_field,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,
@@ -830,7 +937,7 @@ defineExpose({ applyFilter, applyLikeFilter, likeDoc })
 
 // Watchers
 watch(
-  () => getView(route.query.view),
+  () => getView(route.query.view, route.params.viewType, props.doctype),
   (value, old_value) => {
     if (JSON.stringify(value) === JSON.stringify(old_value)) return
     reload()
@@ -838,11 +945,8 @@ watch(
   { deep: true }
 )
 
-watch(
-  () => route,
-  (value, old_value) => {
-    if (value === old_value) return
-    reload()
-  }
-)
+watch([() => route, () => route.params.viewType], (value, old_value) => {
+  if (value[0] === old_value[0] && value[1] === value[0]) return
+  reload()
+})
 </script>

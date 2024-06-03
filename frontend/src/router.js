@@ -14,10 +14,12 @@ const routes = [
     component: () => import('@/pages/MobileNotification.vue'),
   },
   {
-    path: '/leads',
+    alias: '/leads',
+    path: '/leads/view/:viewType?',
     name: 'Leads',
     component: () => import('@/pages/Leads.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
+    props: true,
   },
   {
     path: '/leads/:leadId/:tabName?',
@@ -26,10 +28,12 @@ const routes = [
     props: true,
   },
   {
-    path: '/deals',
+    alias: '/deals',
+    path: '/deals/view/:viewType?',
     name: 'Deals',
     component: () => import('@/pages/Deals.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
+    props: true,
   },
   {
     path: '/deals/:dealId/:tabName?',

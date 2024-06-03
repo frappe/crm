@@ -184,6 +184,7 @@ function parseView(views) {
       icon: getIcon(view.route_name, view.icon),
       to: {
         name: view.route_name,
+        params: { viewType: view.type || 'list' },
         query: { view: view.name },
       },
     }
