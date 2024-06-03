@@ -9,6 +9,7 @@
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
+    v-bind="$attrs"
   >
     <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')">
       <ListHeaderItem
