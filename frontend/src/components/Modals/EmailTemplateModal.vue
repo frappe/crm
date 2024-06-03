@@ -60,7 +60,7 @@
             type="textarea"
             variant="outline"
             ref="content"
-            rows="10"
+            :rows="10"
             v-model="_emailTemplate.response_html"
             :placeholder="
               __(

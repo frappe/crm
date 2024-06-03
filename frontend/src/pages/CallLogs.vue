@@ -50,11 +50,7 @@
       <span>{{ __('No {0} Found', [__('Logs')]) }}</span>
     </div>
   </div>
-  <CallLogModal
-    v-model="showCallLogModal"
-    v-model:reloadCallLogs="callLogs"
-    :name="selectedCallLog"
-  />
+  <CallLogModal v-model="showCallLogModal" :name="selectedCallLog" />
 </template>
 
 <script setup>
