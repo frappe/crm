@@ -19,10 +19,9 @@ const routes = [
     name: 'Leads',
     component: () => import('@/pages/Leads.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
-    props: true,
   },
   {
-    path: '/leads/:leadId/:tabName?',
+    path: '/leads/:leadId',
     name: 'Lead',
     component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
     props: true,
@@ -33,10 +32,9 @@ const routes = [
     name: 'Deals',
     component: () => import('@/pages/Deals.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
-    props: true,
   },
   {
-    path: '/deals/:dealId/:tabName?',
+    path: '/deals/:dealId',
     name: 'Deal',
     component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
     props: true,
