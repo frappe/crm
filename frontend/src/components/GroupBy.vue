@@ -1,6 +1,6 @@
 <template>
   <Autocomplete :options="options" value="" @change="(e) => setGroupBy(e)">
-    <template #target="{ togglePopover }">
+    <template #target="{ togglePopover, isOpen }">
       <Button
         :label="
           hideLabel
@@ -14,7 +14,7 @@
         </template>
         <template #suffix>
           <FeatherIcon
-            :name="open ? 'chevron-up' : 'chevron-down'"
+            :name="isOpen ? 'chevron-up' : 'chevron-down'"
             class="h-4"
           />
         </template>
