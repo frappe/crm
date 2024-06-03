@@ -268,6 +268,7 @@ import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/stores/settings'
+import _ from 'lodash'
 
 const props = defineProps({
   doctype: {
@@ -940,7 +941,7 @@ defineExpose({ applyFilter, applyLikeFilter, likeDoc })
 watch(
   () => getView(route.query.view, route.params.viewType, props.doctype),
   (value, old_value) => {
-    if (JSON.stringify(value) === JSON.stringify(old_value)) return
+    if (_.isEqual(value, old_value)) return
     reload()
   },
   { deep: true }
