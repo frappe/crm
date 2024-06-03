@@ -51,7 +51,7 @@
 
         <div class="flex gap-2">
           <GroupBy
-            v-if="currentViewType === 'group_by'"
+            v-if="route.params.viewType === 'group_by'"
             v-model="list"
             :doctype="doctype"
             :hideLabel="isMobileView"
@@ -142,7 +142,7 @@
           </template>
         </Button>
         <GroupBy
-          v-if="currentViewType === 'group_by'"
+          v-if="route.params.viewType === 'group_by'"
           v-model="list"
           :doctype="doctype"
           @update="updateGroupBy"
@@ -305,9 +305,8 @@ const defaultParams = ref('')
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
-const currentViewType = computed(() => route.params.viewType || 'list')
-
 function getViewType() {
+  let viewType = route.params.viewType || 'list'
   let types = {
     list: {
       label: __('List View'),
@@ -315,15 +314,15 @@ function getViewType() {
     },
     group_by: {
       label: __('Group By View'),
-      icon: h(DetailsIcon, { class: 'size-4' }),
+      icon: DetailsIcon,
     },
   }
 
-  return types[currentViewType.value]
+  return types[viewType]
 }
 
 const currentView = computed(() => {
-  let _view = getView(route.query.view, currentViewType.value, props.doctype)
+  let _view = getView(route.query.view, route.params.viewType, props.doctype)
   return {
     label:
       _view?.label || props.options?.defaultViewName || getViewType().label,
@@ -364,7 +363,7 @@ watch(updatedPageCount, (value) => {
 })
 
 function getParams() {
-  let _view = getView(route.query.view, currentViewType.value, props.doctype)
+  let _view = getView(route.query.view, route.params.viewType, props.doctype)
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const columns = _view?.columns || ''
@@ -390,7 +389,7 @@ function getParams() {
     view.value = {
       name: '',
       label: getViewType().label,
-      type: currentViewType.value || 'list',
+      type: route.params.viewType || 'list',
       icon: '',
       filters: {},
       order_by: 'modified desc',
@@ -414,7 +413,7 @@ function getParams() {
     page_length_count: pageLengthCount.value,
     view: {
       custom_view_name: _view?.name || '',
-      view_type: _view?.type || currentViewType.value || 'list',
+      view_type: _view?.type || route.params.viewType || 'list',
       group_by_field: _view?.group_by_field || 'owner',
     },
     default_filters: props.filters,
@@ -432,7 +431,7 @@ list.value = createResource({
     }
   },
   onSuccess(data) {
-    let cv = getView(route.query.view, currentViewType.value, props.doctype)
+    let cv = getView(route.query.view, route.params.viewType, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
     defaultParams.value = {
       doctype: props.doctype,
@@ -444,7 +443,7 @@ list.value = createResource({
       rows: data.rows,
       view: {
         custom_view_name: cv?.name || '',
-        view_type: cv?.type || currentViewType.value || 'list',
+        view_type: cv?.type || route.params.viewType || 'list',
         group_by_field: cv?.group_by_field || 'owner',
       },
       default_filters: props.filters,
@@ -525,6 +524,7 @@ const viewsDropdownOptions = computed(() => {
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
       view.label = __(view.label)
+      view.type = view.type || 'list'
       view.icon = getIcon(view.icon, view.type)
       view.filters =
         typeof view.filters == 'string'
@@ -534,7 +534,7 @@ const viewsDropdownOptions = computed(() => {
         viewUpdated.value = false
         router.push({
           name: route.name,
-          params: { viewType: view.type || 'list' },
+          params: { viewType: view.type },
           query: { view: view.name },
         })
       }
@@ -812,7 +812,7 @@ const viewModalObj = ref({})
 
 function duplicateView() {
   let label =
-    __(getView(route.query.view, currentViewType.type, props.doctype)?.label) ||
+    __(getView(route.query.view, route.params.viewType, props.doctype)?.label) ||
     getViewType().label
   view.value.name = ''
   view.value.label = label + __(' (New)')
@@ -821,7 +821,7 @@ function duplicateView() {
 }
 
 function editView() {
-  let cView = getView(route.query.view, currentViewType.type, props.doctype)
+  let cView = getView(route.query.view, route.params.viewType, props.doctype)
   view.value.name = route.query.view
   view.value.label = __(cView?.label) || getViewType().label
   view.value.icon = cView?.icon || ''

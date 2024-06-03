@@ -129,7 +129,7 @@ def create_or_update_default_view(view):
 		"CRM View Settings",
 		{
 			"dt": view.doctype,
-			"type": view.type,
+			"type": view.type or 'list',
 			"is_default": True,
 			"user": frappe.session.user
 		},
@@ -137,6 +137,7 @@ def create_or_update_default_view(view):
 	if doc:
 		doc = frappe.get_doc("CRM View Settings", doc)
 		doc.label = view.label
+		doc.type = view.type or 'list'
 		doc.route_name = view.route_name or ""
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)

@@ -251,7 +251,7 @@ def get_list_data(
 
 	default_view_filters = {
 		"dt": doctype,
-		"type": view_type,
+		"type": view_type or 'list',
 		"is_default": 1,
 		"user": frappe.session.user,
 	}
