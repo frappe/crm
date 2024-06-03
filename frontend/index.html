@@ -177,14 +177,6 @@
   </head>
   <body class="sm:overscroll-y-none no-scrollbar">
     <div id="app" class="h-full"></div>
-    <div id="modals"></div>
-    <div id="popovers"></div>
-
-    <script>
-      {% for key in boot %}
-        window["{{ key }}"] = {{ boot[key] | tojson }};
-      {% endfor %}
-    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
