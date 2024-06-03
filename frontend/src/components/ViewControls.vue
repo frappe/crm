@@ -264,7 +264,7 @@ import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
 import { isEmoji } from '@/utils'
 import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
-import { computed, ref, onMounted, watch, h } from 'vue'
+import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/stores/settings'
@@ -314,7 +314,7 @@ function getViewType() {
     },
     group_by: {
       label: __('Group By View'),
-      icon: DetailsIcon,
+      icon: markRaw(DetailsIcon),
     },
   }
 
@@ -495,7 +495,7 @@ if (allowedViews.includes('list')) {
 if (allowedViews.includes('group_by')) {
   defaultViews.push({
     label: __(props.options?.defaultViewName) || __('Group By View'),
-    icon: h(DetailsIcon, { class: 'size-4' }),
+    icon: markRaw(DetailsIcon),
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name, params: { viewType: 'group_by' } })
@@ -507,7 +507,7 @@ function getIcon(icon, type) {
   if (isEmoji(icon)) {
     return h('div', icon)
   } else if (!icon && type === 'group_by') {
-    return DetailsIcon
+    return markRaw(DetailsIcon)
   }
   return icon || 'list'
 }
@@ -812,8 +812,9 @@ const viewModalObj = ref({})
 
 function duplicateView() {
   let label =
-    __(getView(route.query.view, route.params.viewType, props.doctype)?.label) ||
-    getViewType().label
+    __(
+      getView(route.query.view, route.params.viewType, props.doctype)?.label
+    ) || getViewType().label
   view.value.name = ''
   view.value.label = label + __(' (New)')
   viewModalObj.value = view.value
