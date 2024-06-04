@@ -33,7 +33,7 @@
 <script setup>
 import { computed, h } from 'vue'
 import { Dropdown } from 'frappe-ui'
-import { isMobileView } from '@/stores/settings'
+import { isMobileView } from '@/composables/settings'
 
 const props = defineProps({
   actions: {

@@ -103,7 +103,7 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
 import { computed, h } from 'vue'
-import { mobileSidebarOpened as sidebarOpened } from '@/stores/settings'
+import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 

@@ -238,7 +238,7 @@ import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
-import { callEnabled } from '@/stores/settings'
+import { callEnabled } from '@/composables/settings'
 import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 

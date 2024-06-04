@@ -924,7 +924,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import { whatsappEnabled, callEnabled } from '@/stores/settings'
+import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   Button,
   Tooltip,

@@ -195,7 +195,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { whatsappEnabled, callEnabled, isMobileView } from '@/stores/settings'
+import { whatsappEnabled, callEnabled, isMobileView } from '@/composables/settings'
 import {
   createResource,
   Dropdown,

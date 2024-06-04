@@ -12,5 +12,5 @@
 
 <script setup>
 import CallUI from '@/components/CallUI.vue'
-import { mobileSidebarOpened as sidebarOpened } from '@/stores/settings'
+import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
 </script>

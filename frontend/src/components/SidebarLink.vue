@@ -43,7 +43,7 @@
 import { Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { isMobileView, mobileSidebarOpened } from '@/stores/settings'
+import { isMobileView, mobileSidebarOpened } from '@/composables/settings'
 
 const router = useRouter()
 const route = useRoute()

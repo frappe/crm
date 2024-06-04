@@ -267,7 +267,7 @@ import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
-import { isMobileView } from '@/stores/settings'
+import { isMobileView } from '@/composables/settings'
 import _ from 'lodash'
 
 const props = defineProps({

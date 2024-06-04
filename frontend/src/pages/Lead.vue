@@ -293,7 +293,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { whatsappEnabled, callEnabled } from '@/stores/settings'
+import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   createResource,
   FileUploader,
