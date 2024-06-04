@@ -425,12 +425,6 @@ list.value = createResource({
   url: 'crm.api.doc.get_list_data',
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
-  transform(data) {
-    return {
-      ...data,
-      params: getParams(),
-    }
-  },
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
