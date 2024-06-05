@@ -17,7 +17,7 @@
     </template>
     <template #body="{ close }">
       <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
-        <div class="min-w-[352px] p-2">
+        <div class="min-w-60 p-2">
           <div
             v-if="sortValues?.size"
             id="sort-list"
@@ -26,34 +26,51 @@
             <div
               v-for="(sort, i) in sortValues"
               :key="sort.fieldname"
-              class="flex items-center gap-2"
+              class="flex items-center gap-1"
             >
               <div class="handle flex h-7 w-7 items-center justify-center">
                 <DragIcon class="h-4 w-4 cursor-grab text-gray-600" />
               </div>
-              <Autocomplete
-                class="!w-32"
-                :value="sort.fieldname"
-                :options="sortOptions.data"
-                @change="(e) => updateSort(e, i)"
-                :placeholder="__('First Name')"
-              />
-              <FormControl
-                class="!w-32"
-                type="select"
-                v-model="sort.direction"
-                :options="[
-                  { label: __('Ascending'), value: 'asc' },
-                  { label: __('Descending'), value: 'desc' },
-                ]"
-                @change="
-                  (e) => {
-                    sort.direction = e.target.value
-                    apply()
-                  }
-                "
-                :placeholder="__('Ascending')"
-              />
+              <div class="flex">
+                <Button
+                  size="md"
+                  class="rounded-r-none border-r"
+                  @click="
+                    () => {
+                      sort.direction = sort.direction == 'asc' ? 'desc' : 'asc'
+                      apply()
+                    }
+                  "
+                >
+                  <AscendingIcon v-if="sort.direction == 'asc'" class="h-4" />
+                  <DesendingIcon v-else class="h-4" />
+                </Button>
+                <Autocomplete
+                  class="!w-32"
+                  :value="sort.fieldname"
+                  :options="sortOptions.data"
+                  @change="(e) => updateSort(e, i)"
+                  :placeholder="__('First Name')"
+                >
+                  <template
+                    #target="{ togglePopover, selectedValue, displayValue }"
+                  >
+                    <Button
+                      class="flex w-full items-center justify-between rounded-l-none !text-gray-600"
+                      size="md"
+                      @click="togglePopover()"
+                    >
+                      {{ displayValue(selectedValue) }}
+                      <template #suffix>
+                        <FeatherIcon
+                          name="chevron-down"
+                          class="h-4 text-gray-600"
+                        />
+                      </template>
+                    </Button>
+                  </template>
+                </Autocomplete>
+              </div>
               <Button variant="ghost" icon="x" @click="removeSort(i)" />
             </div>
           </div>
@@ -98,6 +115,8 @@
 </template>
 
 <script setup>
+import AscendingIcon from '@/components/Icons/AscendingIcon.vue'
+import DesendingIcon from '@/components/Icons/DesendingIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
