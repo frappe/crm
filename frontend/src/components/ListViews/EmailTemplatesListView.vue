@@ -10,7 +10,7 @@
     }"
     row-key="name"
   >
-    <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')">
+    <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="emit('columnWidthUpdated')">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
@@ -28,9 +28,8 @@
         </Button>
       </ListHeaderItem>
     </ListHeader>
-    <ListRows id="list-rows">
+    <ListRows class="mx-3 sm:mx-5" id="list-rows">
       <ListRow
-        class="mx-5"
         v-for="row in rows"
         :key="row.name"
         v-slot="{ idx, column, item }"
@@ -129,7 +128,7 @@
     </ListSelectBanner>
   </ListView>
   <ListFooter
-    class="border-t px-5 py-2"
+    class="border-t sm:px-5 px-3 py-2"
     v-model="pageLengthCount"
     :options="{
       rowCount: options.rowCount,

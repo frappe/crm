@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-5 mt-2 h-full overflow-y-auto" v-if="showGroupedRows">
+  <div class="mx-3 mt-2 h-full overflow-y-auto sm:mx-5" v-if="showGroupedRows">
     <div v-for="group in reactivieRows" :key="group.group">
       <ListGroupHeader :group="group">
         <div
@@ -27,7 +27,7 @@
       </ListGroupRows>
     </div>
   </div>
-  <ListRows class="mx-5" v-else id="list-rows">
+  <ListRows class="mx-3 sm:mx-5" v-else id="list-rows">
     <ListRow
       v-for="row in reactivieRows"
       :key="row.name"

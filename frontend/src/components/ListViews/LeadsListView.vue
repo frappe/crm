@@ -11,7 +11,7 @@
     }"
     row-key="name"
   >
-    <ListHeader class="mx-5" @columnWidthUpdated="emit('columnWidthUpdated')">
+    <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="emit('columnWidthUpdated')">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
@@ -186,7 +186,7 @@
   </ListView>
   <ListFooter
     v-if="pageLengthCount"
-    class="border-t px-5 py-2"
+    class="border-t sm:px-5 px-3 py-2"
     v-model="pageLengthCount"
     :options="{
       rowCount: options.rowCount,
