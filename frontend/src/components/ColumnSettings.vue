@@ -102,14 +102,14 @@
                 size="md"
                 :label="__('Label')"
                 v-model="column.label"
-                class="w-full"
+                class="sm:w-full w-52"
                 :placeholder="__('First Name')"
               />
               <FormControl
                 type="text"
                 size="md"
                 :label="__('Width')"
-                class="w-full"
+                class="sm:w-full w-52"
                 v-model="column.width"
                 placeholder="10rem"
                 :description="
