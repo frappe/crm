@@ -1,7 +1,25 @@
 <template>
-  <NestedPopover>
-    <template #target>
-      <Button :label="__('Sort')" ref="sortButtonRef">
+  <Autocomplete
+    v-if="!sortValues?.size"
+    :options="options"
+    value=""
+    :placeholder="__('First Name')"
+    @change="(e) => setSort(e)"
+  >
+    <template #target="{ togglePopover }">
+      <Button :label="__('Sort')" @click="togglePopover()">
+        <template v-if="hideLabel">
+          <SortIcon class="h-4" />
+        </template>
+        <template v-if="!hideLabel && !sortValues?.size" #prefix>
+          <SortIcon class="h-4" />
+        </template>
+      </Button>
+    </template>
+  </Autocomplete>
+  <NestedPopover v-else>
+    <template #target="{ open }">
+      <Button v-if="sortValues.size > 1" :label="__('Sort')">
         <template v-if="hideLabel">
           <SortIcon class="h-4" />
         </template>
@@ -14,6 +32,39 @@
           </div>
         </template>
       </Button>
+      <div v-else class="flex items-center justify-center">
+        <Button
+          v-if="sortValues.size"
+          class="rounded-r-none border-r"
+          @click.stop="
+            () => {
+              Array.from(sortValues)[0].direction =
+                Array.from(sortValues)[0].direction == 'asc' ? 'desc' : 'asc'
+              apply()
+            }
+          "
+        >
+          <AscendingIcon
+            v-if="Array.from(sortValues)[0].direction == 'asc'"
+            class="h-4"
+          />
+          <DesendingIcon v-else class="h-4" />
+        </Button>
+        <Button
+          :label="getSortLabel()"
+          :class="sortValues.size ? 'rounded-l-none' : ''"
+        >
+          <template v-if="!hideLabel && !sortValues?.size" #prefix>
+            <SortIcon class="h-4" />
+          </template>
+          <template v-if="sortValues?.size" #suffix>
+            <FeatherIcon
+              :name="open ? 'chevron-up' : 'chevron-down'"
+              class="h-4 text-gray-600"
+            />
+          </template>
+        </Button>
+      </div>
     </template>
     <template #body="{ close }">
       <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
@@ -120,10 +171,10 @@ import DesendingIcon from '@/components/Icons/DesendingIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
-import { useSortable } from '@vueuse/integrations/useSortable'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { useSortable } from '@vueuse/integrations/useSortable'
 import { createResource } from 'frappe-ui'
-import { computed, ref, nextTick, onMounted } from 'vue'
+import { computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -138,8 +189,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update'])
 const list = defineModel()
-
-const sortButtonRef = ref(null)
 
 const sortOptions = createResource({
   url: 'crm.api.doc.sort_options',
@@ -186,6 +235,16 @@ const sortSortable = useSortable('#sort-list', sortValues, {
   animation: 200,
   onEnd: () => apply(),
 })
+
+function getSortLabel() {
+  if (!sortValues.value.size) return __('Sort')
+  let values = Array.from(sortValues.value)
+  let label = sortOptions.data?.find(
+    (option) => option.value === values[0].fieldname
+  )?.label
+
+  return label || sort.fieldname
+}
 
 function setSort(data) {
   sortValues.value.add({ fieldname: data.value, direction: 'asc' })
