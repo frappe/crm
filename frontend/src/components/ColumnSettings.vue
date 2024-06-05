@@ -18,6 +18,7 @@
           <Draggable
             :list="columns"
             @end="apply"
+            :delay="isTouchScreenDevice() ? 200 : 0"
             item-key="key"
             class="list-group"
           >
@@ -147,6 +148,7 @@ import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { isTouchScreenDevice } from '@/utils'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
