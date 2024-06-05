@@ -1,6 +1,7 @@
 <template>
   <NestedPopover>
     <template #target>
+    <div class="flex items-center">
       <Button
         :label="__('Filter')"
         :class="filters?.size ? 'rounded-r-none' : ''"
@@ -15,14 +16,15 @@
         </template>
       </Button>
       <Tooltip v-if="filters?.size" :text="__('Clear all Filter')">
-        <span>
+        <div>
           <Button
             class="rounded-l-none border-l"
             icon="x"
             @click.stop="clearfilter(false)"
           />
-        </span>
+        </div>
       </Tooltip>
+    </div>
     </template>
     <template #body="{ close }">
       <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
