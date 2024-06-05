@@ -59,7 +59,7 @@
                 <component
                   :is="getValSelect(f)"
                   v-model="f.value"
-                  @change="(v) => updateValue(v, f)"
+                  @change.stop="(v) => updateValue(v, f)"
                   :placeholder="__('John Doe')"
                 />
               </div>
