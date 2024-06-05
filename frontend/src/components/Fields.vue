@@ -9,7 +9,9 @@
       <div
         class="grid gap-4"
         :class="
-          section.columns ? 'grid-cols-' + section.columns : 'grid-cols-3'
+          section.columns
+            ? 'grid-cols-' + section.columns
+            : 'grid-cols-2 sm:grid-cols-3'
         "
       >
         <div v-for="field in section.fields" :key="field.name">
@@ -131,6 +133,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { Tooltip } from 'frappe-ui'
+import { isMobileView } from '@/composables/settings'
 
 const { getUser } = usersStore()
 

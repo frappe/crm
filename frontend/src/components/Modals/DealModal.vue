@@ -7,7 +7,7 @@
     }"
   >
     <template #body-content>
-      <div class="mb-4 grid grid-cols-3 gap-4">
+      <div class="mb-4 grid sm:grid-cols-3 grid-cols-1 gap-4">
         <div class="flex items-center gap-3 text-sm text-gray-600">
           <div>{{ __('Choose Existing Organization') }}</div>
           <Switch v-model="chooseExistingOrganization" />
