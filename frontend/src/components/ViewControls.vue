@@ -572,7 +572,15 @@ const quickFilterList = computed(() => {
     if (list.value.params?.filters[filter.name]) {
       let value = list.value.params.filters[filter.name]
       if (Array.isArray(value)) {
-        filter['value'] = value[1].replace(/%/g, '')
+        if (
+          (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
+            filter.type
+          ) &&
+            value[0]?.toLowerCase() == 'like') ||
+          value[0]?.toLowerCase() != 'like'
+        )
+          return
+        filter['value'] = value[1]?.replace(/%/g, '')
       } else {
         filter['value'] = value.replace(/%/g, '')
       }
