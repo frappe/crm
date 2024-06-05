@@ -20,14 +20,14 @@
       >
         <div class="flex items-center p-1 text-gray-500">
           <Button variant="ghost" class="h-7 w-7" @click="prevMonth">
-            <FeatherIcon stroke-width="2" name="chevron-left" class="h-4 w-4" />
+            <FeatherIcon :stroke-width="2" name="chevron-left" class="h-4 w-4" />
           </Button>
           <div class="flex-1 text-center text-base font-medium text-gray-700">
             {{ formatMonth }}
           </div>
           <Button variant="ghost" class="h-7 w-7" @click="nextMonth">
             <FeatherIcon
-              stroke-width="2"
+              :stroke-width="2"
               name="chevron-right"
               class="h-4 w-4"
             />

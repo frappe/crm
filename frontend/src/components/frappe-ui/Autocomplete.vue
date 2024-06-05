@@ -2,7 +2,16 @@
   <Combobox v-model="selectedValue" nullable v-slot="{ open: isComboboxOpen }">
     <Popover class="w-full" v-model:show="showOptions">
       <template #target="{ open: openPopover, togglePopover }">
-        <slot name="target" v-bind="{ open: openPopover, togglePopover }">
+        <slot
+          name="target"
+          v-bind="{
+            open: openPopover,
+            togglePopover,
+            isOpen: showOptions,
+            selectedValue,
+            displayValue,
+          }"
+        >
           <div class="w-full">
             <button
               class="flex w-full items-center justify-between focus:outline-none"

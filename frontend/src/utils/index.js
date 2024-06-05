@@ -212,3 +212,7 @@ export function isEmoji(str) {
   const emojiList = gemoji.map((emoji) => emoji.emoji)
   return emojiList.includes(str)
 }
+
+export function isTouchScreenDevice() {
+	return "ontouchstart" in document.documentElement;
+}

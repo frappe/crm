@@ -21,7 +21,7 @@
             </span>
           </slot>
         </Tooltip>
-        <Tooltip :text="label" placement="right" :disabled="isCollapsed" hoverDelay="1.5">
+        <Tooltip :text="label" placement="right" :disabled="isCollapsed" :hoverDelay="1.5">
           <span
             class="flex-1 flex-shrink-0 truncate text-base duration-300 ease-in-out"
             :class="
@@ -43,7 +43,7 @@
 import { Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { isMobileView, mobileSidebarOpened } from '@/stores/settings'
+import { isMobileView, mobileSidebarOpened } from '@/composables/settings'
 
 const router = useRouter()
 const route = useRoute()

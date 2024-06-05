@@ -1,44 +1,54 @@
 <template>
   <NestedPopover>
     <template #target>
-      <Button
-        :label="__('Filter')"
-        :class="filters?.size ? 'rounded-r-none' : ''"
-      >
-        <template #prefix><FilterIcon class="h-4" /></template>
-        <template v-if="filters?.size" #suffix>
-          <div
-            class="flex h-5 w-5 items-center justify-center rounded bg-gray-900 pt-[1px] text-2xs font-medium text-white"
-          >
-            {{ filters.size }}
+      <div class="flex items-center">
+        <Button
+          :label="__('Filter')"
+          :class="filters?.size ? 'rounded-r-none' : ''"
+        >
+          <template #prefix><FilterIcon class="h-4" /></template>
+          <template v-if="filters?.size" #suffix>
+            <div
+              class="flex h-5 w-5 items-center justify-center rounded bg-gray-900 pt-[1px] text-2xs font-medium text-white"
+            >
+              {{ filters.size }}
+            </div>
+          </template>
+        </Button>
+        <Tooltip v-if="filters?.size" :text="__('Clear all Filter')">
+          <div>
+            <Button
+              class="rounded-l-none border-l"
+              icon="x"
+              @click.stop="clearfilter(false)"
+            />
           </div>
-        </template>
-      </Button>
-      <Tooltip v-if="filters?.size" :text="__('Clear all Filter')">
-        <span>
-          <Button
-            class="rounded-l-none border-l"
-            icon="x"
-            @click.stop="clearfilter(false)"
-          />
-        </span>
-      </Tooltip>
+        </Tooltip>
+      </div>
     </template>
     <template #body="{ close }">
       <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
-        <div class="min-w-[400px] p-2">
+        <div class="min-w-72 p-2 sm:min-w-[400px]">
           <div
             v-if="filters?.size"
             v-for="(f, i) in filters"
             :key="i"
             id="filter-list"
-            class="mb-3 flex items-center justify-between gap-2"
+            class="sm:mb-3 mb-4"
           >
-            <div class="flex items-center gap-2">
-              <div class="w-13 pl-2 text-end text-base text-gray-600">
-                {{ i == 0 ? __('Where') : __('And') }}
+            <div v-if="isMobileView" class="flex flex-col gap-2">
+              <div class="flex w-full items-center justify-between -mb-2">
+                <div class="text-base text-gray-600">
+                  {{ i == 0 ? __('Where') : __('And') }}
+                </div>
+                <Button
+                  class="flex"
+                  variant="ghost"
+                  icon="x"
+                  @click="removeFilter(i)"
+                />
               </div>
-              <div id="fieldname" class="!min-w-[140px]">
+              <div id="fieldname" class="w-full">
                 <Autocomplete
                   :value="f.field.fieldname"
                   :options="filterableFields.data"
@@ -55,16 +65,55 @@
                   :placeholder="__('Equals')"
                 />
               </div>
-              <div id="value" class="!min-w-[140px]">
+              <div id="value" class="w-full">
                 <component
                   :is="getValSelect(f)"
                   v-model="f.value"
-                  @change="(v) => updateValue(v, f)"
+                  @change.stop="(v) => updateValue(v, f)"
                   :placeholder="__('John Doe')"
                 />
               </div>
             </div>
-            <Button variant="ghost" icon="x" @click="removeFilter(i)" />
+            <div v-else class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <div class="w-13 pl-2 text-end text-base text-gray-600">
+                  {{ i == 0 ? __('Where') : __('And') }}
+                </div>
+                <div id="fieldname" class="!min-w-[140px]">
+                  <Autocomplete
+                    :value="f.field.fieldname"
+                    :options="filterableFields.data"
+                    @change="(e) => updateFilter(e, i)"
+                    :placeholder="__('First Name')"
+                  />
+                </div>
+                <div id="operator">
+                  <FormControl
+                    type="select"
+                    v-model="f.operator"
+                    @change="(e) => updateOperator(e, f)"
+                    :options="
+                      getOperators(f.field.fieldtype, f.field.fieldname)
+                    "
+                    :placeholder="__('Equals')"
+                  />
+                </div>
+                <div id="value" class="!min-w-[140px]">
+                  <component
+                    :is="getValSelect(f)"
+                    v-model="f.value"
+                    @change.stop="(v) => updateValue(v, f)"
+                    :placeholder="__('John Doe')"
+                  />
+                </div>
+              </div>
+              <Button
+                class="flex"
+                variant="ghost"
+                icon="x"
+                @click="removeFilter(i)"
+              />
+            </div>
           </div>
           <div
             v-else
@@ -115,6 +164,7 @@ import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { FormControl, createResource, Tooltip } from 'frappe-ui'
 import { h, computed, onMounted } from 'vue'
+import { isMobileView } from '@/composables/settings'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']

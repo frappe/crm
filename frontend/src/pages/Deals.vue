@@ -24,6 +24,9 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Deal"
+    :options="{
+      allowedViews: ['list', 'group_by'],
+    }"
   />
   <DealsListView
     ref="dealsListView"
@@ -61,6 +64,7 @@
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
@@ -77,13 +81,16 @@ import {
   formatTime,
 } from '@/utils'
 import { Breadcrumbs } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { ref, computed, h } from 'vue'
 
 const breadcrumbs = [{ label: __('Deals'), route: { name: 'Deals' } }]
 
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
+
+const route = useRoute()
 
 const dealsListView = ref(null)
 const showDealModal = ref(false)
@@ -98,7 +105,49 @@ const viewControls = ref(null)
 // Rows
 const rows = computed(() => {
   if (!deals.value?.data?.data) return []
-  return deals.value.data.data.map((deal) => {
+  if (route.params.viewType === 'group_by') {
+    if (!deals.value?.data.group_by_field?.name) return []
+    return getGroupedByRows(
+      deals.value?.data.data,
+      deals.value?.data.group_by_field
+    )
+  } else {
+    return parseRows(deals.value?.data.data)
+  }
+})
+
+function getGroupedByRows(listRows, groupByField) {
+  let groupedRows = []
+
+  groupByField.options?.forEach((option) => {
+    let filteredRows = []
+
+    if (!option) {
+      filteredRows = listRows.filter((row) => !row[groupByField.name])
+    } else {
+      filteredRows = listRows.filter((row) => row[groupByField.name] == option)
+    }
+
+    let groupDetail = {
+      label: groupByField.label,
+      group: option || __(' '),
+      collapsed: false,
+      rows: parseRows(filteredRows),
+    }
+    if (groupByField.name == 'status') {
+      groupDetail.icon = () =>
+        h(IndicatorIcon, {
+          class: getDealStatus(option)?.iconColorClass,
+        })
+    }
+    groupedRows.push(groupDetail)
+  })
+
+  return groupedRows || listRows
+}
+
+function parseRows(rows) {
+  return rows.map((deal) => {
     let _rows = {}
     deals.value.data.rows.forEach((row) => {
       _rows[row] = deal[row]
@@ -174,5 +223,5 @@ const rows = computed(() => {
     })
     return _rows
   })
-})
+}
 </script>

@@ -27,6 +27,7 @@ def create(view):
 	doc = frappe.new_doc("CRM View Settings")
 	doc.name = view.label
 	doc.label = view.label
+	doc.type = view.type or 'list'
 	doc.icon = view.icon
 	doc.dt = view.doctype
 	doc.user = frappe.session.user
@@ -34,6 +35,7 @@ def create(view):
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(view.filters)
 	doc.order_by = view.order_by
+	doc.group_by_field = view.group_by_field
 	doc.columns = json.dumps(view.columns)
 	doc.rows = json.dumps(view.rows)
 	doc.insert()
@@ -53,11 +55,13 @@ def update(view):
 
 	doc = frappe.get_doc("CRM View Settings", view.name)
 	doc.label = view.label
+	doc.type = view.type or 'list'
 	doc.icon = view.icon
 	doc.route_name = view.route_name or ""
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by
+	doc.group_by_field = view.group_by_field
 	doc.columns = json.dumps(columns)
 	doc.rows = json.dumps(rows)
 	doc.save()
@@ -123,28 +127,38 @@ def create_or_update_default_view(view):
 
 	doc = frappe.db.exists(
 		"CRM View Settings",
-		{"dt": view.doctype, "is_default": True, "user": frappe.session.user},
+		{
+			"dt": view.doctype,
+			"type": view.type or 'list',
+			"is_default": True,
+			"user": frappe.session.user
+		},
 	)
 	if doc:
 		doc = frappe.get_doc("CRM View Settings", doc)
 		doc.label = view.label
+		doc.type = view.type or 'list'
 		doc.route_name = view.route_name or ""
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by
+		doc.group_by_field = view.group_by_field
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.save()
 	else:
 		doc = frappe.new_doc("CRM View Settings")
-		doc.name = view.label or 'List View'
-		doc.label = view.label or 'List View'
+		label = 'Group By View' if view.type == 'group_by' else 'List View'
+		doc.name = view.label or label
+		doc.label = view.label or label
+		doc.type = view.type or 'list'
 		doc.dt = view.doctype
 		doc.user = frappe.session.user
 		doc.route_name = view.route_name or ""
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by
+		doc.group_by_field = view.group_by_field
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.is_default = True

@@ -2,7 +2,10 @@
   <NestedPopover>
     <template #target>
       <Button :label="__('Columns')">
-        <template #prefix>
+        <template v-if="hideLabel">
+          <ColumnsIcon class="h-4" />
+        </template>
+        <template v-if="!hideLabel" #prefix>
           <ColumnsIcon class="h-4" />
         </template>
       </Button>
@@ -15,6 +18,7 @@
           <Draggable
             :list="columns"
             @end="apply"
+            :delay="isTouchScreenDevice() ? 200 : 0"
             item-key="key"
             class="list-group"
           >
@@ -98,17 +102,21 @@
                 size="md"
                 :label="__('Label')"
                 v-model="column.label"
-                class="w-full"
+                class="sm:w-full w-52"
                 :placeholder="__('First Name')"
               />
               <FormControl
                 type="text"
                 size="md"
                 :label="__('Width')"
-                class="w-full"
+                class="sm:w-full w-52"
                 v-model="column.width"
                 placeholder="10rem"
-                :description="__('Width can be in number, pixel or rem (eg. 3, 30px, 10rem)')"
+                :description="
+                  __(
+                    'Width can be in number, pixel or rem (eg. 3, 30px, 10rem)'
+                  )
+                "
                 :debounce="500"
               />
             </div>
@@ -140,6 +148,7 @@ import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { isTouchScreenDevice } from '@/utils'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
@@ -148,6 +157,10 @@ const props = defineProps({
   doctype: {
     type: String,
     required: true,
+  },
+  hideLabel: {
+    type: Boolean,
+    default: false,
   },
 })
 

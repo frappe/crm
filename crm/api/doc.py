@@ -89,7 +89,7 @@ def get_filterable_fields(doctype: str):
 			"options": "User",
 		},
 		{"fieldname": "_user_tags", "fieldtype": "Data", "label": "Tags"},
-		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Liked By"},
+		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Like"},
 		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
 		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
 		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created On"},
@@ -107,6 +107,54 @@ def get_filterable_fields(doctype: str):
 		field["label"] = _(field.get("label"))
 
 	return res
+
+
+@frappe.whitelist()
+def get_group_by_fields(doctype: str):
+	allowed_fieldtypes = [
+		"Check",
+		"Data",
+		"Float",
+		"Int",
+		"Currency",
+		"Dynamic Link",
+		"Link",
+		"Select",
+		"Duration",
+		"Date",
+		"Datetime",
+	]
+
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in no_value_fields and field.fieldtype in allowed_fieldtypes]
+	fields = [
+		{
+			"label": _(field.label),
+			"value": field.fieldname,
+		}
+		for field in fields
+		if field.label and field.fieldname
+	]
+
+	standard_fields = [
+		{"label": "Name", "value": "name"},
+		{"label": "Created On", "value": "creation"},
+		{"label": "Last Modified", "value": "modified"},
+		{"label": "Modified By", "value": "modified_by"},
+		{"label": "Owner", "value": "owner"},
+		{"label": "Liked By", "value": "_liked_by"},
+		{"label": "Assigned To", "value": "_assign"},
+		{"label": "Comments", "value": "_comments"},
+		{"label": "Created On", "value": "creation"},
+		{"label": "Modified On", "value": "modified"},
+	]
+
+	for field in standard_fields:
+		field["label"] = _(field["label"])
+		fields.append(field)
+
+	return fields
+
 
 def get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
 	parent = "parent" if DocField._table_name == "tabDocField" else "dt"
@@ -159,11 +207,15 @@ def get_list_data(
 	page_length_count=20,
 	columns=None,
 	rows=None,
-	custom_view_name=None,
+	view=None,
 	default_filters=None,
 ):
 	custom_view = False
 	filters = frappe._dict(filters)
+
+	custom_view_name = view.get('custom_view_name') if view else None
+	view_type = view.get('view_type') if view else None
+	group_by_field = view.get('group_by_field') if view else None
 
 	for key in filters:
 		value = filters[key]
@@ -197,8 +249,15 @@ def get_list_data(
 	if not rows:
 		rows = ["name"]
 
-	if not custom_view and frappe.db.exists("CRM View Settings", doctype):
-		list_view_settings = frappe.get_doc("CRM View Settings", doctype)
+	default_view_filters = {
+		"dt": doctype,
+		"type": view_type or 'list',
+		"is_default": 1,
+		"user": frappe.session.user,
+	}
+
+	if not custom_view and frappe.db.exists("CRM View Settings", default_view_filters):
+		list_view_settings = frappe.get_doc("CRM View Settings", default_view_filters)
 		columns = frappe.parse_json(list_view_settings.columns)
 		rows = frappe.parse_json(list_view_settings.rows)
 		is_default = False
@@ -217,6 +276,10 @@ def get_list_data(
 
 		if column.get("key") == "_liked_by" and column.get("width") == "10rem":
 			column["width"] = "50px"
+
+	# check if rows has group_by_field if not add it
+	if group_by_field and group_by_field not in rows:
+		rows.append(group_by_field)
 
 	data = frappe.get_list(
 		doctype,
@@ -251,7 +314,7 @@ def get_list_data(
 		},
 		{"label": "Assigned To", "type": "Text", "value": "_assign"},
 		{"label": "Owner", "type": "Link", "value": "owner", "options": "User"},
-		{"label": "Liked By", "type": "Data", "value": "_liked_by"},
+		{"label": "Like", "type": "Data", "value": "_liked_by"},
 	]
 
 	for field in std_fields:
@@ -264,11 +327,43 @@ def get_list_data(
 	if not is_default and custom_view_name:
 		is_default = frappe.db.get_value("CRM View Settings", custom_view_name, "load_default_columns")
 
+	if group_by_field and view_type == "group_by":
+		def get_options(type, options):
+			if type == "Select":
+				return [option for option in options.split("\n")]
+			else:
+				has_empty_values = any([not d.get(group_by_field) for d in data])
+				options = list(set([d.get(group_by_field) for d in data]))
+				options = [u for u in options if u]
+				if has_empty_values:
+					options.append("")
+
+				if order_by and group_by_field in order_by:
+					order_by_fields = order_by.split(",")
+					order_by_fields = [(field.split(" ")[0], field.split(" ")[1]) for field in order_by_fields]
+					if (group_by_field, "asc") in order_by_fields:
+						options.sort()
+					elif (group_by_field, "desc") in order_by_fields:
+						options.sort(reverse=True)
+				else:
+					options.sort()
+				return options
+
+		for field in fields:
+			if field.get("value") == group_by_field:
+				group_by_field = {
+					"label": field.get("label"),
+					"name": field.get("value"),
+					"type": field.get("type"),
+					"options": get_options(field.get("type"), field.get("options")),
+				}
+
 	return {
 		"data": data,
 		"columns": columns,
 		"rows": rows,
 		"fields": fields,
+		"group_by_field": group_by_field,
 		"page_length": page_length,
 		"page_length_count": page_length_count,
 		"is_default": is_default,
