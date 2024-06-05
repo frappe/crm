@@ -22,7 +22,7 @@
   <div class="flex-1 overflow-y-auto">
     <div
       v-if="notes.data?.data?.length"
-      class="grid sm:grid-cols-4 grid-cols-1 gap-4 px-5 pb-3"
+      class="grid grid-cols-1 gap-2 px-3 pb-2 sm:grid-cols-4 sm:gap-4 sm:px-5 sm:pb-3"
     >
       <div
         v-for="note in notes.data.data"
@@ -75,7 +75,7 @@
   </div>
   <ListFooter
     v-if="notes.data?.data?.length"
-    class="border-t px-5 py-2"
+    class="border-t px-3 py-2 sm:px-5"
     v-model="notes.data.page_length_count"
     :options="{
       rowCount: notes.data.row_count,

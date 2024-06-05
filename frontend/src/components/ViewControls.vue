@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="isMobileView"
-    class="flex flex-col justify-between gap-2 px-5 py-4"
+    class="flex flex-col justify-between gap-2 sm:px-5 px-3 py-4"
   >
-    <div class="flex items-center justify-between gap-2">
+    <div class="flex items-center justify-between gap-2 overflow-x-auto">
       <div class="flex gap-2">
         <Dropdown :options="viewsDropdownOptions">
           <template #default="{ open }">
@@ -41,15 +41,14 @@
       </Button>
     </div>
     <div class="flex flex-col gap-2">
-      <div class="flex items-center justify-between gap-2">
-        <Filter
-          v-model="list"
-          :doctype="doctype"
-          :default_filters="filters"
-          @update="updateFilter"
-        />
-
+      <div class="flex items-center justify-between gap-2 overflow-x-auto">
         <div class="flex gap-2">
+          <Filter
+            v-model="list"
+            :doctype="doctype"
+            :default_filters="filters"
+            @update="updateFilter"
+          />
           <GroupBy
             v-if="route.params.viewType === 'group_by'"
             v-model="list"
@@ -57,6 +56,9 @@
             :hideLabel="isMobileView"
             @update="updateGroupBy"
           />
+        </div>
+
+        <div class="flex gap-2">
           <SortBy
             v-model="list"
             :doctype="doctype"
