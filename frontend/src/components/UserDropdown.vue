@@ -89,17 +89,17 @@ let dropdownOptions = ref([
         label: computed(() => __('Docs')),
         onClick: () => window.open('https://docs.frappe.io/crm', '_blank'),
       },
+    ],
+  },
+  {
+    group: 'Others',
+    hideLabel: true,
+    items: [
       {
         icon: 'settings',
         label: computed(() => __('Settings')),
         onClick: () => (showSettingsModal.value = true),
       },
-    ],
-  },
-  {
-    group: 'Logout',
-    hideLabel: true,
-    items: [
       {
         icon: 'log-out',
         label: computed(() => __('Log out')),
