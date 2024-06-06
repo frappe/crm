@@ -3,13 +3,20 @@
 
 import frappe
 from datetime import datetime
-from frappe.utils import add_to_date
+from frappe.utils import add_to_date, get_datetime
 from frappe.model.document import Document
 
 
 class CRMStatusChangeLog(Document):
 	pass
 
+def get_duration(from_date, to_date):
+	if not isinstance(from_date, datetime):
+		from_date = get_datetime(from_date)
+	if not isinstance(to_date, datetime):
+		to_date = get_datetime(to_date)
+	duration = to_date - from_date
+	return duration.total_seconds()
 
 def add_status_change_log(doc):
 	if not doc.is_new():
@@ -27,7 +34,7 @@ def add_status_change_log(doc):
 		last_status_change.to = doc.status
 		last_status_change.to_date = datetime.now()
 		last_status_change.log_owner = frappe.session.user
-		last_status_change.duration = (last_status_change.to_date - last_status_change.from_date).total_seconds()
+		last_status_change.duration = get_duration(last_status_change.from_date, last_status_change.to_date)
 
 	doc.append("status_change_log", {
 		"from": doc.status,
