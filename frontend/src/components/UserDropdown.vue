@@ -1,5 +1,5 @@
 <template>
-  <Dropdown :options="dropdownOptions">
+  <Dropdown :options="dropdownOptions" v-bind="$attrs">
     <template v-slot="{ open }">
       <button
         class="flex h-12 items-center rounded-md py-2 duration-300 ease-in-out"
@@ -44,9 +44,11 @@
       </button>
     </template>
   </Dropdown>
+  <SettingsModal v-model="showSettingsModal" />
 </template>
 
 <script setup>
+import SettingsModal from '@/components/Settings/SettingsModal.vue'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
@@ -64,6 +66,8 @@ const { logout } = sessionStore()
 const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
+
+const showSettingsModal = ref(false)
 
 let dropdownOptions = ref([
   {
@@ -84,6 +88,11 @@ let dropdownOptions = ref([
         icon: 'book-open',
         label: computed(() => __('Docs')),
         onClick: () => window.open('https://docs.frappe.io/crm', '_blank'),
+      },
+      {
+        icon: 'settings',
+        label: computed(() => __('Settings')),
+        onClick: () => (showSettingsModal.value = true),
       },
     ],
   },
