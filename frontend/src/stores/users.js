@@ -40,6 +40,8 @@ export const usersStore = defineStore('crm-users', () => {
         name: email,
         email: email,
         full_name: email.split('@')[0],
+        first_name: email.split('@')[0],
+        last_name: '',
         user_image: null,
         role: null,
       }
