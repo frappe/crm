@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-4">
     <div
       v-for="section in sections"
-      :key="section.section"
+      :key="section.label"
       class="first:border-t-0 first:pt-0"
       :class="section.hideBorder ? '' : 'border-t pt-4'"
     >
@@ -20,34 +20,34 @@
             <span class="text-red-500" v-if="field.mandatory">*</span>
           </div>
           <FormControl
-            v-if="field.type === 'select'"
+            v-if="field.type === 'Select'"
             type="select"
             class="form-control"
             :class="field.prefix ? 'prefix' : ''"
             :options="field.options"
             v-model="data[field.name]"
-            :placeholder="__(field.placeholder)"
+            :placeholder="__(field.placeholder || field.label)"
           >
             <template v-if="field.prefix" #prefix>
               <IndicatorIcon :class="field.prefix" />
             </template>
           </FormControl>
           <Link
-            v-else-if="field.type === 'link'"
+            v-else-if="field.type === 'Link'"
             class="form-control"
             :value="data[field.name]"
-            :doctype="field.doctype"
+            :doctype="field.options"
             @change="(v) => (data[field.name] = v)"
-            :placeholder="__(field.placeholder)"
+            :placeholder="__(field.placeholder || field.label)"
             :onCreate="field.create"
           />
           <Link
-            v-else-if="field.type === 'user'"
+            v-else-if="field.type === 'User'"
             class="form-control"
             :value="getUser(data[field.name]).full_name"
-            :doctype="field.doctype"
+            :doctype="field.options"
             @change="(v) => (data[field.name] = v)"
-            :placeholder="__(field.placeholder)"
+            :placeholder="__(field.placeholder || field.label)"
             :hideMe="true"
           >
             <template #prefix>
@@ -64,7 +64,7 @@
               </Tooltip>
             </template>
           </Link>
-          <div v-else-if="field.type === 'dropdown'">
+          <div v-else-if="field.type === 'Dropdown'">
             <NestedPopover>
               <template #target="{ open }">
                 <Button
@@ -116,7 +116,7 @@
           <FormControl
             v-else
             type="text"
-            :placeholder="__(field.placeholder)"
+            :placeholder="__(field.placeholder || field.label)"
             v-model="data[field.name]"
           />
         </div>
