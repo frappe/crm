@@ -1,4 +1,5 @@
 import frappe
+import json
 from frappe import _
 from frappe.model.document import get_controller
 from frappe.model import no_value_fields
@@ -155,6 +156,43 @@ def get_group_by_fields(doctype: str):
 
 	return fields
 
+
+@frappe.whitelist()
+def get_quick_entry_fields(doctype: str):
+	sections = []
+	if frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": "Quick Entry"}):
+		layout = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": "Quick Entry"})
+	else:
+		return []
+
+	if layout.layout:
+		sections = json.loads(layout.layout)
+
+	allowed_fields = []
+	for section in sections:
+		allowed_fields.extend(section.get("fields"))
+
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldname in allowed_fields]
+
+	for section in sections:
+		for field in section.get("fields"):
+			field = next((f for f in fields if f.fieldname == field), None)
+			if field:
+				if field.fieldtype == "Select":
+					field.options = field.options.split("\n")
+					field.options = [{"label": _(option), "value": option} for option in field.options]
+					field.options.insert(0, {"label": "", "value": ""})
+				field = {
+					"label": _(field.label),
+					"name": field.fieldname,
+					"type": field.fieldtype,
+					"options": field.options,
+					"mandatory": field.reqd,
+				}
+				section["fields"][section.get("fields").index(field["name"])] = field
+
+	return sections or []
 
 def get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
 	parent = "parent" if DocField._table_name == "tabDocField" else "dt"
