@@ -122,6 +122,10 @@ function createNewLead() {
         error.value = __('Invalid Email')
         return error.value
       }
+      if (!lead.status) {
+        error.value = __('Status is required')
+        return error.value
+      }
       isLeadCreating.value = true
     },
     onSuccess(data) {

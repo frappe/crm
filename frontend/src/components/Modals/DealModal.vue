@@ -171,6 +171,10 @@ function createDeal() {
         error.value = __('Invalid Email')
         return error.value
       }
+      if (!deal.status) {
+        error.value = __('Status is required')
+        return error.value
+      }
       isDealCreating.value = true
     },
     onSuccess(name) {
