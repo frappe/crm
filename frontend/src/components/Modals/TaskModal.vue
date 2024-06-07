@@ -22,7 +22,9 @@
           variant="outline"
           size="sm"
           :label="
-            task.reference_doctype == 'CRM Deal' ? __('Open Deal') : __('Open Lead')
+            task.reference_doctype == 'CRM Deal'
+              ? __('Open Deal')
+              : __('Open Lead')
           "
           @click="redirect()"
         >
@@ -44,7 +46,9 @@
           />
         </div>
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">{{ __('Description') }}</div>
+          <div class="mb-1.5 text-sm text-gray-600">
+            {{ __('Description') }}
+          </div>
           <TextEditor
             variant="outline"
             ref="description"
@@ -52,10 +56,12 @@
             :bubbleMenu="true"
             :content="_task.description"
             @change="(val) => (_task.description = val)"
-            :placeholder="__('Took a call with John Doe and discussed the new project.')"
+            :placeholder="
+              __('Took a call with John Doe and discussed the new project.')
+            "
           />
         </div>
-        <div class="flex items-center gap-2 overflow-x-auto">
+        <div class="flex flex-wrap items-center gap-2">
           <Dropdown :options="taskStatusOptions(updateTaskStatus)">
             <Button :label="_task.status" class="w-full justify-between">
               <template #prefix>

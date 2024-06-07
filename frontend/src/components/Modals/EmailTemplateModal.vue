@@ -15,7 +15,7 @@
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <div class="flex gap-4">
+        <div class="flex sm:flex-row flex-col gap-4">
           <div class="flex-1">
             <div class="mb-1.5 text-sm text-gray-600">
               {{ __('Name') }}

@@ -13,6 +13,7 @@ def after_install():
 	add_default_lead_statuses()
 	add_default_deal_statuses()
 	add_default_communication_statuses()
+	add_default_fields_layout()
 	add_property_setter()
 	add_email_template_custom_fields()
 	frappe.db.commit()
@@ -106,6 +107,36 @@ def add_default_communication_statuses():
 
 		doc = frappe.new_doc("CRM Communication Status")
 		doc.status = status
+		doc.insert()
+
+def add_default_fields_layout():
+	layouts = {
+		"CRM Lead-Quick Entry": {
+			"doctype": "CRM Lead",
+			"layout": '[\n{\n"label": "Person",\n\t"fields": ["salutation", "first_name", "last_name", "email", "mobile_no", "gender"]\n},\n{\n"label": "Organization",\n\t"fields": ["organization", "website", "no_of_employees", "territory", "annual_revenue", "industry"]\n},\n{\n"label": "Other",\n"columns": 2,\n\t"fields": ["status", "lead_owner"]\n}\n]'
+		},
+		"CRM Deal-Quick Entry": {
+			"doctype": "CRM Deal",
+			"layout": '[\n{\n"label": "Select Organization",\n\t"fields": ["organization"]\n},\n{\n"label": "Organization Details",\n\t"fields": [{"label": "Organization Name", "name": "organization_name", "type": "Data"}, "website", "no_of_employees", "territory", "annual_revenue", {"label": "Industry", "name": "industry", "type": "Link", "options": "CRM Industry"}]\n},\n{\n"label": "Select Contact",\n\t"fields": [{"label": "Contact", "name": "contact", "type": "Link", "options": "Contact"}]\n},\n{\n"label": "Contact Details",\n\t"fields": [{"label": "Salutation", "name": "salutation", "type": "Link", "options": "Salutation"}, {"label": "First Name", "name": "first_name", "type": "Data"}, {"label": "Last Name", "name": "last_name", "type": "Data"}, "email", "mobile_no", {"label": "Gender", "name": "gender", "type": "Link", "options": "Gender"}]\n},\n{\n"label": "Other",\n"columns": 2,\n\t"fields": ["status", "deal_owner"]\n}\n]'
+		},
+		"Contact-Quick Entry": {
+			"doctype": "Contact",
+			"layout": '[\n{\n"label": "Salutation",\n"columns": 1,\n"fields": ["salutation"]\n},\n{\n"label": "Full Name",\n"columns": 2,\n"hideBorder": true,\n"fields": ["first_name", "last_name"]\n},\n{\n"label": "Email",\n"columns": 1,\n"hideBorder": true,\n"fields": ["email_id"]\n},\n{\n"label": "Mobile No. & Gender",\n"columns": 2,\n"hideBorder": true,\n"fields": ["mobile_no", "gender"]\n},\n{\n"label": "Organization",\n"columns": 1,\n"hideBorder": true,\n"fields": ["company_name"]\n},\n{\n"label": "Designation",\n"columns": 1,\n"hideBorder": true,\n"fields": ["designation"]\n}\n]'
+		},
+		"Organization-Quick Entry": {
+			"doctype": "CRM Organization",
+			"layout": '[\n{\n"label": "Organization Name",\n"columns": 1,\n"fields": ["organization_name"]\n},\n{\n"label": "Website & Revenue",\n"columns": 2,\n"hideBorder": true,\n"fields": ["website", "annual_revenue"]\n},\n{\n"label": "Territory",\n"columns": 1,\n"hideBorder": true,\n"fields": ["territory"]\n},\n{\n"label": "No of Employees & Industry",\n"columns": 2,\n"hideBorder": true,\n"fields": ["no_of_employees", "industry"]\n}\n]'
+		},
+	}
+
+	for layout in layouts:
+		if frappe.db.exists("CRM Fields Layout", layout):
+			continue
+
+		doc = frappe.new_doc("CRM Fields Layout")
+		doc.type = "Quick Entry"
+		doc.dt = layouts[layout]["doctype"]
+		doc.layout = layouts[layout]["layout"]
 		doc.insert()
 
 def add_property_setter():
