@@ -113,7 +113,7 @@ def add_default_fields_layout():
 	layouts = {
 		"CRM Lead-Quick Entry": {
 			"doctype": "CRM Lead",
-			"layout": '[\n{\n"label": "Person",\n"hideLabel": true,\n\t"fields": ["salutation", "first_name", "last_name", "email", "mobile_no", "gender"]\n},\n{\n"label": "Organization",\n"hideLabel": true,\n\t"fields": ["organization", "website", "no_of_employees", "territory", "annual_revenue", "industry"]\n},\n{\n"label": "Other",\n"hideLabel": true,\n"columns": 2,\n\t"fields": ["status", "lead_owner"]\n}\n]'
+			"layout": '[\n{\n"label": "Person",\n\t"fields": ["salutation", "first_name", "last_name", "email", "mobile_no", "gender"]\n},\n{\n"label": "Organization",\n\t"fields": ["organization", "website", "no_of_employees", "territory", "annual_revenue", "industry"]\n},\n{\n"label": "Other",\n"columns": 2,\n\t"fields": ["status", "lead_owner"]\n}\n]'
 		},
 		"CRM Deal-Quick Entry": {
 			"doctype": "CRM Deal",
@@ -135,8 +135,8 @@ def add_default_fields_layout():
 
 		doc = frappe.new_doc("CRM Fields Layout")
 		doc.type = "Quick Entry"
-		doc.dt = layout.doctype
-		doc.layout = layout.layout
+		doc.dt = layouts[layout]["doctype"]
+		doc.layout = layouts[layout]["layout"]
 		doc.insert()
 
 def add_property_setter():
