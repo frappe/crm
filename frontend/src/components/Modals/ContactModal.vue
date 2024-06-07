@@ -57,7 +57,11 @@
               <div v-else>{{ field.value }}</div>
             </div>
           </div>
-          <Fields v-else :sections="sections" :data="_contact" />
+          <Fields
+            v-else-if="filteredSections"
+            :sections="filteredSections"
+            :data="_contact"
+          />
         </div>
       </div>
       <div v-if="!detailMode" class="px-4 pb-7 pt-4 sm:px-6">
@@ -87,7 +91,7 @@ import AddressIcon from '@/components/Icons/AddressIcon.vue'
 import CertificateIcon from '@/components/Icons/CertificateIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
-import { call } from 'frappe-ui'
+import { call, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { createToast } from '@/utils'
 import { useRouter } from 'vue-router'
@@ -230,199 +234,124 @@ const detailFields = computed(() => {
   return details.filter((detail) => detail.value)
 })
 
-const sections = computed(() => {
-  return [
-    {
-      section: 'Salutation',
-      columns: 1,
-      fields: [
-        {
-          label: 'Salutation',
-          name: 'salutation',
-          type: 'link',
-          placeholder: 'Mr',
-          doctype: 'Salutation',
-        },
-      ],
-    },
-    {
-      section: 'Full Name',
-      columns: 2,
-      hideBorder: true,
-      fields: [
-        {
-          label: 'First Name',
-          name: 'first_name',
-          type: 'data',
-          mandatory: true,
-          placeholder: 'John',
-        },
-        {
-          label: 'Last Name',
-          name: 'last_name',
-          type: 'data',
-          placeholder: 'Doe',
-        },
-      ],
-    },
-    {
-      section: 'Email',
-      columns: 1,
-      hideBorder: true,
-      fields: [
-        {
-          label: 'Email',
-          name: 'email_id',
-          type: props.contact?.data?.name ? 'dropdown' : 'data',
-          placeholder: 'john@doe.com',
-          options:
-            props.contact.data?.email_ids?.map((email) => {
-              return {
-                name: email.name,
-                value: email.email_id,
-                selected: email.email_id === props.contact.data.email_id,
-                placeholder: 'john@doe.com',
-                onClick: () => {
-                  _contact.value.email_id = email.email_id
-                  setAsPrimary('email', email.email_id)
-                },
-                onSave: (option, isNew) => {
-                  if (isNew) {
-                    createNew('email', option.value)
-                    if (props.contact.data.email_ids.length === 1) {
-                      _contact.value.email_id = option.value
-                    }
+const sections = createResource({
+  url: 'crm.api.doc.get_quick_entry_fields',
+  cache: ['quickEntryFields', 'Contact'],
+  params: { doctype: 'Contact' },
+  auto: true,
+})
+
+const filteredSections = computed(() => {
+  let allSections = sections.data || []
+  if (!allSections.length) return []
+
+  allSections.forEach((s) => {
+    s.fields.forEach((field) => {
+      if (field.name == 'email_id') {
+        field.type = props.contact?.data?.name ? 'Dropdown' : 'Data'
+        field.options =
+          props.contact.data?.email_ids?.map((email) => {
+            return {
+              name: email.name,
+              value: email.email_id,
+              selected: email.email_id === props.contact.data.email_id,
+              placeholder: 'john@doe.com',
+              onClick: () => {
+                _contact.value.email_id = email.email_id
+                setAsPrimary('email', email.email_id)
+              },
+              onSave: (option, isNew) => {
+                if (isNew) {
+                  createNew('email', option.value)
+                  if (props.contact.data.email_ids.length === 1) {
+                    _contact.value.email_id = option.value
+                  }
+                } else {
+                  editOption('Contact Email', option.name, option.value)
+                }
+              },
+              onDelete: async (option, isNew) => {
+                props.contact.data.email_ids =
+                  props.contact.data.email_ids.filter(
+                    (email) => email.name !== option.name
+                  )
+                !isNew && (await deleteOption('Contact Email', option.name))
+                if (_contact.value.email_id === option.value) {
+                  if (props.contact.data.email_ids.length === 0) {
+                    _contact.value.email_id = ''
                   } else {
-                    editOption('Contact Email', option.name, option.value)
+                    _contact.value.email_id = props.contact.data.email_ids.find(
+                      (email) => email.is_primary
+                    )?.email_id
                   }
-                },
-                onDelete: async (option, isNew) => {
-                  props.contact.data.email_ids =
-                    props.contact.data.email_ids.filter(
-                      (email) => email.name !== option.name
-                    )
-                  !isNew && (await deleteOption('Contact Email', option.name))
-                  if (_contact.value.email_id === option.value) {
-                    if (props.contact.data.email_ids.length === 0) {
-                      _contact.value.email_id = ''
-                    } else {
-                      _contact.value.email_id =
-                        props.contact.data.email_ids.find(
-                          (email) => email.is_primary
-                        )?.email_id
-                    }
+                }
+              },
+            }
+          }) || []
+        field.create = () => {
+          props.contact.data?.email_ids?.push({
+            name: 'new-1',
+            value: '',
+            selected: false,
+            isNew: true,
+          })
+        }
+      } else if (field.name == 'mobile_no' || field.name == 'actual_mobile_no') {
+        field.type = props.contact?.data?.name ? 'Dropdown' : 'Data'
+        field.name = 'actual_mobile_no'
+        field.options =
+          props.contact.data?.phone_nos?.map((phone) => {
+            return {
+              name: phone.name,
+              value: phone.phone,
+              selected: phone.phone === props.contact.data.actual_mobile_no,
+              onClick: () => {
+                _contact.value.actual_mobile_no = phone.phone
+                _contact.value.mobile_no = phone.phone
+                setAsPrimary('mobile_no', phone.phone)
+              },
+              onSave: (option, isNew) => {
+                if (isNew) {
+                  createNew('phone', option.value)
+                  if (props.contact.data.phone_nos.length === 1) {
+                    _contact.value.actual_mobile_no = option.value
                   }
-                },
-              }
-            }) || [],
-          create: () => {
-            props.contact.data?.email_ids?.push({
-              name: 'new-1',
-              value: '',
-              selected: false,
-              isNew: true,
-            })
-          },
-        },
-      ],
-    },
-    {
-      section: 'Mobile No. & Gender',
-      columns: 2,
-      hideBorder: true,
-      fields: [
-        {
-          label: 'Mobile No.',
-          name: 'actual_mobile_no',
-          type: props.contact?.data?.name ? 'dropdown' : 'data',
-          placeholder: '+91 9876543210',
-          options:
-            props.contact.data?.phone_nos?.map((phone) => {
-              return {
-                name: phone.name,
-                value: phone.phone,
-                selected: phone.phone === props.contact.data.actual_mobile_no,
-                placeholder: '+91 1234567890',
-                onClick: () => {
-                  _contact.value.actual_mobile_no = phone.phone
-                  _contact.value.mobile_no = phone.phone
-                  setAsPrimary('mobile_no', phone.phone)
-                },
-                onSave: (option, isNew) => {
-                  if (isNew) {
-                    createNew('phone', option.value)
-                    if (props.contact.data.phone_nos.length === 1) {
-                      _contact.value.actual_mobile_no = option.value
-                    }
+                } else {
+                  editOption('Contact Phone', option.name, option.value)
+                }
+              },
+              onDelete: async (option, isNew) => {
+                props.contact.data.phone_nos =
+                  props.contact.data.phone_nos.filter(
+                    (phone) => phone.name !== option.name
+                  )
+                !isNew && (await deleteOption('Contact Phone', option.name))
+                if (_contact.value.actual_mobile_no === option.value) {
+                  if (props.contact.data.phone_nos.length === 0) {
+                    _contact.value.actual_mobile_no = ''
                   } else {
-                    editOption('Contact Phone', option.name, option.value)
+                    _contact.value.actual_mobile_no =
+                      props.contact.data.phone_nos.find(
+                        (phone) => phone.is_primary_mobile_no
+                      )?.phone
                   }
-                },
-                onDelete: async (option, isNew) => {
-                  props.contact.data.phone_nos =
-                    props.contact.data.phone_nos.filter(
-                      (phone) => phone.name !== option.name
-                    )
-                  !isNew && (await deleteOption('Contact Phone', option.name))
-                  if (_contact.value.actual_mobile_no === option.value) {
-                    if (props.contact.data.phone_nos.length === 0) {
-                      _contact.value.actual_mobile_no = ''
-                    } else {
-                      _contact.value.actual_mobile_no =
-                        props.contact.data.phone_nos.find(
-                          (phone) => phone.is_primary_mobile_no
-                        )?.phone
-                    }
-                  }
-                },
-              }
-            }) || [],
-          create: () => {
-            props.contact.data?.phone_nos?.push({
-              name: 'new-1',
-              value: '',
-              selected: false,
-              isNew: true,
-            })
-          },
-        },
-        {
-          label: 'Gender',
-          name: 'gender',
-          type: 'link',
-          doctype: 'Gender',
-          placeholder: 'Male',
-        },
-      ],
-    },
-    {
-      section: 'Organization',
-      columns: 1,
-      hideBorder: true,
-      fields: [
-        {
-          label: 'Organization',
-          name: 'company_name',
-          type: 'link',
-          doctype: 'CRM Organization',
-          placeholder: 'Frappé Technologies',
-        },
-      ],
-    },
-    {
-      section: 'Designation',
-      columns: 1,
-      hideBorder: true,
-      fields: [
-        {
-          label: 'Designation',
-          name: 'designation',
-          type: 'data',
-          placeholder: 'CEO',
-        },
-      ],
-    },
-  ]
+                }
+              },
+            }
+          }) || []
+        field.create = () => {
+          props.contact.data?.phone_nos?.push({
+            name: 'new-1',
+            value: '',
+            selected: false,
+            isNew: true,
+          })
+        }
+      }
+    })
+  })
+
+  return allSections
 })
 
 async function setAsPrimary(field, value) {
