@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { Popover } from 'frappe-ui'
+import Popover from '@/components/frappe-ui/Popover.vue'
 export default {
   name: 'DatePicker',
   props: ['value', 'placeholder', 'formatter', 'readonly', 'inputClass'],
