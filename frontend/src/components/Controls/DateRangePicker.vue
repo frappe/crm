@@ -4,16 +4,15 @@
     class="flex w-full [&>div:first-child]:w-full"
   >
     <template #target="{ togglePopover }">
-      <input
+      <Input
         readonly
         type="text"
         :placeholder="placeholder"
         :value="formatter ? formatDates(value) : value"
         @focus="!readonly ? togglePopover() : null"
-        :class="[
-          'form-input block h-7 w-full cursor-pointer select-none rounded border-gray-400 text-sm  placeholder-gray-500 ',
-          inputClass,
-        ]"
+        class="w-full"
+        :class="inputClass"
+        v-bind="$attrs"
       />
     </template>
     <template #body="{ togglePopover }">
@@ -22,7 +21,11 @@
       >
         <div class="flex items-center p-1 text-gray-500">
           <Button variant="ghost" class="h-7 w-7" @click="prevMonth">
-            <FeatherIcon :stroke-width="2" name="chevron-left" class="h-4 w-4" />
+            <FeatherIcon
+              :stroke-width="2"
+              name="chevron-left"
+              class="h-4 w-4"
+            />
           </Button>
           <div class="flex-1 text-center text-base font-medium text-gray-700">
             {{ formatMonth }}

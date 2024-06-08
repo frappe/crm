@@ -10,6 +10,7 @@
         :placeholder="placeholder"
         :value="value && formatter ? formatter(value) : value"
         @focus="!readonly ? togglePopover() : null"
+        class="w-full"
         :class="inputClass"
         v-bind="$attrs"
       />
@@ -20,7 +21,11 @@
       >
         <div class="flex items-center p-1 text-gray-500">
           <Button variant="ghost" class="h-7 w-7" @click="prevMonth">
-            <FeatherIcon :stroke-width="2" name="chevron-left" class="h-4 w-4" />
+            <FeatherIcon
+              :stroke-width="2"
+              name="chevron-left"
+              class="h-4 w-4"
+            />
           </Button>
           <div class="flex-1 text-center text-base font-medium text-gray-700">
             {{ formatMonth }}
