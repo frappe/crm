@@ -102,7 +102,7 @@
                   <component
                     :is="getValSelect(f)"
                     v-model="f.value"
-                    @change.stop="(v) => updateValue(v, f)"
+                    @change="(v) => updateValue(v, f)"
                     :placeholder="__('John Doe')"
                   />
                 </div>
