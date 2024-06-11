@@ -144,16 +144,23 @@ const signature = createResource({
   auto: true,
 })
 
+function setSignature(editor) {
+  signature.data = signature.data.replace(/\n/g, '<br>')
+  let emailContent = editor.getHTML()
+  emailContent = emailContent.startsWith('<p></p>')
+    ? emailContent.slice(7)
+    : emailContent
+  editor.commands.setContent(signature.data + emailContent)
+  editor.commands.focus('start')
+}
+
 watch(
   () => showEmailBox.value,
   (value) => {
     if (value) {
-      newEmailEditor.value.editor.commands.focus()
-
-      if (!newEmail.value && signature.data) {
-        signature.data = signature.data.replace(/\n/g, '<br>')
-        newEmail.value = signature.data
-      }
+      let editor = newEmailEditor.value.editor
+      editor.commands.focus()
+      setSignature(editor)
     }
   }
 )
