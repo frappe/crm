@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between gap-3 border-t sm:px-10 px-4 py-2.5">
+  <div class="flex justify-between gap-3 border-t px-4 py-2.5 sm:px-10">
     <div class="flex gap-1.5">
       <Button
         ref="sendEmailRef"
@@ -102,7 +102,7 @@ import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
-import { call } from 'frappe-ui'
+import { call, createResource } from 'frappe-ui'
 import { ref, watch, computed, nextTick } from 'vue'
 
 const props = defineProps({
@@ -138,11 +138,22 @@ const subject = computed(() => {
   return `${prefix} (#${doc.value.data.name})`
 })
 
+const signature = createResource({
+  url: 'crm.api.get_user_signature',
+  cache: 'user-email-signature',
+  auto: true,
+})
+
 watch(
   () => showEmailBox.value,
   (value) => {
     if (value) {
       newEmailEditor.value.editor.commands.focus()
+
+      if (!newEmail.value && signature.data) {
+        signature.data = signature.data.replace(/\n/g, '<br>')
+        newEmail.value = signature.data
+      }
     }
   }
 )
@@ -248,5 +259,9 @@ function toggleCommentBox() {
   showCommentBox.value = !showCommentBox.value
 }
 
-defineExpose({ show: showEmailBox, showComment: showCommentBox, editor: newEmailEditor })
+defineExpose({
+  show: showEmailBox,
+  showComment: showCommentBox,
+  editor: newEmailEditor,
+})
 </script>
