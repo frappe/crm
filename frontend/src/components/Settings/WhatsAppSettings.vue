@@ -1,0 +1,3 @@
+<template>
+    WhatsApp Settings
+</template>

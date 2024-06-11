@@ -1,3 +1,3 @@
 <template>
-    Agent Settings
+    Twilio Settings
 </template>
