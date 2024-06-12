@@ -40,7 +40,7 @@
             />
           </nav>
         </div>
-        <div class="flex flex-1 flex-col overflow-y-auto p-12 pt-10">
+        <div class="flex flex-1 flex-col overflow-y-auto p-8">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
@@ -50,13 +50,14 @@
 <script setup>
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { isWhatsappInstalled } from '@/composables/settings'
-import { Dialog, FeatherIcon } from 'frappe-ui'
-import { ref, markRaw, h, computed } from 'vue'
+import { Dialog } from 'frappe-ui'
+import { ref, markRaw, computed } from 'vue'
 
 const show = defineModel()
 
@@ -72,7 +73,7 @@ let integrations = computed(() => {
   let items = [
     {
       label: 'Twilio',
-      icon: h(FeatherIcon, { name: 'phone' }),
+      icon: PhoneIcon,
       component: markRaw(TwilioSettings),
     },
   ]
