@@ -534,8 +534,10 @@ def get_assigned_users(doctype, name, default_assigned_to=None):
 
 
 @frappe.whitelist()
-def get_fields(doctype: str):
+def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 	not_allowed_fieldtypes = list(frappe.model.no_value_fields) + ["Read Only"]
+	if allow_all_fieldtypes:
+		not_allowed_fieldtypes = []
 	fields = frappe.get_meta(doctype).fields
 
 	_fields = []
@@ -553,6 +555,7 @@ def get_fields(doctype: str):
 				"type": field.fieldtype,
 				"value": field.fieldname,
 				"options": field.options,
+				"mandatory": field.reqd,
 			})
 
 	return _fields

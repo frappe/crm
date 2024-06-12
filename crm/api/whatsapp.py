@@ -96,6 +96,12 @@ def is_whatsapp_enabled():
         return False
     return frappe.get_cached_value("WhatsApp Settings", "WhatsApp Settings", "enabled")
 
+@frappe.whitelist()
+def is_whatsapp_installed():
+    if not frappe.db.exists("DocType", "WhatsApp Settings"):
+        return False
+    return True
+
 
 @frappe.whitelist()
 def get_whatsapp_messages(reference_doctype, reference_name):

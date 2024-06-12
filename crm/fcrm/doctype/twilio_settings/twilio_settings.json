@@ -7,17 +7,17 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "section_break_ssqj",
+  "enabled",
+  "column_break_avmt",
+  "record_calls",
   "section_break_malx",
   "account_sid",
   "api_key",
   "api_secret",
   "column_break_idds",
   "auth_token",
-  "twiml_sid",
-  "section_break_ssqj",
-  "enabled",
-  "column_break_avmt",
-  "record_calls"
+  "twiml_sid"
  ],
  "fields": [
   {
@@ -84,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-13 14:24:16.726645",
+ "modified": "2024-06-11 17:42:38.256260",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Twilio Settings",
