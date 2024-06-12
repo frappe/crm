@@ -91,11 +91,9 @@
               </Tooltip>
             </template>
           </Link>
-          <DatetimePicker
+          <DateTimePicker
             class="datepicker w-36"
-            icon-left="calendar"
-            :value="_task.due_date"
-            @change="(val) => (_task.due_date = val)"
+            v-model="_task.due_date"
             :placeholder="__('01/04/2024 11:30 PM')"
             input-class="border-none"
           />
@@ -120,8 +118,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
-import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
-import { TextEditor, Dropdown, Tooltip, call } from 'frappe-ui'
+import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
 import { ref, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 

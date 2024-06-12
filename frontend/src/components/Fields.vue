@@ -132,19 +132,15 @@
               </template>
             </NestedPopover>
           </div>
-          <DatetimePicker
+          <DateTimePicker
             v-else-if="field.type === 'Datetime'"
-            icon-left="calendar"
-            :value="data[field.name]"
-            @change="(val) => (data[field.name] = val)"
+            v-model="data[field.name]"
             :placeholder="__(field.placeholder || field.label)"
             input-class="border-none"
           />
           <DatePicker
             v-else-if="field.type === 'Date'"
-            icon-left="calendar"
-            :value="data[field.name]"
-            @change="(val) => (data[field.name] = val)"
+            v-model="data[field.name]"
             :placeholder="__(field.placeholder || field.label)"
             input-class="border-none"
           />
@@ -173,15 +169,13 @@
 </template>
 
 <script setup>
-import DatePicker from '@/components/Controls/DatePicker.vue'
-import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import DropdownItem from '@/components/DropdownItem.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { Tooltip } from 'frappe-ui'
+import { Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
 
 const { getUser } = usersStore()
 
