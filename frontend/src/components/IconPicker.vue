@@ -64,8 +64,8 @@
   </Popover>
 </template>
 <script setup>
+import Popover from '@/components/frappe-ui/Popover.vue'
 import { gemoji } from 'gemoji'
-import { Popover } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const search = ref('')

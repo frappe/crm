@@ -34,10 +34,10 @@
             v-for="(f, i) in filters"
             :key="i"
             id="filter-list"
-            class="sm:mb-3 mb-4"
+            class="mb-4 sm:mb-3"
           >
             <div v-if="isMobileView" class="flex flex-col gap-2">
-              <div class="flex w-full items-center justify-between -mb-2">
+              <div class="-mb-2 flex w-full items-center justify-between">
                 <div class="text-base text-gray-600">
                   {{ i == 0 ? __('Where') : __('And') }}
                 </div>
@@ -102,7 +102,7 @@
                   <component
                     :is="getValSelect(f)"
                     v-model="f.value"
-                    @change.stop="(v) => updateValue(v, f)"
+                    @change="(v) => updateValue(v, f)"
                     :placeholder="__('John Doe')"
                   />
                 </div>
@@ -155,14 +155,18 @@
   </NestedPopover>
 </template>
 <script setup>
-import DatePicker from '@/components/Controls/DatePicker.vue'
-import DatetimePicker from '@/components/Controls/DatetimePicker.vue'
-import DateRangePicker from '@/components/Controls/DateRangePicker.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { FormControl, createResource, Tooltip } from 'frappe-ui'
+import {
+  FormControl,
+  createResource,
+  Tooltip,
+  DatePicker,
+  DateTimePicker,
+  DateRangePicker,
+} from 'frappe-ui'
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 
@@ -395,10 +399,11 @@ function getValSelect(f) {
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
-    return h(DateRangePicker, { value: f.value })
+    return h(DateRangePicker, { value: f.value, iconLeft: '' })
   } else if (typeDate.includes(fieldtype)) {
-    return h(fieldtype == 'Date' ? DatePicker : DatetimePicker, {
+    return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
       value: f.value,
+      iconLeft: '',
     })
   } else {
     return h(FormControl, { type: 'text' })

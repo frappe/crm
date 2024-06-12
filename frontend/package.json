@@ -13,7 +13,7 @@
     "@vueuse/core": "^10.3.0",
     "@vueuse/integrations": "^10.3.0",
     "feather-icons": "^4.28.0",
-    "frappe-ui": "^0.1.59",
+    "frappe-ui": "^0.1.61",
     "gemoji": "^8.1.0",
     "lodash": "^4.17.21",
     "mime": "^4.0.1",

@@ -479,22 +479,26 @@
             </div>
             <div class="flex gap-0.5">
               <Tooltip :text="__('Reply')">
-                <Button
-                  variant="ghost"
-                  class="text-gray-700"
-                  @click="reply(activity.data)"
-                >
-                  <ReplyIcon class="h-4 w-4" />
-                </Button>
+                <div>
+                  <Button
+                    variant="ghost"
+                    class="text-gray-700"
+                    @click="reply(activity.data)"
+                  >
+                    <ReplyIcon class="h-4 w-4" />
+                  </Button>
+                </div>
               </Tooltip>
               <Tooltip :text="__('Reply All')">
-                <Button
-                  variant="ghost"
-                  class="text-gray-700"
-                  @click="reply(activity.data, true)"
-                >
-                  <ReplyAllIcon class="h-4 w-4" />
-                </Button>
+                <div>
+                  <Button
+                    variant="ghost"
+                    class="text-gray-700"
+                    @click="reply(activity.data, true)"
+                  >
+                    <ReplyAllIcon class="h-4 w-4" />
+                  </Button>
+                </div>
               </Tooltip>
             </div>
           </div>

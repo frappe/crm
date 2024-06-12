@@ -15,7 +15,7 @@
         "
       >
         <div v-for="field in section.fields" :key="field.name">
-          <div class="mb-2 text-sm text-gray-600">
+          <div v-if="field.type != 'Check'" class="mb-2 text-sm text-gray-600">
             {{ __(field.label) }}
             <span class="text-red-500" v-if="field.mandatory">*</span>
           </div>
@@ -32,6 +32,25 @@
               <IndicatorIcon :class="field.prefix" />
             </template>
           </FormControl>
+          <div
+            v-else-if="field.type == 'Check'"
+            class="flex items-center gap-2"
+          >
+            <FormControl
+              class="form-control"
+              type="checkbox"
+              v-model="data[field.name]"
+              @change="(e) => (data[field.name] = e.target.checked)"
+              :disabled="Boolean(field.read_only)"
+            />
+            <label
+              class="text-sm text-gray-600"
+              @click="data[field.name] = !data[field.name]"
+            >
+              {{ __(field.label) }}
+              <span class="text-red-500" v-if="field.mandatory">*</span>
+            </label>
+          </div>
           <Link
             v-else-if="field.type === 'Link'"
             class="form-control"
@@ -113,6 +132,30 @@
               </template>
             </NestedPopover>
           </div>
+          <DateTimePicker
+            v-else-if="field.type === 'Datetime'"
+            v-model="data[field.name]"
+            :placeholder="__(field.placeholder || field.label)"
+            input-class="border-none"
+          />
+          <DatePicker
+            v-else-if="field.type === 'Date'"
+            v-model="data[field.name]"
+            :placeholder="__(field.placeholder || field.label)"
+            input-class="border-none"
+          />
+          <FormControl
+            v-else-if="['Small Text', 'Text', 'Long Text'].includes(field.type)"
+            type="textarea"
+            :placeholder="__(field.placeholder || field.label)"
+            v-model="data[field.name]"
+          />
+          <FormControl
+            v-else-if="['Int'].includes(field.type)"
+            type="number"
+            :placeholder="__(field.placeholder || field.label)"
+            v-model="data[field.name]"
+          />
           <FormControl
             v-else
             type="text"
@@ -132,8 +175,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { Tooltip } from 'frappe-ui'
-import { isMobileView } from '@/composables/settings'
+import { Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
 
 const { getUser } = usersStore()
 
