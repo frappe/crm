@@ -225,9 +225,9 @@ const fields = computed(() => {
 })
 
 const sections = createResource({
-  url: 'crm.api.doc.get_quick_entry_fields',
+  url: 'crm.api.doc.get_fields_layout',
   cache: ['quickEntryFields', 'CRM Organization'],
-  params: { doctype: 'CRM Organization' },
+  params: { doctype: 'CRM Organization', type: 'Quick Entry'},
   auto: true,
 })
 

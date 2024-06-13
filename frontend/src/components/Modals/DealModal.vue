@@ -77,9 +77,9 @@ const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 
 const sections = createResource({
-  url: 'crm.api.doc.get_quick_entry_fields',
+  url: 'crm.api.doc.get_fields_layout',
   cache: ['quickEntryFields', 'CRM Deal'],
-  params: { doctype: 'CRM Deal' },
+  params: { doctype: 'CRM Deal', type: 'Quick Entry'},
   auto: true,
   transform: (data) => {
     return data.forEach((section) => {

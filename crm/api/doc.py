@@ -158,10 +158,10 @@ def get_group_by_fields(doctype: str):
 
 
 @frappe.whitelist()
-def get_quick_entry_fields(doctype: str):
+def get_fields_layout(doctype: str, type: str):
 	sections = []
-	if frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": "Quick Entry"}):
-		layout = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": "Quick Entry"})
+	if frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": type}):
+		layout = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": type})
 	else:
 		return []
 
