@@ -40,7 +40,7 @@
             />
           </nav>
         </div>
-        <div class="flex flex-1 flex-col overflow-y-auto p-8">
+        <div class="flex flex-1 flex-col overflow-y-auto">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>

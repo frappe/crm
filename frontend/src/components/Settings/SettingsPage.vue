@@ -3,10 +3,10 @@
     <h2 class="flex gap-2 text-xl font-semibold leading-none">
       <div>{{ __(doctype) }}</div>
       <Badge
+        v-if="data.isDirty"
         :label="__('Not Saved')"
         variant="subtle"
         theme="orange"
-        v-if="data.isDirty"
       />
     </h2>
     <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
@@ -17,7 +17,7 @@
       />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
-      <Spinner />
+      <Spinner class="size-8" />
     </div>
     <div class="flex flex-row-reverse">
       <Button
@@ -31,7 +31,12 @@
 </template>
 <script setup>
 import Fields from '@/components/Fields.vue'
-import { createDocumentResource, createResource, Spinner, Badge } from 'frappe-ui'
+import {
+  createDocumentResource,
+  createResource,
+  Spinner,
+  Badge,
+} from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({

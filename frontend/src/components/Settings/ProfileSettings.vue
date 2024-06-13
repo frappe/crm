@@ -1,5 +1,5 @@
 <template>
-  <div v-if="profile" class="flex w-full items-center justify-between">
+  <div v-if="profile" class="flex w-full items-center justify-between p-12 pt-14">
     <div class="flex items-center gap-4">
       <Avatar
         class="!size-16"
