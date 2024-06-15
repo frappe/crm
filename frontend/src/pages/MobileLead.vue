@@ -283,7 +283,7 @@ function updateLead(fieldname, value, callback) {
 }
 
 function validateRequired(fieldname, value) {
-  let meta = lead.data.all_fields || {}
+  let meta = lead.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
     createToast({
       title: __('Error Updating Lead'),

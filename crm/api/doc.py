@@ -66,12 +66,12 @@ def get_filterable_fields(doctype: str):
 
 	# append DocFields
 	DocField = frappe.qb.DocType("DocField")
-	doc_fields = get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields)
+	doc_fields = get_doctype_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields)
 	res.extend(doc_fields)
 
 	# append Custom Fields
 	CustomField = frappe.qb.DocType("Custom Field")
-	custom_fields = get_fields_meta(CustomField, doctype, allowed_fieldtypes, restricted_fields)
+	custom_fields = get_doctype_fields_meta(CustomField, doctype, allowed_fieldtypes, restricted_fields)
 	res.extend(custom_fields)
 
 	# append standard fields (getting error when using frappe.model.std_fields)
@@ -170,13 +170,15 @@ def get_fields_layout(doctype: str, type: str):
 
 	allowed_fields = []
 	for section in sections:
+		if not section.get("fields"):
+			continue
 		allowed_fields.extend(section.get("fields"))
 
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldname in allowed_fields]
 
 	for section in sections:
-		for field in section.get("fields"):
+		for field in section.get("fields") if section.get("fields") else []:
 			field = next((f for f in fields if f.fieldname == field), None)
 			if field:
 				if field.fieldtype == "Select":
@@ -211,7 +213,7 @@ def save_fields_layout(doctype: str, type: str, layout: str):
 
 	return doc.layout
 
-def get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
+def get_doctype_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
 	parent = "parent" if DocField._table_name == "tabDocField" else "dt"
 	return (
 		frappe.qb.from_(DocField)
@@ -430,8 +432,9 @@ def get_list_data(
 	}
 
 
-def get_doctype_fields(doctype, name):
+def get_fields_meta(doctype):
 	not_allowed_fieldtypes = [
+		"Tab Break",
 		"Section Break",
 		"Column Break",
 	]
@@ -439,56 +442,57 @@ def get_doctype_fields(doctype, name):
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
 
-	sections = {}
-	section_fields = []
-	last_section = None
-	doc = frappe.get_cached_doc(doctype, name)
+	fields_meta = {}
+	for field in fields:
+		fields_meta[field.fieldname] = field
 
+	return fields_meta
+
+@frappe.whitelist()
+def get_sidebar_fields(doctype, name):
+	if not frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": "Side Panel"}):
+		return []
+	layout = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": "Side Panel"}).layout
+
+	if not layout:
+		return []
+	
+	layout = json.loads(layout)
+
+	not_allowed_fieldtypes = [
+		"Tab Break",
+		"Section Break",
+		"Column Break",
+	]
+
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
+
+	doc = frappe.get_cached_doc(doctype, name)
 	has_high_permlevel_fields = any(df.permlevel > 0 for df in fields)
 	if has_high_permlevel_fields:
 		has_read_access_to_permlevels = doc.get_permlevel_access("read")
 		has_write_access_to_permlevels = doc.get_permlevel_access("write")
 
-	for field in fields:
-		if field.fieldtype == "Tab Break" and last_section:
-			sections[last_section]["fields"] = section_fields
-			last_section = None
-			if field.read_only:
-				section_fields = []
-				continue
-		if field.fieldtype == "Tab Break":
-			if field.read_only:
-				section_fields = []
-				continue
-			section_fields = []
-			last_section = field.fieldname
-			sections[field.fieldname] = {
-				"label": field.label,
-				"name": field.fieldname,
-				"opened": True,
-				"fields": [],
-			}
-		else:
-			if field.permlevel > 0:
-				field_has_write_access = field.permlevel in has_write_access_to_permlevels
-				field_has_read_access = field.permlevel in has_read_access_to_permlevels
-				if not field_has_write_access and field_has_read_access:
-					field.read_only = 1
-				if not field_has_read_access and not field_has_write_access:
-					field.hidden = 1
-			section_fields.append(get_field_obj(field))
+	for section in layout:
+		section["name"] = section.get("name") or section.get("label")
+		for field in section.get("fields") if section.get("fields") else []:
+			field_obj = next((f for f in fields if f.fieldname == field), None)
+			if field_obj:
+				if field_obj.permlevel > 0:
+					field_has_write_access = field_obj.permlevel in has_write_access_to_permlevels
+					field_has_read_access = field_obj.permlevel in has_read_access_to_permlevels
+					if not field_has_write_access and field_has_read_access:
+						field_obj.read_only = 1
+					if not field_has_read_access and not field_has_write_access:
+						field_obj.hidden = 1
+				section["fields"][section.get("fields").index(field)] = get_field_obj(field_obj)
 
-	section_fields = []
-	for section in sections:
-		section_fields.append(sections[section])
-
-	fields = [field for field in fields if field.fieldtype not in "Tab Break"]
 	fields_meta = {}
 	for field in fields:
 		fields_meta[field.fieldname] = field
 
-	return section_fields, fields_meta
-
+	return layout
 
 def get_field_obj(field):
 	obj = {
