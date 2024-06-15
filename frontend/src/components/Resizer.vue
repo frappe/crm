@@ -28,6 +28,10 @@ const props = defineProps({
     type: String,
     default: 'left',
   },
+  parent: {
+    type: Object,
+    default: null,
+  },
 })
 
 const sidebarResizing = ref(false)
@@ -58,6 +62,9 @@ function resize(e) {
   sidebarWidth.value =
     props.side == 'left' ? e.clientX : window.innerWidth - e.clientX
 
+  let gap = props.parent ? distance() : 0
+  sidebarWidth.value = sidebarWidth.value - gap
+
   // snap to props.defaultWidth
   let range = [props.defaultWidth - 10, props.defaultWidth + 10]
   if (sidebarWidth.value > range[0] && sidebarWidth.value < range[1]) {
@@ -70,5 +77,10 @@ function resize(e) {
   if (sidebarWidth.value > props.maxWidth) {
     sidebarWidth.value = props.maxWidth
   }
+}
+function distance() {
+  if (!props.parent) return 0
+  const rect = props.parent.getBoundingClientRect()
+  return window.innerWidth - rect[props.side]
 }
 </script>

@@ -369,7 +369,7 @@ function updateDeal(fieldname, value, callback) {
 }
 
 function validateRequired(fieldname, value) {
-  let meta = deal.data.all_fields || {}
+  let meta = deal.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
     createToast({
       title: __('Error Updating Deal'),

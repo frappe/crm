@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 
-from crm.api.doc import get_doctype_fields, get_assigned_users
+from crm.api.doc import get_fields_meta, get_assigned_users
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 
 @frappe.whitelist()
@@ -15,8 +15,8 @@ def get_lead(name):
 		frappe.throw(_("Lead not found"), frappe.DoesNotExistError)
 	lead = lead.pop()
 
-	lead["doctype_fields"], lead["all_fields"] = get_doctype_fields("CRM Lead", name)
 	lead["doctype"] = "CRM Lead"
+	lead["fields_meta"] = get_fields_meta("CRM Lead")
 	lead["_form_script"] = get_form_script('CRM Lead')
 	lead["_assign"] = get_assigned_users("CRM Lead", lead.name, lead.owner)
 	return lead
