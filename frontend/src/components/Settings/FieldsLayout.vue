@@ -74,6 +74,7 @@ const dirty = computed(() => {
 function saveChanges() {
   let _sections = JSON.parse(JSON.stringify(sections.data))
   _sections.forEach((section) => {
+    if (!section.fields) return
     section.fields = section.fields.map((field) => field.name)
   })
   loading.value = true

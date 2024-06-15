@@ -485,41 +485,26 @@ const fieldsLayout = createResource({
   cache: ['fieldsLayout', props.dealId],
   params: { doctype: 'CRM Deal', name: props.dealId },
   auto: true,
-  transform: (data) => getParsedFields(data, deal_contacts.data),
+  transform: (data) => getParsedFields(data),
 })
 
 function getParsedFields(sections, contacts) {
   sections.forEach((section) => {
-    if (section.name == 'contacts_tab') {
-      delete section.fields
-      section.contacts =
-        contacts?.map((contact) => {
-          return {
-            name: contact.name,
-            full_name: contact.full_name,
-            email: contact.email,
-            mobile_no: contact.mobile_no,
-            image: contact.image,
-            is_primary: contact.is_primary,
-            opened: false,
-          }
-        }) || []
-    } else {
-      section.fields.forEach((field) => {
-        if (field.name == 'organization') {
-          field.create = (value, close) => {
-            _organization.value.organization_name = value
-            showOrganizationModal.value = true
-            close()
-          }
-          field.link = (org) =>
-            router.push({
-              name: 'Organization',
-              params: { organizationId: org },
-            })
+    if (section.name == 'contacts_section') return
+    section.fields.forEach((field) => {
+      if (field.name == 'organization') {
+        field.create = (value, close) => {
+          _organization.value.organization_name = value
+          showOrganizationModal.value = true
+          close()
         }
-      })
-    }
+        field.link = (org) =>
+          router.push({
+            name: 'Organization',
+            params: { organizationId: org },
+          })
+      }
+    })
   })
   return sections
 }
@@ -597,6 +582,21 @@ const deal_contacts = createResource({
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
   auto: true,
+  onSuccess: (data) => {
+    fieldsLayout.data.find(
+      (section) => section.name == 'contacts_section',
+    ).contacts = data.map((contact) => {
+      return {
+        name: contact.name,
+        full_name: contact.full_name,
+        email: contact.email,
+        mobile_no: contact.mobile_no,
+        image: contact.image,
+        is_primary: contact.is_primary,
+        opened: false,
+      }
+    })
+  },
 })
 
 function triggerCall() {
