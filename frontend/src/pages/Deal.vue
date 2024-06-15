@@ -583,9 +583,11 @@ const deal_contacts = createResource({
   cache: ['deal_contacts', props.dealId],
   auto: true,
   onSuccess: (data) => {
-    fieldsLayout.data.find(
+    let contactSection = fieldsLayout.data.find(
       (section) => section.name == 'contacts_section',
-    ).contacts = data.map((contact) => {
+    )
+    if (!contactSection) return
+    contactSection.contacts = data.map((contact) => {
       return {
         name: contact.name,
         full_name: contact.full_name,
