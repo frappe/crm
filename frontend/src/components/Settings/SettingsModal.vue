@@ -40,7 +40,7 @@
             />
           </nav>
         </div>
-        <div class="flex flex-1 flex-col overflow-y-auto p-8">
+        <div class="flex flex-1 flex-col overflow-y-auto">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
@@ -54,10 +54,11 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
+import FieldsLayout from '@/components/Settings/FieldsLayout.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { isWhatsappInstalled } from '@/composables/settings'
-import { Dialog } from 'frappe-ui'
-import { ref, markRaw, computed } from 'vue'
+import { Dialog, FeatherIcon } from 'frappe-ui'
+import { ref, markRaw, computed, h } from 'vue'
 
 const show = defineModel()
 
@@ -66,6 +67,11 @@ let tabs = [
     label: 'Profile',
     icon: ContactsIcon,
     component: markRaw(ProfileSettings),
+  },
+  {
+    label: 'Fields Layout',
+    icon: h(FeatherIcon, { name: 'grid' }),
+    component: markRaw(FieldsLayout),
   },
 ]
 

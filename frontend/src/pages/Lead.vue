@@ -162,15 +162,15 @@
         @updateField="updateField"
       />
       <div
-        v-if="detailSections.length"
+        v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="(section, i) in detailSections"
+            v-for="(section, i) in fieldsLayout.data"
             :key="section.label"
             class="flex flex-col p-3"
-            :class="{ 'border-b': i !== detailSections.length - 1 }"
+            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
             <Section :is-opened="section.opened" :label="section.label">
               <SectionFields
@@ -384,7 +384,7 @@ function updateLead(fieldname, value, callback) {
 }
 
 function validateRequired(fieldname, value) {
-  let meta = lead.data.all_fields || {}
+  let meta = lead.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
     createToast({
       title: __('Error Updating Lead'),
@@ -469,10 +469,11 @@ function validateFile(file) {
   }
 }
 
-const detailSections = computed(() => {
-  let data = lead.data
-  if (!data) return []
-  return data.doctype_fields
+const fieldsLayout = createResource({
+  url: 'crm.api.doc.get_sidebar_fields',
+  cache: ['fieldsLayout', props.leadId],
+  params: { doctype: 'CRM Lead', name: props.leadId },
+  auto: true,
 })
 
 function updateField(name, value, callback) {
