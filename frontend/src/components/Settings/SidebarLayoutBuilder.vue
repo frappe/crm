@@ -66,13 +66,33 @@
                 </div>
               </template>
             </Draggable>
-            <Button
-              v-if="section.editable !== false"
-              class="w-full mt-2"
-              variant="outline"
-              :label="__('Add Field')"
-              @click="section.fields.push({ label: 'New Field' })"
-            />
+            <Autocomplete
+              v-if="fields.data && section.editable !== false"
+              value=""
+              :options="fields.data"
+              @change="(e) => addField(section, e)"
+            >
+              <template #target="{ togglePopover }">
+                <Button
+                  class="w-full mt-2"
+                  variant="outline"
+                  @click="togglePopover()"
+                  :label="__('Add Field')"
+                >
+                  <template #prefix>
+                    <FeatherIcon name="plus" class="h-4" />
+                  </template>
+                </Button>
+              </template>
+              <template #item-label="{ option }">
+                <div class="flex flex-col gap-1">
+                  <div>{{ option.label }}</div>
+                  <div class="text-gray-500 text-sm">
+                    {{ `${option.fieldname} - ${option.fieldtype}` }}
+                  </div>
+                </div>
+              </template>
+            </Autocomplete>
             <div
               v-else
               class="flex justify-center items-center border rounded border-dashed p-3"
@@ -98,11 +118,49 @@
   </div>
 </template>
 <script setup>
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'
-import { Input } from 'frappe-ui'
+import { Input, createResource } from 'frappe-ui'
+import { computed, watch } from 'vue'
 
 const props = defineProps({
   sections: Object,
+  doctype: String,
 })
+
+const restrictedFieldTypes = [
+  'Table',
+  'Geolocation',
+  'Attach',
+  'Attach Image',
+  'HTML',
+  'Signature',
+]
+
+const params = computed(() => {
+  return {
+    doctype: props.doctype,
+    restricted_fieldtypes: restrictedFieldTypes,
+    as_array: true,
+  }
+})
+
+const fields = createResource({
+  url: 'crm.api.doc.get_fields_meta',
+  params: params.value,
+  cache: ['fieldsMeta', props.doctype],
+  auto: true,
+})
+
+function addField(section, field) {
+  if (!field) return
+  section.fields.push(field)
+}
+
+watch(
+  () => props.doctype,
+  () => fields.fetch(params.value),
+  { immediate: true },
+)
 </script>

@@ -38,7 +38,7 @@
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
         <div class="flex flex-col overflow-y-auto">
-          <SidebarLayoutBuilder :sections="sections.data" />
+          <SidebarLayoutBuilder :sections="sections.data" :doctype="doctype" />
         </div>
       </div>
     </Resizer>
@@ -75,7 +75,7 @@ function saveChanges() {
   let _sections = JSON.parse(JSON.stringify(sections.data))
   _sections.forEach((section) => {
     if (!section.fields) return
-    section.fields = section.fields.map((field) => field.name)
+    section.fields = section.fields.map((field) => field.fieldname || field.name)
   })
   loading.value = true
   call('crm.api.doc.save_fields_layout', {

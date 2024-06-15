@@ -431,16 +431,23 @@ def get_list_data(
 		"list_script": get_form_script(doctype, "List"),
 	}
 
-
-def get_fields_meta(doctype):
+@frappe.whitelist()
+def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 	not_allowed_fieldtypes = [
 		"Tab Break",
 		"Section Break",
 		"Column Break",
 	]
 
+	if restricted_fieldtypes:
+		restricted_fieldtypes = frappe.parse_json(restricted_fieldtypes)
+		not_allowed_fieldtypes += restricted_fieldtypes
+
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
+
+	if as_array:
+		return fields
 
 	fields_meta = {}
 	for field in fields:
