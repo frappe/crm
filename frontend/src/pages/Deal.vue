@@ -108,15 +108,15 @@
         @updateField="updateField"
       />
       <div
-        v-if="detailSections.length"
+        v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
         <div class="flex flex-col overflow-y-auto">
           <div
-            v-for="(section, i) in detailSections"
+            v-for="(section, i) in fieldsLayout.data"
             :key="section.label"
             class="flex flex-col p-3"
-            :class="{ 'border-b': i !== detailSections.length - 1 }"
+            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
             <Section :is-opened="section.opened" :label="section.label">
               <template #actions>
@@ -480,10 +480,12 @@ const tabs = computed(() => {
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
-const detailSections = computed(() => {
-  let data = deal.data
-  if (!data) return []
-  return getParsedFields(data.doctype_fields, deal_contacts.data)
+const fieldsLayout = createResource({
+  url: 'crm.api.doc.get_sidebar_fields',
+  cache: ['fieldsLayout', props.dealId],
+  params: { doctype: 'CRM Deal', name: props.dealId },
+  auto: true,
+  transform: (data) => getParsedFields(data, deal_contacts.data),
 })
 
 function getParsedFields(sections, contacts) {
