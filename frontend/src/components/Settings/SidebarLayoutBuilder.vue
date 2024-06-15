@@ -32,6 +32,7 @@
                 @click="section.editingLabel = !section.editingLabel"
               />
               <Button
+                v-if="section.editable !== false"
                 icon="x"
                 variant="ghost"
                 @click="sections.splice(sections.indexOf(section), 1)"
@@ -66,11 +67,20 @@
               </template>
             </Draggable>
             <Button
+              v-if="section.editable !== false"
               class="w-full mt-2"
               variant="outline"
               :label="__('Add Field')"
               @click="section.fields.push({ label: 'New Field' })"
             />
+            <div
+              v-else
+              class="flex justify-center items-center border rounded border-dashed p-3"
+            >
+              <div class="text-sm text-gray-500">
+                {{ __('This section is not editable') }}
+              </div>
+            </div>
           </div>
         </div>
       </template>
