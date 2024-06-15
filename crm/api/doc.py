@@ -194,6 +194,23 @@ def get_fields_layout(doctype: str, type: str):
 
 	return sections or []
 
+
+@frappe.whitelist()
+def save_fields_layout(doctype: str, type: str, layout: str):
+	if frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": type}):
+		doc = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": type})
+	else:
+		doc = frappe.new_doc("CRM Fields Layout")
+
+	doc.update({
+		"dt": doctype,
+		"type": type,
+		"layout": layout,
+	})
+	doc.save(ignore_permissions=True)
+
+	return doc.layout
+
 def get_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fields):
 	parent = "parent" if DocField._table_name == "tabDocField" else "dt"
 	return (
