@@ -40,7 +40,7 @@ const error = ref(null)
 const isLeadCreating = ref(false)
 
 const sections = createResource({
-  url: 'crm.api.doc.get_fields_layout',
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['quickEntryFields', 'CRM Lead'],
   params: { doctype: 'CRM Lead', type: 'Quick Entry' },
   auto: true,

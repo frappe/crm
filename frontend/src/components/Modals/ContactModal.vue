@@ -235,7 +235,7 @@ const detailFields = computed(() => {
 })
 
 const sections = createResource({
-  url: 'crm.api.doc.get_fields_layout',
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['quickEntryFields', 'Contact'],
   params: { doctype: 'Contact', type: 'Quick Entry'},
   auto: true,

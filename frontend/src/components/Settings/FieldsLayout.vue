@@ -56,7 +56,7 @@ const doctype = ref('CRM Lead')
 const oldSections = ref([])
 
 const sections = createResource({
-  url: 'crm.api.doc.get_fields_layout',
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['sidebar-sections', doctype.value],
   params: { doctype: doctype.value, type: 'Side Panel' },
   auto: true,
@@ -78,7 +78,7 @@ function saveChanges() {
     section.fields = section.fields.map((field) => field.fieldname || field.name)
   })
   loading.value = true
-  call('crm.api.doc.save_fields_layout', {
+  call('crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout', {
     doctype: doctype.value,
     type: 'Side Panel',
     layout: JSON.stringify(_sections),
