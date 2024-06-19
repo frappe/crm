@@ -10,6 +10,6 @@ def execute():
     layout = json.loads(deal)
     for section in layout:
         if section.get("label") in ["Select Organization", "Organization Details", "Select Contact", "Contact Details"]:
-            section["editable"] = True
+            section["editable"] = False
 
     frappe.db.set_value("CRM Fields Layout", "CRM Deal-Quick Entry", "layout", json.dumps(layout))
