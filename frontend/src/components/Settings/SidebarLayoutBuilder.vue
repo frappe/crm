@@ -42,6 +42,7 @@
           <div v-show="section.opened" class="p-4 pt-0 pb-2">
             <Draggable
               :list="section.fields"
+              group="fields"
               item-key="label"
               class="flex flex-col gap-1"
               handle=".cursor-grab"

@@ -583,7 +583,7 @@ const deal_contacts = createResource({
   cache: ['deal_contacts', props.dealId],
   auto: true,
   onSuccess: (data) => {
-    let contactSection = fieldsLayout.data.find(
+    let contactSection = fieldsLayout.data?.find(
       (section) => section.name == 'contacts_section',
     )
     if (!contactSection) return
