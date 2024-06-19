@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border rounded-xl h-full inline-block w-full transform overflow-y-auto bg-white text-left align-middle shadow-xl transition-all"
+    class="rounded-xl h-full inline-block w-full transform overflow-y-auto bg-white text-left align-middle shadow-xl transition-all"
   >
     <div class="bg-white px-4 pb-6 pt-5 sm:px-6 overflow-y-auto">
       <Draggable :list="sections" item-key="label" class="flex flex-col">
@@ -16,33 +16,28 @@
                 >
                   {{ __(section.label) || __('Untitled') }}
                 </div>
-                <div v-else>
+                <div v-else class="flex gap-2 items-center">
                   <Input
                     v-model="section.label"
                     @keydown.enter="section.editingLabel = false"
                     @blur="section.editingLabel = false"
                     @click.stop
                   />
+                  <Button
+                    v-if="section.editingLabel"
+                    icon="check"
+                    variant="ghost"
+                    @click="section.editingLabel = false"
+                  />
                 </div>
               </div>
-              <div>
-                <Button
-                  :icon="section.hideLabel ? 'eye-off' : 'eye'"
-                  variant="ghost"
-                  @click="section.hideLabel = !section.hideLabel"
-                />
-                <Button
-                  :icon="section.editingLabel ? 'check' : 'edit'"
-                  variant="ghost"
-                  @click="section.editingLabel = !section.editingLabel"
-                />
-                <Button
-                  v-if="section.editable !== false"
-                  icon="x"
-                  variant="ghost"
-                  @click="sections.splice(sections.indexOf(section), 1)"
-                />
-              </div>
+              <Dropdown :options="getOptions(section)">
+                <template #default>
+                  <Button variant="ghost">
+                    <FeatherIcon name="more-horizontal" class="h-4" />
+                  </Button>
+                </template>
+              </Dropdown>
             </div>
             <div>
               <Draggable
@@ -145,7 +140,7 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'
-import { createResource } from 'frappe-ui'
+import { Dropdown, createResource } from 'frappe-ui'
 import { computed, watch } from 'vue'
 
 const props = defineProps({
@@ -180,6 +175,40 @@ const fields = createResource({
 function addField(section, field) {
   if (!field) return
   section.fields.push(field)
+}
+
+function getOptions(section) {
+  return [
+    {
+      label: 'Edit',
+      icon: 'edit',
+      onClick: () => (section.editingLabel = true),
+    },
+    {
+      label: section.hideLabel ? 'Show Label' : 'Hide Label',
+      icon: section.hideLabel ? 'eye' : 'eye-off',
+      onClick: () => (section.hideLabel = !section.hideLabel),
+    },
+    {
+      label: 'Add Column',
+      icon: 'columns',
+      onClick: () =>
+        (section.columns = section.columns ? section.columns + 1 : 4),
+      condition: () => !section.columns || section.columns < 4,
+    },
+    {
+      label: 'Remove Column',
+      icon: 'columns',
+      onClick: () =>
+        (section.columns = section.columns ? section.columns - 1 : 2),
+      condition: () => !section.columns || section.columns > 1,
+    },
+    {
+      label: 'Remove Section',
+      icon: 'trash-2',
+      onClick: () => props.sections.splice(props.sections.indexOf(section), 1),
+    },
+  ]
 }
 
 watch(

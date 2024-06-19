@@ -16,20 +16,27 @@
               <div v-if="!section.editingLabel">
                 {{ __(section.label) || __('Untitled') }}
               </div>
-              <div v-else>
+              <div v-else class="flex gap-2 items-center">
                 <Input
                   v-model="section.label"
                   @keydown.enter="section.editingLabel = false"
                   @blur="section.editingLabel = false"
                   @click.stop
                 />
+                <Button
+                  v-if="section.editingLabel"
+                  icon="check"
+                  variant="ghost"
+                  @click.stop="section.editingLabel = false"
+                />
               </div>
             </div>
             <div>
               <Button
-                :icon="section.editingLabel ? 'check' : 'edit'"
+                v-if="!section.editingLabel"
+                icon="edit"
                 variant="ghost"
-                @click="section.editingLabel = !section.editingLabel"
+                @click="section.editingLabel = true"
               />
               <Button
                 v-if="section.editable !== false"
