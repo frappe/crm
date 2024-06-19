@@ -27,6 +27,10 @@
           @click="saveChanges"
         />
         <Button :label="__('Reset')" @click="reload" />
+        <Button
+          :label="preview ? __('Hide Preview') : __('Show Preview')"
+          @click="preview = !preview"
+        />
       </div>
     </div>
     <Resizer
@@ -37,13 +41,30 @@
     >
       <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
-          <SidebarLayoutBuilder :sections="sections.data" :doctype="doctype" />
+          <SidebarLayoutBuilder
+            v-if="!preview"
+            :sections="sections.data"
+            :doctype="doctype"
+          />
+          <div
+            v-else
+            v-for="(section, i) in sections.data"
+            :key="section.label"
+            class="flex flex-col p-3"
+            :class="{ 'border-b': i !== sections.data.length - 1 }"
+          >
+            <Section :is-opened="section.opened" :label="section.label">
+              <SectionFields :fields="section.fields" v-model="data" />
+            </Section>
+          </div>
         </div>
       </div>
     </Resizer>
   </div>
 </template>
 <script setup>
+import Section from '@/components/Section.vue'
+import SectionFields from '@/components/SectionFields.vue'
 import Resizer from '@/components/Resizer.vue'
 import SidebarLayoutBuilder from '@/components/Settings/SidebarLayoutBuilder.vue'
 import { useDebounceFn } from '@vueuse/core'
@@ -54,6 +75,8 @@ const parentRef = ref(null)
 const doctype = ref('CRM Lead')
 const loading = ref(false)
 const dirty = ref(false)
+const preview = ref(false)
+const data = ref({})
 
 function getParams() {
   return { doctype: doctype.value, type: 'Side Panel' }

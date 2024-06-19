@@ -27,15 +27,29 @@
             @click="saveChanges"
           />
           <Button :label="__('Reset')" @click="reload" />
+          <Button
+            :label="preview ? __('Hide Preview') : __('Show Preview')"
+            @click="preview = !preview"
+          />
         </div>
       </div>
     </div>
     <div v-if="sections?.data" class="overflow-y-auto p-8 pt-3">
-      <QuickEntryLayoutBuilder :sections="sections.data" :doctype="doctype" />
+      <div
+        class="rounded-xl h-full inline-block w-full px-4 pb-6 pt-5 sm:px-6 transform overflow-y-auto bg-white text-left align-middle shadow-xl transition-all"
+      >
+        <QuickEntryLayoutBuilder
+          v-if="!preview"
+          :sections="sections.data"
+          :doctype="doctype"
+        />
+        <Fields v-else :sections="sections.data" :data="{}" />
+      </div>
     </div>
   </div>
 </template>
 <script setup>
+import Fields from '@/components/Fields.vue'
 import QuickEntryLayoutBuilder from '@/components/Settings/QuickEntryLayoutBuilder.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { Badge, call, createResource } from 'frappe-ui'
@@ -44,6 +58,7 @@ import { ref, watch, onMounted } from 'vue'
 const doctype = ref('CRM Lead')
 const loading = ref(false)
 const dirty = ref(false)
+const preview = ref(false)
 
 function getParams() {
   return { doctype: doctype.value, type: 'Quick Entry' }
