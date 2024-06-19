@@ -112,9 +112,13 @@
         variant="outline"
         :label="__('Add Section')"
         @click="
-          sections.push({ label: 'New Section', opened: true, fields: [] })
+          sections.push({ label: __('New Section'), opened: true, fields: [] })
         "
-      />
+      >
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4" />
+        </template>
+      </Button>
     </div>
   </div>
 </template>
