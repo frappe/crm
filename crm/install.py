@@ -113,19 +113,19 @@ def add_default_fields_layout():
 	layouts = {
 		"CRM Lead-Quick Entry": {
 			"doctype": "CRM Lead",
-			"layout": '[\n{\n"label": "Person",\n\t"fields": ["salutation", "first_name", "last_name", "email", "mobile_no", "gender"]\n},\n{\n"label": "Organization",\n\t"fields": ["organization", "website", "no_of_employees", "territory", "annual_revenue", "industry"]\n},\n{\n"label": "Other",\n"columns": 2,\n\t"fields": ["status", "lead_owner"]\n}\n]'
+			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email","mobile_no", "gender"],"hideLabel":true},{"label":"Organization","fields":["organization","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
 		},
 		"CRM Deal-Quick Entry": {
 			"doctype": "CRM Deal",
-			"layout": '[\n{\n"label": "Select Organization",\n\t"fields": ["organization"]\n},\n{\n"label": "Organization Details",\n\t"fields": [{"label": "Organization Name", "name": "organization_name", "type": "Data"}, "website", "no_of_employees", "territory", "annual_revenue", {"label": "Industry", "name": "industry", "type": "Link", "options": "CRM Industry"}]\n},\n{\n"label": "Select Contact",\n\t"fields": [{"label": "Contact", "name": "contact", "type": "Link", "options": "Contact"}]\n},\n{\n"label": "Contact Details",\n\t"fields": [{"label": "Salutation", "name": "salutation", "type": "Link", "options": "Salutation"}, {"label": "First Name", "name": "first_name", "type": "Data"}, {"label": "Last Name", "name": "last_name", "type": "Data"}, "email", "mobile_no", {"label": "Gender", "name": "gender", "type": "Link", "options": "Gender"}]\n},\n{\n"label": "Other",\n"columns": 2,\n\t"fields": ["status", "deal_owner"]\n}\n]'
+			"layout": '[{"label": "Select Organization", "fields": ["organization"], "hideLabel": true, "editable": true}, {"label": "Organization Details", "fields": ["organization_name", "website", "no_of_employees", "territory", "annual_revenue", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact"], "hideLabel": true, "editable": true}, {"label": "Contact Details", "fields": ["salutation", "first_name", "last_name", "email", "mobile_no", "gender"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 2, "fields": ["status", "deal_owner"], "hideLabel": true}]'
 		},
 		"Contact-Quick Entry": {
 			"doctype": "Contact",
-			"layout": '[\n{\n"label": "Salutation",\n"columns": 1,\n"fields": ["salutation"]\n},\n{\n"label": "Full Name",\n"columns": 2,\n"hideBorder": true,\n"fields": ["first_name", "last_name"]\n},\n{\n"label": "Email",\n"columns": 1,\n"hideBorder": true,\n"fields": ["email_id"]\n},\n{\n"label": "Mobile No. & Gender",\n"columns": 2,\n"hideBorder": true,\n"fields": ["mobile_no", "gender"]\n},\n{\n"label": "Organization",\n"columns": 1,\n"hideBorder": true,\n"fields": ["company_name"]\n},\n{\n"label": "Designation",\n"columns": 1,\n"hideBorder": true,\n"fields": ["designation"]\n}\n]'
+			"layout": '[{"label":"Salutation","columns":1,"fields":["salutation"],"hideLabel":true},{"label":"Full Name","columns":2,"hideBorder":true,"fields":["first_name","last_name"],"hideLabel":true},{"label":"Email","columns":1,"hideBorder":true,"fields":["email_id"],"hideLabel":true},{"label":"Mobile No. & Gender","columns":2,"hideBorder":true,"fields":["mobile_no","gender"],"hideLabel":true},{"label":"Organization","columns":1,"hideBorder":true,"fields":["company_name"],"hideLabel":true},{"label":"Designation","columns":1,"hideBorder":true,"fields":["designation"],"hideLabel":true}]'
 		},
 		"Organization-Quick Entry": {
 			"doctype": "CRM Organization",
-			"layout": '[\n{\n"label": "Organization Name",\n"columns": 1,\n"fields": ["organization_name"]\n},\n{\n"label": "Website & Revenue",\n"columns": 2,\n"hideBorder": true,\n"fields": ["website", "annual_revenue"]\n},\n{\n"label": "Territory",\n"columns": 1,\n"hideBorder": true,\n"fields": ["territory"]\n},\n{\n"label": "No of Employees & Industry",\n"columns": 2,\n"hideBorder": true,\n"fields": ["no_of_employees", "industry"]\n}\n]'
+			"layout": '[{"label":"Organization Name","columns":1,"fields":["organization_name"],"hideLabel":true},{"label":"Website & Revenue","columns":2,"hideBorder":true,"fields":["website","annual_revenue"],"hideLabel":true},{"label":"Territory","columns":1,"hideBorder":true,"fields":["territory"],"hideLabel":true},{"label":"No of Employees & Industry","columns":2,"hideBorder":true,"fields":["no_of_employees","industry"],"hideLabel":true}]'
 		},
 	}
 

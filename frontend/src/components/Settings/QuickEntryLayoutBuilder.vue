@@ -2,18 +2,18 @@
   <div>
     <Draggable :list="sections" item-key="label" class="flex flex-col">
       <template #item="{ element: section }">
-        <div class="border-b">
-          <div class="flex items-center justify-between p-2">
+        <div
+          class="py-2 first:pt-0"
+          :class="section.hideBorder ? '' : 'border-t first:border-t-0'"
+        >
+          <div class="flex items-center justify-between pb-2">
             <div
-              class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
-              @click="section.opened = !section.opened"
+              class="flex h-7 max-w-fit cursor-pointer items-center gap-2 text-base font-semibold leading-5"
             >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
-                :class="{ 'rotate-90': section.opened }"
-              />
-              <div v-if="!section.editingLabel">
+              <div
+                v-if="!section.editingLabel"
+                :class="section.hideLabel ? 'text-gray-400' : ''"
+              >
                 {{ __(section.label) || __('Untitled') }}
               </div>
               <div v-else class="flex gap-2 items-center">
@@ -27,31 +27,27 @@
                   v-if="section.editingLabel"
                   icon="check"
                   variant="ghost"
-                  @click.stop="section.editingLabel = false"
+                  @click="section.editingLabel = false"
                 />
               </div>
             </div>
-            <div>
-              <Button
-                v-if="!section.editingLabel"
-                icon="edit"
-                variant="ghost"
-                @click="section.editingLabel = true"
-              />
-              <Button
-                v-if="section.editable !== false"
-                icon="x"
-                variant="ghost"
-                @click="sections.splice(sections.indexOf(section), 1)"
-              />
-            </div>
+            <Dropdown :options="getOptions(section)">
+              <template #default>
+                <Button variant="ghost">
+                  <FeatherIcon name="more-horizontal" class="h-4" />
+                </Button>
+              </template>
+            </Dropdown>
           </div>
-          <div v-show="section.opened" class="p-4 pt-0 pb-2">
+          <div>
             <Draggable
               :list="section.fields"
               group="fields"
               item-key="label"
-              class="flex flex-col gap-1"
+              class="grid gap-2"
+              :class="
+                section.columns ? 'grid-cols-' + section.columns : 'grid-cols-3'
+              "
               handle=".cursor-grab"
             >
               <template #item="{ element: field }">
@@ -75,22 +71,31 @@
               </template>
             </Draggable>
             <Autocomplete
-              v-if="fields.data && section.editable !== false"
+              v-if="fields.data"
               value=""
               :options="fields.data"
               @change="(e) => addField(section, e)"
             >
               <template #target="{ togglePopover }">
-                <Button
-                  class="w-full mt-2"
-                  variant="outline"
-                  @click="togglePopover()"
-                  :label="__('Add Field')"
+                <div
+                  class="grid gap-2 w-full"
+                  :class="
+                    section.columns
+                      ? 'grid-cols-' + section.columns
+                      : 'grid-cols-3'
+                  "
                 >
-                  <template #prefix>
-                    <FeatherIcon name="plus" class="h-4" />
-                  </template>
-                </Button>
+                  <Button
+                    class="mt-2 w-full !h-[38px] !border-gray-200"
+                    variant="outline"
+                    @click="togglePopover()"
+                    :label="__('Add Field')"
+                  >
+                    <template #prefix>
+                      <FeatherIcon name="plus" class="h-4" />
+                    </template>
+                  </Button>
+                </div>
               </template>
               <template #item-label="{ option }">
                 <div class="flex flex-col gap-1">
@@ -101,25 +106,21 @@
                 </div>
               </template>
             </Autocomplete>
-            <div
-              v-else
-              class="flex justify-center items-center border rounded border-dashed p-3"
-            >
-              <div class="text-sm text-gray-500">
-                {{ __('This section is not editable') }}
-              </div>
-            </div>
           </div>
         </div>
       </template>
     </Draggable>
-    <div class="p-2">
+    <div class="py-2 border-t">
       <Button
-        class="w-full"
+        class="w-full !h-[38px] !border-gray-200"
         variant="outline"
         :label="__('Add Section')"
         @click="
-          sections.push({ label: __('New Section'), opened: true, fields: [] })
+          sections.push({
+            label: __('New Section'),
+            opened: true,
+            fields: [],
+          })
         "
       >
         <template #prefix>
@@ -133,7 +134,7 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'
-import { Input, createResource } from 'frappe-ui'
+import { Dropdown, createResource } from 'frappe-ui'
 import { computed, watch } from 'vue'
 
 const props = defineProps({
@@ -168,6 +169,47 @@ const fields = createResource({
 function addField(section, field) {
   if (!field) return
   section.fields.push(field)
+}
+
+function getOptions(section) {
+  return [
+    {
+      label: 'Edit',
+      icon: 'edit',
+      onClick: () => (section.editingLabel = true),
+      condition: () => section.editable !== false,
+    },
+    {
+      label: section.hideLabel ? 'Show Label' : 'Hide Label',
+      icon: section.hideLabel ? 'eye' : 'eye-off',
+      onClick: () => (section.hideLabel = !section.hideLabel),
+    },
+    {
+      label: section.hideBorder ? 'Show Border' : 'Hide Border',
+      icon: 'minus',
+      onClick: () => (section.hideBorder = !section.hideBorder),
+    },
+    {
+      label: 'Add Column',
+      icon: 'columns',
+      onClick: () =>
+        (section.columns = section.columns ? section.columns + 1 : 4),
+      condition: () => !section.columns || section.columns < 4,
+    },
+    {
+      label: 'Remove Column',
+      icon: 'columns',
+      onClick: () =>
+        (section.columns = section.columns ? section.columns - 1 : 2),
+      condition: () => !section.columns || section.columns > 1,
+    },
+    {
+      label: 'Remove Section',
+      icon: 'trash-2',
+      onClick: () => props.sections.splice(props.sections.indexOf(section), 1),
+      condition: () => section.editable !== false,
+    },
+  ]
 }
 
 watch(
