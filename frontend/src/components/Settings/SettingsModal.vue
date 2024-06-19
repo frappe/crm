@@ -92,10 +92,14 @@ const tabs = computed(() => {
     },
   ]
 
-  return _tabs.filter((tab) => {
-    return tab.items.some((item) => {
-      return item.condition ? item.condition() : true
+  return _tabs.map((tab) => {
+    tab.items = tab.items.filter((item) => {
+      if (item.condition) {
+        return item.condition()
+      }
+      return true
     })
+    return tab
   })
 })
 
