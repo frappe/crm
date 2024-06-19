@@ -7,6 +7,12 @@
       :class="section.hideBorder ? '' : 'border-t pt-4'"
     >
       <div
+        v-if="!section.hideLabel"
+        class="flex h-7 mb-3 max-w-fit cursor-pointer items-center gap-2 text-base font-semibold leading-5"
+      >
+        {{ section.label }}
+      </div>
+      <div
         class="grid gap-4"
         :class="
           section.columns
