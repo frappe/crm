@@ -5,8 +5,11 @@
     <div class="bg-white px-4 pb-6 pt-5 sm:px-6 overflow-y-auto">
       <Draggable :list="sections" item-key="label" class="flex flex-col">
         <template #item="{ element: section }">
-          <div class="border-b py-2 first:pt-0">
-            <div class="flex items-center justify-between py-2">
+          <div
+            class="py-2 first:pt-0"
+            :class="section.hideBorder ? '' : 'border-t first:border-t-0'"
+          >
+            <div class="flex items-center justify-between pb-2">
               <div
                 class="flex h-7 max-w-fit cursor-pointer items-center gap-2 text-base font-semibold leading-5"
               >
@@ -115,7 +118,7 @@
           </div>
         </template>
       </Draggable>
-      <div class="py-2">
+      <div class="py-2 border-t">
         <Button
           class="w-full !h-[38px] !border-gray-200"
           variant="outline"
@@ -188,6 +191,11 @@ function getOptions(section) {
       label: section.hideLabel ? 'Show Label' : 'Hide Label',
       icon: section.hideLabel ? 'eye' : 'eye-off',
       onClick: () => (section.hideLabel = !section.hideLabel),
+    },
+    {
+      label: section.hideBorder ? 'Show Border' : 'Hide Border',
+      icon: 'minus',
+      onClick: () => (section.hideBorder = !section.hideBorder),
     },
     {
       label: 'Add Column',
