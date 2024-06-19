@@ -16,6 +16,7 @@
           v-model="doctype"
           :label="__('DocType')"
           :options="['CRM Lead', 'CRM Deal']"
+          @change="reload"
         />
       </div>
       <div class="flex flex-row-reverse gap-2">
@@ -25,18 +26,16 @@
           variant="solid"
           @click="saveChanges"
         />
-        <Button :label="__('Reset')" @click="sections.reload" />
+        <Button :label="__('Reset')" @click="reload" />
       </div>
     </div>
     <Resizer
+      v-if="sections.data"
       class="flex flex-col justify-between border-l"
       :parent="parentRef"
       side="right"
     >
-      <div
-        v-if="sections.data"
-        class="flex flex-1 flex-col justify-between overflow-hidden"
-      >
+      <div class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
           <SidebarLayoutBuilder :sections="sections.data" :doctype="doctype" />
         </div>
@@ -47,48 +46,63 @@
 <script setup>
 import Resizer from '@/components/Resizer.vue'
 import SidebarLayoutBuilder from '@/components/Settings/SidebarLayoutBuilder.vue'
+import { useDebounceFn } from '@vueuse/core'
 import { Badge, call, createResource } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 const parentRef = ref(null)
 const doctype = ref('CRM Lead')
+const loading = ref(false)
+const dirty = ref(false)
 
-const oldSections = ref([])
+function getParams() {
+  return { doctype: doctype.value, type: 'Side Panel' }
+}
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['sidebar-sections', doctype.value],
-  params: { doctype: doctype.value, type: 'Side Panel' },
-  auto: true,
+  params: getParams(),
   onSuccess(data) {
-    oldSections.value = JSON.parse(JSON.stringify(data))
+    sections.originalData = JSON.parse(JSON.stringify(data))
   },
 })
-const loading = ref(false)
 
-const dirty = computed(() => {
-  if (!sections.data) return false
-  return JSON.stringify(sections.data) !== JSON.stringify(oldSections.value)
-})
+watch(
+  () => sections?.data,
+  () => {
+    dirty.value =
+      JSON.stringify(sections?.data) !== JSON.stringify(sections?.originalData)
+  },
+  { deep: true },
+)
+
+onMounted(() => useDebounceFn(reload, 100)())
+
+function reload() {
+  sections.params = getParams()
+  sections.reload()
+}
 
 function saveChanges() {
   let _sections = JSON.parse(JSON.stringify(sections.data))
   _sections.forEach((section) => {
     if (!section.fields) return
-    section.fields = section.fields.map((field) => field.fieldname || field.name)
+    section.fields = section.fields.map(
+      (field) => field.fieldname || field.name,
+    )
   })
   loading.value = true
-  call('crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout', {
-    doctype: doctype.value,
-    type: 'Side Panel',
-    layout: JSON.stringify(_sections),
-  }).then(() => {
+  call(
+    'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout',
+    {
+      doctype: doctype.value,
+      type: 'Side Panel',
+      layout: JSON.stringify(_sections),
+    },
+  ).then(() => {
     loading.value = false
-    sections.reload()
+    reload()
   })
 }
-
-watch(doctype, (val) => sections.fetch({ doctype: val, type: 'Side Panel' }), {
-  immediate: true,
-})
 </script>
