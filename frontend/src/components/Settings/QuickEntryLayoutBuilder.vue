@@ -177,6 +177,7 @@ function getOptions(section) {
       label: 'Edit',
       icon: 'edit',
       onClick: () => (section.editingLabel = true),
+      condition: () => section.editable !== false,
     },
     {
       label: section.hideLabel ? 'Show Label' : 'Hide Label',
@@ -206,6 +207,7 @@ function getOptions(section) {
       label: 'Remove Section',
       icon: 'trash-2',
       onClick: () => props.sections.splice(props.sections.indexOf(section), 1),
+      condition: () => section.editable !== false,
     },
   ]
 }
