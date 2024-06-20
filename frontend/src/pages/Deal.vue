@@ -488,7 +488,7 @@ const fieldsLayout = createResource({
   transform: (data) => getParsedFields(data),
 })
 
-function getParsedFields(sections, contacts) {
+function getParsedFields(sections) {
   sections.forEach((section) => {
     if (section.name == 'contacts_section') return
     section.fields.forEach((field) => {
@@ -583,7 +583,7 @@ const deal_contacts = createResource({
   cache: ['deal_contacts', props.dealId],
   auto: true,
   onSuccess: (data) => {
-    let contactSection = fieldsLayout.data.find(
+    let contactSection = fieldsLayout.data?.find(
       (section) => section.name == 'contacts_section',
     )
     if (!contactSection) return

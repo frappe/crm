@@ -97,15 +97,16 @@ const leadStatuses = computed(() => {
 })
 
 function createNewLead() {
+  if (lead.website && !lead.website.startsWith('http')) {
+    lead.website = 'https://' + lead.website
+  }
+
   createLead.submit(lead, {
     validate() {
       error.value = null
       if (!lead.first_name) {
         error.value = __('First Name is mandatory')
         return error.value
-      }
-      if (lead.website && !lead.website.startsWith('http')) {
-        lead.website = 'https://' + lead.website
       }
       if (lead.annual_revenue) {
         lead.annual_revenue = lead.annual_revenue.replace(/,/g, '')
@@ -132,6 +133,14 @@ function createNewLead() {
       isLeadCreating.value = false
       show.value = false
       router.push({ name: 'Lead', params: { leadId: data.name } })
+    },
+    onError(err) {
+      isLeadCreating.value = false
+      if (!err.messages) {
+        error.value = err.message
+        return
+      }
+      error.value = err.messages.join('\n')
     },
   })
 }

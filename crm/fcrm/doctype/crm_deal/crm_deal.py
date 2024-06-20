@@ -178,6 +178,7 @@ class CRMDeal(Document):
 			"annual_revenue",
 			"status",
 			"email",
+			"currency",
 			"mobile_no",
 			"deal_owner",
 			"sla_status",

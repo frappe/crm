@@ -8,31 +8,41 @@
  "engine": "InnoDB",
  "field_order": [
   "organization_tab",
+  "naming_series",
   "organization",
-  "website",
-  "territory",
-  "annual_revenue",
-  "close_date",
-  "probability",
   "next_step",
+  "probability",
+  "column_break_ijan",
+  "status",
+  "close_date",
   "deal_owner",
   "contacts_tab",
+  "contacts",
+  "contact",
+  "lead_details_tab",
+  "lead",
+  "source",
+  "column_break_wsde",
   "lead_name",
+  "organization_details_section",
+  "organization_name",
+  "website",
+  "no_of_employees",
+  "job_title",
+  "column_break_xbyf",
+  "territory",
+  "currency",
+  "annual_revenue",
+  "industry",
+  "person_section",
+  "salutation",
+  "first_name",
+  "last_name",
+  "column_break_xjmy",
   "email",
   "mobile_no",
   "phone",
-  "contacts",
-  "others_tab",
-  "naming_series",
-  "status",
-  "section_break_sygz",
-  "no_of_employees",
-  "column_break_nwob",
-  "job_title",
-  "section_break_eepu",
-  "lead",
-  "column_break_bqvs",
-  "source",
+  "gender",
   "sla_tab",
   "sla",
   "sla_creation",
@@ -63,7 +73,8 @@
    "fetch_from": ".annual_revenue",
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Amount"
+   "label": "Amount",
+   "options": "currency"
   },
   {
    "fetch_from": ".website",
@@ -87,14 +98,6 @@
    "fieldtype": "Link",
    "label": "Lead",
    "options": "CRM Lead"
-  },
-  {
-   "fieldname": "section_break_eepu",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_bqvs",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "deal_owner",
@@ -141,12 +144,6 @@
    "fieldtype": "Table",
    "label": "Contacts",
    "options": "CRM Contacts"
-  },
-  {
-   "fieldname": "others_tab",
-   "fieldtype": "Tab Break",
-   "label": "Others",
-   "read_only": 1
   },
   {
    "fieldname": "organization_tab",
@@ -236,14 +233,6 @@
    "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
   },
   {
-   "fieldname": "section_break_sygz",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_nwob",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "job_title",
    "fieldtype": "Data",
    "label": "Job Title"
@@ -270,11 +259,87 @@
    "fieldname": "lead_name",
    "fieldtype": "Data",
    "label": "Lead Name"
+  },
+  {
+   "fieldname": "column_break_ijan",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lead_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lead Details"
+  },
+  {
+   "fieldname": "column_break_wsde",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "organization_details_section",
+   "fieldtype": "Section Break",
+   "label": "Organization Details"
+  },
+  {
+   "fieldname": "organization_name",
+   "fieldtype": "Data",
+   "label": "Organization Name"
+  },
+  {
+   "fieldname": "column_break_xbyf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "industry",
+   "fieldtype": "Link",
+   "label": "Industry",
+   "options": "CRM Industry"
+  },
+  {
+   "fieldname": "person_section",
+   "fieldtype": "Section Break",
+   "label": "Person"
+  },
+  {
+   "fieldname": "salutation",
+   "fieldtype": "Link",
+   "label": "Salutation",
+   "options": "Salutation"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "column_break_xjmy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Link",
+   "label": "Gender",
+   "options": "Gender"
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Contact",
+   "options": "Contact"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-25 21:00:08.216020",
+ "modified": "2024-06-20 12:55:41.602364",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

@@ -103,8 +103,13 @@
                 v-if="organization.doc.annual_revenue"
                 class="flex items-center gap-1.5"
               >
-                <FeatherIcon name="dollar-sign" class="h-4 w-4" />
-                <span class="">{{ organization.doc.annual_revenue }}</span>
+                <MoneyIcon class="size-4" />
+                <span class="">{{
+                  formatNumberIntoCurrency(
+                    organization.doc.annual_revenue,
+                    organization.doc.currency,
+                  )
+                }}</span>
               </div>
               <span
                 v-if="organization.doc.annual_revenue"
@@ -231,6 +236,7 @@ import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
+import MoneyIcon from '@/components/Icons/MoneyIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -347,6 +353,7 @@ const deals = createListResource({
   fields: [
     'name',
     'organization',
+    'currency',
     'annual_revenue',
     'status',
     'email',
@@ -405,7 +412,10 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: props.organization?.organization_logo,
     },
-    annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
+    annual_revenue: formatNumberIntoCurrency(
+      deal.annual_revenue,
+      deal.currency,
+    ),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.iconColorClass,

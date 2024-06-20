@@ -58,15 +58,15 @@
           @updateField="updateField"
         />
         <div
-          v-if="detailSections.length"
+          v-if="fieldsLayout.data"
           class="flex flex-1 flex-col justify-between overflow-hidden"
         >
           <div class="flex flex-col overflow-y-auto">
             <div
-              v-for="(section, i) in detailSections"
+              v-for="(section, i) in fieldsLayout.data"
               :key="section.label"
               class="flex flex-col px-2 py-3 sm:p-3"
-              :class="{ 'border-b': i !== detailSections.length - 1 }"
+              :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
             >
               <Section :is-opened="section.opened" :label="section.label">
                 <template #actions>
@@ -441,44 +441,31 @@ const tabs = computed(() => {
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
-const detailSections = computed(() => {
-  let data = deal.data
-  if (!data) return []
-  return getParsedFields(data.doctype_fields, deal_contacts.data)
+const fieldsLayout = createResource({
+  url: 'crm.api.doc.get_sidebar_fields',
+  cache: ['fieldsLayout', props.dealId],
+  params: { doctype: 'CRM Deal', name: props.dealId },
+  auto: true,
+  transform: (data) => getParsedFields(data),
 })
 
-function getParsedFields(sections, contacts) {
+function getParsedFields(sections) {
   sections.forEach((section) => {
-    if (section.name == 'contacts_tab') {
-      delete section.fields
-      section.contacts =
-        contacts?.map((contact) => {
-          return {
-            name: contact.name,
-            full_name: contact.full_name,
-            email: contact.email,
-            mobile_no: contact.mobile_no,
-            image: contact.image,
-            is_primary: contact.is_primary,
-            opened: false,
-          }
-        }) || []
-    } else {
-      section.fields.forEach((field) => {
-        if (field.name == 'organization') {
-          field.create = (value, close) => {
-            _organization.value.organization_name = value
-            showOrganizationModal.value = true
-            close()
-          }
-          field.link = (org) =>
-            router.push({
-              name: 'Organization',
-              params: { organizationId: org },
-            })
+    if (section.name == 'contacts_section') return
+    section.fields.forEach((field) => {
+      if (field.name == 'organization') {
+        field.create = (value, close) => {
+          _organization.value.organization_name = value
+          showOrganizationModal.value = true
+          close()
         }
-      })
-    }
+        field.link = (org) =>
+          router.push({
+            name: 'Organization',
+            params: { organizationId: org },
+          })
+      }
+    })
   })
   return sections
 }
@@ -556,6 +543,23 @@ const deal_contacts = createResource({
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
   auto: true,
+  onSuccess: (data) => {
+    let contactSection = fieldsLayout.data?.find(
+      (section) => section.name == 'contacts_section',
+    )
+    if (!contactSection) return
+    contactSection.contacts = data.map((contact) => {
+      return {
+        name: contact.name,
+        full_name: contact.full_name,
+        email: contact.email,
+        mobile_no: contact.mobile_no,
+        image: contact.image,
+        is_primary: contact.is_primary,
+        opened: false,
+      }
+    })
+  },
 })
 
 function updateField(name, value, callback) {

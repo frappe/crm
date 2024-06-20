@@ -7,8 +7,8 @@
           isCollapsed
             ? 'w-auto px-0'
             : open
-            ? 'w-52 bg-white px-2 shadow-sm'
-            : 'w-52 px-2 hover:bg-gray-200'
+              ? 'w-52 bg-white px-2 shadow-sm'
+              : 'w-52 px-2 hover:bg-gray-200'
         "
       >
         <CRMLogo class="size-8 flex-shrink-0 rounded" />
@@ -44,7 +44,7 @@
       </button>
     </template>
   </Dropdown>
-  <SettingsModal v-model="showSettingsModal" />
+  <SettingsModal v-if="showSettingsModal" v-model="showSettingsModal" />
 </template>
 
 <script setup>
