@@ -488,7 +488,7 @@ const fieldsLayout = createResource({
   transform: (data) => getParsedFields(data),
 })
 
-function getParsedFields(sections, contacts) {
+function getParsedFields(sections) {
   sections.forEach((section) => {
     if (section.name == 'contacts_section') return
     section.fields.forEach((field) => {
