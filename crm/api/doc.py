@@ -377,6 +377,24 @@ def get_list_data(
 	}
 
 @frappe.whitelist()
+def get_kanban_data(doctype: str, filters: dict, order_by: str, column_field: str, columns=None, rows=None):
+	filters = frappe._dict(filters)
+	columns = frappe.parse_json(columns)
+	data = []
+	for column in columns:
+		column_filters = filters.copy()
+		column_filters.update({column_field: column})
+		column_data = frappe.get_list(
+			doctype,
+			fields=rows,
+			filters=column_filters,
+			order_by=order_by,
+			page_length=20,
+		)
+		data.append({"column": column, "data": column_data, "count": len(column_data)})
+	return data
+
+@frappe.whitelist()
 def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 	not_allowed_fieldtypes = [
 		"Tab Break",

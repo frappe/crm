@@ -29,9 +29,24 @@
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
   />
+  <KanbanView
+    doctype="CRM Lead"
+    :filters="{ converted: 0 }"
+    column_field="status"
+    :columns="[
+      'New',
+      'Contacted',
+      'Nurture',
+      'Qualified',
+      'Unqualified',
+      'Junk',
+    ]"
+    :rows="['name', 'status', 'organization', 'lead_owner']"
+    v-if="route.params.viewType == 'kanban'"
+  />
   <LeadsListView
     ref="leadsListView"
-    v-if="leads.data && rows.length"
+    v-else-if="leads.data && rows.length"
     v-model="leads.data.page_length_count"
     v-model:list="leads"
     :rows="rows"
@@ -69,6 +84,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
+import KanbanView from '@/components/Kanban/KanbanView.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
@@ -111,7 +127,7 @@ const rows = computed(() => {
     if (!leads.value?.data.group_by_field?.name) return []
     return getGroupedByRows(
       leads.value?.data.data,
-      leads.value?.data.group_by_field
+      leads.value?.data.group_by_field,
     )
   } else {
     return parseRows(leads.value?.data.data)
@@ -177,8 +193,8 @@ function parseRows(rows) {
           lead.sla_status == 'Failed'
             ? 'red'
             : lead.sla_status == 'Fulfilled'
-            ? 'green'
-            : 'orange'
+              ? 'green'
+              : 'orange'
         if (value == 'First Response Due') {
           value = __(timeAgo(lead.response_by))
           tooltipText = dateFormat(lead.response_by, dateTooltipFormat)
@@ -213,7 +229,7 @@ function parseRows(rows) {
         }
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
-          row
+          row,
         )
       ) {
         let field = row == 'response_by' ? 'response_by' : 'first_responded_on'
