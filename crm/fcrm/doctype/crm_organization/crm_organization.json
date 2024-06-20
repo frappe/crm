@@ -9,6 +9,7 @@
  "field_order": [
   "organization_name",
   "no_of_employees",
+  "currency",
   "annual_revenue",
   "organization_logo",
   "column_break_pnpp",
@@ -47,7 +48,8 @@
   {
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue"
+   "label": "Annual Revenue",
+   "options": "currency"
   },
   {
    "fieldname": "industry",
@@ -60,12 +62,18 @@
    "fieldtype": "Link",
    "label": "Territory",
    "options": "CRM Territory"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:53:14.945857",
+ "modified": "2024-06-20 12:59:55.297752",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
