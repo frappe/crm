@@ -31,6 +31,7 @@
   "job_title",
   "column_break_xbyf",
   "territory",
+  "currency",
   "annual_revenue",
   "industry",
   "person_section",
@@ -72,7 +73,8 @@
    "fetch_from": ".annual_revenue",
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Amount"
+   "label": "Amount",
+   "options": "currency"
   },
   {
    "fetch_from": ".website",
@@ -327,11 +329,17 @@
    "fieldtype": "Link",
    "label": "Contact",
    "options": "Contact"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-19 18:01:59.213811",
+ "modified": "2024-06-20 12:55:41.602364",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

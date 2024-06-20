@@ -357,7 +357,10 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: getOrganization(deal.organization)?.organization_logo,
     },
-    annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
+    annual_revenue: formatNumberIntoCurrency(
+      deal.annual_revenue,
+      deal.currency,
+    ),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.iconColorClass,

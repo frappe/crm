@@ -85,7 +85,7 @@ const showOrganizationModal = ref(false)
 
 const currentOrganization = computed(() => {
   return organizations.value?.data?.data?.find(
-    (organization) => organization.name === route.params.organizationId
+    (organization) => organization.name === route.params.organizationId,
   )
 })
 
@@ -124,7 +124,10 @@ const rows = computed(() => {
       } else if (row === 'website') {
         _rows[row] = website(organization.website)
       } else if (row === 'annual_revenue') {
-        _rows[row] = formatNumberIntoCurrency(organization.annual_revenue)
+        _rows[row] = formatNumberIntoCurrency(
+          organization.annual_revenue,
+          organization.currency,
+        )
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: dateFormat(organization[row], dateTooltipFormat),

@@ -73,6 +73,7 @@ def get_linked_deals(contact):
 			fields=[
 				"name",
 				"organization",
+				"currency",
 				"annual_revenue",
 				"status",
 				"email",

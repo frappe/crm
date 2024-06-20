@@ -61,9 +61,11 @@
 <script setup>
 import Fields from '@/components/Fields.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
+import MoneyIcon from '@/components/Icons/MoneyIcon.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
+import { formatNumberIntoCurrency } from '@/utils'
 import { call, FeatherIcon, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
@@ -205,9 +207,12 @@ const fields = computed(() => {
       value: _organization.value.territory,
     },
     {
-      icon: h(FeatherIcon, { name: 'dollar-sign', class: 'h-4 w-4' }),
+      icon: MoneyIcon,
       name: 'annual_revenue',
-      value: _organization.value.annual_revenue,
+      value: formatNumberIntoCurrency(
+        _organization.value.annual_revenue,
+        _organization.value.currency,
+      ),
     },
     {
       icon: h(FeatherIcon, { name: 'hash', class: 'h-4 w-4' }),
@@ -227,7 +232,7 @@ const fields = computed(() => {
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['quickEntryFields', 'CRM Organization'],
-  params: { doctype: 'CRM Organization', type: 'Quick Entry'},
+  params: { doctype: 'CRM Organization', type: 'Quick Entry' },
   auto: true,
 })
 
@@ -246,6 +251,6 @@ watch(
         editMode.value = true
       }
     })
-  }
+  },
 )
 </script>
