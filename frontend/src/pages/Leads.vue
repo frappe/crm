@@ -26,7 +26,7 @@
     doctype="CRM Lead"
     :filters="{ converted: 0 }"
     :options="{
-      allowedViews: ['list', 'group_by'],
+      allowedViews: ['list', 'group_by', 'kanban'],
     }"
   />
   <LeadsListView

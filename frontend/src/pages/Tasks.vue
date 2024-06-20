@@ -20,6 +20,9 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Task"
+    :options="{
+      allowedViews: ['list', 'kanban'],
+    }"
   />
   <TasksListView
     ref="tasksListView"

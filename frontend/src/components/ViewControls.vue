@@ -249,6 +249,7 @@
 </template>
 <script setup>
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -318,6 +319,10 @@ function getViewType() {
     group_by: {
       label: __('Group By View'),
       icon: markRaw(DetailsIcon),
+    },
+    kanban: {
+      label: __('Kanban View'),
+      icon: markRaw(KanbanIcon),
     },
   }
 
@@ -496,6 +501,16 @@ if (allowedViews.includes('group_by')) {
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name, params: { viewType: 'group_by' } })
+    },
+  })
+}
+if (allowedViews.includes('kanban')) {
+  defaultViews.push({
+    label: __(props.options?.defaultViewName) || __('Kanban View'),
+    icon: markRaw(KanbanIcon),
+    onClick() {
+      viewUpdated.value = false
+      router.push({ name: route.name, params: { viewType: 'kanban' } })
     },
   })
 }
