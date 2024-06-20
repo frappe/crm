@@ -45,7 +45,8 @@ const routes = [
     component: () => import('@/pages/Notes.vue'),
   },
   {
-    path: '/tasks',
+    alias: '/tasks',
+    path: '/tasks/view/:viewType?',
     name: 'Tasks',
     component: () => import('@/pages/Tasks.vue'),
   },
