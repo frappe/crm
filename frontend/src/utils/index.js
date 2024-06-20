@@ -94,12 +94,12 @@ export function secondsToDuration(seconds) {
   return `${hours}h ${minutes}m ${_seconds}s`
 }
 
-export function formatNumberIntoCurrency(value) {
+export function formatNumberIntoCurrency(value, currency = 'INR') {
   if (value) {
     return value.toLocaleString('en-IN', {
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 0,
       style: 'currency',
-      currency: 'INR',
+      currency: currency ? currency : 'INR',
     })
   }
   return ''
