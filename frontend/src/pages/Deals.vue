@@ -109,7 +109,7 @@ const rows = computed(() => {
     if (!deals.value?.data.group_by_field?.name) return []
     return getGroupedByRows(
       deals.value?.data.data,
-      deals.value?.data.group_by_field
+      deals.value?.data.group_by_field,
     )
   } else {
     return parseRows(deals.value?.data.data)
@@ -158,7 +158,10 @@ function parseRows(rows) {
           logo: getOrganization(deal.organization)?.organization_logo,
         }
       } else if (row == 'annual_revenue') {
-        _rows[row] = formatNumberIntoCurrency(deal.annual_revenue)
+        _rows[row] = formatNumberIntoCurrency(
+          deal.annual_revenue,
+          deal.currency,
+        )
       } else if (row == 'status') {
         _rows[row] = {
           label: deal.status,
@@ -171,8 +174,8 @@ function parseRows(rows) {
           deal.sla_status == 'Failed'
             ? 'red'
             : deal.sla_status == 'Fulfilled'
-            ? 'green'
-            : 'orange'
+              ? 'green'
+              : 'orange'
         if (value == 'First Response Due') {
           value = __(timeAgo(deal.response_by))
           tooltipText = dateFormat(deal.response_by, dateTooltipFormat)
@@ -207,7 +210,7 @@ function parseRows(rows) {
         }
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
-          row
+          row,
         )
       ) {
         let field = row == 'response_by' ? 'response_by' : 'first_responded_on'

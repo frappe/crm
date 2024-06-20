@@ -104,7 +104,12 @@
                 class="flex items-center gap-1.5"
               >
                 <MoneyIcon class="size-4" />
-                <span class="">{{ formatNumberIntoCurrency(organization.doc.annual_revenue) }}</span>
+                <span class="">{{
+                  formatNumberIntoCurrency(
+                    organization.doc.annual_revenue,
+                    organization.doc.currency,
+                  )
+                }}</span>
               </div>
               <span
                 v-if="organization.doc.annual_revenue"
@@ -348,6 +353,7 @@ const deals = createListResource({
   fields: [
     'name',
     'organization',
+    'currency',
     'annual_revenue',
     'status',
     'email',
@@ -406,7 +412,10 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: props.organization?.organization_logo,
     },
-    annual_revenue: formatNumberIntoCurrency(deal.annual_revenue),
+    annual_revenue: formatNumberIntoCurrency(
+      deal.annual_revenue,
+      deal.currency,
+    ),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.iconColorClass,
