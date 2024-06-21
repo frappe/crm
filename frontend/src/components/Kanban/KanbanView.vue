@@ -8,9 +8,10 @@
   >
     <template #item="{ element: column }">
       <div
+        v-if="!column.delete"
         class="flex flex-col gap-2.5 min-w-[268px] hover:bg-gray-100 rounded-lg p-2.5 transition-all duration-300 ease-in-out"
       >
-        <div class="flex gap-2 items-center justify-between">
+        <div class="flex gap-2 items-center group justify-between">
           <div class="flex items-center text-base">
             <NestedPopover>
               <template #target>
@@ -47,7 +48,16 @@
             </NestedPopover>
             <div>{{ column.column.name }}</div>
           </div>
-          <div>
+          <div class="flex">
+            <Dropdown :options="actions(column)">
+              <template #default>
+                <Button
+                  class="hidden group-hover:flex"
+                  icon="more-horizontal"
+                  variant="ghost"
+                />
+              </template>
+            </Dropdown>
             <Button icon="plus" variant="ghost" />
           </div>
         </div>
@@ -75,6 +85,7 @@
 import NestedPopover from '@/components/NestedPopover.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import Draggable from 'vuedraggable'
+import { Dropdown } from 'frappe-ui'
 import { computed } from 'vue'
 
 const emit = defineEmits(['update'])
@@ -95,9 +106,29 @@ const columns = computed(() => {
   return _columns
 })
 
+function actions(column) {
+  return [
+    {
+      group: __('Options'),
+      hideLabel: true,
+      items: [
+        {
+          label: __('Delete'),
+          icon: 'trash-2',
+          onClick: () => {
+            column['delete'] = true
+            updateColumn()
+          },
+        },
+      ],
+    },
+  ]
+}
+
 function updateColumn() {
   let _columns = []
   columns.value.forEach((col) => {
+    if (col.delete) return
     _columns.push(col.column)
   })
 
