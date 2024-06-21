@@ -65,8 +65,14 @@
             @update="updateSort"
             :hideLabel="isMobileView"
           />
+          <KanbanSettings
+            v-if="route.params.viewType === 'kanban'"
+            v-model="list"
+            :doctype="doctype"
+            @update="updateKanbanSettings"
+          />
           <ColumnSettings
-            v-if="!options.hideColumnsButton"
+            v-else-if="!options.hideColumnsButton"
             v-model="list"
             :doctype="doctype"
             :hideLabel="isMobileView"
@@ -156,8 +162,14 @@
           @update="updateFilter"
         />
         <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
+        <KanbanSettings
+          v-if="route.params.viewType === 'kanban'"
+          v-model="list"
+          :doctype="doctype"
+          @update="updateKanbanSettings"
+        />
         <ColumnSettings
-          v-if="!options.hideColumnsButton"
+          v-else-if="!options.hideColumnsButton"
           v-model="list"
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
@@ -262,6 +274,7 @@ import Filter from '@/components/Filter.vue'
 import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
+import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
@@ -694,6 +707,23 @@ function updateColumns(obj) {
     list.value.reload()
   }
   viewUpdated.value = true
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
+}
+
+function updateKanbanSettings(column_field) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  list.value.params.view.column_field = column_field.name
+  list.value.params.view.columns = ''
+  view.value.column_field = column_field.name
+  view.value.columns = ''
+  list.value.reload()
 
   if (!route.query.view) {
     create_or_update_default_view()

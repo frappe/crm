@@ -572,3 +572,21 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 			})
 
 	return _fields
+
+@frappe.whitelist()
+def get_kanban_fields(doctype):
+	allowed_fieldtypes = ["Link", "Select"]
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype in allowed_fieldtypes]
+	fields = [
+		{
+			"label": _(field.label),
+			"name": field.fieldname,
+			"type": field.fieldtype,
+			"options": field.options,
+		}
+		for field in fields
+		if field.label and field.fieldname
+	]
+
+	return fields
