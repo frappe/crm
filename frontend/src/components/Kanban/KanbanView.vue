@@ -3,6 +3,7 @@
     v-if="columns"
     :list="columns"
     item-key="column"
+    @end="updateColumn"
     class="flex sm:mx-2.5 mx-2 pb-3.5 overflow-x-auto"
   >
     <template #item="{ element: column }">
@@ -38,7 +39,7 @@
                     <Button
                       variant="solid"
                       :label="__('Apply')"
-                      @click="updateColor"
+                      @click="updateColumn"
                     />
                   </div>
                 </div>
@@ -94,7 +95,7 @@ const columns = computed(() => {
   return _columns
 })
 
-function updateColor() {
+function updateColumn() {
   let _columns = []
   columns.value.forEach((col) => {
     _columns.push(col.column)
