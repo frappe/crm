@@ -20,6 +20,7 @@
   <ViewControls
     ref="viewControls"
     v-model="leads"
+    v-model:kanban="kanban"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
@@ -29,21 +30,7 @@
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
   />
-  <KanbanView
-    doctype="CRM Lead"
-    :filters="{ converted: 0 }"
-    column_field="status"
-    :columns="[
-      'New',
-      'Contacted',
-      'Nurture',
-      'Qualified',
-      'Unqualified',
-      'Junk',
-    ]"
-    :rows="['name', 'status', 'organization', 'lead_owner']"
-    v-if="route.params.viewType == 'kanban'"
-  />
+  <KanbanView v-if="route.params.viewType == 'kanban'" v-model="kanban"  />
   <LeadsListView
     ref="leadsListView"
     v-else-if="leads.data && rows.length"
@@ -115,6 +102,7 @@ const showLeadModal = ref(false)
 
 // leads data is loaded in the ViewControls component
 const leads = ref({})
+const kanban = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)

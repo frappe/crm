@@ -377,10 +377,23 @@ def get_list_data(
 	}
 
 @frappe.whitelist()
-def get_kanban_data(doctype: str, filters: dict, order_by: str, column_field: str, columns=None, rows=None):
+def get_kanban_data(
+	doctype: str,
+	filters: dict,
+	order_by: str,
+	column_field: str,
+	columns=None,
+	rows=None,
+	default_filters=None,
+):
 	filters = frappe._dict(filters)
 	columns = frappe.parse_json(columns)
 	data = []
+
+	if default_filters:
+		default_filters = frappe.parse_json(default_filters)
+		filters.update(default_filters)
+
 	for column in columns:
 		column_filters = filters.copy()
 		column_filters.update({column_field: column})

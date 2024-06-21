@@ -297,6 +297,7 @@ const { reload: reloadView, getView } = viewsStore()
 const { isManager } = usersStore()
 
 const list = defineModel()
+const kanban = defineModel('kanban')
 const loadMore = defineModel('loadMore')
 const resizeColumn = defineModel('resizeColumn')
 const updatedPageCount = defineModel('updatedPageCount')
@@ -428,6 +429,27 @@ function getParams() {
   }
 }
 
+function getKanbanParams() {
+  return {
+    doctype: props.doctype,
+    filters: {},
+    order_by: 'modified desc',
+    column_field: 'status',
+    columns: ['New', 'Contacted', 'Nurture', 'Qualified', 'Unqualified', 'Junk'],
+    rows: ['name', 'lead_name', 'status', 'organization', 'lead_owner'],
+    default_filters: props.filters,
+  }
+}
+
+kanban.value = createResource({
+  url: 'crm.api.doc.get_kanban_data',
+  params: getKanbanParams(),
+  cache: ['Kanban', props.doctype],
+  onSuccess(data) {
+    kanban.value.data = data
+  },
+})
+
 list.value = createResource({
   url: 'crm.api.doc.get_list_data',
   params: getParams(),
@@ -458,8 +480,13 @@ onMounted(() => useDebounceFn(reload, 100)())
 const isLoading = computed(() => list.value?.loading)
 
 function reload() {
-  list.value.params = getParams()
-  list.value.reload()
+  if (route.params.viewType == 'kanban') {
+    kanban.value.params = getKanbanParams()
+    kanban.value.reload()
+  } else {
+    list.value.params = getParams()
+    list.value.reload()
+  }
 }
 
 const showExportDialog = ref(false)
@@ -553,7 +580,7 @@ const viewsDropdownOptions = computed(() => {
     })
     let publicViews = list.value.data.views.filter((v) => v.public)
     let savedViews = list.value.data.views.filter(
-      (v) => !v.pinned && !v.public && !v.is_default
+      (v) => !v.pinned && !v.public && !v.is_default,
     )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
@@ -591,7 +618,7 @@ const quickFilterList = computed(() => {
       if (Array.isArray(value)) {
         if (
           (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.type
+            filter.type,
           ) &&
             value[0]?.toLowerCase() == 'like') ||
           value[0]?.toLowerCase() != 'like'
@@ -717,7 +744,7 @@ function create_or_update_default_view() {
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
     {
       view: view.value,
-    }
+    },
   ).then(() => {
     reloadView()
     view.value = {
@@ -833,7 +860,7 @@ const viewModalObj = ref({})
 function duplicateView() {
   let label =
     __(
-      getView(route.query.view, route.params.viewType, props.doctype)?.label
+      getView(route.query.view, route.params.viewType, props.doctype)?.label,
     ) || getViewType().label
   view.value.name = ''
   view.value.label = label + __(' (New)')
@@ -963,7 +990,7 @@ watch(
     if (_.isEqual(value, old_value)) return
     reload()
   },
-  { deep: true }
+  { deep: true },
 )
 
 watch([() => route, () => route.params.viewType], (value, old_value) => {
