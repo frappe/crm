@@ -315,6 +315,9 @@ def get_data(
 		if hasattr(_list, "default_kanban_data"):
 			rows = _list.default_kanban_data().get("rows")
 
+		if "name" not in rows:
+			rows.append("name")
+
 		for column in columns:
 			column_filters = { column_field: column.get('name') }
 			if column_field in filters and filters.get(column_field) != column.name:
@@ -328,6 +331,10 @@ def get_data(
 					order_by=order_by,
 					page_length=20,
 				)
+
+			if column.get("order"):
+				column_data = sorted(column_data, key=lambda x: column.get("order").index(x.get("name")))
+
 			data.append({"column": column, "data": column_data, "count": len(column_data)})
 
 	fields = frappe.get_meta(doctype).fields

@@ -66,6 +66,7 @@
           group="fields"
           item-key="name"
           class="flex flex-col gap-3.5 overflow-y-auto h-full"
+          @end="updateColumn"
         >
           <template #item="{ element: fields }">
             <div
@@ -129,6 +130,7 @@ function updateColumn() {
   let _columns = []
   columns.value.forEach((col) => {
     if (col.delete) return
+    col.column['order'] = col.data.map((d) => d.name)
     _columns.push(col.column)
   })
 
