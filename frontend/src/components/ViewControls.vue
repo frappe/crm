@@ -373,42 +373,46 @@ watch(updatedPageCount, (value) => {
 
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
+  const view_name = _view?.name || ''
+  const view_type = _view?.type || route.params.viewType || 'list'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
+  const group_by_field = _view?.group_by_field || 'owner'
   const columns = _view?.columns || ''
   const rows = _view?.rows || ''
+  const column_field = _view?.column_field || 'status'
 
-  if (_view) {
-    view.value = {
-      name: _view.name,
-      label: _view.label,
-      type: _view.type || 'list',
-      icon: _view.icon,
-      filters: _view.filters,
-      order_by: _view.order_by,
-      group_by_field: _view.group_by_field,
-      columns: _view.columns,
-      rows: _view.rows,
-      route_name: _view.route_name,
-      load_default_columns: _view.row,
-      pinned: _view.pinned,
-      public: _view.public,
+  view.value = {
+    name: view_name,
+    label: _view?.label || getViewType().label,
+    type: view_type,
+    icon: _view?.icon || '',
+    filters: filters,
+    order_by: order_by,
+    group_by_field: group_by_field,
+    column_field: column_field,
+    columns: columns,
+    rows: rows,
+    route_name: _view?.route_name || route.name,
+    load_default_columns: _view?.row || true,
+    pinned: _view?.pinned || false,
+    public: _view?.public || false,
+  }
+
+  let params = {}
+
+  if (route.params.viewType === 'kanban') {
+    params = {
+      column_field: column_field,
+      columns: columns,
+      rows: rows,
     }
   } else {
-    view.value = {
-      name: '',
-      label: getViewType().label,
-      type: route.params.viewType || 'list',
-      icon: '',
-      filters: {},
-      order_by: 'modified desc',
-      group_by_field: 'owner',
-      columns: '',
-      rows: '',
-      route_name: route.name,
-      load_default_columns: true,
-      pinned: false,
-      public: false,
+    params = {
+      columns: columns,
+      rows: rows,
+      page_length: pageLength.value,
+      page_length_count: pageLengthCount.value,
     }
   }
 
@@ -416,42 +420,18 @@ function getParams() {
     doctype: props.doctype,
     filters: filters,
     order_by: order_by,
-    columns: columns,
-    rows: rows,
-    page_length: pageLength.value,
-    page_length_count: pageLengthCount.value,
+    default_filters: props.filters,
     view: {
-      custom_view_name: _view?.name || '',
-      view_type: _view?.type || route.params.viewType || 'list',
-      group_by_field: _view?.group_by_field || 'owner',
+      custom_view_name: view_name,
+      view_type: view_type,
+      group_by_field: group_by_field,
     },
-    default_filters: props.filters,
+    ...params,
   }
 }
-
-function getKanbanParams() {
-  return {
-    doctype: props.doctype,
-    filters: {},
-    order_by: 'modified desc',
-    column_field: 'status',
-    columns: ['New', 'Contacted', 'Nurture', 'Qualified', 'Unqualified', 'Junk'],
-    rows: ['name', 'lead_name', 'status', 'organization', 'lead_owner'],
-    default_filters: props.filters,
-  }
-}
-
-kanban.value = createResource({
-  url: 'crm.api.doc.get_kanban_data',
-  params: getKanbanParams(),
-  cache: ['Kanban', props.doctype],
-  onSuccess(data) {
-    kanban.value.data = data
-  },
-})
 
 list.value = createResource({
-  url: 'crm.api.doc.get_list_data',
+  url: 'crm.api.doc.get_data',
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
   onSuccess(data) {
@@ -463,6 +443,7 @@ list.value = createResource({
       order_by: params.order_by,
       page_length: params.page_length,
       page_length_count: params.page_length_count,
+      column_field: params.column_field,
       columns: data.columns,
       rows: data.rows,
       view: {
@@ -480,13 +461,8 @@ onMounted(() => useDebounceFn(reload, 100)())
 const isLoading = computed(() => list.value?.loading)
 
 function reload() {
-  if (route.params.viewType == 'kanban') {
-    kanban.value.params = getKanbanParams()
-    kanban.value.reload()
-  } else {
-    list.value.params = getParams()
-    list.value.reload()
-  }
+  list.value.params = getParams()
+  list.value.reload()
 }
 
 const showExportDialog = ref(false)
@@ -754,7 +730,8 @@ function create_or_update_default_view() {
       name: view.value.name,
       filters: defaultParams.value.filters,
       order_by: defaultParams.value.order_by,
-      group_by_field: defaultParams.value.view.group_by_field,
+      group_by_field: defaultParams.value.view?.group_by_field,
+      column_field: defaultParams.value.column_field,
       columns: defaultParams.value.columns,
       rows: defaultParams.value.rows,
       route_name: route.name,
@@ -921,6 +898,7 @@ function saveView() {
     filters: defaultParams.value.filters,
     order_by: defaultParams.value.order_by,
     group_by_field: defaultParams.value.view.group_by_field,
+    column_field: defaultParams.value.column_field,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,

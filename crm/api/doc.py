@@ -200,19 +200,22 @@ def get_quick_filters(doctype: str):
 	return quick_filters
 
 @frappe.whitelist()
-def get_list_data(
+def get_data(
 	doctype: str,
 	filters: dict,
 	order_by: str,
 	page_length=20,
 	page_length_count=20,
-	columns=None,
-	rows=None,
+	column_field=None,
+	columns=[],
+	rows=[],
 	view=None,
 	default_filters=None,
 ):
 	custom_view = False
 	filters = frappe._dict(filters)
+	rows = frappe.parse_json(rows or "[]")
+	columns = frappe.parse_json(columns or "[]")
 
 	custom_view_name = view.get('custom_view_name') if view else None
 	view_type = view.get('view_type') if view else None
@@ -235,61 +238,97 @@ def get_list_data(
 		filters.update(default_filters)
 
 	is_default = True
-	if columns or rows:
-		custom_view = True
-		is_default = False
-		columns = frappe.parse_json(columns)
-		rows = frappe.parse_json(rows)
-
-	if not columns:
-		columns = [
-			{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
-			{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
-		]
-
-	if not rows:
-		rows = ["name"]
-
-	default_view_filters = {
-		"dt": doctype,
-		"type": view_type or 'list',
-		"is_default": 1,
-		"user": frappe.session.user,
-	}
-
+	data = []
 	_list = get_controller(doctype)
 
-	if not custom_view and frappe.db.exists("CRM View Settings", default_view_filters):
-		list_view_settings = frappe.get_doc("CRM View Settings", default_view_filters)
-		columns = frappe.parse_json(list_view_settings.columns)
-		rows = frappe.parse_json(list_view_settings.rows)
-		is_default = False
-	elif not custom_view or is_default and hasattr(_list, "default_list_data"):
-		columns = _list.default_list_data().get("columns")
+	if view_type != "kanban":
+		if columns or rows:
+			custom_view = True
+			is_default = False
+			columns = frappe.parse_json(columns)
+			rows = frappe.parse_json(rows)
 
-	if hasattr(_list, "default_list_data"):
-		rows = _list.default_list_data().get("rows")
+		if not columns:
+			columns = [
+				{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
+				{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
+			]
 
-	# check if rows has all keys from columns if not add them
-	for column in columns:
-		if column.get("key") not in rows:
-			rows.append(column.get("key"))
-		column["label"] = _(column.get("label"))
+		if not rows:
+			rows = ["name"]
 
-		if column.get("key") == "_liked_by" and column.get("width") == "10rem":
-			column["width"] = "50px"
+		default_view_filters = {
+			"dt": doctype,
+			"type": view_type or 'list',
+			"is_default": 1,
+			"user": frappe.session.user,
+		}
 
-	# check if rows has group_by_field if not add it
-	if group_by_field and group_by_field not in rows:
-		rows.append(group_by_field)
+		if not custom_view and frappe.db.exists("CRM View Settings", default_view_filters):
+			list_view_settings = frappe.get_doc("CRM View Settings", default_view_filters)
+			columns = frappe.parse_json(list_view_settings.columns)
+			rows = frappe.parse_json(list_view_settings.rows)
+			is_default = False
+		elif not custom_view or is_default and hasattr(_list, "default_list_data"):
+			columns = _list.default_list_data().get("columns")
 
-	data = frappe.get_list(
-		doctype,
-		fields=rows,
-		filters=filters,
-		order_by=order_by,
-		page_length=page_length,
-	) or []
+		if hasattr(_list, "default_list_data"):
+			rows = _list.default_list_data().get("rows")
+
+		# check if rows has all keys from columns if not add them
+		for column in columns:
+			if column.get("key") not in rows:
+				rows.append(column.get("key"))
+			column["label"] = _(column.get("label"))
+
+			if column.get("key") == "_liked_by" and column.get("width") == "10rem":
+				column["width"] = "50px"
+
+		# check if rows has group_by_field if not add it
+		if group_by_field and group_by_field not in rows:
+			rows.append(group_by_field)
+
+		data = frappe.get_list(
+			doctype,
+			fields=rows,
+			filters=filters,
+			order_by=order_by,
+			page_length=page_length,
+		) or []
+
+	if view_type == "kanban":
+		if not columns and column_field:
+			field_meta = frappe.get_meta(doctype).get_field(column_field)
+			if field_meta.fieldtype == "Link":
+				columns = frappe.get_all(
+					field_meta.options,
+					pluck="name",
+					order_by="modified asc",
+				)
+			elif field_meta.fieldtype == "Select":
+				columns = [option for option in field_meta.options.split("\n")]
+
+
+		if not rows:
+			rows = ["name"]
+
+		if hasattr(_list, "default_kanban_data"):
+			rows = _list.default_kanban_data().get("rows")
+
+		for column in columns:
+			column_filters = { column_field: column }
+			if column_field in filters and filters.get(column_field) != column:
+				column_data = []
+			else:
+				column_filters.update(filters.copy())
+				column_data = frappe.get_list(
+					doctype,
+					fields=rows,
+					filters=column_filters,
+					order_by=order_by,
+					page_length=20,
+				)
+			data.append({"column": column, "data": column_data, "count": len(column_data)})
 
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in no_value_fields]
