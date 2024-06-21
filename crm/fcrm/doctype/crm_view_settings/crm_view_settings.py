@@ -113,11 +113,11 @@ def sync_default_columns(view):
 		if field_meta.fieldtype == "Link":
 			columns = frappe.get_all(
 				field_meta.options,
-				pluck="name",
+				fields=["name"],
 				order_by="modified asc",
 			)
 		elif field_meta.fieldtype == "Select":
-			columns = [option for option in field_meta.options.split("\n")]
+			columns = [{"name": option} for option in field_meta.options.split("\n")]
 	elif hasattr(list, "default_list_data"):
 		columns = list.default_list_data().get("columns")
 

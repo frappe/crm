@@ -302,11 +302,11 @@ def get_data(
 			if field_meta.fieldtype == "Link":
 				columns = frappe.get_all(
 					field_meta.options,
-					pluck="name",
+					fields=["name"],
 					order_by="modified asc",
 				)
 			elif field_meta.fieldtype == "Select":
-				columns = [option for option in field_meta.options.split("\n")]
+				columns = [{"name": option} for option in field_meta.options.split("\n")]
 
 
 		if not rows:
@@ -316,8 +316,8 @@ def get_data(
 			rows = _list.default_kanban_data().get("rows")
 
 		for column in columns:
-			column_filters = { column_field: column }
-			if column_field in filters and filters.get(column_field) != column:
+			column_filters = { column_field: column.get('name') }
+			if column_field in filters and filters.get(column_field) != column.name:
 				column_data = []
 			else:
 				column_filters.update(filters.copy())
