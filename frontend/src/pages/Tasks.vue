@@ -24,7 +24,7 @@
       allowedViews: ['list', 'kanban'],
     }"
   />
-  <KanbanView v-if="$route.params.viewType == 'kanban'" v-model="tasks"  />
+  <KanbanView v-if="$route.params.viewType == 'kanban'" v-model="tasks" />
   <TasksListView
     ref="tasksListView"
     v-else-if="tasks.data && rows.length"
@@ -87,7 +87,11 @@ const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
 const rows = computed(() => {
-  if (!tasks.value?.data?.data) return []
+  if (
+    !tasks.value?.data?.data ||
+    !['list', 'group_by'].includes(tasks.value.data.view_type)
+  )
+    return []
   return tasks.value?.data.data.map((task) => {
     let _rows = {}
     tasks.value?.data.rows.forEach((row) => {

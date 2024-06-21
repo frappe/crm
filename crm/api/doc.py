@@ -413,38 +413,8 @@ def get_data(
 		"row_count": len(data),
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),
+		"view_type": view_type,
 	}
-
-@frappe.whitelist()
-def get_kanban_data(
-	doctype: str,
-	filters: dict,
-	order_by: str,
-	column_field: str,
-	columns=None,
-	rows=None,
-	default_filters=None,
-):
-	filters = frappe._dict(filters)
-	columns = frappe.parse_json(columns)
-	data = []
-
-	if default_filters:
-		default_filters = frappe.parse_json(default_filters)
-		filters.update(default_filters)
-
-	for column in columns:
-		column_filters = filters.copy()
-		column_filters.update({column_field: column})
-		column_data = frappe.get_list(
-			doctype,
-			fields=rows,
-			filters=column_filters,
-			order_by=order_by,
-			page_length=20,
-		)
-		data.append({"column": column, "data": column_data, "count": len(column_data)})
-	return data
 
 @frappe.whitelist()
 def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):

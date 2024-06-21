@@ -92,7 +92,11 @@ const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
 const rows = computed(() => {
-  if (!emailTemplates.value?.data?.data) return []
+  if (
+    !emailTemplates.value?.data?.data ||
+    !['list', 'group_by'].includes(emailTemplates.value.data.view_type)
+  )
+    return []
   return emailTemplates.value?.data.data.map((emailTemplate) => {
     let _rows = {}
     emailTemplates.value?.data.rows.forEach((row) => {

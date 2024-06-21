@@ -110,7 +110,11 @@ const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
 const rows = computed(() => {
-  if (!organizations.value?.data?.data) return []
+  if (
+    !organizations.value?.data?.data ||
+    !['list', 'group_by'].includes(organizations.value.data.view_type)
+  )
+    return []
   return organizations.value?.data.data.map((organization) => {
     let _rows = {}
     organizations.value?.data.rows.forEach((row) => {

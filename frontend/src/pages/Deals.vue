@@ -28,7 +28,7 @@
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
   />
-  <KanbanView v-if="route.params.viewType == 'kanban'" v-model="deals"  />
+  <KanbanView v-if="route.params.viewType == 'kanban'" v-model="deals" />
   <DealsListView
     ref="dealsListView"
     v-else-if="deals.data && rows.length"
@@ -106,7 +106,11 @@ const viewControls = ref(null)
 
 // Rows
 const rows = computed(() => {
-  if (!deals.value?.data?.data) return []
+  if (
+    !deals.value?.data?.data ||
+    !['list', 'group_by'].includes(deals.value.data.view_type)
+  )
+    return []
   if (route.params.viewType === 'group_by') {
     if (!deals.value?.data.group_by_field?.name) return []
     return getGroupedByRows(
