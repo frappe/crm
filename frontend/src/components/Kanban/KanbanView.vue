@@ -1,6 +1,6 @@
 <template>
   <Draggable
-    :list="kanban?.data"
+    :list="kanban?.data?.data"
     item-key="column"
     class="flex sm:mx-5 mx-3 pb-3 overflow-x-auto gap-2"
   >

@@ -20,7 +20,6 @@
   <ViewControls
     ref="viewControls"
     v-model="leads"
-    v-model:kanban="kanban"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
@@ -30,7 +29,7 @@
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
   />
-  <KanbanView v-if="route.params.viewType == 'kanban'" v-model="kanban"  />
+  <KanbanView v-if="route.params.viewType == 'kanban'" v-model="leads"  />
   <LeadsListView
     ref="leadsListView"
     v-else-if="leads.data && rows.length"
@@ -102,7 +101,6 @@ const showLeadModal = ref(false)
 
 // leads data is loaded in the ViewControls component
 const leads = ref({})
-const kanban = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)

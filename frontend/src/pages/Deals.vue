@@ -28,9 +28,10 @@
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
   />
+  <KanbanView v-if="route.params.viewType == 'kanban'" v-model="deals"  />
   <DealsListView
     ref="dealsListView"
-    v-if="deals.data && rows.length"
+    v-else-if="deals.data && rows.length"
     v-model="deals.data.page_length_count"
     v-model:list="deals"
     :rows="rows"
@@ -68,6 +69,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'

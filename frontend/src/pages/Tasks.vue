@@ -24,9 +24,10 @@
       allowedViews: ['list', 'kanban'],
     }"
   />
+  <KanbanView v-if="$route.params.viewType == 'kanban'" v-model="tasks"  />
   <TasksListView
     ref="tasksListView"
-    v-if="tasks.data && rows.length"
+    v-else-if="tasks.data && rows.length"
     v-model="tasks.data.page_length_count"
     v-model:list="tasks"
     :rows="rows"
@@ -65,6 +66,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
+import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import { usersStore } from '@/stores/users'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
