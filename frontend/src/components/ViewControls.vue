@@ -60,6 +60,7 @@
 
         <div class="flex gap-2">
           <SortBy
+            v-if="route.params.viewType !== 'kanban'"
             v-model="list"
             :doctype="doctype"
             @update="updateSort"
@@ -161,7 +162,12 @@
           :default_filters="filters"
           @update="updateFilter"
         />
-        <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
+        <SortBy
+          v-if="route.params.viewType !== 'kanban'"
+          v-model="list"
+          :doctype="doctype"
+          @update="updateSort"
+        />
         <KanbanSettings
           v-if="route.params.viewType === 'kanban'"
           v-model="list"
