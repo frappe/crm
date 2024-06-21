@@ -60,3 +60,16 @@ class CRMTask(Document):
 			"modified",
 		]
 		return {'columns': columns, 'rows': rows}
+
+	@staticmethod
+	def default_kanban_data():
+		rows = [
+			"name",
+			"title",
+			"description",
+			"assigned_to",
+			"due_date",
+			"priority",
+			"modified",
+		]
+		return {'rows': rows}

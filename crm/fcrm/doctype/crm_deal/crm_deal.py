@@ -189,6 +189,20 @@ class CRMDeal(Document):
 			"_assign",
 		]
 		return {'columns': columns, 'rows': rows}
+	
+	@staticmethod
+	def default_kanban_data():
+		rows = [
+			"name",
+			"lead_name",
+			"organization",
+			"annual_revenue",
+			"email",
+			"mobile_no",
+			"deal_owner",
+			"modified",
+		]
+		return {'rows': rows}
 
 @frappe.whitelist()
 def add_contact(deal, contact):

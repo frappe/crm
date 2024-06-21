@@ -324,6 +324,20 @@ class CRMLead(Document):
 		]
 		return {'columns': columns, 'rows': rows}
 
+	@staticmethod
+	def default_kanban_data():
+		rows = [
+			"name",
+			"lead_name",
+			"organization",
+			"email",
+			"mobile_no",
+			"lead_owner",
+			"modified",
+			"image",
+		]
+		return {'rows': rows}
+
 @frappe.whitelist()
 def convert_to_deal(lead, doc=None):
 	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission("CRM Lead", "write", lead):
