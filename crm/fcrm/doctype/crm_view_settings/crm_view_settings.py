@@ -91,20 +91,32 @@ def pin(name, value):
 def remove_duplicates(l):
 	return list(dict.fromkeys(l))
 
-def sync_default_list_rows(doctype):
+def sync_default_rows(doctype, type="list"):
 	list = get_controller(doctype)
 	rows = []
 
-	if hasattr(list, "default_list_data"):
+	if type == "kanban" and hasattr(list, "default_kanban_data"):
+		rows = list.default_kanban_data().get("rows")
+	elif hasattr(list, "default_list_data"):
 		rows = list.default_list_data().get("rows")
 
 	return rows
 
-def sync_default_list_columns(doctype):
-	list = get_controller(doctype)
+def sync_default_columns(view):
+	list = get_controller(view.doctype)
 	columns = []
 
-	if hasattr(list, "default_list_data"):
+	if view.type == "kanban" and view.column_field:
+		field_meta = frappe.get_meta(view.doctype).get_field(view.column_field)
+		if field_meta.fieldtype == "Link":
+			columns = frappe.get_all(
+				field_meta.options,
+				pluck="name",
+				order_by="modified asc",
+			)
+		elif field_meta.fieldtype == "Select":
+			columns = [option for option in field_meta.options.split("\n")]
+	elif hasattr(list, "default_list_data"):
 		columns = list.default_list_data().get("columns")
 
 	return columns
@@ -118,12 +130,12 @@ def create_or_update_default_view(view):
 	columns = parse_json(view.columns or '[]')
 	rows = parse_json(view.rows or '[]')
 
-	default_rows = sync_default_list_rows(view.doctype)
+	default_rows = sync_default_rows(view.doctype, view.type)
 	rows = rows + default_rows if default_rows else rows
 	rows = remove_duplicates(rows)
 
 	if not columns:
-		columns = sync_default_list_columns(view.doctype)
+		columns = sync_default_columns(view)
 
 	doc = frappe.db.exists(
 		"CRM View Settings",
@@ -143,6 +155,7 @@ def create_or_update_default_view(view):
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by
 		doc.group_by_field = view.group_by_field
+		doc.column_field = view.column_field
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.save()
@@ -159,6 +172,7 @@ def create_or_update_default_view(view):
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by
 		doc.group_by_field = view.group_by_field
+		doc.column_field = view.column_field
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.is_default = True
