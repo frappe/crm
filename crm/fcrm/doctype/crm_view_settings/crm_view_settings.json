@@ -15,14 +15,18 @@
   "route_name",
   "pinned",
   "public",
-  "columns_tab",
-  "load_default_columns",
-  "columns",
-  "rows",
   "filters_tab",
   "filters",
   "order_by_tab",
   "order_by",
+  "list_kanban_tab",
+  "list_section",
+  "load_default_columns",
+  "kanban_section",
+  "column_field",
+  "section_break_ndtv",
+  "columns",
+  "rows",
   "group_by_tab",
   "group_by_field"
  ],
@@ -47,11 +51,6 @@
    "fieldname": "filters",
    "fieldtype": "Code",
    "label": "Filters"
-  },
-  {
-   "fieldname": "columns_tab",
-   "fieldtype": "Tab Break",
-   "label": "Columns"
   },
   {
    "fieldname": "filters_tab",
@@ -126,7 +125,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "list\ngroup_by"
+   "options": "list\ngroup_by\nkanban"
   },
   {
    "fieldname": "group_by_tab",
@@ -137,11 +136,35 @@
    "fieldname": "group_by_field",
    "fieldtype": "Data",
    "label": "Group By Field"
+  },
+  {
+   "fieldname": "list_kanban_tab",
+   "fieldtype": "Tab Break",
+   "label": "List/Kanban"
+  },
+  {
+   "fieldname": "list_section",
+   "fieldtype": "Section Break",
+   "label": "List"
+  },
+  {
+   "fieldname": "kanban_section",
+   "fieldtype": "Section Break",
+   "label": "Kanban"
+  },
+  {
+   "fieldname": "column_field",
+   "fieldtype": "Data",
+   "label": "Column Field"
+  },
+  {
+   "fieldname": "section_break_ndtv",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-01 16:58:34.952945",
+ "modified": "2024-06-21 14:12:41.246707",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
