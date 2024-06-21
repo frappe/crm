@@ -79,7 +79,9 @@ const fields = createResource({
 function apply() {
   nextTick(() => {
     showDialog.value = false
-    emit('update', column_field.value)
+    emit('update', {
+      column_field: column_field.value.name,
+    })
   })
 }
 </script>

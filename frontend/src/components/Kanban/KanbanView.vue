@@ -10,8 +10,40 @@
         class="flex flex-col gap-2.5 min-w-[268px] hover:bg-gray-100 rounded-lg p-2.5 transition-all duration-300 ease-in-out"
       >
         <div class="flex gap-2 items-center justify-between">
-          <div class="flex gap-2 items-center text-base py-1.5">
-            <IndicatorIcon :class="colorClasses(column.column.color)" />
+          <div class="flex items-center text-base">
+            <NestedPopover>
+              <template #target>
+                <Button variant="ghost" size="sm" class="hover:!bg-gray-100">
+                  <IndicatorIcon
+                    :class="colorClasses(column.column.color, true)"
+                  />
+                </Button>
+              </template>
+              <template #body="{ close }">
+                <div
+                  class="flex flex-col gap-3 px-3 py-2.5 rounded-lg border border-gray-100 bg-white shadow-xl"
+                >
+                  <div class="flex gap-1">
+                    <Button
+                      :class="colorClasses(color)"
+                      variant="ghost"
+                      v-for="color in colors"
+                      :key="color"
+                      @click="() => (column.column.color = color)"
+                    >
+                      <IndicatorIcon />
+                    </Button>
+                  </div>
+                  <div class="flex flex-row-reverse">
+                    <Button
+                      variant="solid"
+                      :label="__('Apply')"
+                      @click="updateColor"
+                    />
+                  </div>
+                </div>
+              </template>
+            </NestedPopover>
             <div>{{ column.column.name }}</div>
           </div>
           <div>
@@ -39,9 +71,12 @@
   </Draggable>
 </template>
 <script setup>
+import NestedPopover from '@/components/NestedPopover.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import Draggable from 'vuedraggable'
 import { computed } from 'vue'
+
+const emit = defineEmits(['update'])
 
 const kanban = defineModel()
 
@@ -59,14 +94,26 @@ const columns = computed(() => {
   return _columns
 })
 
-function colorClasses(color) {
+function updateColor() {
+  let _columns = []
+  columns.value.forEach((col) => {
+    _columns.push(col.column)
+  })
+
+  emit('update', { columns: _columns })
+}
+
+function colorClasses(color, onlyIcon = false) {
   let textColor = `!text-${color}-600`
   if (color == 'black') {
     textColor = '!text-gray-900'
   } else if (['gray', 'green'].includes(color)) {
     textColor = `!text-${color}-700`
   }
-  return [textColor]
+
+  let bgColor = `!bg-${color}-100 hover:!bg-${color}-200 active:!bg-${color}-300`
+
+  return [textColor, onlyIcon ? '' : bgColor]
 }
 
 const colors = [

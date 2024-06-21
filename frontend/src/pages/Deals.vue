@@ -28,7 +28,11 @@
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
   />
-  <KanbanView v-if="route.params.viewType == 'kanban'" v-model="deals" />
+  <KanbanView
+    v-if="route.params.viewType == 'kanban'"
+    v-model="deals"
+    @update="(data) => viewControls.updateKanbanSettings(data)"
+  />
   <DealsListView
     ref="dealsListView"
     v-else-if="deals.data && rows.length"

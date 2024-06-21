@@ -713,16 +713,18 @@ function updateColumns(obj) {
   }
 }
 
-function updateKanbanSettings(column_field) {
+function updateKanbanSettings(data) {
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
   list.value.params = defaultParams.value
-  list.value.params.view.column_field = column_field.name
-  list.value.params.view.columns = ''
-  view.value.column_field = column_field.name
-  view.value.columns = ''
+  if (data.column_field) {
+    list.value.params.view.column_field = data.column_field
+    view.value.column_field = data.column_field
+  }
+  list.value.params.view.columns = data.columns ? data.columns : ''
+  view.value.columns = data.columns ? data.columns : ''
   list.value.reload()
 
   if (!route.query.view) {
@@ -976,7 +978,7 @@ function likeDoc({ name, liked }) {
   })
 }
 
-defineExpose({ applyFilter, applyLikeFilter, likeDoc })
+defineExpose({ applyFilter, applyLikeFilter, likeDoc, updateKanbanSettings })
 
 // Watchers
 watch(

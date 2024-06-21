@@ -24,7 +24,11 @@
       allowedViews: ['list', 'kanban'],
     }"
   />
-  <KanbanView v-if="$route.params.viewType == 'kanban'" v-model="tasks" />
+  <KanbanView
+    v-if="$route.params.viewType == 'kanban'"
+    v-model="tasks"
+    @update="(data) => viewControls.updateKanbanSettings(data)"
+  />
   <TasksListView
     ref="tasksListView"
     v-else-if="tasks.data && rows.length"
