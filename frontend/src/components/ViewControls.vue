@@ -297,7 +297,6 @@ const { reload: reloadView, getView } = viewsStore()
 const { isManager } = usersStore()
 
 const list = defineModel()
-const kanban = defineModel('kanban')
 const loadMore = defineModel('loadMore')
 const resizeColumn = defineModel('resizeColumn')
 const updatedPageCount = defineModel('updatedPageCount')
@@ -346,6 +345,7 @@ const view = ref({
   icon: '',
   filters: {},
   order_by: 'modified desc',
+  column_field: 'status',
   columns: '',
   rows: '',
   load_default_columns: false,
@@ -399,23 +399,6 @@ function getParams() {
     public: _view?.public || false,
   }
 
-  let params = {}
-
-  if (route.params.viewType === 'kanban') {
-    params = {
-      column_field: column_field,
-      columns: columns,
-      rows: rows,
-    }
-  } else {
-    params = {
-      columns: columns,
-      rows: rows,
-      page_length: pageLength.value,
-      page_length_count: pageLengthCount.value,
-    }
-  }
-
   return {
     doctype: props.doctype,
     filters: filters,
@@ -426,7 +409,11 @@ function getParams() {
       view_type: view_type,
       group_by_field: group_by_field,
     },
-    ...params,
+    column_field: column_field,
+    columns: columns,
+    rows: rows,
+    page_length: pageLength.value,
+    page_length_count: pageLengthCount.value,
   }
 }
 
@@ -441,17 +428,17 @@ list.value = createResource({
       doctype: props.doctype,
       filters: params.filters,
       order_by: params.order_by,
-      page_length: params.page_length,
-      page_length_count: params.page_length_count,
-      column_field: params.column_field,
-      columns: data.columns,
-      rows: data.rows,
+      default_filters: props.filters,
       view: {
         custom_view_name: cv?.name || '',
         view_type: cv?.type || route.params.viewType || 'list',
         group_by_field: params?.view?.group_by_field || 'owner',
       },
-      default_filters: props.filters,
+      column_field: params.column_field,
+      columns: data.columns,
+      rows: data.rows,
+      page_length: params.page_length,
+      page_length_count: params.page_length_count,
     }
   },
 })

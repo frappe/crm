@@ -17,12 +17,12 @@ def create(view):
 	view.columns = parse_json(view.columns or '[]')
 	view.rows = parse_json(view.rows or '[]')
 
-	default_rows = sync_default_list_rows(view.doctype)
+	default_rows = sync_default_rows(view.doctype)
 	view.rows = view.rows + default_rows if default_rows else view.rows
 	view.rows = remove_duplicates(view.rows)
 
 	if not view.columns:
-		view.columns = sync_default_list_columns(view.doctype)
+		view.columns = sync_default_columns(view)
 
 	doc = frappe.new_doc("CRM View Settings")
 	doc.name = view.label
@@ -36,6 +36,7 @@ def create(view):
 	doc.filters = json.dumps(view.filters)
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
+	doc.column_field = view.column_field
 	doc.columns = json.dumps(view.columns)
 	doc.rows = json.dumps(view.rows)
 	doc.insert()
@@ -49,7 +50,7 @@ def update(view):
 	columns = parse_json(view.columns) or []
 	rows = parse_json(view.rows) or []
 
-	default_rows = sync_default_list_rows(view.doctype)
+	default_rows = sync_default_rows(view.doctype)
 	rows = rows + default_rows if default_rows else rows
 	rows = remove_duplicates(rows)
 
@@ -62,6 +63,7 @@ def update(view):
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
+	doc.column_field = view.column_field
 	doc.columns = json.dumps(columns)
 	doc.rows = json.dumps(rows)
 	doc.save()
