@@ -333,7 +333,10 @@ def get_data(
 				)
 
 			if column.get("order"):
-				column_data = sorted(column_data, key=lambda x: column.get("order").index(x.get("name")))
+				column_data = sorted(
+					column_data, key=lambda x: column.get("order").index(x.get("name"))
+					if x.get("name") in column.get("order") else 0
+				)
 
 			data.append({"column": column, "data": column_data, "count": len(column_data)})
 
