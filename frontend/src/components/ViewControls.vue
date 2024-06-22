@@ -738,12 +738,15 @@ async function updateKanbanSettings(data) {
     list.value.params.view.column_field = data.column_field
     view.value.column_field = data.column_field
   }
-  list.value.params.view.columns = data.columns ? data.columns : ''
+  list.value.params.columns = data.columns ? data.columns : ''
   view.value.columns = data.columns ? data.columns : ''
   list.value.reload()
 
   if (!route.query.view) {
     create_or_update_default_view()
+  } else if (!data.column_field) {
+    viewUpdated.value = false
+    update_custom_view()
   }
 }
 
@@ -772,6 +775,13 @@ function create_or_update_default_view() {
       load_default_columns: view.value.load_default_columns,
     }
     viewUpdated.value = false
+  })
+}
+
+function update_custom_view() {
+  view.value.doctype = props.doctype
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
+    view: view.value,
   })
 }
 
