@@ -67,10 +67,12 @@
           item-key="name"
           class="flex flex-col gap-3.5 overflow-y-auto h-full"
           @end="updateColumn"
+          :data-column="column.column.name"
         >
           <template #item="{ element: fields }">
             <div
               class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col gap-2"
+              :data-name="fields.name"
             >
               <div v-for="value in fields" :key="value">
                 <div class="truncate">{{ value }}</div>
@@ -126,7 +128,11 @@ function actions(column) {
   ]
 }
 
-function updateColumn() {
+function updateColumn({ item, from, to }) {
+  let toColumn = to?.dataset.column
+  let fromColumn = from?.dataset.column
+  let itemName = item?.dataset.name
+
   let _columns = []
   columns.value.forEach((col) => {
     if (col.delete) return
@@ -134,7 +140,13 @@ function updateColumn() {
     _columns.push(col.column)
   })
 
-  emit('update', { columns: _columns })
+  let data = { columns: _columns }
+
+  if (toColumn != fromColumn) {
+    data = { item: itemName, to: toColumn, columns: _columns }
+  }
+
+  emit('update', data)
 }
 
 function colorClasses(color, onlyIcon = false) {

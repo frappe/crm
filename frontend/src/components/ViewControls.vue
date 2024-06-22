@@ -719,7 +719,16 @@ function updateColumns(obj) {
   }
 }
 
-function updateKanbanSettings(data) {
+async function updateKanbanSettings(data) {
+  if (data.item && data.to) {
+    await call('frappe.client.set_value', {
+      doctype: props.doctype,
+      name: data.item,
+      fieldname: view.value.column_field,
+      value: data.to,
+    })
+  }
+
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
