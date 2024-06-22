@@ -312,8 +312,8 @@ def get_data(
 		if not rows:
 			rows = ["name"]
 
-		if hasattr(_list, "default_kanban_data"):
-			rows = _list.default_kanban_data().get("rows")
+		if hasattr(_list, "default_list_data"):
+			rows = _list.default_list_data().get("rows")
 
 		if "name" not in rows:
 			rows.append("name")

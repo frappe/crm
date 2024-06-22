@@ -97,9 +97,7 @@ def sync_default_rows(doctype, type="list"):
 	list = get_controller(doctype)
 	rows = []
 
-	if type == "kanban" and hasattr(list, "default_kanban_data"):
-		rows = list.default_kanban_data().get("rows")
-	elif hasattr(list, "default_list_data"):
+	if hasattr(list, "default_list_data"):
 		rows = list.default_list_data().get("rows")
 
 	return rows
