@@ -9,7 +9,7 @@
     <template #item="{ element: column }">
       <div
         v-if="!column.delete"
-        class="flex flex-col gap-2.5 min-w-[268px] hover:bg-gray-100 rounded-lg p-2.5"
+        class="flex flex-col gap-2.5 min-w-72 w-72 hover:bg-gray-100 rounded-lg p-2.5"
       >
         <div class="flex gap-2 items-center group justify-between">
           <div class="flex items-center text-base">

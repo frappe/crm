@@ -728,6 +728,7 @@ async function updateKanbanSettings(data) {
       value: data.to,
     })
   }
+  let isDirty = viewUpdated.value
 
   viewUpdated.value = true
   if (!defaultParams.value) {
@@ -745,8 +746,25 @@ async function updateKanbanSettings(data) {
   if (!route.query.view) {
     create_or_update_default_view()
   } else if (!data.column_field) {
-    viewUpdated.value = false
-    update_custom_view()
+    if (isDirty) {
+      $dialog({
+        title: __('Unsaved Changes'),
+        message: __('You have unsaved changes. Do you want to save them?'),
+        variant: 'danger',
+        actions: [
+          {
+            label: __('Update'),
+            variant: 'solid',
+            onClick: (close) => {
+              update_custom_view()
+              close()
+            },
+          },
+        ],
+      })
+    } else {
+      update_custom_view()
+    }
   }
 }
 
@@ -779,10 +797,25 @@ function create_or_update_default_view() {
 }
 
 function update_custom_view() {
-  view.value.doctype = props.doctype
+  viewUpdated.value = false
+  view.value = {
+    doctype: props.doctype,
+    label: view.value.label,
+    type: view.value.type || 'list',
+    icon: view.value.icon,
+    name: view.value.name,
+    filters: defaultParams.value.filters,
+    order_by: defaultParams.value.order_by,
+    group_by_field: defaultParams.value.view.group_by_field,
+    column_field: defaultParams.value.column_field,
+    columns: defaultParams.value.columns,
+    rows: defaultParams.value.rows,
+    route_name: route.name,
+    load_default_columns: view.value.load_default_columns,
+  }
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
     view: view.value,
-  })
+  }).then(() => reloadView())
 }
 
 function updatePageLength(value, loadMore = false) {
