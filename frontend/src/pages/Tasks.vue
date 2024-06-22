@@ -25,8 +25,11 @@
     }"
   />
   <KanbanView
-    v-if="$route.params.viewType == 'kanban'"
+    v-if="$route.params.viewType == 'kanban' && rows.length"
     v-model="tasks"
+    :options="{
+      onRowClick: (row) => showTask(row.name),
+    }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
   />
   <TasksListView
@@ -91,12 +94,27 @@ const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
 const rows = computed(() => {
-  if (
-    !tasks.value?.data?.data ||
-    !['list', 'group_by'].includes(tasks.value.data.view_type)
-  )
-    return []
-  return tasks.value?.data.data.map((task) => {
+  if (!tasks.value?.data?.data) return []
+
+  if (tasks.value.data.view_type === 'kanban') {
+    return getKanbanRows(tasks.value.data.data)
+  }
+
+  return parseRows(tasks.value?.data.data)
+})
+
+function getKanbanRows(data) {
+  let _rows = []
+  data.forEach((column) => {
+    column.data?.forEach((row) => {
+      _rows.push(row)
+    })
+  })
+  return parseRows(_rows)
+}
+
+function parseRows(rows) {
+  return rows.map((task) => {
     let _rows = {}
     tasks.value?.data.rows.forEach((row) => {
       _rows[row] = task[row]
@@ -115,7 +133,7 @@ const rows = computed(() => {
     })
     return _rows
   })
-})
+}
 
 const showTaskModal = ref(false)
 

@@ -32,6 +32,9 @@
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
     v-model="leads"
+    :options="{
+      getRowRoute: (row) => ({ name: 'Lead', params: { leadId: row.name } }),
+    }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
   />
   <LeadsListView
@@ -112,17 +115,15 @@ const viewControls = ref(null)
 
 // Rows
 const rows = computed(() => {
-  if (
-    !leads.value?.data?.data ||
-    !['list', 'group_by'].includes(leads.value.data.view_type)
-  )
-    return []
-  if (route.params.viewType === 'group_by') {
+  if (!leads.value?.data?.data) return []
+  if (leads.value.data.view_type === 'group_by') {
     if (!leads.value?.data.group_by_field?.name) return []
     return getGroupedByRows(
       leads.value?.data.data,
       leads.value?.data.group_by_field,
     )
+  } else if (leads.value.data.view_type === 'kanban') {
+    return getKanbanRows(leads.value.data.data)
   } else {
     return parseRows(leads.value?.data.data)
   }
@@ -156,6 +157,16 @@ function getGroupedByRows(listRows, groupByField) {
   })
 
   return groupedRows || listRows
+}
+
+function getKanbanRows(data) {
+  let _rows = []
+  data.forEach((column) => {
+    column.data?.forEach((row) => {
+      _rows.push(row)
+    })
+  })
+  return parseRows(_rows)
 }
 
 function parseRows(rows) {

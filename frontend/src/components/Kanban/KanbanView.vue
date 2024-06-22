@@ -70,14 +70,21 @@
           :data-column="column.column.name"
         >
           <template #item="{ element: fields }">
-            <div
+            <component
+              :is="options.getRowRoute ? 'router-link' : 'div'"
               class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col gap-2"
               :data-name="fields.name"
+              v-bind="{
+                to: options.getRowRoute ? options.getRowRoute(fields) : undefined,
+                onClick: options.onRowClick
+                  ? () => options.onRowClick(fields)
+                  : undefined,
+              }"
             >
               <div v-for="value in fields" :key="value">
                 <div class="truncate">{{ value }}</div>
               </div>
-            </div>
+            </component>
           </template>
         </Draggable>
       </div>
@@ -90,6 +97,16 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import Draggable from 'vuedraggable'
 import { Dropdown } from 'frappe-ui'
 import { computed } from 'vue'
+
+const props = defineProps({
+  options: {
+    type: Object,
+    default: () => ({
+      getRowRoute: null,
+      onRowClick: null,
+    }),
+  },
+})
 
 const emit = defineEmits(['update'])
 

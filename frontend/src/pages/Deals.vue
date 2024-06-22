@@ -31,6 +31,9 @@
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
     v-model="deals"
+    :options="{
+      getRowRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
+    }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
   />
   <DealsListView
@@ -110,17 +113,15 @@ const viewControls = ref(null)
 
 // Rows
 const rows = computed(() => {
-  if (
-    !deals.value?.data?.data ||
-    !['list', 'group_by'].includes(deals.value.data.view_type)
-  )
-    return []
-  if (route.params.viewType === 'group_by') {
+  if (!deals.value?.data?.data) return []
+  if (deals.value.data.view_type === 'group_by') {
     if (!deals.value?.data.group_by_field?.name) return []
     return getGroupedByRows(
       deals.value?.data.data,
       deals.value?.data.group_by_field,
     )
+  } else if (deals.value.data.view_type === 'kanban') {
+    return getKanbanRows(deals.value.data.data)
   } else {
     return parseRows(deals.value?.data.data)
   }
@@ -154,6 +155,16 @@ function getGroupedByRows(listRows, groupByField) {
   })
 
   return groupedRows || listRows
+}
+
+function getKanbanRows(data) {
+  let _rows = []
+  data.forEach((column) => {
+    column.data?.forEach((row) => {
+      _rows.push(row)
+    })
+  })
+  return parseRows(_rows)
 }
 
 function parseRows(rows) {
