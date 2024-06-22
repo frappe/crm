@@ -735,7 +735,7 @@ async function updateKanbanSettings(data) {
   }
   list.value.params = defaultParams.value
   if (data.column_field) {
-    list.value.params.view.column_field = data.column_field
+    list.value.params.column_field = data.column_field
     view.value.column_field = data.column_field
   }
   list.value.params.columns = data.columns ? data.columns : ''
