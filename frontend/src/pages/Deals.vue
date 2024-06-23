@@ -32,7 +32,8 @@
     v-if="route.params.viewType == 'kanban'"
     v-model="deals"
     :options="{
-      getRowRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
+      getRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
+      onNewClick: (column) => onNewClick(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
   />
@@ -67,7 +68,11 @@
       </Button>
     </div>
   </div>
-  <DealModal v-model="showDealModal" />
+  <DealModal
+    v-if="showDealModal"
+    v-model="showDealModal"
+    :defaults="defaults"
+  />
 </template>
 
 <script setup>
@@ -103,6 +108,8 @@ const route = useRoute()
 
 const dealsListView = ref(null)
 const showDealModal = ref(false)
+
+const defaults = reactive({})
 
 // deals data is loaded in the ViewControls component
 const deals = ref({})
@@ -247,5 +254,15 @@ function parseRows(rows) {
     })
     return _rows
   })
+}
+
+function onNewClick(column) {
+  let column_field = deals.value.params.column_field
+
+  if (column_field) {
+    defaults[column_field] = column.column.name
+  }
+
+  showDealModal.value = true
 }
 </script>

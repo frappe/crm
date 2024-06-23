@@ -33,7 +33,8 @@
     v-if="route.params.viewType == 'kanban'"
     v-model="leads"
     :options="{
-      getRowRoute: (row) => ({ name: 'Lead', params: { leadId: row.name } }),
+      getRoute: (row) => ({ name: 'Lead', params: { leadId: row.name } }),
+      onNewClick: (column) => onNewClick(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
   />
@@ -68,7 +69,11 @@
       </Button>
     </div>
   </div>
-  <LeadModal v-model="showLeadModal" />
+  <LeadModal
+    v-if="showLeadModal"
+    v-model="showLeadModal"
+    :defaults="defaults"
+  />
 </template>
 
 <script setup>
@@ -105,6 +110,8 @@ const route = useRoute()
 
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
+
+const defaults = reactive({})
 
 // leads data is loaded in the ViewControls component
 const leads = ref({})
@@ -252,53 +259,13 @@ function parseRows(rows) {
   })
 }
 
-let newLead = reactive({
-  salutation: '',
-  first_name: '',
-  last_name: '',
-  lead_name: '',
-  organization: '',
-  status: '',
-  email: '',
-  mobile_no: '',
-  lead_owner: '',
-})
+function onNewClick(column) {
+  let column_field = leads.value.params.column_field
 
-const createLead = createResource({
-  url: 'frappe.client.insert',
-  makeParams(values) {
-    return {
-      doc: {
-        doctype: 'CRM Lead',
-        ...values,
-      },
-    }
-  },
-})
+  if (column_field) {
+    defaults[column_field] = column.column.name
+  }
 
-function createNewLead(close) {
-  createLead
-    .submit(newLead, {
-      validate() {
-        if (!newLead.first_name) {
-          createToast({
-            title: __('Error creating lead'),
-            text: __('First name is required'),
-            icon: 'x',
-            iconClasses: 'text-red-600',
-          })
-          return __('First name is required')
-        }
-      },
-      onSuccess(data) {
-        router.push({
-          name: 'Lead',
-          params: {
-            leadId: data.name,
-          },
-        })
-      },
-    })
-    .then(close)
+  showLeadModal.value = true
 }
 </script>

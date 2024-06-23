@@ -28,7 +28,8 @@
     v-if="$route.params.viewType == 'kanban' && rows.length"
     v-model="tasks"
     :options="{
-      onRowClick: (row) => showTask(row.name),
+      onClick: (row) => showTask(row.name),
+      onNewClick: (column) => createTask(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
   />
@@ -64,7 +65,12 @@
       </Button>
     </div>
   </div>
-  <TaskModal v-model="showTaskModal" v-model:reloadTasks="tasks" :task="task" />
+  <TaskModal
+    v-if="showTaskModal"
+    v-model="showTaskModal"
+    v-model:reloadTasks="tasks"
+    :task="task"
+  />
 </template>
 
 <script setup>
@@ -165,7 +171,7 @@ function showTask(name) {
   showTaskModal.value = true
 }
 
-function createTask() {
+function createTask(column) {
   task.value = {
     name: '',
     title: '',
@@ -177,6 +183,14 @@ function createTask() {
     reference_doctype: 'CRM Lead',
     reference_docname: '',
   }
+
+  if (column.column?.name) {
+    let column_field = tasks.value.params.column_field
+    if (column_field) {
+      task.value[column_field] = column.column.name
+    }
+  }
+
   showTaskModal.value = true
 }
 </script>

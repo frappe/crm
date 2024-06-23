@@ -31,6 +31,10 @@ import { createResource } from 'frappe-ui'
 import { computed, onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
+const props = defineProps({
+  defaults: Object,
+})
+
 const { getUser } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
 
@@ -146,6 +150,7 @@ function createNewLead() {
 }
 
 onMounted(() => {
+  Object.assign(lead, props.defaults)
   if (!lead.lead_owner) {
     lead.lead_owner = getUser().email
   }

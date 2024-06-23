@@ -58,7 +58,11 @@
                 />
               </template>
             </Dropdown>
-            <Button icon="plus" variant="ghost" />
+            <Button
+              icon="plus"
+              variant="ghost"
+              @click="options.onNewClick(column)"
+            />
           </div>
         </div>
         <Draggable
@@ -71,13 +75,13 @@
         >
           <template #item="{ element: fields }">
             <component
-              :is="options.getRowRoute ? 'router-link' : 'div'"
+              :is="options.getRoute ? 'router-link' : 'div'"
               class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col gap-2"
               :data-name="fields.name"
               v-bind="{
-                to: options.getRowRoute ? options.getRowRoute(fields) : undefined,
-                onClick: options.onRowClick
-                  ? () => options.onRowClick(fields)
+                to: options.getRoute ? options.getRoute(fields) : undefined,
+                onClick: options.onClick
+                  ? () => options.onClick(fields)
                   : undefined,
               }"
             >
@@ -102,8 +106,9 @@ const props = defineProps({
   options: {
     type: Object,
     default: () => ({
-      getRowRoute: null,
-      onRowClick: null,
+      getRoute: null,
+      onClick: null,
+      onNewClick: null,
     }),
   },
 })
