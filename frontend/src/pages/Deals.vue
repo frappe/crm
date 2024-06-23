@@ -96,7 +96,7 @@ import {
 } from '@/utils'
 import { Breadcrumbs } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, computed, h } from 'vue'
+import { ref, reactive, computed, h } from 'vue'
 
 const breadcrumbs = [{ label: __('Deals'), route: { name: 'Deals' } }]
 

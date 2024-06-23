@@ -88,15 +88,9 @@ import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import {
-  dateFormat,
-  dateTooltipFormat,
-  timeAgo,
-  formatTime,
-  createToast,
-} from '@/utils'
-import { createResource, Breadcrumbs } from 'frappe-ui'
-import { useRouter, useRoute } from 'vue-router'
+import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
+import { Breadcrumbs } from 'frappe-ui'
+import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
 
 const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
@@ -105,7 +99,6 @@ const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
 
-const router = useRouter()
 const route = useRoute()
 
 const leadsListView = ref(null)
