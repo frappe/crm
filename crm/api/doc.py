@@ -209,6 +209,8 @@ def get_data(
 	column_field=None,
 	columns=[],
 	rows=[],
+	kanban_columns=[],
+	kanban_fields=[],
 	view=None,
 	default_filters=None,
 ):
@@ -216,6 +218,8 @@ def get_data(
 	filters = frappe._dict(filters)
 	rows = frappe.parse_json(rows or "[]")
 	columns = frappe.parse_json(columns or "[]")
+	kanban_fields = frappe.parse_json(kanban_fields or "[]")
+	kanban_columns = frappe.parse_json(kanban_columns or "[]")
 
 	custom_view_name = view.get('custom_view_name') if view else None
 	view_type = view.get('view_type') if view else None
@@ -240,6 +244,8 @@ def get_data(
 	is_default = True
 	data = []
 	_list = get_controller(doctype)
+	if hasattr(_list, "default_list_data"):
+		rows = _list.default_list_data().get("rows")
 
 	if view_type != "kanban":
 		if columns or rows:
@@ -272,9 +278,6 @@ def get_data(
 		elif not custom_view or is_default and hasattr(_list, "default_list_data"):
 			columns = _list.default_list_data().get("columns")
 
-		if hasattr(_list, "default_list_data"):
-			rows = _list.default_list_data().get("rows")
-
 		# check if rows has all keys from columns if not add them
 		for column in columns:
 			if column.get("key") not in rows:
@@ -297,30 +300,30 @@ def get_data(
 		) or []
 
 	if view_type == "kanban":
-		if not columns and column_field:
+		if not kanban_columns and column_field:
 			field_meta = frappe.get_meta(doctype).get_field(column_field)
 			if field_meta.fieldtype == "Link":
-				columns = frappe.get_all(
+				kanban_columns = frappe.get_all(
 					field_meta.options,
 					fields=["name"],
 					order_by="modified asc",
 				)
 			elif field_meta.fieldtype == "Select":
-				columns = [{"name": option} for option in field_meta.options.split("\n")]
+				kanban_columns = [{"name": option} for option in field_meta.options.split("\n")]
 
+		if not kanban_fields:
+			kanban_fields = ["name"]
 
-		if not rows:
-			rows = ["name"]
+		if "name" not in kanban_fields:
+			kanban_fields.append("name")
 
-		if hasattr(_list, "default_list_data"):
-			rows = _list.default_list_data().get("rows")
+		for field in kanban_fields:
+			if field not in rows:
+				rows.append(field)
 
-		if "name" not in rows:
-			rows.append("name")
-
-		for column in columns:
-			column_filters = { column_field: column.get('name') }
-			if column_field in filters and filters.get(column_field) != column.name:
+		for kc in kanban_columns:
+			column_filters = { column_field: kc.get('name') }
+			if column_field in filters and filters.get(column_field) != kc.name:
 				column_data = []
 			else:
 				column_filters.update(filters.copy())
@@ -332,13 +335,13 @@ def get_data(
 					page_length=20,
 				)
 
-			if column.get("order"):
+			if kc.get("order"):
 				column_data = sorted(
-					column_data, key=lambda x: column.get("order").index(x.get("name"))
-					if x.get("name") in column.get("order") else 0
+					column_data, key=lambda x: kc.get("order").index(x.get("name"))
+					if x.get("name") in kc.get("order") else 0
 				)
 
-			data.append({"column": column, "data": column_data, "count": len(column_data)})
+			data.append({"column": kc, "fields": kanban_fields, "data": column_data, "count": len(column_data)})
 
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in no_value_fields]

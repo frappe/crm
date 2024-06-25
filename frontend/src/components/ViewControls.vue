@@ -365,6 +365,8 @@ const view = ref({
   filters: {},
   order_by: 'modified desc',
   column_field: 'status',
+  kanban_columns: '',
+  kanban_fields: '',
   columns: '',
   rows: '',
   load_default_columns: false,
@@ -400,6 +402,8 @@ function getParams() {
   const columns = _view?.columns || ''
   const rows = _view?.rows || ''
   const column_field = _view?.column_field || 'status'
+  const kanban_columns = _view?.kanban_columns || ''
+  const kanban_fields = _view?.kanban_fields || ''
 
   view.value = {
     name: view_name,
@@ -410,6 +414,8 @@ function getParams() {
     order_by: order_by,
     group_by_field: group_by_field,
     column_field: column_field,
+    kanban_columns: kanban_columns,
+    kanban_fields: kanban_fields,
     columns: columns,
     rows: rows,
     route_name: _view?.route_name || route.name,
@@ -429,6 +435,8 @@ function getParams() {
       group_by_field: group_by_field,
     },
     column_field: column_field,
+    kanban_columns: kanban_columns,
+    kanban_fields: kanban_fields,
     columns: columns,
     rows: rows,
     page_length: pageLength.value,
@@ -454,6 +462,8 @@ list.value = createResource({
         group_by_field: params?.view?.group_by_field || 'owner',
       },
       column_field: params.column_field,
+      kanban_columns: data.columns,
+      kanban_fields: data.kanban_fields,
       columns: data.columns,
       rows: data.rows,
       page_length: params.page_length,
@@ -735,12 +745,19 @@ async function updateKanbanSettings(data) {
     defaultParams.value = getParams()
   }
   list.value.params = defaultParams.value
-  if (data.column_field) {
+  if (data.column_field && data.column_field != view.value.column_field) {
     list.value.params.column_field = data.column_field
     view.value.column_field = data.column_field
   }
-  list.value.params.columns = data.columns ? data.columns : ''
-  view.value.columns = data.columns ? data.columns : ''
+  if (data.kanban_columns) {
+    list.value.params.kanban_columns = data.kanban_columns
+    view.value.kanban_columns = data.kanban_columns
+  }
+  if (data.kanban_fields) {
+    list.value.params.kanban_fields = data.kanban_fields
+    view.value.kanban_fields = data.kanban_fields
+  }
+
   list.value.reload()
 
   if (!route.query.view) {
@@ -787,6 +804,8 @@ function create_or_update_default_view() {
       order_by: defaultParams.value.order_by,
       group_by_field: defaultParams.value.view?.group_by_field,
       column_field: defaultParams.value.column_field,
+      kanban_columns: defaultParams.value.kanban_columns,
+      kanban_fields: defaultParams.value.kanban_fields,
       columns: defaultParams.value.columns,
       rows: defaultParams.value.rows,
       route_name: route.name,
@@ -808,6 +827,8 @@ function update_custom_view() {
     order_by: defaultParams.value.order_by,
     group_by_field: defaultParams.value.view.group_by_field,
     column_field: defaultParams.value.column_field,
+    kanban_columns: defaultParams.value.kanban_columns,
+    kanban_fields: defaultParams.value.kanban_fields,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,
@@ -976,6 +997,8 @@ function saveView() {
     order_by: defaultParams.value.order_by,
     group_by_field: defaultParams.value.view.group_by_field,
     column_field: defaultParams.value.column_field,
+    kanban_columns: defaultParams.value.kanban_columns,
+    kanban_fields: defaultParams.value.kanban_fields,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,

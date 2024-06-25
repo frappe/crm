@@ -4,7 +4,7 @@
     :list="columns"
     item-key="column"
     @end="updateColumn"
-    class="flex sm:mx-2.5 mx-2 pb-3.5 overflow-x-auto"
+    class="flex sm:mx-2.5 mx-2 pb-3.5 overflow-x-auto h-full"
   >
     <template #item="{ element: column }">
       <div
@@ -85,8 +85,8 @@
                   : undefined,
               }"
             >
-              <div v-for="value in fields" :key="value">
-                <div class="truncate">{{ value }}</div>
+              <div v-for="value in column.fields" :key="value">
+                <div class="truncate">{{ fields[value] }}</div>
               </div>
             </component>
           </template>
@@ -162,10 +162,10 @@ function updateColumn({ item, from, to }) {
     _columns.push(col.column)
   })
 
-  let data = { columns: _columns }
+  let data = { kanban_columns: _columns }
 
   if (toColumn != fromColumn) {
-    data = { item: itemName, to: toColumn, columns: _columns }
+    data = { item: itemName, to: toColumn, kanban_columns: _columns }
   }
 
   emit('update', data)
