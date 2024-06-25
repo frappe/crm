@@ -314,9 +314,6 @@ def get_data(
 		if not kanban_fields:
 			kanban_fields = ["name"]
 
-		if "name" not in kanban_fields:
-			kanban_fields.append("name")
-
 		for field in kanban_fields:
 			if field not in rows:
 				rows.append(field)
@@ -443,6 +440,32 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
+
+	standard_fields = [
+		{"fieldname": "name", "fieldtype": "Link", "label": "ID", "options": doctype},
+		{
+			"fieldname": "owner",
+			"fieldtype": "Link",
+			"label": "Created By",
+			"options": "User"
+		},
+		{
+			"fieldname": "modified_by",
+			"fieldtype": "Link",
+			"label": "Last Updated By",
+			"options": "User",
+		},
+		{"fieldname": "_user_tags", "fieldtype": "Data", "label": "Tags"},
+		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Like"},
+		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
+		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
+		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created On"},
+		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
+	]
+
+	for field in standard_fields:
+		if not restricted_fieldtypes or field.get('fieldtype') not in restricted_fieldtypes:
+			fields.append(field)
 
 	if as_array:
 		return fields
@@ -585,21 +608,3 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 			})
 
 	return _fields
-
-@frappe.whitelist()
-def get_kanban_fields(doctype):
-	allowed_fieldtypes = ["Link", "Select"]
-	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldtype in allowed_fieldtypes]
-	fields = [
-		{
-			"label": _(field.label),
-			"name": field.fieldname,
-			"type": field.fieldtype,
-			"options": field.options,
-		}
-		for field in fields
-		if field.label and field.fieldname
-	]
-
-	return fields
