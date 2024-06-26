@@ -110,7 +110,7 @@ def add_default_communication_statuses():
 		doc.insert()
 
 def add_default_fields_layout():
-	layouts = {
+	quick_entry_layouts = {
 		"CRM Lead-Quick Entry": {
 			"doctype": "CRM Lead",
 			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email","mobile_no", "gender"],"hideLabel":true},{"label":"Organization","fields":["organization","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
@@ -129,14 +129,35 @@ def add_default_fields_layout():
 		},
 	}
 
-	for layout in layouts:
+	sidebar_fields_layouts = {
+		"CRM Lead-Side Panel": {
+			"doctype": "CRM Lead",
+			"layout": '[{"label": "Details", "name": "details", "opened": true, "fields": ["organization", "website", "territory", "industry", "job_title", "source", "lead_owner"]}, {"label": "Person", "name": "person_tab", "opened": true, "fields": ["salutation", "first_name", "last_name", "email", "mobile_no"]}]'
+		},
+		"CRM Deal-Side Panel": {
+			"doctype": "CRM Deal",
+			"layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Organization Details","name":"organization_tab","opened":true,"fields":["organization","website","territory","annual_revenue","close_date","probability","next_step","deal_owner"]}]'
+		},
+	}
+
+	for layout in quick_entry_layouts:
 		if frappe.db.exists("CRM Fields Layout", layout):
 			continue
 
 		doc = frappe.new_doc("CRM Fields Layout")
 		doc.type = "Quick Entry"
-		doc.dt = layouts[layout]["doctype"]
-		doc.layout = layouts[layout]["layout"]
+		doc.dt = quick_entry_layouts[layout]["doctype"]
+		doc.layout = quick_entry_layouts[layout]["layout"]
+		doc.insert()
+
+	for layout in sidebar_fields_layouts:
+		if frappe.db.exists("CRM Fields Layout", layout):
+			continue
+
+		doc = frappe.new_doc("CRM Fields Layout")
+		doc.type = "Side Panel"
+		doc.dt = sidebar_fields_layouts[layout]["doctype"]
+		doc.layout = sidebar_fields_layouts[layout]["layout"]
 		doc.insert()
 
 def add_property_setter():
