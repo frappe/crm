@@ -750,14 +750,6 @@ async function updateKanbanSettings(data) {
     defaultParams.value = getParams()
   }
   list.value.params = defaultParams.value
-  if (data.column_field && data.column_field != view.value.column_field) {
-    list.value.params.column_field = data.column_field
-    view.value.column_field = data.column_field
-  }
-  if (data.title_field && data.title_field != view.value.title_field) {
-    list.value.params.title_field = data.title_field
-    view.value.title_field = data.title_field
-  }
   if (data.kanban_columns) {
     list.value.params.kanban_columns = data.kanban_columns
     view.value.kanban_columns = data.kanban_columns
@@ -765,6 +757,16 @@ async function updateKanbanSettings(data) {
   if (data.kanban_fields) {
     list.value.params.kanban_fields = data.kanban_fields
     view.value.kanban_fields = data.kanban_fields
+  }
+  if (data.column_field && data.column_field != view.value.column_field) {
+    list.value.params.column_field = data.column_field
+    view.value.column_field = data.column_field
+    list.value.params.kanban_columns = ''
+    view.value.kanban_columns = ''
+  }
+  if (data.title_field && data.title_field != view.value.title_field) {
+    list.value.params.title_field = data.title_field
+    view.value.title_field = data.title_field
   }
 
   list.value.reload()
