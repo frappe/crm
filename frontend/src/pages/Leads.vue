@@ -180,12 +180,10 @@
             :label="getRow(itemName, fieldName).value"
           />
         </div>
-        <div v-else-if="fieldName === 'Check'">
-          <FormControl
-            type="checkbox"
-            :modelValue="getRow(itemName, fieldName)"
-            :disabled="true"
-            class="text-gray-900"
+        <div v-else-if="fieldName === '_assign'" class="flex items-center">
+          <MultipleAvatar
+            :avatars="getRow(itemName, fieldName).label"
+            size="xs"
           />
         </div>
         <div v-else class="truncate text-base">
@@ -278,6 +276,7 @@
 </template>
 
 <script setup>
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -326,7 +325,7 @@ const viewControls = ref(null)
 
 function getRow(name, field) {
   function getValue(value) {
-    if (value && typeof value === 'object') {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
       return value
     }
     return { label: value }
