@@ -117,7 +117,29 @@
     </template>
     <template #actions="{ itemName }">
       <div class="flex gap-2 items-center justify-between">
-        <div></div>
+        <div>
+          <Button
+            class="-ml-2"
+            v-if="getRow(itemName, 'reference_docname').label"
+            variant="ghost"
+            size="sm"
+            :label="
+              getRow(itemName, 'reference_doctype').label == 'CRM Deal'
+                ? __('Deal')
+                : __('Lead')
+            "
+            @click.stop="
+              redirect(
+                getRow(itemName, 'reference_doctype').label,
+                getRow(itemName, 'reference_docname').label,
+              )
+            "
+          >
+            <template #suffix>
+              <ArrowUpRightIcon class="h-4 w-4" />
+            </template>
+          </Button>
+        </div>
         <Dropdown
           class="flex items-center gap-2"
           :options="actions(itemName)"
@@ -171,6 +193,7 @@
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
@@ -190,10 +213,13 @@ import {
   call,
 } from 'frappe-ui'
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const breadcrumbs = [{ label: __('Tasks'), route: { name: 'Tasks' } }]
 
 const { getUser } = usersStore()
+
+const router = useRouter()
 
 const tasksListView = ref(null)
 
@@ -327,5 +353,15 @@ async function deletetask(name) {
     doctype: 'CRM Task',
     name,
   })
+}
+
+function redirect(doctype, docname) {
+  if (!docname) return
+  let name = doctype == 'CRM Deal' ? 'Deal' : 'Lead'
+  let params = { leadId: docname }
+  if (name == 'Deal') {
+    params = { dealId: docname }
+  }
+  router.push({ name: name, params: params })
 }
 </script>
