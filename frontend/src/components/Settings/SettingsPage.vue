@@ -72,6 +72,7 @@ const sections = computed(() => {
   if (fieldsData[0].type !== 'Section Break') {
     _sections.push({
       label: 'General',
+      hideLabel: true,
       columns: 1,
       fields: [],
     })
@@ -80,6 +81,7 @@ const sections = computed(() => {
     if (field.type === 'Section Break') {
       _sections.push({
         label: field.value,
+        hideLabel: true,
         columns: 1,
         fields: [],
       })
