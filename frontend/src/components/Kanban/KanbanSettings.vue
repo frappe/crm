@@ -16,14 +16,32 @@
           v-if="columnFields"
           value=""
           :options="columnFields"
-          @change="(f) => (column_field = f)"
+          @change="(f) => (columnField = f)"
         >
           <template #target="{ togglePopover }">
             <Button
               class="w-full !justify-start"
               variant="subtle"
               @click="togglePopover()"
-              :label="column_field.label"
+              :label="columnField.label"
+            />
+          </template>
+        </Autocomplete>
+        <div class="text-base text-gray-800 mb-2 mt-4">
+          {{ __('Title Field') }}
+        </div>
+        <Autocomplete
+          v-if="fields.data"
+          value=""
+          :options="fields.data"
+          @change="(f) => (titleField = f)"
+        >
+          <template #target="{ togglePopover }">
+            <Button
+              class="w-full !justify-start"
+              variant="subtle"
+              @click="togglePopover()"
+              :label="titleField.label"
             />
           </template>
         </Autocomplete>
@@ -110,7 +128,7 @@ const emit = defineEmits(['update'])
 const list = defineModel()
 const showDialog = ref(false)
 
-const column_field = computed({
+const columnField = computed({
   get: () => {
     let fieldname = list.value?.params?.column_field
     if (!fieldname) return ''
@@ -122,16 +140,29 @@ const column_field = computed({
   },
 })
 
+const titleField = computed({
+  get: () => {
+    let fieldname = list.value?.params?.title_field
+    if (!fieldname) return ''
+
+    return fields.data?.find((field) => field.fieldname === fieldname)
+  },
+  set: (val) => {
+    list.value.params.title_field = val.fieldname
+  },
+})
+
 const columnFields = computed(() => {
   return (
-    fields.data?.filter((field) => ['Link', 'Select'].includes(field.fieldtype)) ||
-    []
+    fields.data?.filter((field) =>
+      ['Link', 'Select'].includes(field.fieldtype),
+    ) || []
   )
 })
 
 const fields = createResource({
   url: 'crm.api.doc.get_fields_meta',
-  params: { doctype: props.doctype, as_array: true},
+  params: { doctype: props.doctype, as_array: true },
   cache: ['kanban_fields', props.doctype],
   auto: true,
   onSuccess: (data) => {
@@ -161,7 +192,7 @@ const allFields = computed({
 })
 
 function reorder() {
-  allFields.value = allFields.value.map(row => row.fieldname)
+  allFields.value = allFields.value.map((row) => row.fieldname)
 }
 
 function addField(field) {
@@ -181,7 +212,8 @@ function apply() {
   nextTick(() => {
     showDialog.value = false
     emit('update', {
-      column_field: column_field.value.fieldname,
+      column_field: columnField.value.fieldname,
+      title_field: titleField.value.fieldname,
       kanban_fields: allFields.value.map((row) => row.fieldname),
     })
   })

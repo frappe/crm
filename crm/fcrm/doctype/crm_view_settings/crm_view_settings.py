@@ -41,6 +41,7 @@ def create(view):
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
 	doc.column_field = view.column_field
+	doc.title_field = view.title_field
 	doc.kanban_columns = json.dumps(view.kanban_columns)
 	doc.kanban_fields = json.dumps(view.kanban_fields)
 	doc.columns = json.dumps(view.columns)
@@ -72,6 +73,7 @@ def update(view):
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
 	doc.column_field = view.column_field
+	doc.title_field = view.title_field
 	doc.kanban_columns = json.dumps(kanban_columns)
 	doc.kanban_fields = json.dumps(kanban_fields)
 	doc.columns = json.dumps(columns)
@@ -170,6 +172,7 @@ def create_or_update_default_view(view):
 		doc.order_by = view.order_by
 		doc.group_by_field = view.group_by_field
 		doc.column_field = view.column_field
+		doc.title_field = view.title_field
 		doc.kanban_columns = json.dumps(kanban_columns)
 		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)
@@ -189,6 +192,7 @@ def create_or_update_default_view(view):
 		doc.order_by = view.order_by
 		doc.group_by_field = view.group_by_field
 		doc.column_field = view.column_field
+		doc.title_field = view.title_field
 		doc.kanban_columns = json.dumps(kanban_columns)
 		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)

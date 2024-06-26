@@ -29,6 +29,7 @@
   "kanban_tab",
   "kanban_section",
   "column_field",
+  "title_field",
   "kanban_columns",
   "kanban_fields"
  ],
@@ -171,11 +172,17 @@
    "fieldname": "kanban_fields",
    "fieldtype": "Code",
    "label": "Kanban Fields"
+  },
+  {
+   "default": "name",
+   "fieldname": "title_field",
+   "fieldtype": "Data",
+   "label": "Title Field"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-25 17:16:02.876349",
+ "modified": "2024-06-25 19:40:12.067788",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

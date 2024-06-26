@@ -365,6 +365,7 @@ const view = ref({
   filters: {},
   order_by: 'modified desc',
   column_field: 'status',
+  title_field: 'name',
   kanban_columns: '',
   kanban_fields: '',
   columns: '',
@@ -402,6 +403,7 @@ function getParams() {
   const columns = _view?.columns || ''
   const rows = _view?.rows || ''
   const column_field = _view?.column_field || 'status'
+  const title_field = _view?.title_field || 'name'
   const kanban_columns = _view?.kanban_columns || ''
   const kanban_fields = _view?.kanban_fields || ''
 
@@ -414,6 +416,7 @@ function getParams() {
     order_by: order_by,
     group_by_field: group_by_field,
     column_field: column_field,
+    title_field: title_field,
     kanban_columns: kanban_columns,
     kanban_fields: kanban_fields,
     columns: columns,
@@ -435,6 +438,7 @@ function getParams() {
       group_by_field: group_by_field,
     },
     column_field: column_field,
+    title_field: title_field,
     kanban_columns: kanban_columns,
     kanban_fields: kanban_fields,
     columns: columns,
@@ -462,6 +466,7 @@ list.value = createResource({
         group_by_field: params?.view?.group_by_field || 'owner',
       },
       column_field: params.column_field,
+      title_field: params.title_field,
       kanban_columns: params.kanban_columns,
       kanban_fields: params.kanban_fields,
       columns: data.columns,
@@ -749,6 +754,10 @@ async function updateKanbanSettings(data) {
     list.value.params.column_field = data.column_field
     view.value.column_field = data.column_field
   }
+  if (data.title_field && data.title_field != view.value.title_field) {
+    list.value.params.title_field = data.title_field
+    view.value.title_field = data.title_field
+  }
   if (data.kanban_columns) {
     list.value.params.kanban_columns = data.kanban_columns
     view.value.kanban_columns = data.kanban_columns
@@ -804,6 +813,7 @@ function create_or_update_default_view() {
       order_by: defaultParams.value.order_by,
       group_by_field: defaultParams.value.view?.group_by_field,
       column_field: defaultParams.value.column_field,
+      title_field: defaultParams.value.title_field,
       kanban_columns: defaultParams.value.kanban_columns,
       kanban_fields: defaultParams.value.kanban_fields,
       columns: defaultParams.value.columns,
@@ -827,6 +837,7 @@ function update_custom_view() {
     order_by: defaultParams.value.order_by,
     group_by_field: defaultParams.value.view.group_by_field,
     column_field: defaultParams.value.column_field,
+    title_field: defaultParams.value.title_field,
     kanban_columns: defaultParams.value.kanban_columns,
     kanban_fields: defaultParams.value.kanban_fields,
     columns: defaultParams.value.columns,
@@ -997,6 +1008,7 @@ function saveView() {
     order_by: defaultParams.value.order_by,
     group_by_field: defaultParams.value.view.group_by_field,
     column_field: defaultParams.value.column_field,
+    title_field: defaultParams.value.title_field,
     kanban_columns: defaultParams.value.kanban_columns,
     kanban_fields: defaultParams.value.kanban_fields,
     columns: defaultParams.value.columns,

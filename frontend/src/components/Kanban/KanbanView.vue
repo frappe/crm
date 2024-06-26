@@ -76,7 +76,7 @@
           <template #item="{ element: fields }">
             <component
               :is="options.getRoute ? 'router-link' : 'div'"
-              class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col gap-2"
+              class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col"
               :data-name="fields.name"
               v-bind="{
                 to: options.getRoute ? options.getRoute(fields) : undefined,
@@ -85,8 +85,24 @@
                   : undefined,
               }"
             >
-              <div v-for="value in column.fields" :key="value">
-                <div class="truncate">{{ fields[value] }}</div>
+              <div class="h-5 flex items-center">
+                <div v-if="fields[titleField]">{{ fields[titleField] }}</div>
+                <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
+              </div>
+              <div class="border-b h-px my-2.5" />
+              <div class="flex flex-col gap-2">
+                <div v-for="value in column.fields" :key="value">
+                  <div class="truncate">{{ fields[value] || '-' }}</div>
+                </div>
+              </div>
+              <div class="border-b h-px mt-2.5 mb-2" />
+              <div class="flex gap-2 items-center justify-between">
+                <div></div>
+                <Button
+                  icon="plus"
+                  variant="ghost"
+                  @click.stop.prevent
+                />
               </div>
             </component>
           </template>
@@ -116,6 +132,10 @@ const props = defineProps({
 const emit = defineEmits(['update'])
 
 const kanban = defineModel()
+
+const titleField = computed(() => {
+  return kanban.value?.params?.title_field
+})
 
 const columns = computed(() => {
   if (!kanban.value?.data?.data || kanban.value.data.view_type != 'kanban')

@@ -207,6 +207,7 @@ def get_data(
 	page_length=20,
 	page_length_count=20,
 	column_field=None,
+	title_field=None,
 	columns=[],
 	rows=[],
 	kanban_columns=[],
@@ -310,6 +311,12 @@ def get_data(
 				)
 			elif field_meta.fieldtype == "Select":
 				kanban_columns = [{"name": option} for option in field_meta.options.split("\n")]
+
+		if not title_field:
+			title_field = "name"
+
+		if title_field not in rows:
+			rows.append(title_field)
 
 		if not kanban_fields:
 			kanban_fields = ["name"]
@@ -472,7 +479,7 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 
 	fields_meta = {}
 	for field in fields:
-		fields_meta[field.fieldname] = field
+		fields_meta[field.get('fieldname')] = field
 
 	return fields_meta
 
