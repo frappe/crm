@@ -339,6 +339,9 @@ def get_data(
 					page_length=20,
 				)
 
+				for d in column_data:
+					getCounts(d, doctype)
+
 			if kc.get("order"):
 				column_data = sorted(
 					column_data, key=lambda x: kc.get("order").index(x.get("name"))
@@ -615,3 +618,12 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 			})
 
 	return _fields
+
+
+def getCounts(d, doctype):
+	d["_email_count"] = frappe.db.count("Communication", filters={"reference_doctype": doctype, "reference_name": d.get("name"), "communication_type": "Communication"}) or 0
+	d["_email_count"] = d["_email_count"] + frappe.db.count("Communication", filters={"reference_doctype": doctype, "reference_name": d.get("name"), "communication_type": "Automated Message"})
+	d["_comment_count"] = frappe.db.count("Comment", filters={"reference_doctype": doctype, "reference_name": d.get("name"), "comment_type": "Comment"})
+	d["_task_count"] = frappe.db.count("CRM Task", filters={"reference_doctype": doctype, "reference_docname": d.get("name")})
+	d["_note_count"] = frappe.db.count("FCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")})
+	return d

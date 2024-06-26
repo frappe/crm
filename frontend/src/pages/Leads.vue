@@ -195,7 +195,27 @@
     </template>
     <template #actions="{ itemName }">
       <div class="flex gap-2 items-center justify-between">
-        <div></div>
+        <div class="text-gray-500 flex items-center gap-1.5">
+          <EmailAtIcon class="h-4 w-4" />
+          <span v-if="getRow(itemName, '_email_count').label">
+            {{ getRow(itemName, '_email_count').label }}
+          </span>
+          <span class="text-3xl leading-[0]"> &middot; </span>
+          <NoteIcon class="h-4 w-4" />
+          <span v-if="getRow(itemName, '_note_count').label">
+            {{ getRow(itemName, '_note_count').label }}
+          </span>
+          <span class="text-3xl leading-[0]"> &middot; </span>
+          <TaskIcon class="h-4 w-4" />
+          <span v-if="getRow(itemName, '_task_count').label">
+            {{ getRow(itemName, '_task_count').label }}
+          </span>
+          <span class="text-3xl leading-[0]"> &middot; </span>
+          <CommentIcon class="h-4 w-4" />
+          <span v-if="getRow(itemName, '_comment_count').label">
+            {{ getRow(itemName, '_comment_count').label }}
+          </span>
+        </div>
         <Dropdown
           class="flex items-center gap-2"
           :options="actions(itemName)"
@@ -259,9 +279,11 @@
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
+import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -447,6 +469,10 @@ function parseRows(rows) {
         }
       }
     })
+    _rows['_email_count'] = lead._email_count
+    _rows['_note_count'] = lead._note_count
+    _rows['_task_count'] = lead._task_count
+    _rows['_comment_count'] = lead._comment_count
     return _rows
   })
 }
