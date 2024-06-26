@@ -115,6 +115,19 @@
         </div>
       </div>
     </template>
+    <template #actions="{ itemName }">
+      <div class="flex gap-2 items-center justify-between">
+        <div></div>
+        <Dropdown
+          class="flex items-center gap-2"
+          :options="actions(itemName)"
+          variant="ghost"
+          @click.stop.prevent
+        >
+          <Button icon="more-horizontal" variant="ghost" />
+        </Dropdown>
+      </div>
+    </template>
   </KanbanView>
   <TasksListView
     ref="tasksListView"
@@ -168,7 +181,14 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import { usersStore } from '@/stores/users'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
-import { Breadcrumbs, Tooltip, Avatar, TextEditor } from 'frappe-ui'
+import {
+  Breadcrumbs,
+  Tooltip,
+  Avatar,
+  TextEditor,
+  Dropdown,
+  call,
+} from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const breadcrumbs = [{ label: __('Tasks'), route: { name: 'Tasks' } }]
@@ -287,5 +307,25 @@ function createTask(column) {
   }
 
   showTaskModal.value = true
+}
+
+function actions(name) {
+  return [
+    {
+      label: __('Delete'),
+      icon: 'trash-2',
+      onClick: () => {
+        deletetask(name)
+        tasks.value.reload()
+      },
+    },
+  ]
+}
+
+async function deletetask(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Task',
+    name,
+  })
 }
 </script>

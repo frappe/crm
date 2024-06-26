@@ -193,6 +193,19 @@
         </div>
       </div>
     </template>
+    <template #actions="{ itemName }">
+      <div class="flex gap-2 items-center justify-between">
+        <div></div>
+        <Dropdown
+          class="flex items-center gap-2"
+          :options="actions(itemName)"
+          variant="ghost"
+          @click.stop.prevent
+        >
+          <Button icon="plus" variant="ghost" />
+        </Dropdown>
+      </div>
+    </template>
   </KanbanView>
   <LeadsListView
     ref="leadsListView"
@@ -230,28 +243,47 @@
     v-model="showLeadModal"
     :defaults="defaults"
   />
+  <NoteModal
+    v-model="showNoteModal"
+    :note="note"
+    doctype="CRM Lead"
+    :doc="docname"
+  />
+  <TaskModal
+    v-model="showTaskModal"
+    :task="task"
+    doctype="CRM Lead"
+    :doc="docname"
+  />
 </template>
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
+import TaskModal from '@/components/Modals/TaskModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { callEnabled } from '@/composables/settings'
 import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
-import { Breadcrumbs, Avatar, Tooltip } from 'frappe-ui'
+import { Breadcrumbs, Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
 
 const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
+const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
@@ -427,5 +459,57 @@ function onNewClick(column) {
   }
 
   showLeadModal.value = true
+}
+
+function actions(itemName) {
+  let mobile_no = getRow(itemName, 'mobile_no')?.label || ''
+  let actions = [
+    {
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      label: __('Make a Call'),
+      onClick: () => makeCall(mobile_no),
+      condition: () => mobile_no && callEnabled.value,
+    },
+    {
+      icon: h(NoteIcon, { class: 'h-4 w-4' }),
+      label: __('New Note'),
+      onClick: () => showNote(itemName),
+    },
+    {
+      icon: h(TaskIcon, { class: 'h-4 w-4' }),
+      label: __('New Task'),
+      onClick: () => showTask(itemName),
+    },
+  ]
+  return actions.filter((action) =>
+    action.condition ? action.condition() : true,
+  )
+}
+
+const docname = ref('')
+const showNoteModal = ref(false)
+const note = ref({
+  title: '',
+  content: '',
+})
+
+function showNote(name) {
+  docname.value = name
+  showNoteModal.value = true
+}
+
+const showTaskModal = ref(false)
+const task = ref({
+  title: '',
+  description: '',
+  assigned_to: '',
+  due_date: '',
+  priority: 'Low',
+  status: 'Backlog',
+})
+
+function showTask(name) {
+  docname.value = name
+  showTaskModal.value = true
 }
 </script>
