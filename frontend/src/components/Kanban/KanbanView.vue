@@ -85,25 +85,40 @@
                   : undefined,
               }"
             >
-              <div class="h-5 flex items-center">
-                <div v-if="fields[titleField]">{{ fields[titleField] }}</div>
-                <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
-              </div>
-              <div class="border-b h-px my-2.5" />
-              <div class="flex flex-col gap-2">
-                <div v-for="value in column.fields" :key="value">
-                  <div class="truncate">{{ fields[value] || '-' }}</div>
+              <slot
+                name="item-title"
+                v-bind="{ fields, titleField, itemName: fields.name }"
+              >
+                <div class="h-5 flex items-center">
+                  <div v-if="fields[titleField]">{{ fields[titleField] }}</div>
+                  <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
                 </div>
+              </slot>
+              <div class="border-b h-px my-2.5" />
+
+              <div class="flex flex-col gap-3.5">
+                <template v-for="value in column.fields" :key="value">
+                  <slot
+                    name="item-fields"
+                    v-bind="{
+                      fields,
+                      fieldName: value,
+                      itemName: fields.name,
+                    }"
+                  >
+                    <div v-if="fields[value]" class="truncate">
+                      {{ fields[value] }}
+                    </div>
+                  </slot>
+                </template>
               </div>
               <div class="border-b h-px mt-2.5 mb-2" />
-              <div class="flex gap-2 items-center justify-between">
-                <div></div>
-                <Button
-                  icon="plus"
-                  variant="ghost"
-                  @click.stop.prevent
-                />
-              </div>
+              <slot name="item-actions">
+                <div class="flex gap-2 items-center justify-between">
+                  <div></div>
+                  <Button icon="plus" variant="ghost" @click.stop.prevent />
+                </div>
+              </slot>
             </component>
           </template>
         </Draggable>

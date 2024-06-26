@@ -37,7 +37,163 @@
       onNewClick: (column) => onNewClick(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
-  />
+  >
+    <template #item-title="{ titleField, itemName }">
+      <div class="flex items-center gap-2">
+        <div v-if="titleField === 'status'">
+          <IndicatorIcon :class="getRow(itemName, titleField).color" />
+        </div>
+        <div
+          v-else-if="
+            titleField === 'organization' && getRow(itemName, titleField).label
+          "
+        >
+          <Avatar
+            class="flex items-center"
+            :image="getRow(itemName, titleField).logo"
+            :label="getRow(itemName, titleField).label"
+            size="sm"
+          />
+        </div>
+        <div
+          v-else-if="
+            titleField === 'lead_name' && getRow(itemName, titleField).label
+          "
+        >
+          <Avatar
+            class="flex items-center"
+            :image="getRow(itemName, titleField).image"
+            :label="getRow(itemName, titleField).image_label"
+            size="sm"
+          />
+        </div>
+        <div
+          v-else-if="
+            titleField === 'lead_owner' &&
+            getRow(itemName, titleField).full_name
+          "
+        >
+          <Avatar
+            class="flex items-center"
+            :image="getRow(itemName, titleField).user_image"
+            :label="getRow(itemName, titleField).full_name"
+            size="sm"
+          />
+        </div>
+        <div v-else-if="titleField === 'mobile_no'">
+          <PhoneIcon class="h-4 w-4" />
+        </div>
+        <div
+          v-if="
+            [
+              'modified',
+              'creation',
+              'first_response_time',
+              'first_responded_on',
+              'response_by',
+            ].includes(titleField)
+          "
+          class="truncate text-base"
+        >
+          <Tooltip :text="getRow(itemName, titleField).label">
+            <div>{{ getRow(itemName, titleField).timeAgo }}</div>
+          </Tooltip>
+        </div>
+        <div v-else-if="titleField === 'sla_status'" class="truncate text-base">
+          <Badge
+            v-if="getRow(itemName, titleField).value"
+            :variant="'subtle'"
+            :theme="getRow(itemName, titleField).color"
+            size="md"
+            :label="getRow(itemName, titleField).value"
+          />
+        </div>
+        <div
+          v-else-if="getRow(itemName, titleField).label"
+          class="truncate text-base"
+        >
+          {{ getRow(itemName, titleField).label }}
+        </div>
+        <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
+      </div>
+    </template>
+    <template #item-fields="{ fieldName, itemName }">
+      <div
+        v-if="getRow(itemName, fieldName).label"
+        class="truncate flex items-center gap-2"
+      >
+        <div v-if="fieldName === 'status'">
+          <IndicatorIcon :class="getRow(itemName, fieldName).color" />
+        </div>
+        <div
+          v-else-if="
+            fieldName === 'organization' && getRow(itemName, fieldName).label
+          "
+        >
+          <Avatar
+            class="flex items-center"
+            :image="getRow(itemName, fieldName).logo"
+            :label="getRow(itemName, fieldName).label"
+            size="xs"
+          />
+        </div>
+        <div v-else-if="fieldName === 'lead_name'">
+          <Avatar
+            v-if="getRow(itemName, fieldName).label"
+            class="flex items-center"
+            :image="getRow(itemName, fieldName).image"
+            :label="getRow(itemName, fieldName).image_label"
+            size="xs"
+          />
+        </div>
+        <div v-else-if="fieldName === 'lead_owner'">
+          <Avatar
+            v-if="getRow(itemName, fieldName).full_name"
+            class="flex items-center"
+            :image="getRow(itemName, fieldName).user_image"
+            :label="getRow(itemName, fieldName).full_name"
+            size="xs"
+          />
+        </div>
+        <div
+          v-if="
+            [
+              'modified',
+              'creation',
+              'first_response_time',
+              'first_responded_on',
+              'response_by',
+            ].includes(fieldName)
+          "
+          class="truncate text-base"
+        >
+          <Tooltip :text="getRow(itemName, fieldName).label">
+            <div>{{ getRow(itemName, fieldName).timeAgo }}</div>
+          </Tooltip>
+        </div>
+        <div v-else-if="fieldName === 'sla_status'" class="truncate text-base">
+          <Badge
+            v-if="getRow(itemName, fieldName).value"
+            :variant="'subtle'"
+            :theme="getRow(itemName, fieldName).color"
+            size="md"
+            :label="getRow(itemName, fieldName).value"
+          />
+        </div>
+        <div v-else-if="fieldName === 'Check'">
+          <FormControl
+            type="checkbox"
+            :modelValue="getRow(itemName, fieldName)"
+            :disabled="true"
+            class="text-gray-900"
+          />
+        </div>
+        <div v-else class="truncate text-base">
+          {{ getRow(itemName, fieldName).label }}
+        </div>
+      </div>
+    </template>
+  </KanbanView>
   <LeadsListView
     ref="leadsListView"
     v-else-if="leads.data && rows.length"
@@ -78,6 +234,7 @@
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -89,7 +246,7 @@ import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
-import { Breadcrumbs } from 'frappe-ui'
+import { Breadcrumbs, Avatar, Tooltip } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
 
@@ -112,6 +269,16 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+function getRow(name, field) {
+  function getValue(value) {
+    if (value && typeof value === 'object') {
+      return value
+    }
+    return { label: value }
+  }
+  return getValue(rows.value?.find((row) => row.name == name)[field])
+}
 
 // Rows
 const rows = computed(() => {

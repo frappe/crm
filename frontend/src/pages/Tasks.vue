@@ -32,7 +32,90 @@
       onNewClick: (column) => createTask(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
-  />
+  >
+    <template #item-title="{ titleField, itemName }">
+      <div class="flex items-center gap-2">
+        <div v-if="titleField === 'status'">
+          <TaskStatusIcon :status="getRow(itemName, titleField).label" />
+        </div>
+        <div v-else-if="titleField === 'priority'">
+          <TaskPriorityIcon :priority="getRow(itemName, titleField).label" />
+        </div>
+        <div v-else-if="titleField === 'assigned_to'">
+          <Avatar
+            v-if="getRow(itemName, titleField).full_name"
+            class="flex items-center"
+            :image="getRow(itemName, titleField).user_image"
+            :label="getRow(itemName, titleField).full_name"
+            size="sm"
+          />
+        </div>
+        <div
+          v-if="['modified', 'creation'].includes(titleField)"
+          class="truncate text-base"
+        >
+          <Tooltip :text="getRow(itemName, titleField).label">
+            <div>{{ getRow(itemName, titleField).timeAgo }}</div>
+          </Tooltip>
+        </div>
+        <div
+          v-else-if="getRow(itemName, titleField).label"
+          class="truncate text-base"
+        >
+          {{ getRow(itemName, titleField).label }}
+        </div>
+        <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
+      </div>
+    </template>
+    <template #item-fields="{ fieldName, itemName }">
+      <div
+        v-if="getRow(itemName, fieldName).label"
+        class="truncate flex items-center gap-2"
+      >
+        <div v-if="fieldName === 'status'">
+          <TaskStatusIcon
+            class="size-3"
+            :status="getRow(itemName, fieldName).label"
+          />
+        </div>
+        <div v-else-if="fieldName === 'priority'">
+          <TaskPriorityIcon :priority="getRow(itemName, fieldName).label" />
+        </div>
+        <div v-else-if="fieldName === 'assigned_to'">
+          <Avatar
+            v-if="getRow(itemName, fieldName).full_name"
+            class="flex items-center"
+            :image="getRow(itemName, fieldName).user_image"
+            :label="getRow(itemName, fieldName).full_name"
+            size="sm"
+          />
+        </div>
+        <div
+          v-if="['modified', 'creation'].includes(fieldName)"
+          class="truncate text-base"
+        >
+          <Tooltip :text="getRow(itemName, fieldName).label">
+            <div>{{ getRow(itemName, fieldName).timeAgo }}</div>
+          </Tooltip>
+        </div>
+        <div
+          v-else-if="fieldName == 'description'"
+          class="truncate text-base max-h-44"
+        >
+          <TextEditor
+            v-if="getRow(itemName, fieldName).label"
+            :content="getRow(itemName, fieldName).label"
+            :editable="false"
+            editor-class="!prose-sm max-w-none focus:outline-none"
+            class="flex-1 overflow-hidden"
+          />
+        </div>
+        <div v-else class="truncate text-base">
+          {{ getRow(itemName, fieldName).label }}
+        </div>
+      </div>
+    </template>
+  </KanbanView>
   <TasksListView
     ref="tasksListView"
     v-else-if="tasks.data && rows.length"
@@ -75,6 +158,8 @@
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
+import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
+import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
@@ -83,7 +168,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import { usersStore } from '@/stores/users'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
-import { Breadcrumbs } from 'frappe-ui'
+import { Breadcrumbs, Tooltip, Avatar, TextEditor } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const breadcrumbs = [{ label: __('Tasks'), route: { name: 'Tasks' } }]
@@ -98,6 +183,16 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+function getRow(name, field) {
+  function getValue(value) {
+    if (value && typeof value === 'object') {
+      return value
+    }
+    return { label: value }
+  }
+  return getValue(rows.value?.find((row) => row.name == name)[field])
+}
 
 const rows = computed(() => {
   if (!tasks.value?.data?.data) return []
