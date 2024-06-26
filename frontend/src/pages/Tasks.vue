@@ -33,7 +33,7 @@
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
   >
-    <template #item-title="{ titleField, itemName }">
+    <template #title="{ titleField, itemName }">
       <div class="flex items-center gap-2">
         <div v-if="titleField === 'status'">
           <TaskStatusIcon :status="getRow(itemName, titleField).label" />
@@ -67,7 +67,7 @@
         <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
       </div>
     </template>
-    <template #item-fields="{ fieldName, itemName }">
+    <template #fields="{ fieldName, itemName }">
       <div
         v-if="getRow(itemName, fieldName).label"
         class="truncate flex items-center gap-2"

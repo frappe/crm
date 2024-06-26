@@ -86,7 +86,7 @@
               }"
             >
               <slot
-                name="item-title"
+                name="title"
                 v-bind="{ fields, titleField, itemName: fields.name }"
               >
                 <div class="h-5 flex items-center">
@@ -99,7 +99,7 @@
               <div class="flex flex-col gap-3.5">
                 <template v-for="value in column.fields" :key="value">
                   <slot
-                    name="item-fields"
+                    name="fields"
                     v-bind="{
                       fields,
                       fieldName: value,
@@ -113,7 +113,7 @@
                 </template>
               </div>
               <div class="border-b h-px mt-2.5 mb-2" />
-              <slot name="item-actions">
+              <slot name="actions" v-bind="{ itemName: fields.name }">
                 <div class="flex gap-2 items-center justify-between">
                   <div></div>
                   <Button icon="plus" variant="ghost" @click.stop.prevent />
