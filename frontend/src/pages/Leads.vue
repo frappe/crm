@@ -195,7 +195,7 @@
     </template>
     <template #actions="{ itemName }">
       <div class="flex gap-2 items-center justify-between">
-        <div class="text-gray-500 flex items-center gap-1.5">
+        <div class="text-gray-600 flex items-center gap-1.5">
           <EmailAtIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_email_count').label">
             {{ getRow(itemName, '_email_count').label }}
