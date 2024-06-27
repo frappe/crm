@@ -331,13 +331,23 @@ def get_data(
 				column_data = []
 			else:
 				column_filters.update(filters.copy())
+				page_length = 20
+
+				if kc.get("page_length"):
+					page_length = kc.get("page_length")
+
 				column_data = frappe.get_list(
 					doctype,
 					fields=rows,
 					filters=column_filters,
 					order_by=order_by,
-					page_length=20,
+					page_length=page_length,
 				)
+
+				all_count = len(frappe.get_list(doctype, filters={ column_field: kc.get('name') }))
+
+				kc["all_count"] = all_count
+				kc["count"] = len(column_data)
 
 				for d in column_data:
 					getCounts(d, doctype)
@@ -348,7 +358,7 @@ def get_data(
 					if x.get("name") in kc.get("order") else 0
 				)
 
-			data.append({"column": kc, "fields": kanban_fields, "data": column_data, "count": len(column_data)})
+			data.append({"column": kc, "fields": kanban_fields, "data": column_data})
 
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in no_value_fields]

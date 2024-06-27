@@ -796,6 +796,25 @@ async function updateKanbanSettings(data) {
   }
 }
 
+function loadMoreKanban(columnName) {
+  let columns = list.value.params.kanban_columns
+
+  if (typeof columns === 'string') {
+    columns = JSON.parse(columns)
+  }
+
+  let column = columns.find((c) => c.name == columnName)
+
+  if (!column.page_length) {
+    column.page_length = 40
+  } else {
+    column.page_length += 20
+  }
+  list.value.params.kanban_columns = columns
+  view.value.kanban_columns = columns
+  list.value.reload()
+}
+
 function create_or_update_default_view() {
   if (route.query.view) return
   view.value.doctype = props.doctype
@@ -1073,7 +1092,13 @@ function likeDoc({ name, liked }) {
   })
 }
 
-defineExpose({ applyFilter, applyLikeFilter, likeDoc, updateKanbanSettings })
+defineExpose({
+  applyFilter,
+  applyLikeFilter,
+  likeDoc,
+  updateKanbanSettings,
+  loadMoreKanban,
+})
 
 // Watchers
 watch(

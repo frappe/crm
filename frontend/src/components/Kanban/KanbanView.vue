@@ -65,63 +65,76 @@
             />
           </div>
         </div>
-        <Draggable
-          :list="column.data"
-          group="fields"
-          item-key="name"
-          class="flex flex-col gap-3.5 overflow-y-auto h-full"
-          @end="updateColumn"
-          :data-column="column.column.name"
-        >
-          <template #item="{ element: fields }">
-            <component
-              :is="options.getRoute ? 'router-link' : 'div'"
-              class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col"
-              :data-name="fields.name"
-              v-bind="{
-                to: options.getRoute ? options.getRoute(fields) : undefined,
-                onClick: options.onClick
-                  ? () => options.onClick(fields)
-                  : undefined,
-              }"
-            >
-              <slot
-                name="title"
-                v-bind="{ fields, titleField, itemName: fields.name }"
+        <div class="overflow-y-auto flex flex-col gap-2">
+          <Draggable
+            :list="column.data"
+            group="fields"
+            item-key="name"
+            class="flex flex-col gap-3.5"
+            @end="updateColumn"
+            :data-column="column.column.name"
+          >
+            <template #item="{ element: fields }">
+              <component
+                :is="options.getRoute ? 'router-link' : 'div'"
+                class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col"
+                :data-name="fields.name"
+                v-bind="{
+                  to: options.getRoute ? options.getRoute(fields) : undefined,
+                  onClick: options.onClick
+                    ? () => options.onClick(fields)
+                    : undefined,
+                }"
               >
-                <div class="h-5 flex items-center">
-                  <div v-if="fields[titleField]">{{ fields[titleField] }}</div>
-                  <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
-                </div>
-              </slot>
-              <div class="border-b h-px my-2.5" />
-
-              <div class="flex flex-col gap-3.5">
-                <template v-for="value in column.fields" :key="value">
-                  <slot
-                    name="fields"
-                    v-bind="{
-                      fields,
-                      fieldName: value,
-                      itemName: fields.name,
-                    }"
-                  >
-                    <div v-if="fields[value]" class="truncate">
-                      {{ fields[value] }}
+                <slot
+                  name="title"
+                  v-bind="{ fields, titleField, itemName: fields.name }"
+                >
+                  <div class="h-5 flex items-center">
+                    <div v-if="fields[titleField]">
+                      {{ fields[titleField] }}
                     </div>
-                  </slot>
-                </template>
-              </div>
-              <div class="border-b h-px mt-2.5 mb-2" />
-              <slot name="actions" v-bind="{ itemName: fields.name }">
-                <div class="flex gap-2 items-center justify-between">
-                  <div></div>
-                  <Button icon="plus" variant="ghost" @click.stop.prevent />
+                    <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
+                  </div>
+                </slot>
+                <div class="border-b h-px my-2.5" />
+
+                <div class="flex flex-col gap-3.5">
+                  <template v-for="value in column.fields" :key="value">
+                    <slot
+                      name="fields"
+                      v-bind="{
+                        fields,
+                        fieldName: value,
+                        itemName: fields.name,
+                      }"
+                    >
+                      <div v-if="fields[value]" class="truncate">
+                        {{ fields[value] }}
+                      </div>
+                    </slot>
+                  </template>
                 </div>
-              </slot>
-            </component>
-          </template>
-        </Draggable>
+                <div class="border-b h-px mt-2.5 mb-2" />
+                <slot name="actions" v-bind="{ itemName: fields.name }">
+                  <div class="flex gap-2 items-center justify-between">
+                    <div></div>
+                    <Button icon="plus" variant="ghost" @click.stop.prevent />
+                  </div>
+                </slot>
+              </component>
+            </template>
+          </Draggable>
+          <div
+            v-if="column.column.count < column.column.all_count"
+            class="flex items-center justify-center"
+          >
+            <Button
+              :label="__('Load More')"
+              @click="emit('loadMore', column.column.name)"
+            />
+          </div>
+        </div>
       </div>
     </template>
   </Draggable>
@@ -144,7 +157,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'loadMore'])
 
 const kanban = defineModel()
 

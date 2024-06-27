@@ -36,6 +36,7 @@
       onNewClick: (column) => onNewClick(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
+    @loadMore="(columnName) => viewControls.loadMoreKanban(columnName)"
   >
     <template #title="{ titleField, itemName }">
       <div class="flex gap-2 items-center">
