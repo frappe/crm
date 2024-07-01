@@ -205,24 +205,23 @@ async function updateTask() {
   show.value = false
 }
 
-onMounted(() => {
-  _task.value = { ...props.task }
-})
+function render() {
+  editMode.value = false
+  nextTick(() => {
+    title.value.el.focus()
+    _task.value = { ...props.task }
+    if (_task.value.title) {
+      editMode.value = true
+    }
+  })
+}
 
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    editMode.value = false
-    nextTick(() => {
-      title.value.el.focus()
-      _task.value = { ...props.task }
-      if (_task.value.title) {
-        editMode.value = true
-      }
-    })
-  }
-)
+onMounted(() => render())
+
+watch(show, (value) => {
+  if (!value) return
+  render()
+})
 </script>
 
 <style scoped>
