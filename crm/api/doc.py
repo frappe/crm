@@ -332,7 +332,8 @@ def get_data(
 
 		for kc in kanban_columns:
 			column_filters = { column_field: kc.get('name') }
-			if column_field in filters and filters.get(column_field) != kc.name:
+			order = kc.get("order")
+			if column_field in filters and filters.get(column_field) != kc.name or kc.get('delete'):
 				column_data = []
 			else:
 				column_filters.update(filters.copy())
@@ -341,7 +342,6 @@ def get_data(
 				if kc.get("page_length"):
 					page_length = kc.get("page_length")
 
-				order = kc.get("order")
 				if order:
 					column_data = get_records_based_on_order(doctype, rows, column_filters, page_length, order)
 				else:

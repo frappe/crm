@@ -1,145 +1,169 @@
 <template>
-  <Draggable
-    v-if="columns"
-    :list="columns"
-    item-key="column"
-    @end="updateColumn"
-    class="flex sm:mx-2.5 mx-2 pb-3.5 overflow-x-auto"
-  >
-    <template #item="{ element: column }">
-      <div
-        v-if="!column.delete"
-        class="flex flex-col gap-2.5 min-w-72 w-72 hover:bg-gray-100 rounded-lg p-2.5"
-      >
-        <div class="flex gap-2 items-center group justify-between">
-          <div class="flex items-center text-base">
-            <NestedPopover>
-              <template #target>
-                <Button variant="ghost" size="sm" class="hover:!bg-gray-100">
-                  <IndicatorIcon
-                    :class="colorClasses(column.column.color, true)"
-                  />
-                </Button>
-              </template>
-              <template #body="{ close }">
-                <div
-                  class="flex flex-col gap-3 px-3 py-2.5 rounded-lg border border-gray-100 bg-white shadow-xl"
-                >
-                  <div class="flex gap-1">
-                    <Button
-                      :class="colorClasses(color)"
-                      variant="ghost"
-                      v-for="color in colors"
-                      :key="color"
-                      @click="() => (column.column.color = color)"
-                    >
-                      <IndicatorIcon />
-                    </Button>
-                  </div>
-                  <div class="flex flex-row-reverse">
-                    <Button
-                      variant="solid"
-                      :label="__('Apply')"
-                      @click="updateColumn"
+  <div class="flex overflow-x-auto">
+    <Draggable
+      v-if="columns"
+      :list="columns"
+      item-key="column"
+      @end="updateColumn"
+      class="flex sm:mx-2.5 mx-2 pb-3.5"
+    >
+      <template #item="{ element: column }">
+        <div
+          v-if="!column.column.delete"
+          class="flex flex-col gap-2.5 min-w-72 w-72 hover:bg-gray-100 rounded-lg p-2.5"
+        >
+          <div class="flex gap-2 items-center group justify-between">
+            <div class="flex items-center text-base">
+              <NestedPopover>
+                <template #target>
+                  <Button variant="ghost" size="sm" class="hover:!bg-gray-100">
+                    <IndicatorIcon
+                      :class="colorClasses(column.column.color, true)"
                     />
-                  </div>
-                </div>
-              </template>
-            </NestedPopover>
-            <div>{{ column.column.name }}</div>
-          </div>
-          <div class="flex">
-            <Dropdown :options="actions(column)">
-              <template #default>
-                <Button
-                  class="hidden group-hover:flex"
-                  icon="more-horizontal"
-                  variant="ghost"
-                />
-              </template>
-            </Dropdown>
-            <Button
-              icon="plus"
-              variant="ghost"
-              @click="options.onNewClick(column)"
-            />
-          </div>
-        </div>
-        <div class="overflow-y-auto flex flex-col gap-2 h-full">
-          <Draggable
-            :list="column.data"
-            group="fields"
-            item-key="name"
-            class="flex flex-col gap-3.5 flex-1"
-            @end="updateColumn"
-            :data-column="column.column.name"
-          >
-            <template #item="{ element: fields }">
-              <component
-                :is="options.getRoute ? 'router-link' : 'div'"
-                class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col"
-                :data-name="fields.name"
-                v-bind="{
-                  to: options.getRoute ? options.getRoute(fields) : undefined,
-                  onClick: options.onClick
-                    ? () => options.onClick(fields)
-                    : undefined,
-                }"
-              >
-                <slot
-                  name="title"
-                  v-bind="{ fields, titleField, itemName: fields.name }"
-                >
-                  <div class="h-5 flex items-center">
-                    <div v-if="fields[titleField]">
-                      {{ fields[titleField] }}
+                  </Button>
+                </template>
+                <template #body="{ close }">
+                  <div
+                    class="flex flex-col gap-3 px-3 py-2.5 rounded-lg border border-gray-100 bg-white shadow-xl"
+                  >
+                    <div class="flex gap-1">
+                      <Button
+                        :class="colorClasses(color)"
+                        variant="ghost"
+                        v-for="color in colors"
+                        :key="color"
+                        @click="() => (column.column.color = color)"
+                      >
+                        <IndicatorIcon />
+                      </Button>
                     </div>
-                    <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
+                    <div class="flex flex-row-reverse">
+                      <Button
+                        variant="solid"
+                        :label="__('Apply')"
+                        @click="updateColumn"
+                      />
+                    </div>
                   </div>
-                </slot>
-                <div class="border-b h-px my-2.5" />
-
-                <div class="flex flex-col gap-3.5">
-                  <template v-for="value in column.fields" :key="value">
-                    <slot
-                      name="fields"
-                      v-bind="{
-                        fields,
-                        fieldName: value,
-                        itemName: fields.name,
-                      }"
-                    >
-                      <div v-if="fields[value]" class="truncate">
-                        {{ fields[value] }}
+                </template>
+              </NestedPopover>
+              <div>{{ column.column.name }}</div>
+            </div>
+            <div class="flex">
+              <Dropdown :options="actions(column)">
+                <template #default>
+                  <Button
+                    class="hidden group-hover:flex"
+                    icon="more-horizontal"
+                    variant="ghost"
+                  />
+                </template>
+              </Dropdown>
+              <Button
+                icon="plus"
+                variant="ghost"
+                @click="options.onNewClick(column)"
+              />
+            </div>
+          </div>
+          <div class="overflow-y-auto flex flex-col gap-2 h-full">
+            <Draggable
+              :list="column.data"
+              group="fields"
+              item-key="name"
+              class="flex flex-col gap-3.5 flex-1"
+              @end="updateColumn"
+              :data-column="column.column.name"
+            >
+              <template #item="{ element: fields }">
+                <component
+                  :is="options.getRoute ? 'router-link' : 'div'"
+                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col"
+                  :data-name="fields.name"
+                  v-bind="{
+                    to: options.getRoute ? options.getRoute(fields) : undefined,
+                    onClick: options.onClick
+                      ? () => options.onClick(fields)
+                      : undefined,
+                  }"
+                >
+                  <slot
+                    name="title"
+                    v-bind="{ fields, titleField, itemName: fields.name }"
+                  >
+                    <div class="h-5 flex items-center">
+                      <div v-if="fields[titleField]">
+                        {{ fields[titleField] }}
                       </div>
-                    </slot>
-                  </template>
-                </div>
-                <div class="border-b h-px mt-2.5 mb-2" />
-                <slot name="actions" v-bind="{ itemName: fields.name }">
-                  <div class="flex gap-2 items-center justify-between">
-                    <div></div>
-                    <Button icon="plus" variant="ghost" @click.stop.prevent />
+                      <div class="text-gray-500" v-else>
+                        {{ __('No Title') }}
+                      </div>
+                    </div>
+                  </slot>
+                  <div class="border-b h-px my-2.5" />
+
+                  <div class="flex flex-col gap-3.5">
+                    <template v-for="value in column.fields" :key="value">
+                      <slot
+                        name="fields"
+                        v-bind="{
+                          fields,
+                          fieldName: value,
+                          itemName: fields.name,
+                        }"
+                      >
+                        <div v-if="fields[value]" class="truncate">
+                          {{ fields[value] }}
+                        </div>
+                      </slot>
+                    </template>
                   </div>
-                </slot>
-              </component>
-            </template>
-          </Draggable>
-          <div
-            v-if="column.column.count < column.column.all_count"
-            class="flex items-center justify-center"
-          >
-            <Button
-              :label="__('Load More')"
-              @click="emit('loadMore', column.column.name)"
-            />
+                  <div class="border-b h-px mt-2.5 mb-2" />
+                  <slot name="actions" v-bind="{ itemName: fields.name }">
+                    <div class="flex gap-2 items-center justify-between">
+                      <div></div>
+                      <Button icon="plus" variant="ghost" @click.stop.prevent />
+                    </div>
+                  </slot>
+                </component>
+              </template>
+            </Draggable>
+            <div
+              v-if="column.column.count < column.column.all_count"
+              class="flex items-center justify-center"
+            >
+              <Button
+                :label="__('Load More')"
+                @click="emit('loadMore', column.column.name)"
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </template>
-  </Draggable>
+      </template>
+    </Draggable>
+    <div v-if="deletedColumns.length" class="shrink-0 min-w-64">
+      <Autocomplete
+        value=""
+        :options="deletedColumns"
+        @change="(e) => addColumn(e)"
+      >
+        <template #target="{ togglePopover }">
+          <Button
+            class="w-full mt-2.5 mb-1 mr-5"
+            @click="togglePopover()"
+            :label="__('Add Column')"
+          >
+            <template #prefix>
+              <FeatherIcon name="plus" class="h-4" />
+            </template>
+          </Button>
+        </template>
+      </Autocomplete>
+    </div>
+  </div>
 </template>
 <script setup>
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import Draggable from 'vuedraggable'
@@ -179,6 +203,14 @@ const columns = computed(() => {
   return _columns
 })
 
+const deletedColumns = computed(() => {
+  return columns.value
+    .filter((col) => col.column['delete'])
+    .map((col) => {
+      return { label: col.column.name, value: col.column.name }
+    })
+})
+
 function actions(column) {
   return [
     {
@@ -189,13 +221,19 @@ function actions(column) {
           label: __('Delete'),
           icon: 'trash-2',
           onClick: () => {
-            column['delete'] = true
+            column.column['delete'] = true
             updateColumn()
           },
         },
       ],
     },
   ]
+}
+
+function addColumn(e) {
+  let column = columns.value.find((col) => col.column.name == e.value)
+  column.column['delete'] = false
+  updateColumn()
 }
 
 function updateColumn(d) {
@@ -205,7 +243,6 @@ function updateColumn(d) {
 
   let _columns = []
   columns.value.forEach((col) => {
-    if (col.delete) return
     col.column['order'] = col.data.map((d) => d.name)
     if (col.column.page_length) {
       delete col.column.page_length
