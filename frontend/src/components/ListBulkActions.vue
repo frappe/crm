@@ -1,16 +1,17 @@
 <template>
   <EditValueModal
+    v-if="showEditModal"
     v-model="showEditModal"
     :doctype="doctype"
     :selectedValues="selectedValues"
     @reload="reload"
   />
   <AssignmentModal
-    v-if="selectedValues"
-    :docs="selectedValues"
-    :doctype="doctype"
+    v-if="showAssignmentModal"
     v-model="showAssignmentModal"
     v-model:assignees="bulkAssignees"
+    :docs="selectedValues"
+    :doctype="doctype"
     @reload="reload"
   />
 </template>

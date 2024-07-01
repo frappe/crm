@@ -263,12 +263,14 @@
     :defaults="defaults"
   />
   <NoteModal
+    v-if="showNoteModal"
     v-model="showNoteModal"
     :note="note"
     doctype="CRM Lead"
     :doc="docname"
   />
   <TaskModal
+    v-if="showTaskModal"
     v-model="showTaskModal"
     :task="task"
     doctype="CRM Lead"

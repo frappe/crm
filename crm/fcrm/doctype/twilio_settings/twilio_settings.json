@@ -11,13 +11,15 @@
   "enabled",
   "column_break_avmt",
   "record_calls",
-  "section_break_malx",
+  "section_break_eklq",
   "account_sid",
-  "api_key",
-  "api_secret",
-  "column_break_idds",
+  "column_break_yqvr",
   "auth_token",
-  "twiml_sid"
+  "section_break_malx",
+  "api_key",
+  "twiml_sid",
+  "column_break_idds",
+  "api_secret"
  ],
  "fields": [
   {
@@ -31,13 +33,15 @@
    "fieldname": "api_key",
    "fieldtype": "Data",
    "label": "API Key",
-   "permlevel": 1
+   "permlevel": 1,
+   "read_only": 1
   },
   {
    "fieldname": "api_secret",
    "fieldtype": "Password",
    "label": "API Secret",
-   "permlevel": 1
+   "permlevel": 1,
+   "read_only": 1
   },
   {
    "fieldname": "column_break_idds",
@@ -54,7 +58,8 @@
    "fieldname": "twiml_sid",
    "fieldtype": "Data",
    "label": "TwiML SID",
-   "permlevel": 1
+   "permlevel": 1,
+   "read_only": 1
   },
   {
    "fieldname": "section_break_ssqj",
@@ -79,12 +84,20 @@
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled"
+  },
+  {
+   "fieldname": "section_break_eklq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_yqvr",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-06-11 17:42:38.256260",
+ "modified": "2024-07-01 17:55:25.003703",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Twilio Settings",

@@ -85,8 +85,8 @@ const props = defineProps({
     default: null,
   },
   docs: {
-    type: Array,
-    default: () => [],
+    type: Set,
+    default: new Set(),
   },
   doctype: {
     type: String,
