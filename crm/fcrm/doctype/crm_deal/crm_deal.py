@@ -190,6 +190,14 @@ class CRMDeal(Document):
 		]
 		return {'columns': columns, 'rows': rows}
 
+	@staticmethod
+	def default_kanban_settings():
+		return {
+			"column_field": "status",
+			"title_field": "organization",
+			"kanban_fields": '["annual_revenue", "email", "mobile_no", "_assign", "modified"]'
+		}
+
 @frappe.whitelist()
 def add_contact(deal, contact):
 	if not frappe.has_permission("CRM Deal", "write", deal):

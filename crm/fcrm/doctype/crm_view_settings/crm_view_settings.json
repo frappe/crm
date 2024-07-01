@@ -15,16 +15,23 @@
   "route_name",
   "pinned",
   "public",
-  "columns_tab",
-  "load_default_columns",
-  "columns",
-  "rows",
   "filters_tab",
   "filters",
   "order_by_tab",
   "order_by",
+  "list_tab",
+  "list_section",
+  "load_default_columns",
+  "columns",
+  "rows",
   "group_by_tab",
-  "group_by_field"
+  "group_by_field",
+  "kanban_tab",
+  "kanban_section",
+  "column_field",
+  "title_field",
+  "kanban_columns",
+  "kanban_fields"
  ],
  "fields": [
   {
@@ -47,11 +54,6 @@
    "fieldname": "filters",
    "fieldtype": "Code",
    "label": "Filters"
-  },
-  {
-   "fieldname": "columns_tab",
-   "fieldtype": "Tab Break",
-   "label": "Columns"
   },
   {
    "fieldname": "filters_tab",
@@ -126,7 +128,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "list\ngroup_by"
+   "options": "list\ngroup_by\nkanban"
   },
   {
    "fieldname": "group_by_tab",
@@ -137,11 +139,50 @@
    "fieldname": "group_by_field",
    "fieldtype": "Data",
    "label": "Group By Field"
+  },
+  {
+   "fieldname": "list_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "kanban_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_field",
+   "fieldtype": "Data",
+   "label": "Column Field"
+  },
+  {
+   "fieldname": "list_tab",
+   "fieldtype": "Tab Break",
+   "label": "List"
+  },
+  {
+   "fieldname": "kanban_tab",
+   "fieldtype": "Tab Break",
+   "label": "Kanban"
+  },
+  {
+   "fieldname": "kanban_columns",
+   "fieldtype": "Code",
+   "label": "Kanban Columns"
+  },
+  {
+   "fieldname": "kanban_fields",
+   "fieldtype": "Code",
+   "label": "Kanban Fields"
+  },
+  {
+   "default": "name",
+   "fieldname": "title_field",
+   "fieldtype": "Data",
+   "label": "Title Field"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-01 16:58:34.952945",
+ "modified": "2024-06-25 19:40:12.067788",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

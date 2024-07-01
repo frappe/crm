@@ -82,7 +82,7 @@ const showContactModal = ref(false)
 
 const currentContact = computed(() => {
   return contacts.value?.data?.data?.find(
-    (contact) => contact.name === route.params.contactId
+    (contact) => contact.name === route.params.contactId,
   )
 })
 
@@ -109,7 +109,11 @@ const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
 const rows = computed(() => {
-  if (!contacts.value?.data?.data) return []
+  if (
+    !contacts.value?.data?.data ||
+    !['list', 'group_by'].includes(contacts.value.data.view_type)
+  )
+    return []
   return contacts.value?.data.data.map((contact) => {
     let _rows = {}
     contacts.value?.data.rows.forEach((row) => {

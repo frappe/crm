@@ -119,7 +119,7 @@ import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -204,6 +204,10 @@ async function updateTask() {
   }
   show.value = false
 }
+
+onMounted(() => {
+  _task.value = { ...props.task }
+})
 
 watch(
   () => show.value,
