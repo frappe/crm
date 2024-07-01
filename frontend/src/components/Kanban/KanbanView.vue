@@ -198,10 +198,10 @@ function actions(column) {
   ]
 }
 
-function updateColumn({ item, from, to }) {
-  let toColumn = to?.dataset.column
-  let fromColumn = from?.dataset.column
-  let itemName = item?.dataset.name
+function updateColumn(d) {
+  let toColumn = d?.to?.dataset.column
+  let fromColumn = d?.from?.dataset.column
+  let itemName = d?.item?.dataset.name
 
   let _columns = []
   columns.value.forEach((col) => {
