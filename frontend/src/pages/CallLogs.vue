@@ -76,7 +76,11 @@ const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
 const rows = computed(() => {
-  if (!callLogs.value?.data?.data) return []
+  if (
+    !callLogs.value?.data?.data ||
+    !['list', 'group_by'].includes(callLogs.value.data.view_type)
+  )
+    return []
   return callLogs.value?.data.data.map((callLog) => {
     let _rows = {}
     callLogs.value?.data.rows.forEach((row) => {

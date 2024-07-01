@@ -12,7 +12,7 @@
           shape="circle"
           :image="avatars[0].image"
           :label="avatars[0].label"
-          size="sm"
+          :size="size"
         />
         <div class="truncate">{{ avatars[0].label }}</div>
       </div>

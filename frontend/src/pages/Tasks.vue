@@ -20,10 +20,141 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Task"
+    :options="{
+      allowedViews: ['list', 'kanban'],
+    }"
   />
+  <KanbanView
+    v-if="$route.params.viewType == 'kanban' && rows.length"
+    v-model="tasks"
+    :options="{
+      onClick: (row) => showTask(row.name),
+      onNewClick: (column) => createTask(column),
+    }"
+    @update="(data) => viewControls.updateKanbanSettings(data)"
+    @loadMore="(columnName) => viewControls.loadMoreKanban(columnName)"
+  >
+    <template #title="{ titleField, itemName }">
+      <div class="flex items-center gap-2">
+        <div v-if="titleField === 'status'">
+          <TaskStatusIcon :status="getRow(itemName, titleField).label" />
+        </div>
+        <div v-else-if="titleField === 'priority'">
+          <TaskPriorityIcon :priority="getRow(itemName, titleField).label" />
+        </div>
+        <div v-else-if="titleField === 'assigned_to'">
+          <Avatar
+            v-if="getRow(itemName, titleField).full_name"
+            class="flex items-center"
+            :image="getRow(itemName, titleField).user_image"
+            :label="getRow(itemName, titleField).full_name"
+            size="sm"
+          />
+        </div>
+        <div
+          v-if="['modified', 'creation'].includes(titleField)"
+          class="truncate text-base"
+        >
+          <Tooltip :text="getRow(itemName, titleField).label">
+            <div>{{ getRow(itemName, titleField).timeAgo }}</div>
+          </Tooltip>
+        </div>
+        <div
+          v-else-if="getRow(itemName, titleField).label"
+          class="truncate text-base"
+        >
+          {{ getRow(itemName, titleField).label }}
+        </div>
+        <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
+      </div>
+    </template>
+    <template #fields="{ fieldName, itemName }">
+      <div
+        v-if="getRow(itemName, fieldName).label"
+        class="truncate flex items-center gap-2"
+      >
+        <div v-if="fieldName === 'status'">
+          <TaskStatusIcon
+            class="size-3"
+            :status="getRow(itemName, fieldName).label"
+          />
+        </div>
+        <div v-else-if="fieldName === 'priority'">
+          <TaskPriorityIcon :priority="getRow(itemName, fieldName).label" />
+        </div>
+        <div v-else-if="fieldName === 'assigned_to'">
+          <Avatar
+            v-if="getRow(itemName, fieldName).full_name"
+            class="flex items-center"
+            :image="getRow(itemName, fieldName).user_image"
+            :label="getRow(itemName, fieldName).full_name"
+            size="sm"
+          />
+        </div>
+        <div
+          v-if="['modified', 'creation'].includes(fieldName)"
+          class="truncate text-base"
+        >
+          <Tooltip :text="getRow(itemName, fieldName).label">
+            <div>{{ getRow(itemName, fieldName).timeAgo }}</div>
+          </Tooltip>
+        </div>
+        <div
+          v-else-if="fieldName == 'description'"
+          class="truncate text-base max-h-44"
+        >
+          <TextEditor
+            v-if="getRow(itemName, fieldName).label"
+            :content="getRow(itemName, fieldName).label"
+            :editable="false"
+            editor-class="!prose-sm max-w-none focus:outline-none"
+            class="flex-1 overflow-hidden"
+          />
+        </div>
+        <div v-else class="truncate text-base">
+          {{ getRow(itemName, fieldName).label }}
+        </div>
+      </div>
+    </template>
+    <template #actions="{ itemName }">
+      <div class="flex gap-2 items-center justify-between">
+        <div>
+          <Button
+            class="-ml-2"
+            v-if="getRow(itemName, 'reference_docname').label"
+            variant="ghost"
+            size="sm"
+            :label="
+              getRow(itemName, 'reference_doctype').label == 'CRM Deal'
+                ? __('Deal')
+                : __('Lead')
+            "
+            @click.stop="
+              redirect(
+                getRow(itemName, 'reference_doctype').label,
+                getRow(itemName, 'reference_docname').label,
+              )
+            "
+          >
+            <template #suffix>
+              <ArrowUpRightIcon class="h-4 w-4" />
+            </template>
+          </Button>
+        </div>
+        <Dropdown
+          class="flex items-center gap-2"
+          :options="actions(itemName)"
+          variant="ghost"
+          @click.stop.prevent
+        >
+          <Button icon="more-horizontal" variant="ghost" />
+        </Dropdown>
+      </div>
+    </template>
+  </KanbanView>
   <TasksListView
     ref="tasksListView"
-    v-if="tasks.data && rows.length"
+    v-else-if="tasks.data && rows.length"
     v-model="tasks.data.page_length_count"
     v-model:list="tasks"
     :rows="rows"
@@ -53,24 +184,43 @@
       </Button>
     </div>
   </div>
-  <TaskModal v-model="showTaskModal" v-model:reloadTasks="tasks" :task="task" />
+  <TaskModal
+    v-if="showTaskModal"
+    v-model="showTaskModal"
+    v-model:reloadTasks="tasks"
+    :task="task"
+  />
 </template>
 
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
+import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
+import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
+import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import { usersStore } from '@/stores/users'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
-import { Breadcrumbs } from 'frappe-ui'
+import {
+  Breadcrumbs,
+  Tooltip,
+  Avatar,
+  TextEditor,
+  Dropdown,
+  call,
+} from 'frappe-ui'
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const breadcrumbs = [{ label: __('Tasks'), route: { name: 'Tasks' } }]
 
 const { getUser } = usersStore()
+
+const router = useRouter()
 
 const tasksListView = ref(null)
 
@@ -81,9 +231,38 @@ const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
+function getRow(name, field) {
+  function getValue(value) {
+    if (value && typeof value === 'object') {
+      return value
+    }
+    return { label: value }
+  }
+  return getValue(rows.value?.find((row) => row.name == name)[field])
+}
+
 const rows = computed(() => {
   if (!tasks.value?.data?.data) return []
-  return tasks.value?.data.data.map((task) => {
+
+  if (tasks.value.data.view_type === 'kanban') {
+    return getKanbanRows(tasks.value.data.data)
+  }
+
+  return parseRows(tasks.value?.data.data)
+})
+
+function getKanbanRows(data) {
+  let _rows = []
+  data.forEach((column) => {
+    column.data?.forEach((row) => {
+      _rows.push(row)
+    })
+  })
+  return parseRows(_rows)
+}
+
+function parseRows(rows) {
+  return rows.map((task) => {
     let _rows = {}
     tasks.value?.data.rows.forEach((row) => {
       _rows[row] = task[row]
@@ -102,7 +281,7 @@ const rows = computed(() => {
     })
     return _rows
   })
-})
+}
 
 const showTaskModal = ref(false)
 
@@ -134,7 +313,7 @@ function showTask(name) {
   showTaskModal.value = true
 }
 
-function createTask() {
+function createTask(column) {
   task.value = {
     name: '',
     title: '',
@@ -146,6 +325,44 @@ function createTask() {
     reference_doctype: 'CRM Lead',
     reference_docname: '',
   }
+
+  if (column.column?.name) {
+    let column_field = tasks.value.params.column_field
+    if (column_field) {
+      task.value[column_field] = column.column.name
+    }
+  }
+
   showTaskModal.value = true
+}
+
+function actions(name) {
+  return [
+    {
+      label: __('Delete'),
+      icon: 'trash-2',
+      onClick: () => {
+        deletetask(name)
+        tasks.value.reload()
+      },
+    },
+  ]
+}
+
+async function deletetask(name) {
+  await call('frappe.client.delete', {
+    doctype: 'CRM Task',
+    name,
+  })
+}
+
+function redirect(doctype, docname) {
+  if (!docname) return
+  let name = doctype == 'CRM Deal' ? 'Deal' : 'Lead'
+  let params = { leadId: docname }
+  if (name == 'Deal') {
+    params = { dealId: docname }
+  }
+  router.push({ name: name, params: params })
 }
 </script>

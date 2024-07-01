@@ -119,7 +119,7 @@ import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -205,20 +205,23 @@ async function updateTask() {
   show.value = false
 }
 
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    editMode.value = false
-    nextTick(() => {
-      title.value.el.focus()
-      _task.value = { ...props.task }
-      if (_task.value.title) {
-        editMode.value = true
-      }
-    })
-  }
-)
+function render() {
+  editMode.value = false
+  nextTick(() => {
+    title.value.el.focus()
+    _task.value = { ...props.task }
+    if (_task.value.title) {
+      editMode.value = true
+    }
+  })
+}
+
+onMounted(() => render())
+
+watch(show, (value) => {
+  if (!value) return
+  render()
+})
 </script>
 
 <style scoped>

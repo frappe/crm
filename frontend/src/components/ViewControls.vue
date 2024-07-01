@@ -60,13 +60,20 @@
 
         <div class="flex gap-2">
           <SortBy
+            v-if="route.params.viewType !== 'kanban'"
             v-model="list"
             :doctype="doctype"
             @update="updateSort"
             :hideLabel="isMobileView"
           />
+          <KanbanSettings
+            v-if="route.params.viewType === 'kanban'"
+            v-model="list"
+            :doctype="doctype"
+            @update="updateKanbanSettings"
+          />
           <ColumnSettings
-            v-if="!options.hideColumnsButton"
+            v-else-if="!options.hideColumnsButton"
             v-model="list"
             :doctype="doctype"
             :hideLabel="isMobileView"
@@ -155,9 +162,20 @@
           :default_filters="filters"
           @update="updateFilter"
         />
-        <SortBy v-model="list" :doctype="doctype" @update="updateSort" />
+        <SortBy
+          v-if="route.params.viewType !== 'kanban'"
+          v-model="list"
+          :doctype="doctype"
+          @update="updateSort"
+        />
+        <KanbanSettings
+          v-if="route.params.viewType === 'kanban'"
+          v-model="list"
+          :doctype="doctype"
+          @update="updateKanbanSettings"
+        />
         <ColumnSettings
-          v-if="!options.hideColumnsButton"
+          v-else-if="!options.hideColumnsButton"
           v-model="list"
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
@@ -249,6 +267,7 @@
 </template>
 <script setup>
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -261,6 +280,7 @@ import Filter from '@/components/Filter.vue'
 import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
+import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
@@ -319,6 +339,10 @@ function getViewType() {
       label: __('Group By View'),
       icon: markRaw(DetailsIcon),
     },
+    kanban: {
+      label: __('Kanban View'),
+      icon: markRaw(KanbanIcon),
+    },
   }
 
   return types[viewType]
@@ -340,6 +364,10 @@ const view = ref({
   icon: '',
   filters: {},
   order_by: 'modified desc',
+  column_field: 'status',
+  title_field: '',
+  kanban_columns: '',
+  kanban_fields: '',
   columns: '',
   rows: '',
   load_default_columns: false,
@@ -367,64 +395,61 @@ watch(updatedPageCount, (value) => {
 
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
+  const view_name = _view?.name || ''
+  const view_type = _view?.type || route.params.viewType || 'list'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
+  const group_by_field = _view?.group_by_field || 'owner'
   const columns = _view?.columns || ''
   const rows = _view?.rows || ''
+  const column_field = _view?.column_field || 'status'
+  const title_field = _view?.title_field || ''
+  const kanban_columns = _view?.kanban_columns || ''
+  const kanban_fields = _view?.kanban_fields || ''
 
-  if (_view) {
-    view.value = {
-      name: _view.name,
-      label: _view.label,
-      type: _view.type || 'list',
-      icon: _view.icon,
-      filters: _view.filters,
-      order_by: _view.order_by,
-      group_by_field: _view.group_by_field,
-      columns: _view.columns,
-      rows: _view.rows,
-      route_name: _view.route_name,
-      load_default_columns: _view.row,
-      pinned: _view.pinned,
-      public: _view.public,
-    }
-  } else {
-    view.value = {
-      name: '',
-      label: getViewType().label,
-      type: route.params.viewType || 'list',
-      icon: '',
-      filters: {},
-      order_by: 'modified desc',
-      group_by_field: 'owner',
-      columns: '',
-      rows: '',
-      route_name: route.name,
-      load_default_columns: true,
-      pinned: false,
-      public: false,
-    }
+  view.value = {
+    name: view_name,
+    label: _view?.label || getViewType().label,
+    type: view_type,
+    icon: _view?.icon || '',
+    filters: filters,
+    order_by: order_by,
+    group_by_field: group_by_field,
+    column_field: column_field,
+    title_field: title_field,
+    kanban_columns: kanban_columns,
+    kanban_fields: kanban_fields,
+    columns: columns,
+    rows: rows,
+    route_name: _view?.route_name || route.name,
+    load_default_columns: _view?.row || true,
+    pinned: _view?.pinned || false,
+    public: _view?.public || false,
   }
 
   return {
     doctype: props.doctype,
     filters: filters,
     order_by: order_by,
+    default_filters: props.filters,
+    view: {
+      custom_view_name: view_name,
+      view_type: view_type,
+      group_by_field: group_by_field,
+    },
+    column_field: column_field,
+    title_field: title_field,
+    kanban_columns: kanban_columns,
+    kanban_fields: kanban_fields,
     columns: columns,
     rows: rows,
     page_length: pageLength.value,
     page_length_count: pageLengthCount.value,
-    view: {
-      custom_view_name: _view?.name || '',
-      view_type: _view?.type || route.params.viewType || 'list',
-      group_by_field: _view?.group_by_field || 'owner',
-    },
-    default_filters: props.filters,
   }
 }
 
 list.value = createResource({
-  url: 'crm.api.doc.get_list_data',
+  url: 'crm.api.doc.get_data',
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
   onSuccess(data) {
@@ -434,16 +459,20 @@ list.value = createResource({
       doctype: props.doctype,
       filters: params.filters,
       order_by: params.order_by,
-      page_length: params.page_length,
-      page_length_count: params.page_length_count,
-      columns: data.columns,
-      rows: data.rows,
+      default_filters: props.filters,
       view: {
         custom_view_name: cv?.name || '',
         view_type: cv?.type || route.params.viewType || 'list',
         group_by_field: params?.view?.group_by_field || 'owner',
       },
-      default_filters: props.filters,
+      column_field: params.column_field,
+      title_field: params.title_field,
+      kanban_columns: params.kanban_columns,
+      kanban_fields: params.kanban_fields,
+      columns: data.columns,
+      rows: data.rows,
+      page_length: params.page_length,
+      page_length_count: params.page_length_count,
     }
   },
 })
@@ -499,6 +528,16 @@ if (allowedViews.includes('group_by')) {
     },
   })
 }
+if (allowedViews.includes('kanban')) {
+  defaultViews.push({
+    label: __(props.options?.defaultViewName) || __('Kanban View'),
+    icon: markRaw(KanbanIcon),
+    onClick() {
+      viewUpdated.value = false
+      router.push({ name: route.name, params: { viewType: 'kanban' } })
+    },
+  })
+}
 
 function getIcon(icon, type) {
   if (isEmoji(icon)) {
@@ -538,7 +577,7 @@ const viewsDropdownOptions = computed(() => {
     })
     let publicViews = list.value.data.views.filter((v) => v.public)
     let savedViews = list.value.data.views.filter(
-      (v) => !v.pinned && !v.public && !v.is_default
+      (v) => !v.pinned && !v.public && !v.is_default,
     )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
@@ -576,7 +615,7 @@ const quickFilterList = computed(() => {
       if (Array.isArray(value)) {
         if (
           (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.type
+            filter.type,
           ) &&
             value[0]?.toLowerCase() == 'like') ||
           value[0]?.toLowerCase() != 'like'
@@ -695,6 +734,87 @@ function updateColumns(obj) {
   }
 }
 
+async function updateKanbanSettings(data) {
+  if (data.item && data.to) {
+    await call('frappe.client.set_value', {
+      doctype: props.doctype,
+      name: data.item,
+      fieldname: view.value.column_field,
+      value: data.to,
+    })
+  }
+  let isDirty = viewUpdated.value
+
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  if (data.kanban_columns) {
+    list.value.params.kanban_columns = data.kanban_columns
+    view.value.kanban_columns = data.kanban_columns
+  }
+  if (data.kanban_fields) {
+    list.value.params.kanban_fields = data.kanban_fields
+    view.value.kanban_fields = data.kanban_fields
+  }
+  if (data.column_field && data.column_field != view.value.column_field) {
+    list.value.params.column_field = data.column_field
+    view.value.column_field = data.column_field
+    list.value.params.kanban_columns = ''
+    view.value.kanban_columns = ''
+  }
+  if (data.title_field && data.title_field != view.value.title_field) {
+    list.value.params.title_field = data.title_field
+    view.value.title_field = data.title_field
+  }
+
+  list.value.reload()
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  } else if (!data.column_field) {
+    if (isDirty) {
+      $dialog({
+        title: __('Unsaved Changes'),
+        message: __('You have unsaved changes. Do you want to save them?'),
+        variant: 'danger',
+        actions: [
+          {
+            label: __('Update'),
+            variant: 'solid',
+            onClick: (close) => {
+              update_custom_view()
+              close()
+            },
+          },
+        ],
+      })
+    } else {
+      update_custom_view()
+    }
+  }
+}
+
+function loadMoreKanban(columnName) {
+  let columns = list.value.params.kanban_columns
+
+  if (typeof columns === 'string') {
+    columns = JSON.parse(columns)
+  }
+
+  let column = columns.find((c) => c.name == columnName)
+
+  if (!column.page_length) {
+    column.page_length = 40
+  } else {
+    column.page_length += 20
+  }
+  list.value.params.kanban_columns = columns
+  view.value.kanban_columns = columns
+  list.value.reload()
+}
+
 function create_or_update_default_view() {
   if (route.query.view) return
   view.value.doctype = props.doctype
@@ -702,7 +822,7 @@ function create_or_update_default_view() {
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
     {
       view: view.value,
-    }
+    },
   ).then(() => {
     reloadView()
     view.value = {
@@ -712,7 +832,11 @@ function create_or_update_default_view() {
       name: view.value.name,
       filters: defaultParams.value.filters,
       order_by: defaultParams.value.order_by,
-      group_by_field: defaultParams.value.view.group_by_field,
+      group_by_field: defaultParams.value.view?.group_by_field,
+      column_field: defaultParams.value.column_field,
+      title_field: defaultParams.value.title_field,
+      kanban_columns: defaultParams.value.kanban_columns,
+      kanban_fields: defaultParams.value.kanban_fields,
       columns: defaultParams.value.columns,
       rows: defaultParams.value.rows,
       route_name: route.name,
@@ -720,6 +844,31 @@ function create_or_update_default_view() {
     }
     viewUpdated.value = false
   })
+}
+
+function update_custom_view() {
+  viewUpdated.value = false
+  view.value = {
+    doctype: props.doctype,
+    label: view.value.label,
+    type: view.value.type || 'list',
+    icon: view.value.icon,
+    name: view.value.name,
+    filters: defaultParams.value.filters,
+    order_by: defaultParams.value.order_by,
+    group_by_field: defaultParams.value.view.group_by_field,
+    column_field: defaultParams.value.column_field,
+    title_field: defaultParams.value.title_field,
+    kanban_columns: defaultParams.value.kanban_columns,
+    kanban_fields: defaultParams.value.kanban_fields,
+    columns: defaultParams.value.columns,
+    rows: defaultParams.value.rows,
+    route_name: route.name,
+    load_default_columns: view.value.load_default_columns,
+  }
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
+    view: view.value,
+  }).then(() => reloadView())
 }
 
 function updatePageLength(value, loadMore = false) {
@@ -818,7 +967,7 @@ const viewModalObj = ref({})
 function duplicateView() {
   let label =
     __(
-      getView(route.query.view, route.params.viewType, props.doctype)?.label
+      getView(route.query.view, route.params.viewType, props.doctype)?.label,
     ) || getViewType().label
   view.value.name = ''
   view.value.label = label + __(' (New)')
@@ -879,6 +1028,10 @@ function saveView() {
     filters: defaultParams.value.filters,
     order_by: defaultParams.value.order_by,
     group_by_field: defaultParams.value.view.group_by_field,
+    column_field: defaultParams.value.column_field,
+    title_field: defaultParams.value.title_field,
+    kanban_columns: defaultParams.value.kanban_columns,
+    kanban_fields: defaultParams.value.kanban_fields,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,
@@ -939,7 +1092,13 @@ function likeDoc({ name, liked }) {
   })
 }
 
-defineExpose({ applyFilter, applyLikeFilter, likeDoc })
+defineExpose({
+  applyFilter,
+  applyLikeFilter,
+  likeDoc,
+  updateKanbanSettings,
+  loadMoreKanban,
+})
 
 // Watchers
 watch(
@@ -948,7 +1107,7 @@ watch(
     if (_.isEqual(value, old_value)) return
     reload()
   },
-  { deep: true }
+  { deep: true },
 )
 
 watch([() => route, () => route.params.viewType], (value, old_value) => {

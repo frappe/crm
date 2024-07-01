@@ -60,3 +60,11 @@ class CRMTask(Document):
 			"modified",
 		]
 		return {'columns': columns, 'rows': rows}
+
+	@staticmethod
+	def default_kanban_settings():
+		return {
+			"column_field": "status",
+			"title_field": "title",
+			"kanban_fields": '["description", "priority", "creation"]'
+		}

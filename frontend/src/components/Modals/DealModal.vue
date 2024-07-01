@@ -46,6 +46,10 @@ import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+const props = defineProps({
+  defaults: Object,
+})
+
 const { getUser } = usersStore()
 const { getDealStatus, statusOptions } = statusesStore()
 
@@ -194,6 +198,7 @@ function createDeal() {
 }
 
 onMounted(() => {
+  Object.assign(deal, props.defaults)
   if (!deal.deal_owner) {
     deal.deal_owner = getUser().email
   }

@@ -16,13 +16,17 @@ def create(view):
 	view.filters = parse_json(view.filters) or {}
 	view.columns = parse_json(view.columns or '[]')
 	view.rows = parse_json(view.rows or '[]')
+	view.kanban_columns = parse_json(view.kanban_columns or '[]')
+	view.kanban_fields = parse_json(view.kanban_fields or '[]')
 
-	default_rows = sync_default_list_rows(view.doctype)
+	default_rows = sync_default_rows(view.doctype)
 	view.rows = view.rows + default_rows if default_rows else view.rows
 	view.rows = remove_duplicates(view.rows)
 
-	if not view.columns:
-		view.columns = sync_default_list_columns(view.doctype)
+	if not view.kanban_columns and view.type == "kanban":
+		view.kanban_columns = sync_default_columns(view)
+	elif not view.columns:
+		view.columns = sync_default_columns(view)
 
 	doc = frappe.new_doc("CRM View Settings")
 	doc.name = view.label
@@ -36,6 +40,10 @@ def create(view):
 	doc.filters = json.dumps(view.filters)
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
+	doc.column_field = view.column_field
+	doc.title_field = view.title_field
+	doc.kanban_columns = json.dumps(view.kanban_columns)
+	doc.kanban_fields = json.dumps(view.kanban_fields)
 	doc.columns = json.dumps(view.columns)
 	doc.rows = json.dumps(view.rows)
 	doc.insert()
@@ -48,8 +56,10 @@ def update(view):
 	filters = parse_json(view.filters) or {}
 	columns = parse_json(view.columns) or []
 	rows = parse_json(view.rows) or []
+	kanban_columns = parse_json(view.kanban_columns) or []
+	kanban_fields = parse_json(view.kanban_fields) or []
 
-	default_rows = sync_default_list_rows(view.doctype)
+	default_rows = sync_default_rows(view.doctype)
 	rows = rows + default_rows if default_rows else rows
 	rows = remove_duplicates(rows)
 
@@ -62,6 +72,10 @@ def update(view):
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
+	doc.column_field = view.column_field
+	doc.title_field = view.title_field
+	doc.kanban_columns = json.dumps(kanban_columns)
+	doc.kanban_fields = json.dumps(kanban_fields)
 	doc.columns = json.dumps(columns)
 	doc.rows = json.dumps(rows)
 	doc.save()
@@ -91,7 +105,7 @@ def pin(name, value):
 def remove_duplicates(l):
 	return list(dict.fromkeys(l))
 
-def sync_default_list_rows(doctype):
+def sync_default_rows(doctype, type="list"):
 	list = get_controller(doctype)
 	rows = []
 
@@ -100,11 +114,21 @@ def sync_default_list_rows(doctype):
 
 	return rows
 
-def sync_default_list_columns(doctype):
-	list = get_controller(doctype)
+def sync_default_columns(view):
+	list = get_controller(view.doctype)
 	columns = []
 
-	if hasattr(list, "default_list_data"):
+	if view.type == "kanban" and view.column_field:
+		field_meta = frappe.get_meta(view.doctype).get_field(view.column_field)
+		if field_meta.fieldtype == "Link":
+			columns = frappe.get_all(
+				field_meta.options,
+				fields=["name"],
+				order_by="modified asc",
+			)
+		elif field_meta.fieldtype == "Select":
+			columns = [{"name": option} for option in field_meta.options.split("\n")]
+	elif hasattr(list, "default_list_data"):
 		columns = list.default_list_data().get("columns")
 
 	return columns
@@ -117,13 +141,17 @@ def create_or_update_default_view(view):
 	filters = parse_json(view.filters) or {}
 	columns = parse_json(view.columns or '[]')
 	rows = parse_json(view.rows or '[]')
+	kanban_columns = parse_json(view.kanban_columns or '[]')
+	kanban_fields = parse_json(view.kanban_fields or '[]')
 
-	default_rows = sync_default_list_rows(view.doctype)
+	default_rows = sync_default_rows(view.doctype, view.type)
 	rows = rows + default_rows if default_rows else rows
 	rows = remove_duplicates(rows)
 
-	if not columns:
-		columns = sync_default_list_columns(view.doctype)
+	if not kanban_columns and view.type == "kanban":
+		kanban_columns = sync_default_columns(view)
+	elif not columns:
+		columns = sync_default_columns(view)
 
 	doc = frappe.db.exists(
 		"CRM View Settings",
@@ -143,6 +171,10 @@ def create_or_update_default_view(view):
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by
 		doc.group_by_field = view.group_by_field
+		doc.column_field = view.column_field
+		doc.title_field = view.title_field
+		doc.kanban_columns = json.dumps(kanban_columns)
+		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.save()
@@ -159,6 +191,10 @@ def create_or_update_default_view(view):
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by
 		doc.group_by_field = view.group_by_field
+		doc.column_field = view.column_field
+		doc.title_field = view.title_field
+		doc.kanban_columns = json.dumps(kanban_columns)
+		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.is_default = True
