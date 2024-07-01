@@ -208,7 +208,7 @@ async function updateTask() {
 function render() {
   editMode.value = false
   nextTick(() => {
-    title.value.el.focus()
+    title.value?.el?.focus?.()
     _task.value = { ...props.task }
     if (_task.value.title) {
       editMode.value = true
