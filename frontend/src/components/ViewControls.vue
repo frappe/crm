@@ -467,10 +467,10 @@ list.value = createResource({
         view_type: cv?.type || route.params.viewType || 'list',
         group_by_field: params?.view?.group_by_field || 'owner',
       },
-      column_field: params.column_field,
-      title_field: params.title_field,
-      kanban_columns: params.kanban_columns,
-      kanban_fields: params.kanban_fields,
+      column_field: data.column_field,
+      title_field: data.title_field,
+      kanban_columns: data.kanban_columns,
+      kanban_fields: data.kanban_fields,
       columns: data.columns,
       rows: data.rows,
       page_length: params.page_length,
@@ -799,7 +799,7 @@ async function updateKanbanSettings(data) {
 }
 
 function loadMoreKanban(columnName) {
-  let columns = list.value.params.kanban_columns
+  let columns = list.value.data.kanban_columns || "[]"
 
   if (typeof columns === 'string') {
     columns = JSON.parse(columns)
