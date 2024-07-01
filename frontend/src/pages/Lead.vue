@@ -185,11 +185,11 @@
     </Resizer>
   </div>
   <AssignmentModal
-    v-if="lead.data"
-    :doc="lead.data"
-    doctype="CRM Lead"
+    v-if="showAssignmentModal"
     v-model="showAssignmentModal"
     v-model:assignees="lead.data._assignedTo"
+    :doc="lead.data"
+    doctype="CRM Lead"
   />
   <Dialog
     v-model="showConvertToDealModal"

@@ -278,11 +278,11 @@
     }"
   />
   <AssignmentModal
-    v-if="deal.data"
-    :doc="deal.data"
-    doctype="CRM Deal"
+    v-if="showAssignmentModal"
     v-model="showAssignmentModal"
     v-model:assignees="deal.data._assignedTo"
+    :doc="deal.data"
+    doctype="CRM Deal"
   />
 </template>
 <script setup>

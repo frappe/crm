@@ -52,7 +52,7 @@ const props = defineProps({
     required: true,
   },
   selectedValues: {
-    type: Array,
+    type: Set,
     required: true,
   },
 })
@@ -67,6 +67,9 @@ const fields = createResource({
   params: {
     doctype: props.doctype,
   },
+  transform: (data) => {
+    return data.filter((f) => f.hidden == 0 && f.read_only == 0)
+  }
 })
 
 onMounted(() => {
