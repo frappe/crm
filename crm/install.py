@@ -16,6 +16,8 @@ def after_install():
 	add_default_fields_layout()
 	add_property_setter()
 	add_email_template_custom_fields()
+	add_default_industries()
+	add_default_lead_sources()
 	frappe.db.commit()
 
 def add_default_lead_statuses():
@@ -196,3 +198,28 @@ def add_email_template_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Email Template")
+
+
+def add_default_industries():
+	industries = ["Accounting", "Advertising", "Aerospace", "Agriculture", "Airline", "Apparel & Accessories", "Automotive", "Banking", "Biotechnology", "Broadcasting", "Brokerage", "Chemical", "Computer", "Consulting", "Consumer Products", "Cosmetics", "Defense", "Department Stores", "Education", "Electronics", "Energy", "Entertainment & Leisure, Executive Search", "Financial Services", "Food", "Beverage & Tobacco", "Grocery", "Health Care", "Internet Publishing", "Investment Banking", "Legal", "Manufacturing", "Motion Picture & Video", "Music", "Newspaper Publishers", "Online Auctions", "Pension Funds", "Pharmaceuticals", "Private Equity", "Publishing", "Real Estate", "Retail & Wholesale", "Securities & Commodity Exchanges", "Service", "Soap & Detergent", "Software", "Sports", "Technology", "Telecommunications", "Television", "Transportation", "Venture Capital"]
+
+	for rec in industries:
+		if frappe.db.exists("CRM Industry", rec):
+			continue
+
+		doc = frappe.new_doc("CRM Industry")
+		doc.industry = rec
+		doc.insert()
+
+
+def add_default_lead_sources():
+
+	lead_sources = ["Existing Customer", "Reference", "Advertisement", "Cold Calling", "Exhibition", "Supplier Reference", "Mass Mailing", "Customer's Vendor", "Campaign", "Walk In"]
+
+	for source in lead_sources:
+		if frappe.db.exists("CRM Lead Source", source):
+			continue
+
+		doc = frappe.new_doc("CRM Lead Source")
+		doc.source_name = source
+		doc.insert()
