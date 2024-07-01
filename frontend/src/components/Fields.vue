@@ -33,6 +33,7 @@
             :options="field.options"
             v-model="data[field.name]"
             :placeholder="__(field.placeholder || field.label)"
+            :disabled="Boolean(field.read_only)"
           >
             <template v-if="field.prefix" #prefix>
               <IndicatorIcon :class="field.prefix" />
@@ -65,6 +66,7 @@
             @change="(v) => (data[field.name] = v)"
             :placeholder="__(field.placeholder || field.label)"
             :onCreate="field.create"
+            :disabled="Boolean(field.read_only)"
           />
           <Link
             v-else-if="field.type === 'User'"
@@ -74,6 +76,7 @@
             @change="(v) => (data[field.name] = v)"
             :placeholder="__(field.placeholder || field.label)"
             :hideMe="true"
+            :disabled="Boolean(field.read_only)"
           >
             <template #prefix>
               <UserAvatar class="mr-2" :user="data[field.name]" size="sm" />
@@ -143,30 +146,35 @@
             v-model="data[field.name]"
             :placeholder="__(field.placeholder || field.label)"
             input-class="border-none"
+            :disabled="Boolean(field.read_only)"
           />
           <DatePicker
             v-else-if="field.type === 'Date'"
             v-model="data[field.name]"
             :placeholder="__(field.placeholder || field.label)"
             input-class="border-none"
+            :disabled="Boolean(field.read_only)"
           />
           <FormControl
             v-else-if="['Small Text', 'Text', 'Long Text'].includes(field.type)"
             type="textarea"
             :placeholder="__(field.placeholder || field.label)"
             v-model="data[field.name]"
+            :disabled="Boolean(field.read_only)"
           />
           <FormControl
             v-else-if="['Int'].includes(field.type)"
             type="number"
             :placeholder="__(field.placeholder || field.label)"
             v-model="data[field.name]"
+            :disabled="Boolean(field.read_only)"
           />
           <FormControl
             v-else
             type="text"
             :placeholder="__(field.placeholder || field.label)"
             v-model="data[field.name]"
+            :disabled="Boolean(field.read_only)"
           />
         </div>
       </div>

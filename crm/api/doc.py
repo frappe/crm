@@ -667,9 +667,6 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 	for field in fields:
 		if (
 			field.fieldtype not in not_allowed_fieldtypes
-			and not field.hidden
-			and not field.read_only
-			and not field.is_virtual
 			and field.fieldname
 		):
 			_fields.append({
@@ -678,6 +675,8 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 				"value": field.fieldname,
 				"options": field.options,
 				"mandatory": field.reqd,
+				"read_only": field.read_only,
+				"hidden": field.hidden,
 			})
 
 	return _fields
