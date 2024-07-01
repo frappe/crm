@@ -67,7 +67,7 @@
               </div>
               <div id="value" class="w-full">
                 <component
-                  :is="getValSelect(f)"
+                  :is="getValueControl(f)"
                   v-model="f.value"
                   @change.stop="(v) => updateValue(v, f)"
                   :placeholder="__('John Doe')"
@@ -100,7 +100,7 @@
                 </div>
                 <div id="value" class="!min-w-[140px]">
                   <component
-                    :is="getValSelect(f)"
+                    :is="getValueControl(f)"
                     v-model="f.value"
                     @change="(v) => updateValue(v, f)"
                     :placeholder="__('John Doe')"
@@ -242,7 +242,7 @@ function convertFilters(data, allFilters) {
   let f = []
   for (let [key, value] of Object.entries(allFilters)) {
     let field = data.find((f) => f.fieldname === key)
-    if (typeof value !== 'object') {
+    if (typeof value !== 'object' || !value) {
       value = ['=', value]
       if (field?.fieldtype === 'Check') {
         value = ['equals', value[1] ? 'Yes' : 'No']
@@ -273,7 +273,7 @@ function getOperators(fieldtype, fieldname) {
         { label: __('In'), value: 'in' },
         { label: __('Not In'), value: 'not in' },
         { label: __('Is'), value: 'is' },
-      ]
+      ],
     )
   }
   if (fieldname === '_assign') {
@@ -298,7 +298,7 @@ function getOperators(fieldtype, fieldname) {
         { label: __('>'), value: '>' },
         { label: __('<='), value: '<=' },
         { label: __('>='), value: '>=' },
-      ]
+      ],
     )
   }
   if (typeSelect.includes(fieldtype)) {
@@ -309,7 +309,7 @@ function getOperators(fieldtype, fieldname) {
         { label: __('In'), value: 'in' },
         { label: __('Not In'), value: 'not in' },
         { label: __('Is'), value: 'is' },
-      ]
+      ],
     )
   }
   if (typeLink.includes(fieldtype)) {
@@ -322,7 +322,7 @@ function getOperators(fieldtype, fieldname) {
         { label: __('In'), value: 'in' },
         { label: __('Not In'), value: 'not in' },
         { label: __('Is'), value: 'is' },
-      ]
+      ],
     )
   }
   if (typeCheck.includes(fieldtype)) {
@@ -336,7 +336,7 @@ function getOperators(fieldtype, fieldname) {
         { label: __('In'), value: 'in' },
         { label: __('Not In'), value: 'not in' },
         { label: __('Is'), value: 'is' },
-      ]
+      ],
     )
   }
   if (typeDate.includes(fieldtype)) {
@@ -351,13 +351,13 @@ function getOperators(fieldtype, fieldname) {
         { label: __('<='), value: '<=' },
         { label: __('Between'), value: 'between' },
         { label: __('Timespan'), value: 'timespan' },
-      ]
+      ],
     )
   }
   return options
 }
 
-function getValSelect(f) {
+function getValueControl(f) {
   const { field, operator } = f
   const { fieldtype, options } = field
   if (operator == 'is') {
