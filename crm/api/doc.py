@@ -315,12 +315,16 @@ def get_data(
 
 		if not title_field:
 			title_field = "name"
+			if hasattr(_list, "default_kanban_settings"):
+				title_field = _list.default_kanban_settings().get("title_field")
 
 		if title_field not in rows:
 			rows.append(title_field)
 
 		if not kanban_fields:
 			kanban_fields = ["name"]
+			if hasattr(_list, "default_kanban_settings"):
+				kanban_fields = json.loads(_list.default_kanban_settings().get("kanban_fields"))
 
 		for field in kanban_fields:
 			if field not in rows:
@@ -442,6 +446,10 @@ def get_data(
 		"columns": columns,
 		"rows": rows,
 		"fields": fields,
+		"column_field": column_field,
+		"title_field": title_field,
+		"kanban_columns": kanban_columns,
+		"kanban_fields": kanban_fields,
 		"group_by_field": group_by_field,
 		"page_length": page_length,
 		"page_length_count": page_length_count,
