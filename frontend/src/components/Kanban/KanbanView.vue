@@ -162,7 +162,7 @@ const emit = defineEmits(['update', 'loadMore'])
 const kanban = defineModel()
 
 const titleField = computed(() => {
-  return kanban.value?.params?.title_field
+  return kanban.value?.data?.title_field
 })
 
 const columns = computed(() => {

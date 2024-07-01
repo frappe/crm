@@ -365,7 +365,7 @@ const view = ref({
   filters: {},
   order_by: 'modified desc',
   column_field: 'status',
-  title_field: 'name',
+  title_field: '',
   kanban_columns: '',
   kanban_fields: '',
   columns: '',
@@ -403,7 +403,7 @@ function getParams() {
   const columns = _view?.columns || ''
   const rows = _view?.rows || ''
   const column_field = _view?.column_field || 'status'
-  const title_field = _view?.title_field || 'name'
+  const title_field = _view?.title_field || ''
   const kanban_columns = _view?.kanban_columns || ''
   const kanban_fields = _view?.kanban_fields || ''
 

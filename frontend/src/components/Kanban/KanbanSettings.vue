@@ -130,25 +130,25 @@ const showDialog = ref(false)
 
 const columnField = computed({
   get: () => {
-    let fieldname = list.value?.params?.column_field
+    let fieldname = list.value?.data?.column_field
     if (!fieldname) return ''
 
     return columnFields.value?.find((field) => field.fieldname === fieldname)
   },
   set: (val) => {
-    list.value.params.column_field = val.fieldname
+    list.value.data.column_field = val.fieldname
   },
 })
 
 const titleField = computed({
   get: () => {
-    let fieldname = list.value?.params?.title_field
+    let fieldname = list.value?.data?.title_field
     if (!fieldname) return ''
 
     return fields.data?.find((field) => field.fieldname === fieldname)
   },
   set: (val) => {
-    list.value.params.title_field = val.fieldname
+    list.value.data.title_field = val.fieldname
   },
 })
 
@@ -172,7 +172,7 @@ const fields = createResource({
 
 const allFields = computed({
   get: () => {
-    let rows = list.value?.params?.kanban_fields
+    let rows = list.value?.data?.kanban_fields
     if (!rows) return []
 
     if (typeof rows === 'string') {
@@ -187,7 +187,7 @@ const allFields = computed({
     return rows.filter((row) => row.label)
   },
   set: (val) => {
-    list.value.params.kanban_fields = val
+    list.value.data.kanban_fields = val
   },
 })
 
