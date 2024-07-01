@@ -4,7 +4,7 @@
     :list="columns"
     item-key="column"
     @end="updateColumn"
-    class="flex sm:mx-2.5 mx-2 pb-3.5 overflow-x-auto h-full"
+    class="flex sm:mx-2.5 mx-2 pb-3.5 overflow-x-auto"
   >
     <template #item="{ element: column }">
       <div
@@ -65,12 +65,12 @@
             />
           </div>
         </div>
-        <div class="overflow-y-auto flex flex-col gap-2">
+        <div class="overflow-y-auto flex flex-col gap-2 h-full">
           <Draggable
             :list="column.data"
             group="fields"
             item-key="name"
-            class="flex flex-col gap-3.5"
+            class="flex flex-col gap-3.5 flex-1"
             @end="updateColumn"
             :data-column="column.column.name"
           >
@@ -207,6 +207,9 @@ function updateColumn({ item, from, to }) {
   columns.value.forEach((col) => {
     if (col.delete) return
     col.column['order'] = col.data.map((d) => d.name)
+    if (col.column.page_length) {
+      delete col.column.page_length
+    }
     _columns.push(col.column)
   })
 

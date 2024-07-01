@@ -4,6 +4,7 @@ from frappe import _
 from frappe.model.document import get_controller
 from frappe.model import no_value_fields
 from pypika import Criterion
+from frappe.utils import make_filter_tuple
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
@@ -336,15 +337,22 @@ def get_data(
 				if kc.get("page_length"):
 					page_length = kc.get("page_length")
 
-				column_data = frappe.get_list(
-					doctype,
-					fields=rows,
-					filters=column_filters,
-					order_by=order_by,
-					page_length=page_length,
-				)
+				order = kc.get("order")
+				if order:
+					column_data = get_records_based_on_order(doctype, rows, column_filters, page_length, order)
+				else:
+					column_data = frappe.get_list(
+						doctype,
+						fields=rows,
+						filters=convert_filter_to_tuple(doctype, column_filters),
+						order_by=order_by,
+						page_length=page_length,
+					)
 
-				all_count = len(frappe.get_list(doctype, filters={ column_field: kc.get('name') }))
+				new_filters = filters.copy()
+				new_filters.update({ column_field: kc.get('name') })
+
+				all_count = len(frappe.get_list(doctype, filters=convert_filter_to_tuple(doctype, new_filters)))
 
 				kc["all_count"] = all_count
 				kc["count"] = len(column_data)
@@ -352,10 +360,10 @@ def get_data(
 				for d in column_data:
 					getCounts(d, doctype)
 
-			if kc.get("order"):
+			if order:
 				column_data = sorted(
-					column_data, key=lambda x: kc.get("order").index(x.get("name"))
-					if x.get("name") in kc.get("order") else 0
+					column_data, key=lambda x: order.index(x.get("name"))
+					if x.get("name") in order else len(order)
 				)
 
 			data.append({"column": kc, "fields": kanban_fields, "data": column_data})
@@ -445,6 +453,43 @@ def get_data(
 		"list_script": get_form_script(doctype, "List"),
 		"view_type": view_type,
 	}
+
+def convert_filter_to_tuple(doctype, filters):
+	if isinstance(filters, dict):
+		filters_items = filters.items()
+		filters = []
+		for key, value in filters_items:
+			filters.append(make_filter_tuple(doctype, key, value))
+	return filters
+
+
+def get_records_based_on_order(doctype, rows, filters, page_length, order):
+	records = []
+	filters = convert_filter_to_tuple(doctype, filters)
+	in_filters = filters.copy()
+	in_filters.append([doctype, "name", "in", order[:page_length]])
+	records = frappe.get_list(
+		doctype,
+		fields=rows,
+		filters=in_filters,
+		order_by="creation desc",
+		page_length=page_length,
+	)
+
+	if len(records) < page_length:
+		not_in_filters = filters.copy()
+		not_in_filters.append([doctype, "name", "not in", order])
+		remaining_records = frappe.get_list(
+			doctype,
+			fields=rows,
+			filters=not_in_filters,
+			order_by="creation desc",
+			page_length=page_length - len(records),
+		)
+		for record in remaining_records:
+			records.append(record)
+
+	return records
 
 @frappe.whitelist()
 def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
