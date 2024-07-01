@@ -181,7 +181,9 @@
           @update="(isDefault) => updateColumns(isDefault)"
         />
         <Dropdown
-          v-if="!options.hideColumnsButton"
+          v-if="
+            !options.hideColumnsButton && route.params.viewType !== 'kanban'
+          "
           :options="[
             {
               group: __('Options'),
