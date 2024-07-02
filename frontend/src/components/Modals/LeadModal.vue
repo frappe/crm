@@ -1,41 +1,60 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      size: '3xl',
-      title: __('Create Lead'),
-    }"
-  >
-    <template #body-content>
-      <Fields v-if="sections.data" :sections="sections.data" :data="lead" />
-      <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
-    </template>
-    <template #actions>
-      <div class="flex flex-row-reverse gap-2">
-        <Button
-          variant="solid"
-          :label="__('Create')"
-          :loading="isLeadCreating"
-          @click="createNewLead"
-        />
+  <Dialog v-model="show" :options="{ size: '3xl' }">
+    <template #body>
+      <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
+        <div class="mb-5 flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+              {{ __('Create Lead') }}
+            </h3>
+          </div>
+          <div class="flex items-center gap-1">
+            <Button
+              v-if="isManager()"
+              variant="ghost"
+              class="w-7"
+              @click="openQuickEntryModal"
+            >
+              <EditIcon class="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" class="w-7" @click="show = false">
+              <FeatherIcon name="x" class="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        <div>
+          <Fields v-if="sections.data" :sections="sections.data" :data="lead" />
+          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+        </div>
+      </div>
+      <div class="px-4 pb-7 pt-4 sm:px-6">
+        <div class="flex flex-row-reverse gap-2">
+          <Button
+            variant="solid"
+            :label="__('Create')"
+            :loading="isLeadCreating"
+            @click="createNewLead"
+          />
+        </div>
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import Fields from '@/components/Fields.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { createResource } from 'frappe-ui'
-import { computed, onMounted, ref, reactive } from 'vue'
+import { computed, onMounted, ref, reactive, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
   defaults: Object,
 })
 
-const { getUser } = usersStore()
+const { getUser, isManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
 
 const show = defineModel()
@@ -146,6 +165,15 @@ function createNewLead() {
       }
       error.value = err.messages.join('\n')
     },
+  })
+}
+
+const showQuickEntryModal = defineModel('quickEntry')
+
+function openQuickEntryModal() {
+  showQuickEntryModal.value = true
+  nextTick(() => {
+    show.value = false
   })
 }
 

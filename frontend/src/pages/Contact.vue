@@ -204,8 +204,14 @@
   </div>
   <ContactModal
     v-model="showContactModal"
+    v-model:quickEntry="showQuickEntryModal"
     :contact="contact"
     :options="{ detailMode }"
+  />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="Contact"
   />
 </template>
 
@@ -228,6 +234,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
+import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import {
   dateFormat,
   dateTooltipFormat,
@@ -258,6 +265,7 @@ const props = defineProps({
 const router = useRouter()
 
 const showContactModal = ref(false)
+const showQuickEntryModal = ref(false)
 const detailMode = ref(false)
 
 const breadcrumbs = computed(() => {

@@ -234,6 +234,7 @@
   <DealModal
     v-if="showDealModal"
     v-model="showDealModal"
+    v-model:quickEntry="showQuickEntryModal"
     :defaults="defaults"
   />
   <NoteModal
@@ -249,6 +250,11 @@
     :task="task"
     doctype="CRM Deal"
     :doc="docname"
+  />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="CRM Deal"
   />
 </template>
 
@@ -268,6 +274,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
+import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
@@ -296,6 +303,7 @@ const route = useRoute()
 
 const dealsListView = ref(null)
 const showDealModal = ref(false)
+const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
 
