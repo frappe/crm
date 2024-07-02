@@ -40,14 +40,12 @@
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import RightSideLayoutIcon from '@/components/Icons/RightSideLayoutIcon.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
-import SidebarFieldsLayout from '@/components/Settings/SidebarFieldsLayout.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { isWhatsappInstalled } from '@/composables/settings'
-import { Dialog, FeatherIcon } from 'frappe-ui'
+import { Dialog } from 'frappe-ui'
 import { ref, markRaw, computed, h } from 'vue'
 
 const show = defineModel()
@@ -78,16 +76,6 @@ const tabs = computed(() => {
           icon: WhatsAppIcon,
           component: markRaw(WhatsAppSettings),
           condition: () => isWhatsappInstalled.value,
-        },
-      ],
-    },
-    {
-      label: 'Customizations',
-      items: [
-        {
-          label: 'Sidebar Fields Layout',
-          icon: RightSideLayoutIcon,
-          component: markRaw(SidebarFieldsLayout),
         },
       ],
     },

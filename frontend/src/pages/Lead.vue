@@ -178,6 +178,15 @@
                 v-model="lead.data"
                 @update="updateField"
               />
+              <template v-if="i == 0" #actions>
+                <Button
+                  variant="ghost"
+                  class="w-7 mr-2"
+                  @click="showSidePanelModal = true"
+                >
+                  <EditIcon class="h-4 w-4" />
+                </Button>
+              </template>
             </Section>
           </div>
         </div>
@@ -227,7 +236,7 @@
         <div v-else class="mt-2.5 text-base">
           {{
             __(
-              'New organization will be created based on the data in details section'
+              'New organization will be created based on the data in details section',
             )
           }}
         </div>
@@ -257,9 +266,11 @@
       </div>
     </template>
   </Dialog>
+  <SidePanelModal v-if="showSidePanelModal" v-model="showSidePanelModal" />
 </template>
 <script setup>
 import Resizer from '@/components/Resizer.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
@@ -275,6 +286,7 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
@@ -347,6 +359,7 @@ onMounted(() => {
 
 const reload = ref(false)
 const showAssignmentModal = ref(false)
+const showSidePanelModal = ref(false)
 
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -454,7 +467,7 @@ const tabs = computed(() => {
 watch(tabs, (value) => {
   if (value && route.params.tabName) {
     let index = value.findIndex(
-      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase()
+      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase(),
     )
     if (index !== -1) {
       tabIndex.value = index
@@ -549,7 +562,7 @@ async function convertToDeal(updated) {
         organization: lead.data.organization,
       },
       '',
-      () => convertToDeal(true)
+      () => convertToDeal(true),
     )
     showConvertToDealModal.value = false
   } else {
@@ -557,7 +570,7 @@ async function convertToDeal(updated) {
       'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
       {
         lead: lead.data.name,
-      }
+      },
     )
     if (deal) {
       if (updated) {
