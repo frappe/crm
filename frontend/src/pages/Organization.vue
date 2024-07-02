@@ -214,8 +214,14 @@
   </div>
   <OrganizationModal
     v-model="showOrganizationModal"
+    v-model:quickEntry="showQuickEntryModal"
     v-model:organization="organization"
     :options="{ detailMode }"
+  />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="CRM Organization"
   />
 </template>
 
@@ -232,6 +238,7 @@ import {
 } from 'frappe-ui'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
@@ -263,6 +270,7 @@ const props = defineProps({
 const { $dialog } = globalStore()
 const { getDealStatus } = statusesStore()
 const showOrganizationModal = ref(false)
+const showQuickEntryModal = ref(false)
 const detailMode = ref(false)
 
 const router = useRouter()

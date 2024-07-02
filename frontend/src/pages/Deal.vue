@@ -146,6 +146,16 @@
                     </template>
                   </Link>
                 </div>
+                <Button
+                  v-else-if="
+                    ((!section.contacts && i == 1) || i == 0) && isManager()
+                  "
+                  variant="ghost"
+                  class="w-7 mr-2"
+                  @click="showSidePanelModal = true"
+                >
+                  <EditIcon class="h-4 w-4" />
+                </Button>
               </template>
               <SectionFields
                 v-if="section.fields"
@@ -284,10 +294,16 @@
     :doc="deal.data"
     doctype="CRM Deal"
   />
+  <SidePanelModal
+    v-if="showSidePanelModal"
+    v-model="showSidePanelModal"
+    doctype="CRM Deal"
+  />
 </template>
 <script setup>
 import Resizer from '@/components/Resizer.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
@@ -305,6 +321,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
+import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
@@ -321,6 +338,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   createResource,
@@ -337,6 +355,7 @@ import { useRouter } from 'vue-router'
 const { $dialog, makeCall } = globalStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
+const { isManager } = usersStore()
 const router = useRouter()
 
 const props = defineProps({
@@ -372,6 +391,7 @@ onMounted(() => {
 const reload = ref(false)
 const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
+const showSidePanelModal = ref(false)
 const _organization = ref({})
 
 const organization = computed(() => {

@@ -59,13 +59,22 @@
       </Button>
     </div>
   </div>
-  <OrganizationModal v-model="showOrganizationModal" />
+  <OrganizationModal
+    v-model="showOrganizationModal"
+    v-model:quickEntry="showQuickEntryModal"
+  />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="CRM Organization"
+  />
 </template>
 <script setup>
 import CustomActions from '@/components/CustomActions.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { Breadcrumbs } from 'frappe-ui'
@@ -82,6 +91,7 @@ const route = useRoute()
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
+const showQuickEntryModal = ref(false)
 
 const currentOrganization = computed(() => {
   return organizations.value?.data?.data?.find(
