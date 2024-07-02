@@ -178,7 +178,7 @@
                 v-model="lead.data"
                 @update="updateField"
               />
-              <template v-if="i == 0" #actions>
+              <template v-if="i == 0 && isManager()" #actions>
                 <Button
                   variant="ghost"
                   class="w-7 mr-2"
@@ -305,6 +305,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   createResource,
@@ -324,6 +325,7 @@ const { $dialog, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
+const { isManager } = usersStore()
 const route = useRoute()
 const router = useRouter()
 

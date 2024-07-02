@@ -9,7 +9,12 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" class="w-7" @click="openQuickEntryModal">
+            <Button
+              v-if="isManager()"
+              variant="ghost"
+              class="w-7"
+              @click="openQuickEntryModal"
+            >
               <EditIcon class="h-4 w-4" />
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
@@ -64,7 +69,7 @@ const props = defineProps({
   defaults: Object,
 })
 
-const { getUser } = usersStore()
+const { getUser, isManager } = usersStore()
 const { getDealStatus, statusOptions } = statusesStore()
 
 const show = defineModel()

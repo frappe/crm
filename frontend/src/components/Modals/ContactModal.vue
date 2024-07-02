@@ -10,6 +10,7 @@
           </div>
           <div class="flex items-center gap-1">
             <Button
+              v-if="isManager() || detailMode"
               variant="ghost"
               class="w-7"
               @click="detailMode ? (detailMode = false) : openQuickEntryModal()"
@@ -90,6 +91,7 @@ import AddressIcon from '@/components/Icons/AddressIcon.vue'
 import CertificateIcon from '@/components/Icons/CertificateIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
+import { usersStore } from '@/stores/users'
 import { call, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 import { createToast } from '@/utils'
@@ -109,6 +111,8 @@ const props = defineProps({
     },
   },
 })
+
+const { isManager } = usersStore()
 
 const router = useRouter()
 const show = defineModel()

@@ -147,7 +147,9 @@
                   </Link>
                 </div>
                 <Button
-                  v-else-if="(!section.contacts && i == 1) || i == 0"
+                  v-else-if="
+                    ((!section.contacts && i == 1) || i == 0) && isManager()
+                  "
                   variant="ghost"
                   class="w-7 mr-2"
                   @click="showSidePanelModal = true"
@@ -336,6 +338,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
+import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   createResource,
@@ -352,6 +355,7 @@ import { useRouter } from 'vue-router'
 const { $dialog, makeCall } = globalStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
+const { isManager } = usersStore()
 const router = useRouter()
 
 const props = defineProps({
