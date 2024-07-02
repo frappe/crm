@@ -260,6 +260,7 @@
   <LeadModal
     v-if="showLeadModal"
     v-model="showLeadModal"
+    v-model:quickEntry="showQuickEntryModal"
     :defaults="defaults"
   />
   <NoteModal
@@ -276,6 +277,7 @@
     doctype="CRM Lead"
     :doc="docname"
   />
+  <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" />
 </template>
 
 <script setup>
@@ -294,6 +296,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
+import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
@@ -316,6 +319,7 @@ const route = useRoute()
 
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
+const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
 

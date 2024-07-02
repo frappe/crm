@@ -1,49 +1,63 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      size: '3xl',
-      title: __('Create Deal'),
-    }"
-  >
-    <template #body-content>
-      <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div class="flex items-center gap-3 text-sm text-gray-600">
-          <div>{{ __('Choose Existing Organization') }}</div>
-          <Switch v-model="chooseExistingOrganization" />
+  <Dialog v-model="show" :options="{ size: '3xl' }">
+    <template #body>
+      <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
+        <div class="mb-5 flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+              {{ __('Create Deal') }}
+            </h3>
+          </div>
+          <div class="flex items-center gap-1">
+            <Button variant="ghost" class="w-7" @click="openQuickEntryModal">
+              <EditIcon class="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" class="w-7" @click="show = false">
+              <FeatherIcon name="x" class="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-        <div class="flex items-center gap-3 text-sm text-gray-600">
-          <div>{{ __('Choose Existing Contact') }}</div>
-          <Switch v-model="chooseExistingContact" />
+        <div>
+          <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+              <div>{{ __('Choose Existing Organization') }}</div>
+              <Switch v-model="chooseExistingOrganization" />
+            </div>
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+              <div>{{ __('Choose Existing Contact') }}</div>
+              <Switch v-model="chooseExistingContact" />
+            </div>
+          </div>
+          <Fields
+            v-if="filteredSections"
+            class="border-t pt-4"
+            :sections="filteredSections"
+            :data="deal"
+          />
+          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
-      <Fields
-        v-if="filteredSections"
-        class="border-t pt-4"
-        :sections="filteredSections"
-        :data="deal"
-      />
-      <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
-    </template>
-    <template #actions>
-      <div class="flex flex-row-reverse gap-2">
-        <Button
-          variant="solid"
-          :label="__('Create')"
-          :loading="isDealCreating"
-          @click="createDeal"
-        />
+      <div class="px-4 pb-7 pt-4 sm:px-6">
+        <div class="flex flex-row-reverse gap-2">
+          <Button
+            variant="solid"
+            :label="__('Create')"
+            :loading="isDealCreating"
+            @click="createDeal"
+          />
+        </div>
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import Fields from '@/components/Fields.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { Switch, createResource } from 'frappe-ui'
-import { computed, ref, reactive, onMounted } from 'vue'
+import { computed, ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -83,7 +97,7 @@ const chooseExistingOrganization = ref(false)
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['quickEntryFields', 'CRM Deal'],
-  params: { doctype: 'CRM Deal', type: 'Quick Entry'},
+  params: { doctype: 'CRM Deal', type: 'Quick Entry' },
   auto: true,
   transform: (data) => {
     return data.forEach((section) => {
@@ -108,21 +122,21 @@ const filteredSections = computed(() => {
 
   if (chooseExistingOrganization.value) {
     _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Organization')
+      allSections.find((s) => s.label === 'Select Organization'),
     )
   } else {
     _filteredSections.push(
-      allSections.find((s) => s.label === 'Organization Details')
+      allSections.find((s) => s.label === 'Organization Details'),
     )
   }
 
   if (chooseExistingContact.value) {
     _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Contact')
+      allSections.find((s) => s.label === 'Select Contact'),
     )
   } else {
     _filteredSections.push(
-      allSections.find((s) => s.label === 'Contact Details')
+      allSections.find((s) => s.label === 'Contact Details'),
     )
   }
 
@@ -194,6 +208,15 @@ function createDeal() {
       }
       error.value = err.messages.join('\n')
     },
+  })
+}
+
+const showQuickEntryModal = defineModel('quickEntry')
+
+function openQuickEntryModal() {
+  showQuickEntryModal.value = true
+  nextTick(() => {
+    show.value = false
   })
 }
 

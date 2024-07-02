@@ -10,10 +10,9 @@
           </div>
           <div class="flex items-center gap-1">
             <Button
-              v-if="detailMode"
               variant="ghost"
               class="w-7"
-              @click="detailMode = false"
+              @click="detailMode ? (detailMode = false) : openQuickEntryModal()"
             >
               <EditIcon class="h-4 w-4" />
             </Button>
@@ -253,4 +252,13 @@ watch(
     })
   },
 )
+
+const showQuickEntryModal = defineModel('quickEntry')
+
+function openQuickEntryModal() {
+  showQuickEntryModal.value = true
+  nextTick(() => {
+    show.value = false
+  })
+}
 </script>

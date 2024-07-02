@@ -45,7 +45,6 @@ import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
 import SidebarFieldsLayout from '@/components/Settings/SidebarFieldsLayout.vue'
-import QuickEntryLayout from '@/components/Settings/QuickEntryLayout.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { isWhatsappInstalled } from '@/composables/settings'
 import { Dialog, FeatherIcon } from 'frappe-ui'
@@ -89,11 +88,6 @@ const tabs = computed(() => {
           label: 'Sidebar Fields Layout',
           icon: RightSideLayoutIcon,
           component: markRaw(SidebarFieldsLayout),
-        },
-        {
-          label: 'Quick Entry Layout',
-          icon: h(FeatherIcon, { name: 'grid' }),
-          component: markRaw(QuickEntryLayout),
         },
       ],
     },

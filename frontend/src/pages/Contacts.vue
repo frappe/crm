@@ -59,7 +59,16 @@
       </Button>
     </div>
   </div>
-  <ContactModal v-model="showContactModal" :contact="{}" />
+  <ContactModal
+    v-model="showContactModal"
+    v-model:quickEntry="showQuickEntryModal"
+    :contact="{}"
+  />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="Contact"
+  />
 </template>
 
 <script setup>
@@ -67,6 +76,7 @@ import CustomActions from '@/components/CustomActions.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
+import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { Breadcrumbs } from 'frappe-ui'
@@ -79,6 +89,7 @@ const { getOrganization } = organizationsStore()
 const route = useRoute()
 
 const showContactModal = ref(false)
+const showQuickEntryModal = ref(false)
 
 const currentContact = computed(() => {
   return contacts.value?.data?.data?.find(
