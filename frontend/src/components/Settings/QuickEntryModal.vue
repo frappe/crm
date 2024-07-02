@@ -1,7 +1,7 @@
 <template>
   <Dialog v-model="show" :options="{ size: '3xl' }">
     <template #body>
-      <div class="flex flex-col overflow-hidden">
+      <div class="flex flex-col overflow-hidden h-[calc(100vh_-_8rem)]">
         <div class="flex flex-col gap-2 p-8 pb-5">
           <h2 class="flex gap-2 text-xl font-semibold leading-none h-5 mb-4">
             <div>{{ __('Edit Quick Entry Layout') }}</div>
