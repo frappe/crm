@@ -197,7 +197,7 @@ async function sendMail() {
     doctype: props.doctype,
     name: doc.value.data.name,
     send_email: 1,
-    sender: getUser().name,
+    sender: getUser().email,
     sender_full_name: getUser()?.full_name || undefined,
   })
 }
@@ -207,7 +207,7 @@ async function sendComment() {
     reference_doctype: props.doctype,
     reference_name: doc.value.data.name,
     content: newComment.value,
-    comment_email: getUser().name,
+    comment_email: getUser().email,
     comment_by: getUser()?.full_name || undefined,
   })
   if (comment && attachments.value.length) {

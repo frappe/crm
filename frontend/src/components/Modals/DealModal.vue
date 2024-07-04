@@ -228,7 +228,7 @@ function openQuickEntryModal() {
 onMounted(() => {
   Object.assign(deal, props.defaults)
   if (!deal.deal_owner) {
-    deal.deal_owner = getUser().email
+    deal.deal_owner = getUser().name
   }
 })
 </script>
