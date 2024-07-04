@@ -17,10 +17,10 @@ export const usersStore = defineStore('crm-users', () => {
     auto: true,
     transform(users) {
       for (let user of users) {
-        if (user.name === 'Administrator') {
-          user.email = 'Administrator'
-        }
         usersByName[user.name] = user
+        if (user.name === 'Administrator') {
+          usersByName[user.email] = user
+        }
       }
       return users
     },

@@ -180,7 +180,7 @@ function openQuickEntryModal() {
 onMounted(() => {
   Object.assign(lead, props.defaults)
   if (!lead.lead_owner) {
-    lead.lead_owner = getUser().email
+    lead.lead_owner = getUser().name
   }
 })
 </script>

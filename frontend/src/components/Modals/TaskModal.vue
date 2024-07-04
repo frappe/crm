@@ -178,7 +178,7 @@ function redirect() {
 
 async function updateTask() {
   if (!_task.value.assigned_to) {
-    _task.value.assigned_to = getUser().email
+    _task.value.assigned_to = getUser().name
   }
   if (_task.value.name) {
     let d = await call('frappe.client.set_value', {
