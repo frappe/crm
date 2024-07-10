@@ -23,13 +23,15 @@
           <div class="flex gap-1.5">
             <Button
               :label="__('CC')"
+              variant="ghost"
               @click="toggleCC()"
-              :class="[cc ? 'bg-gray-300 hover:bg-gray-200' : '']"
+              :class="[cc ? '!bg-gray-300 hover:bg-gray-200' : '!text-gray-500']"
             />
             <Button
               :label="__('BCC')"
+              variant="ghost"
               @click="toggleBCC()"
-              :class="[bcc ? 'bg-gray-300 hover:bg-gray-200' : '']"
+              :class="[bcc ? '!bg-gray-300 hover:bg-gray-200' : '!text-gray-500']"
             />
           </div>
         </div>
