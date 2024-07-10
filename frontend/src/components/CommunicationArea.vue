@@ -133,7 +133,8 @@ const signature = createResource({
 })
 
 function setSignature(editor) {
-  signature.data = signature.data?.replace(/\n/g, '<br>')
+  if (!signature.data) return
+  signature.data = signature.data.replace(/\n/g, '<br>')
   let emailContent = editor.getHTML()
   emailContent = emailContent.startsWith('<p></p>')
     ? emailContent.slice(7)
