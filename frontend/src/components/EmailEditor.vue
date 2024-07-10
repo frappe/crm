@@ -96,11 +96,19 @@
           class="flex justify-between gap-2 overflow-hidden border-t sm:px-10 px-4 py-2.5"
         >
           <div class="flex items-center overflow-x-auto">
-            <TextEditorFixedMenu
-              class="-ml-1"
-              :buttons="textEditorMenuButtons"
-            />
+            <TextEditorBubbleMenu :buttons="textEditorMenuButtons" />
             <div class="flex gap-1">
+              <IconPicker
+                v-model="emoji"
+                v-slot="{ togglePopover }"
+                @update:modelValue="() => appendEmoji()"
+              >
+                <Button variant="ghost" @click="togglePopover()">
+                  <template #icon>
+                    <SmileIcon class="h-4" />
+                  </template>
+                </Button>
+              </IconPicker>
               <FileUploader
                 :upload-args="{
                   doctype: doctype,
@@ -147,12 +155,14 @@
 </template>
 
 <script setup>
+import IconPicker from '@/components/IconPicker.vue'
+import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import MultiselectInput from '@/components/Controls/MultiselectInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
-import { TextEditorFixedMenu, TextEditor, FileUploader, call } from 'frappe-ui'
+import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { validateEmail } from '@/utils'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel, nextTick } from 'vue'
@@ -195,6 +205,7 @@ const content = defineModel('content')
 const textEditor = ref(null)
 const cc = ref(false)
 const bcc = ref(false)
+const emoji = ref('')
 
 const subject = ref(props.subject)
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
@@ -231,6 +242,12 @@ async function applyEmailTemplate(template) {
     editor.value.commands.setContent(data.message)
   }
   showEmailTemplateSelectorModal.value = false
+}
+
+function appendEmoji() {
+  editor.value.commands.insertContent(emoji.value)
+  editor.value.commands.focus()
+  emoji.value = ''
 }
 
 function toggleCC() {
