@@ -95,45 +95,43 @@
         <div
           class="flex justify-between gap-2 overflow-hidden border-t sm:px-10 px-4 py-2.5"
         >
-          <div class="flex items-center overflow-x-auto">
+          <div class="flex gap-1 items-center overflow-x-auto">
             <TextEditorBubbleMenu :buttons="textEditorMenuButtons" />
-            <div class="flex gap-1">
-              <IconPicker
-                v-model="emoji"
-                v-slot="{ togglePopover }"
-                @update:modelValue="() => appendEmoji()"
-              >
-                <Button variant="ghost" @click="togglePopover()">
-                  <template #icon>
-                    <SmileIcon class="h-4" />
-                  </template>
-                </Button>
-              </IconPicker>
-              <FileUploader
-                :upload-args="{
-                  doctype: doctype,
-                  docname: modelValue.name,
-                  private: true,
-                }"
-                @success="(f) => attachments.push(f)"
-              >
-                <template #default="{ openFileSelector }">
-                  <Button variant="ghost" @click="openFileSelector()">
-                    <template #icon>
-                      <AttachmentIcon class="h-4" />
-                    </template>
-                  </Button>
-                </template>
-              </FileUploader>
-              <Button
-                variant="ghost"
-                @click="showEmailTemplateSelectorModal = true"
-              >
+            <IconPicker
+              v-model="emoji"
+              v-slot="{ togglePopover }"
+              @update:modelValue="() => appendEmoji()"
+            >
+              <Button variant="ghost" @click="togglePopover()">
                 <template #icon>
-                  <EmailIcon class="h-4" />
+                  <SmileIcon class="h-4" />
                 </template>
               </Button>
-            </div>
+            </IconPicker>
+            <FileUploader
+              :upload-args="{
+                doctype: doctype,
+                docname: modelValue.name,
+                private: true,
+              }"
+              @success="(f) => attachments.push(f)"
+            >
+              <template #default="{ openFileSelector }">
+                <Button variant="ghost" @click="openFileSelector()">
+                  <template #icon>
+                    <AttachmentIcon class="h-4" />
+                  </template>
+                </Button>
+              </template>
+            </FileUploader>
+            <Button
+              variant="ghost"
+              @click="showEmailTemplateSelectorModal = true"
+            >
+              <template #icon>
+                <EmailIcon class="h-4" />
+              </template>
+            </Button>
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
             <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />
