@@ -298,8 +298,11 @@ def create_deal(args):
 	deal.update({
 		"organization": args.get("organization") or create_organization(args),
 		"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
-		"deal_owner": args.get("deal_owner"),
-		"status": args.get("status"),
 	})
+
+	args.pop("organization", None)
+
+	deal.update(args)
+
 	deal.insert(ignore_permissions=True)
 	return deal.name
