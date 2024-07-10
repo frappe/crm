@@ -5,6 +5,7 @@
       :list="columns"
       item-key="column"
       @end="updateColumn"
+      :delay="isTouchScreenDevice() ? 200 : 0"
       class="flex sm:mx-2.5 mx-2 pb-3.5"
     >
       <template #item="{ element: column }">
@@ -73,6 +74,7 @@
               item-key="name"
               class="flex flex-col gap-3.5 flex-1"
               @end="updateColumn"
+              :delay="isTouchScreenDevice() ? 200 : 0"
               :data-column="column.column.name"
             >
               <template #item="{ element: fields }">
@@ -166,6 +168,7 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import { isTouchScreenDevice } from '@/utils'
 import Draggable from 'vuedraggable'
 import { Dropdown } from 'frappe-ui'
 import { computed } from 'vue'
