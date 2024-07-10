@@ -9,60 +9,68 @@
     :editable="editable"
   >
     <template #top>
-      <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t py-2.5">
-        <span class="text-xs text-gray-500">{{ __('SUBJECT') }}:</span>
-        <TextInput
-          class="flex-1 border-none bg-white hover:bg-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
-          v-model="subject"
-        />
-      </div>
-      <div
-        class="sm:mx-10 mx-4 flex items-center gap-2 border-t py-2.5"
-        :class="[cc || bcc ? 'border-b' : '']"
-      >
-        <span class="text-xs text-gray-500">{{ __('TO') }}:</span>
-        <MultiselectInput
-          class="flex-1"
-          v-model="toEmails"
-          :validate="validateEmail"
-          :error-message="
-            (value) => __('{0} is an invalid email address', [value])
-          "
-        />
-      </div>
-      <div
-        v-if="cc"
-        class="sm:mx-10 mx-4 flex items-center gap-2 py-2.5"
-        :class="bcc ? 'border-b' : ''"
-      >
-        <span class="text-xs text-gray-500">{{ __('CC') }}:</span>
-        <MultiselectInput
-          ref="ccInput"
-          class="flex-1"
-          v-model="ccEmails"
-          :validate="validateEmail"
-          :error-message="
-            (value) => __('{0} is an invalid email address', [value])
-          "
-        />
-      </div>
-      <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2 py-2.5">
-        <span class="text-xs text-gray-500">{{ __('BCC') }}:</span>
-        <MultiselectInput
-          ref="bccInput"
-          class="flex-1"
-          v-model="bccEmails"
-          :validate="validateEmail"
-          :error-message="
-            (value) => __('{0} is an invalid email address', [value])
-          "
-        />
+      <div class="flex flex-col gap-3">
+        <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
+          <span class="text-xs text-gray-500">{{ __('TO') }}:</span>
+          <MultiselectInput
+            class="flex-1"
+            v-model="toEmails"
+            :validate="validateEmail"
+            :error-message="
+              (value) => __('{0} is an invalid email address', [value])
+            "
+          />
+          <div class="flex gap-1.5">
+            <Button
+              :label="__('CC')"
+              @click="toggleCC()"
+              :class="[cc ? 'bg-gray-300 hover:bg-gray-200' : '']"
+            />
+            <Button
+              :label="__('BCC')"
+              @click="toggleBCC()"
+              :class="[bcc ? 'bg-gray-300 hover:bg-gray-200' : '']"
+            />
+          </div>
+        </div>
+        <div v-if="cc" class="sm:mx-10 mx-4 flex items-center gap-2">
+          <span class="text-xs text-gray-500">{{ __('CC') }}:</span>
+          <MultiselectInput
+            ref="ccInput"
+            class="flex-1"
+            v-model="ccEmails"
+            :validate="validateEmail"
+            :error-message="
+              (value) => __('{0} is an invalid email address', [value])
+            "
+          />
+        </div>
+        <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2">
+          <span class="text-xs text-gray-500">{{ __('BCC') }}:</span>
+          <MultiselectInput
+            ref="bccInput"
+            class="flex-1"
+            v-model="bccEmails"
+            :validate="validateEmail"
+            :error-message="
+              (value) => __('{0} is an invalid email address', [value])
+            "
+          />
+        </div>
+        <div class="sm:mx-10 mx-4 flex items-center gap-2 pb-2.5">
+          <span class="text-xs text-gray-500">{{ __('SUBJECT') }}:</span>
+          <TextInput
+            class="flex-1 border-none bg-white hover:bg-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
+            v-model="subject"
+          />
+        </div>
       </div>
     </template>
     <template v-slot:editor="{ editor }">
       <EditorContent
         :class="[
-          editable && 'sm:mx-10 mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
+          editable &&
+            'sm:mx-10 mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
         ]"
         :editor="editor"
       />
@@ -147,7 +155,7 @@ import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelecto
 import { TextEditorFixedMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { validateEmail } from '@/utils'
 import { EditorContent } from '@tiptap/vue-3'
-import { ref, computed, defineModel } from 'vue'
+import { ref, computed, defineModel, nextTick } from 'vue'
 
 const props = defineProps({
   placeholder: {
@@ -211,7 +219,7 @@ async function applyEmailTemplate(template) {
     {
       template_name: template.name,
       doc: modelValue.value,
-    }
+    },
   )
 
   if (template.subject) {
@@ -225,6 +233,16 @@ async function applyEmailTemplate(template) {
   showEmailTemplateSelectorModal.value = false
 }
 
+function toggleCC() {
+  cc.value = !cc.value
+  cc.value && nextTick(() => ccInput.value.setFocus())
+}
+
+function toggleBCC() {
+  bcc.value = !bcc.value
+  bcc.value && nextTick(() => bccInput.value.setFocus())
+}
+
 defineExpose({
   editor,
   subject,
@@ -233,8 +251,6 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
-  ccInput,
-  bccInput,
 })
 
 const textEditorMenuButtons = [

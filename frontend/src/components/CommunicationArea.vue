@@ -23,18 +23,6 @@
         </template>
       </Button>
     </div>
-    <div v-if="showEmailBox" class="flex gap-1.5">
-      <Button
-        :label="__('CC')"
-        @click="toggleCC()"
-        :class="[newEmailEditor.cc ? 'bg-gray-300 hover:bg-gray-200' : '']"
-      />
-      <Button
-        :label="__('BCC')"
-        @click="toggleBCC()"
-        :class="[newEmailEditor.bcc ? 'bg-gray-300 hover:bg-gray-200' : '']"
-      />
-    </div>
   </div>
   <div
     v-show="showEmailBox"
@@ -103,7 +91,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
 import { call, createResource } from 'frappe-ui'
-import { ref, watch, computed, nextTick } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -145,7 +133,7 @@ const signature = createResource({
 })
 
 function setSignature(editor) {
-  signature.data = signature.data.replace(/\n/g, '<br>')
+  signature.data = signature.data?.replace(/\n/g, '<br>')
   let emailContent = editor.getHTML()
   emailContent = emailContent.startsWith('<p></p>')
     ? emailContent.slice(7)
@@ -234,22 +222,6 @@ async function submitComment() {
   newComment.value = ''
   reload.value = true
   emit('scroll')
-}
-
-function toggleCC() {
-  newEmailEditor.value.cc = !newEmailEditor.value.cc
-  newEmailEditor.value.cc &&
-    nextTick(() => {
-      newEmailEditor.value.ccInput.setFocus()
-    })
-}
-
-function toggleBCC() {
-  newEmailEditor.value.bcc = !newEmailEditor.value.bcc
-  newEmailEditor.value.bcc &&
-    nextTick(() => {
-      newEmailEditor.value.bccInput.setFocus()
-    })
 }
 
 function toggleEmailBox() {

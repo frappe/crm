@@ -8,7 +8,7 @@
         :label="value"
         theme="gray"
         variant="subtle"
-        class="rounded-full"
+        class="rounded"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
@@ -133,30 +133,26 @@ watchDebounced(
   query,
   (val) => {
     val = val || ''
-    if (text.value === val) return
+    if (text.value === val && options.value?.length) return
     text.value = val
     reload(val)
   },
-  { debounce: 300, immediate: true }
+  { debounce: 300, immediate: true },
 )
 
 const filterOptions = createResource({
-  url: 'frappe.desk.search.search_link',
+  url: 'crm.api.contact.search_emails',
   method: 'POST',
   cache: [text.value, 'Contact'],
-  params: {
-    txt: text.value,
-    doctype: 'Contact',
-  },
+  params: { txt: text.value },
   transform: (data) => {
     let allData = data
-      .filter((c) => {
-        return c.description.split(', ')[1]
-      })
       .map((option) => {
-        let email = option.description.split(', ')[1]
+        let fullName = option[0]
+        let email = option[1]
+        let name = option[2]
         return {
-          label: option.label || email,
+          label: fullName || name || email,
           value: email,
         }
       })
@@ -177,10 +173,7 @@ const options = computed(() => {
 
 function reload(val) {
   filterOptions.update({
-    params: {
-      txt: val,
-      doctype: 'Contact',
-    },
+    params: { txt: val },
   })
   filterOptions.reload()
 }
