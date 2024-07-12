@@ -4,6 +4,7 @@
     :srcdoc="htmlContent"
     class="prose-f block h-screen max-h-[500px] w-full"
     style="
+      height: 40px;
       mask-image: linear-gradient(
         to bottom,
         black calc(100% - 20px),
@@ -235,13 +236,13 @@ watch(iframeRef, (iframe) => {
         iframe.contentWindow.document.querySelector('.email-content')
       let parent = emailContent.closest('html')
 
-      iframe.style.height = parent.offsetHeight + 'px'
+      iframe.style.height = parent.offsetHeight + 1 + 'px'
 
       let replyCollapsers = emailContent.querySelectorAll('.replyCollapser')
       if (replyCollapsers.length) {
         replyCollapsers.forEach((replyCollapser) => {
           replyCollapser.addEventListener('change', () => {
-            iframe.style.height = parent.offsetHeight + 'px'
+            iframe.style.height = parent.offsetHeight + 1 + 'px'
           })
         })
       }
