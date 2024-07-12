@@ -1,12 +1,20 @@
 <template>
   <TextEditor
     ref="textEditor"
-    :editor-class="['prose-sm max-w-none', editable && 'min-h-[7rem]']"
+    :editor-class="[
+      'prose-sm max-w-none',
+      editable && 'min-h-[7rem]',
+      '[&_p.reply-to-content]:hidden',
+    ]"
     :content="content"
     @change="editable ? (content = $event) : null"
-    :starterkit-options="{ heading: { levels: [2, 3, 4, 5, 6] } }"
+    :starterkit-options="{
+      heading: { levels: [2, 3, 4, 5, 6] },
+      paragraph: false,
+    }"
     :placeholder="placeholder"
     :editable="editable"
+    :extensions="[CustomParagraph]"
   >
     <template #top>
       <div class="flex flex-col gap-3">
@@ -25,13 +33,17 @@
               :label="__('CC')"
               variant="ghost"
               @click="toggleCC()"
-              :class="[cc ? '!bg-gray-300 hover:bg-gray-200' : '!text-gray-500']"
+              :class="[
+                cc ? '!bg-gray-300 hover:bg-gray-200' : '!text-gray-500',
+              ]"
             />
             <Button
               :label="__('BCC')"
               variant="ghost"
               @click="toggleBCC()"
-              :class="[bcc ? '!bg-gray-300 hover:bg-gray-200' : '!text-gray-500']"
+              :class="[
+                bcc ? '!bg-gray-300 hover:bg-gray-200' : '!text-gray-500',
+              ]"
             />
           </div>
         </div>
@@ -164,6 +176,7 @@ import MultiselectInput from '@/components/Controls/MultiselectInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { validateEmail } from '@/utils'
+import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel, nextTick } from 'vue'
 
@@ -195,6 +208,24 @@ const props = defineProps({
   discardButtonProps: {
     type: Object,
     default: () => ({}),
+  },
+})
+
+const CustomParagraph = Paragraph.extend({
+  addAttributes() {
+    return {
+      class: {
+        default: null,
+        renderHTML: (attributes) => {
+          if (!attributes.class) {
+            return {}
+          }
+          return {
+            class: `${attributes.class}`,
+          }
+        },
+      },
+    }
   },
 })
 
