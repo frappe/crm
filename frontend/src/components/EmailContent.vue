@@ -232,6 +232,15 @@ watch(iframeRef, (iframe) => {
       const emailContent =
         iframe.contentWindow.document.querySelector('.email-content')
       iframe.style.height = emailContent.offsetHeight + 25 + 'px'
+
+      let replyCollapsers = emailContent.querySelectorAll('.replyCollapser')
+      if (replyCollapsers.length) {
+        replyCollapsers.forEach((replyCollapser) => {
+          replyCollapser.addEventListener('change', () => {
+            iframe.style.height = emailContent.offsetHeight + 25 + 'px'
+          })
+        })
+      }
     }
   }
 })
