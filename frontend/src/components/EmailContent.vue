@@ -33,10 +33,13 @@ const parser = new DOMParser()
 const doc = parser.parseFromString(_content.value, 'text/html')
 
 const gmailReplyToContent = doc.querySelectorAll('div.gmail_quote')
+const outlookReplyToContent = doc.querySelectorAll('div#appendonsend')
 const replyToContent = doc.querySelectorAll('p.reply-to-content')
 
 if (gmailReplyToContent.length) {
   _content.value = parseReplyToContent(doc, 'div.gmail_quote', true)
+} else if (outlookReplyToContent.length) {
+  _content.value = parseReplyToContent(doc, 'div#appendonsend')
 } else if (replyToContent.length) {
   _content.value = parseReplyToContent(doc, 'p.reply-to-content')
 }
