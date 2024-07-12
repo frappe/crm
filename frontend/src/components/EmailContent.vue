@@ -6,7 +6,7 @@
     style="
       mask-image: linear-gradient(
         to bottom,
-        black calc(100% - 30px),
+        black calc(100% - 20px),
         transparent 100%
       );
     "
@@ -47,9 +47,7 @@ if (gmailReplyToContent.length) {
 function parseReplyToContent(doc, selector, forGmail = false) {
   function handleAllInstances(doc) {
     const replyToContentElements = doc.querySelectorAll(selector)
-    if (replyToContentElements.length === 0) {
-      return
-    }
+    if (replyToContentElements.length === 0) return
     const replyToContentElement = replyToContentElements[0]
     replaceReplyToContent(replyToContentElement, forGmail)
     handleAllInstances(doc)
@@ -61,6 +59,7 @@ function parseReplyToContent(doc, selector, forGmail = false) {
 }
 
 function replaceReplyToContent(replyToContentElement, forGmail) {
+  if (!replyToContentElement) return
   let randomId = Math.random().toString(36).substring(2, 7)
   const wrapper = doc.createElement('div')
   wrapper.classList.add('replied-content')
@@ -90,6 +89,8 @@ function replaceReplyToContent(replyToContentElement, forGmail) {
     const replyToContentIndex = allSiblings.indexOf(replyToContentElement)
     const followingSiblings = allSiblings.slice(replyToContentIndex + 1)
 
+    if (followingSiblings.length === 0) return
+
     let clonedFollowingSiblings = followingSiblings.map((sibling) =>
       sibling.cloneNode(true),
     )
@@ -99,6 +100,7 @@ function replaceReplyToContent(replyToContentElement, forGmail) {
 
     wrapper.append(div)
 
+    // Remove all siblings after the reply-to-content element
     for (let i = replyToContentIndex + 1; i < allSiblings.length; i++) {
       replyToContentElement.parentElement.removeChild(allSiblings[i])
     }
@@ -231,13 +233,15 @@ watch(iframeRef, (iframe) => {
     iframe.onload = () => {
       const emailContent =
         iframe.contentWindow.document.querySelector('.email-content')
-      iframe.style.height = emailContent.offsetHeight + 25 + 'px'
+      let parent = emailContent.closest('html')
+
+      iframe.style.height = parent.offsetHeight + 'px'
 
       let replyCollapsers = emailContent.querySelectorAll('.replyCollapser')
       if (replyCollapsers.length) {
         replyCollapsers.forEach((replyCollapser) => {
           replyCollapser.addEventListener('change', () => {
-            iframe.style.height = emailContent.offsetHeight + 25 + 'px'
+            iframe.style.height = parent.offsetHeight + 'px'
           })
         })
       }
