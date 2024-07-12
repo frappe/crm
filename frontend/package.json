@@ -9,6 +9,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@tiptap/extension-paragraph": "^2.4.0",
     "@twilio/voice-sdk": "^2.10.2",
     "@vueuse/core": "^10.3.0",
     "@vueuse/integrations": "^10.3.0",
