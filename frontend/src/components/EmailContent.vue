@@ -32,20 +32,23 @@ const _content = ref(props.content)
 const parser = new DOMParser()
 const doc = parser.parseFromString(_content.value, 'text/html')
 
+const gmailReplyToContent = doc.querySelectorAll('div.gmail_quote')
 const replyToContent = doc.querySelectorAll('p.reply-to-content')
 
-if (replyToContent.length) {
-  _content.value = parseReplyToContent(doc)
+if (gmailReplyToContent.length) {
+  _content.value = parseReplyToContent(doc, 'div.gmail_quote', true)
+} else if (replyToContent.length) {
+  _content.value = parseReplyToContent(doc, 'p.reply-to-content')
 }
 
-function parseReplyToContent(doc) {
+function parseReplyToContent(doc, selector, forGmail = false) {
   function handleAllInstances(doc) {
-    const replyToContentElements = doc.querySelectorAll('p.reply-to-content')
+    const replyToContentElements = doc.querySelectorAll(selector)
     if (replyToContentElements.length === 0) {
       return
     }
     const replyToContentElement = replyToContentElements[0]
-    replaceReplyToContent(replyToContentElement)
+    replaceReplyToContent(replyToContentElement, forGmail)
     handleAllInstances(doc)
   }
 
@@ -54,7 +57,7 @@ function parseReplyToContent(doc) {
   return doc.body.innerHTML
 }
 
-function replaceReplyToContent(replyToContentElement) {
+function replaceReplyToContent(replyToContentElement, forGmail) {
   let randomId = Math.random().toString(36).substring(2, 7)
   const wrapper = doc.createElement('div')
   wrapper.classList.add('replied-content')
@@ -71,21 +74,31 @@ function replaceReplyToContent(replyToContentElement) {
   collapseInput.setAttribute('type', 'checkbox')
   wrapper.appendChild(collapseInput)
 
-  const allSiblings = Array.from(replyToContentElement.parentElement.children)
-  const replyToContentIndex = allSiblings.indexOf(replyToContentElement)
-  const followingSiblings = allSiblings.slice(replyToContentIndex + 1)
+  if (forGmail) {
+    const prevSibling = replyToContentElement.previousElementSibling
+    if (prevSibling && prevSibling.tagName === 'BR') {
+      prevSibling.remove()
+    }
+    let cloned = replyToContentElement.cloneNode(true)
+    cloned.classList.remove('gmail_quote')
+    wrapper.appendChild(cloned)
+  } else {
+    const allSiblings = Array.from(replyToContentElement.parentElement.children)
+    const replyToContentIndex = allSiblings.indexOf(replyToContentElement)
+    const followingSiblings = allSiblings.slice(replyToContentIndex + 1)
 
-  let clonedFollowingSiblings = followingSiblings.map((sibling) =>
-    sibling.cloneNode(true),
-  )
+    let clonedFollowingSiblings = followingSiblings.map((sibling) =>
+      sibling.cloneNode(true),
+    )
 
-  const div = doc.createElement('div')
-  div.append(...clonedFollowingSiblings)
+    const div = doc.createElement('div')
+    div.append(...clonedFollowingSiblings)
 
-  wrapper.append(div)
+    wrapper.append(div)
 
-  for (let i = replyToContentIndex + 1; i < allSiblings.length; i++) {
-    replyToContentElement.parentElement.removeChild(allSiblings[i])
+    for (let i = replyToContentIndex + 1; i < allSiblings.length; i++) {
+      replyToContentElement.parentElement.removeChild(allSiblings[i])
+    }
   }
 
   replyToContentElement.parentElement.replaceChild(
