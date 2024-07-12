@@ -27,6 +27,72 @@ const files = import.meta.globEager('/src/index.css', { query: '?inline' })
 const css = files['/src/index.css'].default
 
 const iframeRef = ref(null)
+const _content = ref(props.content)
+
+const parser = new DOMParser()
+const doc = parser.parseFromString(_content.value, 'text/html')
+
+const replyToContent = doc.querySelectorAll('p.reply-to-content')
+
+if (replyToContent.length) {
+  _content.value = parseReplyToContent(doc)
+}
+
+function parseReplyToContent(doc) {
+  function handleAllInstances(doc) {
+    const replyToContentElements = doc.querySelectorAll('p.reply-to-content')
+    if (replyToContentElements.length === 0) {
+      return
+    }
+    const replyToContentElement = replyToContentElements[0]
+    replaceReplyToContent(replyToContentElement)
+    handleAllInstances(doc)
+  }
+
+  handleAllInstances(doc)
+
+  return doc.body.innerHTML
+}
+
+function replaceReplyToContent(replyToContentElement) {
+  let randomId = Math.random().toString(36).substring(2, 7)
+  const wrapper = doc.createElement('div')
+  wrapper.classList.add('replied-content')
+
+  const collapseLabel = doc.createElement('label')
+  collapseLabel.classList.add('collapse')
+  collapseLabel.setAttribute('for', randomId)
+  collapseLabel.innerHTML = '...'
+  wrapper.appendChild(collapseLabel)
+
+  const collapseInput = doc.createElement('input')
+  collapseInput.setAttribute('id', randomId)
+  collapseInput.setAttribute('class', 'replyCollapser')
+  collapseInput.setAttribute('type', 'checkbox')
+  wrapper.appendChild(collapseInput)
+
+  const allSiblings = Array.from(replyToContentElement.parentElement.children)
+  const replyToContentIndex = allSiblings.indexOf(replyToContentElement)
+  const followingSiblings = allSiblings.slice(replyToContentIndex + 1)
+
+  let clonedFollowingSiblings = followingSiblings.map((sibling) =>
+    sibling.cloneNode(true),
+  )
+
+  const div = doc.createElement('div')
+  div.append(...clonedFollowingSiblings)
+
+  wrapper.append(div)
+
+  for (let i = replyToContentIndex + 1; i < allSiblings.length; i++) {
+    replyToContentElement.parentElement.removeChild(allSiblings[i])
+  }
+
+  replyToContentElement.parentElement.replaceChild(
+    wrapper,
+    replyToContentElement,
+  )
+}
 
 const htmlContent = `
 <!DOCTYPE html>
@@ -34,6 +100,35 @@ const htmlContent = `
 <head>
   <style>
     ${css}
+
+    .replied-content .collapse {
+      margin: 10px 0 10px 0;
+      visibility: visible;
+      cursor: pointer;
+      display: flex;
+      font-size: larger;
+      font-weight: 700;
+      height: 12px;
+      line-height: 0.1;
+      background: #e8eaed;
+      width: 23px;
+      justify-content: center;
+      border-radius: 5px;
+    }
+
+    .replied-content .collapse:hover {
+      background: #dadce0;
+    }
+
+    .replied-content .collapse + input {
+      display: none;
+    }
+    .replied-content .collapse + input + div {
+      display: none;
+    }
+    .replied-content .collapse + input:checked + div {
+      display: block;
+    }
 
     .email-content {
         word-break: break-word;
@@ -110,7 +205,7 @@ const htmlContent = `
   </style>
 </head>
 <body>
-    <div ref="emailContentRef" class="email-content prose-f">${props.content}</div>
+    <div ref="emailContentRef" class="email-content prose-f">${_content.value}</div>
 </body>
 </html>
 `
