@@ -434,7 +434,7 @@
         ]"
       >
         <div
-          class="z-10 flex h-7 w-7 items-center justify-center rounded bg-gray-100"
+          class="z-10 flex h-7 w-7 items-center justify-center bg-white"
           :class="{
             'mt-3': [
               'communication',
@@ -446,7 +446,13 @@
             ),
           }"
         >
+          <UserAvatar
+            v-if="activity.activity_type == 'communication'"
+            :user="activity.data.sender"
+            size="md"
+          />
           <component
+            v-else
             :is="activity.icon"
             :class="
               ['added', 'removed', 'changed'].includes(activity.activity_type)
@@ -458,18 +464,14 @@
       </div>
       <div v-if="activity.activity_type == 'communication'" class="pb-6">
         <div
-          class="cursor-pointer rounded-md bg-gray-50 p-3 text-base leading-6 transition-all duration-300 ease-in-out"
+          class="cursor-pointer rounded-md shadow bg-white px-3 py-1.5 text-base leading-6 transition-all duration-300 ease-in-out"
         >
-          <div class="mb-1 flex items-center justify-between gap-2">
+          <div class="-mb-0.5 flex items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <UserAvatar :user="activity.data.sender" size="md" />
               <span>{{ activity.data.sender_full_name }}</span>
-              <span>&middot;</span>
-              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-sm text-gray-600">
-                  {{ __(timeAgo(activity.creation)) }}
-                </div>
-              </Tooltip>
+              <span class="text-sm text-gray-600">
+                {{ '<' + activity.data.sender + '>' }}
+              </span>
               <Badge
                 v-if="activity.communication_type == 'Automated Message'"
                 :label="__('Notification')"
@@ -477,56 +479,63 @@
                 theme="green"
               />
             </div>
-            <div class="flex gap-0.5">
-              <Tooltip :text="__('Reply')">
-                <div>
-                  <Button
-                    variant="ghost"
-                    class="text-gray-700"
-                    @click="reply(activity.data)"
-                  >
-                    <ReplyIcon class="h-4 w-4" />
-                  </Button>
+            <div class="flex items-center gap-2">
+              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+                <div class="text-sm text-gray-600">
+                  {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
-              <Tooltip :text="__('Reply All')">
-                <div>
-                  <Button
-                    variant="ghost"
-                    class="text-gray-700"
-                    @click="reply(activity.data, true)"
-                  >
-                    <ReplyAllIcon class="h-4 w-4" />
-                  </Button>
-                </div>
-              </Tooltip>
+              <div class="flex gap-0.5">
+                <Tooltip :text="__('Reply')">
+                  <div>
+                    <Button
+                      variant="ghost"
+                      class="text-gray-700"
+                      @click="reply(activity.data)"
+                    >
+                      <template #icon>
+                        <ReplyIcon />
+                      </template>
+                    </Button>
+                  </div>
+                </Tooltip>
+                <Tooltip :text="__('Reply All')">
+                  <div>
+                    <Button
+                      variant="ghost"
+                      class="text-gray-700"
+                      @click="reply(activity.data, true)"
+                    >
+                      <template #icon>
+                        <ReplyAllIcon />
+                      </template>
+                    </Button>
+                  </div>
+                </Tooltip>
+              </div>
             </div>
           </div>
-          <div class="text-sm leading-5 text-gray-600">
-            {{ activity.data.subject }}
+          <div class="flex flex-col gap-1 text-base text-gray-800">
+            <div>
+              <span class="mr-1 text-gray-600"> {{ __('To') }}: </span>
+              <span>{{ activity.data.recipients }}</span>
+              <span v-if="activity.data.cc">, </span>
+              <span v-if="activity.data.cc" class="mr-1 text-gray-600">
+                {{ __('CC') }}:
+              </span>
+              <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
+              <span v-if="activity.data.bcc">, </span>
+              <span v-if="activity.data.bcc" class="mr-1 text-gray-600">
+                {{ __('BCC') }}:
+              </span>
+              <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
+            </div>
+            <div>
+              <span class="mr-1 text-gray-600"> {{ __('Subject') }}: </span>
+              <span>{{ activity.data.subject }}</span>
+            </div>
           </div>
-          <div class="mb-3 text-sm leading-5 text-gray-600">
-            <span class="mr-1 text-2xs font-bold text-gray-500">
-              {{ __('TO') }}:
-            </span>
-            <span>{{ activity.data.recipients }}</span>
-            <span v-if="activity.data.cc">, </span>
-            <span
-              v-if="activity.data.cc"
-              class="mr-1 text-2xs font-bold text-gray-500"
-            >
-              {{ __('CC') }}:
-            </span>
-            <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
-            <span v-if="activity.data.bcc">, </span>
-            <span
-              v-if="activity.data.bcc"
-              class="mr-1 text-2xs font-bold text-gray-500"
-            >
-              {{ __('BCC') }}:
-            </span>
-            <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
-          </div>
+          <div class="border-0 border-t my-3.5 border-gray-200" />
           <EmailContent :content="activity.data.content" />
           <div
             v-if="activity.data?.attachments?.length"
@@ -1236,9 +1245,6 @@ function timelineIcon(activity_type, is_lead) {
     case 'comment':
       icon = CommentIcon
       break
-    case 'communication':
-      icon = EmailAtIcon
-      break
     case 'incoming_call':
       icon = InboundCallIcon
       break
@@ -1347,7 +1353,7 @@ function reply(email, reply_all = false) {
     .chain()
     .clearContent()
     .insertContent('<p>.</p>')
-    .updateAttributes('paragraph', {class:'reply-to-content'})
+    .updateAttributes('paragraph', { class: 'reply-to-content' })
     .insertContent(repliedMessage)
     .focus('all')
     .insertContentAt(0, { type: 'paragraph' })
