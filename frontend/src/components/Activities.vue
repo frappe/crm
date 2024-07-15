@@ -426,15 +426,10 @@
       <div
         v-if="title == 'Activity'"
         class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
-        :class="[
-          i != activities.length - 1 ? 'before:h-full' : 'before:h-4',
-          activity.other_versions
-            ? 'after:translate-y-[calc(-50% - 4px)] after:absolute after:bottom-9 after:left-[50%] after:top-0 after:-z-10 after:w-8 after:rounded-bl-xl after:border-b after:border-l after:border-gray-200'
-            : '',
-        ]"
+        :class="[i != activities.length - 1 ? 'before:h-full' : 'before:h-4']"
       >
         <div
-          class="z-10 flex h-8 w-7 items-center justify-center bg-white"
+          class="z-10 flex h-7 w-7 items-center justify-center bg-white"
           :class="{
             'mt-2.5': [
               'communication',
@@ -442,6 +437,9 @@
               'outgoing_call',
             ].includes(activity.activity_type),
             'bg-white': ['added', 'removed', 'changed'].includes(
+              activity.activity_type,
+            ),
+            'h-8': ['comment', 'communication'].includes(
               activity.activity_type,
             ),
           }"
@@ -555,9 +553,7 @@
         :id="activity.name"
         v-else-if="activity.activity_type == 'comment'"
       >
-        <div
-          class="mb-1 flex items-start justify-stretch gap-2 py-1 text-base"
-        >
+        <div class="mb-1 flex items-start justify-stretch gap-2 py-1 text-base">
           <div class="inline-flex items-center flex-wrap gap-1 text-gray-600">
             <UserAvatar class="mr-1" :user="activity.owner" size="md" />
             <span class="font-medium text-gray-800">
@@ -688,9 +684,32 @@
           </div>
         </div>
       </div>
-      <div v-else class="mb-4 flex flex-col gap-5 py-1.5">
-        <div class="flex items-start justify-stretch gap-2 text-base">
-          <div class="inline-flex flex-wrap gap-1 text-gray-600">
+      <div v-else class="mb-4 flex flex-col gap-2 py-1.5">
+        <div class="flex items-center justify-stretch gap-2 text-base">
+          <div
+            v-if="activity.other_versions"
+            class="inline-flex gap-1.5 text-gray-800 font-medium"
+          >
+            <div class="inline-flex gap-1">
+              <span>{{ activity.show_others ? __('Hide') : __('Show') }}</span>
+              <span> +{{ activity.other_versions.length + 1 }} </span>
+              <span>{{ __('changes from') }}</span>
+              <span>{{ activity.owner_name }}</span>
+            </div>
+            <Button
+              class="!size-4"
+              variant="ghost"
+              @click="activity.show_others = !activity.show_others"
+            >
+              <template #icon>
+                <SelectIcon />
+              </template>
+            </Button>
+          </div>
+          <div
+            v-else
+            class="inline-flex items-center flex-wrap gap-1 text-gray-600"
+          >
             <span class="font-medium text-gray-800">
               {{ activity.owner_name }}
             </span>
@@ -745,85 +764,71 @@
         </div>
         <div
           v-if="activity.other_versions && activity.show_others"
-          v-for="activity in activity.other_versions"
-          class="flex items-start justify-stretch gap-2 text-base"
+          class="flex flex-col gap-0.5"
         >
-          <div class="flex items-start gap-1 text-gray-600">
-            <div class="flex flex-1 items-center gap-1">
-              <span
-                v-if="activity.data.field_label"
-                class="max-w-xs truncate text-gray-600"
-              >
-                {{ __(activity.data.field_label) }}
-              </span>
-              <FeatherIcon
-                name="arrow-right"
-                class="mx-1 h-4 w-4 text-gray-600"
-              />
-            </div>
-            <div class="flex flex-wrap items-center gap-1">
-              <span v-if="activity.type">{{
-                startCase(__(activity.type))
-              }}</span>
-              <span
-                v-if="activity.data.old_value"
-                class="max-w-xs font-medium text-gray-800"
-              >
-                <div
-                  class="flex items-center gap-1"
-                  v-if="activity.options == 'User'"
-                >
-                  <UserAvatar :user="activity.data.old_value" size="xs" />
-                  {{ getUser(activity.data.old_value).full_name }}
-                </div>
-                <div class="truncate" v-else>
-                  {{ activity.data.old_value }}
-                </div>
-              </span>
-              <span v-if="activity.to">{{ __('to') }}</span>
-              <span
-                v-if="activity.data.value"
-                class="max-w-xs font-medium text-gray-800"
-              >
-                <div
-                  class="flex items-center gap-1"
-                  v-if="activity.options == 'User'"
-                >
-                  <UserAvatar :user="activity.data.value" size="xs" />
-                  {{ getUser(activity.data.value).full_name }}
-                </div>
-                <div class="truncate" v-else>
-                  {{ activity.data.value }}
-                </div>
-              </span>
-            </div>
-          </div>
-
-          <div class="ml-auto whitespace-nowrap">
-            <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-              <div class="text-sm text-gray-600">
-                {{ __(timeAgo(activity.creation)) }}
-              </div>
-            </Tooltip>
-          </div>
-        </div>
-        <div v-if="activity.other_versions">
-          <Button
-            :label="
-              activity.show_others
-                ? __('Hide all Changes')
-                : __('Show all Changes')
-            "
-            variant="outline"
-            @click="activity.show_others = !activity.show_others"
+          <div
+            v-for="activity in [activity, ...activity.other_versions]"
+            class="flex items-start justify-stretch gap-2 py-1.5 text-base"
           >
-            <template #suffix>
-              <FeatherIcon
-                :name="activity.show_others ? 'chevron-up' : 'chevron-down'"
-                class="h-4 text-gray-600"
-              />
-            </template>
-          </Button>
+            <div class="flex items-start gap-1 text-gray-600">
+              <div class="flex flex-1 items-center gap-1">
+                <span
+                  v-if="activity.data.field_label"
+                  class="max-w-xs truncate text-gray-600"
+                >
+                  {{ __(activity.data.field_label) }}
+                </span>
+                <FeatherIcon
+                  name="arrow-right"
+                  class="mx-1 h-4 w-4 text-gray-600"
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-1">
+                <span v-if="activity.type">{{
+                  startCase(__(activity.type))
+                }}</span>
+                <span
+                  v-if="activity.data.old_value"
+                  class="max-w-xs font-medium text-gray-800"
+                >
+                  <div
+                    class="flex items-center gap-1"
+                    v-if="activity.options == 'User'"
+                  >
+                    <UserAvatar :user="activity.data.old_value" size="xs" />
+                    {{ getUser(activity.data.old_value).full_name }}
+                  </div>
+                  <div class="truncate" v-else>
+                    {{ activity.data.old_value }}
+                  </div>
+                </span>
+                <span v-if="activity.to">{{ __('to') }}</span>
+                <span
+                  v-if="activity.data.value"
+                  class="max-w-xs font-medium text-gray-800"
+                >
+                  <div
+                    class="flex items-center gap-1"
+                    v-if="activity.options == 'User'"
+                  >
+                    <UserAvatar :user="activity.data.value" size="xs" />
+                    {{ getUser(activity.data.value).full_name }}
+                  </div>
+                  <div class="truncate" v-else>
+                    {{ activity.data.value }}
+                  </div>
+                </span>
+              </div>
+            </div>
+
+            <div class="ml-auto whitespace-nowrap">
+              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+                <div class="text-sm text-gray-600">
+                  {{ __(timeAgo(activity.creation)) }}
+                </div>
+              </Tooltip>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -919,7 +924,7 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
-import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
+import SelectIcon from '@/components/Icons/SelectIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
