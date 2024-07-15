@@ -932,7 +932,7 @@ import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import EmailContent from '@/components/EmailContent.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -1115,7 +1115,7 @@ const replyMessage = ref({})
 const defaultActions = computed(() => {
   let actions = [
     {
-      icon: h(EmailIcon, { class: 'h-4 w-4' }),
+      icon: h(Email2Icon, { class: 'h-4 w-4' }),
       label: __('New Email'),
       onClick: () => (emailBox.value.show = true),
     },
@@ -1252,7 +1252,7 @@ const emptyText = computed(() => {
 const emptyTextIcon = computed(() => {
   let icon = ActivityIcon
   if (props.title == 'Emails') {
-    icon = EmailIcon
+    icon = Email2Icon
   } else if (props.title == 'Comments') {
     icon = CommentIcon
   } else if (props.title == 'Calls') {

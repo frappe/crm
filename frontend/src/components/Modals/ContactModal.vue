@@ -84,7 +84,7 @@
 import Fields from '@/components/Fields.vue'
 import ContactIcon from '@/components/Icons/ContactIcon.vue'
 import GenderIcon from '@/components/Icons/GenderIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import AddressIcon from '@/components/Icons/AddressIcon.vue'
@@ -208,7 +208,7 @@ const detailFields = computed(() => {
       value: _contact.value.gender,
     },
     {
-      icon: EmailIcon,
+      icon: Email2Icon,
       name: 'email_id',
       value: _contact.value.email_id,
     },

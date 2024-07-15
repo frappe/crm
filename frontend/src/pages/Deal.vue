@@ -77,7 +77,7 @@
             </Tooltip>
             <Tooltip :text="__('Send an email')">
               <Button class="h-7 w-7">
-                <EmailIcon
+                <Email2Icon
                   class="h-4 w-4"
                   @click="
                     deal.data.email
@@ -240,7 +240,7 @@
                         class="flex flex-col gap-1.5 text-base text-gray-800"
                       >
                         <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
-                          <EmailIcon class="h-4 w-4" />
+                          <Email2Icon class="h-4 w-4" />
                           {{ contact.email }}
                         </div>
                         <div class="flex items-center gap-3 p-1 py-1.5">
@@ -306,6 +306,7 @@ import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'

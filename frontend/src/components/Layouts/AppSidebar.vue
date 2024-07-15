@@ -97,7 +97,7 @@
 
 <script setup>
 import Section from '@/components/Section.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -160,7 +160,7 @@ const links = [
   },
   {
     label: 'Email Templates',
-    icon: EmailIcon,
+    icon: Email2Icon,
     to: 'Email Templates',
   },
 ]
