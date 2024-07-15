@@ -12,7 +12,8 @@
     <template v-slot:editor="{ editor }">
       <EditorContent
         :class="[
-          editable && 'sm:mx-10 mx-4 max-h-[50vh] overflow-y-auto border-t py-3',
+          editable &&
+            'sm:mx-10 mx-4 max-h-[50vh] overflow-y-auto border-t py-3',
         ]"
         :editor="editor"
       />
@@ -37,11 +38,19 @@
         <div
           class="flex justify-between gap-2 overflow-hidden border-t sm:px-10 px-4 py-2.5"
         >
-          <div class="flex items-center overflow-x-auto">
-            <TextEditorFixedMenu
-              class="-ml-1"
-              :buttons="textEditorMenuButtons"
-            />
+          <div class="flex gap-1 items-center overflow-x-auto">
+            <TextEditorBubbleMenu :buttons="textEditorMenuButtons" />
+            <IconPicker
+              v-model="emoji"
+              v-slot="{ togglePopover }"
+              @update:modelValue="() => appendEmoji()"
+            >
+              <Button variant="ghost" @click="togglePopover()">
+                <template #icon>
+                  <SmileIcon class="h-4" />
+                </template>
+              </Button>
+            </IconPicker>
             <FileUploader
               :upload-args="{
                 doctype: doctype,
@@ -77,10 +86,12 @@
   </TextEditor>
 </template>
 <script setup>
+import IconPicker from '@/components/IconPicker.vue'
+import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import { usersStore } from '@/stores/users'
-import { TextEditorFixedMenu, TextEditor, FileUploader } from 'frappe-ui'
+import { TextEditorBubbleMenu, TextEditor, FileUploader } from 'frappe-ui'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel } from 'vue'
 
@@ -118,10 +129,17 @@ const content = defineModel('content')
 const { users: usersList } = usersStore()
 
 const textEditor = ref(null)
+const emoji = ref('')
 
 const editor = computed(() => {
   return textEditor.value.editor
 })
+
+function appendEmoji() {
+  editor.value.commands.insertContent(emoji.value)
+  editor.value.commands.focus()
+  emoji.value = ''
+}
 
 function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)

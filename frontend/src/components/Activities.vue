@@ -442,7 +442,7 @@
               'outgoing_call',
             ].includes(activity.activity_type),
             'bg-white': ['added', 'removed', 'changed'].includes(
-              activity.activity_type
+              activity.activity_type,
             ),
           }"
         >
@@ -528,7 +528,10 @@
             <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
           </div>
           <EmailContent :content="activity.data.content" />
-          <div class="flex flex-wrap gap-2">
+          <div
+            v-if="activity.data?.attachments?.length"
+            class="flex flex-wrap gap-2"
+          >
             <AttachmentItem
               v-for="a in activity.data.attachments"
               :key="a.file_url"
@@ -1102,7 +1105,7 @@ const defaultActions = computed(() => {
     },
   ]
   return actions.filter((action) =>
-    action.condition ? action.condition() : true
+    action.condition ? action.condition() : true,
   )
 })
 
@@ -1120,12 +1123,12 @@ const activities = computed(() => {
   } else if (props.title == 'Emails') {
     if (!all_activities.data?.versions) return []
     activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'communication'
+      (activity) => activity.activity_type === 'communication',
     )
   } else if (props.title == 'Comments') {
     if (!all_activities.data?.versions) return []
     activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'comment'
+      (activity) => activity.activity_type === 'comment',
     )
   } else if (props.title == 'Calls') {
     if (!all_activities.data?.calls) return []
@@ -1338,12 +1341,15 @@ function reply(email, reply_all = false) {
     editor.bccEmails = bcc
   }
 
+  let repliedMessage = `<blockquote>${message}</blockquote>`
+
   editor.editor
     .chain()
     .clearContent()
-    .insertContent(message)
+    .insertContent('<p>.</p>')
+    .updateAttributes('paragraph', {class:'reply-to-content'})
+    .insertContent(repliedMessage)
     .focus('all')
-    .setBlockquote()
     .insertContentAt(0, { type: 'paragraph' })
     .focus('start')
     .run()

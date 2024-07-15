@@ -132,3 +132,36 @@ def set_as_primary(contact, field, value):
 
 	contact.save()
 	return True
+
+
+@frappe.whitelist()
+def search_emails(txt: str):
+	doctype = "Contact"
+	meta = frappe.get_meta(doctype)
+	filters = [["Contact", "email_id", "is", "set"]]
+
+	if meta.get("fields", {"fieldname": "enabled", "fieldtype": "Check"}):
+		filters.append([doctype, "enabled", "=", 1])
+	if meta.get("fields", {"fieldname": "disabled", "fieldtype": "Check"}):
+		filters.append([doctype, "disabled", "!=", 1])
+
+	or_filters = []
+	search_fields = ["full_name", "email_id", "name"]
+	if txt:
+		for f in search_fields:
+			or_filters.append([doctype, f.strip(), "like", f"%{txt}%"])
+
+	results = frappe.get_list(
+		doctype,
+		filters=filters,
+		fields=search_fields,
+		or_filters=or_filters,
+		limit_start=0,
+		limit_page_length=20,
+		order_by='email_id, full_name, name',
+		ignore_permissions=False,
+		as_list=True,
+		strict=False,
+	)
+
+	return results
