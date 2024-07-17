@@ -166,7 +166,7 @@
             :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
           >
             <div
-              class="z-10 flex h-7 w-7 items-center justify-center rounded bg-gray-100"
+              class="z-10 flex h-7 w-7 items-center justify-center bg-white"
             >
               <CommentIcon class="text-gray-800" />
             </div>
@@ -929,7 +929,7 @@
 </template>
 <script setup>
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
-import EmailContent from '@/components/EmailContent.vue'
+import EmailContent from '@/components/Activities/EmailContent.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
