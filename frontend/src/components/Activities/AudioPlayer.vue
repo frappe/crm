@@ -61,11 +61,13 @@
             </template>
           </Button>
         </div>
-        <Button variant="ghost">
-          <template #icon>
-            <FeatherIcon class="size-4" name="more-horizontal" />
-          </template>
-        </Button>
+        <Dropdown :options="options">
+          <Button variant="ghost" @click="showPlaybackSpeed = false">
+            <template #icon>
+              <FeatherIcon class="size-4" name="more-horizontal" />
+            </template>
+          </Button>
+        </Dropdown>
       </div>
     </div>
 
@@ -84,7 +86,10 @@
 import VolumnLowIcon from '@/components/Icons/VolumnLowIcon.vue'
 import VolumnHighIcon from '@/components/Icons/VolumnHighIcon.vue'
 import MuteIcon from '@/components/Icons/MuteIcon.vue'
-import { computed, ref } from 'vue'
+import PlaybackSpeedIcon from '@/components/Icons/PlaybackSpeedIcon.vue'
+import PlaybackSpeedOption from '@/components/Activities/PlaybackSpeedOption.vue'
+import Dropdown from '@/components/frappe-ui/Dropdown.vue'
+import { computed, h, ref } from 'vue'
 
 const props = defineProps({
   src: String,
@@ -129,6 +134,55 @@ function updateVolumnProgress(value) {
   currentVolumn.value = value
   volumnProgress.value = value * 100
 }
+
+const showPlaybackSpeed = ref(false)
+const currentPlaybackSpeed = ref(1)
+
+const options = computed(() => {
+  let playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
+
+  let playbackSpeedOptions = playbackSpeeds.map((speed) => {
+    let label = `${speed}x`
+    if (speed === 1) {
+      label = __('Normal')
+    }
+    return {
+      component: () =>
+        h(PlaybackSpeedOption, {
+          label,
+          active: speed === currentPlaybackSpeed.value,
+          onClick: () => {
+            audio.value.playbackRate = speed
+            showPlaybackSpeed.value = false
+            currentPlaybackSpeed.value = speed
+          },
+        }),
+    }
+  })
+  let _options = [
+    {
+      icon: 'download',
+      label: __('Download'),
+      onClick: () => {
+        const a = document.createElement('a')
+        a.href = props.src
+        a.download = props.src.split('/').pop()
+        a.click()
+      },
+    },
+    {
+      icon: () => h(PlaybackSpeedIcon, { class: 'size-4' }),
+      label: __('Playback speed'),
+      onClick: (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        showPlaybackSpeed.value = true
+      },
+    },
+  ]
+
+  return showPlaybackSpeed.value ? playbackSpeedOptions : _options
+})
 </script>
 
 <style scoped>

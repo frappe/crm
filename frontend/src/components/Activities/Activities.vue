@@ -372,7 +372,6 @@
               class="flex items-center justify-between rounded border"
             >
               <AudioPlayer :src="call.recording_url" />
-              <audio class="audio-control" controls :src="call.recording_url" />
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
