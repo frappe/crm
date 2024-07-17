@@ -165,9 +165,7 @@
             class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
             :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
           >
-            <div
-              class="z-10 flex h-7 w-7 items-center justify-center bg-white"
-            >
+            <div class="z-10 flex h-7 w-7 items-center justify-center bg-white">
               <CommentIcon class="text-gray-800" />
             </div>
           </div>
@@ -373,6 +371,7 @@
               v-if="call.show_recording && call.recording_url"
               class="flex items-center justify-between rounded border"
             >
+              <AudioPlayer :src="call.recording_url" />
               <audio class="audio-control" controls :src="call.recording_url" />
             </div>
             <div class="flex items-center justify-between">
@@ -698,13 +697,9 @@
           </div>
           <div
             v-if="activity.show_recording && activity.recording_url"
-            class="flex items-center justify-between"
+            class="flex flex-col items-center justify-between"
           >
-            <audio
-              class="audio-control"
-              controls
-              :src="activity.recording_url"
-            ></audio>
+            <AudioPlayer :src="activity.recording_url" />
           </div>
         </div>
       </div>
@@ -930,6 +925,7 @@
 <script setup>
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
+import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
