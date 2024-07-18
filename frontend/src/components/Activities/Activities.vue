@@ -276,99 +276,22 @@
             :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
           >
             <div
-              class="z-10 mt-[15px] flex h-7 w-7 items-center justify-center rounded bg-gray-100"
+              class="z-10 flex h-8 w-7 items-center justify-center bg-white text-gray-800"
             >
+              <MissedCallIcon
+                v-if="call.status == 'No Answer'"
+                class="text-red-600"
+              />
+              <DeclinedCallIcon v-else-if="call.status == 'Busy'" />
               <component
+                v-else
                 :is="
                   call.type == 'Incoming' ? InboundCallIcon : OutboundCallIcon
                 "
-                class="text-gray-800"
               />
             </div>
           </div>
-          <div
-            class="mb-3 flex flex-col gap-3 rounded-md bg-gray-50 p-4 sm:max-w-[70%]"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                {{
-                  call.type == 'Incoming'
-                    ? __('Inbound Call')
-                    : __('Outbound Call')
-                }}
-              </div>
-              <div>
-                <Tooltip :text="dateFormat(call.creation, dateTooltipFormat)">
-                  <div class="text-sm text-gray-600">
-                    {{ __(timeAgo(call.creation)) }}
-                  </div>
-                </Tooltip>
-              </div>
-            </div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1">
-                <DurationIcon class="h-4 w-4 text-gray-600" />
-                <div class="text-sm text-gray-600">{{ __('Duration') }}</div>
-                <div class="text-sm">
-                  {{ call.duration }}
-                </div>
-              </div>
-              <div
-                v-if="call.recording_url"
-                class="flex cursor-pointer select-none items-center gap-1"
-                @click="call.show_recording = !call.show_recording"
-              >
-                <PlayIcon class="h-4 w-4 text-gray-600" />
-                <div class="text-sm text-gray-600">
-                  {{
-                    call.show_recording
-                      ? __('Hide Recording')
-                      : __('Listen to Call')
-                  }}
-                </div>
-              </div>
-            </div>
-            <div
-              v-if="call.show_recording && call.recording_url"
-              class="flex items-center justify-between rounded border"
-            >
-              <AudioPlayer :src="call.recording_url" />
-            </div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1">
-                <Avatar
-                  :image="call.caller.image"
-                  :label="call.caller.label"
-                  size="xl"
-                />
-                <div class="ml-1 flex flex-col gap-1">
-                  <div class="text-base font-medium">
-                    {{ __(call.caller.label) }}
-                  </div>
-                  <div class="text-xs text-gray-600">
-                    {{ call.from }}
-                  </div>
-                </div>
-                <FeatherIcon
-                  name="arrow-right"
-                  class="mx-2 h-5 w-5 text-gray-600"
-                />
-                <Avatar
-                  :image="call.receiver.image"
-                  :label="call.receiver.label"
-                  size="xl"
-                />
-                <div class="ml-1 flex flex-col gap-1">
-                  <div class="text-base font-medium">
-                    {{ __(call.receiver.label) }}
-                  </div>
-                  <div class="text-xs text-gray-600">
-                    {{ call.to }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CallContent class="mb-4" :activity="call" />
         </div>
       </div>
     </div>
@@ -535,99 +458,7 @@
         "
         class="mb-4"
       >
-        <div class="mb-1 flex items-start justify-stretch gap-2 py-1 text-base">
-          <div class="inline-flex items-center flex-wrap gap-1 text-gray-600">
-            <Avatar
-              :image="activity.caller.image"
-              :label="activity.caller.label"
-              size="md"
-            />
-            <span class="font-medium text-gray-800 ml-1">
-              {{ activity.caller.label }}
-            </span>
-            <span>{{
-              activity.type == 'Incoming'
-                ? __('has reached out')
-                : __('has made a call')
-            }}</span>
-          </div>
-          <div class="ml-auto whitespace-nowrap">
-            <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-              <div class="text-sm text-gray-600">
-                {{ __(timeAgo(activity.creation)) }}
-              </div>
-            </Tooltip>
-          </div>
-        </div>
-        <div
-          class="flex flex-col gap-2 border border-gray-200 rounded-md bg-white px-3 py-2.5"
-        >
-          <div class="flex items-center justify-between">
-            <div class="inline-flex gap-2 items-center text-base font-medium">
-              <div>
-                {{
-                  activity.type == 'Incoming'
-                    ? __('Inbound Call')
-                    : __('Outbound Call')
-                }}
-              </div>
-            </div>
-            <div>
-              <MultipleAvatar
-                :avatars="[
-                  {
-                    image: activity.caller.image,
-                    label: activity.caller.label,
-                    name: activity.caller.label,
-                  },
-                  {
-                    image: activity.receiver.image,
-                    label: activity.receiver.label,
-                    name: activity.receiver.label,
-                  },
-                ]"
-                size="sm"
-              />
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <Badge :label="dateFormat(activity.creation, 'MMM D, dddd')">
-              <template #prefix>
-                <CalendarIcon class="size-3" />
-              </template>
-            </Badge>
-            <Badge
-              v-if="activity.status == 'Completed'"
-              :label="activity.duration"
-            >
-              <template #prefix>
-                <DurationIcon class="size-3" />
-              </template>
-            </Badge>
-            <Badge
-              v-if="activity.recording_url"
-              :label="
-                activity.show_recording ? __('Hide Recording') : __('Listen')
-              "
-              class="cursor-pointer"
-              @click="activity.show_recording = !activity.show_recording"
-            >
-              <template #prefix>
-                <PlayIcon class="size-3" />
-              </template>
-            </Badge>
-            <Badge
-              :label="statusLabelMap[activity.status]"
-              :theme="statusColorMap[activity.status]"
-            />
-          </div>
-          <div
-            v-if="activity.show_recording && activity.recording_url"
-            class="flex flex-col items-center justify-between"
-          >
-            <AudioPlayer :src="activity.recording_url" />
-          </div>
-        </div>
+        <CallContent :activity="activity" />
       </div>
       <div v-else class="mb-4 flex flex-col gap-2 py-1.5">
         <div class="flex items-center justify-stretch gap-2 text-base">
@@ -849,10 +680,9 @@
   />
 </template>
 <script setup>
-import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
 import CommentContent from '@/components/Activities/CommentContent.vue'
-import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
+import CallContent from '@/components/Activities/CallContent.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -863,11 +693,9 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/WhatsAppBox.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
-import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
-import PlayIcon from '@/components/Icons/PlayIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
@@ -893,7 +721,6 @@ import {
   startCase,
   taskStatusOptions,
 } from '@/utils'
-import { statusLabelMap, statusColorMap } from '@/utils/callLog.js'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -903,7 +730,6 @@ import {
   Tooltip,
   Dropdown,
   TextEditor,
-  Avatar,
   Badge,
   createResource,
   call,
