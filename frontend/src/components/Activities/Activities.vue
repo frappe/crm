@@ -104,56 +104,8 @@
       v-if="title == 'Notes'"
       class="grid grid-cols-1 gap-4 px-4 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
     >
-      <div
-        v-for="note in activities"
-        class="activity group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-gray-50 px-4 py-3 hover:bg-gray-100"
-        @click="showNote(note)"
-      >
-        <div class="flex items-center justify-between">
-          <div class="truncate text-lg font-medium">
-            {{ note.title }}
-          </div>
-          <Dropdown
-            :options="[
-              {
-                label: __('Delete'),
-                icon: 'trash-2',
-                onClick: () => deleteNote(note.name),
-              },
-            ]"
-            @click.stop
-            class="h-6 w-6"
-          >
-            <Button
-              icon="more-horizontal"
-              variant="ghosted"
-              class="!h-6 !w-6 hover:bg-gray-100"
-            />
-          </Dropdown>
-        </div>
-        <TextEditor
-          v-if="note.content"
-          :content="note.content"
-          :editable="false"
-          editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
-          class="flex-1 overflow-hidden"
-        />
-        <div class="mt-1 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2 truncate">
-            <UserAvatar :user="note.owner" size="xs" />
-            <div
-              class="truncate text-sm text-gray-800"
-              :title="getUser(note.owner).full_name"
-            >
-              {{ getUser(note.owner).full_name }}
-            </div>
-          </div>
-          <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
-            <div class="truncate text-sm text-gray-700">
-              {{ __(timeAgo(note.modified)) }}
-            </div>
-          </Tooltip>
-        </div>
+      <div v-for="note in activities" @click="showNote(note)">
+        <NoteArea :note="note" v-model="all_activities" />
       </div>
     </div>
     <div v-else-if="title == 'Comments'" class="pb-5">
@@ -598,6 +550,7 @@
 import EmailArea from '@/components/Activities/EmailArea.vue'
 import CommentArea from '@/components/Activities/CommentArea.vue'
 import CallArea from '@/components/Activities/CallArea.vue'
+import NoteArea from '@/components/Activities/NoteArea.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -605,8 +558,8 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-import WhatsAppArea from '@/components/WhatsAppArea.vue'
-import WhatsAppBox from '@/components/WhatsAppBox.vue'
+import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
+import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
@@ -637,14 +590,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
-import {
-  Button,
-  Tooltip,
-  Dropdown,
-  TextEditor,
-  createResource,
-  call,
-} from 'frappe-ui'
+import { Button, Tooltip, Dropdown, createResource, call } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -963,14 +909,6 @@ function showNote(n) {
     content: '',
   }
   showNoteModal.value = true
-}
-
-async function deleteNote(name) {
-  await call('frappe.client.delete', {
-    doctype: 'FCRM Note',
-    name,
-  })
-  all_activities.reload()
 }
 
 // Tasks
