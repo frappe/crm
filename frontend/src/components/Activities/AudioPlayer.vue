@@ -1,14 +1,13 @@
 <template>
-  <div class="player w-full text-sm text-gray-600">
-    <div class="player-controls flex items-center gap-2">
+  <div class="w-full text-sm text-gray-600">
+    <div class="flex items-center gap-2">
       <Button variant="ghost" @click="playPause">
         <template #icon>
-          <FeatherIcon class="size-4" :name="isPaused ? 'play' : 'pause'" />
+          <PlayIcon v-if="isPaused" class="size-4 text-gray-600" />
+          <PauseIcon v-else class="size-4 text-gray-600" />
         </template>
       </Button>
-      <div
-        class="player-timeline flex gap-2 items-center justify-between flex-1"
-      >
+      <div class="flex gap-2 items-center justify-between flex-1">
         <input
           class="w-full slider !h-[0.5] bg-gray-200 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb:hover]:outline [&::-webkit-slider-thumb:hover]:outline-[0.5px]"
           :style="{
@@ -83,6 +82,8 @@
 </template>
 
 <script setup>
+import PlayIcon from '@/components/Icons/PlayIcon.vue'
+import PauseIcon from '@/components/Icons/PauseIcon.vue'
 import VolumnLowIcon from '@/components/Icons/VolumnLowIcon.vue'
 import VolumnHighIcon from '@/components/Icons/VolumnHighIcon.vue'
 import MuteIcon from '@/components/Icons/MuteIcon.vue'
