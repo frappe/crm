@@ -165,50 +165,11 @@
             class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
             :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
           >
-            <div class="z-10 flex h-7 w-7 items-center justify-center bg-white">
+            <div class="z-10 flex h-8 w-7 items-center justify-center bg-white">
               <CommentIcon class="text-gray-800" />
             </div>
           </div>
-          <div class="mb-4" :id="comment.name">
-            <div
-              class="mb-0.5 flex items-start justify-stretch gap-2 py-1.5 text-base"
-            >
-              <div class="inline-flex flex-wrap gap-1 text-gray-600">
-                <span class="font-medium text-gray-800">
-                  {{ comment.owner_name }}
-                </span>
-                <span>{{ __('added a') }}</span>
-                <span class="max-w-xs truncate font-medium text-gray-800">
-                  {{ __('comment') }}
-                </span>
-              </div>
-              <div class="ml-auto whitespace-nowrap">
-                <Tooltip
-                  :text="dateFormat(comment.creation, dateTooltipFormat)"
-                >
-                  <div class="text-sm text-gray-600">
-                    {{ __(timeAgo(comment.creation)) }}
-                  </div>
-                </Tooltip>
-              </div>
-            </div>
-            <div
-              class="cursor-pointer rounded bg-gray-50 px-4 py-3 text-base leading-6 transition-all duration-300 ease-in-out"
-            >
-              <div class="prose-f" v-html="comment.content" />
-              <div
-                v-if="comment.attachments.length"
-                class="mt-2 flex flex-wrap gap-2"
-              >
-                <AttachmentItem
-                  v-for="a in comment.attachments"
-                  :key="a.file_url"
-                  :label="a.file_name"
-                  :url="a.file_url"
-                />
-              </div>
-            </div>
-          </div>
+          <CommentContent class="mb-4" :activity="comment" />
         </div>
       </div>
     </div>
@@ -565,41 +526,7 @@
         :id="activity.name"
         v-else-if="activity.activity_type == 'comment'"
       >
-        <div class="mb-1 flex items-start justify-stretch gap-2 py-1 text-base">
-          <div class="inline-flex items-center flex-wrap gap-1 text-gray-600">
-            <UserAvatar class="mr-1" :user="activity.owner" size="md" />
-            <span class="font-medium text-gray-800">
-              {{ activity.owner_name }}
-            </span>
-            <span>{{ __('added a') }}</span>
-            <span class="max-w-xs truncate font-medium text-gray-800">
-              {{ __('comment') }}
-            </span>
-          </div>
-          <div class="ml-auto whitespace-nowrap">
-            <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-              <div class="text-sm text-gray-600">
-                {{ __(timeAgo(activity.creation)) }}
-              </div>
-            </Tooltip>
-          </div>
-        </div>
-        <div
-          class="cursor-pointer rounded bg-gray-50 px-3 py-[7.5px] text-base leading-6 transition-all duration-300 ease-in-out"
-        >
-          <div class="prose-f" v-html="activity.content" />
-          <div
-            v-if="activity.attachments.length"
-            class="mt-2 flex flex-wrap gap-2"
-          >
-            <AttachmentItem
-              v-for="a in activity.attachments"
-              :key="a.file_url"
-              :label="a.file_name"
-              :url="a.file_url"
-            />
-          </div>
-        </div>
+        <CommentContent :activity="activity" />
       </div>
       <div
         v-else-if="
@@ -924,6 +851,7 @@
 <script setup>
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
+import CommentContent from '@/components/Activities/CommentContent.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
