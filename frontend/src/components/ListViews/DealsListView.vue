@@ -29,7 +29,7 @@
         </Button>
       </ListHeaderItem>
     </ListHeader>
-    <ListRows :rows="rows" v-slot="{ idx, column, item }">
+    <ListRows :rows="rows" v-slot="{ idx, column, item, row }">
       <div v-if="column.key === '_assign'" class="flex items-center">
         <MultipleAvatar
           :avatars="item"
