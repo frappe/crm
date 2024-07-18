@@ -309,7 +309,7 @@
         </div>
       </div>
       <div v-if="activity.activity_type == 'communication'" class="pb-5 mt-px">
-        <EmailArea :activity="activity" />
+        <EmailArea :activity="activity" :emailBox="emailBox" />
       </div>
       <div
         class="mb-4"
@@ -944,53 +944,6 @@ function updateTaskStatus(status, task) {
   }).then(() => {
     all_activities.reload()
   })
-}
-
-// Email
-function reply(email, reply_all = false) {
-  emailBox.value.show = true
-  let editor = emailBox.value.editor
-  let message = email.content
-  let recipients = email.recipients.split(',').map((r) => r.trim())
-  editor.toEmails = [email.sender]
-  editor.cc = editor.bcc = false
-  editor.ccEmails = []
-  editor.bccEmails = []
-
-  if (!email.subject.startsWith('Re:')) {
-    editor.subject = `Re: ${email.subject}`
-  }
-
-  if (reply_all) {
-    let cc = email.cc?.split(',').map((r) => r.trim())
-    let bcc = email.bcc?.split(',').map((r) => r.trim())
-
-    if (cc?.length) {
-      recipients = recipients.filter((r) => !cc?.includes(r))
-      cc.push(...recipients)
-    } else {
-      cc = recipients
-    }
-
-    editor.cc = cc ? true : false
-    editor.bcc = bcc ? true : false
-
-    editor.ccEmails = cc
-    editor.bccEmails = bcc
-  }
-
-  let repliedMessage = `<blockquote>${message}</blockquote>`
-
-  editor.editor
-    .chain()
-    .clearContent()
-    .insertContent('<p>.</p>')
-    .updateAttributes('paragraph', { class: 'reply-to-content' })
-    .insertContent(repliedMessage)
-    .focus('all')
-    .insertContentAt(0, { type: 'paragraph' })
-    .focus('start')
-    .run()
 }
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
