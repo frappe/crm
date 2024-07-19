@@ -1,85 +1,14 @@
 <template>
-  <div
-    class="mx-4 my-3 flex items-center justify-between text-lg font-medium sm:mx-10 sm:mb-4 sm:mt-8"
-  >
-    <div class="flex h-8 items-center text-xl font-semibold text-gray-800">
-      {{ __(title) }}
-    </div>
-    <Button
-      v-if="title == 'Emails'"
-      variant="solid"
-      @click="$refs.emailBox.show = true"
-    >
-      <template #prefix>
-        <FeatherIcon name="plus" class="h-4 w-4" />
-      </template>
-      <span>{{ __('New Email') }}</span>
-    </Button>
-    <Button
-      v-else-if="title == 'Comments'"
-      variant="solid"
-      @click="$refs.emailBox.showComment = true"
-    >
-      <template #prefix>
-        <FeatherIcon name="plus" class="h-4 w-4" />
-      </template>
-      <span>{{ __('New Comment') }}</span>
-    </Button>
-    <Button
-      v-else-if="title == 'Calls'"
-      variant="solid"
-      @click="makeCall(doc.data.mobile_no)"
-    >
-      <template #prefix>
-        <PhoneIcon class="h-4 w-4" />
-      </template>
-      <span>{{ __('Make a Call') }}</span>
-    </Button>
-    <Button v-else-if="title == 'Notes'" variant="solid" @click="modalRef.showNote()">
-      <template #prefix>
-        <FeatherIcon name="plus" class="h-4 w-4" />
-      </template>
-      <span>{{ __('New Note') }}</span>
-    </Button>
-    <Button
-      v-else-if="title == 'Tasks'"
-      variant="solid"
-      @click="modalRef.showTask()"
-    >
-      <template #prefix>
-        <FeatherIcon name="plus" class="h-4 w-4" />
-      </template>
-      <span>{{ __('New Task') }}</span>
-    </Button>
-    <div class="flex gap-2" v-else-if="title == 'WhatsApp'">
-      <Button
-        :label="__('Send Template')"
-        @click="showWhatsappTemplates = true"
-      />
-      <Button variant="solid" @click="$refs.whatsappBox.show()">
-        <template #prefix>
-          <FeatherIcon name="plus" class="h-4 w-4" />
-        </template>
-        <span>{{ __('New Message') }}</span>
-      </Button>
-    </div>
-    <Dropdown v-else :options="defaultActions" @click.stop>
-      <template v-slot="{ open }">
-        <Button variant="solid" class="flex items-center gap-1">
-          <template #prefix>
-            <FeatherIcon name="plus" class="h-4 w-4" />
-          </template>
-          <span>{{ __('New') }}</span>
-          <template #suffix>
-            <FeatherIcon
-              :name="open ? 'chevron-up' : 'chevron-down'"
-              class="h-4 w-4"
-            />
-          </template>
-        </Button>
-      </template>
-    </Dropdown>
-  </div>
+  <ActivityHeader
+    v-model="tabIndex"
+    v-model:showWhatsappTemplates="showWhatsappTemplates"
+    :tabs="tabs"
+    :title="title"
+    :doc="doc"
+    :emailBox="emailBox"
+    :whatsappBox="whatsappBox"
+    :modalRef="modalRef"
+  />
   <div
     v-if="all_activities?.loading"
     class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
@@ -415,12 +344,12 @@
     <Button
       v-else-if="title == 'Emails'"
       :label="__('New Email')"
-      @click="$refs.emailBox.show = true"
+      @click="emailBox.show = true"
     />
     <Button
       v-else-if="title == 'Comments'"
       :label="__('New Comment')"
-      @click="$refs.emailBox.showComment = true"
+      @click="emailBox.showComment = true"
     />
     <Button
       v-else-if="title == 'Tasks'"
@@ -459,6 +388,7 @@
   />
 </template>
 <script setup>
+import ActivityHeader from '@/components/Activities/ActivityHeader.vue'
 import EmailArea from '@/components/Activities/EmailArea.vue'
 import CommentArea from '@/components/Activities/CommentArea.vue'
 import CallArea from '@/components/Activities/CallArea.vue'
@@ -497,8 +427,8 @@ import {
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
-import { Button, Tooltip, Dropdown, createResource } from 'frappe-ui'
+import { whatsappEnabled } from '@/composables/settings'
+import { Button, Tooltip, createResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -626,46 +556,6 @@ function sendTemplate(template) {
 }
 
 const replyMessage = ref({})
-
-const defaultActions = computed(() => {
-  let actions = [
-    {
-      icon: h(Email2Icon, { class: 'h-4 w-4' }),
-      label: __('New Email'),
-      onClick: () => (emailBox.value.show = true),
-    },
-    {
-      icon: h(CommentIcon, { class: 'h-4 w-4' }),
-      label: __('New Comment'),
-      onClick: () => (emailBox.value.showComment = true),
-    },
-    {
-      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
-      label: __('Make a Call'),
-      onClick: () => makeCall(doc.value.data.mobile_no),
-      condition: () => callEnabled.value,
-    },
-    {
-      icon: h(NoteIcon, { class: 'h-4 w-4' }),
-      label: __('New Note'),
-      onClick: () => modalRef.value.showNote(),
-    },
-    {
-      icon: h(TaskIcon, { class: 'h-4 w-4' }),
-      label: __('New Task'),
-      onClick: () => modalRef.value.showTask(),
-    },
-    {
-      icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
-      label: __('New WhatsApp Message'),
-      onClick: () => (tabIndex.value = getTabIndex('WhatsApp')),
-      condition: () => whatsappEnabled.value,
-    },
-  ]
-  return actions.filter((action) =>
-    action.condition ? action.condition() : true,
-  )
-})
 
 function get_activities() {
   if (!all_activities.data?.versions) return []
@@ -808,6 +698,7 @@ function timelineIcon(activity_type, is_lead) {
 }
 
 const emailBox = ref(null)
+const whatsappBox = ref(null)
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
@@ -831,10 +722,6 @@ function scroll(hash) {
       el.focus()
     }
   }, 500)
-}
-
-function getTabIndex(name) {
-  return props.tabs.findIndex((tab) => tab.name === name)
 }
 
 defineExpose({ emailBox })
