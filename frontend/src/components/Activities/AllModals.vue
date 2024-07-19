@@ -6,9 +6,17 @@
     :doctype="doctype"
     :doc="doc.data?.name"
   />
+  <NoteModal
+    v-model="showNoteModal"
+    v-model:reloadNotes="activities"
+    :note="note"
+    :doctype="doctype"
+    :doc="doc.data?.name"
+  />
 </template>
 <script setup>
 import TaskModal from '@/components/Modals/TaskModal.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 
@@ -54,9 +62,22 @@ function updateTaskStatus(status, task) {
   })
 }
 
+// Notes
+const showNoteModal = ref(false)
+const note = ref({})
+
+function showNote(n) {
+  note.value = n || {
+    title: '',
+    content: '',
+  }
+  showNoteModal.value = true
+}
+
 defineExpose({
   showTask,
   deleteTask,
   updateTaskStatus,
+  showNote,
 })
 </script>

@@ -35,7 +35,7 @@
       </template>
       <span>{{ __('Make a Call') }}</span>
     </Button>
-    <Button v-else-if="title == 'Notes'" variant="solid" @click="showNote()">
+    <Button v-else-if="title == 'Notes'" variant="solid" @click="modalRef.showNote()">
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
@@ -108,7 +108,7 @@
       v-if="title == 'Notes'"
       class="grid grid-cols-1 gap-4 px-4 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
     >
-      <div v-for="note in activities" @click="showNote(note)">
+      <div v-for="note in activities" @click="modalRef.showNote(note)">
         <NoteArea :note="note" v-model="all_activities" />
       </div>
     </div>
@@ -410,7 +410,7 @@
     <Button
       v-else-if="title == 'Notes'"
       :label="__('Create Note')"
-      @click="showNote()"
+      @click="modalRef.showNote()"
     />
     <Button
       v-else-if="title == 'Emails'"
@@ -444,13 +444,6 @@
     v-model:whatsapp="whatsappMessages"
     :doctype="doctype"
     @scroll="scroll"
-  />
-  <NoteModal
-    v-model="showNoteModal"
-    v-model:reloadNotes="all_activities"
-    :note="note"
-    :doctype="doctype"
-    :doc="doc.data?.name"
   />
   <WhatsappTemplateSelectorModal
     v-if="whatsappEnabled"
@@ -492,7 +485,6 @@ import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import {
@@ -656,7 +648,7 @@ const defaultActions = computed(() => {
     {
       icon: h(NoteIcon, { class: 'h-4 w-4' }),
       label: __('New Note'),
-      onClick: () => showNote(),
+      onClick: () => modalRef.value.showNote(),
     },
     {
       icon: h(TaskIcon, { class: 'h-4 w-4' }),
@@ -815,18 +807,7 @@ function timelineIcon(activity_type, is_lead) {
   return markRaw(icon)
 }
 
-// Notes
-const showNoteModal = ref(false)
-const note = ref({})
 const emailBox = ref(null)
-
-function showNote(n) {
-  note.value = n || {
-    title: '',
-    content: '',
-  }
-  showNoteModal.value = true
-}
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
