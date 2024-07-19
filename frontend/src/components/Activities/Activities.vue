@@ -733,18 +733,3 @@ nextTick(() => {
   scroll(hash)
 })
 </script>
-
-<style scoped>
-.audio-control {
-  width: 100%;
-  height: 40px;
-  outline: none;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.audio-control::-webkit-media-controls-panel {
-  background-color: white;
-}
-</style>
