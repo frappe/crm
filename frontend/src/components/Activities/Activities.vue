@@ -41,7 +41,11 @@
       </template>
       <span>{{ __('New Note') }}</span>
     </Button>
-    <Button v-else-if="title == 'Tasks'" variant="solid" @click="showTask()">
+    <Button
+      v-else-if="title == 'Tasks'"
+      variant="solid"
+      @click="modalRef.showTask()"
+    >
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
@@ -126,97 +130,13 @@
       </div>
     </div>
     <div v-else-if="title == 'Tasks'" class="px-4 pb-3 sm:px-10 sm:pb-5">
-      <div v-for="(task, i) in activities">
-        <div
-          class="activity flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
-          @click="showTask(task)"
-        >
-          <div class="flex flex-1 flex-col gap-1.5 text-base">
-            <div class="font-medium text-gray-900">
-              {{ task.title }}
-            </div>
-            <div class="flex gap-1.5 text-gray-800">
-              <div class="flex items-center gap-1.5">
-                <UserAvatar :user="task.assigned_to" size="xs" />
-                {{ getUser(task.assigned_to).full_name }}
-              </div>
-              <div
-                v-if="task.due_date"
-                class="flex items-center justify-center"
-              >
-                <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
-              </div>
-              <div v-if="task.due_date">
-                <Tooltip
-                  :text="
-                    dateFormat(task.due_date, 'ddd, MMM D, YYYY | hh:mm a')
-                  "
-                >
-                  <div class="flex gap-2">
-                    <CalendarIcon />
-                    <div>{{ dateFormat(task.due_date, 'D MMM, hh:mm a') }}</div>
-                  </div>
-                </Tooltip>
-              </div>
-              <div class="flex items-center justify-center">
-                <DotIcon class="h-2.5 w-2.5 text-gray-600" :radius="2" />
-              </div>
-              <div class="flex gap-2">
-                <TaskPriorityIcon class="!h-2 !w-2" :priority="task.priority" />
-                {{ task.priority }}
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center gap-1">
-            <Dropdown
-              :options="taskStatusOptions(updateTaskStatus, task)"
-              @click.stop
-            >
-              <Tooltip :text="__('Change Status')">
-                <Button variant="ghosted" class="hover:bg-gray-300">
-                  <TaskStatusIcon :status="task.status" />
-                </Button>
-              </Tooltip>
-            </Dropdown>
-            <Dropdown
-              :options="[
-                {
-                  label: __('Delete'),
-                  icon: 'trash-2',
-                  onClick: () => {
-                    $dialog({
-                      title: __('Delete Task'),
-                      message: __('Are you sure you want to delete this task?'),
-                      actions: [
-                        {
-                          label: __('Delete'),
-                          theme: 'red',
-                          variant: 'solid',
-                          onClick(close) {
-                            deleteTask(task.name)
-                            close()
-                          },
-                        },
-                      ],
-                    })
-                  },
-                },
-              ]"
-              @click.stop
-            >
-              <Button
-                icon="more-horizontal"
-                variant="ghosted"
-                class="hover:bg-gray-300"
-              />
-            </Dropdown>
-          </div>
-        </div>
-        <div
-          v-if="i < activities.length - 1"
-          class="mx-2 h-px border-t border-gray-200"
-        />
-      </div>
+      <TaskArea
+        v-model="all_activities"
+        v-model:doc="doc"
+        :modalRef="modalRef"
+        :tasks="activities"
+        :doctype="doctype"
+      />
     </div>
     <div v-else-if="title == 'Calls'" class="activity">
       <div v-for="(call, i) in activities">
@@ -505,7 +425,7 @@
     <Button
       v-else-if="title == 'Tasks'"
       :label="__('Create Task')"
-      @click="showTask()"
+      @click="modalRef.showTask()"
     />
   </div>
   <CommunicationArea
@@ -532,18 +452,17 @@
     :doctype="doctype"
     :doc="doc.data?.name"
   />
-  <TaskModal
-    v-model="showTaskModal"
-    v-model:reloadTasks="all_activities"
-    :task="task"
-    :doctype="doctype"
-    :doc="doc.data?.name"
-  />
   <WhatsappTemplateSelectorModal
     v-if="whatsappEnabled"
     v-model="showWhatsappTemplates"
     :doctype="doctype"
     @send="(t) => sendTemplate(t)"
+  />
+  <AllModals
+    ref="modalRef"
+    v-model="all_activities"
+    :doctype="doctype"
+    :doc="doc"
   />
 </template>
 <script setup>
@@ -551,6 +470,7 @@ import EmailArea from '@/components/Activities/EmailArea.vue'
 import CommentArea from '@/components/Activities/CommentArea.vue'
 import CallArea from '@/components/Activities/CallArea.vue'
 import NoteArea from '@/components/Activities/NoteArea.vue'
+import TaskArea from '@/components/Activities/TaskArea.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -561,9 +481,6 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
-import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
-import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
-import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
@@ -576,21 +493,20 @@ import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
+import AllModals from '@/components/Activities/AllModals.vue'
 import {
   timeAgo,
   dateFormat,
   dateTooltipFormat,
   secondsToDuration,
   startCase,
-  taskStatusOptions,
 } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
-import { Button, Tooltip, Dropdown, createResource, call } from 'frappe-ui'
+import { Button, Tooltip, Dropdown, createResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -628,6 +544,7 @@ const reload = defineModel('reload')
 const tabIndex = defineModel('tabIndex')
 
 const reload_email = ref(false)
+const modalRef = ref(null)
 
 const all_activities = createResource({
   url: 'crm.api.activities.get_activities',
@@ -744,7 +661,7 @@ const defaultActions = computed(() => {
     {
       icon: h(TaskIcon, { class: 'h-4 w-4' }),
       label: __('New Task'),
-      onClick: () => showTask(),
+      onClick: () => modalRef.value.showTask(),
     },
     {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
@@ -909,41 +826,6 @@ function showNote(n) {
     content: '',
   }
   showNoteModal.value = true
-}
-
-// Tasks
-const showTaskModal = ref(false)
-const task = ref({})
-
-function showTask(t) {
-  task.value = t || {
-    title: '',
-    description: '',
-    assigned_to: '',
-    due_date: '',
-    priority: 'Low',
-    status: 'Backlog',
-  }
-  showTaskModal.value = true
-}
-
-async function deleteTask(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Task',
-    name,
-  })
-  all_activities.reload()
-}
-
-function updateTaskStatus(status, task) {
-  call('frappe.client.set_value', {
-    doctype: 'CRM Task',
-    name: task.name,
-    fieldname: 'status',
-    value: status,
-  }).then(() => {
-    all_activities.reload()
-  })
 }
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
