@@ -9,7 +9,7 @@
         @click="toggleEmailBox()"
       >
         <template #prefix>
-          <EmailIcon class="h-4" />
+          <Email2Icon class="h-4" />
         </template>
       </Button>
       <Button
@@ -87,7 +87,7 @@
 import EmailEditor from '@/components/EmailEditor.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
 import { call, createResource } from 'frappe-ui'

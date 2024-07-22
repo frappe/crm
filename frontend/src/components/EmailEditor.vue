@@ -143,7 +143,7 @@
               @click="showEmailTemplateSelectorModal = true"
             >
               <template #icon>
-                <EmailIcon class="h-4" />
+                <Email2Icon class="h-4" />
               </template>
             </Button>
           </div>
@@ -169,7 +169,7 @@
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import MultiselectInput from '@/components/Controls/MultiselectInput.vue'

@@ -64,7 +64,7 @@
                 v-if="contact.data.email_id"
                 class="flex items-center gap-1.5"
               >
-                <EmailIcon class="h-4 w-4" />
+                <Email2Icon class="h-4 w-4" />
                 <span class="">{{ contact.data.email_id }}</span>
               </div>
               <span
@@ -227,7 +227,7 @@ import {
 } from 'frappe-ui'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'

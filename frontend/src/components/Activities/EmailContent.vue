@@ -2,15 +2,7 @@
   <iframe
     ref="iframeRef"
     :srcdoc="htmlContent"
-    class="prose-f block h-screen max-h-[500px] w-full"
-    style="
-      height: 40px;
-      mask-image: linear-gradient(
-        to bottom,
-        black calc(100% - 20px),
-        transparent 100%
-      );
-    "
+    class="prose-f block h-10 max-h-[500px] w-full"
   />
 </template>
 
