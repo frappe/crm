@@ -1,24 +1,23 @@
 <template>
   <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
+    width="12"
+    height="12"
+    viewBox="0 0 12 12"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <path
-      d="M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8Z"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M8.00024 4.97693V8.00018L10.1666 10.1667"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
+    <g clip-path="url(#clip0_4750_5685)">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M10.4375 6C10.4375 8.45076 8.45076 10.4375 6 10.4375C3.54924 10.4375 1.5625 8.45076 1.5625 6C1.5625 3.54924 3.54924 1.5625 6 1.5625C8.45076 1.5625 10.4375 3.54924 10.4375 6ZM11.4375 6C11.4375 9.00305 9.00305 11.4375 6 11.4375C2.99695 11.4375 0.5625 9.00305 0.5625 6C0.5625 2.99695 2.99695 0.5625 6 0.5625C9.00305 0.5625 11.4375 2.99695 11.4375 6ZM9.00005 5.50004C9.27619 5.50004 9.50004 5.72391 9.50004 6.00005C9.50004 6.27619 9.27618 6.50004 9.00003 6.50004L6.25001 6.5C5.8358 6.49999 5.50003 6.16421 5.50002 5.75L5.5 3C5.5 2.72386 5.72385 2.5 6 2.5C6.27614 2.5 6.5 2.72385 6.5 3L6.50002 5.5L9.00005 5.50004Z"
+        fill="currentColor"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0_4750_5685">
+        <rect width="12" height="12" fill="white" />
+      </clipPath>
+    </defs>
   </svg>
 </template>

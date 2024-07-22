@@ -22,7 +22,7 @@
           v-slot="{ idx, column, item }"
           :row="row"
         >
-          <slot v-bind="{ idx, column, item }" />
+          <slot v-bind="{ idx, column, item, row }" />
         </ListRow>
       </ListGroupRows>
     </div>
@@ -34,7 +34,7 @@
       v-slot="{ idx, column, item }"
       :row="row"
     >
-      <slot v-bind="{ idx, column, item }" />
+      <slot v-bind="{ idx, column, item, row }" />
     </ListRow>
   </ListRows>
 </template>

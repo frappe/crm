@@ -216,7 +216,7 @@ function render() {
   })
 }
 
-onMounted(() => render())
+onMounted(() => show.value && render())
 
 watch(show, (value) => {
   if (!value) return
