@@ -55,7 +55,7 @@
       </template>
       <span>{{ __('New Task') }}</span>
     </Button>
-    <div class="flex gap-2" v-else-if="title == 'WhatsApp'">
+    <div class="flex gap-2 shrink-0" v-else-if="title == 'WhatsApp'">
       <Button
         :label="__('Send Template')"
         @click="showWhatsappTemplates = true"

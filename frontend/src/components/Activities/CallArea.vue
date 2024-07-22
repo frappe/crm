@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-1 flex items-start justify-stretch gap-2 py-1 text-base">
+    <div class="mb-1 flex items-center justify-stretch gap-2 py-1 text-base">
       <div class="inline-flex items-center flex-wrap gap-1 text-gray-600">
         <Avatar
           :image="activity.caller.image"
@@ -55,7 +55,7 @@
           />
         </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center flex-wrap gap-2">
         <Badge :label="dateFormat(activity.creation, 'MMM D, dddd')">
           <template #prefix>
             <CalendarIcon class="size-3" />

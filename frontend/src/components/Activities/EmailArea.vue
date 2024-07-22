@@ -1,11 +1,11 @@
 <template>
   <div
-    class="cursor-pointer rounded-md shadow bg-white px-3 py-1.5 text-base leading-6 transition-all duration-300 ease-in-out"
+    class="cursor-pointer flex flex-col rounded-md shadow bg-white px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
   >
-    <div class="-mb-0.5 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
+    <div class="-mb-0.5 flex items-center justify-between gap-2 truncate">
+      <div class="flex items-center gap-2 truncate">
         <span>{{ activity.data.sender_full_name }}</span>
-        <span class="text-sm text-gray-600">
+        <span class="sm:flex hidden text-sm text-gray-600">
           {{ '<' + activity.data.sender + '>' }}
         </span>
         <Badge
@@ -15,7 +15,7 @@
           theme="green"
         />
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 shrink-0">
         <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
           <div class="text-sm text-gray-600">
             {{ __(timeAgo(activity.creation)) }}

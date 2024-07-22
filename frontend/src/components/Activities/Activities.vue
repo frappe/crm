@@ -29,7 +29,7 @@
     >
       <div v-if="title == 'WhatsApp' && whatsappMessages.data?.length">
         <WhatsAppArea
-          class="px-4 sm:px-10"
+          class="px-3 sm:px-10"
           v-model="whatsappMessages"
           v-model:reply="replyMessage"
           :messages="whatsappMessages.data"
@@ -37,7 +37,7 @@
       </div>
       <div
         v-else-if="title == 'Notes'"
-        class="grid grid-cols-1 gap-4 px-4 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
+        class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
       >
         <div v-for="note in activities" @click="modalRef.showNote(note)">
           <NoteArea :note="note" v-model="all_activities" />
@@ -46,7 +46,7 @@
       <div v-else-if="title == 'Comments'" class="pb-5">
         <div v-for="(comment, i) in activities">
           <div
-            class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 px-4 sm:gap-4 sm:px-10"
+            class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 px-3 sm:gap-4 sm:px-10"
           >
             <div
               class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
@@ -62,7 +62,10 @@
           </div>
         </div>
       </div>
-      <div v-else-if="title == 'Tasks'" class="px-4 pb-3 sm:px-10 sm:pb-5">
+      <div
+        v-else-if="title == 'Tasks'"
+        class="px-3 pb-3 sm:px-10 sm:pb-5 overflow-x-auto sm:w-full w-max"
+      >
         <TaskArea
           v-model="all_activities"
           v-model:doc="doc"
@@ -74,7 +77,7 @@
       <div v-else-if="title == 'Calls'" class="activity">
         <div v-for="(call, i) in activities">
           <div
-            class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-4 sm:px-10"
+            class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
           >
             <div
               class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
@@ -103,15 +106,15 @@
       <div
         v-else
         v-for="(activity, i) in activities"
-        class="activity px-4 sm:px-10"
+        class="activity px-3 sm:px-10"
         :class="
-          title == 'Activity'
+          ['Activity', 'Emails'].includes(title)
             ? 'grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 sm:gap-4'
             : ''
         "
       >
         <div
-          v-if="title == 'Activity'"
+          v-if="['Activity', 'Emails'].includes(title)"
           class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
           :class="[i != activities.length - 1 ? 'before:h-full' : 'before:h-4']"
         >
@@ -187,16 +190,12 @@
           <div class="flex items-center justify-stretch gap-2 text-base">
             <div
               v-if="activity.other_versions"
-              class="inline-flex gap-1.5 text-gray-800 font-medium"
+              class="inline-flex flex-wrap gap-1.5 text-gray-800 font-medium"
             >
-              <div class="inline-flex gap-1">
-                <span>{{
-                  activity.show_others ? __('Hide') : __('Show')
-                }}</span>
-                <span> +{{ activity.other_versions.length + 1 }} </span>
-                <span>{{ __('changes from') }}</span>
-                <span>{{ activity.owner_name }}</span>
-              </div>
+              <span>{{ activity.show_others ? __('Hide') : __('Show') }}</span>
+              <span> +{{ activity.other_versions.length + 1 }} </span>
+              <span>{{ __('changes from') }}</span>
+              <span>{{ activity.owner_name }}</span>
               <Button
                 class="!size-4"
                 variant="ghost"
@@ -271,55 +270,51 @@
               v-for="activity in [activity, ...activity.other_versions]"
               class="flex items-start justify-stretch gap-2 py-1.5 text-base"
             >
-              <div class="flex items-start gap-1 text-gray-600">
-                <div class="flex flex-1 items-center gap-1">
-                  <span
-                    v-if="activity.data.field_label"
-                    class="max-w-xs truncate text-gray-600"
+              <div class="inline-flex flex-wrap gap-1 text-gray-600">
+                <span
+                  v-if="activity.data.field_label"
+                  class="max-w-xs truncate text-gray-600"
+                >
+                  {{ __(activity.data.field_label) }}
+                </span>
+                <FeatherIcon
+                  name="arrow-right"
+                  class="mx-1 h-4 w-4 text-gray-600"
+                />
+                <span v-if="activity.type">
+                  {{ startCase(__(activity.type)) }}
+                </span>
+                <span
+                  v-if="activity.data.old_value"
+                  class="max-w-xs font-medium text-gray-800"
+                >
+                  <div
+                    class="flex items-center gap-1"
+                    v-if="activity.options == 'User'"
                   >
-                    {{ __(activity.data.field_label) }}
-                  </span>
-                  <FeatherIcon
-                    name="arrow-right"
-                    class="mx-1 h-4 w-4 text-gray-600"
-                  />
-                </div>
-                <div class="flex flex-wrap items-center gap-1">
-                  <span v-if="activity.type">{{
-                    startCase(__(activity.type))
-                  }}</span>
-                  <span
-                    v-if="activity.data.old_value"
-                    class="max-w-xs font-medium text-gray-800"
+                    <UserAvatar :user="activity.data.old_value" size="xs" />
+                    {{ getUser(activity.data.old_value).full_name }}
+                  </div>
+                  <div class="truncate" v-else>
+                    {{ activity.data.old_value }}
+                  </div>
+                </span>
+                <span v-if="activity.to">{{ __('to') }}</span>
+                <span
+                  v-if="activity.data.value"
+                  class="max-w-xs font-medium text-gray-800"
+                >
+                  <div
+                    class="flex items-center gap-1"
+                    v-if="activity.options == 'User'"
                   >
-                    <div
-                      class="flex items-center gap-1"
-                      v-if="activity.options == 'User'"
-                    >
-                      <UserAvatar :user="activity.data.old_value" size="xs" />
-                      {{ getUser(activity.data.old_value).full_name }}
-                    </div>
-                    <div class="truncate" v-else>
-                      {{ activity.data.old_value }}
-                    </div>
-                  </span>
-                  <span v-if="activity.to">{{ __('to') }}</span>
-                  <span
-                    v-if="activity.data.value"
-                    class="max-w-xs font-medium text-gray-800"
-                  >
-                    <div
-                      class="flex items-center gap-1"
-                      v-if="activity.options == 'User'"
-                    >
-                      <UserAvatar :user="activity.data.value" size="xs" />
-                      {{ getUser(activity.data.value).full_name }}
-                    </div>
-                    <div class="truncate" v-else>
-                      {{ activity.data.value }}
-                    </div>
-                  </span>
-                </div>
+                    <UserAvatar :user="activity.data.value" size="xs" />
+                    {{ getUser(activity.data.value).full_name }}
+                  </div>
+                  <div class="truncate" v-else>
+                    {{ activity.data.value }}
+                  </div>
+                </span>
               </div>
 
               <div class="ml-auto whitespace-nowrap">

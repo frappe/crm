@@ -1,6 +1,6 @@
 <template>
   <div :id="activity.name">
-    <div class="mb-1 flex items-start justify-stretch gap-2 py-1 text-base">
+    <div class="mb-1 flex items-center justify-stretch gap-2 py-1 text-base">
       <div class="inline-flex items-center flex-wrap gap-1 text-gray-600">
         <UserAvatar class="mr-1" :user="activity.owner" size="md" />
         <span class="font-medium text-gray-800">
