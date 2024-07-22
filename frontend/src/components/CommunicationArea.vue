@@ -22,6 +22,21 @@
           <CommentIcon class="h-4" />
         </template>
       </Button>
+      
+      <!-- Add another button called "Call"
+      Clicking on it whould launch a tel:// link to launch phone call on mobile
+      and then toggle comment box -->
+      <Button
+        variant="ghost"
+        :label="__('Call')"
+        :class="[showCommentBox ? '!bg-gray-300 hover:!bg-gray-200' : '']"
+        @click="makeCall()"
+      >
+        <template #prefix>
+          <PhoneIcon class="h-4" />
+        </template>
+      </Button>
+
     </div>
     <div v-if="showEmailBox" class="flex gap-1.5">
       <Button
