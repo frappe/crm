@@ -195,7 +195,7 @@ function bulkActions(selections, unselectAll) {
     })
   }
 
-  if (!props.options.hideDelete) {
+  if (props.doctype === 'CRM Lead') {
     actions.push({
       label: __('Convert to Deal'),
       onClick: () => convertToDeal(selections, unselectAll),
