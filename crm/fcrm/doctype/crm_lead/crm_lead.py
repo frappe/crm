@@ -149,6 +149,7 @@ class CRMLead(Document):
 				"organization_name": self.organization,
 				"website": self.website,
 				"territory": self.territory,
+				"industry": self.industry,
 				"annual_revenue": self.annual_revenue,
 			}
 		)
