@@ -56,6 +56,39 @@ function editValues(selections, unselectAll) {
   unselectAllAction.value = unselectAll
 }
 
+function convertToDeal(selections, unselectAll) {
+  $dialog({
+    title: __('Convert to Deal'),
+    message: __('Are you sure you want to convert {0} Lead(s) to Deal(s)?', [
+      selections.size,
+    ]),
+    variant: 'solid',
+    theme: 'blue',
+    actions: [
+      {
+        label: __('Convert'),
+        variant: 'solid',
+        onClick: (close) => {
+          Array.from(selections).forEach((name) => {
+            call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
+              lead: name,
+            }).then(() => {
+              createToast({
+                title: __('Converted successfully'),
+                icon: 'check',
+                iconClasses: 'text-green-600',
+              })
+              list.value.reload()
+              unselectAll()
+              close()
+            })
+          })
+        },
+      },
+    ],
+  })
+}
+
 function deleteValues(selections, unselectAll) {
   $dialog({
     title: __('Delete'),
@@ -159,6 +192,13 @@ function bulkActions(selections, unselectAll) {
     actions.push({
       label: __('Clear Assignment'),
       onClick: () => clearAssignemnts(selections, unselectAll),
+    })
+  }
+
+  if (!props.options.hideDelete) {
+    actions.push({
+      label: __('Convert to Deal'),
+      onClick: () => convertToDeal(selections, unselectAll),
     })
   }
 
