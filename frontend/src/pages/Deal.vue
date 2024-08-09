@@ -350,7 +350,7 @@ import {
   Breadcrumbs,
   call,
 } from 'frappe-ui'
-import { ref, computed, h, onMounted } from 'vue'
+import { ref, computed, h, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { $dialog, makeCall } = globalStore()
@@ -384,9 +384,17 @@ const deal = createResource({
   },
 })
 
+const tabIndex = ref(0)
+
 onMounted(() => {
+  let savedTabIndex = parseInt(localStorage.getItem('DealTabIndex'),10)
+  tabIndex.value = isNaN(savedTabIndex) ||  savedTabIndex < 0 ? 0 : savedTabIndex
   if (deal.data) return
   deal.fetch()
+})
+
+watch(tabIndex, (tabIndexValue)=>{
+  localStorage.setItem('DealTabIndex', tabIndexValue)
 })
 
 const reload = ref(false)
@@ -457,7 +465,6 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-const tabIndex = ref(0)
 const tabs = computed(() => {
   let tabOptions = [
     {

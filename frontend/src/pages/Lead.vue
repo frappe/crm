@@ -355,9 +355,17 @@ const lead = createResource({
   },
 })
 
+const tabIndex = ref(0)
+
 onMounted(() => {
+  let savedTabIndex = parseInt(localStorage.getItem('LeadTabIndex'),10)
+  tabIndex.value = isNaN(savedTabIndex) ||  savedTabIndex < 0 ? 0 : savedTabIndex
   if (lead.data) return
   lead.fetch()
+})
+
+watch(tabIndex, (tabIndexValue)=>{
+  localStorage.setItem('LeadTabIndex', tabIndexValue)
 })
 
 const reload = ref(false)
@@ -422,7 +430,7 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-const tabIndex = ref(0)
+
 
 const tabs = computed(() => {
   let tabOptions = [
