@@ -50,10 +50,11 @@
 <script setup>
 import SettingsModal from '@/components/Settings/SettingsModal.vue'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
+import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { Dropdown } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, markRaw} from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -75,9 +76,7 @@ let dropdownOptions = ref([
     hideLabel: true,
     items: [
       {
-        icon: 'corner-up-left',
-        label: computed(() => __('Switch to Desk')),
-        onClick: () => window.location.replace('/app'),
+        component: markRaw(Apps),
       },
       {
         icon: 'life-buoy',
