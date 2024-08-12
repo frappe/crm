@@ -4,11 +4,23 @@ app_publisher = "Frappe Technologies Pvt. Ltd."
 app_description = "Kick-ass Open Source CRM"
 app_email = "shariq@frappe.io"
 app_license = "AGPLv3"
-app_icon_url = ""
+app_icon_url = "/assets/crm/manifest/apple-icon-180.png"
 app_icon_title = "CRM"
 app_icon_route = "/crm"
 
+# Apps
+# ------------------
+
 # required_apps = []
+include_as_app = [
+	{
+		"name": "crm",
+		"logo": "/assets/crm/manifest/apple-icon-180.png",
+		"title": "CRM",
+		"route": "/crm",
+		# "has_permission": "crm.api.permission.has_app_permission"
+	}
+]
 
 # Includes in <head>
 # ------------------
