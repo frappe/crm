@@ -12,7 +12,7 @@ app_icon_route = "/crm"
 # ------------------
 
 # required_apps = []
-include_as_app = [
+add_to_apps_screen = [
 	{
 		"name": "crm",
 		"logo": "/assets/crm/manifest/apple-icon-180.png",
