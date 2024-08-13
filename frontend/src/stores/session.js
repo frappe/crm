@@ -35,7 +35,6 @@ export const sessionStore = defineStore('crm-session', () => {
   const logout = createResource({
     url: 'logout',
     onSuccess() {
-      users.reset()
       user.value = null
       router.replace({ name: 'Login' })
     },

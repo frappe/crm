@@ -102,11 +102,6 @@ const routes = [
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),
   },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/pages/Login.vue'),
-  },
 ]
 
 const handleMobileView = (componentName) => {
@@ -150,8 +145,9 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.name === 'Login' && isLoggedIn) {
     next({ name: 'Leads' })
-  } else if (to.name !== 'Login' && !isLoggedIn) {
-    next({ name: 'Login' })
+  } else if (!isLoggedIn) {
+    users?.reset?.()
+    window.location.href = "/login?redirect-to=/crm";
   } else if (to.matched.length === 0) {
     next({ name: 'Invalid Page' })
   } else {
