@@ -1,5 +1,5 @@
 <template>
-  <FadedScrollableDiv>
+  <div>
     <Draggable :list="sections" item-key="label" class="flex flex-col gap-5.5">
       <template #item="{ element: section }">
         <div class="flex flex-col gap-3">
@@ -132,10 +132,9 @@
         </template>
       </Button>
     </div>
-  </FadedScrollableDiv>
+  </div>
 </template>
 <script setup>
-import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'

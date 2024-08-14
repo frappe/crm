@@ -14,7 +14,7 @@
       </h3>
     </template>
     <template #body-content>
-      <div class="flex flex-col gap-5.5 h-[calc(100vh_-_17rem)]">
+      <div class="flex flex-col gap-5.5">
         <div class="flex justify-between gap-2">
           <FormControl
             type="select"
@@ -29,16 +29,13 @@
             size="sm"
           />
         </div>
-        <div v-if="sections.data" class="flex gap-4 overflow-hidden">
+        <div v-if="sections.data" class="flex gap-4">
           <SidePanelLayoutBuilder
-            class="flex flex-1 flex-col overflow-y-auto pr-2"
+            class="flex flex-1 flex-col pr-2"
             :sections="sections.data"
             :doctype="_doctype"
           />
-          <div
-            v-if="preview"
-            class="flex flex-1 flex-col overflow-y-auto border rounded"
-          >
+          <div v-if="preview" class="flex flex-1 flex-col border rounded">
             <div
               v-for="(section, i) in sections.data"
               :key="section.label"
