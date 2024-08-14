@@ -182,5 +182,8 @@ onMounted(() => {
   if (!lead.lead_owner) {
     lead.lead_owner = getUser().name
   }
+  if (!lead.status && leadStatuses.value[0].value) {
+    lead.status = leadStatuses.value[0].value
+  }
 })
 </script>
