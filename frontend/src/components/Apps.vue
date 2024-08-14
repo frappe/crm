@@ -3,7 +3,8 @@
     <template #target="{ togglePopover }">
       <button
         :class="[
-          'group w-full flex h-7 items-center justify-between rounded px-2 text-base text-gray-800 hover:bg-gray-100',
+          active ? 'bg-gray-100' : 'text-gray-800',
+          'group w-full flex h-7 items-center justify-between rounded px-2 text-base hover:bg-gray-100',
         ]"
         @click.prevent="togglePopover()"
       >
@@ -39,6 +40,10 @@
 import AppsIcon from '@/components/Icons/AppsIcon.vue'
 import { Popover, createResource } from 'frappe-ui'
 
+const props = defineProps({
+  active: Boolean,
+})
+
 const apps = createResource({
   url: 'frappe.apps.get_apps',
   cache: 'apps',
@@ -47,7 +52,7 @@ const apps = createResource({
     let _apps = [
       {
         name: 'frappe',
-        logo: '/assets/crm/images/desk.png',
+        logo: '/assets/frappe/images/framework.png',
         title: __('Desk'),
         route: '/app',
       },
