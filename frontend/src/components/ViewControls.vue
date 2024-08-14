@@ -287,7 +287,13 @@ import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
 import { isEmoji } from '@/utils'
-import { createResource, Dropdown, call, FeatherIcon } from 'frappe-ui'
+import {
+  createResource,
+  Dropdown,
+  call,
+  FeatherIcon,
+  usePageMeta,
+} from 'frappe-ui'
 import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
@@ -356,6 +362,19 @@ const currentView = computed(() => {
     label:
       _view?.label || props.options?.defaultViewName || getViewType().label,
     icon: _view?.icon || getViewType().icon,
+    is_default: !_view || _view.is_default,
+  }
+})
+
+usePageMeta(() => {
+  let label = currentView.value.label
+  if (currentView.value.is_default) {
+    let routeName = route.name
+    label = `${routeName} - ${label}`
+  }
+  return {
+    title: label,
+    emoji: isEmoji(currentView.value.icon) ? currentView.value.icon : '',
   }
 })
 
@@ -799,7 +818,7 @@ async function updateKanbanSettings(data) {
 }
 
 function loadMoreKanban(columnName) {
-  let columns = list.value.data.kanban_columns || "[]"
+  let columns = list.value.data.kanban_columns || '[]'
 
   if (typeof columns === 'string') {
     columns = JSON.parse(columns)

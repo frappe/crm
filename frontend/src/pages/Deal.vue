@@ -350,6 +350,7 @@ import {
   Tabs,
   Breadcrumbs,
   call,
+  usePageMeta,
 } from 'frappe-ui'
 import { ref, computed, h, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -456,6 +457,12 @@ const breadcrumbs = computed(() => {
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
+})
+
+usePageMeta(() => {
+  return {
+    title: organization.value?.name || deal.data?.name,
+  }
 })
 
 const tabIndex = ref(0)
