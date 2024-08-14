@@ -85,6 +85,11 @@
                 <div>{{ item.timeAgo }}</div>
               </Tooltip>
             </div>
+            <div
+              v-else-if="column.type === 'Text Editor'"
+              v-html="item"
+              class="truncate text-base h-4 [&>p]:truncate"
+            />
             <div v-else-if="column.type === 'Check'">
               <FormControl
                 type="checkbox"
@@ -233,7 +238,7 @@ const listBulkActionsRef = ref(null)
 
 defineExpose({
   customListActions: computed(
-    () => listBulkActionsRef.value?.customListActions
+    () => listBulkActionsRef.value?.customListActions,
   ),
 })
 </script>
