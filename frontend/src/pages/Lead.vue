@@ -322,6 +322,7 @@ import {
   Switch,
   Breadcrumbs,
   call,
+  usePageMeta,
 } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -424,6 +425,12 @@ const breadcrumbs = computed(() => {
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
+})
+
+usePageMeta(() => {
+  return {
+    title: lead.data?.lead_name || lead.data?.name,
+  }
 })
 
 const tabIndex = ref(0)

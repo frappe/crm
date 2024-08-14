@@ -224,6 +224,7 @@ import {
   Tabs,
   call,
   createResource,
+  usePageMeta,
 } from 'frappe-ui'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -268,6 +269,22 @@ const showContactModal = ref(false)
 const showQuickEntryModal = ref(false)
 const detailMode = ref(false)
 
+const contact = createResource({
+  url: 'crm.api.contact.get_contact',
+  cache: ['contact', props.contactId],
+  params: {
+    name: props.contactId,
+  },
+  auto: true,
+  transform: (data) => {
+    return {
+      ...data,
+      actual_mobile_no: data.mobile_no,
+      mobile_no: data.mobile_no,
+    }
+  },
+})
+
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Contacts'), route: { name: 'Contacts' } }]
   items.push({
@@ -276,6 +293,13 @@ const breadcrumbs = computed(() => {
   })
   return items
 })
+
+usePageMeta(() => {
+  return {
+    title: contact.data?.full_name || contact.data?.name,
+  }
+})
+
 
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
@@ -324,22 +348,6 @@ const tabs = [
     count: computed(() => deals.data?.length),
   },
 ]
-
-const contact = createResource({
-  url: 'crm.api.contact.get_contact',
-  cache: ['contact', props.contactId],
-  params: {
-    name: props.contactId,
-  },
-  auto: true,
-  transform: (data) => {
-    return {
-      ...data,
-      actual_mobile_no: data.mobile_no,
-      mobile_no: data.mobile_no,
-    }
-  },
-})
 
 const deals = createResource({
   url: 'crm.api.contact.get_linked_deals',
