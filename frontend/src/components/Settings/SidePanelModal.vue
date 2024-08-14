@@ -1,67 +1,70 @@
 <template>
   <Dialog v-model="show" :options="{ size: '3xl' }">
-    <template #body>
-      <div ref="parentRef" class="flex h-[calc(100vh_-_8rem)]">
-        <div class="flex-1 flex flex-col justify-between gap-2 p-8">
-          <div class="flex flex-col gap-2">
-            <h2 class="flex gap-2 text-xl font-semibold leading-none h-5 mb-4">
-              <div>{{ __('Edit Fields Layout') }}</div>
-              <Badge
-                v-if="dirty"
-                :label="__('Not Saved')"
-                variant="subtle"
-                theme="orange"
-              />
-            </h2>
-            <FormControl
-              type="select"
-              v-model="_doctype"
-              :label="__('DocType')"
-              :options="['CRM Lead', 'CRM Deal']"
-              @change="reload"
-            />
-          </div>
-          <div class="flex flex-row-reverse gap-2">
-            <Button
-              :loading="loading"
-              :label="__('Save')"
-              variant="solid"
-              @click="saveChanges"
-            />
-            <Button :label="__('Reset')" @click="reload" />
-            <Button
-              :label="preview ? __('Hide Preview') : __('Show Preview')"
-              @click="preview = !preview"
-            />
-          </div>
+    <template #body-title>
+      <h3
+        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-gray-900"
+      >
+        <div>{{ __('Edit Field Layout') }}</div>
+        <Badge
+          v-if="dirty"
+          :label="__('Not Saved')"
+          variant="subtle"
+          theme="orange"
+        />
+      </h3>
+    </template>
+    <template #body-content>
+      <div class="flex flex-col gap-5.5">
+        <div class="flex justify-between gap-2">
+          <FormControl
+            type="select"
+            class="w-1/4"
+            v-model="_doctype"
+            :options="['CRM Lead', 'CRM Deal']"
+            @change="reload"
+          />
+          <Switch
+            v-model="preview"
+            :label="preview ? __('Hide preview') : __('Show preview')"
+            size="sm"
+          />
         </div>
-        <Resizer
-          v-if="sections.data"
-          class="flex flex-col justify-between border-l"
-          :parent="parentRef"
-          side="right"
-        >
-          <div class="flex flex-1 flex-col justify-between overflow-hidden">
-            <div class="flex flex-col overflow-y-auto">
-              <SidePanelLayoutBuilder
-                v-if="!preview"
-                :sections="sections.data"
-                :doctype="_doctype"
-              />
-              <div
-                v-else
-                v-for="(section, i) in sections.data"
-                :key="section.label"
-                class="flex flex-col p-3"
-                :class="{ 'border-b': i !== sections.data.length - 1 }"
-              >
-                <Section :is-opened="section.opened" :label="section.label">
-                  <SectionFields :fields="section.fields" v-model="data" />
-                </Section>
-              </div>
+        <div v-if="sections.data" class="flex gap-4">
+          <SidePanelLayoutBuilder
+            class="flex flex-1 flex-col pr-2"
+            :sections="sections.data"
+            :doctype="_doctype"
+          />
+          <div v-if="preview" class="flex flex-1 flex-col border rounded">
+            <div
+              v-for="(section, i) in sections.data"
+              :key="section.label"
+              class="flex flex-col py-1.5 px-1"
+              :class="{ 'border-b': i !== sections.data.length - 1 }"
+            >
+              <Section :is-opened="section.opened" :label="section.label">
+                <SectionFields :fields="section.fields" v-model="data" />
+              </Section>
             </div>
           </div>
-        </Resizer>
+          <div
+            v-else
+            class="flex flex-1 justify-center items-center text-gray-600 bg-gray-50 rounded border border-gray-50"
+          >
+            {{ __('Toggle on for preview') }}
+          </div>
+        </div>
+      </div>
+    </template>
+    <template #actions>
+      <div class="flex flex-row-reverse gap-2">
+        <Button
+          :loading="loading"
+          :label="__('Save')"
+          variant="solid"
+          @click="saveChanges"
+        />
+        <Button :label="__('Reset')" @click="reload" />
       </div>
     </template>
   </Dialog>
@@ -69,10 +72,9 @@
 <script setup>
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
-import Resizer from '@/components/Resizer.vue'
 import SidePanelLayoutBuilder from '@/components/Settings/SidePanelLayoutBuilder.vue'
 import { useDebounceFn } from '@vueuse/core'
-import { Dialog, Badge, call, createResource } from 'frappe-ui'
+import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
@@ -82,9 +84,10 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['reload'])
+
 const show = defineModel()
 const _doctype = ref(props.doctype)
-const parentRef = ref(null)
 const loading = ref(false)
 const dirty = ref(false)
 const preview = ref(false)
@@ -139,7 +142,8 @@ function saveChanges() {
     },
   ).then(() => {
     loading.value = false
-    reload()
+    show.value = false
+    emit('reload')
   })
 }
 </script>

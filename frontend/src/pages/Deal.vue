@@ -298,6 +298,7 @@
     v-if="showSidePanelModal"
     v-model="showSidePanelModal"
     doctype="CRM Deal"
+    @reload="() => fieldsLayout.reload()"
   />
 </template>
 <script setup>
