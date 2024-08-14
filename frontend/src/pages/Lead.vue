@@ -266,7 +266,11 @@
       </div>
     </template>
   </Dialog>
-  <SidePanelModal v-if="showSidePanelModal" v-model="showSidePanelModal" />
+  <SidePanelModal
+    v-if="showSidePanelModal"
+    v-model="showSidePanelModal"
+    @reload="() => fieldsLayout.reload()"
+  />
 </template>
 <script setup>
 import Resizer from '@/components/Resizer.vue'

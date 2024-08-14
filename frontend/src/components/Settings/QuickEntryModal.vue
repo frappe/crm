@@ -122,7 +122,6 @@ function saveChanges() {
   ).then(() => {
     loading.value = false
     show.value = false
-    reload()
   })
 }
 </script>

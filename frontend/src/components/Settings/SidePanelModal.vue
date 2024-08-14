@@ -84,6 +84,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['reload'])
+
 const show = defineModel()
 const _doctype = ref(props.doctype)
 const loading = ref(false)
@@ -141,7 +143,7 @@ function saveChanges() {
   ).then(() => {
     loading.value = false
     show.value = false
-    reload()
+    emit('reload')
   })
 }
 </script>
