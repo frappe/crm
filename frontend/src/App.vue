@@ -1,6 +1,5 @@
 <template>
-  <router-view v-if="$route.name == 'Login'" />
-  <Layout v-else-if="session().isLoggedIn">
+  <Layout v-if="session().isLoggedIn">
     <router-view />
   </Layout>
   <Dialogs />
