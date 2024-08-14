@@ -246,8 +246,9 @@ def get_data(
 	is_default = True
 	data = []
 	_list = get_controller(doctype)
+	default_rows = []
 	if hasattr(_list, "default_list_data"):
-		rows = _list.default_list_data().get("rows")
+		default_rows = _list.default_list_data().get("rows")
 
 	if view_type != "kanban":
 		if columns or rows:
@@ -278,6 +279,7 @@ def get_data(
 			rows = frappe.parse_json(list_view_settings.rows)
 			is_default = False
 		elif not custom_view or is_default and hasattr(_list, "default_list_data"):
+			rows = default_rows
 			columns = _list.default_list_data().get("columns")
 
 		# check if rows has all keys from columns if not add them
@@ -302,6 +304,9 @@ def get_data(
 		) or []
 
 	if view_type == "kanban":
+		if not rows:
+			rows = default_rows
+
 		if not kanban_columns and column_field:
 			field_meta = frappe.get_meta(doctype).get_field(column_field)
 			if field_meta.fieldtype == "Link":
