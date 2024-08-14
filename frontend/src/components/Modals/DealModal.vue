@@ -230,5 +230,8 @@ onMounted(() => {
   if (!deal.deal_owner) {
     deal.deal_owner = getUser().name
   }
+  if (!deal.status && dealStatuses.value[0].value) {
+    deal.status = dealStatuses.value[0].value
+  }
 })
 </script>
