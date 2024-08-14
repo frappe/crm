@@ -62,22 +62,20 @@
             >
               <template #item="{ element: field }">
                 <div
-                  class="px-2.5 py-2 border rounded text-base text-gray-800 flex items-center justify-between gap-2"
+                  class="px-2.5 py-2 border rounded text-base leading-4 text-gray-800 flex items-center justify-between gap-2"
                 >
                   <div class="flex items-center gap-2">
                     <DragVerticalIcon class="h-3.5 cursor-grab" />
                     <div>{{ field.label }}</div>
                   </div>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      icon="x"
-                      class="!size-4 rounded-sm"
-                      @click="
-                        section.fields.splice(section.fields.indexOf(field), 1)
-                      "
-                    />
-                  </div>
+                  <Button
+                    variant="ghost"
+                    icon="x"
+                    class="!size-4 rounded-sm"
+                    @click="
+                      section.fields.splice(section.fields.indexOf(field), 1)
+                    "
+                  />
                 </div>
               </template>
             </Draggable>
