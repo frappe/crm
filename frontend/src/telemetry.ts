@@ -47,13 +47,13 @@ function initPosthog(ps: PosthogSettings) {
     api_host: ps.posthog_host,
     person_profiles: 'identified_only',
     autocapture: false,
-    capture_pageview: false,
-    capture_pageleave: false,
+    capture_pageview: true,
+    capture_pageleave: true,
     enable_heatmaps: false,
-    disable_session_recording: true,
+    disable_session_recording: false,
     loaded: (ph: typeof posthog) => {
       window.posthog = ph
-      ph.identify(window.location.host)
+      ph.identify(window.location.hostname)
     },
   })
 }
