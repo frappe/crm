@@ -21,6 +21,7 @@ import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import { setupListActions, createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
+import { capture } from '@/telemetry'
 import { call } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -69,6 +70,7 @@ function convertToDeal(selections, unselectAll) {
         label: __('Convert'),
         variant: 'solid',
         onClick: (close) => {
+          capture('bulk_convert_to_deal')
           Array.from(selections).forEach((name) => {
             call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
               lead: name,
@@ -103,6 +105,7 @@ function deleteValues(selections, unselectAll) {
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
+          capture('bulk_delete')
           call('frappe.desk.reportview.delete_items', {
             items: JSON.stringify(Array.from(selections)),
             doctype: props.doctype,
@@ -145,6 +148,7 @@ function clearAssignemnts(selections, unselectAll) {
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
+          capture('bulk_clear_assignment')
           call('frappe.desk.form.assign_to.remove_multiple', {
             doctype: props.doctype,
             names: JSON.stringify(Array.from(selections)),

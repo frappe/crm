@@ -75,7 +75,6 @@ const templates = createListResource({
   filters: { status: 'APPROVED', for_doctype: ['in', [props.doctype, '']] },
   orderBy: 'modified desc',
   pageLength: 99999,
-  auto: true,
 })
 
 onMounted(() => {

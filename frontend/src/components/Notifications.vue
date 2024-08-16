@@ -18,10 +18,7 @@
         <div class="flex gap-1">
           <Tooltip :text="__('Mark all as read')">
             <div>
-              <Button
-                variant="ghost"
-                @click="() => notificationsStore().mark_as_read.reload()"
-              >
+              <Button variant="ghost" @click="() => markAllAsRead()">
                 <template #icon>
                   <MarkAsDoneIcon class="h-4 w-4" />
                 </template>
@@ -48,7 +45,7 @@
           :key="n.comment"
           :to="getRoute(n)"
           class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-gray-100"
-          @click="mark_as_read(n.comment || n.notification_type_doc)"
+          @click="markAsRead(n.comment || n.notification_type_doc)"
         >
           <div class="mt-1 flex items-center gap-2.5">
             <div
@@ -98,6 +95,7 @@ import { notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
+import { capture } from '@/telemetry'
 import { Tooltip } from 'frappe-ui'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
@@ -113,15 +111,21 @@ onClickOutside(
   },
   {
     ignore: ['#notifications-btn'],
-  }
+  },
 )
 
 function toggleNotificationPanel() {
   notificationsStore().toggle()
 }
 
-function mark_as_read(doc) {
+function markAsRead(doc) {
+  capture('notification_mark_as_read')
   notificationsStore().mark_doc_as_read(doc)
+}
+
+function markAllAsRead() {
+  capture('notification_mark_all_as_read')
+  notificationsStore().mark_as_read.reload()
 }
 
 onBeforeUnmount(() => {

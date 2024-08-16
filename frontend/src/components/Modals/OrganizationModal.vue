@@ -67,6 +67,7 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import { usersStore } from '@/stores/users'
 import { formatNumberIntoCurrency } from '@/utils'
+import { capture } from '@/telemetry'
 import { call, FeatherIcon, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
@@ -157,7 +158,10 @@ async function callInsertDoc() {
     },
   })
   loading.value = false
-  doc.name && handleOrganizationUpdate(doc)
+  if (doc.name) {
+    capture('organization_created')
+    handleOrganizationUpdate(doc)
+  }
 }
 
 function handleOrganizationUpdate(doc, renamed = false) {

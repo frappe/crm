@@ -92,6 +92,7 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import { usersStore } from '@/stores/users'
 import { TextEditorBubbleMenu, TextEditor, FileUploader } from 'frappe-ui'
+import { capture } from '@/telemetry'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel } from 'vue'
 
@@ -139,6 +140,7 @@ function appendEmoji() {
   editor.value.commands.insertContent(emoji.value)
   editor.value.commands.focus()
   emoji.value = ''
+  capture('emoji_inserted_in_comment', { emoji: emoji.value })
 }
 
 function removeAttachment(attachment) {
