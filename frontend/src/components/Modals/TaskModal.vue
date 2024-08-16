@@ -118,6 +118,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
+import { capture } from '@/telemetry'
 import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
 import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -199,6 +200,7 @@ async function updateTask() {
       },
     })
     if (d.name) {
+      capture('task_created', { task: d.name })
       tasks.value.reload()
     }
   }

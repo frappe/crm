@@ -96,6 +96,7 @@
 </template>
 
 <script setup>
+import { capture } from '@/telemetry'
 import { Checkbox, Select, TextEditor, call } from 'frappe-ui'
 import { ref, nextTick, watch } from 'vue'
 
@@ -171,7 +172,10 @@ async function callInsertDoc() {
       ..._emailTemplate.value,
     },
   })
-  doc.name && handleEmailTemplateUpdate(doc)
+  if (doc.name) {
+    capture('email_template_created', { email_template: doc.name })
+    handleEmailTemplateUpdate(doc)
+  }
 }
 
 function handleEmailTemplateUpdate(doc) {
