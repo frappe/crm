@@ -74,6 +74,7 @@ import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import SidePanelLayoutBuilder from '@/components/Settings/SidePanelLayoutBuilder.vue'
 import { useDebounceFn } from '@vueuse/core'
+import { capture } from '@/telemetry'
 import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
@@ -143,6 +144,7 @@ function saveChanges() {
   ).then(() => {
     loading.value = false
     show.value = false
+    capture('side_panel_layout_builder', { doctype: _doctype.value })
     emit('reload')
   })
 }
