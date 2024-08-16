@@ -312,6 +312,7 @@ import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { capture } from '@/telemetry'
 import {
   createResource,
   FileUploader,
@@ -587,6 +588,7 @@ async function convertToDeal(updated) {
       },
     )
     if (deal) {
+      capture('convert_lead_to_deal', { lead: lead.data.name, deal })
       if (updated) {
         await organizations.reload()
         await contacts.reload()
