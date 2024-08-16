@@ -125,7 +125,7 @@ async function updateNote() {
       },
     })
     if (d.name) {
-      capture('note_created', { note: d.name })
+      capture('note_created')
       notes.value?.reload()
       emit('after', d, true)
     }

@@ -220,7 +220,7 @@ async function submitEmail() {
   newEmail.value = ''
   reload.value = true
   emit('scroll')
-  capture('email_sent', { doctype: props.doctype, name: doc.value.data.name })
+  capture('email_sent', { doctype: props.doctype })
 }
 
 async function submitComment() {
@@ -230,7 +230,7 @@ async function submitComment() {
   newComment.value = ''
   reload.value = true
   emit('scroll')
-  capture('comment_sent', { doctype: props.doctype, name: doc.value.data.name })
+  capture('comment_sent', { doctype: props.doctype })
 }
 
 function toggleEmailBox() {

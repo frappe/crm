@@ -92,6 +92,7 @@ import CertificateIcon from '@/components/Icons/CertificateIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import { usersStore } from '@/stores/users'
+import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 import { createToast } from '@/utils'
@@ -160,7 +161,10 @@ async function callInsertDoc() {
       ..._contact.value,
     },
   })
-  doc.name && handleContactUpdate(doc)
+  if (doc.name) {
+    capture('contact_created')
+    handleContactUpdate(doc)
+  }
 }
 
 function handleContactUpdate(doc) {

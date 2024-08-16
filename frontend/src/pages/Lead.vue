@@ -588,7 +588,7 @@ async function convertToDeal(updated) {
       },
     )
     if (deal) {
-      capture('convert_lead_to_deal', { lead: lead.data.name, deal })
+      capture('convert_lead_to_deal')
       if (updated) {
         await organizations.reload()
         await contacts.reload()

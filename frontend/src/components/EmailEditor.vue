@@ -274,7 +274,7 @@ async function applyEmailTemplate(template) {
     editor.value.commands.setContent(data.message)
   }
   showEmailTemplateSelectorModal.value = false
-  capture('email_template_applied', { email_template: template.name })
+  capture('email_template_applied', { doctype: props.doctype })
 }
 
 function appendEmoji() {

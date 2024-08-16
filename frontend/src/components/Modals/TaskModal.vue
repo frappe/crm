@@ -200,7 +200,7 @@ async function updateTask() {
       },
     })
     if (d.name) {
-      capture('task_created', { task: d.name })
+      capture('task_created')
       tasks.value.reload()
     }
   }

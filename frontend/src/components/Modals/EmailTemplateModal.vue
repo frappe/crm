@@ -173,7 +173,7 @@ async function callInsertDoc() {
     },
   })
   if (doc.name) {
-    capture('email_template_created', { email_template: doc.name })
+    capture('email_template_created', { doctype: doc.reference_doctype })
     handleEmailTemplateUpdate(doc)
   }
 }
