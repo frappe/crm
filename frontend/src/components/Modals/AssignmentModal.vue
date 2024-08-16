@@ -80,6 +80,7 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
+import { capture } from '@/telemetry'
 import { Tooltip, call } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 
@@ -160,6 +161,7 @@ function updateAssignees() {
   }
 
   if (addedAssignees.length) {
+    capture('assign_to', { doctype: props.doctype })
     if (props.docs.size) {
       call('frappe.desk.form.assign_to.add_multiple', {
         doctype: props.doctype,
