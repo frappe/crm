@@ -161,8 +161,8 @@ function updateAssignees() {
   }
 
   if (addedAssignees.length) {
-    capture('assign_to', { doctype: props.doctype })
     if (props.docs.size) {
+      capture('bulk_assign_to', { doctype: props.doctype })
       call('frappe.desk.form.assign_to.add_multiple', {
         doctype: props.doctype,
         name: JSON.stringify(Array.from(props.docs)),
@@ -173,6 +173,7 @@ function updateAssignees() {
         emit('reload')
       })
     } else {
+      capture('assign_to', { doctype: props.doctype })
       call('frappe.desk.form.assign_to.add', {
         doctype: props.doctype,
         name: props.doc.name,
