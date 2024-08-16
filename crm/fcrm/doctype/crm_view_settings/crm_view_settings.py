@@ -92,6 +92,8 @@ def public(name, value):
 		frappe.throw("Not permitted", frappe.PermissionError)
 
 	doc = frappe.get_doc("CRM View Settings", name)
+	if doc.pinned:
+		doc.pinned = False
 	doc.public = value
 	doc.user = "" if value else frappe.session.user
 	doc.save()
