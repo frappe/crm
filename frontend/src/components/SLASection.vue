@@ -5,7 +5,9 @@
       :key="s.label"
       class="flex items-center gap-2 text-base leading-5"
     >
-      <div class="sm:w-[106px] w-36 text-sm text-gray-600">{{ __(s.label) }}</div>
+      <div class="sm:w-[106px] w-36 text-sm text-gray-600">
+        {{ __(s.label) }}
+      </div>
       <div class="grid min-h-[28px] items-center">
         <Tooltip v-if="s.tooltipText" :text="__(s.tooltipText)">
           <div class="ml-2 cursor-pointer">
@@ -43,6 +45,7 @@
 import { Dropdown, Tooltip } from 'frappe-ui'
 import { timeAgo, dateFormat, formatTime, dateTooltipFormat } from '@/utils'
 import { statusesStore } from '@/stores/statuses'
+import { capture } from '@/telemetry'
 import { computed, defineModel } from 'vue'
 
 const data = defineModel()
@@ -58,8 +61,8 @@ let slaSection = computed(() => {
     data.value.sla_status == 'Failed'
       ? 'red'
       : data.value.sla_status == 'Fulfilled'
-      ? 'green'
-      : 'orange'
+        ? 'green'
+        : 'orange'
 
   if (status == 'First Response Due') {
     status = timeAgo(data.value.response_by)
@@ -94,11 +97,13 @@ let slaSection = computed(() => {
         options: communicationStatuses.data?.map((status) => ({
           label: status.name,
           value: status.name,
-          onClick: () =>
-            emit('updateField', 'communication_status', status.name),
+          onClick: () => {
+            capture('sla_status_change')
+            emit('updateField', 'communication_status', status.name)
+          },
         })),
       },
-    ]
+    ],
   )
   return sections
 })
