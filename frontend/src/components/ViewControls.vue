@@ -162,6 +162,7 @@
       afterUpdate: () => {
         viewUpdated = false
         reloadView()
+        list.reload()
       },
     }"
   />
@@ -280,14 +281,17 @@ function getViewType() {
   let viewType = route.params.viewType || 'list'
   let types = {
     list: {
+      name: 'list',
       label: __('List'),
       icon: markRaw(ListIcon),
     },
     group_by: {
+      name: 'group_by',
       label: __('Group By'),
       icon: markRaw(GroupByIcon),
     },
     kanban: {
+      name: 'kanban',
       label: __('Kanban'),
       icon: markRaw(KanbanIcon),
     },
@@ -299,6 +303,7 @@ function getViewType() {
 const currentView = computed(() => {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
   return {
+    name: _view?.name || getViewType().name,
     label:
       _view?.label || props.options?.defaultViewName || getViewType().label,
     icon: _view?.icon || getViewType().icon,
@@ -471,6 +476,7 @@ let allowedViews = props.options.allowedViews || ['list']
 
 if (allowedViews.includes('list')) {
   defaultViews.push({
+    name: 'list',
     label: __(props.options?.defaultViewName) || __('List'),
     icon: markRaw(ListIcon),
     onClick() {
@@ -481,6 +487,7 @@ if (allowedViews.includes('list')) {
 }
 if (allowedViews.includes('kanban')) {
   defaultViews.push({
+    name: 'kanban',
     label: __(props.options?.defaultViewName) || __('Kanban'),
     icon: markRaw(KanbanIcon),
     onClick() {
@@ -491,6 +498,7 @@ if (allowedViews.includes('kanban')) {
 }
 if (allowedViews.includes('group_by')) {
   defaultViews.push({
+    name: 'group_by',
     label: __(props.options?.defaultViewName) || __('Group By'),
     icon: markRaw(GroupByIcon),
     onClick() {
@@ -522,6 +530,7 @@ const viewsDropdownOptions = computed(() => {
 
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
+      view.name = view.name
       view.label = __(view.label)
       view.type = view.type || 'list'
       view.icon = getIcon(view.icon, view.type)
@@ -544,16 +553,15 @@ const viewsDropdownOptions = computed(() => {
     )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
-    publicViews.length &&
-      _views.push({
-        group: __('Public Views'),
-        items: publicViews,
-      })
-
     savedViews.length &&
       _views.push({
         group: __('Saved Views'),
         items: savedViews,
+      })
+    publicViews.length &&
+      _views.push({
+        group: __('Public Views'),
+        items: publicViews,
       })
     pinnedViews.length &&
       _views.push({
@@ -866,7 +874,10 @@ function updatePageLength(value, loadMore = false) {
 }
 
 // View Actions
-const viewActions = computed(() => {
+const viewActions = (view) => {
+  let isDefault = typeof view.name === 'string'
+  let _view = getView(view.name)
+
   let actions = [
     {
       group: __('Default Views'),
@@ -875,37 +886,36 @@ const viewActions = computed(() => {
         {
           label: __('Duplicate'),
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
-          onClick: () => duplicateView(),
+          onClick: () => duplicateView(_view),
         },
       ],
     },
   ]
 
-  if (route.query.view && (!view.value.public || isManager())) {
+  if (!isDefault && (!_view.public || isManager())) {
     actions[0].items.push({
       label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
-      onClick: () => editView(),
+      onClick: () => editView(_view),
     })
 
-    if (!view.value.public) {
+    if (!_view.public) {
       actions[0].items.push({
-        label: view.value.pinned ? __('Unpin View') : __('Pin View'),
-        icon: () =>
-          h(view.value.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
-        onClick: () => pinView(),
+        label: _view.pinned ? __('Unpin View') : __('Pin View'),
+        icon: () => h(_view.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
+        onClick: () => pinView(_view),
       })
     }
 
     if (isManager()) {
       actions[0].items.push({
-        label: view.value.public ? __('Make Private') : __('Make Public'),
+        label: _view.public ? __('Make Private') : __('Make Public'),
         icon: () =>
           h(FeatherIcon, {
-            name: view.value.public ? 'lock' : 'unlock',
+            name: _view.public ? 'lock' : 'unlock',
             class: 'h-4 w-4',
           }),
-        onClick: () => publicView(),
+        onClick: () => publicView(_view),
       })
     }
 
@@ -926,7 +936,7 @@ const viewActions = computed(() => {
                   label: __('Delete'),
                   variant: 'solid',
                   theme: 'red',
-                  onClick: (close) => deleteView(close),
+                  onClick: (close) => deleteView(_view, close),
                 },
               ],
             }),
@@ -935,63 +945,61 @@ const viewActions = computed(() => {
     })
   }
   return actions
-})
+}
 
 const viewModalObj = ref({})
 
 function createView() {
   view.value.name = ''
   view.value.label = ''
+  view.value.icon = ''
   viewModalObj.value = view.value
+  viewModalObj.value.mode = 'create'
   showViewModal.value = true
 }
 
-function duplicateView() {
-  let label =
-    __(
-      getView(route.query.view, route.params.viewType, props.doctype)?.label,
-    ) || getViewType().label
-  view.value.name = ''
-  view.value.label = label + __(' (New)')
-  viewModalObj.value = view.value
+function duplicateView(v) {
+  v.label = v.label + __(' (New)')
+  viewModalObj.value = v
+  viewModalObj.value.mode = 'duplicate'
   showViewModal.value = true
 }
 
-function editView() {
-  let cView = getView(route.query.view, route.params.viewType, props.doctype)
-  view.value.name = route.query.view
-  view.value.label = __(cView?.label) || getViewType().label
-  view.value.icon = cView?.icon || ''
-  viewModalObj.value = view.value
+function editView(v) {
+  viewModalObj.value = v
+  viewModalObj.value.mode = 'edit'
   showViewModal.value = true
 }
 
-function publicView() {
+function publicView(v) {
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.public', {
-    name: route.query.view,
-    value: !view.value.public,
+    name: v.name,
+    value: !v.public,
   }).then(() => {
-    view.value.public = !view.value.public
+    v.public = !v.public
     reloadView()
+    list.value.reload()
   })
 }
 
-function pinView() {
+function pinView(v) {
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.pin', {
-    name: route.query.view,
-    value: !view.value.pinned,
+    name: v.name,
+    value: !v.pinned,
   }).then(() => {
-    view.value.pinned = !view.value.pinned
+    v.pinned = !v.pinned
     reloadView()
+    list.value.reload()
   })
 }
 
-function deleteView(close) {
+function deleteView(v, close) {
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete', {
-    name: route.query.view,
+    name: v.name,
   }).then(() => {
     router.push({ name: route.name })
     reloadView()
+    list.value.reload()
   })
   close()
 }
@@ -1020,6 +1028,7 @@ function saveView() {
     load_default_columns: view.value.load_default_columns,
   }
   viewModalObj.value = view.value
+  viewModalObj.value.mode = 'edit'
   showViewModal.value = true
 }
 
