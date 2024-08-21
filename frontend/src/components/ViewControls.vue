@@ -3,43 +3,6 @@
     v-if="isMobileView"
     class="flex flex-col justify-between gap-2 sm:px-5 px-3 py-4"
   >
-    <div class="flex items-center justify-between gap-2 overflow-x-auto">
-      <div class="flex gap-2">
-        <Dropdown :options="viewsDropdownOptions">
-          <template #default="{ open }">
-            <Button :label="__(currentView.label)">
-              <template #prefix>
-                <div v-if="isEmoji(currentView.icon)">
-                  {{ currentView.icon }}
-                </div>
-                <FeatherIcon
-                  v-else-if="typeof currentView.icon == 'string'"
-                  :name="currentView.icon"
-                  class="h-4"
-                />
-                <component v-else :is="currentView.icon" class="h-4" />
-              </template>
-              <template #suffix>
-                <FeatherIcon
-                  :name="open ? 'chevron-up' : 'chevron-down'"
-                  class="h-4 text-gray-600"
-                />
-              </template>
-            </Button>
-          </template>
-        </Dropdown>
-        <Dropdown :options="viewActions">
-          <template #default>
-            <Button icon="more-horizontal" />
-          </template>
-        </Dropdown>
-      </div>
-      <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
-        <template #icon>
-          <RefreshIcon class="h-4 w-4" />
-        </template>
-      </Button>
-    </div>
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between gap-2 overflow-x-auto">
         <div class="flex gap-2">
@@ -59,6 +22,11 @@
         </div>
 
         <div class="flex gap-2">
+          <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
+            <template #icon>
+              <RefreshIcon class="h-4 w-4" />
+            </template>
+          </Button>
           <SortBy
             v-if="route.params.viewType !== 'kanban'"
             v-model="list"
@@ -91,37 +59,13 @@
     </div>
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
-    <div class="flex items-center gap-2">
-      <Dropdown :options="viewsDropdownOptions">
-        <template #default="{ open }">
-          <Button :label="__(currentView.label)">
-            <template #prefix>
-              <div v-if="isEmoji(currentView.icon)">{{ currentView.icon }}</div>
-              <FeatherIcon
-                v-else-if="typeof currentView.icon == 'string'"
-                :name="currentView.icon"
-                class="h-4"
-              />
-              <component v-else :is="currentView.icon" class="h-4" />
-            </template>
-            <template #suffix>
-              <FeatherIcon
-                :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4 text-gray-600"
-              />
-            </template>
-          </Button>
-        </template>
-      </Dropdown>
-      <Dropdown :options="viewActions">
+      <!-- <Dropdown :options="viewActions">
         <template #default>
           <Button icon="more-horizontal" />
         </template>
-      </Dropdown>
-    </div>
-    <div class="-mr-2 h-[70%] border-l" />
+      </Dropdown> -->
     <FadedScrollableDiv
-      class="flex flex-1 items-center overflow-x-auto px-1"
+      class="flex flex-1 items-center overflow-x-auto -ml-1"
       orientation="horizontal"
     >
       <div
@@ -268,8 +212,9 @@
   </Dialog>
 </template>
 <script setup>
-import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import ListIcon from '@/components/Icons/ListIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
+import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -340,15 +285,15 @@ function getViewType() {
   let viewType = route.params.viewType || 'list'
   let types = {
     list: {
-      label: __('List View'),
-      icon: 'list',
+      label: __('List'),
+      icon: markRaw(ListIcon),
     },
     group_by: {
-      label: __('Group By View'),
-      icon: markRaw(DetailsIcon),
+      label: __('Group By'),
+      icon: markRaw(GroupByIcon),
     },
     kanban: {
-      label: __('Kanban View'),
+      label: __('Kanban'),
       icon: markRaw(KanbanIcon),
     },
   }
@@ -531,31 +476,31 @@ let allowedViews = props.options.allowedViews || ['list']
 
 if (allowedViews.includes('list')) {
   defaultViews.push({
-    label: __(props.options?.defaultViewName) || __('List View'),
-    icon: 'list',
+    label: __(props.options?.defaultViewName) || __('List'),
+    icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name })
     },
   })
 }
-if (allowedViews.includes('group_by')) {
-  defaultViews.push({
-    label: __(props.options?.defaultViewName) || __('Group By View'),
-    icon: markRaw(DetailsIcon),
-    onClick() {
-      viewUpdated.value = false
-      router.push({ name: route.name, params: { viewType: 'group_by' } })
-    },
-  })
-}
 if (allowedViews.includes('kanban')) {
   defaultViews.push({
-    label: __(props.options?.defaultViewName) || __('Kanban View'),
+    label: __(props.options?.defaultViewName) || __('Kanban'),
     icon: markRaw(KanbanIcon),
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name, params: { viewType: 'kanban' } })
+    },
+  })
+}
+if (allowedViews.includes('group_by')) {
+  defaultViews.push({
+    label: __(props.options?.defaultViewName) || __('Group By'),
+    icon: markRaw(GroupByIcon),
+    onClick() {
+      viewUpdated.value = false
+      router.push({ name: route.name, params: { viewType: 'group_by' } })
     },
   })
 }
@@ -564,9 +509,11 @@ function getIcon(icon, type) {
   if (isEmoji(icon)) {
     return h('div', icon)
   } else if (!icon && type === 'group_by') {
-    return markRaw(DetailsIcon)
+    return markRaw(GroupByIcon)
+  } else if (!icon && type === 'kanban') {
+    return markRaw(KanbanIcon)
   }
-  return icon || 'list'
+  return icon || markRaw(ListIcon)
 }
 
 const viewsDropdownOptions = computed(() => {
@@ -1119,6 +1066,8 @@ defineExpose({
   likeDoc,
   updateKanbanSettings,
   loadMoreKanban,
+  viewsDropdownOptions,
+  currentView,
 })
 
 // Watchers

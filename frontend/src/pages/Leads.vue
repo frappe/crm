@@ -1,7 +1,51 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <div class="flex items-center">
+        <router-link
+          :to="{ name: 'Leads' }"
+          class="px-0.5 py-1 text-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-600 hover:text-gray-700"
+        >
+          {{ __('Leads') }}
+        </router-link>
+        <span class="mx-0.5 text-base text-gray-500" aria-hidden="true">
+          /
+        </span>
+        <Dropdown
+          v-if="viewControls"
+          :options="viewControls.viewsDropdownOptions"
+        >
+          <template #default="{ open }">
+            <Button
+              variant="ghost"
+              class="text-lg font-medium"
+              :label="__(viewControls.currentView.label)"
+            >
+              <template #prefix>
+                <div v-if="isEmoji(viewControls.currentView.icon)">
+                  {{ viewControls.currentView.icon }}
+                </div>
+                <FeatherIcon
+                  v-else-if="typeof viewControls.currentView.icon == 'string'"
+                  :name="viewControls.currentView.icon"
+                  class="h-4"
+                />
+                <component
+                  v-else
+                  :is="viewControls.currentView.icon"
+                  class="h-4"
+                />
+              </template>
+              <template #suffix>
+                <FeatherIcon
+                  :name="open ? 'chevron-up' : 'chevron-down'"
+                  class="h-4 text-gray-800"
+                />
+              </template>
+            </Button>
+          </template>
+        </Dropdown>
+      </div>
     </template>
     <template #right-header>
       <CustomActions
@@ -303,12 +347,16 @@ import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
-import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
-import { Breadcrumbs, Avatar, Tooltip, Dropdown } from 'frappe-ui'
+import {
+  dateFormat,
+  dateTooltipFormat,
+  timeAgo,
+  formatTime,
+  isEmoji,
+} from '@/utils'
+import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
-
-const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
