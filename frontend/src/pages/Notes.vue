@@ -1,7 +1,39 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <div class="flex items-center">
+        <router-link
+          :to="{ name: 'Notes' }"
+          class="px-0.5 py-1 text-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-600 hover:text-gray-700"
+        >
+          {{ __('Notes') }}
+        </router-link>
+        <span class="mx-0.5 text-base text-gray-500" aria-hidden="true">
+          /
+        </span>
+        <Dropdown
+          v-if="viewControls"
+          :options="viewControls.viewsDropdownOptions"
+        >
+          <template #default="{ open }">
+            <Button
+              variant="ghost"
+              class="text-lg font-medium"
+              :label="__(viewControls.currentView.label)"
+            >
+              <template #prefix>
+                <Icon :icon="viewControls.currentView.icon" class="h-4" />
+              </template>
+              <template #suffix>
+                <FeatherIcon
+                  :name="open ? 'chevron-up' : 'chevron-down'"
+                  class="h-4 text-gray-800"
+                />
+              </template>
+            </Button>
+          </template>
+        </Dropdown>
+      </div>
     </template>
     <template #right-header>
       <Button variant="solid" :label="__('Create')" @click="createNote">
@@ -10,6 +42,7 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    ref="viewControls"
     v-model="notes"
     v-model:loadMore="loadMore"
     v-model:updatedPageCount="updatedPageCount"
@@ -102,6 +135,7 @@
 </template>
 
 <script setup>
+import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -109,19 +143,10 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
-import {
-  TextEditor,
-  call,
-  Dropdown,
-  Tooltip,
-  Breadcrumbs,
-  ListFooter,
-} from 'frappe-ui'
+import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()
-
-const breadcrumbs = [{ label: __('Notes'), route: { name: 'Notes' } }]
 
 const showNoteModal = ref(false)
 const currentNote = ref(null)
@@ -129,13 +154,14 @@ const currentNote = ref(null)
 const notes = ref({})
 const loadMore = ref(1)
 const updatedPageCount = ref(20)
+const viewControls = ref(null)
 
 watch(
   () => notes.value?.data?.page_length_count,
   (val, old_value) => {
     if (!val || val === old_value) return
     updatedPageCount.value = val
-  }
+  },
 )
 
 function createNote() {

@@ -1,7 +1,11 @@
 <template>
   <LayoutHeader v-if="contact.data">
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <Breadcrumbs :items="breadcrumbs">
+        <template #prefix="{ item }">
+          <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
+        </template>
+      </Breadcrumbs>
     </template>
   </LayoutHeader>
   <div v-if="contact.data" class="flex h-full flex-col overflow-hidden">
@@ -216,16 +220,7 @@
 </template>
 
 <script setup>
-import {
-  Breadcrumbs,
-  Avatar,
-  FileUploader,
-  Tooltip,
-  Tabs,
-  call,
-  createResource,
-  usePageMeta,
-} from 'frappe-ui'
+import Icon from '@/components/Icon.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -242,13 +237,24 @@ import {
   timeAgo,
   formatNumberIntoCurrency,
 } from '@/utils'
+import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
+import {
+  Breadcrumbs,
+  Avatar,
+  FileUploader,
+  Tooltip,
+  Tabs,
+  call,
+  createResource,
+  usePageMeta,
+} from 'frappe-ui'
 import { ref, computed, h } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const { $dialog, makeCall } = globalStore()
 
@@ -263,6 +269,7 @@ const props = defineProps({
   },
 })
 
+const route = useRoute()
 const router = useRouter()
 
 const showContactModal = ref(false)
@@ -287,6 +294,22 @@ const contact = createResource({
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Contacts'), route: { name: 'Contacts' } }]
+
+  if (route.query.view || route.query.viewType) {
+    let view = getView(route.query.view, route.query.viewType, 'Contact')
+    if (view) {
+      items.push({
+        label: __(view.label),
+        icon: view.icon,
+        route: {
+          name: 'Contacts',
+          params: { viewType: route.query.viewType },
+          query: { view: route.query.view },
+        },
+      })
+    }
+  }
+
   items.push({
     label: contact.data?.full_name,
     route: { name: 'Contact', params: { contactId: props.contactId } },
@@ -299,7 +322,6 @@ usePageMeta(() => {
     title: contact.data?.full_name || contact.data?.name,
   }
 })
-
 
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()

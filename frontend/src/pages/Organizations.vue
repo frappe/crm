@@ -1,7 +1,39 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <div class="flex items-center">
+        <router-link
+          :to="{ name: 'Organizations' }"
+          class="px-0.5 py-1 text-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-600 hover:text-gray-700"
+        >
+          {{ __('Organizations') }}
+        </router-link>
+        <span class="mx-0.5 text-base text-gray-500" aria-hidden="true">
+          /
+        </span>
+        <Dropdown
+          v-if="viewControls"
+          :options="viewControls.viewsDropdownOptions"
+        >
+          <template #default="{ open }">
+            <Button
+              variant="ghost"
+              class="text-lg font-medium"
+              :label="__(viewControls.currentView.label)"
+            >
+              <template #prefix>
+                <Icon :icon="viewControls.currentView.icon" class="h-4" />
+              </template>
+              <template #suffix>
+                <FeatherIcon
+                  :name="open ? 'chevron-up' : 'chevron-down'"
+                  class="h-4 text-gray-800"
+                />
+              </template>
+            </Button>
+          </template>
+        </Dropdown>
+      </div>
     </template>
     <template #right-header>
       <CustomActions
@@ -70,6 +102,7 @@
   />
 </template>
 <script setup>
+import Icon from '@/components/Icon.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -77,7 +110,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
-import { Breadcrumbs } from 'frappe-ui'
+import { Dropdown } from 'frappe-ui'
 import {
   dateFormat,
   dateTooltipFormat,
@@ -85,32 +118,10 @@ import {
   formatNumberIntoCurrency,
 } from '@/utils'
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
 const showQuickEntryModal = ref(false)
-
-const currentOrganization = computed(() => {
-  return organizations.value?.data?.data?.find(
-    (organization) => organization.name === route.params.organizationId,
-  )
-})
-
-const breadcrumbs = computed(() => {
-  let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
-  if (!currentOrganization.value) return items
-  items.push({
-    label: __(currentOrganization.value.name),
-    route: {
-      name: 'Organization',
-      params: { organizationId: currentOrganization.value.name },
-    },
-  })
-  return items
-})
 
 // organizations data is loaded in the ViewControls component
 const organizations = ref({})
