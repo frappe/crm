@@ -59,11 +59,6 @@
     </div>
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
-    <!-- <Dropdown :options="viewActions">
-        <template #default>
-          <Button icon="more-horizontal" />
-        </template>
-      </Dropdown> -->
     <FadedScrollableDiv
       class="flex flex-1 items-center overflow-x-auto -ml-1"
       orientation="horizontal"
@@ -1085,6 +1080,7 @@ defineExpose({
   likeDoc,
   updateKanbanSettings,
   loadMoreKanban,
+  viewActions,
   viewsDropdownOptions,
   currentView,
 })
