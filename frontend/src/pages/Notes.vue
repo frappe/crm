@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="Notes" />
     </template>
     <template #right-header>
       <Button variant="solid" :label="__('Create')" @click="createNote">
@@ -10,6 +10,7 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    ref="viewControls"
     v-model="notes"
     v-model:loadMore="loadMore"
     v-model:updatedPageCount="updatedPageCount"
@@ -102,6 +103,7 @@
 </template>
 
 <script setup>
+import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -109,19 +111,10 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
-import {
-  TextEditor,
-  call,
-  Dropdown,
-  Tooltip,
-  Breadcrumbs,
-  ListFooter,
-} from 'frappe-ui'
+import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()
-
-const breadcrumbs = [{ label: __('Notes'), route: { name: 'Notes' } }]
 
 const showNoteModal = ref(false)
 const currentNote = ref(null)
@@ -129,13 +122,14 @@ const currentNote = ref(null)
 const notes = ref({})
 const loadMore = ref(1)
 const updatedPageCount = ref(20)
+const viewControls = ref(null)
 
 watch(
   () => notes.value?.data?.page_length_count,
   (val, old_value) => {
     if (!val || val === old_value) return
     updatedPageCount.value = val
-  }
+  },
 )
 
 function createNote() {
