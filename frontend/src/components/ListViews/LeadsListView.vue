@@ -4,14 +4,21 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      getRowRoute: (row) => ({ name: 'Lead', params: { leadId: row.name } }),
+      getRowRoute: (row) => ({
+        name: 'Lead',
+        params: { leadId: row.name },
+        query: { view: route.query.view, viewType: route.params.viewType },
+      }),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
   >
-    <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="emit('columnWidthUpdated')">
+    <ListHeader
+      class="sm:mx-5 mx-3"
+      @columnWidthUpdated="emit('columnWidthUpdated')"
+    >
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
@@ -217,6 +224,7 @@ import {
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const props = defineProps({
   rows: {
@@ -248,6 +256,8 @@ const emit = defineEmits([
   'likeDoc',
 ])
 
+const route = useRoute()
+
 const pageLengthCount = defineModel()
 const list = defineModel('list')
 
@@ -273,7 +283,7 @@ const listBulkActionsRef = ref(null)
 
 defineExpose({
   customListActions: computed(
-    () => listBulkActionsRef.value?.customListActions
+    () => listBulkActionsRef.value?.customListActions,
   ),
 })
 </script>
