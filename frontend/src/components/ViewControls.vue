@@ -929,7 +929,9 @@ const viewActions = (view) => {
           onClick: () =>
             $dialog({
               title: __('Delete View'),
-              message: __('Are you sure you want to delete this view?'),
+              message: __('Are you sure you want to delete "{0}" view?', [
+                _view.label,
+              ]),
               variant: 'danger',
               actions: [
                 {
