@@ -59,7 +59,7 @@
     </div>
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
-      <!-- <Dropdown :options="viewActions">
+    <!-- <Dropdown :options="viewActions">
         <template #default>
           <Button icon="more-horizontal" />
         </template>
@@ -567,6 +567,18 @@ const viewsDropdownOptions = computed(() => {
       })
   }
 
+  _views.push({
+    group: __('Actions'),
+    hideLabel: true,
+    items: [
+      {
+        label: __('Create View'),
+        icon: 'plus',
+        onClick: () => createView(),
+      },
+    ],
+  })
+
   return _views
 })
 
@@ -931,6 +943,13 @@ const viewActions = computed(() => {
 })
 
 const viewModalObj = ref({})
+
+function createView() {
+  view.value.name = ''
+  view.value.label = ''
+  viewModalObj.value = view.value
+  showViewModal.value = true
+}
 
 function duplicateView() {
   let label =
