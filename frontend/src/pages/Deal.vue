@@ -174,8 +174,8 @@
                   <span>{{ __('Loading...') }}</span>
                 </div>
                 <div
-                  v-else-if="section.contacts.length"
-                  v-for="(contact, i) in section.contacts"
+                  v-else-if="deal_contacts?.data?.length"
+                  v-for="(contact, i) in deal_contacts.data"
                   :key="contact.name"
                 >
                   <div
@@ -251,7 +251,7 @@
                     </Section>
                   </div>
                   <div
-                    v-if="i != section.contacts.length - 1"
+                    v-if="i != deal_contacts.data.length - 1"
                     class="mx-2 h-px border-t border-gray-200"
                   />
                 </div>
@@ -298,6 +298,7 @@
     v-if="showSidePanelModal"
     v-model="showSidePanelModal"
     doctype="CRM Deal"
+    @reload="() => fieldsLayout.reload()"
   />
 </template>
 <script setup>
@@ -349,6 +350,7 @@ import {
   Tabs,
   Breadcrumbs,
   call,
+  usePageMeta,
 } from 'frappe-ui'
 import { ref, computed, h, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -455,6 +457,12 @@ const breadcrumbs = computed(() => {
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
+})
+
+usePageMeta(() => {
+  return {
+    title: organization.value?.name || deal.data?.name,
+  }
 })
 
 const tabIndex = ref(0)
@@ -603,22 +611,11 @@ const deal_contacts = createResource({
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
   auto: true,
-  onSuccess: (data) => {
-    let contactSection = fieldsLayout.data?.find(
-      (section) => section.name == 'contacts_section',
-    )
-    if (!contactSection) return
-    contactSection.contacts = data.map((contact) => {
-      return {
-        name: contact.name,
-        full_name: contact.full_name,
-        email: contact.email,
-        mobile_no: contact.mobile_no,
-        image: contact.image,
-        is_primary: contact.is_primary,
-        opened: false,
-      }
+  transform: (data) => {
+    data.forEach((contact) => {
+      contact.opened = false
     })
+    return data
   },
 })
 

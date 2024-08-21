@@ -1,11 +1,13 @@
 <template>
   <div>
-    <Draggable :list="sections" item-key="label" class="flex flex-col">
+    <Draggable :list="sections" item-key="label" class="flex flex-col gap-5.5">
       <template #item="{ element: section }">
-        <div class="border-b">
-          <div class="flex items-center justify-between p-2">
+        <div class="flex flex-col gap-3">
+          <div
+            class="flex items-center justify-between rounded px-2.5 py-2 bg-gray-50"
+          >
             <div
-              class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
+              class="flex max-w-fit cursor-pointer items-center gap-2 text-base leading-4"
               @click="section.opened = !section.opened"
             >
               <FeatherIcon
@@ -26,51 +28,54 @@
                 <Button
                   v-if="section.editingLabel"
                   icon="check"
+                  class="!size-4 rounded-sm"
                   variant="ghost"
                   @click.stop="section.editingLabel = false"
                 />
               </div>
             </div>
-            <div>
+            <div class="flex gap-1 items-center">
               <Button
                 v-if="!section.editingLabel"
-                icon="edit"
+                class="!size-4 rounded-sm"
                 variant="ghost"
                 @click="section.editingLabel = true"
-              />
+              >
+                <EditIcon class="h-3.5" />
+              </Button>
               <Button
                 v-if="section.editable !== false"
+                class="!size-4 rounded-sm"
                 icon="x"
                 variant="ghost"
                 @click="sections.splice(sections.indexOf(section), 1)"
               />
             </div>
           </div>
-          <div v-show="section.opened" class="p-4 pt-0 pb-2">
+          <div v-show="section.opened">
             <Draggable
               :list="section.fields"
               group="fields"
               item-key="label"
-              class="flex flex-col gap-1"
+              class="flex flex-col gap-1.5"
               handle=".cursor-grab"
             >
               <template #item="{ element: field }">
                 <div
-                  class="px-1.5 py-1 border rounded text-base text-gray-800 flex items-center justify-between gap-2"
+                  class="px-2.5 py-2 border rounded text-base leading-4 text-gray-800 flex items-center justify-between gap-2"
                 >
                   <div class="flex items-center gap-2">
                     <DragVerticalIcon class="h-3.5 cursor-grab" />
                     <div>{{ field.label }}</div>
                   </div>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      icon="x"
-                      @click="
-                        section.fields.splice(section.fields.indexOf(field), 1)
-                      "
-                    />
-                  </div>
+                  <Button
+                    variant="ghost"
+                    icon="x"
+                    class="!size-4 rounded-sm"
+                    @click="
+                      section.fields.splice(section.fields.indexOf(field), 1)
+                    "
+                  />
                 </div>
               </template>
             </Draggable>
@@ -82,7 +87,7 @@
             >
               <template #target="{ togglePopover }">
                 <Button
-                  class="w-full mt-2"
+                  class="w-full h-8 mt-1.5 !border-gray-200 hover:!border-gray-300"
                   variant="outline"
                   @click="togglePopover()"
                   :label="__('Add Field')"
@@ -113,10 +118,10 @@
         </div>
       </template>
     </Draggable>
-    <div class="p-2">
+    <div class="mt-5.5">
       <Button
-        class="w-full"
-        variant="outline"
+        class="w-full h-8"
+        variant="subtle"
         :label="__('Add Section')"
         @click="
           sections.push({ label: __('New Section'), opened: true, fields: [] })
@@ -130,6 +135,7 @@
   </div>
 </template>
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'

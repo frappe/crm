@@ -46,6 +46,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import Fields from '@/components/Fields.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
+import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
 import { computed, onMounted, ref, reactive, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
@@ -153,6 +154,7 @@ function createNewLead() {
       isLeadCreating.value = true
     },
     onSuccess(data) {
+      capture('lead_created')
       isLeadCreating.value = false
       show.value = false
       router.push({ name: 'Lead', params: { leadId: data.name } })
@@ -181,6 +183,9 @@ onMounted(() => {
   Object.assign(lead, props.defaults)
   if (!lead.lead_owner) {
     lead.lead_owner = getUser().name
+  }
+  if (!lead.status && leadStatuses.value[0].value) {
+    lead.status = leadStatuses.value[0].value
   }
 })
 </script>

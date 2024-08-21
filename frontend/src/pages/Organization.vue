@@ -235,6 +235,7 @@ import {
   call,
   createListResource,
   createDocumentResource,
+  usePageMeta,
 } from 'frappe-ui'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
@@ -293,6 +294,12 @@ const breadcrumbs = computed(() => {
     },
   })
   return items
+})
+
+usePageMeta(() => {
+  return {
+    title: props.organizationId,
+  }
 })
 
 function validateFile(file) {

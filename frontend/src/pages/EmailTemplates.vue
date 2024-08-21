@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        @click="showEmailTemplateModal = true"
+        @click="() => showEmailTemplate()"
       >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -55,7 +55,7 @@
     >
       <Email2Icon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Email Templates')]) }}</span>
-      <Button :label="__('Create')" @click="showEmailTemplateModal = true">
+      <Button :label="__('Create')" @click="() => showEmailTemplate()">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
@@ -115,28 +115,32 @@ const rows = computed(() => {
 
 const showEmailTemplateModal = ref(false)
 
-const emailTemplate = ref({
-  subject: '',
-  response: '',
-  response_html: '',
-  name: '',
-  enabled: 1,
-  use_html: 0,
-  owner: '',
-  reference_doctype: 'CRM Deal',
-})
+const emailTemplate = ref({})
 
 function showEmailTemplate(name) {
-  let et = rows.value?.find((row) => row.name === name)
-  emailTemplate.value = {
-    subject: et.subject,
-    response: et.response,
-    response_html: et.response_html,
-    name: et.name,
-    enabled: et.enabled,
-    use_html: et.use_html,
-    owner: et.owner,
-    reference_doctype: et.reference_doctype,
+  if (!name) {
+    emailTemplate.value = {
+      subject: '',
+      response: '',
+      response_html: '',
+      name: '',
+      enabled: 1,
+      use_html: 0,
+      owner: '',
+      reference_doctype: 'CRM Deal',
+    }
+  } else {
+    let et = rows.value?.find((row) => row.name === name)
+    emailTemplate.value = {
+      subject: et.subject,
+      response: et.response,
+      response_html: et.response_html,
+      name: et.name,
+      enabled: et.enabled,
+      use_html: et.use_html,
+      owner: et.owner,
+      reference_doctype: et.reference_doctype,
+    }
   }
   showEmailTemplateModal.value = true
 }

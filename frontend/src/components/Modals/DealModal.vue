@@ -61,6 +61,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import Fields from '@/components/Fields.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
+import { capture } from '@/telemetry'
 import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
@@ -201,6 +202,7 @@ function createDeal() {
       isDealCreating.value = true
     },
     onSuccess(name) {
+      capture('deal_created')
       isDealCreating.value = false
       show.value = false
       router.push({ name: 'Deal', params: { dealId: name } })
@@ -229,6 +231,9 @@ onMounted(() => {
   Object.assign(deal, props.defaults)
   if (!deal.deal_owner) {
     deal.deal_owner = getUser().name
+  }
+  if (!deal.status && dealStatuses.value[0].value) {
+    deal.status = dealStatuses.value[0].value
   }
 })
 </script>

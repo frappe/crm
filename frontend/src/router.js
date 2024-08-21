@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { usersStore } from '@/stores/users'
+import { userResource } from '@/stores/user'
 import { sessionStore } from '@/stores/session'
 
 const routes = [
@@ -102,11 +102,6 @@ const routes = [
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),
   },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/pages/Login.vue'),
-  },
 ]
 
 const handleMobileView = (componentName) => {
@@ -139,19 +134,18 @@ let router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const { users } = usersStore()
   const { isLoggedIn } = sessionStore()
 
-  isLoggedIn && (await users.promise)
+  isLoggedIn && (await userResource.promise)
 
   if (from.meta?.scrollPos) {
     from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop
   }
 
-  if (to.name === 'Login' && isLoggedIn) {
+  if (to.name === 'Home' && isLoggedIn) {
     next({ name: 'Leads' })
-  } else if (to.name !== 'Login' && !isLoggedIn) {
-    next({ name: 'Login' })
+  } else if (!isLoggedIn) {
+    window.location.href = "/login?redirect-to=/crm";
   } else if (to.matched.length === 0) {
     next({ name: 'Invalid Page' })
   } else {

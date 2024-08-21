@@ -53,11 +53,11 @@ def create(view):
 def update(view):
 	view = frappe._dict(view)
 
-	filters = parse_json(view.filters) or {}
-	columns = parse_json(view.columns) or []
-	rows = parse_json(view.rows) or []
-	kanban_columns = parse_json(view.kanban_columns) or []
-	kanban_fields = parse_json(view.kanban_fields) or []
+	filters = parse_json(view.filters or {})
+	columns = parse_json(view.columns or [])
+	rows = parse_json(view.rows or [])
+	kanban_columns = parse_json(view.kanban_columns or [])
+	kanban_fields = parse_json(view.kanban_fields or [])
 
 	default_rows = sync_default_rows(view.doctype)
 	rows = rows + default_rows if default_rows else rows
@@ -92,6 +92,8 @@ def public(name, value):
 		frappe.throw("Not permitted", frappe.PermissionError)
 
 	doc = frappe.get_doc("CRM View Settings", name)
+	if doc.pinned:
+		doc.pinned = False
 	doc.public = value
 	doc.user = "" if value else frappe.session.user
 	doc.save()

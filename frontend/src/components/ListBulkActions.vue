@@ -21,6 +21,7 @@ import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import { setupListActions, createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
+import { capture } from '@/telemetry'
 import { call } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -56,6 +57,40 @@ function editValues(selections, unselectAll) {
   unselectAllAction.value = unselectAll
 }
 
+function convertToDeal(selections, unselectAll) {
+  $dialog({
+    title: __('Convert to Deal'),
+    message: __('Are you sure you want to convert {0} Lead(s) to Deal(s)?', [
+      selections.size,
+    ]),
+    variant: 'solid',
+    theme: 'blue',
+    actions: [
+      {
+        label: __('Convert'),
+        variant: 'solid',
+        onClick: (close) => {
+          capture('bulk_convert_to_deal')
+          Array.from(selections).forEach((name) => {
+            call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
+              lead: name,
+            }).then(() => {
+              createToast({
+                title: __('Converted successfully'),
+                icon: 'check',
+                iconClasses: 'text-green-600',
+              })
+              list.value.reload()
+              unselectAll()
+              close()
+            })
+          })
+        },
+      },
+    ],
+  })
+}
+
 function deleteValues(selections, unselectAll) {
   $dialog({
     title: __('Delete'),
@@ -70,6 +105,7 @@ function deleteValues(selections, unselectAll) {
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
+          capture('bulk_delete')
           call('frappe.desk.reportview.delete_items', {
             items: JSON.stringify(Array.from(selections)),
             doctype: props.doctype,
@@ -112,6 +148,7 @@ function clearAssignemnts(selections, unselectAll) {
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
+          capture('bulk_clear_assignment')
           call('frappe.desk.form.assign_to.remove_multiple', {
             doctype: props.doctype,
             names: JSON.stringify(Array.from(selections)),
@@ -159,6 +196,13 @@ function bulkActions(selections, unselectAll) {
     actions.push({
       label: __('Clear Assignment'),
       onClick: () => clearAssignemnts(selections, unselectAll),
+    })
+  }
+
+  if (props.doctype === 'CRM Lead') {
+    actions.push({
+      label: __('Convert to Deal'),
+      onClick: () => convertToDeal(selections, unselectAll),
     })
   }
 

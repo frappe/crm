@@ -1,14 +1,11 @@
 <template>
   <div>
-    <Draggable :list="sections" item-key="label" class="flex flex-col">
+    <Draggable :list="sections" item-key="label" class="flex flex-col gap-5.5">
       <template #item="{ element: section }">
-        <div
-          class="py-2 first:pt-0"
-          :class="section.hideBorder ? '' : 'border-t first:border-t-0'"
-        >
-          <div class="flex items-center justify-between pb-2">
+        <div class="flex flex-col gap-1.5 p-2.5 bg-gray-50 rounded">
+          <div class="flex items-center justify-between">
             <div
-              class="flex h-7 max-w-fit cursor-pointer items-center gap-2 text-base font-semibold leading-5"
+              class="flex h-7 max-w-fit cursor-pointer items-center gap-2 text-base font-medium leading-4"
             >
               <div
                 v-if="!section.editingLabel"
@@ -39,81 +36,71 @@
               </template>
             </Dropdown>
           </div>
-          <div>
-            <Draggable
-              :list="section.fields"
-              group="fields"
-              item-key="label"
-              class="grid gap-2"
-              :class="
-                section.columns ? 'grid-cols-' + section.columns : 'grid-cols-3'
-              "
-              handle=".cursor-grab"
-            >
-              <template #item="{ element: field }">
-                <div
-                  class="px-1.5 py-1 border rounded text-base text-gray-800 flex items-center justify-between gap-2"
-                >
-                  <div class="flex items-center gap-2">
-                    <DragVerticalIcon class="h-3.5 cursor-grab" />
-                    <div>{{ field.label }}</div>
-                  </div>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      icon="x"
-                      @click="
-                        section.fields.splice(section.fields.indexOf(field), 1)
-                      "
-                    />
-                  </div>
+          <Draggable
+            :list="section.fields"
+            group="fields"
+            item-key="label"
+            class="grid gap-1.5"
+            :class="
+              section.columns ? 'grid-cols-' + section.columns : 'grid-cols-3'
+            "
+            handle=".cursor-grab"
+          >
+            <template #item="{ element: field }">
+              <div
+                class="px-2.5 py-2 border rounded text-base bg-white text-gray-800 flex items-center leading-4 justify-between gap-2"
+              >
+                <div class="flex items-center gap-2">
+                  <DragVerticalIcon class="h-3.5 cursor-grab" />
+                  <div>{{ field.label }}</div>
                 </div>
-              </template>
-            </Draggable>
-            <Autocomplete
-              v-if="fields.data"
-              value=""
-              :options="fields.data"
-              @change="(e) => addField(section, e)"
-            >
-              <template #target="{ togglePopover }">
-                <div
-                  class="grid gap-2 w-full"
-                  :class="
-                    section.columns
-                      ? 'grid-cols-' + section.columns
-                      : 'grid-cols-3'
+                <Button
+                  variant="ghost"
+                  class="!size-4 rounded-sm"
+                  icon="x"
+                  @click="
+                    section.fields.splice(section.fields.indexOf(field), 1)
                   "
+                />
+              </div>
+            </template>
+          </Draggable>
+          <Autocomplete
+            v-if="fields.data"
+            value=""
+            :options="fields.data"
+            @change="(e) => addField(section, e)"
+          >
+            <template #target="{ togglePopover }">
+              <div class="gap-2 w-full">
+                <Button
+                  class="w-full !h-8 !border-gray-200 hover:!border-gray-300"
+                  variant="outline"
+                  @click="togglePopover()"
+                  :label="__('Add Field')"
                 >
-                  <Button
-                    class="mt-2 w-full !h-[38px] !border-gray-200"
-                    variant="outline"
-                    @click="togglePopover()"
-                    :label="__('Add Field')"
-                  >
-                    <template #prefix>
-                      <FeatherIcon name="plus" class="h-4" />
-                    </template>
-                  </Button>
+                  <template #prefix>
+                    <FeatherIcon name="plus" class="h-4" />
+                  </template>
+                </Button>
+              </div>
+            </template>
+            <template #item-label="{ option }">
+              <div class="flex flex-col gap-1">
+                <div>{{ option.label }}</div>
+                <div class="text-gray-500 text-sm">
+                  {{ `${option.fieldname} - ${option.fieldtype}` }}
                 </div>
-              </template>
-              <template #item-label="{ option }">
-                <div class="flex flex-col gap-1">
-                  <div>{{ option.label }}</div>
-                  <div class="text-gray-500 text-sm">
-                    {{ `${option.fieldname} - ${option.fieldtype}` }}
-                  </div>
-                </div>
-              </template>
-            </Autocomplete>
-          </div>
+              </div>
+            </template>
+          </Autocomplete>
         </div>
       </template>
     </Draggable>
-    <div class="py-2 border-t">
+    <div class="mt-5.5">
       <Button
-        class="w-full !h-[38px] !border-gray-200"
-        variant="outline"
+        class="w-full h-8"
+        variant="subtle"
         :label="__('Add Section')"
         @click="
           sections.push({

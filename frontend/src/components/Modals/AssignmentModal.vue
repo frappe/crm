@@ -9,7 +9,7 @@
           label: __('Cancel'),
           variant: 'subtle',
           onClick: () => {
-            assignees = oldAssignees
+            assignees = [...oldAssignees]
             show = false
           },
         },
@@ -20,6 +20,11 @@
         },
       ],
     }"
+    @close="
+      () => {
+        assignees = [...oldAssignees]
+      }
+    "
   >
     <template #body-content>
       <Link
@@ -75,9 +80,9 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
+import { capture } from '@/telemetry'
 import { Tooltip, call } from 'frappe-ui'
-import { ref, computed } from 'vue'
-import { watchOnce } from '@vueuse/core'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
   doc: {
@@ -106,7 +111,7 @@ const { getUser } = usersStore()
 
 const removeValue = (value) => {
   assignees.value = assignees.value.filter(
-    (assignee) => assignee.name !== value
+    (assignee) => assignee.name !== value,
   )
 }
 
@@ -135,13 +140,13 @@ function updateAssignees() {
   }
   const removedAssignees = oldAssignees.value
     .filter(
-      (assignee) => !assignees.value.find((a) => a.name === assignee.name)
+      (assignee) => !assignees.value.find((a) => a.name === assignee.name),
     )
     .map((assignee) => assignee.name)
 
   const addedAssignees = assignees.value
     .filter(
-      (assignee) => !oldAssignees.value.find((a) => a.name === assignee.name)
+      (assignee) => !oldAssignees.value.find((a) => a.name === assignee.name),
     )
     .map((assignee) => assignee.name)
 
@@ -157,6 +162,7 @@ function updateAssignees() {
 
   if (addedAssignees.length) {
     if (props.docs.size) {
+      capture('bulk_assign_to', { doctype: props.doctype })
       call('frappe.desk.form.assign_to.add_multiple', {
         doctype: props.doctype,
         name: JSON.stringify(Array.from(props.docs)),
@@ -167,6 +173,7 @@ function updateAssignees() {
         emit('reload')
       })
     } else {
+      capture('assign_to', { doctype: props.doctype })
       call('frappe.desk.form.assign_to.add', {
         doctype: props.doctype,
         name: props.doc.name,
@@ -177,7 +184,7 @@ function updateAssignees() {
   show.value = false
 }
 
-watchOnce(assignees, (value) => {
-  oldAssignees.value = [...value]
+onMounted(() => {
+  oldAssignees.value = [...assignees.value]
 })
 </script>

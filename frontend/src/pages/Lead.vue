@@ -266,7 +266,11 @@
       </div>
     </template>
   </Dialog>
-  <SidePanelModal v-if="showSidePanelModal" v-model="showSidePanelModal" />
+  <SidePanelModal
+    v-if="showSidePanelModal"
+    v-model="showSidePanelModal"
+    @reload="() => fieldsLayout.reload()"
+  />
 </template>
 <script setup>
 import Resizer from '@/components/Resizer.vue'
@@ -308,6 +312,7 @@ import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { capture } from '@/telemetry'
 import {
   createResource,
   FileUploader,
@@ -318,6 +323,7 @@ import {
   Switch,
   Breadcrumbs,
   call,
+  usePageMeta,
 } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -420,6 +426,12 @@ const breadcrumbs = computed(() => {
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
+})
+
+usePageMeta(() => {
+  return {
+    title: lead.data?.lead_name || lead.data?.name,
+  }
 })
 
 const tabIndex = ref(0)
@@ -576,6 +588,7 @@ async function convertToDeal(updated) {
       },
     )
     if (deal) {
+      capture('convert_lead_to_deal')
       if (updated) {
         await organizations.reload()
         await contacts.reload()
