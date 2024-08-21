@@ -22,19 +22,7 @@
               :label="__(viewControls.currentView.label)"
             >
               <template #prefix>
-                <div v-if="isEmoji(viewControls.currentView.icon)">
-                  {{ viewControls.currentView.icon }}
-                </div>
-                <FeatherIcon
-                  v-else-if="typeof viewControls.currentView.icon == 'string'"
-                  :name="viewControls.currentView.icon"
-                  class="h-4"
-                />
-                <component
-                  v-else
-                  :is="viewControls.currentView.icon"
-                  class="h-4"
-                />
+                <Icon :icon="viewControls.currentView.icon" class="h-4" />
               </template>
               <template #suffix>
                 <FeatherIcon
