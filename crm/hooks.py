@@ -18,7 +18,7 @@ add_to_apps_screen = [
 		"logo": "/assets/crm/manifest/apple-icon-180.png",
 		"title": "CRM",
 		"route": "/crm",
-		# "has_permission": "crm.api.permission.has_app_permission"
+		"has_permission": "crm.api.check_app_permission",
 	}
 ]
 
