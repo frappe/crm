@@ -1,6 +1,5 @@
 import '../../../frappe/frappe/public/js/lib/posthog.js'
 import { createResource } from 'frappe-ui'
-import { computed } from 'vue'
 
 declare global {
   interface Window {
