@@ -20,23 +20,107 @@
         :options="[
           { label: __('Regular Access'), value: 'Sales User' },
           { label: __('Manager Access'), value: 'Sales Manager' },
-          { label: __('Admin Access'), value: 'Administrator' },
         ]"
+        :description="description"
       />
       <ErrorMessage class="mt-2" v-if="error" :message="error" />
+      <template v-if="pendingInvitations.data?.length && !invitees.length">
+        <div
+          class="mt-4 flex items-center justify-between border-b py-2 text-base text-gray-600"
+        >
+          <div class="w-4/5">{{ __('Pending Invites') }}</div>
+        </div>
+        <ul class="divide-y overflow-auto">
+          <li
+            class="flex items-center justify-between py-2"
+            v-for="user in pendingInvitations.data"
+            :key="user.name"
+          >
+            <div class="w-4/5 text-base">
+              <span class="text-gray-900">
+                {{ user.email }}
+              </span>
+              <span class="text-gray-600"> ({{ roleMap[user.role] }}) </span>
+            </div>
+            <div>
+              <Tooltip text="Delete Invitation">
+                <Button
+                  icon="x"
+                  :loading="
+                    pendingInvitations.delete.loading &&
+                    pendingInvitations.delete.params.name === user.name
+                  "
+                  @click="pendingInvitations.delete.submit(user.name)"
+                />
+              </Tooltip>
+            </div>
+          </li>
+        </ul>
+      </template>
     </div>
     <div class="flex flex-row-reverse">
-      <Button :label="__('Send Invites')" variant="solid" @click="update" />
+      <Button
+        :label="__('Send Invites')"
+        variant="solid"
+        @click="inviteByEmail.submit()"
+        :loading="inviteByEmail.loading"
+      />
     </div>
   </div>
 </template>
 <script setup>
 import MultiValueInput from '@/components/Controls/MultiValueInput.vue'
-import { validateEmail } from '@/utils'
-import { FormControl } from 'frappe-ui'
-import { ref } from 'vue'
+import { validateEmail, convertArrayToString } from '@/utils'
+import {
+  createListResource,
+  createResource,
+  FormControl,
+  Tooltip,
+} from 'frappe-ui'
+import { ref, computed } from 'vue'
 
 const invitees = ref([])
 const role = ref('Sales User')
 const error = ref(null)
+
+const description = computed(() => {
+  return {
+    'Sales Manager':
+      'Can manage and invite new members, and create public & private views (reports).',
+    'Sales User':
+      'Can work with leads and deals and create private views (reports).',
+  }[role.value]
+})
+
+const roleMap = {
+  'Sales User': __('Regular Access'),
+  'Sales Manager': __('Manager Access'),
+}
+
+const inviteByEmail = createResource({
+  url: 'crm.api.invite_by_email',
+  makeParams() {
+    return {
+      emails: convertArrayToString(invitees.value),
+      role: role.value,
+    }
+  },
+  onSuccess() {
+    invitees.value = []
+    role.value = 'Sales User'
+    error.value = null
+    pendingInvitations.reload()
+  },
+  onError(error) {
+    error.value = error
+  },
+})
+
+const pendingInvitations = createListResource({
+  type: 'list',
+  doctype: 'CRM Invitation',
+  filters: { status: 'Pending' },
+  fields: ['name', 'email', 'role'],
+  auto: true,
+})
 </script>

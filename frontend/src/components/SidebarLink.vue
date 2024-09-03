@@ -21,7 +21,12 @@
             </span>
           </slot>
         </Tooltip>
-        <Tooltip :text="label" placement="right" :disabled="isCollapsed" :hoverDelay="1.5">
+        <Tooltip
+          :text="label"
+          placement="right"
+          :disabled="isCollapsed"
+          :hoverDelay="1.5"
+        >
           <span
             class="flex-1 flex-shrink-0 truncate text-sm duration-300 ease-in-out"
             :class="
@@ -50,7 +55,7 @@ const route = useRoute()
 
 const props = defineProps({
   icon: {
-    type: Object,
+    type: [Object, String],
   },
   label: {
     type: String,
