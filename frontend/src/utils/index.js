@@ -216,3 +216,7 @@ export function isEmoji(str) {
 export function isTouchScreenDevice() {
 	return "ontouchstart" in document.documentElement;
 }
+
+export function convertArrayToString(array) {
+  return array.map((item) => item).join(',')
+}

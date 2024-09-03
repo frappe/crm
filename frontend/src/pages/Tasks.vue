@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="Tasks" />
     </template>
     <template #right-header>
       <CustomActions
@@ -193,6 +193,7 @@
 </template>
 
 <script setup>
+import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
@@ -205,18 +206,9 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import { usersStore } from '@/stores/users'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
-import {
-  Breadcrumbs,
-  Tooltip,
-  Avatar,
-  TextEditor,
-  Dropdown,
-  call,
-} from 'frappe-ui'
+import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-
-const breadcrumbs = [{ label: __('Tasks'), route: { name: 'Tasks' } }]
 
 const { getUser } = usersStore()
 

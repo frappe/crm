@@ -1,7 +1,11 @@
 <template>
   <LayoutHeader v-if="organization.doc">
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <Breadcrumbs :items="breadcrumbs">
+        <template #prefix="{ item }">
+          <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
+        </template>
+      </Breadcrumbs>
     </template>
   </LayoutHeader>
   <div v-if="organization.doc" class="flex flex-1 flex-col overflow-hidden">
@@ -226,17 +230,7 @@
 </template>
 
 <script setup>
-import {
-  Breadcrumbs,
-  Avatar,
-  FileUploader,
-  Dropdown,
-  Tabs,
-  call,
-  createListResource,
-  createDocumentResource,
-  usePageMeta,
-} from 'frappe-ui'
+import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
@@ -252,14 +246,26 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
+import { getView } from '@/utils/view'
 import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
   formatNumberIntoCurrency,
 } from '@/utils'
+import {
+  Breadcrumbs,
+  Avatar,
+  FileUploader,
+  Dropdown,
+  Tabs,
+  call,
+  createListResource,
+  createDocumentResource,
+  usePageMeta,
+} from 'frappe-ui'
 import { h, computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
   organizationId: {
@@ -274,6 +280,7 @@ const showOrganizationModal = ref(false)
 const showQuickEntryModal = ref(false)
 const detailMode = ref(false)
 
+const route = useRoute()
 const router = useRouter()
 
 const organization = createDocumentResource({
@@ -286,6 +293,26 @@ const organization = createDocumentResource({
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
+
+  if (route.query.view || route.query.viewType) {
+    let view = getView(
+      route.query.view,
+      route.query.viewType,
+      'CRM Organization',
+    )
+    if (view) {
+      items.push({
+        label: __(view.label),
+        icon: view.icon,
+        route: {
+          name: 'Organizations',
+          params: { viewType: route.query.viewType },
+          query: { view: route.query.view },
+        },
+      })
+    }
+  }
+
   items.push({
     label: props.organizationId,
     route: {

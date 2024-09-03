@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="Deals" />
     </template>
     <template #right-header>
       <CustomActions
@@ -32,7 +32,11 @@
     v-if="route.params.viewType == 'kanban'"
     v-model="deals"
     :options="{
-      getRoute: (row) => ({ name: 'Deal', params: { dealId: row.name } }),
+      getRoute: (row) => ({
+        name: 'Deal',
+        params: { dealId: row.name },
+        query: { view: route.query.view, viewType: route.params.viewType },
+      }),
       onNewClick: (column) => onNewClick(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
@@ -259,6 +263,7 @@
 </template>
 
 <script setup>
+import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
@@ -288,11 +293,9 @@ import {
   formatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
-import { Breadcrumbs, Tooltip, Avatar, Dropdown } from 'frappe-ui'
+import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
-
-const breadcrumbs = [{ label: __('Deals'), route: { name: 'Deals' } }]
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()

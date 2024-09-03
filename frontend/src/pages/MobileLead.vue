@@ -3,7 +3,11 @@
     <header
       class="relative flex h-12 items-center justify-between gap-2 py-2.5 pl-5"
     >
-      <Breadcrumbs :items="breadcrumbs" />
+      <Breadcrumbs :items="breadcrumbs">
+        <template #prefix="{ item }">
+          <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
+        </template>
+      </Breadcrumbs>
       <div class="absolute right-0">
         <Dropdown :options="statusOptions('lead', updateField)">
           <template #default="{ open }">
@@ -138,7 +142,7 @@
         <div v-else class="mt-2.5 text-base">
           {{
             __(
-              'New organization will be created based on the data in details section'
+              'New organization will be created based on the data in details section',
             )
           }}
         </div>
@@ -170,6 +174,7 @@
   </Dialog>
 </template>
 <script setup>
+import Icon from '@/components/Icon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
@@ -191,11 +196,16 @@ import SectionFields from '@/components/SectionFields.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomActions } from '@/utils'
+import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { whatsappEnabled, callEnabled, isMobileView } from '@/composables/settings'
+import {
+  whatsappEnabled,
+  callEnabled,
+  isMobileView,
+} from '@/composables/settings'
 import {
   createResource,
   Dropdown,
@@ -298,6 +308,22 @@ function validateRequired(fieldname, value) {
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
+
+  if (route.query.view || route.query.viewType) {
+    let view = getView(route.query.view, route.query.viewType, 'CRM Lead')
+    if (view) {
+      items.push({
+        label: __(view.label),
+        icon: view.icon,
+        route: {
+          name: 'Leads',
+          params: { viewType: route.query.viewType },
+          query: { view: route.query.view },
+        },
+      })
+    }
+  }
+
   items.push({
     label: lead.data.lead_name || __('Untitled'),
     route: { name: 'Lead', params: { leadId: lead.data.name } },
@@ -359,7 +385,7 @@ const tabs = computed(() => {
 watch(tabs, (value) => {
   if (value && route.params.tabName) {
     let index = value.findIndex(
-      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase()
+      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase(),
     )
     if (index !== -1) {
       tabIndex.value = index
@@ -447,7 +473,7 @@ async function convertToDeal(updated) {
         organization: lead.data.organization,
       },
       '',
-      () => convertToDeal(true)
+      () => convertToDeal(true),
     )
     showConvertToDealModal.value = false
   } else {
@@ -455,7 +481,7 @@ async function convertToDeal(updated) {
       'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
       {
         lead: lead.data.name,
-      }
+      },
     )
     if (deal) {
       if (updated) {

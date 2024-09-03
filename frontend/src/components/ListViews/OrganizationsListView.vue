@@ -6,6 +6,7 @@
       getRowRoute: (row) => ({
         name: 'Organization',
         params: { organizationId: row.name },
+        query: { view: route.query.view, viewType: route.params.viewType },
       }),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
@@ -156,6 +157,7 @@ import {
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const props = defineProps({
   rows: {
@@ -186,6 +188,8 @@ const emit = defineEmits([
   'applyLikeFilter',
   'likeDoc',
 ])
+
+const route = useRoute()
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')

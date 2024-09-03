@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="Email Templates" />
     </template>
     <template #right-header>
       <CustomActions
@@ -68,6 +68,7 @@
 </template>
 
 <script setup>
+import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -75,12 +76,7 @@ import ViewControls from '@/components/ViewControls.vue'
 import EmailTemplatesListView from '@/components/ListViews/EmailTemplatesListView.vue'
 import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
-import { Breadcrumbs } from 'frappe-ui'
 import { computed, ref } from 'vue'
-
-const breadcrumbs = [
-  { label: __('Email Templates'), route: { name: 'Email Templates' } },
-]
 
 const emailTemplatesListView = ref(null)
 

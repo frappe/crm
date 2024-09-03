@@ -108,9 +108,9 @@ watch(show, (value) => {
   duplicateMode.value = false
   nextTick(() => {
     _view.value = { ...view.value }
-    if (_view.value.name) {
+    if (_view.value.mode === 'edit') {
       editMode.value = true
-    } else if (_view.value.label) {
+    } else if (_view.value.mode === 'duplicate') {
       duplicateMode.value = true
     }
   })

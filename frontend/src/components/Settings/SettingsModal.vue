@@ -40,6 +40,7 @@
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
@@ -53,26 +54,31 @@ const show = defineModel()
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: 'Settings',
+      label: __('Settings'),
       hideLabel: true,
       items: [
         {
-          label: 'Profile',
+          label: __('Profile'),
           icon: ContactsIcon,
           component: markRaw(ProfileSettings),
+        },
+        {
+          label: __('Invite Members'),
+          icon: 'user-plus',
+          component: markRaw(InviteMemberPage),
         },
       ],
     },
     {
-      label: 'Integrations',
+      label: __('Integrations'),
       items: [
         {
-          label: 'Twilio',
+          label: __('Twilio'),
           icon: PhoneIcon,
           component: markRaw(TwilioSettings),
         },
         {
-          label: 'WhatsApp',
+          label: __('WhatsApp'),
           icon: WhatsAppIcon,
           component: markRaw(WhatsAppSettings),
           condition: () => isWhatsappInstalled.value,

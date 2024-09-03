@@ -40,7 +40,8 @@ const routes = [
     props: true,
   },
   {
-    path: '/notes',
+    alias: '/notes',
+    path: '/notes/view/:viewType?',
     name: 'Notes',
     component: () => import('@/pages/Notes.vue'),
   },
@@ -51,7 +52,8 @@ const routes = [
     component: () => import('@/pages/Tasks.vue'),
   },
   {
-    path: '/contacts',
+    alias: '/contacts',
+    path: '/contacts/view/:viewType?',
     name: 'Contacts',
     component: () => import('@/pages/Contacts.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
@@ -63,7 +65,8 @@ const routes = [
     props: true,
   },
   {
-    path: '/organizations',
+    alias: '/organizations',
+    path: '/organizations/view/:viewType?',
     name: 'Organizations',
     component: () => import('@/pages/Organizations.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
@@ -75,13 +78,15 @@ const routes = [
     props: true,
   },
   {
-    path: '/call-logs',
+    alias: '/call-logs',
+    path: '/call-logs/view/:viewType?',
     name: 'Call Logs',
     component: () => import('@/pages/CallLogs.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
-    path: '/email-templates',
+    alias: '/email-templates',
+    path: '/email-templates/view/:viewType?',
     name: 'Email Templates',
     component: () => import('@/pages/EmailTemplates.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
@@ -91,11 +96,6 @@ const routes = [
     name: 'Email Template',
     component: () => import('@/pages/EmailTemplate.vue'),
     props: true,
-  },
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('@/pages/Dashboard.vue'),
   },
   {
     path: '/:invalidpath',

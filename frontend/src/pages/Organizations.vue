@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="Organizations" />
     </template>
     <template #right-header>
       <CustomActions
@@ -70,6 +70,7 @@
   />
 </template>
 <script setup>
+import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -77,7 +78,6 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
-import { Breadcrumbs } from 'frappe-ui'
 import {
   dateFormat,
   dateTooltipFormat,
@@ -85,32 +85,10 @@ import {
   formatNumberIntoCurrency,
 } from '@/utils'
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
 const showQuickEntryModal = ref(false)
-
-const currentOrganization = computed(() => {
-  return organizations.value?.data?.data?.find(
-    (organization) => organization.name === route.params.organizationId,
-  )
-})
-
-const breadcrumbs = computed(() => {
-  let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
-  if (!currentOrganization.value) return items
-  items.push({
-    label: __(currentOrganization.value.name),
-    route: {
-      name: 'Organization',
-      params: { organizationId: currentOrganization.value.name },
-    },
-  })
-  return items
-})
 
 // organizations data is loaded in the ViewControls component
 const organizations = ref({})

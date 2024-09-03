@@ -5,9 +5,9 @@
       :show="open"
       :placement="popoverPlacement"
     >
-      <template #target>
-        <MenuButton as="div">
-          <slot v-if="$slots.default" v-bind="{ open }" />
+      <template #target="{ togglePopover }">
+        <MenuButton as="template">
+          <slot v-if="$slots.default" v-bind="{ open, togglePopover }" />
           <Button v-else :active="open" v-bind="button">
             {{ button ? button?.label || null : 'Options' }}
           </Button>
@@ -17,13 +17,18 @@
       <template #body>
         <div
           class="rounded-lg bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          :class="{
+            'mt-2': ['bottom', 'left', 'right'].includes(placement),
+            'ml-2': placement == 'right-start',
+          }"
         >
           <MenuItems
-            class="mt-2 min-w-40 divide-y divide-gray-100"
+            class="min-w-40 divide-y divide-gray-100"
             :class="{
               'left-0 origin-top-left': placement == 'left',
               'right-0 origin-top-right': placement == 'right',
               'inset-x-0 origin-top': placement == 'center',
+              'mt-0 origin-top-right': placement == 'right-start',
             }"
           >
             <div v-for="group in groups" :key="group.key" class="p-1.5">
@@ -38,34 +43,36 @@
                 :key="item.label"
                 v-slot="{ active }"
               >
-                <component
-                  v-if="item.component"
-                  :is="item.component"
-                  :active="active"
-                />
-                <button
-                  v-else
-                  :class="[
-                    active ? 'bg-gray-100' : 'text-gray-800',
-                    'group flex h-7 w-full items-center rounded px-2 text-base',
-                  ]"
-                  @click="item.onClick"
-                >
-                  <FeatherIcon
-                    v-if="item.icon && typeof item.icon === 'string'"
-                    :name="item.icon"
-                    class="mr-2 h-4 w-4 flex-shrink-0 text-gray-700"
-                    aria-hidden="true"
-                  />
+                <slot name="item" v-bind="{ item, active }">
                   <component
-                    class="mr-2 h-4 w-4 flex-shrink-0 text-gray-700"
-                    v-else-if="item.icon"
-                    :is="item.icon"
+                    v-if="item.component"
+                    :is="item.component"
+                    :active="active"
                   />
-                  <span class="whitespace-nowrap">
-                    {{ item.label }}
-                  </span>
-                </button>
+                  <button
+                    v-else
+                    :class="[
+                      active ? 'bg-gray-100' : 'text-gray-800',
+                      'group flex h-7 w-full items-center rounded px-2 text-base',
+                    ]"
+                    @click="item.onClick"
+                  >
+                    <FeatherIcon
+                      v-if="item.icon && typeof item.icon === 'string'"
+                      :name="item.icon"
+                      class="mr-2 h-4 w-4 flex-shrink-0 text-gray-700"
+                      aria-hidden="true"
+                    />
+                    <component
+                      class="mr-2 h-4 w-4 flex-shrink-0 text-gray-700"
+                      v-else-if="item.icon"
+                      :is="item.icon"
+                    />
+                    <span class="whitespace-nowrap">
+                      {{ item.label }}
+                    </span>
+                  </button>
+                </slot>
               </MenuItem>
             </div>
           </MenuItems>
@@ -130,6 +137,7 @@ const popoverPlacement = computed(() => {
   if (props.placement === 'left') return 'bottom-start'
   if (props.placement === 'right') return 'bottom-end'
   if (props.placement === 'center') return 'bottom-center'
+  if (props.placement === 'right-start') return 'right-start'
   return 'bottom'
 })
 
@@ -140,6 +148,7 @@ function normalizeDropdownItem(option) {
   }
 
   return {
+    name: option.name,
     label: option.label,
     icon: option.icon,
     group: option.group,
