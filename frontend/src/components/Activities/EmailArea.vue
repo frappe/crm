@@ -105,6 +105,8 @@ function reply(email, reply_all = false) {
 
   if (!email.subject.startsWith('Re:')) {
     editor.subject = `Re: ${email.subject}`
+  } else {
+    editor.subject = email.subject
   }
 
   if (reply_all) {
