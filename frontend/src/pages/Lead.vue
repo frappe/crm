@@ -355,9 +355,7 @@ const lead = createResource({
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   onSuccess: (data) => {
-    setupAssignees(data)
-    setupCustomStatuses(data)
-    setupCustomActions(data, {
+    let obj = {
       doc: data,
       $dialog,
       router,
@@ -365,7 +363,10 @@ const lead = createResource({
       createToast,
       deleteDoc: deleteLead,
       call,
-    })
+    }
+    setupAssignees(data)
+    setupCustomStatuses(data, obj)
+    setupCustomActions(data, obj)
   },
 })
 

@@ -137,13 +137,13 @@ function getStatusFromScript(script, obj) {
   return formScript?.statuses || []
 }
 
-export function setupCustomStatuses(data) {
+export function setupCustomStatuses(data, obj) {
   if (!data._form_script) return []
 
   let statuses = []
   if (Array.isArray(data._form_script)) {
     data._form_script.forEach((script) => {
-      statuses = statuses.concat(getStatusFromScript(script, data))
+      statuses = statuses.concat(getStatusFromScript(script, obj))
     })
   } else {
     statuses = getStatusFromScript(data._form_script, data)
