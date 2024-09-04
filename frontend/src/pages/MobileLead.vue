@@ -9,7 +9,11 @@
         </template>
       </Breadcrumbs>
       <div class="absolute right-0">
-        <Dropdown :options="statusOptions('lead', updateField)">
+        <Dropdown
+          :options="
+            statusOptions('lead', updateField, lead.data._customStatuses)
+          "
+        >
           <template #default="{ open }">
             <Button
               :label="lead.data.status"
@@ -195,7 +199,12 @@ import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { createToast, setupAssignees, setupCustomActions } from '@/utils'
+import {
+  createToast,
+  setupAssignees,
+  setupCustomActions,
+  setupCustomStatuses,
+} from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
@@ -237,6 +246,7 @@ const lead = createResource({
   cache: ['lead', props.leadId],
   onSuccess: (data) => {
     setupAssignees(data)
+    setupCustomStatuses(data)
     setupCustomActions(data, {
       doc: data,
       $dialog,

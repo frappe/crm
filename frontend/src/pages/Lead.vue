@@ -18,7 +18,7 @@
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown :options="statusOptions('lead', updateField)">
+      <Dropdown :options="statusOptions('lead', updateField, lead.data._customStatuses)">
         <template #default="{ open }">
           <Button
             :label="lead.data.status"
@@ -308,6 +308,7 @@ import {
   createToast,
   setupAssignees,
   setupCustomActions,
+  setupCustomStatuses,
   errorMessage,
   copyToClipboard,
 } from '@/utils'
@@ -355,6 +356,7 @@ const lead = createResource({
   cache: ['lead', props.leadId],
   onSuccess: (data) => {
     setupAssignees(data)
+    setupCustomStatuses(data)
     setupCustomActions(data, {
       doc: data,
       $dialog,

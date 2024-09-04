@@ -18,7 +18,7 @@
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown :options="statusOptions('deal', updateField)">
+      <Dropdown :options="statusOptions('deal', updateField, deal.data._customStatuses)">
         <template #default="{ open }">
           <Button
             :label="deal.data.status"
@@ -339,6 +339,7 @@ import {
   createToast,
   setupAssignees,
   setupCustomActions,
+  setupCustomStatuses,
   errorMessage,
   copyToClipboard,
 } from '@/utils'
@@ -381,6 +382,7 @@ const deal = createResource({
   cache: ['deal', props.dealId],
   onSuccess: (data) => {
     setupAssignees(data)
+    setupCustomStatuses(data)
     setupCustomActions(data, {
       doc: data,
       $dialog,
