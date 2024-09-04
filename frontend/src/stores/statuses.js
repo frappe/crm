@@ -64,9 +64,9 @@ export const statusesStore = defineStore('crm-statuses', () => {
     } else if (['gray', 'green'].includes(color)) {
       textColor = `!text-${color}-700`
     }
-  
+
     let bgColor = `!bg-${color}-100 hover:!bg-${color}-200 active:!bg-${color}-300`
-  
+
     return [textColor, onlyIcon ? '' : bgColor]
   }
 
@@ -91,9 +91,17 @@ export const statusesStore = defineStore('crm-statuses', () => {
     return communicationStatuses[name]
   }
 
-  function statusOptions(doctype, action) {
+  function statusOptions(doctype, action, statuses = []) {
     let statusesByName =
       doctype == 'deal' ? dealStatusesByName : leadStatusesByName
+
+    if (statuses.length) {
+      statusesByName = statuses.reduce((acc, status) => {
+        acc[status] = statusesByName[status]
+        return acc
+      }, {})
+    }
+
     let options = []
     for (const status in statusesByName) {
       options.push({
