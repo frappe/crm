@@ -51,7 +51,8 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col gap-1 text-base text-gray-800">
+    <div class="flex flex-col gap-1 text-base leading-5 text-gray-800">
+      <div>{{ activity.data.subject }}</div>
       <div>
         <span class="mr-1 text-gray-600"> {{ __('To') }}: </span>
         <span>{{ activity.data.recipients }}</span>
@@ -66,12 +67,8 @@
         </span>
         <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
       </div>
-      <div>
-        <span class="mr-1 text-gray-600"> {{ __('Subject') }}: </span>
-        <span>{{ activity.data.subject }}</span>
-      </div>
     </div>
-    <div class="border-0 border-t my-3.5 border-gray-200" />
+    <div class="border-0 border-t mt-3 mb-1 border-gray-200" />
     <EmailContent :content="activity.data.content" />
     <div v-if="activity.data?.attachments?.length" class="flex flex-wrap gap-2">
       <AttachmentItem
