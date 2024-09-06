@@ -212,7 +212,7 @@
                             />
                           </div>
                           <div class="flex items-center">
-                            <Dropdown :options="contactOptions(contact.name)">
+                            <Dropdown :options="contactOptions(contact)">
                               <Button
                                 icon="more-horizontal"
                                 class="text-gray-600"
@@ -567,9 +567,9 @@ const _contact = ref({})
 function contactOptions(contact) {
   let options = [
     {
-      label: __('Delete'),
+      label: __('Remove'),
       icon: 'trash-2',
-      onClick: () => removeContact(contact),
+      onClick: () => removeContact(contact.name),
     },
   ]
 
