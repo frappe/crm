@@ -4,6 +4,9 @@
       {{ __('Send Invites To') }}
     </h2>
     <div class="flex-1 overflow-y-auto">
+      <label class="block text-xs text-gray-600 mb-1.5">
+        {{ __('Invite by email') }}
+      </label>
       <MultiValueInput
         v-model="invitees"
         :validate="validateEmail"
@@ -26,17 +29,17 @@
       <ErrorMessage class="mt-2" v-if="error" :message="error" />
       <template v-if="pendingInvitations.data?.length && !invitees.length">
         <div
-          class="mt-4 flex items-center justify-between border-b py-2 text-base text-gray-600"
+          class="mt-6 flex items-center justify-between py-4 text-base font-semibold"
         >
-          <div class="w-4/5">{{ __('Pending Invites') }}</div>
+          <div>{{ __('Pending Invites') }}</div>
         </div>
-        <ul class="divide-y overflow-auto">
+        <ul class="flex flex-col gap-1">
           <li
-            class="flex items-center justify-between py-2"
+            class="flex items-center justify-between px-2 py-1 rounded-lg bg-gray-50"
             v-for="user in pendingInvitations.data"
             :key="user.name"
           >
-            <div class="w-4/5 text-base">
+            <div class="text-base">
               <span class="text-gray-900">
                 {{ user.email }}
               </span>
@@ -46,6 +49,7 @@
               <Tooltip text="Delete Invitation">
                 <Button
                   icon="x"
+                  variant="ghost"
                   :loading="
                     pendingInvitations.delete.loading &&
                     pendingInvitations.delete.params.name === user.name
