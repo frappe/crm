@@ -131,6 +131,27 @@ function getActionsFromScript(script, obj) {
   return formScript?.actions || []
 }
 
+function getStatusFromScript(script, obj) {
+  let scriptFn = new Function(script + '\nreturn setupForm')()
+  let formScript = scriptFn(obj)
+  return formScript?.statuses || []
+}
+
+export function setupCustomStatuses(data, obj) {
+  if (!data._form_script) return []
+
+  let statuses = []
+  if (Array.isArray(data._form_script)) {
+    data._form_script.forEach((script) => {
+      statuses = statuses.concat(getStatusFromScript(script, obj))
+    })
+  } else {
+    statuses = getStatusFromScript(data._form_script, data)
+  }
+
+  data._customStatuses = statuses
+}
+
 export function setupCustomActions(data, obj) {
   if (!data._form_script) return []
 
@@ -215,4 +236,8 @@ export function isEmoji(str) {
 
 export function isTouchScreenDevice() {
 	return "ontouchstart" in document.documentElement;
+}
+
+export function convertArrayToString(array) {
+  return array.map((item) => item).join(',')
 }
