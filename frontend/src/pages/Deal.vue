@@ -18,7 +18,9 @@
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown :options="statusOptions('deal', updateField)">
+      <Dropdown
+        :options="statusOptions('deal', updateField, deal.data._customStatuses)"
+      >
         <template #default="{ open }">
           <Button
             :label="deal.data.status"
@@ -212,7 +214,7 @@
                             />
                           </div>
                           <div class="flex items-center">
-                            <Dropdown :options="contactOptions(contact.name)">
+                            <Dropdown :options="contactOptions(contact)">
                               <Button
                                 icon="more-horizontal"
                                 class="text-gray-600"
@@ -339,6 +341,7 @@ import {
   createToast,
   setupAssignees,
   setupCustomActions,
+  setupCustomStatuses,
   errorMessage,
   copyToClipboard,
 } from '@/utils'
@@ -380,8 +383,7 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: (data) => {
-    setupAssignees(data)
-    setupCustomActions(data, {
+    let obj = {
       doc: data,
       $dialog,
       router,
@@ -389,7 +391,10 @@ const deal = createResource({
       createToast,
       deleteDoc: deleteDeal,
       call,
-    })
+    }
+    setupAssignees(data)
+    setupCustomStatuses(data, obj)
+    setupCustomActions(data, obj)
   },
 })
 
@@ -567,9 +572,9 @@ const _contact = ref({})
 function contactOptions(contact) {
   let options = [
     {
-      label: __('Delete'),
+      label: __('Remove'),
       icon: 'trash-2',
-      onClick: () => removeContact(contact),
+      onClick: () => removeContact(contact.name),
     },
   ]
 
