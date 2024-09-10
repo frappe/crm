@@ -431,7 +431,7 @@ function parseRows(rows) {
           ...(deal.deal_owner && getUser(deal.deal_owner)),
         }
       } else if (row == '_assign') {
-        let assignees = JSON.parse(deal._assign) || []
+        let assignees = JSON.parse(deal._assign || '[]')
         if (!assignees.length && deal.deal_owner) {
           assignees = [deal.deal_owner]
         }
