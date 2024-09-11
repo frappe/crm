@@ -2,11 +2,26 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 
 class CRMFormScript(Document):
-	pass
+	def validate(self):
+		in_user_env = not (
+			frappe.flags.in_install
+			or frappe.flags.in_patch
+			or frappe.flags.in_test
+			or frappe.flags.in_fixtures
+		)
+		if in_user_env and self.is_standard and not frappe.conf.developer_mode:
+			# only enabled can be changed for standard form scripts
+			if self.has_value_changed("enabled"):
+				enabled_value = self.enabled
+				self.reload()
+				self.enabled = enabled_value
+			else:
+				frappe.throw(_("You need to be in developer mode to edit a Standard Form Script"))
 
 def get_form_script(dt, view="Form"):
 	"""Returns the form script for the given doctype"""
