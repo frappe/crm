@@ -45,12 +45,12 @@ class ERPNextCRMSettings(Document):
 		client = get_erpnext_site_client(self)
 		try:
 			client.post_api("erpnext.crm.frappe_crm_api.create_custom_fields_for_frappe_crm")
-		except Exception as e:
+		except Exception:
 			frappe.log_error(
 				frappe.get_traceback(),
 				f"Error while creating custom field in the remote erpnext site: {self.erpnext_site_url}"
 			)
-			frappe.throw("Error while creating custom field in the remote erpnext site, check error log for more details")
+			frappe.throw("Error while creating custom field in ERPNext, check error log for more details")
 
 	def create_crm_form_script(self):
 		if not frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
@@ -110,13 +110,12 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 				"erpnext_company": erpnext_crm_settings.erpnext_company
 			},
 		)
-	except Exception as e:
+	except Exception:
 		frappe.log_error(
 			frappe.get_traceback(),
 			f"Error while creating prospect in remote site: {erpnext_crm_settings.erpnext_site_url}"
 		)
-		raise
-		pass
+		frappe.throw(_("Error while creating prospect in ERPNext, check error log for more details"))
 
 def get_contacts(doc):
 	contacts = []
@@ -157,12 +156,12 @@ def create_customer_in_remote_site(customer, erpnext_crm_settings):
 	client = get_erpnext_site_client(erpnext_crm_settings)
 	try:
 		client.post_api("erpnext.crm.frappe_crm_api.create_customer", customer)
-	except Exception as e:
+	except Exception:
 		frappe.log_error(
 			frappe.get_traceback(),
 			"Error while creating customer in remote site"
 		)
-		pass
+		frappe.throw(_("Error while creating customer in ERPNext, check error log for more details"))
 
 def get_crm_form_script():
 	return  """
