@@ -7,7 +7,6 @@ from frappe.custom.doctype.property_setter.property_setter import make_property_
 from frappe.model.document import Document
 from frappe.frappeclient import FrappeClient
 from frappe.utils import get_url_to_form
-from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm, create_customer
 import json
 
 class ERPNextCRMSettings(Document):
@@ -37,6 +36,7 @@ class ERPNextCRMSettings(Document):
 
 	def create_custom_fields(self):
 		if self.is_erpnext_in_the_current_site:
+			from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm
 			create_custom_fields_for_frappe_crm()
 		else:
 			self.create_custom_fields_in_remote_site()
@@ -148,6 +148,7 @@ def create_customer_in_erpnext(doc, method):
 		"contacts": json.dumps(contacts),
 	}
 	if erpnext_crm_settings.is_erpnext_in_the_current_site:
+		from erpnext.crm.frappe_crm_api import create_customer
 		create_customer(customer)
 	else:
 		create_customer_in_remote_site(customer, erpnext_crm_settings)	
