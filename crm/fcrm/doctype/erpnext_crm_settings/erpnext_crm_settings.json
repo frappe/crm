@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-02 15:23:17.022214",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "is_erpnext_in_the_current_site",
+  "column_break_vfru",
+  "erpnext_company",
+  "section_break_oubd",
+  "erpnext_site_url",
+  "column_break_fllx",
+  "api_key",
+  "api_secret"
+ ],
+ "fields": [
+  {
+   "depends_on": "eval:!doc.is_erpnext_in_the_current_site",
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "API Key",
+   "mandatory_depends_on": "eval:!doc.is_erpnext_in_the_current_site"
+  },
+  {
+   "depends_on": "eval:!doc.is_erpnext_in_the_current_site",
+   "fieldname": "api_secret",
+   "fieldtype": "Data",
+   "label": "API Secret",
+   "mandatory_depends_on": "eval:!doc.is_erpnext_in_the_current_site"
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "section_break_oubd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fllx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:!doc.is_erpnext_in_the_current_site",
+   "fieldname": "erpnext_site_url",
+   "fieldtype": "Data",
+   "label": "ERPNext Site URL",
+   "mandatory_depends_on": "eval:!doc.is_erpnext_in_the_current_site"
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "erpnext_company",
+   "fieldtype": "Data",
+   "label": "Company in ERPNext Site",
+   "mandatory_depends_on": "enabled"
+  },
+  {
+   "fieldname": "column_break_vfru",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "fieldname": "is_erpnext_in_the_current_site",
+   "fieldtype": "Check",
+   "label": "Is ERPNext in the current site?"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-09-12 18:14:44.323068",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "ERPNext CRM Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

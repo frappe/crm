@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-full flex-col gap-8">
     <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-      <div>{{ __(doctype) }}</div>
+      <div>{{ title || __(doctype) }}</div>
       <Badge
         v-if="data.isDirty"
         :label="__('Not Saved')"
@@ -43,6 +43,10 @@ const props = defineProps({
   doctype: {
     type: String,
     required: true,
+  },
+  title: {
+    type: String,
+    default: '',
   },
 })
 
