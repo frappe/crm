@@ -37,12 +37,17 @@ import {
   Spinner,
   Badge,
 } from 'frappe-ui'
+import { evaluate_depends_on_value, createToast } from '@/utils'
 import { computed } from 'vue'
 
 const props = defineProps({
   doctype: {
     type: String,
     required: true,
+  },
+  successMessage: {
+    type: String,
+    default: 'Updated Successfully',
   },
 })
 
@@ -62,6 +67,24 @@ const data = createDocumentResource({
   fields: ['*'],
   cache: props.doctype,
   auto: true,
+  setValue: {
+    onSuccess: () => {
+      createToast({
+        title: __('Success'),
+        text: __(props.successMessage),
+        icon: 'check',
+        iconClasses: 'text-green-600',
+      })
+    },
+    onError: (err) => {
+      createToast({
+        title: __('Error'),
+        text: err.message + ': ' + err.messages[0],
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
+    },
+  },
 })
 
 const sections = computed(() => {
@@ -90,6 +113,10 @@ const sections = computed(() => {
     } else {
       _sections[_sections.length - 1].fields.push({
         ...field,
+        display_depends_on: evaluate_depends_on_value(
+          field.depends_on,
+          data.doc,
+        ),
         name: field.value,
       })
     }

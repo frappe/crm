@@ -23,9 +23,11 @@
         <div v-for="field in section.fields" :key="field.name">
           <div
             v-if="
-              field.type == 'Check' ||
-              (field.read_only && data[field.name]) ||
-              !field.read_only || !field.hidden
+              (field.type == 'Check' ||
+                (field.read_only && data[field.name]) ||
+                !field.read_only ||
+                !field.hidden) &&
+              field.display_depends_on
             "
           >
             <div
