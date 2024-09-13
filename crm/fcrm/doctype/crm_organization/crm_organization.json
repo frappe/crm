@@ -15,7 +15,8 @@
   "column_break_pnpp",
   "website",
   "territory",
-  "industry"
+  "industry",
+  "address"
  ],
  "fields": [
   {
@@ -68,12 +69,18 @@
    "fieldtype": "Link",
    "label": "Currency",
    "options": "Currency"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Link",
+   "label": "Address",
+   "options": "Address"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-20 12:59:55.297752",
+ "modified": "2024-09-13 15:52:05.106389",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",

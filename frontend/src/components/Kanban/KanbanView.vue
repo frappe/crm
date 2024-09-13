@@ -1,5 +1,5 @@
 <template>
-  <div class="flex overflow-x-auto">
+  <div class="flex overflow-x-auto h-full">
     <Draggable
       v-if="columns"
       :list="columns"
