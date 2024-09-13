@@ -448,7 +448,7 @@ function parseRows(rows) {
           ...(lead.lead_owner && getUser(lead.lead_owner)),
         }
       } else if (row == '_assign') {
-        let assignees = JSON.parse(lead._assign) || []
+        let assignees = JSON.parse(lead._assign || '[]')
         if (!assignees.length && lead.lead_owner) {
           assignees = [lead.lead_owner]
         }
