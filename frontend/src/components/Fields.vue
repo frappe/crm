@@ -88,9 +88,13 @@
               <Button
                 v-if="data[field.name] && field.edit"
                 class="shrink-0"
-                label="Edit"
+                :label="__('Edit')"
                 @click="field.edit(data[field.name])"
-              />
+              >
+                <template #prefix>
+                  <EditIcon class="h-4 w-4" />
+                </template>
+              </Button>
             </div>
 
             <Link
@@ -206,6 +210,7 @@
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import DropdownItem from '@/components/DropdownItem.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
