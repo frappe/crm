@@ -241,3 +241,45 @@ export function isTouchScreenDevice() {
 export function convertArrayToString(array) {
   return array.map((item) => item).join(',')
 }
+
+export function _eval(code, context = {}) {
+  let variable_names = Object.keys(context)
+  let variables = Object.values(context)
+  code = `let out = ${code}; return out`
+  try {
+    let expression_function = new Function(...variable_names, code)
+    return expression_function(...variables)
+  } catch (error) {
+    console.log('Error evaluating the following expression:')
+    console.error(code)
+    throw error
+  }
+}
+
+export function evaluate_depends_on_value(expression, doc) {
+  if (!expression) return true
+  if (!doc) return true
+
+  let out = null
+
+  if (typeof expression === 'boolean') {
+    out = expression
+  } else if (typeof expression === 'function') {
+    out = expression(doc)
+  } else if (expression.substr(0, 5) == 'eval:') {
+    try {
+      out = _eval(expression.substr(5), { doc })
+    } catch (e) {
+      out = true
+    }
+  } else {
+    let value = doc[expression]
+    if (Array.isArray(value)) {
+      out = !!value.length
+    } else {
+      out = !!value
+    }
+  }
+
+  return out
+}

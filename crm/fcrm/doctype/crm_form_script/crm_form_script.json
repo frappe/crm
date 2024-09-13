@@ -10,6 +10,7 @@
   "view",
   "column_break_gboh",
   "enabled",
+  "is_standard",
   "section_break_xeox",
   "script"
  ],
@@ -52,11 +53,18 @@
    "label": "Apply To",
    "options": "Form\nList",
    "set_only_once": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_standard",
+   "fieldtype": "Check",
+   "label": "Is Standard",
+   "no_copy": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-10 18:27:17.617602",
+ "modified": "2024-09-11 12:56:09.288849",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Form Script",
