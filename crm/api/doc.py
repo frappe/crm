@@ -682,6 +682,9 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 				"mandatory": field.reqd,
 				"read_only": field.read_only,
 				"hidden": field.hidden,
+				"depends_on": field.depends_on,
+				"mandatory_depends_on": field.mandatory_depends_on,
+				"read_only_depends_on": field.read_only_depends_on,
 			})
 
 	return _fields
