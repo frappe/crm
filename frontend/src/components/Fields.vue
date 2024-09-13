@@ -27,7 +27,7 @@
                 (field.read_only && data[field.name]) ||
                 !field.read_only ||
                 !field.hidden) &&
-              field.display_depends_on
+              (!field.depends_on || field.display_depends_on)
             "
           >
             <div
