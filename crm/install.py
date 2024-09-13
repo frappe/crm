@@ -129,6 +129,10 @@ def add_default_fields_layout():
 			"doctype": "CRM Organization",
 			"layout": '[{"label":"Organization Name","columns":1,"fields":["organization_name"],"hideLabel":true},{"label":"Website & Revenue","columns":2,"hideBorder":true,"fields":["website","annual_revenue"],"hideLabel":true},{"label":"Territory","columns":1,"hideBorder":true,"fields":["territory"],"hideLabel":true},{"label":"No of Employees & Industry","columns":2,"hideBorder":true,"fields":["no_of_employees","industry"],"hideLabel":true}]'
 		},
+		"Address-Quick Entry": {
+			"doctype": "Address",
+			"layout": '[{"label":"Address","columns":1,"fields":["address_title","address_type","address_line1","address_line2","city","state","country","pincode"],"hideLabel":true}]'
+		},
 	}
 
 	sidebar_fields_layouts = {
