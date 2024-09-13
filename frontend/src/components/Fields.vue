@@ -76,15 +76,23 @@
                 <span class="text-red-500" v-if="field.mandatory">*</span>
               </label>
             </div>
-            <Link
-              v-else-if="field.type === 'Link'"
-              class="form-control"
-              :value="data[field.name]"
-              :doctype="field.options"
-              @change="(v) => (data[field.name] = v)"
-              :placeholder="__(field.placeholder || field.label)"
-              :onCreate="field.create"
-            />
+            <div class="flex gap-1" v-else-if="field.type === 'Link'">
+              <Link
+                class="form-control flex-1"
+                :value="data[field.name]"
+                :doctype="field.options"
+                @change="(v) => (data[field.name] = v)"
+                :placeholder="__(field.placeholder || field.label)"
+                :onCreate="field.create"
+              />
+              <Button
+                v-if="data[field.name] && field.edit"
+                class="shrink-0"
+                label="Edit"
+                @click="field.edit(data[field.name])"
+              />
+            </div>
+
             <Link
               v-else-if="field.type === 'User'"
               class="form-control"
