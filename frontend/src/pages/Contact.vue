@@ -8,165 +8,223 @@
       </Breadcrumbs>
     </template>
   </LayoutHeader>
-  <div v-if="contact.data" class="flex h-full flex-col overflow-hidden">
-    <FileUploader @success="changeContactImage" :validateFile="validateFile">
-      <template #default="{ openFileSelector, error }">
-        <div class="flex items-start justify-start gap-6 p-5 sm:items-center">
-          <div class="group relative h-24 w-24">
-            <Avatar
-              size="3xl"
-              class="h-24 w-24"
-              :label="contact.data.full_name"
-              :image="contact.data.image"
-            />
-            <component
-              :is="contact.data.image ? Dropdown : 'div'"
-              v-bind="
-                contact.data.image
-                  ? {
-                      options: [
-                        {
-                          icon: 'upload',
-                          label: contact.data.image
-                            ? __('Change image')
-                            : __('Upload image'),
-                          onClick: openFileSelector,
-                        },
-                        {
-                          icon: 'trash-2',
-                          label: __('Remove image'),
-                          onClick: () => changeContactImage(''),
-                        },
-                      ],
-                    }
-                  : { onClick: openFileSelector }
-              "
-              class="!absolute bottom-0 left-0 right-0"
-            >
-              <div
-                class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
-                style="
-                  -webkit-clip-path: inset(12px 0 0 0);
-                  clip-path: inset(12px 0 0 0);
-                "
-              >
-                <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
-              </div>
-            </component>
-          </div>
-          <div class="flex flex-col gap-2 truncate sm:gap-0.5">
-            <div class="truncate text-3xl font-semibold">
-              <span v-if="contact.data.salutation">
-                {{ contact.data.salutation + '. ' }}
-              </span>
-              <span>{{ contact.data.full_name }}</span>
-            </div>
-            <div
-              class="flex flex-col flex-wrap gap-3 text-base text-gray-700 sm:flex-row sm:items-center sm:gap-2"
-            >
-              <div
-                v-if="contact.data.email_id"
-                class="flex items-center gap-1.5"
-              >
-                <Email2Icon class="h-4 w-4" />
-                <span class="">{{ contact.data.email_id }}</span>
-              </div>
-              <span
-                v-if="contact.data.email_id"
-                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
-              >
-                &middot;
-              </span>
-              <component
-                :is="callEnabled ? Tooltip : 'div'"
-                :text="__('Make Call')"
-                v-if="contact.data.actual_mobile_no"
+  <div class="flex h-full">
+    <div
+      v-if="contact.data"
+      class="flex h-full flex-col overflow-hidden border-r min-w-[352px]"
+    >
+      <div class="border-b">
+        <FileUploader
+          @success="changeContactImage"
+          :validateFile="validateFile"
+        >
+          <template #default="{ openFileSelector, error }">
+            <div class="flex flex-col items-start justify-start gap-4 p-5">
+              <div class="flex gap-4 items-center">
+                <div class="group relative h-15.5 w-15.5">
+                  <Avatar
+                    size="3xl"
+                    class="h-15.5 w-15.5"
+                    :label="contact.data.full_name"
+                    :image="contact.data.image"
+                  />
+                  <component
+                    :is="contact.data.image ? Dropdown : 'div'"
+                    v-bind="
+                      contact.data.image
+                        ? {
+                            options: [
+                              {
+                                icon: 'upload',
+                                label: contact.data.image
+                                  ? __('Change image')
+                                  : __('Upload image'),
+                                onClick: openFileSelector,
+                              },
+                              {
+                                icon: 'trash-2',
+                                label: __('Remove image'),
+                                onClick: () => changeContactImage(''),
+                              },
+                            ],
+                          }
+                        : { onClick: openFileSelector }
+                    "
+                    class="!absolute bottom-0 left-0 right-0"
+                  >
+                    <div
+                      class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                      style="
+                        -webkit-clip-path: inset(22px 0 0 0);
+                        clip-path: inset(22px 0 0 0);
+                      "
+                    >
+                      <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
+                    </div>
+                  </component>
+                </div>
+                <div class="flex flex-col gap-2 truncate">
+                  <div class="truncate text-2xl font-medium">
+                    <span v-if="contact.data.salutation">
+                      {{ contact.data.salutation + '. ' }}
+                    </span>
+                    <span>{{ contact.data.full_name }}</span>
+                  </div>
+                  <div
+                    v-if="contact.data.company_name"
+                    class="flex items-center gap-1.5 text-base text-gray-800"
+                  >
+                    <Avatar
+                      size="xs"
+                      :label="contact.data.company_name"
+                      :image="
+                        getOrganization(contact.data.company_name)
+                          ?.organization_logo
+                      "
+                    />
+                    <span class="">{{ contact.data.company_name }}</span>
+                  </div>
+                  <!-- <div
+                class="flex flex-col flex-wrap gap-3 text-base text-gray-700 sm:flex-row sm:items-center sm:gap-2"
               >
                 <div
+                  v-if="contact.data.email_id"
                   class="flex items-center gap-1.5"
-                  :class="callEnabled ? 'cursor-pointer' : ''"
-                  @click="
-                    callEnabled && makeCall(contact.data.actual_mobile_no)
-                  "
                 >
-                  <PhoneIcon class="h-4 w-4" />
-                  <span class="">{{ contact.data.actual_mobile_no }}</span>
+                  <Email2Icon class="h-4 w-4" />
+                  <span class="">{{ contact.data.email_id }}</span>
                 </div>
-              </component>
-              <span
-                v-if="contact.data.actual_mobile_no"
-                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
-              >
-                &middot;
-              </span>
-              <div
-                v-if="contact.data.company_name"
-                class="flex items-center gap-1.5"
-              >
-                <Avatar
-                  size="xs"
-                  :label="contact.data.company_name"
-                  :image="
-                    getOrganization(contact.data.company_name)
-                      ?.organization_logo
+                <span
+                  v-if="contact.data.email_id"
+                  class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
+                >
+                  &middot;
+                </span>
+                <component
+                  :is="callEnabled ? Tooltip : 'div'"
+                  :text="__('Make Call')"
+                  v-if="contact.data.actual_mobile_no"
+                >
+                  <div
+                    class="flex items-center gap-1.5"
+                    :class="callEnabled ? 'cursor-pointer' : ''"
+                    @click="
+                      callEnabled && makeCall(contact.data.actual_mobile_no)
+                    "
+                  >
+                    <PhoneIcon class="h-4 w-4" />
+                    <span class="">{{ contact.data.actual_mobile_no }}</span>
+                  </div>
+                </component>
+                <span
+                  v-if="contact.data.actual_mobile_no"
+                  class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
+                >
+                  &middot;
+                </span>
+                <div
+                  v-if="contact.data.company_name"
+                  class="flex items-center gap-1.5"
+                >
+                  <Avatar
+                    size="xs"
+                    :label="contact.data.company_name"
+                    :image="
+                      getOrganization(contact.data.company_name)
+                        ?.organization_logo
+                    "
+                  />
+                  <span class="">{{ contact.data.company_name }}</span>
+                </div>
+                <span
+                  v-if="contact.data.company_name"
+                  class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
+                >
+                  &middot;
+                </span>
+                <Button
+                  v-if="
+                    contact.data.email_id ||
+                    contact.data.mobile_no ||
+                    contact.data.company_name
+                  "
+                  variant="ghost"
+                  :label="__('More')"
+                  class="w-fit cursor-pointer hover:text-gray-900 sm:-ml-1"
+                  @click="
+                    () => {
+                      detailMode = true
+                      showContactModal = true
+                    }
                   "
                 />
-                <span class="">{{ contact.data.company_name }}</span>
+              </div> -->
+                  <ErrorMessage :message="__(error)" />
+                </div>
               </div>
-              <span
-                v-if="contact.data.company_name"
-                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
-              >
-                &middot;
-              </span>
-              <Button
-                v-if="
-                  contact.data.email_id ||
-                  contact.data.mobile_no ||
-                  contact.data.company_name
-                "
-                variant="ghost"
-                :label="__('More')"
-                class="w-fit cursor-pointer hover:text-gray-900 sm:-ml-1"
-                @click="
-                  () => {
-                    detailMode = true
-                    showContactModal = true
-                  }
-                "
-              />
+              <div class="flex gap-1.5">
+                <Button
+                  :label="__('Make Call')"
+                  size="sm"
+                  @click="
+                    () => {
+                      detailMode = false
+                      showContactModal = true
+                    }
+                  "
+                >
+                  <template #prefix>
+                    <PhoneIcon class="h-4 w-4" />
+                  </template>
+                </Button>
+                <Button
+                  :label="__('Delete')"
+                  theme="red"
+                  size="sm"
+                  @click="deleteContact"
+                >
+                  <template #prefix>
+                    <FeatherIcon name="trash-2" class="h-4 w-4" />
+                  </template>
+                </Button>
+              </div>
             </div>
-            <div class="mt-2 flex gap-1.5">
-              <Button
-                :label="__('Edit')"
-                size="sm"
-                @click="
-                  () => {
-                    detailMode = false
-                    showContactModal = true
-                  }
-                "
-              >
-                <template #prefix>
+          </template>
+        </FileUploader>
+      </div>
+      <div
+        v-if="fieldsLayout.data"
+        class="flex flex-1 flex-col justify-between overflow-hidden"
+      >
+        <div class="flex flex-col overflow-y-auto">
+          <div
+            v-for="(section, i) in fieldsLayout.data"
+            :key="section.label"
+            class="flex flex-col p-3"
+            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
+          >
+            <Section :is-opened="section.opened" :label="section.label">
+              <template #actions>
+                <Button
+                  v-if="i == 0 && isManager()"
+                  variant="ghost"
+                  class="w-7"
+                  @click="showSidePanelModal = true"
+                >
                   <EditIcon class="h-4 w-4" />
-                </template>
-              </Button>
-              <Button
-                :label="__('Delete')"
-                theme="red"
-                size="sm"
-                @click="deleteContact"
-              >
-                <template #prefix>
-                  <FeatherIcon name="trash-2" class="h-4 w-4" />
-                </template>
-              </Button>
-            </div>
-            <ErrorMessage :message="__(error)" />
+                </Button>
+              </template>
+              <SectionFields
+                v-if="section.fields"
+                :fields="section.fields"
+                v-model="contact.data"
+                @update="updateField"
+              />
+            </Section>
           </div>
         </div>
-      </template>
-    </FileUploader>
+      </div>
+    </div>
     <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
@@ -221,6 +279,8 @@
 
 <script setup>
 import Icon from '@/components/Icon.vue'
+import Section from '@/components/Section.vue'
+import SectionFields from '@/components/SectionFields.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -258,7 +318,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 const { $dialog, makeCall } = globalStore()
 
-const { getUser } = usersStore()
+const { getUser, isManager } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
 
@@ -385,6 +445,29 @@ const rows = computed(() => {
 
   return deals.data.map((row) => getDealRowObject(row))
 })
+
+// const fieldsLayout = ref({
+//   data: {},
+// })
+
+const fieldsLayout = createResource({
+  url: 'crm.api.doc.get_sidebar_fields',
+  cache: ['fieldsLayout', props.contactId],
+  params: { doctype: 'Contact', name: props.contactId },
+  auto: true,
+  // transform: (data) => getParsedFields(data),
+})
+
+function updateField(fieldname, value) {
+  call('frappe.client.set_value', {
+    doctype: 'Contact',
+    name: props.contactId,
+    fieldname,
+    value,
+  })
+
+  contact.reload()
+}
 
 const columns = computed(() => dealColumns)
 
