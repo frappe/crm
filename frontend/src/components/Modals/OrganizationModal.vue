@@ -36,8 +36,8 @@
             </div>
           </div>
           <Fields
-            v-else-if="sections.data"
-            :sections="sections.data"
+            v-else-if="filteredSections"
+            :sections="filteredSections"
             :data="_organization"
           />
         </div>
@@ -56,10 +56,12 @@
       </div>
     </template>
   </Dialog>
+  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
 import Fields from '@/components/Fields.vue'
+import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import MoneyIcon from '@/components/Icons/MoneyIcon.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
@@ -93,6 +95,7 @@ const loading = ref(false)
 const title = ref(null)
 const detailMode = ref(false)
 const editMode = ref(false)
+let _address = ref({})
 let _organization = ref({
   organization_name: '',
   website: '',
@@ -100,6 +103,8 @@ let _organization = ref({
   no_of_employees: '1-10',
   industry: '',
 })
+
+const showAddressModal = ref(false)
 
 let doc = ref({})
 
@@ -241,6 +246,33 @@ const sections = createResource({
   cache: ['quickEntryFields', 'CRM Organization'],
   params: { doctype: 'CRM Organization', type: 'Quick Entry' },
   auto: true,
+})
+
+const filteredSections = computed(() => {
+  let allSections = sections.data || []
+  if (!allSections.length) return []
+
+  allSections.forEach((s) => {
+    s.fields.forEach((field) => {
+      if (field.name == 'address') {
+        field.create = (value, close) => {
+          _organization.value.address = value
+          _address.value = {}
+          showAddressModal.value = true
+          close()
+        }
+        field.edit = async (addr) => {
+          _address.value = await call('frappe.client.get', {
+            doctype: 'Address',
+            name: addr,
+          })
+          showAddressModal.value = true
+        }
+      }
+    })
+  })
+
+  return allSections
 })
 
 watch(

@@ -78,10 +78,12 @@
       </div>
     </template>
   </Dialog>
+  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
 import Fields from '@/components/Fields.vue'
+import AddressModal from '@/components/Modals/AddressModal.vue'
 import ContactIcon from '@/components/Icons/ContactIcon.vue'
 import GenderIcon from '@/components/Icons/GenderIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -121,6 +123,9 @@ const show = defineModel()
 const detailMode = ref(false)
 const editMode = ref(false)
 let _contact = ref({})
+let _address = ref({})
+
+const showAddressModal = ref(false)
 
 async function updateContact() {
   if (!dirty.value) {
@@ -356,6 +361,20 @@ const filteredSections = computed(() => {
             selected: false,
             isNew: true,
           })
+        }
+      } else if (field.name == 'address') {
+        field.create = (value, close) => {
+          _contact.value.address = value
+          _address.value = {}
+          showAddressModal.value = true
+          close()
+        }
+        field.edit = async (addr) => {
+          _address.value = await call('frappe.client.get', {
+            doctype: 'Address',
+            name: addr,
+          })
+          showAddressModal.value = true
         }
       }
     })

@@ -20,7 +20,13 @@
             type="select"
             class="w-1/4"
             v-model="_doctype"
-            :options="['CRM Lead', 'CRM Deal', 'Contact', 'CRM Organization']"
+            :options="[
+              'CRM Lead',
+              'CRM Deal',
+              'Contact',
+              'CRM Organization',
+              'Address',
+            ]"
             @change="reload"
           />
           <Switch
@@ -54,7 +60,7 @@
 </template>
 <script setup>
 import Fields from '@/components/Fields.vue'
-import QuickEntryLayoutBuilder from '@/components/Settings/QuickEntryLayoutBuilder.vue'
+import QuickEntryLayoutBuilder from '@/components/QuickEntryLayoutBuilder.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { capture } from '@/telemetry'
 import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'
