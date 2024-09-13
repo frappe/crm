@@ -41,9 +41,15 @@
       </div>
     </template>
   </Dialog>
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="Address"
+  />
 </template>
 
 <script setup>
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import Fields from '@/components/Fields.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
@@ -189,7 +195,7 @@ watch(
   },
 )
 
-const showQuickEntryModal = defineModel('quickEntry')
+const showQuickEntryModal = ref(false)
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true

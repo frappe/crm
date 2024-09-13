@@ -56,11 +56,7 @@
       </div>
     </template>
   </Dialog>
-  <AddressModal
-    v-model="showAddressModal"
-    v-model:address="_address"
-    v-model:quickEntry="showQuickEntryModal"
-  />
+  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
