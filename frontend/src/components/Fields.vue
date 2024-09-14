@@ -3,7 +3,7 @@
     <div
       v-for="section in sections"
       :key="section.label"
-      class="first:border-t-0 first:pt-0"
+      class="section first:border-t-0 first:pt-0"
       :class="section.hideBorder ? '' : 'border-t pt-4'"
     >
       <div
@@ -22,6 +22,7 @@
       >
         <div v-for="field in section.fields" :key="field.name">
           <div
+            class="settings-field"
             v-if="
               (field.type == 'Check' ||
                 (field.read_only && data[field.name]) ||
@@ -230,5 +231,13 @@ const props = defineProps({
 <style scoped>
 :deep(.form-control.prefix select) {
   padding-left: 2rem;
+}
+
+.section {
+  display: none;
+}
+
+.section:has(.settings-field) {
+  display: block;
 }
 </style>
