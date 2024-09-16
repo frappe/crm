@@ -18,12 +18,12 @@ class ERPNextCRMSettings(Document):
 			self.create_crm_form_script()
 	
 	def validate_if_erpnext_installed(self):
-		if self.is_erpnext_in_the_current_site:
+		if not self.is_erpnext_in_different_site:
 			if "erpnext" not in frappe.get_installed_apps():
 				frappe.throw(_("ERPNext is not installed in the current site"))
 
 	def add_quotation_to_option(self):
-		if self.is_erpnext_in_the_current_site:
+		if not self.is_erpnext_in_different_site:
 			if not frappe.db.exists("Property Setter", {"name": "Quotation-quotation_to-link_filters"}):
 				make_property_setter(
 					doctype="Quotation",
@@ -35,7 +35,7 @@ class ERPNextCRMSettings(Document):
 				)
 
 	def create_custom_fields(self):
-		if self.is_erpnext_in_the_current_site:
+		if not self.is_erpnext_in_different_site:
 			from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm
 			create_custom_fields_for_frappe_crm()
 		else:
@@ -80,7 +80,7 @@ def get_quotation_url(crm_deal, organization):
 	if not erpnext_crm_settings.enabled:
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
 
-	if erpnext_crm_settings.is_erpnext_in_the_current_site:
+	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		quotation_url = get_url_to_form("Quotation")
 		return f"{quotation_url}/new?quotation_to=CRM Deal&crm_deal={crm_deal}&party_name={crm_deal}"
 	else:
@@ -147,7 +147,7 @@ def create_customer_in_erpnext(doc, method):
 		"crm_deal": doc.name,
 		"contacts": json.dumps(contacts),
 	}
-	if erpnext_crm_settings.is_erpnext_in_the_current_site:
+	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		from erpnext.crm.frappe_crm_api import create_customer
 		create_customer(customer)
 	else:

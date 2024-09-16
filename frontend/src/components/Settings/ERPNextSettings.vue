@@ -1,6 +1,11 @@
 <template>
-  <SettingsPage doctype="ERPNext CRM Settings" :title="__('ERPNext Settings')" class="p-8" />
+  <SettingsPage
+    doctype="ERPNext CRM Settings"
+    :title="__('ERPNext Settings')"
+    :successMessage="__('ERPNext Settings updated')"
+    class="p-8"
+  />
 </template>
 <script setup>
-  import SettingsPage from '@/components/Settings/SettingsPage.vue'
+import SettingsPage from '@/components/Settings/SettingsPage.vue'
 </script>
