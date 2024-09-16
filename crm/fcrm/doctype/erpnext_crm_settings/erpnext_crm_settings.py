@@ -139,7 +139,11 @@ def get_organization_address(organization):
 
 def create_customer_in_erpnext(doc, method):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
-	if not erpnext_crm_settings.enabled or doc.status != "Won":
+	if (
+		not erpnext_crm_settings.enabled
+		or not erpnext_crm_settings.create_customer_on_status_change
+		or doc.status != erpnext_crm_settings.deal_status
+	):
 		return
 	
 	contacts = get_contacts(doc)
@@ -160,7 +164,9 @@ def create_customer_in_erpnext(doc, method):
 		from erpnext.crm.frappe_crm_api import create_customer
 		create_customer(customer)
 	else:
-		create_customer_in_remote_site(customer, erpnext_crm_settings)	
+		create_customer_in_remote_site(customer, erpnext_crm_settings)
+
+	frappe.publish_realtime("crm_customer_created")
 
 def create_customer_in_remote_site(customer, erpnext_crm_settings):
 	client = get_erpnext_site_client(erpnext_crm_settings)

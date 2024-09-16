@@ -335,7 +335,7 @@ import {
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-const { $dialog, makeCall } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
@@ -358,10 +358,15 @@ const lead = createResource({
     let obj = {
       doc: data,
       $dialog,
+      $socket,
       router,
       updateField,
       createToast,
       deleteDoc: deleteLead,
+      resource: {
+        lead,
+        fieldsLayout,
+      },
       call,
     }
     setupAssignees(data)

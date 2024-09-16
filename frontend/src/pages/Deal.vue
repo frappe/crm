@@ -361,10 +361,10 @@ import {
   call,
   usePageMeta,
 } from 'frappe-ui'
-import { ref, computed, h, onMounted } from 'vue'
+import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const { $dialog, makeCall } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { isManager } = usersStore()
@@ -386,10 +386,16 @@ const deal = createResource({
     let obj = {
       doc: data,
       $dialog,
+      $socket,
       router,
       updateField,
       createToast,
       deleteDoc: deleteDeal,
+      resource: {
+        deal,
+        deal_contacts,
+        fieldsLayout,
+      },
       call,
     }
     setupAssignees(data)
@@ -399,8 +405,20 @@ const deal = createResource({
 })
 
 onMounted(() => {
+  $socket.on('crm_customer_created', () => {
+    createToast({
+      title: __('Customer created successfully'),
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  })
+
   if (deal.data) return
   deal.fetch()
+})
+
+onBeforeUnmount(() => {
+  $socket.off('crm_customer_created')
 })
 
 const reload = ref(false)

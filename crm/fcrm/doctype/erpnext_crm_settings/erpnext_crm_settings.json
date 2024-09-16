@@ -13,7 +13,11 @@
   "erpnext_site_url",
   "column_break_fllx",
   "api_key",
-  "api_secret"
+  "api_secret",
+  "section_break_jnbn",
+  "create_customer_on_status_change",
+  "column_break_kbhw",
+  "deal_status"
  ],
  "fields": [
   {
@@ -69,12 +73,34 @@
    "fieldname": "is_erpnext_in_different_site",
    "fieldtype": "Check",
    "label": "Is ERPNext installed on a different site?"
+  },
+  {
+   "fieldname": "section_break_jnbn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "fieldname": "create_customer_on_status_change",
+   "fieldtype": "Check",
+   "label": "Create customer on status change"
+  },
+  {
+   "fieldname": "column_break_kbhw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "create_customer_on_status_change",
+   "fieldname": "deal_status",
+   "fieldtype": "Link",
+   "label": "Deal Status",
+   "options": "CRM Deal Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-16 13:51:35.141503",
+ "modified": "2024-09-16 19:01:28.694010",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "ERPNext CRM Settings",
