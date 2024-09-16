@@ -8,19 +8,14 @@
       </Breadcrumbs>
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="deal.data._customActions"
-        :actions="deal.data._customActions"
-      />
+      <CustomActions v-if="customActions" :actions="customActions" />
       <component :is="deal.data._assignedTo?.length == 1 ? 'Button' : 'div'">
         <MultipleAvatar
           :avatars="deal.data._assignedTo"
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown
-        :options="statusOptions('deal', updateField, deal.data._customStatuses)"
-      >
+      <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
             :label="deal.data.status"
@@ -172,7 +167,7 @@
               <div v-else>
                 <div
                   v-if="
-                    deal_contacts?.loading && deal_contacts?.data?.length == 0
+                    dealContacts?.loading && dealContacts?.data?.length == 0
                   "
                   class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-gray-500"
                 >
@@ -180,8 +175,8 @@
                   <span>{{ __('Loading...') }}</span>
                 </div>
                 <div
-                  v-else-if="deal_contacts?.data?.length"
-                  v-for="(contact, i) in deal_contacts.data"
+                  v-else-if="dealContacts?.data?.length"
+                  v-for="(contact, i) in dealContacts.data"
                   :key="contact.name"
                 >
                   <div
@@ -257,7 +252,7 @@
                     </Section>
                   </div>
                   <div
-                    v-if="i != deal_contacts.data.length - 1"
+                    v-if="i != dealContacts.data.length - 1"
                     class="mx-2 h-px border-t border-gray-200"
                   />
                 </div>
@@ -340,8 +335,7 @@ import {
   openWebsite,
   createToast,
   setupAssignees,
-  setupCustomActions,
-  setupCustomStatuses,
+  setupCustomizations,
   errorMessage,
   copyToClipboard,
 } from '@/utils'
@@ -378,11 +372,14 @@ const props = defineProps({
   },
 })
 
+const customActions = ref([])
+const customStatuses = ref([])
+
 const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
-  onSuccess: (data) => {
+  onSuccess: async (data) => {
     let obj = {
       doc: data,
       $dialog,
@@ -393,14 +390,15 @@ const deal = createResource({
       deleteDoc: deleteDeal,
       resource: {
         deal,
-        deal_contacts,
+        dealContacts,
         fieldsLayout,
       },
       call,
     }
     setupAssignees(data)
-    setupCustomStatuses(data, obj)
-    setupCustomActions(data, obj)
+    let customization = await setupCustomizations(data, obj)
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
   },
 })
 
@@ -613,7 +611,7 @@ async function addContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Contact added'),
       icon: 'check',
@@ -628,7 +626,7 @@ async function removeContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Contact removed'),
       icon: 'check',
@@ -643,7 +641,7 @@ async function setPrimaryContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Primary contact set'),
       icon: 'check',
@@ -652,7 +650,7 @@ async function setPrimaryContact(contact) {
   }
 }
 
-const deal_contacts = createResource({
+const dealContacts = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
@@ -666,7 +664,7 @@ const deal_contacts = createResource({
 })
 
 function triggerCall() {
-  let primaryContact = deal_contacts.data?.find((c) => c.is_primary)
+  let primaryContact = dealContacts.data?.find((c) => c.is_primary)
   let mobile_no = primaryContact.mobile_no || null
 
   if (!primaryContact) {

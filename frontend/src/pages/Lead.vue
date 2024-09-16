@@ -8,17 +8,14 @@
       </Breadcrumbs>
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="lead.data._customActions"
-        :actions="lead.data._customActions"
-      />
+      <CustomActions v-if="customActions" :actions="customActions" />
       <component :is="lead.data._assignedTo?.length == 1 ? 'Button' : 'div'">
         <MultipleAvatar
           :avatars="lead.data._assignedTo"
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown :options="statusOptions('lead', updateField, lead.data._customStatuses)">
+      <Dropdown :options="statusOptions('lead', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
             :label="lead.data.status"
@@ -307,8 +304,7 @@ import {
   openWebsite,
   createToast,
   setupAssignees,
-  setupCustomActions,
-  setupCustomStatuses,
+  setupCustomizations,
   errorMessage,
   copyToClipboard,
 } from '@/utils'
@@ -350,11 +346,14 @@ const props = defineProps({
   },
 })
 
+const customActions = ref([])
+const customStatuses = ref([])
+
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
-  onSuccess: (data) => {
+  onSuccess: async (data) => {
     let obj = {
       doc: data,
       $dialog,
@@ -370,8 +369,9 @@ const lead = createResource({
       call,
     }
     setupAssignees(data)
-    setupCustomStatuses(data, obj)
-    setupCustomActions(data, obj)
+    let customization = await setupCustomizations(data, obj)
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
   },
 })
 
