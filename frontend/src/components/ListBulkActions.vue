@@ -19,7 +19,7 @@
 <script setup>
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
-import { setupListActions, createToast } from '@/utils'
+import { setupListCustomizations, createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { capture } from '@/telemetry'
 import { call } from 'frappe-ui'
@@ -45,7 +45,7 @@ const list = defineModel()
 
 const router = useRouter()
 
-const { $dialog } = globalStore()
+const { $dialog, $socket } = globalStore()
 
 const showEditModal = ref(false)
 const selectedValues = ref([])
@@ -230,17 +230,20 @@ function reload(unselectAll) {
   list.value?.reload()
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (!list.value?.data) return
-  setupListActions(list.value.data, {
+  let customization = await setupListCustomizations(list.value.data, {
     list: list.value,
     call,
     createToast,
     $dialog,
+    $socket,
     router,
   })
-  customBulkActions.value = list.value?.data?.bulkActions || []
-  customListActions.value = list.value?.data?.listActions || []
+  customBulkActions.value =
+    customization?.bulkActions || list.value?.data?.bulkActions || []
+  customListActions.value =
+    customization?.actions || list.value?.data?.listActions || []
 })
 
 defineExpose({
