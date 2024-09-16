@@ -90,7 +90,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "create_customer_on_status_change",
+   "depends_on": "eval:doc.enabled && doc.create_customer_on_status_change",
    "fieldname": "deal_status",
    "fieldtype": "Link",
    "label": "Deal Status",
@@ -100,7 +100,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-16 19:01:28.694010",
+ "modified": "2024-09-16 20:51:17.148493",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "ERPNext CRM Settings",
