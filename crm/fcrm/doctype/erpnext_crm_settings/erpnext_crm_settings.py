@@ -95,6 +95,7 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 		client = get_erpnext_site_client(erpnext_crm_settings)
 		doc = frappe.get_doc("CRM Deal", crm_deal)
 		contacts = get_contacts(doc)
+		address = get_organization_address(doc.organization)
 		return client.post_api("erpnext.crm.frappe_crm_api.create_prospect_against_crm_deal",
 			{
 				"organization": doc.organization,
@@ -107,7 +108,8 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 				"website": doc.website,
 				"annual_revenue": doc.annual_revenue,
 				"contacts": json.dumps(contacts),
-				"erpnext_company": erpnext_crm_settings.erpnext_company
+				"erpnext_company": erpnext_crm_settings.erpnext_company,
+				"address": address.as_dict() if address else None
 			},
 		)
 	except Exception:
@@ -130,12 +132,18 @@ def get_contacts(doc):
 		})
 	return contacts
 
+def get_organization_address(organization):
+	address = frappe.get_value("CRM Organization", organization, "address")
+	address = frappe.get_doc("Address", address) if address else None
+	return address
+
 def create_customer_in_erpnext(doc, method):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if not erpnext_crm_settings.enabled or doc.status != "Won":
 		return
 	
 	contacts = get_contacts(doc)
+	address = get_organization_address(doc.organization)
 	customer = {
 		"customer_name": doc.organization,
 		"customer_group": "All Customer Groups",
@@ -146,6 +154,7 @@ def create_customer_in_erpnext(doc, method):
 		"website": doc.website,
 		"crm_deal": doc.name,
 		"contacts": json.dumps(contacts),
+		"address": address.as_dict() if address else None,
 	}
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		from erpnext.crm.frappe_crm_api import create_customer
