@@ -339,7 +339,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-20 12:55:41.602364",
+ "modified": "2024-09-16 19:44:19.553715",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
@@ -371,8 +371,10 @@
    "write": 1
   }
  ],
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
+ "title_field": "organization",
  "track_changes": 1
 }
