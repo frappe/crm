@@ -57,7 +57,7 @@ export function taskStatusOptions(action, data) {
         label: status,
         onClick: () => action && action(status, data),
       }
-    }
+    },
   )
 }
 
@@ -125,77 +125,61 @@ export function setupAssignees(data) {
   }))
 }
 
-function getActionsFromScript(script, obj) {
+async function getFromScript(script, obj) {
   let scriptFn = new Function(script + '\nreturn setupForm')()
-  let formScript = scriptFn(obj)
-  return formScript?.actions || []
+  let formScript = await scriptFn(obj)
+  return formScript || {}
 }
 
-function getStatusFromScript(script, obj) {
-  let scriptFn = new Function(script + '\nreturn setupForm')()
-  let formScript = scriptFn(obj)
-  return formScript?.statuses || []
-}
-
-export function setupCustomStatuses(data, obj) {
+export async function setupCustomizations(data, obj) {
   if (!data._form_script) return []
 
   let statuses = []
+  let actions = []
   if (Array.isArray(data._form_script)) {
-    data._form_script.forEach((script) => {
-      statuses = statuses.concat(getStatusFromScript(script, obj))
-    })
+    for (let script of data._form_script) {
+      let _script = await getFromScript(script, obj)
+      actions = actions.concat(_script?.actions || [])
+      statuses = statuses.concat(_script?.statuses || [])
+    }
   } else {
-    statuses = getStatusFromScript(data._form_script, data)
+    let _script = await getFromScript(data._form_script, data)
+    actions = _script?.actions || []
+    statuses = _script?.statuses || []
   }
 
   data._customStatuses = statuses
-}
-
-export function setupCustomActions(data, obj) {
-  if (!data._form_script) return []
-
-  let actions = []
-  if (Array.isArray(data._form_script)) {
-    data._form_script.forEach((script) => {
-      actions = actions.concat(getActionsFromScript(script, obj))
-    })
-  } else {
-    actions = getActionsFromScript(data._form_script, obj)
-  }
-
   data._customActions = actions
+  return { statuses, actions }
 }
 
-function getActionsFromListScript(script, obj) {
+async function getListScript(script, obj) {
   let scriptFn = new Function(script + '\nreturn setupList')()
-  let listScript = scriptFn(obj)
-  return {
-    actions: listScript?.actions || [],
-    bulk_actions: listScript?.bulk_actions || [],
-  }
+  let listScript = await scriptFn(obj)
+  return listScript || {}
 }
 
-export function setupListActions(data, obj = {}) {
+export async function setupListCustomizations(data, obj = {}) {
   if (!data.list_script) return []
 
   let actions = []
   let bulkActions = []
 
   if (Array.isArray(data.list_script)) {
-    data.list_script.forEach((script) => {
-      let _actions = getActionsFromListScript(script, obj)
-      actions = actions.concat(_actions.actions)
-      bulkActions = bulkActions.concat(_actions.bulk_actions)
-    })
+    for (let script of data.list_script) {
+      let _script = await getListScript(script, obj)
+      actions = actions.concat(_script?.actions || [])
+      bulkActions = bulkActions.concat(_script?.bulk_actions || [])
+    }
   } else {
-    let _actions = getActionsFromListScript(data.list_script, obj)
-    actions = _actions.actions
-    bulkActions = _actions.bulk_actions
+    let _script = await getListScript(data.list_script, obj)
+    actions = _script?.actions || []
+    bulkActions = _script?.bulk_actions || []
   }
 
   data.listActions = actions
   data.bulkActions = bulkActions
+  return { actions, bulkActions }
 }
 
 export function errorMessage(title, message) {
@@ -235,7 +219,7 @@ export function isEmoji(str) {
 }
 
 export function isTouchScreenDevice() {
-	return "ontouchstart" in document.documentElement;
+  return 'ontouchstart' in document.documentElement
 }
 
 export function convertArrayToString(array) {

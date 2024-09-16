@@ -15,6 +15,7 @@
         :sections="sections"
         :data="data.doc"
       />
+      <ErrorMessage class="mt-2" :message="error" />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
       <Spinner class="size-8" />
@@ -36,9 +37,10 @@ import {
   createResource,
   Spinner,
   Badge,
+  ErrorMessage,
 } from 'frappe-ui'
 import { evaluate_depends_on_value, createToast } from '@/utils'
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -65,6 +67,8 @@ const fields = createResource({
   auto: true,
 })
 
+const error = ref(null)
+
 const data = createDocumentResource({
   doctype: props.doctype,
   name: props.doctype,
@@ -73,6 +77,7 @@ const data = createDocumentResource({
   auto: true,
   setValue: {
     onSuccess: () => {
+      error.value = null
       createToast({
         title: __('Success'),
         text: __(props.successMessage),
@@ -117,8 +122,12 @@ const sections = computed(() => {
     } else {
       _sections[_sections.length - 1].fields.push({
         ...field,
-        display_depends_on: evaluate_depends_on_value(
+        display_via_depends_on: evaluate_depends_on_value(
           field.depends_on,
+          data.doc,
+        ),
+        mandatory_via_depends_on: evaluate_depends_on_value(
+          field.mandatory_depends_on,
           data.doc,
         ),
         name: field.value,
@@ -130,6 +139,24 @@ const sections = computed(() => {
 })
 
 function update() {
+  error.value = null
+  if (validateMandatoryFields()) return
   data.save.submit()
+}
+
+function validateMandatoryFields() {
+  for (let section of sections.value) {
+    for (let field of section.fields) {
+      if (
+        (field.mandatory ||
+          (field.mandatory_depends_on && field.mandatory_via_depends_on)) &&
+        !data.doc[field.name]
+      ) {
+        error.value = __('{0} is mandatory', [__(field.label)])
+        return true
+      }
+    }
+  }
+  return false
 }
 </script>

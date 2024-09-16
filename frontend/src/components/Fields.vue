@@ -28,7 +28,7 @@
                 (field.read_only && data[field.name]) ||
                 !field.read_only ||
                 !field.hidden) &&
-              (!field.depends_on || field.display_depends_on)
+              (!field.depends_on || field.display_via_depends_on)
             "
           >
             <div
@@ -36,7 +36,14 @@
               class="mb-2 text-sm text-gray-600"
             >
               {{ __(field.label) }}
-              <span class="text-red-500" v-if="field.mandatory">*</span>
+              <span
+                class="text-red-500"
+                v-if="
+                  field.mandatory ||
+                  (field.mandatory_depends_on && field.mandatory_via_depends_on)
+                "
+                >*</span
+              >
             </div>
             <FormControl
               v-if="field.read_only && field.type !== 'Check'"

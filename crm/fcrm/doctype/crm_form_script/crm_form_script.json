@@ -35,6 +35,7 @@
    "default": "0",
    "fieldname": "enabled",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Enabled"
   },
   {
@@ -64,7 +65,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-11 12:56:09.288849",
+ "modified": "2024-09-16 19:40:19.340948",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Form Script",
