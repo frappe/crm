@@ -181,9 +181,10 @@ def create_customer_in_remote_site(customer, erpnext_crm_settings):
 
 def get_crm_form_script():
 	return  """
-function setupForm({ doc, call, $dialog, updateField, createToast }) {
+async function setupForm({ doc, call, $dialog, updateField, createToast }) {
 	let actions = [];
-	if (!["Lost", "Won"].includes(doc?.status)) {
+	let is_erpnext_integration_enabled = await call("frappe.client.get_single_value", {doctype: "ERPNext CRM Settings", field: "enabled"});
+	if (!["Lost", "Won"].includes(doc?.status) && is_erpnext_integration_enabled) {
 		actions.push({
 			label: __("Create Quotation"),
 			onClick: async () => {
