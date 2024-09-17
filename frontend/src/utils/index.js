@@ -143,7 +143,7 @@ export async function setupCustomizations(data, obj) {
       statuses = statuses.concat(_script?.statuses || [])
     }
   } else {
-    let _script = await getFromScript(data._form_script, data)
+    let _script = await getFromScript(data._form_script, obj)
     actions = _script?.actions || []
     statuses = _script?.statuses || []
   }
