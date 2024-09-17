@@ -208,6 +208,7 @@ def create_customer_in_remote_site(customer, erpnext_crm_settings):
 		)
 		frappe.throw(_("Error while creating customer in ERPNext, check error log for more details"))
 
+@frappe.whitelist()
 def get_crm_form_script():
 	return  """
 async function setupForm({ doc, call, $dialog, updateField, createToast }) {
