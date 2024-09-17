@@ -82,13 +82,13 @@ def get_quotation_url(crm_deal, organization):
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		quotation_url = get_url_to_form("Quotation")
-		return f"{quotation_url}/new?quotation_to=CRM Deal&crm_deal={crm_deal}&party_name={crm_deal}"
+		return f"{quotation_url}/new?quotation_to=CRM Deal&crm_deal={crm_deal}&party_name={crm_deal}&company={erpnext_crm_settings.erpnext_company}"
 	else:
 		site_url = erpnext_crm_settings.get("erpnext_site_url")
 		quotation_url = f"{site_url}/app/quotation"
 
 		prospect = create_prospect_in_remote_site(crm_deal, erpnext_crm_settings)
-		return f"{quotation_url}/new?quotation_to=Prospect&crm_deal={crm_deal}&party_name={prospect}"
+		return f"{quotation_url}/new?quotation_to=Prospect&crm_deal={crm_deal}&party_name={prospect}&company={erpnext_crm_settings.erpnext_company}"
 
 def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 	try:
