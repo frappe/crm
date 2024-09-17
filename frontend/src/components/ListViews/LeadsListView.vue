@@ -69,10 +69,10 @@
           </div>
           <div v-else-if="column.key === 'organization'">
             <Avatar
-              v-if="item.label"
+              v-if="item"
               class="flex items-center"
-              :image="item.logo"
-              :label="item.label"
+              :image="item"
+              :label="item"
               size="sm"
             />
           </div>
