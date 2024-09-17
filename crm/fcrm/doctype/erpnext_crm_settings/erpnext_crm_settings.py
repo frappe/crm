@@ -233,7 +233,9 @@ async function setupForm({ doc, call, $dialog, updateField, createToast }) {
 		})
 	}
 	if (is_erpnext_integration_enabled) {
-		let customer_url = await call("crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_customer_link", doc.name);
+		let customer_url = await call("crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_customer_link", {
+			crm_deal: doc.name
+		});
 		if (customer_url) {
 			actions.push({
 				label: __("View Customer"),
