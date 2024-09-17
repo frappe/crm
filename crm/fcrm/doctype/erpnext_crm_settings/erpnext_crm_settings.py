@@ -75,6 +75,35 @@ def get_erpnext_site_client(erpnext_crm_settings):
 	)
 
 @frappe.whitelist()
+def get_customer_link(crm_deal):
+	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
+	if not erpnext_crm_settings.enabled:
+		frappe.throw(_("ERPNext is not integrated with the CRM"))
+
+	if not erpnext_crm_settings.is_erpnext_in_different_site:
+		customer_url = get_url_to_form("Customer")
+		customer = frappe.db.exists("Customer", {"crm_deal": crm_deal})
+		if customer:
+			return f"{customer_url}/{customer}"
+		else:
+			return ""
+	else:
+		client = get_erpnext_site_client(erpnext_crm_settings)
+		try:
+			customer = client.get_list("Customer", {"crm_deal": crm_deal})[0]["name"]
+			if customer:
+				return f"{erpnext_crm_settings.erpnext_site_url}/app/customer/{customer}"
+			else:
+				return ""
+		except Exception:
+			frappe.log_error(
+				frappe.get_traceback(),
+				f"Error while fetching customer in remote site: {erpnext_crm_settings.erpnext_site_url}"
+			)
+			frappe.throw(_("Error while fetching customer in ERPNext, check error log for more details"))
+
+
+@frappe.whitelist()
 def get_quotation_url(crm_deal, organization):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if not erpnext_crm_settings.enabled:
@@ -82,13 +111,13 @@ def get_quotation_url(crm_deal, organization):
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		quotation_url = get_url_to_form("Quotation")
-		return f"{quotation_url}/new?quotation_to=CRM Deal&crm_deal={crm_deal}&party_name={crm_deal}"
+		return f"{quotation_url}/new?quotation_to=CRM Deal&crm_deal={crm_deal}&party_name={crm_deal}&company={erpnext_crm_settings.erpnext_company}"
 	else:
 		site_url = erpnext_crm_settings.get("erpnext_site_url")
 		quotation_url = f"{site_url}/app/quotation"
 
 		prospect = create_prospect_in_remote_site(crm_deal, erpnext_crm_settings)
-		return f"{quotation_url}/new?quotation_to=Prospect&crm_deal={crm_deal}&party_name={prospect}"
+		return f"{quotation_url}/new?quotation_to=Prospect&crm_deal={crm_deal}&party_name={prospect}&company={erpnext_crm_settings.erpnext_company}"
 
 def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 	try:
@@ -179,6 +208,7 @@ def create_customer_in_remote_site(customer, erpnext_crm_settings):
 		)
 		frappe.throw(_("Error while creating customer in ERPNext, check error log for more details"))
 
+@frappe.whitelist()
 def get_crm_form_script():
 	return  """
 async function setupForm({ doc, call, $dialog, updateField, createToast }) {
@@ -202,7 +232,17 @@ async function setupForm({ doc, call, $dialog, updateField, createToast }) {
 			}
 		})
 	}
-	
+	if (is_erpnext_integration_enabled) {
+		let customer_url = await call("crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_customer_link", {
+			crm_deal: doc.name
+		});
+		if (customer_url) {
+			actions.push({
+				label: __("View Customer"),
+				onClick: () => window.open(customer_url, '_blank')
+			});
+		}
+	}
 	return {
 		actions: actions,
 	};

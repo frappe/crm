@@ -290,6 +290,7 @@ import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
+  website,
   formatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
@@ -394,6 +395,8 @@ function parseRows(rows) {
           label: deal.organization,
           logo: getOrganization(deal.organization)?.organization_logo,
         }
+      } else if (row === 'website') {
+        _rows[row] = website(deal.website)
       } else if (row == 'annual_revenue') {
         _rows[row] = formatNumberIntoCurrency(
           deal.annual_revenue,

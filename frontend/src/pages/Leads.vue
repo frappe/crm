@@ -307,7 +307,13 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
-import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
+import {
+  dateFormat,
+  dateTooltipFormat,
+  timeAgo,
+  website,
+  formatTime,
+} from '@/utils'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
@@ -411,6 +417,8 @@ function parseRows(rows) {
         }
       } else if (row == 'organization') {
         _rows[row] = lead.organization
+      } else if (row === 'website') {
+        _rows[row] = website(lead.website)
       } else if (row == 'status') {
         _rows[row] = {
           label: lead.status,
