@@ -77,6 +77,7 @@
               <Section :is-opened="section.opened" :label="section.label">
                 <SectionFields
                   :fields="section.fields"
+                  :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="lead.data"
                   @update="updateField"
                 />

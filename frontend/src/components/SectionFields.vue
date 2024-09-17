@@ -1,6 +1,7 @@
 <template>
   <FadedScrollableDiv
-    class="flex max-h-[300px] flex-col gap-1.5 overflow-y-auto"
+    class="flex flex-col gap-1.5 overflow-y-auto"
+    :class="[isLastSection ? '' : 'max-h-[300px]']"
   >
     <div
       v-for="field in _fields"
@@ -123,6 +124,10 @@ const props = defineProps({
   fields: {
     type: Object,
     required: true,
+  },
+  isLastSection: {
+    type: Boolean,
+    default: false,
   },
 })
 

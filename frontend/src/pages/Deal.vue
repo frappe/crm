@@ -161,6 +161,7 @@
               <SectionFields
                 v-if="section.fields"
                 :fields="section.fields"
+                :isLastSection="i == fieldsLayout.data.length - 1"
                 v-model="deal.data"
                 @update="updateField"
               />
