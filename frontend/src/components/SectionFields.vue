@@ -7,7 +7,7 @@
       v-for="field in _fields"
       :key="field.label"
       :class="[field.hidden && 'hidden']"
-      class="flex items-center gap-2 px-3 leading-5 first:mt-3"
+      class="section-field flex items-center gap-2 px-3 leading-5 first:mt-3"
     >
       <Tooltip :text="__(field.label)" :hoverDelay="1">
         <div class="sm:w-[106px] w-36 shrink-0 truncate text-sm text-gray-600">

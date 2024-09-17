@@ -116,7 +116,7 @@
           <div
             v-for="(section, i) in fieldsLayout.data"
             :key="section.label"
-            class="flex flex-col p-3"
+            class="section flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
             <Section :is-opened="section.opened" :label="section.label">
@@ -705,3 +705,12 @@ function openEmailBox() {
   activities.value.emailBox.show = true
 }
 </script>
+
+<style scoped>
+:deep(.section:has(.section-field.hidden)) {
+  display: none;
+}
+:deep(.section:has(.section-field:not(.hidden))) {
+  display: flex;
+}
+</style>
