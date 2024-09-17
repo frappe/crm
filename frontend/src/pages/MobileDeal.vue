@@ -224,10 +224,7 @@
     v-model:organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) =>
-        updateField('organization', doc.name, () => {
-          organizations.reload()
-        }),
+      afterInsert: (doc) => updateField('organization', doc.name),
     }"
   />
   <ContactModal
@@ -275,7 +272,6 @@ import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
-import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import {
   whatsappEnabled,
@@ -294,7 +290,6 @@ import { ref, computed, h, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { $dialog, $socket } = globalStore()
-const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const route = useRoute()
 const router = useRouter()
@@ -314,6 +309,10 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: async (data) => {
+    organization.update({
+      params: { doctype: 'CRM Organization', name: data.organization },
+    })
+    organization.fetch()
     let obj = {
       doc: data,
       $dialog,
@@ -336,6 +335,11 @@ const deal = createResource({
   },
 })
 
+const organization = createResource({
+  url: 'frappe.client.get',
+  onSuccess: (data) => (deal.data._organizationObj = data),
+})
+
 onMounted(() => {
   if (deal.data) return
   deal.fetch()
@@ -345,10 +349,6 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
 const _organization = ref({})
-
-const organization = computed(() => {
-  return deal.data?.organization && getOrganization(deal.data.organization)
-})
 
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -418,7 +418,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.value?.name || __('Untitled'),
+    label: organization.data?.name || __('Untitled'),
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items

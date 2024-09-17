@@ -59,15 +59,15 @@
             <Avatar
               size="3xl"
               class="size-12"
-              :label="organization?.name || __('Untitled')"
-              :image="organization?.organization_logo"
+              :label="organization.data?.name || __('Untitled')"
+              :image="organization.data?.organization_logo"
             />
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate">
-          <Tooltip :text="organization?.name || __('Set an organization')">
+          <Tooltip :text="organization.data?.name || __('Set an organization')">
             <div class="truncate text-2xl font-medium">
-              {{ organization?.name || __('Untitled') }}
+              {{ organization.data?.name || __('Untitled') }}
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
@@ -275,10 +275,7 @@
     v-model:organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) =>
-        updateField('organization', doc.name, () => {
-          organizations.reload()
-        }),
+      afterInsert: (doc) => updateField('organization', doc.name),
     }"
   />
   <ContactModal
@@ -342,7 +339,6 @@ import {
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
-import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
@@ -360,7 +356,6 @@ import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { $dialog, $socket, makeCall } = globalStore()
-const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { isManager } = usersStore()
 const route = useRoute()
@@ -381,6 +376,10 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: async (data) => {
+    organization.update({
+      params: { doctype: 'CRM Organization', name: data.organization },
+    })
+    organization.fetch()
     let obj = {
       doc: data,
       $dialog,
@@ -403,6 +402,11 @@ const deal = createResource({
   },
 })
 
+const organization = createResource({
+  url: 'frappe.client.get',
+  onSuccess: (data) => (deal.data._organizationObj = data),
+})
+
 onMounted(() => {
   $socket.on('crm_customer_created', () => {
     createToast({
@@ -412,7 +416,10 @@ onMounted(() => {
     })
   })
 
-  if (deal.data) return
+  if (deal.data) {
+    organization.data = deal.data._organizationObj
+    return
+  }
   deal.fetch()
 })
 
@@ -425,10 +432,6 @@ const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
 const showSidePanelModal = ref(false)
 const _organization = ref({})
-
-const organization = computed(() => {
-  return deal.data?.organization && getOrganization(deal.data.organization)
-})
 
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -498,7 +501,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.value?.name || __('Untitled'),
+    label: organization.data?.name || __('Untitled'),
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -506,7 +509,7 @@ const breadcrumbs = computed(() => {
 
 usePageMeta(() => {
   return {
-    title: organization.value?.name || deal.data?.name,
+    title: organization.data?.name || deal.data?.name,
   }
 })
 

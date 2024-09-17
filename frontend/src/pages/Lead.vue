@@ -312,7 +312,6 @@ import {
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
-import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
@@ -334,7 +333,6 @@ import { useRouter, useRoute } from 'vue-router'
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
-const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const { isManager } = usersStore()
 const route = useRoute()
@@ -621,7 +619,6 @@ async function convertToDeal(updated) {
     if (deal) {
       capture('convert_lead_to_deal')
       if (updated) {
-        await organizations.reload()
         await contacts.reload()
       }
       router.push({ name: 'Deal', params: { dealId: deal } })

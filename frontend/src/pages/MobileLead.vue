@@ -197,7 +197,6 @@ import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
-import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import {
   whatsappEnabled,
@@ -217,7 +216,6 @@ import { useRouter, useRoute } from 'vue-router'
 
 const { $dialog, $socket } = globalStore()
 const { getContactByName, contacts } = contactsStore()
-const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const route = useRoute()
 const router = useRouter()
@@ -494,7 +492,6 @@ async function convertToDeal(updated) {
     )
     if (deal) {
       if (updated) {
-        await organizations.reload()
         await contacts.reload()
       }
       router.push({ name: 'Deal', params: { dealId: deal } })
