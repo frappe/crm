@@ -72,7 +72,14 @@ export function taskPriorityOptions(action, data) {
 }
 
 export function openWebsite(url) {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url
+  }
   window.open(url, '_blank')
+}
+
+export function website(url) {
+  return url && url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
 }
 
 export function htmlToText(html) {

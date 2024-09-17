@@ -107,8 +107,7 @@
   {
    "fieldname": "website",
    "fieldtype": "Data",
-   "label": "Website",
-   "options": "URL"
+   "label": "Website"
   },
   {
    "fieldname": "mobile_no",
@@ -291,7 +290,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-16 19:46:01.307171",
+ "modified": "2024-09-17 18:36:57.289897",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

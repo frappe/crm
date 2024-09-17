@@ -82,6 +82,7 @@ import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
+  website,
   formatNumberIntoCurrency,
 } from '@/utils'
 import { ref, computed } from 'vue'
@@ -130,8 +131,4 @@ const rows = computed(() => {
     return _rows
   })
 })
-
-function website(url) {
-  return url && url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
-}
 </script>

@@ -80,8 +80,7 @@
    "fetch_from": ".website",
    "fieldname": "website",
    "fieldtype": "Data",
-   "label": "Website",
-   "options": "URL"
+   "label": "Website"
   },
   {
    "fieldname": "close_date",
@@ -339,7 +338,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-16 19:44:19.553715",
+ "modified": "2024-09-17 18:34:15.873610",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
