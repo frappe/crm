@@ -18,6 +18,10 @@ frappe.ui.form.on("CRM Form Script", {
 			);
 		}
 
+		if (!frappe.boot.developer_mode) {
+			frm.toggle_enable("is_standard", 0);
+		}
+
 		frm.trigger("add_enable_button");
 	},
 
