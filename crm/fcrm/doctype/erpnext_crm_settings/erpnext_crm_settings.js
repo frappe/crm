@@ -9,24 +9,13 @@ frappe.ui.form.on("ERPNext CRM Settings", {
 				__(
 					"Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
 				),
-				() => frm.trigger("update_form_script")
+				() => frm.trigger("reset_erpnext_form_script")
 			);
 		});
 	},
-	async update_form_script() {
-		let script = await frappe.call(
-			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_crm_form_script"
-		);
-		if (script.message) {
-			let form_script = await frappe.db.set_value(
-				"CRM Form Script",
-				"Create Quotation from CRM Deal",
-				"script",
-				script.message
-			);
-			if (form_script.message) {
-				frappe.msgprint(__("Form Script updated successfully"));
-			}
-		}
+	async reset_erpnext_form_script(frm) {
+		let script = await frm.call("reset_erpnext_form_script");
+		script.message &&
+			frappe.msgprint(__("Form Script updated successfully"));
 	},
 });

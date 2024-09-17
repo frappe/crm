@@ -65,6 +65,18 @@ class ERPNextCRMSettings(Document):
 				"is_standard": 1
 			}).insert()
 
+	@frappe.whitelist()
+	def reset_erpnext_form_script(self):
+		try:
+			if frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
+				script = get_crm_form_script()
+				frappe.db.set_value("CRM Form Script", "Create Quotation from CRM Deal", "script", script)
+				return True
+			return False
+		except Exception:
+			frappe.log_error(frappe.get_traceback(), "Error while resetting form script")
+			return False
+
 def get_erpnext_site_client(erpnext_crm_settings):
 	site_url = erpnext_crm_settings.erpnext_site_url
 	api_key = erpnext_crm_settings.api_key
