@@ -68,7 +68,7 @@ class ERPNextCRMSettings(Document):
 def get_erpnext_site_client(erpnext_crm_settings):
 	site_url = erpnext_crm_settings.erpnext_site_url
 	api_key = erpnext_crm_settings.api_key
-	api_secret = erpnext_crm_settings.api_secret
+	api_secret = erpnext_crm_settings.get_password("api_secret", raise_exception=False)
 
 	return FrappeClient(
 		site_url, api_key=api_key, api_secret=api_secret
