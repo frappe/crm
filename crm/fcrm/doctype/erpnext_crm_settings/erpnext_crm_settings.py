@@ -102,7 +102,8 @@ def get_customer_link(crm_deal):
 	else:
 		client = get_erpnext_site_client(erpnext_crm_settings)
 		try:
-			customer = client.get_list("Customer", {"crm_deal": crm_deal})[0]["name"]
+			customer = client.get_list("Customer", {"crm_deal": crm_deal})
+			customer = customer[0].get("name") if len(customer) else None
 			if customer:
 				return f"{erpnext_crm_settings.erpnext_site_url}/app/customer/{customer}"
 			else:
