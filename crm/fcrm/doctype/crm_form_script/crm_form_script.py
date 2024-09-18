@@ -14,7 +14,7 @@ class CRMFormScript(Document):
 			or frappe.flags.in_test
 			or frappe.flags.in_fixtures
 		)
-		if in_user_env and self.is_standard and not frappe.conf.developer_mode:
+		if in_user_env and not self.is_new() and self.is_standard and not frappe.conf.developer_mode:
 			# only enabled can be changed for standard form scripts
 			if self.has_value_changed("enabled"):
 				enabled_value = self.enabled

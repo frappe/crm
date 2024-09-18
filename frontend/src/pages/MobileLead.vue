@@ -9,11 +9,7 @@
         </template>
       </Breadcrumbs>
       <div class="absolute right-0">
-        <Dropdown
-          :options="
-            statusOptions('lead', updateField, lead.data._customStatuses)
-          "
-        >
+        <Dropdown :options="statusOptions('lead', updateField, customStatuses)">
           <template #default="{ open }">
             <Button
               :label="lead.data.status"
@@ -45,10 +41,7 @@
       />
     </component>
     <div class="flex items-center gap-2">
-      <CustomActions
-        v-if="lead.data._customActions"
-        :actions="lead.data._customActions"
-      />
+      <CustomActions v-if="customActions" :actions="customActions" />
       <Button
         :label="__('Convert')"
         variant="solid"
@@ -84,6 +77,7 @@
               <Section :is-opened="section.opened" :label="section.label">
                 <SectionFields
                   :fields="section.fields"
+                  :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="lead.data"
                   @update="updateField"
                 />
@@ -199,16 +193,10 @@ import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import {
-  createToast,
-  setupAssignees,
-  setupCustomActions,
-  setupCustomStatuses,
-} from '@/utils'
+import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
-import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import {
   whatsappEnabled,
@@ -226,9 +214,8 @@ import {
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-const { $dialog } = globalStore()
+const { $dialog, $socket } = globalStore()
 const { getContactByName, contacts } = contactsStore()
-const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const route = useRoute()
 const router = useRouter()
@@ -240,23 +227,32 @@ const props = defineProps({
   },
 })
 
+const customActions = ref([])
+const customStatuses = ref([])
+
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
-  onSuccess: (data) => {
+  onSuccess: async (data) => {
     let obj = {
       doc: data,
       $dialog,
+      $socket,
       router,
       updateField,
       createToast,
       deleteDoc: deleteLead,
+      resource: {
+        lead,
+        fieldsLayout,
+      },
       call,
     }
     setupAssignees(data)
-    setupCustomStatuses(data, obj)
-    setupCustomActions(data, obj)
+    let customization = await setupCustomizations(data, obj)
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
   },
 })
 
@@ -496,7 +492,6 @@ async function convertToDeal(updated) {
     )
     if (deal) {
       if (updated) {
-        await organizations.reload()
         await contacts.reload()
       }
       router.push({ name: 'Deal', params: { dealId: deal } })

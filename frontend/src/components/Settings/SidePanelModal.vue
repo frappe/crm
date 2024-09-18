@@ -43,7 +43,11 @@
               :class="{ 'border-b': i !== sections.data.length - 1 }"
             >
               <Section :is-opened="section.opened" :label="section.label">
-                <SectionFields :fields="section.fields" v-model="data" />
+                <SectionFields
+                  :fields="section.fields"
+                  :isLastSection="i == section.data.length - 1"
+                  v-model="data"
+                />
               </Section>
             </div>
           </div>

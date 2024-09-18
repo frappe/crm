@@ -28,8 +28,7 @@
   {
    "fieldname": "website",
    "fieldtype": "Data",
-   "label": "Website",
-   "options": "URL"
+   "label": "Website"
   },
   {
    "fieldname": "organization_logo",
@@ -80,7 +79,7 @@
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-13 15:52:05.106389",
+ "modified": "2024-09-17 18:37:10.341062",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",

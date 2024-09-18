@@ -8,19 +8,14 @@
       </Breadcrumbs>
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="deal.data._customActions"
-        :actions="deal.data._customActions"
-      />
+      <CustomActions v-if="customActions" :actions="customActions" />
       <component :is="deal.data._assignedTo?.length == 1 ? 'Button' : 'div'">
         <MultipleAvatar
           :avatars="deal.data._assignedTo"
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown
-        :options="statusOptions('deal', updateField, deal.data._customStatuses)"
-      >
+      <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
             :label="deal.data.status"
@@ -64,15 +59,15 @@
             <Avatar
               size="3xl"
               class="size-12"
-              :label="organization?.name || __('Untitled')"
-              :image="organization?.organization_logo"
+              :label="organization.data?.name || __('Untitled')"
+              :image="organization.data?.organization_logo"
             />
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate">
-          <Tooltip :text="organization?.name || __('Set an organization')">
+          <Tooltip :text="organization.data?.name || __('Set an organization')">
             <div class="truncate text-2xl font-medium">
-              {{ organization?.name || __('Untitled') }}
+              {{ organization.data?.name || __('Untitled') }}
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
@@ -121,7 +116,7 @@
           <div
             v-for="(section, i) in fieldsLayout.data"
             :key="section.label"
-            class="flex flex-col p-3"
+            class="section flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
             <Section :is-opened="section.opened" :label="section.label">
@@ -166,13 +161,14 @@
               <SectionFields
                 v-if="section.fields"
                 :fields="section.fields"
+                :isLastSection="i == fieldsLayout.data.length - 1"
                 v-model="deal.data"
                 @update="updateField"
               />
               <div v-else>
                 <div
                   v-if="
-                    deal_contacts?.loading && deal_contacts?.data?.length == 0
+                    dealContacts?.loading && dealContacts?.data?.length == 0
                   "
                   class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-gray-500"
                 >
@@ -180,8 +176,8 @@
                   <span>{{ __('Loading...') }}</span>
                 </div>
                 <div
-                  v-else-if="deal_contacts?.data?.length"
-                  v-for="(contact, i) in deal_contacts.data"
+                  v-else-if="dealContacts?.data?.length"
+                  v-for="(contact, i) in dealContacts.data"
                   :key="contact.name"
                 >
                   <div
@@ -257,7 +253,7 @@
                     </Section>
                   </div>
                   <div
-                    v-if="i != deal_contacts.data.length - 1"
+                    v-if="i != dealContacts.data.length - 1"
                     class="mx-2 h-px border-t border-gray-200"
                   />
                 </div>
@@ -279,10 +275,7 @@
     v-model:organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) =>
-        updateField('organization', doc.name, () => {
-          organizations.reload()
-        }),
+      afterInsert: (doc) => updateField('organization', doc.name),
     }"
   />
   <ContactModal
@@ -340,14 +333,12 @@ import {
   openWebsite,
   createToast,
   setupAssignees,
-  setupCustomActions,
-  setupCustomStatuses,
+  setupCustomizations,
   errorMessage,
   copyToClipboard,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
-import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
@@ -361,11 +352,10 @@ import {
   call,
   usePageMeta,
 } from 'frappe-ui'
-import { ref, computed, h, onMounted } from 'vue'
+import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const { $dialog, makeCall } = globalStore()
-const { organizations, getOrganization } = organizationsStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { isManager } = usersStore()
 const route = useRoute()
@@ -378,29 +368,63 @@ const props = defineProps({
   },
 })
 
+const customActions = ref([])
+const customStatuses = ref([])
+
 const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
-  onSuccess: (data) => {
+  onSuccess: async (data) => {
+    organization.update({
+      params: { doctype: 'CRM Organization', name: data.organization },
+    })
+    organization.fetch()
     let obj = {
       doc: data,
       $dialog,
+      $socket,
       router,
       updateField,
       createToast,
       deleteDoc: deleteDeal,
+      resource: {
+        deal,
+        dealContacts,
+        fieldsLayout,
+      },
       call,
     }
     setupAssignees(data)
-    setupCustomStatuses(data, obj)
-    setupCustomActions(data, obj)
+    let customization = await setupCustomizations(data, obj)
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
   },
 })
 
+const organization = createResource({
+  url: 'frappe.client.get',
+  onSuccess: (data) => (deal.data._organizationObj = data),
+})
+
 onMounted(() => {
-  if (deal.data) return
+  $socket.on('crm_customer_created', () => {
+    createToast({
+      title: __('Customer created successfully'),
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  })
+
+  if (deal.data) {
+    organization.data = deal.data._organizationObj
+    return
+  }
   deal.fetch()
+})
+
+onBeforeUnmount(() => {
+  $socket.off('crm_customer_created')
 })
 
 const reload = ref(false)
@@ -408,10 +432,6 @@ const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
 const showSidePanelModal = ref(false)
 const _organization = ref({})
-
-const organization = computed(() => {
-  return deal.data?.organization && getOrganization(deal.data.organization)
-})
 
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -481,7 +501,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.value?.name || __('Untitled'),
+    label: organization.data?.name || __('Untitled'),
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -489,7 +509,7 @@ const breadcrumbs = computed(() => {
 
 usePageMeta(() => {
   return {
-    title: organization.value?.name || deal.data?.name,
+    title: organization.data?.name || deal.data?.name,
   }
 })
 
@@ -595,7 +615,7 @@ async function addContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Contact added'),
       icon: 'check',
@@ -610,7 +630,7 @@ async function removeContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Contact removed'),
       icon: 'check',
@@ -625,7 +645,7 @@ async function setPrimaryContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Primary contact set'),
       icon: 'check',
@@ -634,7 +654,7 @@ async function setPrimaryContact(contact) {
   }
 }
 
-const deal_contacts = createResource({
+const dealContacts = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
@@ -648,7 +668,7 @@ const deal_contacts = createResource({
 })
 
 function triggerCall() {
-  let primaryContact = deal_contacts.data?.find((c) => c.is_primary)
+  let primaryContact = dealContacts.data?.find((c) => c.is_primary)
   let mobile_no = primaryContact.mobile_no || null
 
   if (!primaryContact) {
@@ -685,3 +705,12 @@ function openEmailBox() {
   activities.value.emailBox.show = true
 }
 </script>
+
+<style scoped>
+:deep(.section:has(.section-field.hidden)) {
+  display: none;
+}
+:deep(.section:has(.section-field:not(.hidden))) {
+  display: flex;
+}
+</style>

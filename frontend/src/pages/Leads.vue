@@ -305,17 +305,21 @@ import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
-import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from '@/utils'
+import {
+  dateFormat,
+  dateTooltipFormat,
+  timeAgo,
+  website,
+  formatTime,
+} from '@/utils'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
-const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()
 
 const route = useRoute()
@@ -412,10 +416,9 @@ function parseRows(rows) {
           image_label: lead.first_name,
         }
       } else if (row == 'organization') {
-        _rows[row] = {
-          label: lead.organization,
-          logo: getOrganization(lead.organization)?.organization_logo,
-        }
+        _rows[row] = lead.organization
+      } else if (row === 'website') {
+        _rows[row] = website(lead.website)
       } else if (row == 'status') {
         _rows[row] = {
           label: lead.status,

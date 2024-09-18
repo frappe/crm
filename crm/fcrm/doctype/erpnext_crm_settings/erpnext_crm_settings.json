@@ -1,0 +1,124 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-02 15:23:17.022214",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "is_erpnext_in_different_site",
+  "column_break_vfru",
+  "erpnext_company",
+  "section_break_oubd",
+  "erpnext_site_url",
+  "column_break_fllx",
+  "api_key",
+  "api_secret",
+  "section_break_jnbn",
+  "create_customer_on_status_change",
+  "column_break_kbhw",
+  "deal_status"
+ ],
+ "fields": [
+  {
+   "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "API Key",
+   "mandatory_depends_on": "is_erpnext_in_different_site"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
+   "fieldname": "api_secret",
+   "fieldtype": "Password",
+   "label": "API Secret",
+   "mandatory_depends_on": "is_erpnext_in_different_site"
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "section_break_oubd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fllx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
+   "fieldname": "erpnext_site_url",
+   "fieldtype": "Data",
+   "label": "ERPNext Site URL",
+   "mandatory_depends_on": "is_erpnext_in_different_site"
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "erpnext_company",
+   "fieldtype": "Data",
+   "label": "Company in ERPNext Site",
+   "mandatory_depends_on": "enabled"
+  },
+  {
+   "fieldname": "column_break_vfru",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "fieldname": "is_erpnext_in_different_site",
+   "fieldtype": "Check",
+   "label": "Is ERPNext installed on a different site?"
+  },
+  {
+   "fieldname": "section_break_jnbn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "fieldname": "create_customer_on_status_change",
+   "fieldtype": "Check",
+   "label": "Create customer on status change"
+  },
+  {
+   "fieldname": "column_break_kbhw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.create_customer_on_status_change",
+   "fieldname": "deal_status",
+   "fieldtype": "Link",
+   "label": "Deal Status",
+   "mandatory_depends_on": "create_customer_on_status_change",
+   "options": "CRM Deal Status"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-09-17 19:21:11.060901",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "ERPNext CRM Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

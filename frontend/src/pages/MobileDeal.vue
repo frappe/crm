@@ -9,11 +9,7 @@
         </template>
       </Breadcrumbs>
       <div class="absolute right-0">
-        <Dropdown
-          :options="
-            statusOptions('deal', updateField, deal.data._customStatuses)
-          "
-        >
+        <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
           <template #default="{ open }">
             <Button
               :label="deal.data.status"
@@ -45,10 +41,7 @@
       />
     </component>
     <div class="flex items-center gap-2">
-      <CustomActions
-        v-if="deal.data._customActions"
-        :actions="deal.data._customActions"
-      />
+      <CustomActions v-if="customActions" :actions="customActions" />
     </div>
   </div>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
@@ -108,13 +101,14 @@
                 <SectionFields
                   v-if="section.fields"
                   :fields="section.fields"
+                  :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="deal.data"
                   @update="updateField"
                 />
                 <div v-else>
                   <div
                     v-if="
-                      deal_contacts?.loading && deal_contacts?.data?.length == 0
+                      dealContacts?.loading && dealContacts?.data?.length == 0
                     "
                     class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-gray-500"
                   >
@@ -230,10 +224,7 @@
     v-model:organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) =>
-        updateField('organization', doc.name, () => {
-          organizations.reload()
-        }),
+      afterInsert: (doc) => updateField('organization', doc.name),
     }"
   />
   <ContactModal
@@ -278,15 +269,9 @@ import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import {
-  createToast,
-  setupAssignees,
-  setupCustomActions,
-  setupCustomStatuses,
-} from '@/utils'
+import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
-import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import {
   whatsappEnabled,
@@ -304,8 +289,7 @@ import {
 import { ref, computed, h, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const { $dialog } = globalStore()
-const { organizations, getOrganization } = organizationsStore()
+const { $dialog, $socket } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const route = useRoute()
 const router = useRouter()
@@ -317,24 +301,43 @@ const props = defineProps({
   },
 })
 
+const customActions = ref([])
+const customStatuses = ref([])
+
 const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
-  onSuccess: (data) => {
+  onSuccess: async (data) => {
+    organization.update({
+      params: { doctype: 'CRM Organization', name: data.organization },
+    })
+    organization.fetch()
     let obj = {
       doc: data,
       $dialog,
+      $socket,
       router,
       updateField,
       createToast,
       deleteDoc: deleteDeal,
+      resource: {
+        deal,
+        dealContacts,
+        fieldsLayout,
+      },
       call,
     }
     setupAssignees(data)
-    setupCustomStatuses(data, obj)
-    setupCustomActions(data, obj)
+    let customization = await setupCustomizations(data, obj)
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
   },
+})
+
+const organization = createResource({
+  url: 'frappe.client.get',
+  onSuccess: (data) => (deal.data._organizationObj = data),
 })
 
 onMounted(() => {
@@ -346,10 +349,6 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
 const _organization = ref({})
-
-const organization = computed(() => {
-  return deal.data?.organization && getOrganization(deal.data.organization)
-})
 
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -419,7 +418,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.value?.name || __('Untitled'),
+    label: organization.data?.name || __('Untitled'),
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -533,7 +532,7 @@ async function addContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Contact added'),
       icon: 'check',
@@ -548,7 +547,7 @@ async function removeContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Contact removed'),
       icon: 'check',
@@ -563,7 +562,7 @@ async function setPrimaryContact(contact) {
     contact,
   })
   if (d) {
-    deal_contacts.reload()
+    dealContacts.reload()
     createToast({
       title: __('Primary contact set'),
       icon: 'check',
@@ -572,7 +571,7 @@ async function setPrimaryContact(contact) {
   }
 }
 
-const deal_contacts = createResource({
+const dealContacts = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],

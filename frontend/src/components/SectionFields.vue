@@ -1,12 +1,13 @@
 <template>
   <FadedScrollableDiv
-    class="flex max-h-[300px] flex-col gap-1.5 overflow-y-auto"
+    class="flex flex-col gap-1.5 overflow-y-auto"
+    :class="[isLastSection ? '' : 'max-h-[300px]']"
   >
     <div
       v-for="field in _fields"
       :key="field.label"
       :class="[field.hidden && 'hidden']"
-      class="flex items-center gap-2 px-3 leading-5 first:mt-3"
+      class="section-field flex items-center gap-2 px-3 leading-5 first:mt-3"
     >
       <Tooltip :text="__(field.label)" :hoverDelay="1">
         <div class="sm:w-[106px] w-36 shrink-0 truncate text-sm text-gray-600">
@@ -123,6 +124,10 @@ const props = defineProps({
   fields: {
     type: Object,
     required: true,
+  },
+  isLastSection: {
+    type: Boolean,
+    default: false,
   },
 })
 
