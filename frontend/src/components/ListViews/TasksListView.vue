@@ -41,7 +41,9 @@
         <div v-if="column.key === 'due_date'">
           <Tooltip :text="dateFormat(item, 'ddd, MMM D, YYYY | hh:mm a')">
             <div class="flex items-center gap-2 truncate text-base">
-              <CalendarIcon />
+              <div>
+                <CalendarIcon />
+              </div>
               <div v-if="item" class="truncate">
                 {{ dateFormat(item, 'D MMM, hh:mm a') }}
               </div>
@@ -238,7 +240,7 @@ const listBulkActionsRef = ref(null)
 
 defineExpose({
   customListActions: computed(
-    () => listBulkActionsRef.value?.customListActions,
+    () => listBulkActionsRef.value?.customListActions
   ),
 })
 </script>
