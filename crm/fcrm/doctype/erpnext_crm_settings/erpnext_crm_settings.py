@@ -175,9 +175,20 @@ def get_contacts(doc):
 	return contacts
 
 def get_organization_address(organization):
-	address = frappe.get_value("CRM Organization", organization, "address")
+	address = frappe.db.get_value("CRM Organization", organization, "address")
 	address = frappe.get_doc("Address", address) if address else None
-	return address
+	return {
+		"name": address.name,
+		"address_title": address.address_title,
+		"address_type": address.address_type,
+		"address_line1": address.address_line1,
+		"address_line2": address.address_line2,
+		"city": address.city,
+		"county": address.county,
+		"state": address.state,
+		"country": address.country,
+		"pincode": address.pincode,
+	}
 
 def create_customer_in_erpnext(doc, method):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
@@ -200,7 +211,7 @@ def create_customer_in_erpnext(doc, method):
 		"website": doc.website,
 		"crm_deal": doc.name,
 		"contacts": json.dumps(contacts),
-		"address": address.as_dict() if address else None,
+		"address": json.dumps(address) if address else None,
 	}
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		from erpnext.crm.frappe_crm_api import create_customer
