@@ -39,7 +39,9 @@
         :row="row"
       >
         <div v-if="column.key === 'due_date'">
-          <Tooltip :text="dateFormat(item, 'ddd, MMM D, YYYY | hh:mm a')">
+          <Tooltip
+            :text="item && dateFormat(item, 'ddd, MMM D, YYYY | hh:mm a')"
+          >
             <div class="flex items-center gap-2 truncate text-base">
               <div><CalendarIcon /></div>
               <div v-if="item" class="truncate">
