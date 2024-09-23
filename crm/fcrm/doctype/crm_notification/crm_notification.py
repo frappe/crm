@@ -33,4 +33,4 @@ def notify_user(args):
 
 	if frappe.db.exists("CRM Notification", values):
 		return
-	frappe.get_doc(values).insert()
+	frappe.get_doc(values).insert(ignore_permissions=True)

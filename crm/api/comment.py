@@ -3,6 +3,7 @@ from collections.abc import Iterable
 import frappe
 from frappe import _
 from bs4 import BeautifulSoup
+from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 def on_update(self, method):
     notify_mentions(self)
@@ -29,22 +30,17 @@ def notify_mentions(doc):
                 <span class="font-medium text-gray-900">{ doc.reference_name }</span>
             </div>
         """
-        values = frappe._dict(
-            doctype="CRM Notification",
-            from_user=doc.owner,
-            to_user=mention.email,
-            type="Mention",
-            message=doc.content,
-            notification_text=notification_text,
-            notification_type_doctype="Comment",
-            notification_type_doc=doc.name,
-            reference_doctype=doc.reference_doctype,
-            reference_name=doc.reference_name,
-        )
-
-        if frappe.db.exists("CRM Notification", values):
-            return
-        frappe.get_doc(values).insert()
+        notify_user({
+            "owner": doc.owner,
+            "assigned_to": mention.email,
+            "notification_type": "Mention",
+            "message": doc.content,
+            "notification_text": notification_text,
+            "doctype": "Comment",
+            "name": doc.name,
+            "reference_doctype": doc.reference_doctype,
+            "reference_docname": doc.reference_name,
+        })
 
 
 def extract_mentions(html):
