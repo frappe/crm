@@ -7,6 +7,7 @@ def validate(doc, method):
 	set_primary_mobile_no(doc)
 	doc.set_primary_email()
 	doc.set_primary("mobile_no")
+	update_deals_email_mobile_no(doc)
 
 
 def set_primary_email(doc):
@@ -23,6 +24,21 @@ def set_primary_mobile_no(doc):
 
 	if len(doc.phone_nos) == 1:
 		doc.phone_nos[0].is_primary_mobile_no = 1
+
+
+def update_deals_email_mobile_no(doc):
+	linked_deals = frappe.get_all(
+		"CRM Contacts",
+		filters={"contact": doc.name, "is_primary": 1},
+		fields=["parent"],
+	)
+
+	for linked_deal in linked_deals:
+		deal = frappe.get_cached_doc("CRM Deal", linked_deal.parent)
+		if deal.email != doc.email_id or deal.mobile_no != doc.mobile_no:
+			deal.email = doc.email_id
+			deal.mobile_no = doc.mobile_no
+			deal.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
