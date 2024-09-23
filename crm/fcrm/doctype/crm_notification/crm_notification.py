@@ -25,10 +25,10 @@ def notify_user(args):
 		type=args.notification_type,
 		message=args.message,
 		notification_text=args.notification_text,
-		notification_type_doctype=args.doctype,
-		notification_type_doc=args.name,
-		reference_doctype=args.reference_doctype,
-		reference_name=args.reference_docname,
+		notification_type_doctype=args.reference_doctype,
+		notification_type_doc=args.reference_docname,
+		reference_doctype=args.redirect_to_doctype,
+		reference_name=args.redirect_to_docname,
 	)
 
 	if frappe.db.exists("CRM Notification", values):

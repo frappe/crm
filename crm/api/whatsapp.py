@@ -44,10 +44,10 @@ def notify_agent(doc):
                 "notification_type": "WhatsApp",
                 "message": doc.message,
                 "notification_text": notification_text,
-                "doctype": "WhatsApp Message",
-                "name": doc.name,
-                "reference_doctype": doc.reference_doctype,
-                "reference_docname": doc.reference_name,
+                "reference_doctype": "WhatsApp Message",
+                "reference_docname": doc.name,
+                "redirect_to_doctype": doc.reference_doctype,
+                "redirect_to_docname": doc.reference_name,
             })
 
 

@@ -36,10 +36,10 @@ def notify_mentions(doc):
             "notification_type": "Mention",
             "message": doc.content,
             "notification_text": notification_text,
-            "doctype": "Comment",
-            "name": doc.name,
-            "reference_doctype": doc.reference_doctype,
-            "reference_docname": doc.reference_name,
+            "reference_doctype": "Comment",
+            "reference_docname": doc.name,
+            "redirect_to_doctype": doc.reference_doctype,
+            "redirect_to_docname": doc.reference_name,
         })
 
 
