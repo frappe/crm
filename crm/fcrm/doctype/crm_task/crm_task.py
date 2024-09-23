@@ -12,6 +12,17 @@ class CRMTask(Document):
 	def after_insert(self):
 		self.assign_to()
 
+	def validate(self):
+		if self.is_new() or not self.assigned_to:
+			return
+
+		if self.get_doc_before_save().assigned_to != self.assigned_to:
+			self.unassign_from_previous_user(self.get_doc_before_save().assigned_to)
+			self.assign_to()
+
+	def unassign_from_previous_user(self, user):
+		unassign(self.doctype, self.name, user)
+
 	def assign_to(self):
 		if self.assigned_to:
 			assign({
