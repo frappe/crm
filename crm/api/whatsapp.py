@@ -2,6 +2,7 @@ import frappe
 import json
 from frappe import _
 from crm.api.doc import get_assigned_users
+from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 def validate(doc, method):
@@ -29,30 +30,25 @@ def notify_agent(doc):
         if doctype.startswith("CRM "):
             doctype = doctype[4:].lower()
         notification_text = f"""
-			<div class="mb-2 leading-5 text-gray-600">
-				<span class="font-medium text-gray-900">{ _('You') }</span>
-				<span>{ _('received a whatsapp message in {0}').format(doctype) }</span>
-				<span class="font-medium text-gray-900">{ doc.reference_name }</span>
-			</div>
-		"""
+            <div class="mb-2 leading-5 text-gray-600">
+                <span class="font-medium text-gray-900">{ _('You') }</span>
+                <span>{ _('received a whatsapp message in {0}').format(doctype) }</span>
+                <span class="font-medium text-gray-900">{ doc.reference_name }</span>
+            </div>
+        """
         assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)
         for user in assigned_users:
-            values = frappe._dict(
-                doctype="CRM Notification",
-                from_user=doc.owner,
-                to_user=user,
-                type="WhatsApp",
-                message=doc.message,
-                notification_text=notification_text,
-                notification_type_doctype="WhatsApp Message",
-                notification_type_doc=doc.name,
-                reference_doctype=doc.reference_doctype,
-                reference_name=doc.reference_name,
-            )
-
-            if frappe.db.exists("CRM Notification", values):
-                return
-            frappe.get_doc(values).insert(ignore_permissions=True)
+            notify_user({
+                "owner": doc.owner,
+                "assigned_to": user,
+                "notification_type": "WhatsApp",
+                "message": doc.message,
+                "notification_text": notification_text,
+                "reference_doctype": "WhatsApp Message",
+                "reference_docname": doc.name,
+                "redirect_to_doctype": doc.reference_doctype,
+                "redirect_to_docname": doc.reference_name,
+            })
 
 
 def get_lead_or_deal_from_number(number):
@@ -62,10 +58,10 @@ def get_lead_or_deal_from_number(number):
         mobile_no = parse_mobile_no(mobile_no)
 
         query = f"""
-			SELECT name, mobile_no
-			FROM `tab{doctype}`
-			WHERE CONCAT('+', REGEXP_REPLACE(mobile_no, '[^0-9]', '')) = {mobile_no}
-		"""
+            SELECT name, mobile_no
+            FROM `tab{doctype}`
+            WHERE CONCAT('+', REGEXP_REPLACE(mobile_no, '[^0-9]', '')) = {mobile_no}
+        """
 
         data = frappe.db.sql(query + where, as_dict=True)
         return data[0].name if data else None
