@@ -6,7 +6,7 @@ from frappe import _
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 from frappe.model.document import Document
 from frappe.frappeclient import FrappeClient
-from frappe.utils import get_url_to_form
+from frappe.utils import get_url_to_form, get_url_to_list
 import json
 
 class ERPNextCRMSettings(Document):
@@ -93,12 +93,8 @@ def get_customer_link(crm_deal):
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
-		customer_url = get_url_to_form("Customer")
 		customer = frappe.db.exists("Customer", {"crm_deal": crm_deal})
-		if customer:
-			return f"{customer_url}/{customer}"
-		else:
-			return ""
+		return get_url_to_form("Customer", customer) if customer else ""
 	else:
 		client = get_erpnext_site_client(erpnext_crm_settings)
 		try:
@@ -123,7 +119,7 @@ def get_quotation_url(crm_deal, organization):
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
-		quotation_url = get_url_to_form("Quotation")
+		quotation_url = get_url_to_list("Quotation")
 		return f"{quotation_url}/new?quotation_to=CRM Deal&crm_deal={crm_deal}&party_name={crm_deal}&company={erpnext_crm_settings.erpnext_company}"
 	else:
 		site_url = erpnext_crm_settings.get("erpnext_site_url")
