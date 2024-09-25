@@ -173,6 +173,8 @@ def get_contacts(doc):
 def get_organization_address(organization):
 	address = frappe.db.get_value("CRM Organization", organization, "address")
 	address = frappe.get_doc("Address", address) if address else None
+	if not address:
+		return None
 	return {
 		"name": address.name,
 		"address_title": address.address_title,
