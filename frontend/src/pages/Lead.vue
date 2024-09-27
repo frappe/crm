@@ -330,7 +330,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import {useActiveTabManager} from '@/composables/useActiveTabManager'
+import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
