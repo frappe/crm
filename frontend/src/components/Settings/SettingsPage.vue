@@ -122,6 +122,7 @@ const sections = computed(() => {
     } else {
       _sections[_sections.length - 1].fields.push({
         ...field,
+        filters: field.link_filters && JSON.parse(field.link_filters),
         display_via_depends_on: evaluate_depends_on_value(
           field.depends_on,
           data.doc,
