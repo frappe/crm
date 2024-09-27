@@ -685,6 +685,7 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 				"depends_on": field.depends_on,
 				"mandatory_depends_on": field.mandatory_depends_on,
 				"read_only_depends_on": field.read_only_depends_on,
+				"link_filters": field.get("link_filters"),
 			})
 
 	return _fields
