@@ -69,6 +69,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  filters: {
+    type: Array,
+    default: () => [],
+  },
   modelValue: {
     type: String,
     default: '',
@@ -122,6 +126,7 @@ const options = createResource({
   params: {
     txt: text.value,
     doctype: props.doctype,
+    filters: props.filters,
   },
   transform: (data) => {
     let allData = data.map((option) => {
@@ -152,6 +157,7 @@ function reload(val) {
     params: {
       txt: val,
       doctype: props.doctype,
+      filters: props.filters,
     },
   })
   options.reload()
