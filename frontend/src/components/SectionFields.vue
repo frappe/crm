@@ -65,6 +65,7 @@
           class="form-control"
           :value="data[field.name] && getUser(data[field.name]).full_name"
           doctype="User"
+          :filters="field.filters"
           @change="(data) => emit('update', field.name, data)"
           :placeholder="'Select' + ' ' + field.label + '...'"
           :hideMe="true"
@@ -88,6 +89,7 @@
           class="form-control select-text"
           :value="data[field.name]"
           :doctype="field.doctype"
+          :filters="field.filters"
           :placeholder="field.placeholder"
           @change="(data) => emit('update', field.name, data)"
           :onCreate="field.create"
@@ -144,6 +146,7 @@ const _fields = computed(() => {
     if (df?.depends_on) evaluate_depends_on(df.depends_on, field)
     all_fields.push({
       ...field,
+      filters: df.link_filters && JSON.parse(df.link_filters),
       placeholder: field.placeholder || field.label,
     })
   })

@@ -354,6 +354,8 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useActiveTabManager } from '@/composables/useActiveTabManager'
+
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
@@ -376,10 +378,13 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: async (data) => {
-    organization.update({
-      params: { doctype: 'CRM Organization', name: data.organization },
-    })
-    organization.fetch()
+    if (data.organization) {
+      organization.update({
+        params: { doctype: 'CRM Organization', name: data.organization },
+      })
+      organization.fetch()
+    }
+
     let obj = {
       doc: data,
       $dialog,
@@ -513,7 +518,6 @@ usePageMeta(() => {
   }
 })
 
-const tabIndex = ref(0)
 const tabs = computed(() => {
   let tabOptions = [
     {
@@ -556,6 +560,7 @@ const tabs = computed(() => {
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
+const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
 
 const fieldsLayout = createResource({
   url: 'crm.api.doc.get_sidebar_fields',
