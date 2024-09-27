@@ -309,10 +309,13 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: async (data) => {
-    organization.update({
-      params: { doctype: 'CRM Organization', name: data.organization },
-    })
-    organization.fetch()
+    if (data.organization) {
+      organization.update({
+        params: { doctype: 'CRM Organization', name: data.organization },
+      })
+      organization.fetch()
+    }
+
     let obj = {
       doc: data,
       $dialog,
