@@ -1,0 +1,3370 @@
+# Russian translations for Frappe CRM.
+# Copyright (C) 2024 Frappe Technologies Pvt. Ltd.
+# This file is distributed under the same license as the Frappe CRM project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Frappe CRM VERSION\n"
+"Report-Msgid-Bugs-To: shariq@frappe.io\n"
+"POT-Creation-Date: 2024-10-26 14:06+0000\n"
+"PO-Revision-Date: 2024-10-26 19:19+0400\n"
+"Last-Translator: AlexKuzin <dev@olimpicfresh.ru>\n"
+"Language-Team: shariq@frappe.io\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Generated-By: Babel 2.13.1\n"
+"X-Generator: Poedit 3.5\n"
+
+#: frontend/src/components/ViewControls.vue:964
+msgid " (New)"
+msgstr " (Новый)"
+
+#: frontend/src/components/Modals/TaskModal.vue:97
+msgid "01/04/2024 11:30 PM"
+msgstr "01/04/2024 11:30 PM"
+
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM
+#. Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "1-10"
+msgstr "1-10"
+
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM
+#. Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "1000+"
+msgstr "1000+"
+
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM
+#. Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "11-50"
+msgstr "11-50"
+
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM
+#. Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "201-500"
+msgstr "201-500"
+
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM
+#. Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "501-1000"
+msgstr "501-1000"
+
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
+#. Option for the 'No. of Employees' (Select) field in DocType 'CRM
+#. Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "51-200"
+msgstr "51-200"
+
+#. Paragraph text in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "<b>META</b>"
+msgstr "<b>МЕТА</b>"
+
+#. Paragraph text in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "<b>SHORTCUTS</b>"
+msgstr "<b>ЯРЛЫКИ</b>"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:78
+msgid "<p>Dear {{ lead_name }},</p>\\n\\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\\n\\n<p>Thanks,</p>\\n<p>Frappé</p>"
+msgstr "<p>Уважаемый {{имя_клиента}},</p>\\n\\nЭто<p>напоминание о выплате {{сумма_итого}}.</p>\\n\\nСпасибо<p>,</p>\\n<p>Подпись</p>"
+
+#. Header text in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "<span class=\"h5\"><b>PORTAL</b></span>"
+msgstr "<span class=\"h5\"><b>ПОРТАЛ</b></span>"
+
+#: frontend/src/components/CommunicationArea.vue:81
+msgid "@John, can you please check this?"
+msgstr "@John, не могли бы Вы проверить это?"
+
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:47
+msgid "A Lead requires either a person's name or an organization's name"
+msgstr "Для лида требуется либо имя человека, либо название организации"
+
+#. Label of a Data field in DocType 'ERPNext CRM Settings'
+#. Label of a Data field in DocType 'Twilio Settings'
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+msgid "API Key"
+msgstr "API ключ"
+
+#. Label of a Password field in DocType 'ERPNext CRM Settings'
+#. Label of a Password field in DocType 'Twilio Settings'
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+msgid "API Secret"
+msgstr "API Секрет"
+
+#: frontend/src/components/CallUI.vue:91
+msgid "Accept"
+msgstr "Ответить"
+
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.js:7
+msgid "Accept Invitation"
+msgstr "Принять приглашение"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "Accepted"
+msgstr "Принято"
+
+#. Label of a Datetime field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "Accepted At"
+msgstr "Принято в"
+
+#. Label of a Data field in DocType 'Twilio Settings'
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+msgid "Account SID"
+msgstr "SID аккаунта"
+
+#: frontend/src/components/CustomActions.vue:73
+#: frontend/src/components/ViewControls.vue:574
+msgid "Actions"
+msgstr "Действия"
+
+#: frontend/src/pages/Deal.vue:544 frontend/src/pages/Lead.vue:490
+#: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:352
+msgid "Activity"
+msgstr "Активность"
+
+#: frontend/src/components/ColumnSettings.vue:63
+#: frontend/src/components/Kanban/KanbanView.vue:156
+msgid "Add Column"
+msgstr "Добавить колонку"
+
+#: frontend/src/components/Kanban/KanbanSettings.vue:83
+#: frontend/src/components/QuickEntryLayoutBuilder.vue:80
+#: frontend/src/components/Settings/SidePanelLayoutBuilder.vue:93
+msgid "Add Field"
+msgstr "Добавить поле"
+
+#: frontend/src/components/Filter.vue:136
+msgid "Add Filter"
+msgstr "Добавить фильтр"
+
+#: frontend/src/components/QuickEntryLayoutBuilder.vue:104
+#: frontend/src/components/Settings/SidePanelLayoutBuilder.vue:125
+msgid "Add Section"
+msgstr "Добавить секцию"
+
+#: frontend/src/components/SortBy.vue:146
+msgid "Add Sort"
+msgstr "Добавить сортировку"
+
+#. Label of a Section Break field in DocType 'CRM Holiday List'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+msgid "Add Weekly Holidays"
+msgstr "Добавить еженедельные выходные"
+
+#. Label of a Button field in DocType 'CRM Holiday List'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+msgid "Add to Holidays"
+msgstr "Добавить в праздники"
+
+#. Label of a Link field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "Address"
+msgstr "Адрес"
+
+#: crm/integrations/twilio/twilio_handler.py:148
+msgid "Agent is unavailable to take the call, please call after some time."
+msgstr "Оператор не может ответить на звонок, пожалуйста, позвоните через некоторое время."
+
+#. Label of a Currency field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Contact.vue:426
+#: frontend/src/pages/Organization.vue:506
+msgid "Amount"
+msgstr "Сумма"
+
+#: frontend/src/components/Filter.vue:42 frontend/src/components/Filter.vue:80
+msgid "And"
+msgstr "И"
+
+#. Label of a Currency field in DocType 'CRM Lead'
+#. Label of a Currency field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "Annual Revenue"
+msgstr "Годовой доход"
+
+#: frontend/src/components/Modals/DealModal.vue:186
+#: frontend/src/components/Modals/LeadModal.vue:138
+msgid "Annual Revenue should be a number"
+msgstr "Годовой доход должен быть числом"
+
+#: frontend/src/components/Kanban/KanbanSettings.vue:106
+#: frontend/src/components/Kanban/KanbanView.vue:44
+msgid "Apply"
+msgstr "Применить"
+
+#. Label of a Link field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Apply On"
+msgstr "Применить для"
+
+#. Label of a Select field in DocType 'CRM Form Script'
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+msgid "Apply To"
+msgstr "Применить к"
+
+#: frontend/src/components/Apps.vue:14
+msgid "Apps"
+msgstr "Приложения"
+
+#: frontend/src/components/Activities/AttachmentArea.vue:134
+msgid "Are you sure you want to delete this attachment?"
+msgstr "Вы хотите удалить это вложение?"
+
+#: frontend/src/pages/Contact.vue:346
+msgid "Are you sure you want to delete this contact?"
+msgstr "Вы хотите удалить этот контакт?"
+
+#: frontend/src/pages/Organization.vue:352
+msgid "Are you sure you want to delete this organization?"
+msgstr "Вы уверены, что хотите удалить эту организацию?"
+
+#: frontend/src/components/Activities/TaskArea.vue:58
+msgid "Are you sure you want to delete this task?"
+msgstr "Вы уверены, что хотите удалить эту задачу?"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
+msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
+msgstr "Вы уверены, что хотите сбросить скрипт формы 'Создать заявку из сделки CRM'?"
+
+#: frontend/src/components/ListBulkActions.vue:193
+#: frontend/src/components/Modals/AssignmentModal.vue:5
+msgid "Assign To"
+msgstr "Назначить на"
+
+#. Label of a Link field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Assigned To"
+msgstr "Назначено"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Assignment"
+msgstr "Назначение"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Assignment Rule"
+msgstr "Правило назначения"
+
+#: frontend/src/components/ListBulkActions.vue:158
+msgid "Assignment cleared successfully"
+msgstr "Назначение успешно очищено"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:5
+#: frontend/src/components/FilesUploader/FilesUploader.vue:76
+msgid "Attach"
+msgstr "Прикрепить"
+
+#: frontend/src/pages/Deal.vue:103 frontend/src/pages/Lead.vue:153
+msgid "Attach a file"
+msgstr "Добавить вложение"
+
+#: frontend/src/pages/Deal.vue:575 frontend/src/pages/Lead.vue:521
+#: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:383
+msgid "Attachments"
+msgstr "Вложения"
+
+#. Label of a Password field in DocType 'Twilio Settings'
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+msgid "Auth Token"
+msgstr "Токен авторизации"
+
+#: frontend/src/components/Activities/EmailArea.vue:72
+#: frontend/src/components/EmailEditor.vue:41
+#: frontend/src/components/EmailEditor.vue:63
+msgid "BCC"
+msgstr "Скрытая копия"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:31
+#: frontend/src/components/Settings/ProfileSettings.vue:45
+msgid "Back"
+msgstr "Назад"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:31
+msgid "Back to file upload"
+msgstr "Вернуться к загрузке файлов"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Backlog"
+msgstr "Бэклог"
+
+#: frontend/src/components/Filter.vue:352
+msgid "Between"
+msgstr "Между"
+
+#: frontend/src/components/Modals/EditValueModal.vue:2
+msgid "Bulk Edit"
+msgstr "Массовое редактирование"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Busy"
+msgstr "Занято"
+
+#: frontend/src/components/Activities/EmailArea.vue:67
+#: frontend/src/components/EmailEditor.vue:33
+#: frontend/src/components/EmailEditor.vue:51
+msgid "CC"
+msgstr "Копия"
+
+#: frontend/src/components/UserDropdown.vue:24
+msgid "CRM"
+msgstr "CRM"
+
+#. Name of a DocType
+#. Linked DocType in FCRM Note's connections
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/fcrm_note/fcrm_note.json
+msgid "CRM Call Log"
+msgstr "Журнал вызовов CRM"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json
+msgid "CRM Communication Status"
+msgstr "Статус общения CRM"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_contacts/crm_contacts.json
+msgid "CRM Contacts"
+msgstr "CRM Контакты"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: frontend/src/components/Modals/EmailTemplateModal.vue:37
+msgid "CRM Deal"
+msgstr "CRM Сделки"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+msgid "CRM Deal Status"
+msgstr "CRM Статус сделки"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+msgid "CRM Fields Layout"
+msgstr "CRM Макет полей"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+msgid "CRM Form Script"
+msgstr "CRM Скрипт формы"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_holiday/crm_holiday.json
+msgid "CRM Holiday"
+msgstr "CRM Праздники"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+msgid "CRM Holiday List"
+msgstr "CRM Праздничный список"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_industry/crm_industry.json
+msgid "CRM Industry"
+msgstr "CRM Индустрия"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "CRM Invitation"
+msgstr "CRM Приглашение"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "CRM Lead"
+msgstr "CRM Лид"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
+msgid "CRM Lead Source"
+msgstr "CRM Источник лида"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "CRM Lead Status"
+msgstr "CRM Статус лида"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "CRM Notification"
+msgstr "CRM Уведомление"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "CRM Organization"
+msgstr "CRM Организация"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "CRM Portal Page"
+msgstr "CRM Страница портала"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "CRM Service Day"
+msgstr "CRM День обслуживания"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "CRM Service Level Agreement"
+msgstr "CRM Соглашение об уровне обслуживания"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
+msgid "CRM Service Level Priority"
+msgstr "CRM Приоритет уровня обслуживания"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
+msgid "CRM Status Change Log"
+msgstr "CRM Журнал изменений состояния"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "CRM Task"
+msgstr "CRM Задача"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+msgid "CRM Territory"
+msgstr "CRM Регион"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "CRM View Settings"
+msgstr "CRM Настройки представления"
+
+#: frontend/src/components/ViewControls.vue:193
+msgid "CSV"
+msgstr "CSV"
+
+#: frontend/src/components/Modals/CallLogModal.vue:6
+msgid "Call Details"
+msgstr "Детализация звонков"
+
+#. Label of a Link field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Call Received By"
+msgstr "Вызов принят"
+
+#: frontend/src/components/Modals/NoteModal.vue:45
+#: frontend/src/components/Modals/TaskModal.vue:45
+msgid "Call with John Doe"
+msgstr "Звонок с неизвестным"
+
+#. Label of a Link field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Caller"
+msgstr "Абонент"
+
+#: frontend/src/components/CallUI.vue:39 frontend/src/components/CallUI.vue:146
+msgid "Calling..."
+msgstr "Звонок…"
+
+#: frontend/src/pages/Deal.vue:559 frontend/src/pages/Lead.vue:505
+#: frontend/src/pages/MobileDeal.vue:457 frontend/src/pages/MobileLead.vue:367
+msgid "Calls"
+msgstr "Звонки"
+
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:51
+msgid "Camera"
+msgstr "Камера"
+
+#: frontend/src/components/CallUI.vue:76
+#: frontend/src/components/ColumnSettings.vue:126
+#: frontend/src/components/Modals/AssignmentModal.vue:9
+#: frontend/src/components/ViewControls.vue:56
+#: frontend/src/components/ViewControls.vue:83
+msgid "Cancel"
+msgstr "Отмена"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#. Option for the 'Status' (Select) field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Canceled"
+msgstr "Отменен"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:94
+msgid "Capture"
+msgstr "Захватить"
+
+#: frontend/src/components/Activities/TaskArea.vue:44
+msgid "Change Status"
+msgstr "Изменить статус"
+
+#: frontend/src/pages/Contact.vue:31 frontend/src/pages/Lead.vue:83
+#: frontend/src/pages/Organization.vue:34
+msgid "Change image"
+msgstr "Изменить изображение"
+
+#: frontend/src/pages/Lead.vue:230 frontend/src/pages/Lead.vue:257
+#: frontend/src/pages/MobileLead.vue:127 frontend/src/pages/MobileLead.vue:154
+msgid "Choose Existing"
+msgstr "Выбрать существующий"
+
+#: frontend/src/components/Modals/DealModal.vue:32
+msgid "Choose Existing Contact"
+msgstr "Выбрать существующий контакт"
+
+#: frontend/src/components/Modals/DealModal.vue:28
+msgid "Choose Existing Organization"
+msgstr "Выбрать существующую организацию"
+
+#: frontend/src/components/Controls/Link.vue:48
+msgid "Clear"
+msgstr "Очистить"
+
+#: frontend/src/components/ListBulkActions.vue:139
+#: frontend/src/components/ListBulkActions.vue:147
+#: frontend/src/components/ListBulkActions.vue:197
+msgid "Clear Assignment"
+msgstr "Очистить назначения"
+
+#: frontend/src/components/SortBy.vue:158
+msgid "Clear Sort"
+msgstr "Очистить сортировку"
+
+#. Label of a Button field in DocType 'CRM Holiday List'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+msgid "Clear Table"
+msgstr "Очистить таблицу"
+
+#: frontend/src/components/Filter.vue:18 frontend/src/components/Filter.vue:148
+msgid "Clear all Filter"
+msgstr "Очистить весь фильтр"
+
+#: frontend/src/components/Notifications.vue:28
+msgid "Close"
+msgstr "Закрыть"
+
+#. Label of a Date field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+msgid "Close Date"
+msgstr "Дата закрытия"
+
+#: frontend/src/components/Layouts/AppSidebar.vue:79
+msgid "Collapse"
+msgstr "Свернуть"
+
+#. Label of a Select field in DocType 'CRM Deal Status'
+#. Label of a Select field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "Color"
+msgstr "Цвет"
+
+#. Label of a Data field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/Kanban/KanbanSettings.vue:14
+msgid "Column Field"
+msgstr "Поле колонки"
+
+#. Label of a Code field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/ColumnSettings.vue:4
+msgid "Columns"
+msgstr "Колонки"
+
+#. Label of a Link field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: frontend/src/components/CommentBox.vue:80
+#: frontend/src/components/CommunicationArea.vue:17
+msgid "Comment"
+msgstr "Комментарий"
+
+#: frontend/src/pages/Deal.vue:554 frontend/src/pages/Lead.vue:500
+#: frontend/src/pages/MobileDeal.vue:452 frontend/src/pages/MobileLead.vue:362
+msgid "Comments"
+msgstr "Комментарии"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Link field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Communication Status"
+msgstr "Статус общения"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Communication Statuses"
+msgstr "Статусы общения"
+
+#. Label of a Data field in DocType 'ERPNext CRM Settings'
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+msgid "Company in ERPNext Site"
+msgstr "Компания на сайте ERP"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Completed"
+msgstr "Завершен"
+
+#. Option for the 'Device' (Select) field in DocType 'Twilio Agents'
+#: crm/fcrm/doctype/twilio_agents/twilio_agents.json
+msgid "Computer"
+msgstr "Компьютер"
+
+#. Label of a Code field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Condition"
+msgstr "Условие"
+
+#. Label of a Link field in DocType 'CRM Contacts'
+#. Label of a Link field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_contacts/crm_contacts.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Lead.vue:253
+#: frontend/src/pages/MobileLead.vue:150
+msgid "Contact"
+msgstr "Контакт"
+
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:178
+msgid "Contact Already Exists"
+msgstr "Контакт уже существует"
+
+#: frontend/src/components/Modals/EditValueModal.vue:20
+msgid "Contact Us"
+msgstr "Свяжитесь с нами"
+
+#: frontend/src/pages/Deal.vue:649 frontend/src/pages/MobileDeal.vue:547
+msgid "Contact added"
+msgstr "Контакт добавлен"
+
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:177
+msgid "Contact already exists with {0}"
+msgstr "Контакт уже существует с {0}"
+
+#: crm/api/contact.py:57
+msgid "Contact not found"
+msgstr "Контакт не найден"
+
+#: frontend/src/pages/Deal.vue:664 frontend/src/pages/MobileDeal.vue:562
+msgid "Contact removed"
+msgstr "Контакт удален"
+
+#. Label of a Tab Break field in DocType 'CRM Deal'
+#. Label of a Table field in DocType 'CRM Deal'
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+#: frontend/src/pages/Contact.vue:296
+msgid "Contacts"
+msgstr "Контакты"
+
+#. Label of a Text Editor field in DocType 'FCRM Note'
+#: crm/fcrm/doctype/fcrm_note/fcrm_note.json
+#: frontend/src/components/Modals/EmailTemplateModal.vue:67
+#: frontend/src/components/Modals/NoteModal.vue:49
+msgid "Content"
+msgstr "Содержание"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:55
+msgid "Content Type"
+msgstr "Тип контента"
+
+#: frontend/src/components/ListBulkActions.vue:70
+#: frontend/src/pages/Lead.vue:216 frontend/src/pages/MobileLead.vue:46
+#: frontend/src/pages/MobileLead.vue:113
+msgid "Convert"
+msgstr "Конвертировать"
+
+#: frontend/src/components/ListBulkActions.vue:62
+#: frontend/src/components/ListBulkActions.vue:204
+#: frontend/src/pages/Lead.vue:37 frontend/src/pages/Lead.vue:212
+#: frontend/src/pages/MobileLead.vue:109
+msgid "Convert to Deal"
+msgstr "Конвертировать в сделку"
+
+#. Label of a Check field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Converted"
+msgstr "Конвертирован"
+
+#: frontend/src/components/ListBulkActions.vue:79
+msgid "Converted successfully"
+msgstr "Преобразование прошло успешно"
+
+#: frontend/src/components/Modals/AddressModal.vue:99
+#: frontend/src/components/Modals/DealModal.vue:49
+#: frontend/src/components/Modals/EmailTemplateModal.vue:9
+#: frontend/src/components/Modals/LeadModal.vue:34
+#: frontend/src/components/Modals/NoteModal.vue:8
+#: frontend/src/components/Modals/OrganizationModal.vue:194
+#: frontend/src/components/Modals/TaskModal.vue:8
+#: frontend/src/components/Modals/ViewModal.vue:16
+#: frontend/src/pages/Contacts.vue:13 frontend/src/pages/Contacts.vue:57
+#: frontend/src/pages/Deals.vue:13 frontend/src/pages/Deals.vue:233
+#: frontend/src/pages/EmailTemplates.vue:13
+#: frontend/src/pages/EmailTemplates.vue:58 frontend/src/pages/Leads.vue:13
+#: frontend/src/pages/Leads.vue:259 frontend/src/pages/Notes.vue:7
+#: frontend/src/pages/Notes.vue:93 frontend/src/pages/Organizations.vue:13
+#: frontend/src/pages/Organizations.vue:57 frontend/src/pages/Tasks.vue:11
+#: frontend/src/pages/Tasks.vue:182
+msgid "Create"
+msgstr "Создать"
+
+#: frontend/src/components/Modals/DealModal.vue:8
+msgid "Create Deal"
+msgstr "Создать сделку"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:5
+msgid "Create Email Template"
+msgstr "Создайте шаблон электронной почты"
+
+#: frontend/src/components/Modals/LeadModal.vue:8
+msgid "Create Lead"
+msgstr "Создать Лида"
+
+#: frontend/src/components/Controls/Link.vue:36
+#: frontend/src/components/Fields.vue:170
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:55
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:45
+msgid "Create New"
+msgstr "Создать"
+
+#: frontend/src/components/Activities/Activities.vue:382
+#: frontend/src/components/Modals/NoteModal.vue:18
+msgid "Create Note"
+msgstr "Создать заметку"
+
+#: frontend/src/components/Activities/Activities.vue:397
+#: frontend/src/components/Modals/TaskModal.vue:18
+msgid "Create Task"
+msgstr "Создать задачу"
+
+#: frontend/src/components/Modals/ViewModal.vue:9
+#: frontend/src/components/ViewControls.vue:578
+msgid "Create View"
+msgstr "Создать представление"
+
+#. Label of a Check field in DocType 'ERPNext CRM Settings'
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+msgid "Create customer on status change"
+msgstr "Создание клиента при изменении статуса"
+
+#: frontend/src/components/Modals/CallLogModal.vue:95
+msgid "Create lead"
+msgstr "Создать Лида"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Link field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "Currency"
+msgstr "Валюта"
+
+#: frontend/src/pages/Deal.vue:436
+msgid "Customer created successfully"
+msgstr "Клиент создан успешно"
+
+#. Label of a Date field in DocType 'CRM Holiday'
+#: crm/fcrm/doctype/crm_holiday/crm_holiday.json
+msgid "Date"
+msgstr "Дата"
+
+#: frontend/src/pages/Tasks.vue:129
+msgid "Deal"
+msgstr "Сделка"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+msgid "Deal Owner"
+msgstr "Владелец сделки"
+
+#. Label of a Link field in DocType 'ERPNext CRM Settings'
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+msgid "Deal Status"
+msgstr "Статус сделки"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Deal Statuses"
+msgstr "Статусы сделок"
+
+#: crm/fcrm/doctype/crm_deal/api.py:20
+msgid "Deal not found"
+msgstr "Сделка не найдена"
+
+#: frontend/src/pages/Contact.vue:446 frontend/src/pages/Organization.vue:526
+msgid "Deal owner"
+msgstr "Владелец сделки"
+
+#: frontend/src/pages/Deal.vue:478 frontend/src/pages/MobileDeal.vue:376
+msgid "Deal updated"
+msgstr "Сделка обновлена"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+#: frontend/src/pages/Deal.vue:510 frontend/src/pages/MobileDeal.vue:408
+msgid "Deals"
+msgstr "Сделки"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:92
+msgid "Dear {{ lead_name }}, \\n\\nThis is a reminder for the payment of {{ grand_total }}. \\n\\nThanks, \\nFrappé"
+msgstr "Уважаемый {{имя_клиента }}, \\n\\nЭто напоминание о выплате {{ сумма_итого }}. \\n\\nСпасибо, \\nПодпись"
+
+#. Label of a Check field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Default"
+msgstr "По умолчанию"
+
+#. Label of a Check field in DocType 'CRM Service Level Priority'
+#: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
+msgid "Default Priority"
+msgstr "Приоритет по умолчанию"
+
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:33
+msgid "Default Service Level Agreement already exists for {0}"
+msgstr "Соглашение об уровне обслуживания по умолчанию уже существует для {0}"
+
+#: frontend/src/components/ViewControls.vue:525
+#: frontend/src/components/ViewControls.vue:883
+msgid "Default Views"
+msgstr "Виды по умолчанию"
+
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:18
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:30
+msgid "Default statuses, custom fields and layouts restored successfully."
+msgstr "Статусы по умолчанию, пользовательские поля и макеты успешно восстановлены."
+
+#: frontend/src/components/Activities/AttachmentArea.vue:137
+#: frontend/src/components/Activities/NoteArea.vue:12
+#: frontend/src/components/Activities/TaskArea.vue:53
+#: frontend/src/components/Activities/TaskArea.vue:61
+#: frontend/src/components/Kanban/KanbanView.vue:224
+#: frontend/src/components/ListBulkActions.vue:96
+#: frontend/src/components/ListBulkActions.vue:104
+#: frontend/src/components/ListBulkActions.vue:186
+#: frontend/src/components/ViewControls.vue:927
+#: frontend/src/components/ViewControls.vue:938
+#: frontend/src/pages/Contact.vue:155 frontend/src/pages/Contact.vue:349
+#: frontend/src/pages/MobileDeal.vue:522 frontend/src/pages/Notes.vue:40
+#: frontend/src/pages/Organization.vue:158
+#: frontend/src/pages/Organization.vue:355 frontend/src/pages/Tasks.vue:334
+msgid "Delete"
+msgstr "Удалить"
+
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:26
+msgid "Delete & Restore"
+msgstr "Удаление и восстановление"
+
+#: frontend/src/components/Activities/TaskArea.vue:57
+msgid "Delete Task"
+msgstr "Удалить задачу"
+
+#: frontend/src/components/ViewControls.vue:923
+#: frontend/src/components/ViewControls.vue:931
+msgid "Delete View"
+msgstr "Удалиить представление"
+
+#: frontend/src/components/Activities/AttachmentArea.vue:58
+#: frontend/src/components/Activities/AttachmentArea.vue:133
+msgid "Delete attachment"
+msgstr "Удалить вложение"
+
+#: frontend/src/pages/Contact.vue:345
+msgid "Delete contact"
+msgstr "Удалить контакт"
+
+#: frontend/src/pages/Organization.vue:351
+msgid "Delete organization"
+msgstr "Удалить организацию"
+
+#: frontend/src/components/ListBulkActions.vue:114
+msgid "Deleted successfully"
+msgstr "Успешно удалено"
+
+#. Label of a Text Editor field in DocType 'CRM Holiday'
+#. Label of a Text Editor field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_holiday/crm_holiday.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+#: frontend/src/components/Modals/TaskModal.vue:50
+msgid "Description"
+msgstr "Описание"
+
+#: frontend/src/components/Apps.vue:58
+msgid "Desk"
+msgstr "Рабочий стол"
+
+#. Label of a Tab Break field in DocType 'CRM Lead'
+#. Label of a Text Editor field in DocType 'CRM Lead Source'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
+#: frontend/src/pages/MobileDeal.vue:436 frontend/src/pages/MobileLead.vue:346
+msgid "Details"
+msgstr "Подробности"
+
+#. Label of a Select field in DocType 'Twilio Agents'
+#: crm/fcrm/doctype/twilio_agents/twilio_agents.json
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:39
+msgid "Device"
+msgstr "Устройство"
+
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
+msgid "Disable"
+msgstr "Отключить"
+
+#: frontend/src/components/CommentBox.vue:76
+#: frontend/src/components/EmailEditor.vue:151
+msgid "Discard"
+msgstr "Отменить"
+
+#. Label of a Link field in DocType 'CRM Form Script'
+#. Label of a Link field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "DocType"
+msgstr "ДокТайп"
+
+#: frontend/src/components/UserDropdown.vue:88
+msgid "Docs"
+msgstr "Документы"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:32
+msgid "Doctype"
+msgstr "ДокТайп"
+
+#. Label of a Link field in DocType 'CRM Fields Layout'
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+msgid "Document Type"
+msgstr "Тип документа"
+
+#: crm/api/activities.py:16
+msgid "Document not found"
+msgstr "Документ не найден"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Done"
+msgstr "Выполнено"
+
+#: frontend/src/components/Activities/AudioPlayer.vue:166
+#: frontend/src/components/ViewControls.vue:175
+msgid "Download"
+msgstr "Загрузить"
+
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:24
+msgid "Drag and drop files here or upload from"
+msgstr "Перетащите файлы сюда или загрузите из"
+
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:56
+msgid "Drop files here"
+msgstr "Перетащите файлы сюда"
+
+#. Label of a Datetime field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Due Date"
+msgstr "Срок исполнения"
+
+#: frontend/src/components/Modals/ViewModal.vue:15
+#: frontend/src/components/ViewControls.vue:887
+msgid "Duplicate"
+msgstr "Дублировать"
+
+#: frontend/src/components/Modals/ViewModal.vue:8
+msgid "Duplicate View"
+msgstr "Дублировать представление"
+
+#. Label of a Duration field in DocType 'CRM Call Log'
+#. Label of a Duration field in DocType 'CRM Status Change Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
+msgid "Duration"
+msgstr "Продолжительность"
+
+#: frontend/src/components/Settings/SettingsModal.vue:89
+msgid "ERPNext"
+msgstr "ERP"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+msgid "ERPNext CRM Settings"
+msgstr "Настройки ERP для CRM"
+
+#: frontend/src/components/Settings/ERPNextSettings.vue:4
+msgid "ERPNext Settings"
+msgstr "Настройки ERP"
+
+#: frontend/src/components/Settings/ERPNextSettings.vue:5
+msgid "ERPNext Settings updated"
+msgstr "Обновлены настройки ERP"
+
+#. Label of a Data field in DocType 'ERPNext CRM Settings'
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+msgid "ERPNext Site URL"
+msgstr "URL сайта ERP"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:23
+msgid "ERPNext is not installed in the current site"
+msgstr "ERP не установлена на текущем сайте"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:93
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:119
+msgid "ERPNext is not integrated with the CRM"
+msgstr "ERP не интегрирована с CRM"
+
+#: frontend/src/components/Fields.vue:100
+#: frontend/src/components/ListBulkActions.vue:179
+#: frontend/src/components/ViewControls.vue:897
+#: frontend/src/pages/Contact.vue:141 frontend/src/pages/Organization.vue:144
+msgid "Edit"
+msgstr "Редактировать"
+
+#: frontend/src/components/Settings/SidePanelModal.vue:7
+msgid "Edit Field Layout"
+msgstr "Редактирование макета поля"
+
+#: frontend/src/components/Modals/NoteModal.vue:18
+msgid "Edit Note"
+msgstr "Изменить заметку"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:16
+msgid "Edit Profile"
+msgstr "Изменить профиль"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:31
+msgid "Edit Profile Photo"
+msgstr "Изменить фото профиля"
+
+#: frontend/src/components/Modals/QuickEntryModal.vue:7
+msgid "Edit Quick Entry Layout"
+msgstr "Редактирование макета быстрой записи"
+
+#: frontend/src/components/Modals/TaskModal.vue:18
+msgid "Edit Task"
+msgstr "Редактировать задачу"
+
+#: frontend/src/components/Modals/ViewModal.vue:6
+msgid "Edit View"
+msgstr "Редактировать представление"
+
+#: frontend/src/components/Settings/ProfileSettings.vue:14
+msgid "Edit profile"
+msgstr "Изменить профиль"
+
+#. Label of a Data field in DocType 'CRM Contacts'
+#. Label of a Data field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Invitation'
+#. Label of a Data field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_contacts/crm_contacts.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json frontend/src/pages/Contact.vue:436
+#: frontend/src/pages/Organization.vue:516
+#: frontend/src/pages/Organization.vue:544
+msgid "Email"
+msgstr "Почта"
+
+#. Label of a Datetime field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "Email Sent At"
+msgstr "Письмо отправлено на"
+
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:4
+msgid "Email Templates"
+msgstr "Шаблоны писем"
+
+#: frontend/src/components/EmailEditor.vue:199
+msgid "Email from Lead"
+msgstr "Электронное письмо от лида"
+
+#: frontend/src/pages/Deal.vue:549 frontend/src/pages/Lead.vue:495
+#: frontend/src/pages/MobileDeal.vue:447 frontend/src/pages/MobileLead.vue:357
+msgid "Emails"
+msgstr "Письма"
+
+#: frontend/src/components/ListViews/ListRows.vue:12
+msgid "Empty"
+msgstr "Пусто"
+
+#: frontend/src/components/Filter.vue:122
+msgid "Empty - Choose a field to filter by"
+msgstr "Пусто - Выберите поле для фильтрации"
+
+#: frontend/src/components/SortBy.vue:132
+msgid "Empty - Choose a field to sort by"
+msgstr "Пусто - Выберите поле для сортировки"
+
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
+msgid "Enable"
+msgstr "Включить"
+
+#. Label of a Check field in DocType 'CRM Form Script'
+#. Label of a Check field in DocType 'CRM Service Level Agreement'
+#. Label of a Check field in DocType 'ERPNext CRM Settings'
+#. Label of a Check field in DocType 'Twilio Settings'
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+#: frontend/src/components/Modals/EmailTemplateModal.vue:99
+msgid "Enabled"
+msgstr "Включено"
+
+#. Label of a Date field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "End Date"
+msgstr "Дата окончания"
+
+#. Label of a Datetime field in DocType 'CRM Call Log'
+#. Label of a Time field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "End Time"
+msgstr "Время окончания"
+
+#: frontend/src/components/Fields.vue:246
+msgid "Enter {0}"
+msgstr "Введите {0}"
+
+#: frontend/src/components/Filter.vue:65 frontend/src/components/Filter.vue:98
+#: frontend/src/components/Filter.vue:269
+#: frontend/src/components/Filter.vue:290
+#: frontend/src/components/Filter.vue:307
+#: frontend/src/components/Filter.vue:318
+#: frontend/src/components/Filter.vue:329
+#: frontend/src/components/Filter.vue:345
+msgid "Equals"
+msgstr "Равно"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:169
+#: frontend/src/components/Settings/SettingsPage.vue:90
+#: frontend/src/pages/Lead.vue:589 frontend/src/pages/Lead.vue:599
+#: frontend/src/pages/MobileLead.vue:443 frontend/src/pages/MobileLead.vue:453
+msgid "Error"
+msgstr "Ошибка"
+
+#: frontend/src/pages/Deal.vue:499 frontend/src/pages/MobileDeal.vue:397
+msgid "Error Updating Deal"
+msgstr "Ошибка при обновлении сделки"
+
+#: frontend/src/pages/Lead.vue:445 frontend/src/pages/MobileLead.vue:307
+msgid "Error Updating Lead"
+msgstr "Ошибка обновлении лида"
+
+#: frontend/src/pages/Deal.vue:486 frontend/src/pages/MobileDeal.vue:384
+msgid "Error updating deal"
+msgstr "Ошибка при обновлении сделки"
+
+#: frontend/src/pages/Lead.vue:432 frontend/src/pages/MobileLead.vue:294
+msgid "Error updating lead"
+msgstr "Ошибка обновлении лида"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:231
+msgid "Error while creating customer in ERPNext, check error log for more details"
+msgstr "Ошибка при создании клиента в ERP, проверьте журнал ошибок для получения более подробной информации"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:158
+msgid "Error while creating prospect in ERPNext, check error log for more details"
+msgstr "Ошибка при создании перспективы в ERP, проверьте журнал ошибок для получения более подробной информации"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:112
+msgid "Error while fetching customer in ERPNext, check error log for more details"
+msgstr "Ошибка при получении клиента в ERP, проверьте журнал ошибок для получения более подробной информации"
+
+#: frontend/src/components/ViewControls.vue:189
+#: frontend/src/components/ViewControls.vue:198
+msgid "Excel"
+msgstr "Excel"
+
+#: frontend/src/components/Layouts/AppSidebar.vue:79
+msgid "Expand"
+msgstr "Развернуть"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "Expired"
+msgstr "Истекло"
+
+#: frontend/src/components/ViewControls.vue:132
+#: frontend/src/components/ViewControls.vue:172
+msgid "Export"
+msgstr "Экспорт"
+
+#: frontend/src/components/ViewControls.vue:203
+msgid "Export All {0} Record(s)"
+msgstr "Экспорт всех {0} записей"
+
+#: frontend/src/components/ViewControls.vue:185
+msgid "Export Type"
+msgstr "Тип экспорта"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/fcrm_note/fcrm_note.json
+msgid "FCRM Note"
+msgstr "FCRM Заметка"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "FCRM Settings"
+msgstr "Настройки FCRM"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
+#. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Failed"
+msgstr "Не удалось"
+
+#: crm/integrations/twilio/api.py:106
+msgid "Failed to capture Twilio recording"
+msgstr "Не удалось получить запись Twilio"
+
+#: crm/integrations/twilio/api.py:129
+msgid "Failed to update Twilio call status"
+msgstr "Не удалось обновить статус вызова Twilio"
+
+#: frontend/src/components/Modals/EditValueModal.vue:5
+msgid "Field"
+msgstr "Поле"
+
+#: frontend/src/components/Kanban/KanbanSettings.vue:50
+msgid "Fields Order"
+msgstr "Упорядочить"
+
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:355
+msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
+msgstr "Файл \"{0}\" был пропущен, потому что разрешена загрузка только {1}"
+
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:360
+msgid "File \"{0}\" was skipped because only {1} uploads are allowed for DocType \"{2}\""
+msgstr "Файл \"{0}\" был пропущен, потому что для ДокТайпа \"{2}\" разрешена загрузка только {1}"
+
+#: frontend/src/components/Filter.vue:6
+msgid "Filter"
+msgstr "Фильтровать"
+
+#. Label of a Code field in DocType 'CRM View Settings'
+#. Label of a Tab Break field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Filters"
+msgstr "Фильтры"
+
+#. Label of a Data field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: frontend/src/components/ColumnSettings.vue:106
+#: frontend/src/components/Filter.vue:56 frontend/src/components/Filter.vue:87
+#: frontend/src/components/SortBy.vue:6 frontend/src/components/SortBy.vue:104
+#: frontend/src/components/SortBy.vue:138
+msgid "First Name"
+msgstr "Имя"
+
+#: frontend/src/components/Modals/LeadModal.vue:132
+msgid "First Name is mandatory"
+msgstr "Имя обязательно"
+
+#. Label of a Datetime field in DocType 'CRM Deal'
+#. Label of a Datetime field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "First Responded On"
+msgstr "Первая реакция на"
+
+#. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
+#. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "First Response Due"
+msgstr "Первая реакция"
+
+#. Label of a Duration field in DocType 'CRM Service Level Priority'
+#: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
+msgid "First Response TIme"
+msgstr "Время первого ответа"
+
+#. Label of a Duration field in DocType 'CRM Deal'
+#. Label of a Duration field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "First Response Time"
+msgstr "Время первого отклика"
+
+#: frontend/src/components/Filter.vue:129
+msgid "First name"
+msgstr "Имя"
+
+#. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+msgid "Form"
+msgstr "Форма"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:19
+msgid "Form Script updated successfully"
+msgstr "Скрипт формы успешно обновлен"
+
+#. Name of a Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Frappe CRM"
+msgstr "CRM"
+
+#. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
+#. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Friday"
+msgstr "Пятница"
+
+#. Label of a Data field in DocType 'CRM Call Log'
+#. Label of a Data field in DocType 'CRM Status Change Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
+msgid "From"
+msgstr "Из"
+
+#. Label of a Date field in DocType 'CRM Holiday List'
+#. Label of a Datetime field in DocType 'CRM Status Change Log'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
+msgid "From Date"
+msgstr "От даты"
+
+#. Label of a Link field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "From User"
+msgstr "От пользователя"
+
+#. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
+#. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Fulfilled"
+msgstr "Выполнен"
+
+#. Label of a Data field in DocType 'CRM Contacts'
+#. Label of a Data field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_contacts/crm_contacts.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Full Name"
+msgstr "ФИО"
+
+#. Label of a Link field in DocType 'CRM Contacts'
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Link field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_contacts/crm_contacts.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Gender"
+msgstr "Пол"
+
+#: frontend/src/pages/Deal.vue:91 frontend/src/pages/Lead.vue:141
+msgid "Go to website"
+msgstr "Перейти на сайт"
+
+#. Label of a Tab Break field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/ViewControls.vue:290
+#: frontend/src/components/ViewControls.vue:502 frontend/src/utils/view.js:16
+msgid "Group By"
+msgstr "Группировать по"
+
+#. Label of a Data field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Group By Field"
+msgstr "Группировка по полю"
+
+#: frontend/src/components/GroupBy.vue:8
+msgid "Group By: "
+msgstr "Группировать по: "
+
+#: frontend/src/components/CommunicationArea.vue:58
+msgid "Hi John, \\n\\nCan you please provide more details on this..."
+msgstr "Здравствуйте, Джон,\\n\\nМожете ли вы предоставить более подробную информацию об этом..."
+
+#: frontend/src/components/Activities/Activities.vue:230
+msgid "Hide"
+msgstr "Скрыть"
+
+#: frontend/src/components/Activities/CallArea.vue:71
+msgid "Hide Recording"
+msgstr "Скрыть запись"
+
+#: frontend/src/components/Modals/QuickEntryModal.vue:34
+#: frontend/src/components/Settings/SidePanelModal.vue:28
+msgid "Hide preview"
+msgstr "Скрыть просмотр"
+
+#. Option for the 'Priority' (Select) field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "High"
+msgstr "Высокий"
+
+#. Label of a Link field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Holiday List"
+msgstr "Список выходных"
+
+#. Label of a Data field in DocType 'CRM Holiday List'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+msgid "Holiday List Name"
+msgstr "Название списка праздников"
+
+#. Label of a Section Break field in DocType 'CRM Holiday List'
+#. Label of a Table field in DocType 'CRM Holiday List'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+msgid "Holidays"
+msgstr "Выходные"
+
+#. Label of a Data field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: frontend/src/components/ViewControls.vue:589
+msgid "ID"
+msgstr "Идентификатор (ID)"
+
+#. Label of a Data field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Icon"
+msgstr "Иконка"
+
+#. Label of a Attach Image field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Image"
+msgstr "Изображение"
+
+#: frontend/src/components/Filter.vue:273
+#: frontend/src/components/Filter.vue:294
+#: frontend/src/components/Filter.vue:309
+#: frontend/src/components/Filter.vue:322
+#: frontend/src/components/Filter.vue:336
+msgid "In"
+msgstr "В"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#. Option for the 'Status' (Select) field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "In Progress"
+msgstr "В процессе"
+
+#: frontend/src/components/SLASection.vue:75
+msgid "In less than a minute"
+msgstr "Менее чем за минуту"
+
+#: frontend/src/components/Activities/CallArea.vue:35
+msgid "Inbound Call"
+msgstr "Входящий звонок"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Incoming"
+msgstr "Входящий"
+
+#: frontend/src/components/CallUI.vue:40
+msgid "Incoming call..."
+msgstr "Входящий звонок..."
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Industries"
+msgstr "Отрасли"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Industry'
+#. Label of a Link field in DocType 'CRM Lead'
+#. Label of a Link field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_industry/crm_industry.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "Industry"
+msgstr "Сфера"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Initiated"
+msgstr "Начато"
+
+#: frontend/src/components/CallUI.vue:35
+msgid "Initiating call..."
+msgstr "Инициирование звонка..."
+
+#: frontend/src/components/Settings/SettingsModal.vue:75
+msgid "Integrations"
+msgstr "Интеграции"
+
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.py:33
+msgid "Invalid Account SID or Auth Token."
+msgstr "Неверный SID учетной записи или Auth Token."
+
+#: frontend/src/components/Modals/DealModal.vue:195
+#: frontend/src/components/Modals/LeadModal.vue:147
+msgid "Invalid Email"
+msgstr "Неверный адрес электронной почты"
+
+#: frontend/src/components/Settings/SettingsModal.vue:68
+msgid "Invite Members"
+msgstr "Пригласить пользователей"
+
+#: frontend/src/components/Settings/InviteMemberPage.vue:22
+msgid "Invite as"
+msgstr "Пригласить в качестве"
+
+#: frontend/src/components/Settings/InviteMemberPage.vue:8
+msgid "Invite by email"
+msgstr "Пригласите по электронной почте"
+
+#. Label of a Link field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "Invited By"
+msgstr "Приглашены"
+
+#: frontend/src/components/Filter.vue:275
+#: frontend/src/components/Filter.vue:284
+#: frontend/src/components/Filter.vue:296
+#: frontend/src/components/Filter.vue:311
+#: frontend/src/components/Filter.vue:324
+#: frontend/src/components/Filter.vue:338
+#: frontend/src/components/Filter.vue:347
+msgid "Is"
+msgstr "Является"
+
+#. Label of a Check field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Is Default"
+msgstr "По умолчанию"
+
+#. Label of a Check field in DocType 'ERPNext CRM Settings'
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+msgid "Is ERPNext installed on a different site?"
+msgstr "ERP установлена на другом сайте?"
+
+#. Label of a Check field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+msgid "Is Group"
+msgstr "Группа"
+
+#. Label of a Check field in DocType 'CRM Contacts'
+#: crm/fcrm/doctype/crm_contacts/crm_contacts.json
+msgid "Is Primary"
+msgstr "Основной адрес"
+
+#. Label of a Check field in DocType 'CRM Form Script'
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+msgid "Is Standard"
+msgstr "Стандартный"
+
+#. Label of a Data field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Job Title"
+msgstr "Должность"
+
+#: frontend/src/components/Filter.vue:73 frontend/src/components/Filter.vue:106
+#: frontend/src/components/Modals/AssignmentModal.vue:35
+#: frontend/src/components/Modals/TaskModal.vue:77
+msgid "John Doe"
+msgstr "Иван Иванович"
+
+#. Label of a Tab Break field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/ViewControls.vue:295
+#: frontend/src/components/ViewControls.vue:491 frontend/src/utils/view.js:20
+msgid "Kanban"
+msgstr "Канбан"
+
+#. Label of a Code field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Kanban Columns"
+msgstr "Колонки Канбан"
+
+#. Label of a Code field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Kanban Fields"
+msgstr "Поля Канбан"
+
+#: frontend/src/components/Kanban/KanbanSettings.vue:3
+#: frontend/src/components/Kanban/KanbanSettings.vue:11
+msgid "Kanban Settings"
+msgstr "Настройки Kanban"
+
+#. Label of a Data field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "Key"
+msgstr "Ключ"
+
+#. Label of a Data field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/ColumnSettings.vue:103
+msgid "Label"
+msgstr "Название"
+
+#: frontend/src/components/Filter.vue:615
+msgid "Last 6 Months"
+msgstr "Последние 6 месяцев"
+
+#: frontend/src/components/Filter.vue:607
+msgid "Last Month"
+msgstr "Последний месяц"
+
+#. Label of a Data field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Last Name"
+msgstr "Фамилия"
+
+#: frontend/src/components/Filter.vue:611
+msgid "Last Quarter"
+msgstr "Последний квартал"
+
+#. Label of a Link field in DocType 'CRM Status Change Log'
+#: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
+msgid "Last Status Change Log"
+msgstr "Журнал последних изменений состояния"
+
+#: frontend/src/components/Filter.vue:603
+msgid "Last Week"
+msgstr "Последняя неделя"
+
+#: frontend/src/components/Filter.vue:619
+msgid "Last Year"
+msgstr "Последний год"
+
+#: frontend/src/pages/Contact.vue:451 frontend/src/pages/Organization.vue:531
+#: frontend/src/pages/Organization.vue:559
+msgid "Last modified"
+msgstr "Последнее изменение"
+
+#. Label of a Code field in DocType 'CRM Fields Layout'
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+msgid "Layout"
+msgstr "Раскладка"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Tasks.vue:130
+msgid "Lead"
+msgstr "Лид"
+
+#. Label of a Tab Break field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+msgid "Lead Details"
+msgstr "Подробности"
+
+#. Label of a Data field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+msgid "Lead Name"
+msgstr "Название лида"
+
+#. Label of a Link field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Lead Owner"
+msgstr "Владелец лида"
+
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:64
+msgid "Lead Owner cannot be same as the Lead Email Address"
+msgstr "Владелец лида не может совпадать с адресом электронной почты лида"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Lead Sources"
+msgstr "Источники лидов"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Lead Statuses"
+msgstr "Статусы лидов"
+
+#: crm/fcrm/doctype/crm_lead/api.py:15
+msgid "Lead not found"
+msgstr "Лид не найден"
+
+#: frontend/src/pages/Lead.vue:424 frontend/src/pages/MobileLead.vue:286
+msgid "Lead updated"
+msgstr "Лид обновлен"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+#: frontend/src/pages/Lead.vue:456 frontend/src/pages/MobileLead.vue:318
+msgid "Leads"
+msgstr "Лиды"
+
+#. Label of a Int field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+msgid "Left"
+msgstr "Слева"
+
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
+msgid "Library"
+msgstr "Библиотека"
+
+#: frontend/src/components/Filter.vue:271
+#: frontend/src/components/Filter.vue:282
+#: frontend/src/components/Filter.vue:292
+#: frontend/src/components/Filter.vue:320
+#: frontend/src/components/Filter.vue:334
+msgid "Like"
+msgstr "Похоже"
+
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
+msgid "Link"
+msgstr "Ссылка"
+
+#. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
+#. Label of a Tab Break field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/ViewControls.vue:285
+#: frontend/src/components/ViewControls.vue:480 frontend/src/utils/view.js:12
+msgid "List"
+msgstr "Список"
+
+#: frontend/src/components/Activities/CallArea.vue:71
+msgid "Listen"
+msgstr "Слушать"
+
+#. Label of a Check field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Load Default Columns"
+msgstr "Загрузка колонок по умолчанию"
+
+#: frontend/src/components/Kanban/KanbanView.vue:138
+msgid "Load More"
+msgstr "Загрузить больше"
+
+#: frontend/src/components/Activities/Activities.vue:22
+#: frontend/src/pages/Deal.vue:181 frontend/src/pages/MobileDeal.vue:116
+msgid "Loading..."
+msgstr "Загрузка..."
+
+#. Label of a Tab Break field in DocType 'CRM Deal'
+#. Label of a Tab Break field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Log"
+msgstr "Журнал"
+
+#: frontend/src/components/UserDropdown.vue:104
+msgid "Log out"
+msgstr "Выход"
+
+#. Option for the 'Priority' (Select) field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Low"
+msgstr "Низкий"
+
+#: frontend/src/pages/Contact.vue:82
+msgid "Make Call"
+msgstr "Позвонить"
+
+#: frontend/src/components/ViewControls.vue:912
+msgid "Make Private"
+msgstr "Сделать личным"
+
+#: frontend/src/components/ViewControls.vue:912
+msgid "Make Public"
+msgstr "Сделать публичным"
+
+#: frontend/src/components/Activities/Activities.vue:377
+#: frontend/src/components/Activities/ActivityHeader.vue:36
+#: frontend/src/components/Activities/ActivityHeader.vue:140
+#: frontend/src/pages/Deals.vue:490 frontend/src/pages/Leads.vue:507
+msgid "Make a Call"
+msgstr "Позвонить"
+
+#: frontend/src/pages/Deal.vue:74 frontend/src/pages/Lead.vue:116
+msgid "Make a call"
+msgstr "Позвонить"
+
+#: frontend/src/components/Activities/AttachmentArea.vue:104
+msgid "Make attachment {0}"
+msgstr "Сделайте вложение {0}"
+
+#: frontend/src/components/Activities/AttachmentArea.vue:43
+msgid "Make private"
+msgstr "Сделать приватным"
+
+#: frontend/src/components/Activities/AttachmentArea.vue:43
+msgid "Make public"
+msgstr "Сделать публичным"
+
+#: frontend/src/components/Activities/AttachmentArea.vue:113
+msgid "Make {0}"
+msgstr "Сделайте {0}"
+
+#: frontend/src/components/Settings/InviteMemberPage.vue:25
+#: frontend/src/components/Settings/InviteMemberPage.vue:101
+msgid "Manager Access"
+msgstr "Менеджерский доступ"
+
+#: frontend/src/components/Notifications.vue:19
+#: frontend/src/pages/MobileNotification.vue:11
+#: frontend/src/pages/MobileNotification.vue:14
+msgid "Mark all as read"
+msgstr "Отметить все как прочитанное"
+
+#. Label of a Data field in DocType 'CRM Call Log'
+#. Option for the 'Priority' (Select) field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Medium"
+msgstr "Средний"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Mention"
+msgstr "Упоминание"
+
+#. Label of a HTML Editor field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Message"
+msgstr "Сообщение"
+
+#. Label of a Data field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Middle Name"
+msgstr "Отчество"
+
+#. Label of a Data field in DocType 'CRM Contacts'
+#. Label of a Data field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_contacts/crm_contacts.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Mobile No"
+msgstr "Мобильный"
+
+#: frontend/src/components/Modals/DealModal.vue:191
+#: frontend/src/components/Modals/LeadModal.vue:143
+msgid "Mobile No should be a number"
+msgstr "Мобильный номер должен быть номером"
+
+#: frontend/src/pages/Contact.vue:441 frontend/src/pages/Organization.vue:521
+msgid "Mobile no"
+msgstr "Мобильный"
+
+#. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
+#. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Monday"
+msgstr "Понедельник"
+
+#: frontend/src/pages/Contact.vue:129 frontend/src/pages/Organization.vue:132
+msgid "More"
+msgstr "Подробнее"
+
+#: frontend/src/components/Modals/ViewModal.vue:42
+msgid "My Open Deals"
+msgstr "Мои открытые сделки"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:21
+#: frontend/src/pages/Organization.vue:539
+msgid "Name"
+msgstr "Название"
+
+#. Label of a Select field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+msgid "Naming Series"
+msgstr "Именованные серии"
+
+#: frontend/src/components/Activities/ActivityHeader.vue:86
+msgid "New"
+msgstr "Новое"
+
+#: frontend/src/components/Modals/AddressModal.vue:94
+msgid "New Address"
+msgstr "Новый адрес"
+
+#: frontend/src/components/Activities/Activities.vue:392
+#: frontend/src/components/Activities/ActivityHeader.vue:26
+#: frontend/src/components/Activities/ActivityHeader.vue:135
+msgid "New Comment"
+msgstr "Новый комментарий"
+
+#: frontend/src/components/Activities/Activities.vue:387
+#: frontend/src/components/Activities/ActivityHeader.vue:16
+#: frontend/src/components/Activities/ActivityHeader.vue:130
+msgid "New Email"
+msgstr "Новое письмо"
+
+#: frontend/src/components/Activities/ActivityHeader.vue:77
+msgid "New Message"
+msgstr "Новое сообщение"
+
+#: frontend/src/components/Activities/ActivityHeader.vue:46
+#: frontend/src/components/Activities/ActivityHeader.vue:146
+#: frontend/src/pages/Deals.vue:496 frontend/src/pages/Leads.vue:513
+msgid "New Note"
+msgstr "Новая заметка"
+
+#: frontend/src/components/Modals/OrganizationModal.vue:187
+msgid "New Organization"
+msgstr "Новая организация"
+
+#: frontend/src/components/QuickEntryLayoutBuilder.vue:107
+#: frontend/src/components/Settings/SidePanelLayoutBuilder.vue:127
+msgid "New Section"
+msgstr "Новая секция"
+
+#: frontend/src/components/Activities/ActivityHeader.vue:56
+#: frontend/src/components/Activities/ActivityHeader.vue:151
+#: frontend/src/pages/Deals.vue:501 frontend/src/pages/Leads.vue:518
+msgid "New Task"
+msgstr "Новая задача"
+
+#: frontend/src/components/Activities/ActivityHeader.vue:161
+msgid "New WhatsApp Message"
+msgstr "Новое сообщение WhatsApp"
+
+#: frontend/src/pages/Lead.vue:270 frontend/src/pages/MobileLead.vue:167
+msgid "New contact will be created based on the person's details"
+msgstr "Новый контакт будет создан на основе данных этого человека"
+
+#: frontend/src/pages/Lead.vue:244 frontend/src/pages/MobileLead.vue:141
+msgid "New organization will be created based on the data in details section"
+msgstr "Новая организация будет создана на основе данных, указанных в разделе подробностей"
+
+#: frontend/src/components/Filter.vue:663
+msgid "Next 6 Months"
+msgstr "Следующие 6 месяцев"
+
+#: frontend/src/components/Filter.vue:655
+msgid "Next Month"
+msgstr "Следующий месяц"
+
+#: frontend/src/components/Filter.vue:659
+msgid "Next Quarter"
+msgstr "Следующий квартал"
+
+#. Label of a Data field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+msgid "Next Step"
+msgstr "Следующий шаг"
+
+#: frontend/src/components/Filter.vue:651
+msgid "Next Week"
+msgstr "Следующая неделя"
+
+#: frontend/src/components/Filter.vue:667
+msgid "Next Year"
+msgstr "Следующий год"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "No Answer"
+msgstr "Нет ответа"
+
+#: frontend/src/components/Kanban/KanbanView.vue:101
+#: frontend/src/pages/Deals.vue:106 frontend/src/pages/Leads.vue:122
+#: frontend/src/pages/Tasks.vue:68
+msgid "No Title"
+msgstr "Без заголовка"
+
+#: frontend/src/pages/Deal.vue:269 frontend/src/pages/MobileDeal.vue:204
+msgid "No contacts added"
+msgstr "Контакты не добавлены"
+
+#: frontend/src/pages/Deal.vue:86 frontend/src/pages/Lead.vue:136
+msgid "No email set"
+msgstr "Электронная почта не установлена"
+
+#: frontend/src/pages/Deal.vue:709
+msgid "No mobile number set"
+msgstr "Номер мобильного телефона не установлен"
+
+#: frontend/src/components/Notifications.vue:83
+#: frontend/src/pages/MobileNotification.vue:67
+msgid "No new notifications"
+msgstr "Нет новых уведомлений"
+
+#: frontend/src/pages/Lead.vue:123
+msgid "No phone number set"
+msgstr "Номер телефона не установлен"
+
+#: frontend/src/pages/Deal.vue:704
+msgid "No primary contact set"
+msgstr "Первичный контакт не установлен"
+
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:52
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:42
+msgid "No templates found"
+msgstr "Шаблоны не найдены"
+
+#: frontend/src/pages/Deal.vue:98 frontend/src/pages/Lead.vue:148
+msgid "No website set"
+msgstr "Веб-сайт не установлен"
+
+#: frontend/src/components/Fields.vue:162
+msgid "No {0} Available"
+msgstr "{0} - нет доступных"
+
+#: frontend/src/pages/CallLogs.vue:50 frontend/src/pages/Contact.vue:203
+#: frontend/src/pages/Contacts.vue:56 frontend/src/pages/Deals.vue:232
+#: frontend/src/pages/EmailTemplates.vue:57 frontend/src/pages/Leads.vue:258
+#: frontend/src/pages/Notes.vue:92 frontend/src/pages/Organization.vue:213
+#: frontend/src/pages/Organizations.vue:56 frontend/src/pages/Tasks.vue:181
+msgid "No {0} Found"
+msgstr "{0} не найдены"
+
+#. Label of a Select field in DocType 'CRM Deal'
+#. Label of a Select field in DocType 'CRM Lead'
+#. Label of a Select field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "No. of Employees"
+msgstr "Штат"
+
+#: frontend/src/components/Activities/AudioPlayer.vue:148
+msgid "Normal"
+msgstr "Обычный"
+
+#: frontend/src/components/Filter.vue:270
+#: frontend/src/components/Filter.vue:291
+#: frontend/src/components/Filter.vue:308
+#: frontend/src/components/Filter.vue:319
+#: frontend/src/components/Filter.vue:346
+msgid "Not Equals"
+msgstr "Не равно"
+
+#: frontend/src/components/Filter.vue:274
+#: frontend/src/components/Filter.vue:295
+#: frontend/src/components/Filter.vue:310
+#: frontend/src/components/Filter.vue:323
+#: frontend/src/components/Filter.vue:337
+msgid "Not In"
+msgstr "Не в"
+
+#: frontend/src/components/Filter.vue:272
+#: frontend/src/components/Filter.vue:283
+#: frontend/src/components/Filter.vue:293
+#: frontend/src/components/Filter.vue:321
+#: frontend/src/components/Filter.vue:335
+msgid "Not Like"
+msgstr "Не похоже"
+
+#: frontend/src/components/Modals/QuickEntryModal.vue:10
+#: frontend/src/components/Settings/SettingsPage.vue:7
+#: frontend/src/components/Settings/SidePanelModal.vue:10
+msgid "Not Saved"
+msgstr "Не сохранено"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:204
+msgid "Not allowed to add contact to Deal"
+msgstr "Не разрешено добавлять контакты в сделку"
+
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:340
+msgid "Not allowed to convert Lead to Deal"
+msgstr "Не разрешается конвертировать лид в сделку"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:214
+msgid "Not allowed to remove contact from Deal"
+msgstr "Не разрешается удалять контакты из сделки"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:224
+msgid "Not allowed to set primary contact for Deal"
+msgstr "Не разрешено устанавливать основной контакт для сделки"
+
+#. Label of a Link field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Note"
+msgstr "Заметка"
+
+#: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:516
+#: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:378
+msgid "Notes"
+msgstr "Заметки"
+
+#: frontend/src/pages/Notes.vue:20
+msgid "Notes View"
+msgstr "Просмотр заметок"
+
+#: frontend/src/components/Activities/EmailArea.vue:13
+msgid "Notification"
+msgstr "Уведомление"
+
+#. Label of a Text field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Notification Text"
+msgstr "Текст уведомления"
+
+#. Label of a Dynamic Link field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Notification Type Doc"
+msgstr "Тип уведомления"
+
+#. Label of a Link field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Notification Type Doctype"
+msgstr "Тип уведомления, ДокТайп"
+
+#: frontend/src/components/Layouts/AppSidebar.vue:13
+#: frontend/src/components/Mobile/MobileSidebar.vue:21
+#: frontend/src/components/Notifications.vue:17
+#: frontend/src/pages/MobileNotification.vue:6
+msgid "Notifications"
+msgstr "Уведомления"
+
+#. Label of a Link field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+msgid "Old Parent"
+msgstr "Старый родитель"
+
+#: frontend/src/pages/Contact.vue:329 frontend/src/pages/Lead.vue:550
+#: frontend/src/pages/Organization.vue:335
+msgid "Only PNG and JPG images are allowed"
+msgstr "Разрешены только изображения в формате PNG и JPG"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:55
+msgid "Only one {0} can be set as primary."
+msgstr "Только один {0} может быть установлен как основной."
+
+#: frontend/src/components/Modals/NoteModal.vue:26
+#: frontend/src/components/Modals/TaskModal.vue:26
+msgid "Open Deal"
+msgstr "Открыть сделку"
+
+#: frontend/src/components/Modals/NoteModal.vue:27
+#: frontend/src/components/Modals/TaskModal.vue:27
+msgid "Open Lead"
+msgstr "Открыть лида"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.js:6
+#: crm/fcrm/doctype/crm_lead/crm_lead.js:6
+msgid "Open in Portal"
+msgstr "Открыть в портале"
+
+#: frontend/src/components/Kanban/KanbanView.vue:220
+#: frontend/src/components/ViewControls.vue:128
+msgid "Options"
+msgstr "Параметры"
+
+#. Label of a Tab Break field in DocType 'CRM View Settings'
+#. Label of a Code field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Order By"
+msgstr "Сортировать по"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Tab Break field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json frontend/src/pages/Contact.vue:421
+#: frontend/src/pages/Lead.vue:226 frontend/src/pages/MobileLead.vue:123
+#: frontend/src/pages/Organization.vue:501
+#: frontend/src/pages/Organization.vue:554
+msgid "Organization"
+msgstr "Организация"
+
+#. Label of a Section Break field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+msgid "Organization Details"
+msgstr "Подробности организации"
+
+#. Label of a Attach Image field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "Organization Logo"
+msgstr "Логотип организации"
+
+#. Label of a Data field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "Organization Name"
+msgstr "Название организации"
+
+#: frontend/src/pages/Deal.vue:57
+msgid "Organization logo"
+msgstr "Логотип организации"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+#: frontend/src/pages/Organization.vue:295
+msgid "Organizations"
+msgstr "Организации"
+
+#. Label of a Tab Break field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Others"
+msgstr "Другое"
+
+#: frontend/src/components/Activities/CallArea.vue:36
+msgid "Outbound Call"
+msgstr "Исходящий звонок"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Outgoing"
+msgstr "Исходящие"
+
+#. Label of a Link field in DocType 'CRM Status Change Log'
+#: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
+msgid "Owner"
+msgstr "Владелец"
+
+#. Label of a Link field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+msgid "Parent CRM Territory"
+msgstr "Родительский регион CRM"
+
+#: crm/api/demo.py:21 crm/api/demo.py:31
+msgid "Password cannot be reset by Demo User {}"
+msgstr "Пароль не может быть сброшен пользователем Demo {}"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:28
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:11
+msgid "Payment Reminder"
+msgstr "Напоминание о платеже"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:50
+msgid "Payment Reminder from Frappé - (#{{ name }})"
+msgstr "Напоминание о платеже от Frappé - (#{{ имя }})"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "Pending"
+msgstr "В ожидании"
+
+#: frontend/src/components/Settings/InviteMemberPage.vue:34
+msgid "Pending Invites"
+msgstr "Приглашения в ожидании"
+
+#. Label of a Section Break field in DocType 'CRM Deal'
+#. Label of a Tab Break field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Person"
+msgstr "Личность"
+
+#. Label of a Data field in DocType 'CRM Contacts'
+#. Label of a Data field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Lead'
+#. Option for the 'Device' (Select) field in DocType 'Twilio Agents'
+#: crm/fcrm/doctype/crm_contacts/crm_contacts.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/twilio_agents/twilio_agents.json
+#: frontend/src/pages/Organization.vue:549
+msgid "Phone"
+msgstr "Телефон"
+
+#: frontend/src/components/ViewControls.vue:904
+msgid "Pin View"
+msgstr "Закрепить вид"
+
+#. Label of a Check field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Pinned"
+msgstr "Закреплено"
+
+#: frontend/src/components/ViewControls.vue:568
+msgid "Pinned Views"
+msgstr "Сохраненные виды"
+
+#: frontend/src/components/Activities/AudioPlayer.vue:176
+msgid "Playback speed"
+msgstr "Скорость воспроизведения"
+
+#: crm/integrations/twilio/twilio_handler.py:124
+msgid "Please enable twilio settings before making a call."
+msgstr "Пожалуйста, включите настройки twilio перед совершением звонка."
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:170
+msgid "Please enter a valid URL"
+msgstr "Пожалуйста, введите корректный URL"
+
+#: frontend/src/pages/Lead.vue:590 frontend/src/pages/MobileLead.vue:444
+msgid "Please select an existing contact"
+msgstr "Пожалуйста, выберите существующий контакт"
+
+#: frontend/src/pages/Lead.vue:600 frontend/src/pages/MobileLead.vue:454
+msgid "Please select an existing organization"
+msgstr "Пожалуйста, выберите существующую организацию"
+
+#. Label of a Int field in DocType 'CRM Deal Status'
+#. Label of a Int field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "Position"
+msgstr "Позиция"
+
+#: frontend/src/pages/Deal.vue:213 frontend/src/pages/MobileDeal.vue:148
+msgid "Primary"
+msgstr "Основной"
+
+#: frontend/src/pages/Deal.vue:679 frontend/src/pages/MobileDeal.vue:577
+msgid "Primary contact set"
+msgstr "Установка основного контакта"
+
+#. Label of a Table field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Priorities"
+msgstr "Приоритеты"
+
+#. Label of a Link field in DocType 'CRM Service Level Priority'
+#. Label of a Select field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Priority"
+msgstr "Приоритет"
+
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:89
+msgid "Private"
+msgstr "Личное"
+
+#. Label of a Percent field in DocType 'CRM Deal'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+msgid "Probability"
+msgstr "Вероятность успеха"
+
+#: frontend/src/components/Settings/SettingsModal.vue:63
+msgid "Profile"
+msgstr "Профиль"
+
+#. Label of a Check field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Public"
+msgstr "Публичное"
+
+#: frontend/src/components/ViewControls.vue:563
+msgid "Public Views"
+msgstr "Общие представления"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Queued"
+msgstr "В очереди"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+msgid "Quick Entry"
+msgstr "Быстрый ввод"
+
+#. Label of a Check field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Read"
+msgstr "Прочитано"
+
+#. Label of a Check field in DocType 'Twilio Settings'
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+msgid "Record Calls"
+msgstr "Запись звонков"
+
+#. Label of a Data field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Recording URL"
+msgstr "URL записи"
+
+#. Label of a Dynamic Link field in DocType 'CRM Notification'
+#. Label of a Dynamic Link field in DocType 'CRM Task'
+#. Label of a Dynamic Link field in DocType 'FCRM Note'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+#: crm/fcrm/doctype/fcrm_note/fcrm_note.json
+msgid "Reference Doc"
+msgstr "Справочный документ"
+
+#. Label of a Link field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Reference Doctype"
+msgstr "Справочный доктайп"
+
+#. Label of a Link field in DocType 'CRM Call Log'
+#. Label of a Link field in DocType 'CRM Task'
+#. Label of a Link field in DocType 'FCRM Note'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+#: crm/fcrm/doctype/fcrm_note/fcrm_note.json
+msgid "Reference Document Type"
+msgstr "Тип документа-ссылки"
+
+#. Label of a Dynamic Link field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Reference Name"
+msgstr "Имя ссылки"
+
+#: frontend/src/components/ViewControls.vue:25
+#: frontend/src/components/ViewControls.vue:87
+msgid "Refresh"
+msgstr "Обновить"
+
+#: frontend/src/components/Settings/InviteMemberPage.vue:24
+#: frontend/src/components/Settings/InviteMemberPage.vue:100
+msgid "Regular Access"
+msgstr "Обычный доступ"
+
+#: frontend/src/components/CallUI.vue:103
+msgid "Reject"
+msgstr "Отклонить"
+
+#: frontend/src/pages/Deal.vue:624
+msgid "Remove"
+msgstr "Удалить"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:23
+msgid "Remove all"
+msgstr "Удалить все"
+
+#: frontend/src/pages/Contact.vue:37 frontend/src/pages/Lead.vue:89
+#: frontend/src/pages/Organization.vue:40
+msgid "Remove image"
+msgstr "Удалить изображение"
+
+#: frontend/src/components/Activities/EmailArea.vue:31
+#: frontend/src/components/CommunicationArea.vue:8
+msgid "Reply"
+msgstr "Ответить"
+
+#: frontend/src/components/Activities/EmailArea.vue:44
+msgid "Reply All"
+msgstr "Ответить всем"
+
+#: frontend/src/components/Modals/QuickEntryModal.vue:56
+#: frontend/src/components/Settings/SidePanelModal.vue:71
+msgid "Reset"
+msgstr "Сбросить"
+
+#: frontend/src/components/ColumnSettings.vue:76
+msgid "Reset Changes"
+msgstr "Сбросить изменения"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
+msgid "Reset ERPNext Form Script"
+msgstr "Сбросить скрипт формы ERP"
+
+#: frontend/src/components/ColumnSettings.vue:87
+msgid "Reset to Default"
+msgstr "Восстановить значения по умолчанию"
+
+#. Label of a Datetime field in DocType 'CRM Deal'
+#. Label of a Datetime field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Response By"
+msgstr "Ответ"
+
+#. Label of a Section Break field in DocType 'CRM Deal'
+#. Label of a Section Break field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Response Details"
+msgstr "Детали ответа"
+
+#. Label of a Section Break field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Response and Follow Up"
+msgstr "Ответ и последующие действия"
+
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:14
+msgid "Restore"
+msgstr "Восстановить"
+
+#. Label of a Button field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:13
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Restore Defaults"
+msgstr "Восстановить значения по умолчанию"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:54
+msgid "Retake"
+msgstr "Повторить"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:62
+msgid "Rich Text"
+msgstr "Форматируемый текст"
+
+#. Label of a Int field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+msgid "Right"
+msgstr "Справа"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+msgid "Ringing"
+msgstr "Вызов"
+
+#: frontend/src/components/CallUI.vue:37 frontend/src/components/CallUI.vue:146
+msgid "Ringing..."
+msgstr "Звонок..."
+
+#. Label of a Select field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+msgid "Role"
+msgstr "Роль"
+
+#. Label of a Data field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Route Name"
+msgstr "Название маршрута"
+
+#. Label of a Code field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Rows"
+msgstr "Строки"
+
+#. Label of a Tab Break field in DocType 'CRM Deal'
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Tab Break field in DocType 'CRM Lead'
+#. Label of a Link field in DocType 'CRM Lead'
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "SLA"
+msgstr "SLA"
+
+#. Label of a Datetime field in DocType 'CRM Deal'
+#. Label of a Datetime field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "SLA Creation"
+msgstr "Создание SLA"
+
+#. Label of a Data field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "SLA Name"
+msgstr "Название SLA"
+
+#. Label of a Select field in DocType 'CRM Deal'
+#. Label of a Select field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "SLA Status"
+msgstr "Статус уровня обслуживания"
+
+#: frontend/src/components/EmailEditor.vue:75
+msgid "SUBJECT"
+msgstr "ТЕМА"
+
+#. Name of a role
+#. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_industry/crm_industry.json
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/fcrm/doctype/fcrm_note/fcrm_note.json
+#: crm/fcrm/doctype/twilio_agents/twilio_agents.json
+msgid "Sales Manager"
+msgstr "Менеджер по продажам"
+
+#. Name of a role
+#. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_industry/crm_industry.json
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/fcrm/doctype/fcrm_note/fcrm_note.json
+msgid "Sales User"
+msgstr "Пользователь отдела продаж"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Link field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Salutation"
+msgstr "Приветствие"
+
+#. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
+#. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Saturday"
+msgstr "Суббота"
+
+#: frontend/src/components/Modals/AddressModal.vue:99
+#: frontend/src/components/Modals/OrganizationModal.vue:194
+#: frontend/src/components/Modals/QuickEntryModal.vue:52
+#: frontend/src/components/Settings/ProfileSettings.vue:52
+#: frontend/src/components/Settings/SidePanelModal.vue:67
+msgid "Save"
+msgstr "Сохранить"
+
+#: frontend/src/components/Modals/ViewModal.vue:13
+#: frontend/src/components/ViewControls.vue:57
+#: frontend/src/components/ViewControls.vue:84
+msgid "Save Changes"
+msgstr "Сохранить изменения"
+
+#: frontend/src/components/ViewControls.vue:558
+msgid "Saved Views"
+msgstr "Сохраненные виды"
+
+#. Label of a Code field in DocType 'CRM Form Script'
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.json
+msgid "Script"
+msgstr "Скрипт"
+
+#: frontend/src/components/Fields.vue:244
+msgid "Select {0}"
+msgstr "Выбрать {0}"
+
+#: frontend/src/components/EmailEditor.vue:155
+msgid "Send"
+msgstr "Отправить"
+
+#: frontend/src/components/Settings/InviteMemberPage.vue:67
+msgid "Send Invites"
+msgstr "Отправить приглашения"
+
+#: frontend/src/components/Settings/InviteMemberPage.vue:4
+msgid "Send Invites To"
+msgstr "Отправить приглашения"
+
+#: frontend/src/components/Activities/ActivityHeader.vue:70
+msgid "Send Template"
+msgstr "Отправить шаблон"
+
+#: frontend/src/pages/Deal.vue:79 frontend/src/pages/Lead.vue:129
+msgid "Send an email"
+msgstr "Отправить письмо"
+
+#. Label of a Select field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Series"
+msgstr "Серии"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:69
+msgid "Set all as private"
+msgstr "Установите все как личное"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:62
+msgid "Set all as public"
+msgstr "Установите все как общедоступные"
+
+#: frontend/src/pages/Deal.vue:68
+msgid "Set an organization"
+msgstr "Установите организацию"
+
+#: frontend/src/pages/Deal.vue:632 frontend/src/pages/MobileDeal.vue:530
+msgid "Set as Primary Contact"
+msgstr "Установите в качестве основного контакта"
+
+#: frontend/src/pages/Lead.vue:110
+msgid "Set first name"
+msgstr "Установите имя"
+
+#: frontend/src/components/Settings/SettingsModal.vue:7
+#: frontend/src/components/Settings/SettingsModal.vue:59
+#: frontend/src/components/UserDropdown.vue:99
+msgid "Settings"
+msgstr "Настройки"
+
+#: frontend/src/components/Activities/Activities.vue:230
+msgid "Show"
+msgstr "Показать"
+
+#: frontend/src/components/Modals/QuickEntryModal.vue:34
+#: frontend/src/components/Settings/SidePanelModal.vue:28
+msgid "Show preview"
+msgstr "Предварительный просмотр"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+msgid "Side Panel"
+msgstr "Боковая панель"
+
+#. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
+#. Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Simple Python Expression, Example: doc.status == 'Open' and doc.lead_source == 'Ads'"
+msgstr "Простое выражение Python, пример: doc.status == 'Open' и doc.lead_source == 'Ads'"
+
+#: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:22
+#: frontend/src/components/SortBy.vue:240
+msgid "Sort"
+msgstr "Сортировка"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Link field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: frontend/src/components/Modals/EditValueModal.vue:10
+msgid "Source"
+msgstr "Источник"
+
+#. Label of a Data field in DocType 'CRM Lead Source'
+#: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
+msgid "Source Name"
+msgstr "Название источника"
+
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.js:15
+msgid "Standard Form Scripts can not be modified, duplicate the Form Script instead."
+msgstr "Стандартные скрипты форм не могут быть изменены, вместо этого дублируйте их."
+
+#. Label of a Date field in DocType 'CRM Service Level Agreement'
+#. Label of a Date field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Start Date"
+msgstr "Дата начала"
+
+#. Label of a Datetime field in DocType 'CRM Call Log'
+#. Label of a Time field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Start Time"
+msgstr "Время начала"
+
+#. Label of a Select field in DocType 'CRM Call Log'
+#. Label of a Data field in DocType 'CRM Communication Status'
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Deal Status'
+#. Label of a Select field in DocType 'CRM Invitation'
+#. Label of a Link field in DocType 'CRM Lead'
+#. Label of a Data field in DocType 'CRM Lead Status'
+#. Label of a Select field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:431
+#: frontend/src/pages/Organization.vue:511
+msgid "Status"
+msgstr "Статус"
+
+#. Label of a Table field in DocType 'CRM Deal'
+#. Label of a Table field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Status Change Log"
+msgstr "Журнал изменений состояния"
+
+#: frontend/src/components/Modals/DealModal.vue:199
+#: frontend/src/components/Modals/LeadModal.vue:151
+msgid "Status is required"
+msgstr "Статус обязателен"
+
+#: frontend/src/components/Modals/EmailTemplateModal.vue:43
+msgid "Subject"
+msgstr "Тема"
+
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:31
+msgid "Subject: {0}"
+msgstr "Тема: {0}"
+
+#: frontend/src/components/Settings/SettingsPage.vue:82
+msgid "Success"
+msgstr "Успешно"
+
+#. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
+#. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Sunday"
+msgstr "Воскресенье"
+
+#: frontend/src/components/UserDropdown.vue:83
+msgid "Support"
+msgstr "Поддержка"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:49
+msgid "Switch camera"
+msgstr "Другая камера"
+
+#. Name of a role
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+msgid "System Manager"
+msgstr "Системный менеджер"
+
+#: frontend/src/components/EmailEditor.vue:22
+msgid "TO"
+msgstr "КОМУ"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "Task"
+msgstr "Задача"
+
+#: frontend/src/pages/Deal.vue:565 frontend/src/pages/Lead.vue:511
+#: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:373
+msgid "Tasks"
+msgstr "Задачи"
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Territories"
+msgstr "Территории"
+
+#. Label of a Link field in DocType 'CRM Deal'
+#. Label of a Link field in DocType 'CRM Lead'
+#. Label of a Link field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "Territory"
+msgstr "Регион"
+
+#. Label of a Link field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+msgid "Territory Manager"
+msgstr "Территориальный менеджер"
+
+#. Label of a Data field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_territory/crm_territory.json
+msgid "Territory Name"
+msgstr "Название территории"
+
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:46
+msgid "The Condition '{0}' is invalid: {1}"
+msgstr "Условие '{0}' недействительно: {1}"
+
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:14
+msgid "There can only be one default priority in Priorities table"
+msgstr "В таблице приоритетов может быть только один приоритет по умолчанию"
+
+#: frontend/src/components/Filter.vue:639
+msgid "This Month"
+msgstr "Этот месяц"
+
+#: frontend/src/components/Filter.vue:643
+msgid "This Quarter"
+msgstr "Этот квартал"
+
+#: frontend/src/components/Filter.vue:635
+msgid "This Week"
+msgstr "На этой неделе"
+
+#: frontend/src/components/Filter.vue:647
+msgid "This Year"
+msgstr "В этом году"
+
+#: frontend/src/components/Settings/SidePanelLayoutBuilder.vue:114
+msgid "This section is not editable"
+msgstr "Этот раздел нельзя редактировать"
+
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:9
+msgid "This will restore (if not exist) all the default statuses, custom fields and layouts. Delete & Restore will delete default layouts and then restore them."
+msgstr "Это восстановит (если их нет) все статусы, пользовательские поля и макеты по умолчанию. \"Удаление и восстановление\" удалит макеты по умолчанию, а затем восстановит их."
+
+#. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
+#. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Thursday"
+msgstr "Четверг"
+
+#: frontend/src/components/Filter.vue:353
+msgid "Timespan"
+msgstr "Временной интервал"
+
+#. Label of a Data field in DocType 'CRM Task'
+#. Label of a Data field in DocType 'FCRM Note'
+#: crm/fcrm/doctype/crm_task/crm_task.json
+#: crm/fcrm/doctype/fcrm_note/fcrm_note.json
+#: frontend/src/components/Modals/NoteModal.vue:40
+#: frontend/src/components/Modals/TaskModal.vue:40
+msgid "Title"
+msgstr "Заголовок"
+
+#. Label of a Data field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/Kanban/KanbanSettings.vue:31
+msgid "Title Field"
+msgstr "Поле заголовка"
+
+#. Label of a Data field in DocType 'CRM Call Log'
+#. Label of a Data field in DocType 'CRM Status Change Log'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
+#: frontend/src/components/Activities/EmailArea.vue:63
+msgid "To"
+msgstr "Кому"
+
+#. Label of a Date field in DocType 'CRM Holiday List'
+#. Label of a Datetime field in DocType 'CRM Status Change Log'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
+msgid "To Date"
+msgstr "До даты"
+
+#. Label of a Link field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+msgid "To User"
+msgstr "Пользователю"
+
+#: frontend/src/components/Filter.vue:627
+msgid "Today"
+msgstr "Сегодня"
+
+#. Option for the 'Status' (Select) field in DocType 'CRM Task'
+#: crm/fcrm/doctype/crm_task/crm_task.json
+msgid "Todo"
+msgstr "Список дел"
+
+#: frontend/src/components/Settings/SidePanelModal.vue:58
+msgid "Toggle on for preview"
+msgstr "Включите для предварительного просмотра"
+
+#: frontend/src/components/Filter.vue:631
+msgid "Tomorrow"
+msgstr "Завтра"
+
+#: frontend/src/components/Modals/NoteModal.vue:58
+#: frontend/src/components/Modals/TaskModal.vue:60
+msgid "Took a call with John Doe and discussed the new project."
+msgstr "Созвонился с Джоном Доу и обсудил новый проект."
+
+#. Label of a Int field in DocType 'CRM Holiday List'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+msgid "Total Holidays"
+msgstr "Всего праздников"
+
+#. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
+#. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Tuesday"
+msgstr "Вторник"
+
+#. Label of a Data field in DocType 'Twilio Settings'
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+msgid "TwiML SID"
+msgstr "TwiML SID"
+
+#: frontend/src/components/Settings/SettingsModal.vue:78
+msgid "Twilio"
+msgstr "Twilio"
+
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.py:61
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.py:62
+msgid "Twilio API credential creation error."
+msgstr "Ошибка создания учетных данных API Twilio."
+
+#. Name of a DocType
+#: crm/fcrm/doctype/twilio_agents/twilio_agents.json
+msgid "Twilio Agents"
+msgstr "Агенты Twilio"
+
+#. Label of a Data field in DocType 'Twilio Agents'
+#: crm/fcrm/doctype/twilio_agents/twilio_agents.json
+msgid "Twilio Number"
+msgstr "Номер Twilio"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/twilio_settings/twilio_settings.json
+msgid "Twilio Settings"
+msgstr "Twilio Настройки"
+
+#. Label of a Select field in DocType 'CRM Call Log'
+#. Label of a Select field in DocType 'CRM Fields Layout'
+#. Label of a Select field in DocType 'CRM Notification'
+#. Label of a Select field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "Type"
+msgstr "Тип"
+
+#: frontend/src/components/Activities/WhatsAppBox.vue:85
+msgid "Type your message here..."
+msgstr "Напишите ваше сообщение здесь..."
+
+#: frontend/src/components/CallUI.vue:316
+msgid "Unknown"
+msgstr "Неизвестный"
+
+#: frontend/src/components/ViewControls.vue:904
+msgid "Unpin View"
+msgstr "Отвязать вид"
+
+#: frontend/src/components/ViewControls.vue:762
+msgid "Unsaved Changes"
+msgstr "Несохраненные изменения"
+
+#: frontend/src/components/Modals/AddressModal.vue:8
+#: frontend/src/components/Modals/ContactModal.vue:8
+#: frontend/src/components/Modals/OrganizationModal.vue:8
+#: frontend/src/components/QuickEntryLayoutBuilder.vue:14
+#: frontend/src/components/Section.vue:13
+#: frontend/src/components/Settings/SidePanelLayoutBuilder.vue:19
+#: frontend/src/pages/Deal.vue:62 frontend/src/pages/Deal.vue:70
+#: frontend/src/pages/Deal.vue:528 frontend/src/pages/Lead.vue:71
+#: frontend/src/pages/Lead.vue:112 frontend/src/pages/Lead.vue:474
+#: frontend/src/pages/MobileDeal.vue:426 frontend/src/pages/MobileLead.vue:336
+msgid "Untitled"
+msgstr "Без названия"
+
+#: frontend/src/components/ColumnSettings.vue:132
+#: frontend/src/components/Modals/AssignmentModal.vue:17
+#: frontend/src/components/Modals/EmailTemplateModal.vue:9
+#: frontend/src/components/Modals/NoteModal.vue:8
+#: frontend/src/components/Modals/TaskModal.vue:8
+#: frontend/src/components/Settings/SettingsPage.vue:26
+#: frontend/src/components/ViewControls.vue:767
+msgid "Update"
+msgstr "Обновить"
+
+#: frontend/src/components/Modals/EditValueModal.vue:30
+msgid "Update {0} Records"
+msgstr "Обновление {0} записей"
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:86
+msgid "Upload"
+msgstr "Загрузить"
+
+#: frontend/src/components/Activities/Activities.vue:402
+#: frontend/src/components/Activities/ActivityHeader.vue:66
+#: frontend/src/components/Activities/ActivityHeader.vue:156
+msgid "Upload Attachment"
+msgstr "Загрузить вложение"
+
+#: frontend/src/components/Activities/WhatsAppBox.vue:132
+msgid "Upload Document"
+msgstr "Загрузить документ"
+
+#: frontend/src/components/Activities/WhatsAppBox.vue:140
+msgid "Upload Image"
+msgstr "Загрузить изображение"
+
+#: frontend/src/components/Activities/WhatsAppBox.vue:148
+msgid "Upload Video"
+msgstr "Загрузить видео"
+
+#: frontend/src/pages/Contact.vue:32 frontend/src/pages/Lead.vue:84
+#: frontend/src/pages/Organization.vue:35
+msgid "Upload image"
+msgstr "Загрузить изображение"
+
+#. Label of a Link field in DocType 'CRM View Settings'
+#. Label of a Link field in DocType 'Twilio Agents'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/fcrm/doctype/twilio_agents/twilio_agents.json
+msgid "User"
+msgstr "Пользователь"
+
+#. Label of a Data field in DocType 'Twilio Agents'
+#: crm/fcrm/doctype/twilio_agents/twilio_agents.json
+msgid "User Name"
+msgstr "Имя пользователя"
+
+#. Label of a Section Break field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Validity"
+msgstr "Период действия"
+
+#: frontend/src/components/Modals/EditValueModal.vue:14
+msgid "Value"
+msgstr "Значение"
+
+#: frontend/src/components/Modals/ViewModal.vue:25
+msgid "View Name"
+msgstr "Название представления"
+
+#. Label of a Data field in DocType 'CRM Deal'
+#. Label of a Data field in DocType 'CRM Lead'
+#. Label of a Data field in DocType 'CRM Organization'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_organization/crm_organization.json
+msgid "Website"
+msgstr "Сайт"
+
+#. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
+#. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Wednesday"
+msgstr "Среда"
+
+#. Label of a Check field in DocType 'CRM Holiday'
+#. Label of a Select field in DocType 'CRM Holiday List'
+#: crm/fcrm/doctype/crm_holiday/crm_holiday.json
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
+msgid "Weekly Off"
+msgstr "Еженедельный выходной"
+
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:11
+msgid "Welcome Message"
+msgstr "Приветственное сообщение"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: frontend/src/components/Settings/SettingsModal.vue:83
+#: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:526
+#: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:388
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:4
+msgid "WhatsApp Templates"
+msgstr "Шаблоны WhatsApp"
+
+#: frontend/src/components/Filter.vue:42 frontend/src/components/Filter.vue:80
+msgid "Where"
+msgstr "Где"
+
+#: frontend/src/components/ColumnSettings.vue:111
+msgid "Width"
+msgstr "Ширина"
+
+#: frontend/src/components/ColumnSettings.vue:116
+msgid "Width can be in number, pixel or rem (eg. 3, 30px, 10rem)"
+msgstr "Ширина может быть в цифрах, пикселях или ремах (например, 3, 30px, 10rem)"
+
+#. Label of a Select field in DocType 'CRM Service Day'
+#: crm/fcrm/doctype/crm_service_day/crm_service_day.json
+msgid "Workday"
+msgstr "Рабочий день"
+
+#. Label of a Section Break field in DocType 'CRM Service Level Agreement'
+#. Label of a Table field in DocType 'CRM Service Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Working Hours"
+msgstr "Рабочие часы"
+
+#: frontend/src/components/Filter.vue:623
+msgid "Yesterday"
+msgstr "Вчера"
+
+#: crm/api/whatsapp.py:221 crm/api/whatsapp.py:240
+#: frontend/src/components/Activities/WhatsAppArea.vue:34
+#: frontend/src/components/Activities/WhatsAppBox.vue:14
+msgid "You"
+msgstr "Вы"
+
+#: frontend/src/components/ViewControls.vue:763
+msgid "You have unsaved changes. Do you want to save them?"
+msgstr "У Вас есть несохраненные изменения. Хотите сохранить их?"
+
+#: crm/fcrm/doctype/crm_form_script/crm_form_script.py:24
+msgid "You need to be in developer mode to edit a Standard Form Script"
+msgstr "Чтобы редактировать скрипт стандартной формы, Вам необходимо находиться в режиме разработчика"
+
+#: crm/api/todo.py:24
+msgid "Your assignment on {0} {1} has been removed by {2}"
+msgstr "Ваше назначение на {0} {1} было удалено {2}"
+
+#: frontend/src/components/Activities/CommentArea.vue:9
+msgid "added a"
+msgstr "добавил"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "amber"
+msgstr "янтарь"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "black"
+msgstr "черный"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "blue"
+msgstr "синий"
+
+#: frontend/src/components/Activities/Activities.vue:232
+msgid "changes from"
+msgstr "изменения от"
+
+#: frontend/src/components/Activities/CommentArea.vue:11
+msgid "comment"
+msgstr "комментарий"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "cyan"
+msgstr "голубой"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "gray"
+msgstr "серый"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "green"
+msgstr "зеленый"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "group_by"
+msgstr "группировка_по"
+
+#: frontend/src/components/Activities/CallArea.vue:16
+msgid "has made a call"
+msgstr "сделал(а) звонок"
+
+#: frontend/src/components/Activities/CallArea.vue:15
+msgid "has reached out"
+msgstr "протянул руку помощи"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "kanban"
+msgstr "канбан"
+
+#: crm/api/doc.py:35 crm/api/doc.py:155 crm/api/doc.py:412
+msgid "label"
+msgstr "название"
+
+#. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
+#: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+msgid "list"
+msgstr "список"
+
+#: frontend/src/components/Notifications.vue:65
+#: frontend/src/pages/MobileNotification.vue:52
+msgid "mentioned you in {0}"
+msgstr "упомянул(а) вас в {0}"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "orange"
+msgstr "оранжевый"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "pink"
+msgstr "розовый"
+
+#: frontend/src/components/Activities/AttachmentArea.vue:103
+msgid "private"
+msgstr "личное"
+
+#: frontend/src/components/Activities/AttachmentArea.vue:103
+msgid "public"
+msgstr "публичное"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "purple"
+msgstr "пурпурный"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "red"
+msgstr "красный"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "teal"
+msgstr "аквамарин"
+
+#: frontend/src/components/Activities/Activities.vue:274
+#: frontend/src/components/Activities/Activities.vue:337
+msgid "to"
+msgstr "для"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "violet"
+msgstr "фиолетовый"
+
+#. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
+#. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
+#: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
+#: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+msgid "yellow"
+msgstr "жёлтый"
+
+#: crm/api/todo.py:28
+msgid "{0} assigned a {1} {2} to you"
+msgstr "{0} назначил Вам {1} {2}"
+
+#: frontend/src/pages/Deal.vue:500 frontend/src/pages/Lead.vue:446
+#: frontend/src/pages/MobileDeal.vue:398 frontend/src/pages/MobileLead.vue:308
+msgid "{0} is a required field"
+msgstr "{0} - обязательное поле"
+
+#: frontend/src/components/EmailEditor.vue:28
+#: frontend/src/components/EmailEditor.vue:58
+#: frontend/src/components/EmailEditor.vue:70
+#: frontend/src/components/Settings/InviteMemberPage.vue:14
+msgid "{0} is an invalid email address"
+msgstr "{0} - недопустимый адрес электронной почты"
+
+#: frontend/src/components/Settings/SettingsPage.vue:156
+msgid "{0} is mandatory"
+msgstr "{0} является обязательным"

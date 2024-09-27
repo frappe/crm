@@ -2,6 +2,7 @@
   <ActivityHeader
     v-model="tabIndex"
     v-model:showWhatsappTemplates="showWhatsappTemplates"
+    v-model:showFilesUploader="showFilesUploader"
     :tabs="tabs"
     :title="title"
     :doc="doc"
@@ -62,17 +63,8 @@
           </div>
         </div>
       </div>
-      <div
-        v-else-if="title == 'Tasks'"
-        class="px-3 pb-3 sm:px-10 sm:pb-5 overflow-x-auto sm:w-full w-max"
-      >
-        <TaskArea
-          v-model="all_activities"
-          v-model:doc="doc"
-          :modalRef="modalRef"
-          :tasks="activities"
-          :doctype="doctype"
-        />
+      <div v-else-if="title == 'Tasks'" class="px-3 pb-3 sm:px-10 sm:pb-5">
+        <TaskArea :modalRef="modalRef" :tasks="activities" :doctype="doctype" />
       </div>
       <div v-else-if="title == 'Calls'" class="activity">
         <div v-for="(call, i) in activities">
@@ -102,6 +94,15 @@
             <CallArea class="mb-4" :activity="call" />
           </div>
         </div>
+      </div>
+      <div
+        v-else-if="title == 'Attachments'"
+        class="px-3 pb-3 sm:px-10 sm:pb-5"
+      >
+        <AttachmentArea
+          :attachments="activities"
+          @reload="all_activities.reload() && scroll()"
+        />
       </div>
       <div
         v-else
@@ -176,6 +177,40 @@
           v-else-if="activity.activity_type == 'comment'"
         >
           <CommentArea :activity="activity" />
+        </div>
+        <div
+          class="mb-4 flex flex-col gap-2 py-1.5"
+          :id="activity.name"
+          v-else-if="activity.activity_type == 'attachment_log'"
+        >
+          <div class="flex items-center justify-stretch gap-2 text-base">
+            <div
+              class="inline-flex items-center flex-wrap gap-1.5 text-gray-800 font-medium"
+            >
+              <span class="font-medium">{{ activity.owner_name }}</span>
+              <span class="text-gray-600">{{ __(activity.data.type) }}</span>
+              <a
+                v-if="activity.data.file_url"
+                :href="activity.data.file_url"
+                target="_blank"
+              >
+                <span>{{ activity.data.file_name }}</span>
+              </a>
+              <span v-else>{{ activity.data.file_name }}</span>
+              <FeatherIcon
+                v-if="activity.data.is_private"
+                name="lock"
+                class="size-3"
+              />
+            </div>
+            <div class="ml-auto whitespace-nowrap">
+              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+                <div class="text-sm text-gray-600">
+                  {{ __(timeAgo(activity.creation)) }}
+                </div>
+              </Tooltip>
+            </div>
+          </div>
         </div>
         <div
           v-else-if="
@@ -362,6 +397,11 @@
         :label="__('Create Task')"
         @click="modalRef.showTask()"
       />
+      <Button
+        v-else-if="title == 'Attachments'"
+        :label="__('Upload Attachment')"
+        @click="showFilesUploader = true"
+      />
     </div>
   </FadedScrollableDiv>
   <div>
@@ -395,6 +435,18 @@
     :doctype="doctype"
     :doc="doc"
   />
+  <FilesUploader
+    v-if="doc.data?.name"
+    v-model="showFilesUploader"
+    :doctype="doctype"
+    :docname="doc.data.name"
+    @after="
+      () => {
+        all_activities.reload()
+        changeTabTo('attachments')
+      }
+    "
+  />
 </template>
 <script setup>
 import ActivityHeader from '@/components/Activities/ActivityHeader.vue'
@@ -403,12 +455,14 @@ import CommentArea from '@/components/Activities/CommentArea.vue'
 import CallArea from '@/components/Activities/CallArea.vue'
 import NoteArea from '@/components/Activities/NoteArea.vue'
 import TaskArea from '@/components/Activities/TaskArea.vue'
+import AttachmentArea from '@/components/Activities/AttachmentArea.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
@@ -426,6 +480,7 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
+import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import {
   timeAgo,
   dateFormat,
@@ -457,10 +512,6 @@ const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
 const props = defineProps({
-  title: {
-    type: String,
-    default: 'Activity',
-  },
   doctype: {
     type: String,
     default: 'CRM Lead',
@@ -471,19 +522,31 @@ const props = defineProps({
   },
 })
 
+const route = useRoute()
+
 const doc = defineModel()
 const reload = defineModel('reload')
 const tabIndex = defineModel('tabIndex')
 
 const reload_email = ref(false)
 const modalRef = ref(null)
+const showFilesUploader = ref(false)
+
+const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
+
+const changeTabTo = (tabName) => {
+  const tabNames = props.tabs?.map((tab) => tab.name?.toLowerCase())
+  const index = tabNames?.indexOf(tabName)
+  if (index == -1) return
+  tabIndex.value = index
+}
 
 const all_activities = createResource({
   url: 'crm.api.activities.get_activities',
   params: { name: doc.value.data.name },
   cache: ['activity', doc.value.data.name],
   auto: true,
-  transform: ([versions, calls, notes, tasks]) => {
+  transform: ([versions, calls, notes, tasks, attachments]) => {
     if (calls?.length) {
       calls.forEach((doc) => {
         doc.show_recording = false
@@ -518,7 +581,7 @@ const all_activities = createResource({
         }
       })
     }
-    return { versions, calls, notes, tasks }
+    return { versions, calls, notes, tasks, attachments }
   },
 })
 
@@ -549,6 +612,14 @@ onMounted(() => {
       whatsappMessages.reload()
     }
   })
+
+  nextTick(() => {
+    const hash = route.hash.slice(1) || null
+    let tabNames = props.tabs?.map((tab) => tab.name)
+    if (!tabNames?.includes(hash)) {
+      scroll(hash)
+    }
+  })
 })
 
 function sendTemplate(template) {
@@ -576,31 +647,34 @@ function get_activities() {
 }
 
 const activities = computed(() => {
-  let activities = []
-  if (props.title == 'Activity') {
-    activities = get_activities()
-  } else if (props.title == 'Emails') {
+  let _activities = []
+  if (title.value == 'Activity') {
+    _activities = get_activities()
+  } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
-    activities = all_activities.data.versions.filter(
+    _activities = all_activities.data.versions.filter(
       (activity) => activity.activity_type === 'communication',
     )
-  } else if (props.title == 'Comments') {
+  } else if (title.value == 'Comments') {
     if (!all_activities.data?.versions) return []
-    activities = all_activities.data.versions.filter(
+    _activities = all_activities.data.versions.filter(
       (activity) => activity.activity_type === 'comment',
     )
-  } else if (props.title == 'Calls') {
+  } else if (title.value == 'Calls') {
     if (!all_activities.data?.calls) return []
     return sortByCreation(all_activities.data.calls)
-  } else if (props.title == 'Tasks') {
+  } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
     return sortByCreation(all_activities.data.tasks)
-  } else if (props.title == 'Notes') {
+  } else if (title.value == 'Notes') {
     if (!all_activities.data?.notes) return []
     return sortByCreation(all_activities.data.notes)
+  } else if (title.value == 'Attachments') {
+    if (!all_activities.data?.attachments) return []
+    return sortByCreation(all_activities.data.attachments)
   }
 
-  activities.forEach((activity) => {
+  _activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
 
     if (
@@ -619,7 +693,7 @@ const activities = computed(() => {
       })
     }
   })
-  return sortByCreation(activities)
+  return sortByCreation(_activities)
 })
 
 function sortByCreation(list) {
@@ -649,17 +723,19 @@ function update_activities_details(activity) {
 
 const emptyText = computed(() => {
   let text = 'No Activities'
-  if (props.title == 'Emails') {
+  if (title.value == 'Emails') {
     text = 'No Email Communications'
-  } else if (props.title == 'Comments') {
+  } else if (title.value == 'Comments') {
     text = 'No Comments'
-  } else if (props.title == 'Calls') {
+  } else if (title.value == 'Calls') {
     text = 'No Call Logs'
-  } else if (props.title == 'Notes') {
+  } else if (title.value == 'Notes') {
     text = 'No Notes'
-  } else if (props.title == 'Tasks') {
+  } else if (title.value == 'Tasks') {
     text = 'No Tasks'
-  } else if (props.title == 'WhatsApp') {
+  } else if (title.value == 'Attachments') {
+    text = 'No Attachments'
+  } else if (title.value == 'WhatsApp') {
     text = 'No WhatsApp Messages'
   }
   return text
@@ -667,17 +743,19 @@ const emptyText = computed(() => {
 
 const emptyTextIcon = computed(() => {
   let icon = ActivityIcon
-  if (props.title == 'Emails') {
+  if (title.value == 'Emails') {
     icon = Email2Icon
-  } else if (props.title == 'Comments') {
+  } else if (title.value == 'Comments') {
     icon = CommentIcon
-  } else if (props.title == 'Calls') {
+  } else if (title.value == 'Calls') {
     icon = PhoneIcon
-  } else if (props.title == 'Notes') {
+  } else if (title.value == 'Notes') {
     icon = NoteIcon
-  } else if (props.title == 'Tasks') {
+  } else if (title.value == 'Tasks') {
     icon = TaskIcon
-  } else if (props.title == 'WhatsApp') {
+  } else if (title.value == 'Attachments') {
+    icon = AttachmentIcon
+  } else if (title.value == 'WhatsApp') {
     icon = WhatsAppIcon
   }
   return h(icon, { class: 'text-gray-500' })
@@ -701,6 +779,9 @@ function timelineIcon(activity_type, is_lead) {
     case 'outgoing_call':
       icon = OutboundCallIcon
       break
+    case 'attachment_log':
+      icon = AttachmentIcon
+      break
     default:
       icon = DotIcon
   }
@@ -720,6 +801,7 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
 })
 
 function scroll(hash) {
+  if (['tasks', 'notes'].includes(route.hash?.slice(1))) return
   setTimeout(() => {
     let el
     if (!hash) {
@@ -735,12 +817,5 @@ function scroll(hash) {
   }, 500)
 }
 
-defineExpose({ emailBox })
-
-const route = useRoute()
-
-nextTick(() => {
-  const hash = route.hash.slice(1) || null
-  scroll(hash)
-})
+defineExpose({ emailBox, all_activities })
 </script>

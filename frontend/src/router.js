@@ -145,9 +145,14 @@ router.beforeEach(async (to, from, next) => {
   if (to.name === 'Home' && isLoggedIn) {
     next({ name: 'Leads' })
   } else if (!isLoggedIn) {
-    window.location.href = "/login?redirect-to=/crm";
+    window.location.href = '/login?redirect-to=/crm'
   } else if (to.matched.length === 0) {
     next({ name: 'Invalid Page' })
+  } else if (['Deal', 'Lead'].includes(to.name) && !to.hash) {
+    let storageKey = to.name === 'Deal' ? 'lastDealTab' : 'lastLeadTab'
+    const activeTab = localStorage.getItem(storageKey) || 'activity'
+    const hash = '#' + activeTab
+    next({ ...to, hash })
   } else {
     next()
   }

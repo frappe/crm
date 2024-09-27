@@ -48,7 +48,7 @@
             <FormControl
               v-if="field.read_only && field.type !== 'Check'"
               type="text"
-              :placeholder="__(field.placeholder || field.label)"
+              :placeholder="getPlaceholder(field)"
               v-model="data[field.name]"
               :disabled="true"
             />
@@ -59,7 +59,7 @@
               :class="field.prefix ? 'prefix' : ''"
               :options="field.options"
               v-model="data[field.name]"
-              :placeholder="__(field.placeholder || field.label)"
+              :placeholder="getPlaceholder(field)"
             >
               <template v-if="field.prefix" #prefix>
                 <IndicatorIcon :class="field.prefix" />
@@ -89,8 +89,9 @@
                 class="form-control flex-1"
                 :value="data[field.name]"
                 :doctype="field.options"
+                :filters="field.filters"
                 @change="(v) => (data[field.name] = v)"
-                :placeholder="__(field.placeholder || field.label)"
+                :placeholder="getPlaceholder(field)"
                 :onCreate="field.create"
               />
               <Button
@@ -110,8 +111,9 @@
               class="form-control"
               :value="getUser(data[field.name]).full_name"
               :doctype="field.options"
+              :filters="field.filters"
               @change="(v) => (data[field.name] = v)"
-              :placeholder="__(field.placeholder || field.label)"
+              :placeholder="getPlaceholder(field)"
               :hideMe="true"
             >
               <template #prefix>
@@ -180,13 +182,13 @@
             <DateTimePicker
               v-else-if="field.type === 'Datetime'"
               v-model="data[field.name]"
-              :placeholder="__(field.placeholder || field.label)"
+              :placeholder="getPlaceholder(field)"
               input-class="border-none"
             />
             <DatePicker
               v-else-if="field.type === 'Date'"
               v-model="data[field.name]"
-              :placeholder="__(field.placeholder || field.label)"
+              :placeholder="getPlaceholder(field)"
               input-class="border-none"
             />
             <FormControl
@@ -194,19 +196,19 @@
                 ['Small Text', 'Text', 'Long Text'].includes(field.type)
               "
               type="textarea"
-              :placeholder="__(field.placeholder || field.label)"
+              :placeholder="getPlaceholder(field)"
               v-model="data[field.name]"
             />
             <FormControl
               v-else-if="['Int'].includes(field.type)"
               type="number"
-              :placeholder="__(field.placeholder || field.label)"
+              :placeholder="getPlaceholder(field)"
               v-model="data[field.name]"
             />
             <FormControl
               v-else
               type="text"
-              :placeholder="__(field.placeholder || field.label)"
+              :placeholder="getPlaceholder(field)"
               v-model="data[field.name]"
               :disabled="Boolean(field.read_only)"
             />
@@ -233,6 +235,17 @@ const props = defineProps({
   sections: Array,
   data: Object,
 })
+
+const getPlaceholder = (field) => {
+  if (field.placeholder) {
+    return __(field.placeholder)
+  }
+  if (['Select', 'Link'].includes(field.type)) {
+    return __('Select {0}', [__(field.label)])
+  } else {
+    return __('Enter {0}', [__(field.label)])
+  }
+}
 </script>
 
 <style scoped>

@@ -5,6 +5,7 @@
     :task="task"
     :doctype="doctype"
     :doc="doc.data?.name"
+    @after="redirect('tasks')"
   />
   <NoteModal
     v-model="showNoteModal"
@@ -12,6 +13,7 @@
     :note="note"
     :doctype="doctype"
     :doc="doc.data?.name"
+    @after="redirect('notes')"
   />
 </template>
 <script setup>
@@ -19,6 +21,7 @@ import TaskModal from '@/components/Modals/TaskModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
   doctype: String,
@@ -72,6 +75,19 @@ function showNote(n) {
     content: '',
   }
   showNoteModal.value = true
+}
+
+// common
+const route = useRoute()
+const router = useRouter()
+
+function redirect(tabName) {
+  if (route.name == 'Lead' || route.name == 'Deal') {
+    let hash = '#' + tabName
+    if (route.hash != hash) {
+      router.push({ ...route, hash })
+    }
+  }
 }
 
 defineExpose({

@@ -141,7 +141,7 @@ const props = defineProps({
 const show = defineModel()
 const tasks = defineModel('reloadTasks')
 
-const emit = defineEmits(['updateTask'])
+const emit = defineEmits(['updateTask', 'after'])
 
 const router = useRouter()
 const { getUser } = usersStore()
@@ -202,6 +202,7 @@ async function updateTask() {
     if (d.name) {
       capture('task_created')
       tasks.value.reload()
+      emit('after')
     }
   }
   show.value = false

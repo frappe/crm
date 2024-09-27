@@ -40,12 +40,12 @@
               v-for="(section, i) in sections.data"
               :key="section.label"
               class="flex flex-col py-1.5 px-1"
-              :class="{ 'border-b': i !== sections.data.length - 1 }"
+              :class="{ 'border-b': i !== sections.data?.length - 1 }"
             >
               <Section :is-opened="section.opened" :label="section.label">
                 <SectionFields
                   :fields="section.fields"
-                  :isLastSection="i == section.data.length - 1"
+                  :isLastSection="i == section.data?.length - 1"
                   v-model="data"
                 />
               </Section>
@@ -133,9 +133,9 @@ function saveChanges() {
   let _sections = JSON.parse(JSON.stringify(sections.data))
   _sections.forEach((section) => {
     if (!section.fields) return
-    section.fields = section.fields.map(
-      (field) => field.fieldname || field.name,
-    )
+    section.fields = section.fields
+      .map((field) => field.fieldname || field.name)
+      .filter(Boolean)
   })
   loading.value = true
   call(
