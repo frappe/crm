@@ -46,7 +46,6 @@ export function useActiveTabManager(tabs, storageKey) {
 
     let lastVisitedTab = getActiveTabFromLocalStorage()
     if (lastVisitedTab) {
-      setActiveTabInUrl(lastVisitedTab)
       return getTabIndex(lastVisitedTab)
     }
 
