@@ -48,6 +48,7 @@ frappe.ui.form.on("CRM Form Script", {
 function setupForm({ doc }) {
 	return {
 		actions: [],
+		statuses: [],
 	}
 }`.trim();
 		}
