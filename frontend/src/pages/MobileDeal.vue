@@ -522,7 +522,7 @@ function contactOptions(contact) {
     options.push({
       label: __('Set as Primary Contact'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
-      onClick: () => setPrimaryContact(contact),
+      onClick: () => setPrimaryContact(contact.name),
     })
   }
 
