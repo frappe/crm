@@ -125,7 +125,6 @@ import { computed } from 'vue'
 const props = defineProps({
   fields: {
     type: Object,
-    required: true,
   },
   isLastSection: {
     type: Boolean,
@@ -146,7 +145,7 @@ const _fields = computed(() => {
     if (df?.depends_on) evaluate_depends_on(df.depends_on, field)
     all_fields.push({
       ...field,
-      filters: df.link_filters && JSON.parse(df.link_filters),
+      filters: df?.link_filters && JSON.parse(df.link_filters),
       placeholder: field.placeholder || field.label,
     })
   })

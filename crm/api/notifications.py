@@ -48,6 +48,7 @@ def get_notifications():
 def mark_as_read(user=None, doc=None):
     user = user or frappe.session.user
     filters = {"to_user": user, "read": False}
+    or_filters = []
     if doc:
         or_filters = [
             {"comment": doc},
