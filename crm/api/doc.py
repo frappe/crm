@@ -617,6 +617,7 @@ def get_field_obj(field):
 		obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
 		obj["doctype"] = field.options
 	elif field.fieldtype == "Select" and field.options:
+		obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
 		obj["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]
 
 	if field.read_only:
