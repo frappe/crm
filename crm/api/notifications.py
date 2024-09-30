@@ -27,7 +27,7 @@ def get_notifications():
                 "type": notification.type,
                 "to_user": notification.to_user,
                 "read": notification.read,
-                "comment": notification.comment,
+                "hash": get_hash(notification),
                 "notification_text": notification.notification_text,
                 "notification_type_doctype": notification.notification_type_doctype,
                 "notification_type_doc": notification.notification_type_doc,
@@ -58,3 +58,17 @@ def mark_as_read(user=None, doc=None):
         d = frappe.get_doc("CRM Notification", n.name)
         d.read = True
         d.save()
+
+def get_hash(notification):
+    _hash = ""
+    if notification.type == "Mention" and notification.notification_type_doc:
+        _hash = "#" + notification.notification_type_doc
+
+    if notification.type == "WhatsApp":
+        _hash = "#whatsapp"
+
+    if notification.type == "Assignment" and notification.notification_type_doctype == "CRM Task":
+        _hash = "#tasks"
+        if "has been removed by" in notification.message:
+            _hash = ""
+    return _hash

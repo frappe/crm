@@ -147,10 +147,11 @@ function getRoute(notification) {
       dealId: notification.reference_name,
     }
   }
+
   return {
     name: notification.route_name,
     params: params,
-    hash: '#' + notification.comment || notification.notification_type_doc,
+    hash: notification.hash,
   }
 }
 
