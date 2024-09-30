@@ -45,7 +45,6 @@
       <Activities
         ref="activities"
         doctype="CRM Lead"
-        :title="tab.name"
         :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"

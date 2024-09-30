@@ -457,10 +457,6 @@ const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
 const props = defineProps({
-  title: {
-    type: String,
-    default: 'Activity',
-  },
   doctype: {
     type: String,
     default: 'CRM Lead',
@@ -471,12 +467,16 @@ const props = defineProps({
   },
 })
 
+const route = useRoute()
+
 const doc = defineModel()
 const reload = defineModel('reload')
 const tabIndex = defineModel('tabIndex')
 
 const reload_email = ref(false)
 const modalRef = ref(null)
+
+const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
 
 const all_activities = createResource({
   url: 'crm.api.activities.get_activities',
@@ -549,6 +549,14 @@ onMounted(() => {
       whatsappMessages.reload()
     }
   })
+
+  nextTick(() => {
+    const hash = route.hash.slice(1) || null
+    let tabNames = props.tabs?.map((tab) => tab.name)
+    if (!tabNames?.includes(hash)) {
+      scroll(hash)
+    }
+  })
 })
 
 function sendTemplate(template) {
@@ -577,25 +585,25 @@ function get_activities() {
 
 const activities = computed(() => {
   let activities = []
-  if (props.title == 'Activity') {
+  if (title.value == 'Activity') {
     activities = get_activities()
-  } else if (props.title == 'Emails') {
+  } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
     activities = all_activities.data.versions.filter(
       (activity) => activity.activity_type === 'communication',
     )
-  } else if (props.title == 'Comments') {
+  } else if (title.value == 'Comments') {
     if (!all_activities.data?.versions) return []
     activities = all_activities.data.versions.filter(
       (activity) => activity.activity_type === 'comment',
     )
-  } else if (props.title == 'Calls') {
+  } else if (title.value == 'Calls') {
     if (!all_activities.data?.calls) return []
     return sortByCreation(all_activities.data.calls)
-  } else if (props.title == 'Tasks') {
+  } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
     return sortByCreation(all_activities.data.tasks)
-  } else if (props.title == 'Notes') {
+  } else if (title.value == 'Notes') {
     if (!all_activities.data?.notes) return []
     return sortByCreation(all_activities.data.notes)
   }
@@ -649,17 +657,17 @@ function update_activities_details(activity) {
 
 const emptyText = computed(() => {
   let text = 'No Activities'
-  if (props.title == 'Emails') {
+  if (title.value == 'Emails') {
     text = 'No Email Communications'
-  } else if (props.title == 'Comments') {
+  } else if (title.value == 'Comments') {
     text = 'No Comments'
-  } else if (props.title == 'Calls') {
+  } else if (title.value == 'Calls') {
     text = 'No Call Logs'
-  } else if (props.title == 'Notes') {
+  } else if (title.value == 'Notes') {
     text = 'No Notes'
-  } else if (props.title == 'Tasks') {
+  } else if (title.value == 'Tasks') {
     text = 'No Tasks'
-  } else if (props.title == 'WhatsApp') {
+  } else if (title.value == 'WhatsApp') {
     text = 'No WhatsApp Messages'
   }
   return text
@@ -667,17 +675,17 @@ const emptyText = computed(() => {
 
 const emptyTextIcon = computed(() => {
   let icon = ActivityIcon
-  if (props.title == 'Emails') {
+  if (title.value == 'Emails') {
     icon = Email2Icon
-  } else if (props.title == 'Comments') {
+  } else if (title.value == 'Comments') {
     icon = CommentIcon
-  } else if (props.title == 'Calls') {
+  } else if (title.value == 'Calls') {
     icon = PhoneIcon
-  } else if (props.title == 'Notes') {
+  } else if (title.value == 'Notes') {
     icon = NoteIcon
-  } else if (props.title == 'Tasks') {
+  } else if (title.value == 'Tasks') {
     icon = TaskIcon
-  } else if (props.title == 'WhatsApp') {
+  } else if (title.value == 'WhatsApp') {
     icon = WhatsAppIcon
   }
   return h(icon, { class: 'text-gray-500' })
@@ -737,11 +745,4 @@ function scroll(hash) {
 }
 
 defineExpose({ emailBox })
-
-const route = useRoute()
-
-nextTick(() => {
-  const hash = route.hash.slice(1) || null
-  scroll(hash)
-})
 </script>
