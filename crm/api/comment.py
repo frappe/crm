@@ -18,16 +18,18 @@ def notify_mentions(doc):
     if not content:
         return
     mentions = extract_mentions(content)
+    reference_doc = frappe.get_doc(doc.reference_doctype, doc.reference_name)
     for mention in mentions:
         owner = frappe.get_cached_value("User", doc.owner, "full_name")
         doctype = doc.reference_doctype
         if doctype.startswith("CRM "):
             doctype = doctype[4:].lower()
+        name = reference_doc.lead_name or name if doctype == "lead" else reference_doc.organization or reference_doc.lead_name or name
         notification_text = f"""
             <div class="mb-2 leading-5 text-gray-600">
                 <span class="font-medium text-gray-900">{ owner }</span>
                 <span>{ _('mentioned you in {0}').format(doctype) }</span>
-                <span class="font-medium text-gray-900">{ doc.reference_name }</span>
+                <span class="font-medium text-gray-900">{ name }</span>
             </div>
         """
         notify_user({
