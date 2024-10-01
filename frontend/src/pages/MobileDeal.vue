@@ -212,7 +212,7 @@
       <Activities
         v-else
         doctype="CRM Deal"
-        :title="tab.name"
+        :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
         v-model="deal"
@@ -278,6 +278,7 @@ import {
   callEnabled,
   isMobileView,
 } from '@/composables/settings'
+import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   createResource,
   Dropdown,
@@ -427,7 +428,6 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-const tabIndex = ref(0)
 const tabs = computed(() => {
   let tabOptions = [
     {
@@ -476,6 +476,7 @@ const tabs = computed(() => {
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
+const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
 
 const fieldsLayout = createResource({
   url: 'crm.api.doc.get_sidebar_fields',
