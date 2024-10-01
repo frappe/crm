@@ -36,7 +36,7 @@
     </template>
   </LayoutHeader>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
-    <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
+    <Tabs v-model="tabIndex" :tabs="tabs">
       <Activities
         ref="activities"
         doctype="CRM Deal"
