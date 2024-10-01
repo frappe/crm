@@ -55,9 +55,9 @@
           v-else-if="field.type === 'select'"
           class="form-control cursor-pointer [&_select]:cursor-pointer"
           type="select"
-          :value="data[field.name]"
+          v-model="data[field.name]"
           :options="field.options"
-          :debounce="500"
+          :placeholder="field.placeholder"
           @change.stop="emit('update', field.name, $event.target.value)"
         />
         <Link
@@ -141,7 +141,7 @@ const data = defineModel()
 const _fields = computed(() => {
   let all_fields = []
   props.fields?.forEach((field) => {
-    let df = field.all_properties
+    let df = field?.all_properties
     if (df?.depends_on) evaluate_depends_on(df.depends_on, field)
     all_fields.push({
       ...field,

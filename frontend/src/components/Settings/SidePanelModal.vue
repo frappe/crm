@@ -133,9 +133,9 @@ function saveChanges() {
   let _sections = JSON.parse(JSON.stringify(sections.data))
   _sections.forEach((section) => {
     if (!section.fields) return
-    section.fields = section.fields.map(
-      (field) => field.fieldname || field.name,
-    )
+    section.fields = section.fields
+      .map((field) => field.name || field.fieldname)
+      .filter(Boolean)
   })
   loading.value = true
   call(
