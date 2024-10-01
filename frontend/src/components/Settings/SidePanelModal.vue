@@ -134,7 +134,7 @@ function saveChanges() {
   _sections.forEach((section) => {
     if (!section.fields) return
     section.fields = section.fields
-      .map((field) => field.name || field.fieldname)
+      .map((field) => field.fieldname || field.name)
       .filter(Boolean)
   })
   loading.value = true
