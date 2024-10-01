@@ -89,7 +89,6 @@
       <Activities
         v-else
         doctype="CRM Lead"
-        :title="tab.name"
         :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
@@ -203,6 +202,7 @@ import {
   callEnabled,
   isMobileView,
 } from '@/composables/settings'
+import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   createResource,
   Dropdown,
@@ -338,8 +338,6 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-const tabIndex = ref(0)
-
 const tabs = computed(() => {
   let tabOptions = [
     {
@@ -388,6 +386,7 @@ const tabs = computed(() => {
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
+const { tabIndex } = useActiveTabManager(tabs, 'lastLeadTab')
 
 watch(tabs, (value) => {
   if (value && route.params.tabName) {
