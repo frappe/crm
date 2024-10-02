@@ -1,0 +1,41 @@
+# Set to true to add reviewers to pull requests
+addReviewers: true
+
+# Set to true to add assignees to pull requests
+addAssignees: false
+
+# A number of reviewers added to the pull request
+# Set 0 to add all the reviewers (default: 0)
+numberOfReviewers: 2
+
+# A number of assignees to add to the pull request
+# Set to 0 to add all of the assignees.
+# Uses numberOfReviewers if unset.
+# numberOfAssignees: 2
+
+# Set to true to add reviewers from different groups to pull requests
+useReviewGroups: false
+
+# A list of reviewers, split into different groups, to be added to pull requests (GitHub user name)
+#reviewGroups:
+#  groupA:
+#    - reviewerA
+#    - reviewerB
+#    - reviewerC
+#  groupB:
+#    - reviewerD
+#    - reviewerE
+#    - reviewerF
+
+# Set to true to add assignees from different groups to pull requests
+useAssigneeGroups: true
+# A list of assignees, split into different froups, to be added to pull requests (GitHub user name)
+ assigneeGroups:
+   groupA:
+     - stevekaschimer
+   groupB:
+     - skaschimer
+
+# A list of keywords to be skipped the process that add reviewers if pull requests include it
+# skipKeywords:
+#   - wip
