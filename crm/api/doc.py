@@ -611,12 +611,13 @@ def get_field_obj(field):
 		"all_properties": field,
 	}
 
-	obj["placeholder"] = "Add " + field.label + "..."
+	obj["placeholder"] = field.get("placeholder") or "Add " + field.label + "..."
 
 	if field.fieldtype == "Link":
-		obj["placeholder"] = "Select " + field.label + "..."
+		obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
 		obj["doctype"] = field.options
 	elif field.fieldtype == "Select" and field.options:
+		obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
 		obj["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]
 
 	if field.read_only:
@@ -685,6 +686,8 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 				"depends_on": field.depends_on,
 				"mandatory_depends_on": field.mandatory_depends_on,
 				"read_only_depends_on": field.read_only_depends_on,
+				"link_filters": field.get("link_filters"),
+				"placeholder": field.get("placeholder"),
 			})
 
 	return _fields

@@ -16,6 +16,12 @@
         />
       </div>
       <div class="flex items-center gap-2 shrink-0">
+        <Badge
+          v-if="status.label"
+          :label="__(status.label)"
+          variant="subtle"
+          :theme="status.color"
+        />
         <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
           <div class="text-sm text-gray-600">
             {{ __(timeAgo(activity.creation)) }}
@@ -87,6 +93,7 @@ import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
 import { Badge, Tooltip } from 'frappe-ui'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { computed } from 'vue'
 
 const props = defineProps({
   activity: Object,
@@ -140,4 +147,19 @@ function reply(email, reply_all = false) {
     .focus('start')
     .run()
 }
+
+const status = computed(() => {
+  let _status = props.activity?.data?.delivery_status
+  let indicator_color = 'red'
+  if (['Sent', 'Clicked'].includes(_status)) {
+    indicator_color = 'green'
+  } else if (['Sending', 'Scheduled'].includes(_status)) {
+    indicator_color = 'orange'
+  } else if (['Opened', 'Read'].includes(_status)) {
+    indicator_color = 'blue'
+  } else if (_status == 'Error') {
+    indicator_color = 'red'
+  }
+  return { label: _status, color: indicator_color }
+})
 </script>

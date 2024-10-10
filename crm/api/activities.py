@@ -125,6 +125,7 @@ def get_deal_activities(name):
 				"bcc": communication.bcc,
 				"attachments": get_attachments('Communication', communication.name),
 				"read_by_recipient": communication.read_by_recipient,
+				"delivery_status": communication.delivery_status,
 			},
 			"is_lead": False,
 		}
@@ -238,6 +239,7 @@ def get_lead_activities(name):
 				"bcc": communication.bcc,
 				"attachments": get_attachments('Communication', communication.name),
 				"read_by_recipient": communication.read_by_recipient,
+				"delivery_status": communication.delivery_status,
 			},
 			"is_lead": True,
 		}

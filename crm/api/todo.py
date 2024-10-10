@@ -52,8 +52,8 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 	if doctype.startswith("CRM "):
 		doctype = doctype[4:].lower()
 
-	if doctype in ["CRM Lead", "CRM Deal"]:
-		name = reference_doc.lead_name or name if doctype == "CRM Lead" else reference_doc.organization or reference_doc.lead_name or name
+	if doctype in ["lead", "deal"]:
+		name = reference_doc.lead_name or name if doctype == "lead" else reference_doc.organization or reference_doc.lead_name or name
 
 		if is_cancelled:
 			return f"""
@@ -76,7 +76,7 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 			</div>
 		"""
 
-	if doc.reference_type == "CRM Task":
+	if doctype == "task":
 		if is_cancelled:
 			return f"""
 				<div class="mb-2 leading-5 text-gray-600">

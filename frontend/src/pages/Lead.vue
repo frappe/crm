@@ -45,7 +45,6 @@
       <Activities
         ref="activities"
         doctype="CRM Lead"
-        :title="tab.name"
         :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
@@ -330,6 +329,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
@@ -463,8 +463,6 @@ usePageMeta(() => {
   }
 })
 
-const tabIndex = ref(0)
-
 const tabs = computed(() => {
   let tabOptions = [
     {
@@ -507,6 +505,8 @@ const tabs = computed(() => {
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
+
+const { tabIndex } = useActiveTabManager(tabs, 'lastLeadTab')
 
 watch(tabs, (value) => {
   if (value && route.params.tabName) {

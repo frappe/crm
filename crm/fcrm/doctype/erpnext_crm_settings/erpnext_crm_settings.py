@@ -29,7 +29,7 @@ class ERPNextCRMSettings(Document):
 					doctype="Quotation",
 					fieldname="quotation_to",
 					property="link_filters",
-					value='[["DocType","name","in", ["Customer", "Lead", "Prospect", "Frappe CRM Deal"]]]',
+					value='[["DocType","name","in", ["Customer", "Lead", "Prospect", "CRM Deal"]]]',
 					property_type="JSON",
 					validate_fields_for_doctype=False,
 				)
