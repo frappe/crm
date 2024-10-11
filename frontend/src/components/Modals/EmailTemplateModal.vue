@@ -52,11 +52,23 @@
         </div>
         <div>
           <div class="mb-1.5 text-sm text-gray-600">
+            {{ __('Content Type') }}
+          </div>
+          <Select
+            variant="outline"
+            v-model="_emailTemplate.content_type"
+            default="Rich Text"
+            :options="['Rich Text', 'HTML']"
+            :placeholder="__('Rich Text')"
+          />
+        </div>
+        <div>
+          <div class="mb-1.5 text-sm text-gray-600">
             {{ __('Content') }}
             <span class="text-red-500">*</span>
           </div>
           <FormControl
-            v-if="_emailTemplate.use_html"
+            v-if="_emailTemplate.content_type === 'HTML'"
             type="textarea"
             variant="outline"
             ref="content"
@@ -64,7 +76,7 @@
             v-model="_emailTemplate.response_html"
             :placeholder="
               __(
-                '<p>Dear {{ lead_name }},</p>\n\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\n\n<p>Thanks,</p>\n<p>Frappé</p>'
+                '<p>Dear {{ lead_name }},</p>\n\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\n\n<p>Thanks,</p>\n<p>Frappé</p>',
               )
             "
           />
@@ -78,16 +90,13 @@
             @change="(val) => (_emailTemplate.response = val)"
             :placeholder="
               __(
-                'Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé'
+                'Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé',
               )
             "
           />
         </div>
         <div>
           <Checkbox v-model="_emailTemplate.enabled" :label="__('Enabled')" />
-        </div>
-        <div>
-          <Checkbox v-model="_emailTemplate.use_html" :label="__('Use HTML')" />
         </div>
         <ErrorMessage :message="__(errorMessage)" />
       </div>
@@ -116,7 +125,9 @@ const emit = defineEmits(['after'])
 const subjectRef = ref(null)
 const nameRef = ref(null)
 const editMode = ref(false)
-let _emailTemplate = ref({})
+let _emailTemplate = ref({
+  content_type: 'Rich Text',
+})
 
 async function updateEmailTemplate() {
   if (!validate()) return
@@ -184,6 +195,9 @@ function handleEmailTemplateUpdate(doc) {
 }
 
 function validate() {
+  _emailTemplate.value.use_html = Boolean(
+    _emailTemplate.value.content_type == 'HTML',
+  )
   if (!_emailTemplate.value.name) {
     errorMessage.value = 'Name is required'
     return false
@@ -193,9 +207,14 @@ function validate() {
     return false
   }
   if (
-    !_emailTemplate.value.response ||
-    _emailTemplate.value.response === '<p></p>'
+    !_emailTemplate.value.use_html &&
+    (!_emailTemplate.value.response ||
+      _emailTemplate.value.response === '<p></p>')
   ) {
+    errorMessage.value = 'Content is required'
+    return false
+  }
+  if (_emailTemplate.value.use_html && !_emailTemplate.value.response_html) {
     errorMessage.value = 'Content is required'
     return false
   }
@@ -215,10 +234,13 @@ watch(
         nameRef.value.el.focus()
       }
       _emailTemplate.value = { ...props.emailTemplate }
+      _emailTemplate.value.content_type = _emailTemplate.value.use_html
+        ? 'HTML'
+        : 'Rich Text'
       if (_emailTemplate.value.name) {
         editMode.value = true
       }
     })
-  }
+  },
 )
 </script>
