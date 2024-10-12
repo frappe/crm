@@ -68,20 +68,21 @@
           class="flex flex-1 flex-col justify-between overflow-hidden"
         >
           <div class="flex flex-col overflow-y-auto">
-            <div
-              v-for="(section, i) in fieldsLayout.data"
-              :key="section.label"
-              class="flex flex-col px-2 py-3 sm:p-3"
-              :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-            >
-              <Section :is-opened="section.opened" :label="section.label">
-                <SectionFields
-                  :fields="section.fields"
-                  :isLastSection="i == fieldsLayout.data.length - 1"
-                  v-model="lead.data"
-                  @update="updateField"
-                />
-              </Section>
+            <div v-for="(section, i) in fieldsLayout.data" :key="section.label">
+              <div
+                v-if="section.fields.some((field) => field.hidden === 0)"
+                class="flex flex-col px-2 py-3 sm:p-3"
+                :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
+              >
+                <Section :is-opened="section.opened" :label="section.label">
+                  <SectionFields
+                    :fields="section.fields"
+                    :isLastSection="i == fieldsLayout.data.length - 1"
+                    v-model="lead.data"
+                    @update="updateField"
+                  />
+                </Section>
+              </div>
             </div>
           </div>
         </div>
