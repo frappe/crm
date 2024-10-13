@@ -1,0 +1,31 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-13 13:06:22.305044",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "deal_elements"
+ ],
+ "fields": [
+  {
+   "fieldname": "deal_elements",
+   "fieldtype": "Link",
+   "label": "Deal Elements",
+   "options": "CRM Deal Element"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-10-13 13:07:29.615600",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Deal Elements",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

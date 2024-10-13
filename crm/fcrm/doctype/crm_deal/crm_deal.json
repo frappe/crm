@@ -7,6 +7,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "tab_6_tab",
+  "details_section",
+  "deal_elements",
   "organization_tab",
   "naming_series",
   "organization",
@@ -334,11 +337,27 @@
    "fieldtype": "Link",
    "label": "Currency",
    "options": "Currency"
+  },
+  {
+   "fieldname": "tab_6_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "deal_elements",
+   "fieldtype": "Table MultiSelect",
+   "label": "Deal Elements",
+   "options": "CRM Deal Elements"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-17 18:34:15.873610",
+ "modified": "2024-10-13 07:25:20.676662",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
