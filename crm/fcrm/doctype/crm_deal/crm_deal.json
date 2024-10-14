@@ -10,15 +10,15 @@
   "tab_6_tab",
   "details_section",
   "deal_elements",
-  "organization_tab",
-  "naming_series",
-  "organization",
-  "next_step",
   "probability",
-  "column_break_ijan",
-  "status",
   "close_date",
+  "naming_series",
+  "column_break_tukx",
+  "next_step",
+  "status",
   "deal_owner",
+  "organization_tab",
+  "organization",
   "contacts_tab",
   "contacts",
   "contact",
@@ -263,10 +263,6 @@
    "label": "Lead Name"
   },
   {
-   "fieldname": "column_break_ijan",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "lead_details_tab",
    "fieldtype": "Tab Break",
    "label": "Lead Details"
@@ -353,11 +349,15 @@
    "fieldtype": "Table MultiSelect",
    "label": "Deal Elements",
    "options": "CRM Deal Elements"
+  },
+  {
+   "fieldname": "column_break_tukx",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-13 07:25:20.676662",
+ "modified": "2024-10-14 07:18:34.660756",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
