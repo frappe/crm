@@ -3,6 +3,7 @@ import frappe
 from frappe.translate import get_all_translations
 from frappe.utils import validate_email_address, split_emails, cstr
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
+from frappe.core.api.file import get_max_file_size
 
 
 @frappe.whitelist(allow_guest=True)
@@ -107,3 +108,20 @@ def invite_by_email(emails: str, role: str):
 
 	for email in to_invite:
 		frappe.get_doc(doctype="CRM Invitation", email=email, role=role).insert(ignore_permissions=True)
+
+
+@frappe.whitelist()
+def get_file_uploader_defaults(doctype: str):
+	max_number_of_files = None
+	make_attachments_public = False
+	if doctype:
+		meta = frappe.get_meta(doctype)
+		max_number_of_files = meta.get("max_attachments")
+		make_attachments_public = meta.get("make_attachments_public")
+
+	return {
+		'allowed_file_types': frappe.get_system_settings("allowed_file_extensions"),
+		'max_file_size': get_max_file_size(),
+		'max_number_of_files': max_number_of_files,
+		'make_attachments_public': bool(make_attachments_public),
+	}
