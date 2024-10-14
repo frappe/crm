@@ -104,6 +104,15 @@
           </div>
         </div>
       </div>
+      <div v-else-if="title == 'Attachments'">
+        <div
+          class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
+        >
+          <div v-for="attachment in activities">
+            <AttachmentArea :attachment="attachment" />
+          </div>
+        </div>
+      </div>
       <div
         v-else
         v-for="(activity, i) in activities"
@@ -415,6 +424,7 @@ import CommentArea from '@/components/Activities/CommentArea.vue'
 import CallArea from '@/components/Activities/CallArea.vue'
 import NoteArea from '@/components/Activities/NoteArea.vue'
 import TaskArea from '@/components/Activities/TaskArea.vue'
+import AttachmentArea from '@/components/Activities/AttachmentArea.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -498,7 +508,7 @@ const all_activities = createResource({
   params: { name: doc.value.data.name },
   cache: ['activity', doc.value.data.name],
   auto: true,
-  transform: ([versions, calls, notes, tasks]) => {
+  transform: ([versions, calls, notes, tasks, attachments]) => {
     if (calls?.length) {
       calls.forEach((doc) => {
         doc.show_recording = false
@@ -533,7 +543,7 @@ const all_activities = createResource({
         }
       })
     }
-    return { versions, calls, notes, tasks }
+    return { versions, calls, notes, tasks, attachments }
   },
 })
 
@@ -621,6 +631,9 @@ const activities = computed(() => {
   } else if (title.value == 'Notes') {
     if (!all_activities.data?.notes) return []
     return sortByCreation(all_activities.data.notes)
+  } else if (title.value == 'Attachments') {
+    if (!all_activities.data?.attachments) return []
+    return sortByCreation(all_activities.data.attachments)
   }
 
   activities.forEach((activity) => {

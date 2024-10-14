@@ -35,10 +35,11 @@ def get_deal_activities(name):
 	calls = []
 	notes = []
 	tasks = []
+	attachments = []
 	creation_text = "created this deal"
 
 	if lead:
-		activities, calls, notes, tasks = get_lead_activities(lead)
+		activities, calls, notes, tasks, attachments = get_lead_activities(lead)
 		creation_text = "converted the lead to this deal"
 
 	activities.append({
@@ -134,11 +135,12 @@ def get_deal_activities(name):
 	calls = calls + get_linked_calls(name)
 	notes = notes + get_linked_notes(name)
 	tasks = tasks + get_linked_tasks(name)
+	attachments = attachments + get_attachments('CRM Deal', name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities, calls, notes, tasks
+	return activities, calls, notes, tasks, attachments
 
 def get_lead_activities(name):
 	get_docinfo('', "CRM Lead", name)
@@ -248,19 +250,20 @@ def get_lead_activities(name):
 	calls = get_linked_calls(name)
 	notes = get_linked_notes(name)
 	tasks = get_linked_tasks(name)
+	attachments = get_attachments('CRM Lead', name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities, calls, notes, tasks
+	return activities, calls, notes, tasks, attachments
 
 @redis_cache()
 def get_attachments(doctype, name):
 	return frappe.db.get_all(
 		"File",
 		filters={"attached_to_doctype": doctype, "attached_to_name": name},
-		fields=["name", "file_name", "file_url", "file_size", "is_private"],
-	)
+		fields=["name", "file_name", "file_url", "file_size", "is_private", "creation", "owner"],
+	) or []
 
 def handle_multiple_versions(versions):
 	activities = []
