@@ -214,6 +214,11 @@ async function startCamera() {
   video.value.srcObject = stream
 }
 
+function switchCamera() {
+  facingMode.value = facingMode.value === 'environment' ? 'user' : 'environment'
+  startCamera()
+}
+
 const canvas = ref(null)
 
 function captureImage() {
@@ -388,5 +393,6 @@ defineExpose({
   cameraImage,
   captureImage,
   uploadViaCamera,
+  switchCamera,
 })
 </script>

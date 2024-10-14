@@ -43,6 +43,13 @@
             </template>
           </Button>
           <Button
+            v-if="
+              filesUploaderArea?.showCamera && !filesUploaderArea?.cameraImage
+            "
+            :label="__('Switch camera')"
+            @click="() => filesUploaderArea.switchCamera()"
+          />
+          <Button
             v-if="filesUploaderArea?.cameraImage"
             :label="__('Retake')"
             @click="filesUploaderArea.cameraImage = null"
