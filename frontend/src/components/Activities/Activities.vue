@@ -2,6 +2,7 @@
   <ActivityHeader
     v-model="tabIndex"
     v-model:showWhatsappTemplates="showWhatsappTemplates"
+    v-model:showFilesUploader="showFilesUploader"
     :tabs="tabs"
     :title="title"
     :doc="doc"
@@ -362,6 +363,11 @@
         :label="__('Create Task')"
         @click="modalRef.showTask()"
       />
+      <Button
+        v-else-if="title == 'Attachments'"
+        :label="__('Upload Attachment')"
+        @click="showFilesUploader = true"
+      />
     </div>
   </FadedScrollableDiv>
   <div>
@@ -395,6 +401,12 @@
     :doctype="doctype"
     :doc="doc"
   />
+  <FilesUploader
+    v-if="doc.data?.name"
+    v-model="showFilesUploader"
+    :doctype="doctype"
+    :docname="doc.data.name"
+  />
 </template>
 <script setup>
 import ActivityHeader from '@/components/Activities/ActivityHeader.vue'
@@ -409,6 +421,7 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
@@ -426,6 +439,7 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
+import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import {
   timeAgo,
   dateFormat,
@@ -475,6 +489,7 @@ const tabIndex = defineModel('tabIndex')
 
 const reload_email = ref(false)
 const modalRef = ref(null)
+const showFilesUploader = ref(false)
 
 const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
 
@@ -667,6 +682,8 @@ const emptyText = computed(() => {
     text = 'No Notes'
   } else if (title.value == 'Tasks') {
     text = 'No Tasks'
+  } else if (title.value == 'Attachments') {
+    text = 'No Attachments'
   } else if (title.value == 'WhatsApp') {
     text = 'No WhatsApp Messages'
   }
@@ -685,6 +702,8 @@ const emptyTextIcon = computed(() => {
     icon = NoteIcon
   } else if (title.value == 'Tasks') {
     icon = TaskIcon
+  } else if (title.value == 'Attachments') {
+    icon = AttachmentIcon
   } else if (title.value == 'WhatsApp') {
     icon = WhatsAppIcon
   }
