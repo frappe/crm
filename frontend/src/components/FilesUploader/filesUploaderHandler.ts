@@ -1,5 +1,5 @@
 interface UploadOptions {
-  file?: File
+  fileObj?: File
   private?: boolean
   fileUrl?: string
   folder?: string
@@ -99,8 +99,8 @@ class FilesUploadHandler {
 
       let formData = new FormData()
 
-      if (options.file && file?.name) {
-        formData.append('file', options.file, file.name)
+      if (options.fileObj && file?.name) {
+        formData.append('file', options.fileObj, file.name)
       }
       formData.append('is_private', options.private || false ? '1' : '0')
       formData.append('folder', options.folder || 'Home')

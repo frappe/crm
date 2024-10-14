@@ -2,6 +2,15 @@
   <div v-if="showWebLink">
     <TextInput v-model="webLink" placeholder="https://example.com" />
   </div>
+  <div v-else-if="showCamera">
+    <video v-show="!cameraImage" ref="video" class="rounded" autoplay></video>
+    <canvas
+      v-show="cameraImage"
+      ref="canvas"
+      class="rounded"
+      style="width: -webkit-fill-available"
+    />
+  </div>
   <div v-else>
     <div
       class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed min-h-64 text-gray-600"
@@ -38,7 +47,7 @@
             <div class="mt-1">{{ __('Link') }}</div>
           </div>
           <div v-if="allowTakePhoto">
-            <Button icon="camera" size="md" @click="captureImage" />
+            <Button icon="camera" size="md" @click="startCamera" />
             <div class="mt-1">{{ __('Camera') }}</div>
           </div>
         </div>
@@ -117,7 +126,7 @@
 import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
-import { createToast } from '@/utils'
+import { createToast, dateFormat } from '@/utils'
 import { FormControl, CircularProgressBar, createResource } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 
@@ -138,13 +147,17 @@ const fileInput = ref(null)
 const isDragging = ref(false)
 const showWebLink = ref(false)
 const showFileBrowser = ref(false)
+const showCamera = ref(false)
 
 const webLink = ref('')
+const cameraImage = ref(null)
 
 const allowMultiple = ref(props.options.allowMultiple == false ? false : true)
 const disableFileBrowser = ref(props.options.disableFileBrowser || false)
 const allowWebLink = ref(props.options.allowWebLink == false ? false : true)
-const allowTakePhoto = ref(props.options.allowTakePhoto || false)
+const allowTakePhoto = ref(
+  props.options.allowTakePhoto || window.navigator.mediaDevices || false,
+)
 const restrictions = ref(props.options.restrictions || {})
 const makeAttachmentsPublic = ref(props.options.makeAttachmentsPublic || false)
 
@@ -186,15 +199,56 @@ function onFileInput(event) {
   addFiles(fileInput.value.files)
 }
 
+const video = ref(null)
+const facingMode = ref('environment')
+
+async function startCamera() {
+  showCamera.value = true
+
+  let stream = await navigator.mediaDevices.getUserMedia({
+    video: {
+      facingMode: facingMode.value,
+    },
+    audio: false,
+  })
+  video.value.srcObject = stream
+}
+
+const canvas = ref(null)
+
 function captureImage() {
-  //
+  const width = video.value.videoWidth
+  const height = video.value.videoHeight
+
+  canvas.value.width = width
+  canvas.value.height = height
+
+  canvas.value.getContext('2d').drawImage(video.value, 0, 0, width, height)
+
+  cameraImage.value = canvas.value.toDataURL('image/png')
+}
+
+function uploadViaCamera() {
+  const nowDatetime = dateFormat(new Date(), 'YYYY_MM_DD_HH_mm_ss')
+  let filename = `capture_${nowDatetime}.png`
+  urlToFile(cameraImage.value, filename, 'image/png').then((file) => {
+    addFiles([file])
+    showCamera.value = false
+    cameraImage.value = null
+  })
+}
+
+function urlToFile(url, filename, mime_type) {
+  return fetch(url)
+    .then((res) => res.arrayBuffer())
+    .then((buffer) => new File([buffer], filename, { type: mime_type }))
 }
 
 function addFiles(fileArray) {
   let _files = Array.from(fileArray)
     .filter(checkRestrictions)
     .map((file, i) => {
-      let isImage = file.type.startsWith('image')
+      let isImage = file.type?.startsWith('image')
       let sizeKb = file.size / 1024
       return {
         index: i,
@@ -203,7 +257,7 @@ function addFiles(fileArray) {
         cropperFile: file,
         cropBoxData: null,
         type: file.type,
-        optimize: sizeKb > 200 && isImage && !file.type.includes('svg'),
+        optimize: sizeKb > 200 && isImage && !file.type?.includes('svg'),
         name: file.name,
         doc: null,
         progress: 0,
@@ -314,13 +368,13 @@ function convertSize(size) {
     size /= 1024
     unitIndex++
   }
-  return `${size.toFixed(2)} ${units[unitIndex]}`
+  return `${size?.toFixed(2)} ${units[unitIndex]}`
 }
 
 function fileIcon(type) {
-  if (type.startsWith('audio')) {
+  if (type?.startsWith('audio')) {
     return FileAudioIcon
-  } else if (type.startsWith('video')) {
+  } else if (type?.startsWith('video')) {
     return FileVideoIcon
   }
   return FileTextIcon
@@ -330,5 +384,9 @@ defineExpose({
   showFileBrowser,
   showWebLink,
   webLink,
+  showCamera,
+  cameraImage,
+  captureImage,
+  uploadViaCamera,
 })
 </script>

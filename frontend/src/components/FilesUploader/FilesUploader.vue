@@ -16,7 +16,7 @@
     </template>
     <template #actions>
       <div class="flex justify-between">
-        <div>
+        <div class="flex gap-2">
           <Button
             v-if="files.length"
             variant="subtle"
@@ -25,14 +25,28 @@
             @click="removeAllFiles"
           />
           <Button
-            v-if="filesUploaderArea?.showWebLink"
+            v-if="
+              filesUploaderArea?.showWebLink || filesUploaderArea?.showCamera
+            "
             :label="__('Back to file upload')"
-            @click="filesUploaderArea.showWebLink = false"
+            @click="
+              () => {
+                filesUploaderArea.showWebLink = false
+                filesUploaderArea.showCamera = false
+                filesUploaderArea.webLink = null
+                filesUploaderArea.cameraImage = null
+              }
+            "
           >
             <template #prefix>
               <FeatherIcon name="arrow-left" class="size-4" />
             </template>
           </Button>
+          <Button
+            v-if="filesUploaderArea?.cameraImage"
+            :label="__('Retake')"
+            @click="filesUploaderArea.cameraImage = null"
+          />
         </div>
         <div class="flex gap-2">
           <Button
@@ -50,11 +64,28 @@
             @click="setAllPrivate"
           />
           <Button
+            v-if="!filesUploaderArea?.showCamera"
             variant="solid"
             :label="__('Attach')"
             :loading="fileUploadStarted"
             :disabled="disableAttachButton"
             @click="attachFiles"
+          />
+          <Button
+            v-if="
+              filesUploaderArea?.showCamera && filesUploaderArea?.cameraImage
+            "
+            variant="solid"
+            :label="__('Upload')"
+            @click="() => filesUploaderArea.uploadViaCamera()"
+          />
+          <Button
+            v-if="
+              filesUploaderArea?.showCamera && !filesUploaderArea?.cameraImage
+            "
+            variant="solid"
+            :label="__('Capture')"
+            @click="() => filesUploaderArea.captureImage()"
           />
         </div>
       </div>
@@ -105,6 +136,9 @@ function removeAllFiles() {
 }
 
 const disableAttachButton = computed(() => {
+  if (filesUploaderArea.value?.showCamera) {
+    return !filesUploaderArea.value.cameraImage
+  }
   if (filesUploaderArea.value?.showWebLink) {
     return !filesUploaderArea.value.webLink
   }
@@ -141,7 +175,7 @@ const fileUploadStarted = ref(false)
 
 function attachFile(file, i) {
   const args = {
-    file: file?.fileObj || {},
+    fileObj: file.fileObj || {},
     type: file.type,
     private: file.private,
     fileUrl: file.fileUrl,
