@@ -153,7 +153,7 @@ const webLink = ref('')
 const cameraImage = ref(null)
 
 const allowMultiple = ref(props.options.allowMultiple == false ? false : true)
-const disableFileBrowser = ref(props.options.disableFileBrowser || false)
+const disableFileBrowser = ref(props.options.disableFileBrowser || true)
 const allowWebLink = ref(props.options.allowWebLink == false ? false : true)
 const allowTakePhoto = ref(
   props.options.allowTakePhoto || window.navigator.mediaDevices || false,
