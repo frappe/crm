@@ -8,6 +8,7 @@
   >
     <template #body-content>
       <FilesUploaderArea
+        ref="filesUploaderArea"
         v-model="files"
         :doctype="doctype"
         :options="options"
@@ -23,6 +24,15 @@
             :disabled="fileUploadStarted"
             @click="removeAllFiles"
           />
+          <Button
+            v-if="filesUploaderArea?.showWebLink"
+            :label="__('Back to file upload')"
+            @click="filesUploaderArea.showWebLink = false"
+          >
+            <template #prefix>
+              <FeatherIcon name="arrow-left" class="size-4" />
+            </template>
+          </Button>
         </div>
         <div class="flex gap-2">
           <Button
@@ -41,10 +51,10 @@
           />
           <Button
             variant="solid"
-            :loading="fileUploadStarted"
-            :disabled="!files.length"
-            @click="attachFiles"
             :label="__('Attach')"
+            :loading="fileUploadStarted"
+            :disabled="disableAttachButton"
+            @click="attachFiles"
           />
         </div>
       </div>
@@ -55,6 +65,7 @@
 <script setup>
 import FilesUploaderArea from '@/components/FilesUploader/FilesUploaderArea.vue'
 import FilesUploadHandler from './filesUploaderHandler'
+import { createToast } from '@/utils'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -75,6 +86,8 @@ const props = defineProps({
 })
 
 const show = defineModel()
+
+const filesUploaderArea = ref(null)
 const files = ref([])
 
 const isAllPrivate = computed(() => files.value.every((a) => a.private))
@@ -91,8 +104,36 @@ function removeAllFiles() {
   files.value = []
 }
 
+const disableAttachButton = computed(() => {
+  if (filesUploaderArea.value?.showWebLink) {
+    return !filesUploaderArea.value.webLink
+  }
+  return !files.value.length
+})
+
 function attachFiles() {
+  if (filesUploaderArea.value.showWebLink) {
+    return uploadViaWebLink()
+  }
   files.value.forEach((file, i) => attachFile(file, i))
+}
+
+function uploadViaWebLink() {
+  let fileUrl = filesUploaderArea.value.webLink
+  if (!fileUrl) {
+    createToast({
+      title: __('Error'),
+      title: __('Please enter a valid URL'),
+      icon: 'x',
+      iconClasses: 'text-red-600',
+    })
+    return
+  }
+  fileUrl = decodeURI(fileUrl)
+  show.value = false
+  return attachFile({
+    fileUrl,
+  })
 }
 
 const uploader = ref(null)

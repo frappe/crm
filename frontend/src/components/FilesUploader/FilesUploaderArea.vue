@@ -1,109 +1,114 @@
 <template>
-  <div
-    class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed min-h-64 text-gray-600"
-    @dragover.prevent="dragover"
-    @dragleave.prevent="dragleave"
-    @drop.prevent="dropfiles"
-    v-show="files.length === 0"
-  >
-    <div v-if="!isDragging" class="flex flex-col gap-3">
-      <div class="text-center text-gray-600">
-        {{ __('Drag and drop files here or upload from') }}
-      </div>
-      <div
-        class="grid grid-flow-col justify-center gap-4 text-center text-base"
-      >
-        <input
-          type="file"
-          class="hidden"
-          ref="fileInput"
-          @change="onFileInput"
-          :multiple="allowMultiple"
-          :accept="(restrictions.allowedFileTypes || []).join(', ')"
-        />
-        <div>
-          <Button icon="monitor" size="md" @click="browseFiles" />
-          <div class="mt-1">{{ __('Device') }}</div>
-        </div>
-        <div v-if="!disableFileBrowser">
-          <Button icon="folder" size="md" @click="showFileBrowser = true" />
-          <div class="mt-1">{{ __('Library') }}</div>
-        </div>
-        <div v-if="allowWebLink">
-          <Button icon="link" size="md" @click="showWebLink = true" />
-          <div class="mt-1">{{ __('Link') }}</div>
-        </div>
-        <div v-if="allowTakePhoto">
-          <Button icon="camera" size="md" @click="captureImage" />
-          <div class="mt-1">{{ __('Camera') }}</div>
-        </div>
-      </div>
-    </div>
-    <div v-else>
-      {{ __('Drop files here') }}
-    </div>
+  <div v-if="showWebLink">
+    <TextInput v-model="webLink" placeholder="https://example.com" />
   </div>
-  <div v-show="files.length" class="flex flex-col divide-y">
+  <div v-else>
     <div
-      v-for="file in files"
-      :key="file.name"
-      class="flex items-center justify-between py-3"
+      class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed min-h-64 text-gray-600"
+      @dragover.prevent="dragover"
+      @dragleave.prevent="dragleave"
+      @drop.prevent="dropfiles"
+      v-show="files.length === 0"
     >
-      <div class="flex items-center gap-4">
-        <div
-          class="size-11 rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
-          :class="{ border: !file.type?.startsWith('image') }"
-        >
-          <img
-            v-if="file.type?.startsWith('image')"
-            class="size-full object-cover"
-            :src="file.src"
-            :alt="file.name"
-          />
-          <component v-else class="size-4" :is="fileIcon(file.type)" />
+      <div v-if="!isDragging" class="flex flex-col gap-3">
+        <div class="text-center text-gray-600">
+          {{ __('Drag and drop files here or upload from') }}
         </div>
-        <div class="flex flex-col gap-1 text-sm text-gray-600">
-          <div class="text-base text-gray-800">
-            {{ file.name }}
-          </div>
-          <div class="mb-1">
-            {{ convertSize(file.fileObj.size) }}
-          </div>
-          <FormControl
-            v-model="file.private"
-            type="checkbox"
-            class="[&>label]:text-sm [&>label]:text-gray-600"
-            :label="__('Private')"
+        <div
+          class="grid grid-flow-col justify-center gap-4 text-center text-base"
+        >
+          <input
+            type="file"
+            class="hidden"
+            ref="fileInput"
+            @change="onFileInput"
+            :multiple="allowMultiple"
+            :accept="(restrictions.allowedFileTypes || []).join(', ')"
           />
-          <ErrorMessage
-            class="mt-2"
-            v-if="file.errorMessage"
-            :message="file.errorMessage"
-          />
+          <div>
+            <Button icon="monitor" size="md" @click="browseFiles" />
+            <div class="mt-1">{{ __('Device') }}</div>
+          </div>
+          <div v-if="!disableFileBrowser">
+            <Button icon="folder" size="md" @click="showFileBrowser = true" />
+            <div class="mt-1">{{ __('Library') }}</div>
+          </div>
+          <div v-if="allowWebLink">
+            <Button icon="link" size="md" @click="showWebLink = true" />
+            <div class="mt-1">{{ __('Link') }}</div>
+          </div>
+          <div v-if="allowTakePhoto">
+            <Button icon="camera" size="md" @click="captureImage" />
+            <div class="mt-1">{{ __('Camera') }}</div>
+          </div>
         </div>
       </div>
-      <div>
-        <CircularProgressBar
-          v-if="file.uploading || file.uploaded == file.total"
-          :class="{
-            'text-green-500': file.uploaded == file.total,
-          }"
-          :theme="{
-            primary: '#22C55E',
-            secondary: 'lightgray',
-          }"
-          :step="file.uploaded || 1"
-          :totalSteps="file.total || 100"
-          size="xs"
-          variant="outline"
-          :showPercentage="file.uploading"
-        />
-        <Button
-          v-else
-          variant="ghost"
-          icon="trash-2"
-          @click="removeFile(file.name)"
-        />
+      <div v-else>
+        {{ __('Drop files here') }}
+      </div>
+    </div>
+    <div v-show="files.length" class="flex flex-col divide-y">
+      <div
+        v-for="file in files"
+        :key="file.name"
+        class="flex items-center justify-between py-3"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="size-11 rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
+            :class="{ border: !file.type?.startsWith('image') }"
+          >
+            <img
+              v-if="file.type?.startsWith('image')"
+              class="size-full object-cover"
+              :src="file.src"
+              :alt="file.name"
+            />
+            <component v-else class="size-4" :is="fileIcon(file.type)" />
+          </div>
+          <div class="flex flex-col gap-1 text-sm text-gray-600">
+            <div class="text-base text-gray-800">
+              {{ file.name }}
+            </div>
+            <div class="mb-1">
+              {{ convertSize(file.fileObj.size) }}
+            </div>
+            <FormControl
+              v-model="file.private"
+              type="checkbox"
+              class="[&>label]:text-sm [&>label]:text-gray-600"
+              :label="__('Private')"
+            />
+            <ErrorMessage
+              class="mt-2"
+              v-if="file.errorMessage"
+              :message="file.errorMessage"
+            />
+          </div>
+        </div>
+        <div>
+          <CircularProgressBar
+            v-if="file.uploading || file.uploaded == file.total"
+            :class="{
+              'text-green-500': file.uploaded == file.total,
+            }"
+            :theme="{
+              primary: '#22C55E',
+              secondary: 'lightgray',
+            }"
+            :step="file.uploaded || 1"
+            :totalSteps="file.total || 100"
+            size="xs"
+            variant="outline"
+            :showPercentage="file.uploading"
+          />
+          <Button
+            v-else
+            variant="ghost"
+            icon="trash-2"
+            @click="removeFile(file.name)"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -131,8 +136,10 @@ const files = defineModel()
 
 const fileInput = ref(null)
 const isDragging = ref(false)
-const showWebLink = ref(true)
-const showFileBrowser = ref(true)
+const showWebLink = ref(false)
+const showFileBrowser = ref(false)
+
+const webLink = ref('')
 
 const allowMultiple = ref(props.options.allowMultiple == false ? false : true)
 const disableFileBrowser = ref(props.options.disableFileBrowser || false)
@@ -318,4 +325,10 @@ function fileIcon(type) {
   }
   return FileTextIcon
 }
+
+defineExpose({
+  showFileBrowser,
+  showWebLink,
+  webLink,
+})
 </script>

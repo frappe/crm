@@ -99,7 +99,7 @@ class FilesUploadHandler {
 
       let formData = new FormData()
 
-      if (options.file && file) {
+      if (options.file && file?.name) {
         formData.append('file', options.file, file.name)
       }
       formData.append('is_private', options.private || false ? '1' : '0')
