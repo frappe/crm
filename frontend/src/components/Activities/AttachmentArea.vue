@@ -56,7 +56,13 @@ import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
 import { Tooltip } from 'frappe-ui'
-import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
+import {
+  dateFormat,
+  timeAgo,
+  dateTooltipFormat,
+  convertSize,
+  isImage,
+} from '@/utils'
 import FeatherIcon from 'frappe-ui/src/components/FeatherIcon.vue'
 
 const props = defineProps({
@@ -73,23 +79,6 @@ function togglePrivate() {
 
 function deleteAttachment() {
   //   FilesUploadHandler.deleteAttachment(attachment)
-}
-
-function convertSize(size) {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  let unitIndex = 0
-  while (size > 1024) {
-    size /= 1024
-    unitIndex++
-  }
-  return `${size?.toFixed(2)} ${units[unitIndex]}`
-}
-
-function isImage(type) {
-  if (!type) return false
-  return ['png', 'jpg', 'jpeg', 'gif', 'svg', 'bmp', 'webp'].includes(
-    type.toLowerCase(),
-  )
 }
 
 function fileIcon(type) {

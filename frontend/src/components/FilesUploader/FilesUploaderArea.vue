@@ -126,7 +126,7 @@
 import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
-import { createToast, dateFormat } from '@/utils'
+import { createToast, dateFormat, convertSize } from '@/utils'
 import { FormControl, CircularProgressBar, createResource } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 
@@ -364,16 +364,6 @@ function showMaxFilesNumberWarning(file, maxNumberOfFiles) {
 
 function removeFile(name) {
   files.value = files.value.filter((file) => file.name !== name)
-}
-
-function convertSize(size) {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  let unitIndex = 0
-  while (size > 1024) {
-    size /= 1024
-    unitIndex++
-  }
-  return `${size?.toFixed(2)} ${units[unitIndex]}`
 }
 
 function fileIcon(type) {
