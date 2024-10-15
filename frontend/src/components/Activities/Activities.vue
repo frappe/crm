@@ -111,7 +111,10 @@
             :key="attachment.name"
             class="activity"
           >
-            <AttachmentArea :attachment="attachment" />
+            <AttachmentArea
+              :attachment="attachment"
+              @reload="all_activities.reload() && scroll()"
+            />
           </div>
         </div>
       </div>

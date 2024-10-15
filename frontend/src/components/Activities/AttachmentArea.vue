@@ -35,7 +35,10 @@
         <Tooltip
           :text="attachment.is_private ? __('Make public') : __('Make private')"
         >
-          <Button class="!size-5" @click="togglePrivate">
+          <Button
+            class="!size-5"
+            @click.stop="togglePrivate(attachment.name, attachment.is_private)"
+          >
             <FeatherIcon
               :name="attachment.is_private ? 'lock' : 'unlock'"
               class="size-3 text-gray-700"
@@ -43,7 +46,10 @@
           </Button>
         </Tooltip>
         <Tooltip :text="__('Delete attachment')">
-          <Button class="!size-5" @click="deleteAttachment">
+          <Button
+            class="!size-5"
+            @click.stop="() => deleteAttachment(attachment.name)"
+          >
             <FeatherIcon name="trash-2" class="size-3 text-gray-700" />
           </Button>
         </Tooltip>
@@ -55,7 +61,8 @@
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
-import { Tooltip } from 'frappe-ui'
+import { globalStore } from '@/stores/global'
+import { call, Tooltip } from 'frappe-ui'
 import {
   dateFormat,
   timeAgo,
@@ -63,22 +70,68 @@ import {
   convertSize,
   isImage,
 } from '@/utils'
-import FeatherIcon from 'frappe-ui/src/components/FeatherIcon.vue'
 
 const props = defineProps({
   attachment: Object,
 })
 
+const emit = defineEmits(['reload'])
+
+const { $dialog } = globalStore()
+
 function openFile() {
   window.open(props.attachment.file_url, '_blank')
 }
 
-function togglePrivate() {
-  //   FilesUploadHandler.togglePrivate(attachment)
+function togglePrivate(fileName, isPrivate) {
+  let changeTo = isPrivate ? __('public') : __('private')
+  let title = __('Make attachment {0}', [changeTo])
+  let message = __('Are you sure you want to make this attachment {0}?', [
+    changeTo,
+  ])
+  $dialog({
+    title,
+    message,
+    actions: [
+      {
+        label: __('Make {0}', [changeTo]),
+        variant: 'solid',
+        onClick: async (close) => {
+          await call('frappe.client.set_value', {
+            doctype: 'File',
+            name: fileName,
+            fieldname: {
+              is_private: !isPrivate,
+            },
+          })
+          emit('reload')
+          close()
+        },
+      },
+    ],
+  })
 }
 
-function deleteAttachment() {
-  //   FilesUploadHandler.deleteAttachment(attachment)
+function deleteAttachment(fileName) {
+  $dialog({
+    title: __('Delete attachment'),
+    message: __('Are you sure you want to delete this attachment?'),
+    actions: [
+      {
+        label: __('Delete'),
+        variant: 'solid',
+        theme: 'red',
+        onClick: async (close) => {
+          await call('frappe.client.delete', {
+            doctype: 'File',
+            name: fileName,
+          })
+          emit('reload')
+          close()
+        },
+      },
+    ],
+  })
 }
 
 function fileIcon(type) {
