@@ -105,10 +105,12 @@
         </div>
       </div>
       <div v-else-if="title == 'Attachments'">
-        <div
-          class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
-        >
-          <div v-for="attachment in activities">
+        <div class="flex flex-col gap-2 px-3 sm:px-10 mb-4">
+          <div
+            v-for="attachment in activities"
+            :key="attachment.name"
+            class="activity"
+          >
             <AttachmentArea :attachment="attachment" />
           </div>
         </div>
@@ -415,6 +417,7 @@
     v-model="showFilesUploader"
     :doctype="doctype"
     :docname="doc.data.name"
+    @after="() => all_activities.reload()"
   />
 </template>
 <script setup>
@@ -609,9 +612,9 @@ function get_activities() {
 }
 
 const activities = computed(() => {
-  let activities = []
+  let _activities = []
   if (title.value == 'Activity') {
-    activities = get_activities()
+    _activities = get_activities()
   } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
     activities = all_activities.data.versions.filter(
@@ -636,7 +639,7 @@ const activities = computed(() => {
     return sortByCreation(all_activities.data.attachments)
   }
 
-  activities.forEach((activity) => {
+  _activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
 
     if (
@@ -655,7 +658,7 @@ const activities = computed(() => {
       })
     }
   })
-  return sortByCreation(activities)
+  return sortByCreation(_activities)
 })
 
 function sortByCreation(list) {
@@ -776,5 +779,5 @@ function scroll(hash) {
   }, 500)
 }
 
-defineExpose({ emailBox })
+defineExpose({ emailBox, all_activities })
 </script>

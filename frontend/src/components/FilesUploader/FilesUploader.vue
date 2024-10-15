@@ -123,6 +123,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['after'])
+
 const show = defineModel()
 
 const filesUploaderArea = ref(null)
@@ -216,6 +218,7 @@ function attachFile(file, i) {
         files.value = []
         show.value = false
         fileUploadStarted.value = false
+        emit('after')
       }
     })
     .catch((error) => {

@@ -282,6 +282,7 @@
     v-model="showFilesUploader"
     doctype="CRM Lead"
     :docname="lead.data.name"
+    @after="() => activities?.all_activities?.reload()"
   />
 </template>
 <script setup>

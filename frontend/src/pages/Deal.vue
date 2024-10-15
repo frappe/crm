@@ -309,6 +309,7 @@
     v-model="showFilesUploader"
     doctype="CRM Deal"
     :docname="deal.data.name"
+    @after="() => activities?.all_activities?.reload()"
   />
 </template>
 <script setup>
