@@ -257,12 +257,12 @@ def get_lead_activities(name):
 
 	return activities, calls, notes, tasks, attachments
 
-@redis_cache()
+
 def get_attachments(doctype, name):
 	return frappe.db.get_all(
 		"File",
 		filters={"attached_to_doctype": doctype, "attached_to_name": name},
-		fields=["name", "file_name", "file_url", "file_size", "is_private", "creation", "owner"],
+		fields=["name", "file_name", "file_type", "file_url", "file_size", "is_private", "creation", "owner"],
 	) or []
 
 def handle_multiple_versions(versions):
