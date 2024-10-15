@@ -103,7 +103,41 @@ def is_whatsapp_installed():
 def get_whatsapp_messages(reference_doctype, reference_name):
     if not frappe.db.exists("DocType", "WhatsApp Message"):
         return []
-    messages = frappe.get_all(
+    messages = []
+
+    if reference_doctype == 'CRM Deal':
+        lead = frappe.db.get_value(reference_doctype, reference_name, 'lead')
+        if lead:
+            messages = frappe.get_all(
+                "WhatsApp Message",
+                filters={
+                    "reference_doctype": "CRM Lead",
+                    "reference_name": lead,
+                },
+                fields=[
+                    "name",
+                    "type",
+                    "to",
+                    "from",
+                    "content_type",
+                    "message_type",
+                    "attach",
+                    "template",
+                    "use_template",
+                    "message_id",
+                    "is_reply",
+                    "reply_to_message_id",
+                    "creation",
+                    "message",
+                    "status",
+                    "reference_doctype",
+                    "reference_name",
+                    "template_parameters",
+                    "template_header_parameters",
+                ],
+            )
+
+    messages += frappe.get_all(
         "WhatsApp Message",
         filters={
             "reference_doctype": reference_doctype,

@@ -5,5 +5,5 @@
 from frappe.tests import UnitTestCase
 
 
-class TestCRMNotification(UnitTestCase):
+class TestFCRMSettings(UnitTestCase):
 	pass
