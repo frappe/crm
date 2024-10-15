@@ -33,7 +33,7 @@
     :rows="rows"
     :columns="contacts.data.columns"
     :options="{
-      showTooltip: false,
+      showTooltip: true,
       resizeColumn: true,
       rowCount: contacts.data.row_count,
       totalCount: contacts.data.total_count,
