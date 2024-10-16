@@ -32,7 +32,7 @@
         value=""
         doctype="User"
         @change="(option) => addValue(option) && ($refs.input.value = '')"
-        :placeholder="__('John Doe')"
+        :placeholder="__('Select User')"
         :hideMe="true"
       >
         <template #item-prefix="{ option }">

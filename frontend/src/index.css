@@ -1,9 +1,6 @@
 @import './assets/Inter/inter.css';
 @import 'frappe-ui/src/style.css';
-<<<<<<< HEAD
 @import './assets/custom.css';
-=======
->>>>>>> 590b92c (Merge pull request #404 from saeedkola/develop)
 
 @layer components {
 	.prose-f {
