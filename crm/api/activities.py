@@ -1,5 +1,6 @@
 import json
 
+from bs4 import BeautifulSoup
 import frappe
 from frappe import _
 from frappe.utils.caching import redis_cache
@@ -132,6 +133,17 @@ def get_deal_activities(name):
 		}
 		activities.append(activity)
 
+	for attachment_log in docinfo.attachment_logs:
+		activity = {
+			"name": attachment_log.name,
+			"activity_type": "attachment_log",
+			"creation": attachment_log.creation,
+			"owner": attachment_log.owner,
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"is_lead": False,
+		}
+		activities.append(activity)
+
 	calls = calls + get_linked_calls(name)
 	notes = notes + get_linked_notes(name)
 	tasks = tasks + get_linked_tasks(name)
@@ -247,6 +259,17 @@ def get_lead_activities(name):
 		}
 		activities.append(activity)
 
+	for attachment_log in docinfo.attachment_logs:
+		activity = {
+			"name": attachment_log.name,
+			"activity_type": "attachment_log",
+			"creation": attachment_log.creation,
+			"owner": attachment_log.owner,
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"is_lead": True,
+		}
+		activities.append(activity)
+
 	calls = get_linked_calls(name)
 	notes = get_linked_notes(name)
 	tasks = get_linked_tasks(name)
@@ -345,3 +368,26 @@ def get_linked_tasks(name):
 		],
 	)
 	return tasks or []
+
+def parse_attachment_log(html, type):
+	soup = BeautifulSoup(html, "html.parser")
+	a_tag = soup.find("a")
+	type = "added" if type == "Attachment" else "removed"
+	if not a_tag:
+		return {
+			"type": type,
+			"file_name": html.replace("Removed ", ""),
+			"file_url": "",
+			"is_private": False,
+		}
+
+	is_private = False
+	if "private/files" in a_tag["href"]:
+		is_private = True
+
+	return {
+		"type": type,
+		"file_name": a_tag.text,
+		"file_url": a_tag["href"],
+		"is_private": is_private,
+	}

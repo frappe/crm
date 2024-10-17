@@ -193,6 +193,40 @@
           <CommentArea :activity="activity" />
         </div>
         <div
+          class="mb-4 flex flex-col gap-2 py-1.5"
+          :id="activity.name"
+          v-else-if="activity.activity_type == 'attachment_log'"
+        >
+          <div class="flex items-center justify-stretch gap-2 text-base">
+            <div
+              class="inline-flex items-center flex-wrap gap-1.5 text-gray-800 font-medium"
+            >
+              <span class="font-medium">{{ activity.owner_name }}</span>
+              <span class="text-gray-600">{{ __(activity.data.type) }}</span>
+              <a
+                v-if="activity.data.file_url"
+                :href="activity.data.file_url"
+                target="_blank"
+              >
+                <span>{{ activity.data.file_name }}</span>
+              </a>
+              <span v-else>{{ activity.data.file_name }}</span>
+              <FeatherIcon
+                v-if="activity.data.is_private"
+                name="lock"
+                class="size-3"
+              />
+            </div>
+            <div class="ml-auto whitespace-nowrap">
+              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+                <div class="text-sm text-gray-600">
+                  {{ __(timeAgo(activity.creation)) }}
+                </div>
+              </Tooltip>
+            </div>
+          </div>
+        </div>
+        <div
           v-else-if="
             activity.activity_type == 'incoming_call' ||
             activity.activity_type == 'outgoing_call'
@@ -746,6 +780,9 @@ function timelineIcon(activity_type, is_lead) {
       break
     case 'outgoing_call':
       icon = OutboundCallIcon
+      break
+    case 'attachment_log':
+      icon = AttachmentIcon
       break
     default:
       icon = DotIcon
