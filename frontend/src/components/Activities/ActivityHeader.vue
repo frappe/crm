@@ -55,6 +55,16 @@
       </template>
       <span>{{ __('New Task') }}</span>
     </Button>
+    <Button
+      v-else-if="title == 'Attachments'"
+      variant="solid"
+      @click="showFilesUploader = true"
+    >
+      <template #prefix>
+        <FeatherIcon name="plus" class="h-4 w-4" />
+      </template>
+      <span>{{ __('Upload Attachment') }}</span>
+    </Button>
     <div class="flex gap-2 shrink-0" v-else-if="title == 'WhatsApp'">
       <Button
         :label="__('Send Template')"
@@ -91,6 +101,7 @@ import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { globalStore } from '@/stores/global'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
@@ -110,6 +121,7 @@ const { makeCall } = globalStore()
 
 const tabIndex = defineModel()
 const showWhatsappTemplates = defineModel('showWhatsappTemplates')
+const showFilesUploader = defineModel('showFilesUploader')
 
 const defaultActions = computed(() => {
   let actions = [
@@ -138,6 +150,11 @@ const defaultActions = computed(() => {
       icon: h(TaskIcon, { class: 'h-4 w-4' }),
       label: __('New Task'),
       onClick: () => props.modalRef.showTask(),
+    },
+    {
+      icon: h(AttachmentIcon, { class: 'h-4 w-4' }),
+      label: __('Upload Attachment'),
+      onClick: () => (showFilesUploader.value = true),
     },
     {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),

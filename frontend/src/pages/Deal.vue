@@ -100,6 +100,11 @@
                 />
               </Button>
             </Tooltip>
+            <Tooltip :text="__('Attach a file')">
+              <Button class="size-7" @click="showFilesUploader = true">
+                <AttachmentIcon class="size-4" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </div>
@@ -299,6 +304,18 @@
     doctype="CRM Deal"
     @reload="() => fieldsLayout.reload()"
   />
+  <FilesUploader
+    v-if="deal.data?.name"
+    v-model="showFilesUploader"
+    doctype="CRM Deal"
+    :docname="deal.data.name"
+    @after="
+      () => {
+        activities?.all_activities?.reload()
+        changeTabTo('attachments')
+      }
+    "
+  />
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -317,10 +334,12 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
@@ -435,6 +454,7 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
 const showSidePanelModal = ref(false)
+const showFilesUploader = ref(false)
 const _organization = ref({})
 
 function updateDeal(fieldname, value, callback) {
@@ -549,6 +569,11 @@ const tabs = computed(() => {
       name: 'Notes',
       label: __('Notes'),
       icon: NoteIcon,
+    },
+    {
+      name: 'Attachments',
+      label: __('Attachments'),
+      icon: AttachmentIcon,
     },
     {
       name: 'WhatsApp',

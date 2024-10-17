@@ -179,6 +179,7 @@ import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
@@ -376,6 +377,11 @@ const tabs = computed(() => {
       name: 'Notes',
       label: __('Notes'),
       icon: NoteIcon,
+    },
+    {
+      name: 'Attachments',
+      label: __('Attachments'),
+      icon: AttachmentIcon,
     },
     {
       name: 'WhatsApp',

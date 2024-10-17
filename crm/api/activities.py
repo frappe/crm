@@ -1,5 +1,6 @@
 import json
 
+from bs4 import BeautifulSoup
 import frappe
 from frappe import _
 from frappe.utils.caching import redis_cache
@@ -35,10 +36,11 @@ def get_deal_activities(name):
 	calls = []
 	notes = []
 	tasks = []
+	attachments = []
 	creation_text = "created this deal"
 
 	if lead:
-		activities, calls, notes, tasks = get_lead_activities(lead)
+		activities, calls, notes, tasks, attachments = get_lead_activities(lead)
 		creation_text = "converted the lead to this deal"
 
 	activities.append({
@@ -131,14 +133,26 @@ def get_deal_activities(name):
 		}
 		activities.append(activity)
 
+	for attachment_log in docinfo.attachment_logs:
+		activity = {
+			"name": attachment_log.name,
+			"activity_type": "attachment_log",
+			"creation": attachment_log.creation,
+			"owner": attachment_log.owner,
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"is_lead": False,
+		}
+		activities.append(activity)
+
 	calls = calls + get_linked_calls(name)
 	notes = notes + get_linked_notes(name)
 	tasks = tasks + get_linked_tasks(name)
+	attachments = attachments + get_attachments('CRM Deal', name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities, calls, notes, tasks
+	return activities, calls, notes, tasks, attachments
 
 def get_lead_activities(name):
 	get_docinfo('', "CRM Lead", name)
@@ -245,22 +259,34 @@ def get_lead_activities(name):
 		}
 		activities.append(activity)
 
+	for attachment_log in docinfo.attachment_logs:
+		activity = {
+			"name": attachment_log.name,
+			"activity_type": "attachment_log",
+			"creation": attachment_log.creation,
+			"owner": attachment_log.owner,
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"is_lead": True,
+		}
+		activities.append(activity)
+
 	calls = get_linked_calls(name)
 	notes = get_linked_notes(name)
 	tasks = get_linked_tasks(name)
+	attachments = get_attachments('CRM Lead', name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities, calls, notes, tasks
+	return activities, calls, notes, tasks, attachments
 
-@redis_cache()
+
 def get_attachments(doctype, name):
 	return frappe.db.get_all(
 		"File",
 		filters={"attached_to_doctype": doctype, "attached_to_name": name},
-		fields=["name", "file_name", "file_url", "file_size", "is_private"],
-	)
+		fields=["name", "file_name", "file_type", "file_url", "file_size", "is_private", "creation", "owner"],
+	) or []
 
 def handle_multiple_versions(versions):
 	activities = []
@@ -342,3 +368,26 @@ def get_linked_tasks(name):
 		],
 	)
 	return tasks or []
+
+def parse_attachment_log(html, type):
+	soup = BeautifulSoup(html, "html.parser")
+	a_tag = soup.find("a")
+	type = "added" if type == "Attachment" else "removed"
+	if not a_tag:
+		return {
+			"type": type,
+			"file_name": html.replace("Removed ", ""),
+			"file_url": "",
+			"is_private": False,
+		}
+
+	is_private = False
+	if "private/files" in a_tag["href"]:
+		is_private = True
+
+	return {
+		"type": type,
+		"file_name": a_tag.text,
+		"file_url": a_tag["href"],
+		"is_private": is_private,
+	}

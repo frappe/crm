@@ -39,7 +39,7 @@ import {
   Badge,
   ErrorMessage,
 } from 'frappe-ui'
-import { evaluate_depends_on_value, createToast } from '@/utils'
+import { evaluateDependsOnValue, createToast } from '@/utils'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -123,11 +123,11 @@ const sections = computed(() => {
       _sections[_sections.length - 1].fields.push({
         ...field,
         filters: field.link_filters && JSON.parse(field.link_filters),
-        display_via_depends_on: evaluate_depends_on_value(
+        display_via_depends_on: evaluateDependsOnValue(
           field.depends_on,
           data.doc,
         ),
-        mandatory_via_depends_on: evaluate_depends_on_value(
+        mandatory_via_depends_on: evaluateDependsOnValue(
           field.mandatory_depends_on,
           data.doc,
         ),
