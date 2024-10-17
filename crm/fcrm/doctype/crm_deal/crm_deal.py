@@ -18,9 +18,11 @@ class CRMDeal(Document):
 	def validate(self):
 		self.set_primary_contact()
 		self.set_primary_email_mobile_no()
-		if self.deal_owner and not self.is_new():
-			self.share_with_agent(self.deal_owner)
-			self.assign_agent(self.deal_owner)
+		if not self.is_new():
+			curr_owner = frappe.db.get_value(self.doctype,self.name,"deal_owner")
+			if self.deal_owner and self.deal_owner != curr_owner:
+				self.share_with_agent(self.deal_owner)
+				self.assign_agent(self.deal_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
 

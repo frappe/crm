@@ -21,9 +21,11 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
-		if self.lead_owner and not self.is_new():
-			self.share_with_agent(self.lead_owner)
-			self.assign_agent(self.lead_owner)
+		if not self.is_new():
+			curr_owner = frappe.db.get_value(self.doctype,self.name,"lead_owner")
+			if self.lead_owner and self.lead_owner != curr_owner:
+				self.share_with_agent(self.lead_owner)
+				self.assign_agent(self.lead_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
 
