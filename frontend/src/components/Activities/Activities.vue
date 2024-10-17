@@ -443,7 +443,12 @@
     v-model="showFilesUploader"
     :doctype="doctype"
     :docname="doc.data.name"
-    @after="() => all_activities.reload()"
+    @after="
+      () => {
+        all_activities.reload()
+        changeTabTo('attachments')
+      }
+    "
   />
 </template>
 <script setup>
@@ -531,6 +536,13 @@ const modalRef = ref(null)
 const showFilesUploader = ref(false)
 
 const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
+
+const changeTabTo = (tabName) => {
+  const tabNames = props.tabs?.map((tab) => tab.name?.toLowerCase())
+  const index = tabNames?.indexOf(tabName)
+  if (index == -1) return
+  tabIndex.value = index
+}
 
 const all_activities = createResource({
   url: 'crm.api.activities.get_activities',

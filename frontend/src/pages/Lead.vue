@@ -282,7 +282,12 @@
     v-model="showFilesUploader"
     doctype="CRM Lead"
     :docname="lead.data.name"
-    @after="() => activities?.all_activities?.reload()"
+    @after="
+      () => {
+        activities?.all_activities?.reload()
+        changeTabTo('attachments')
+      }
+    "
   />
 </template>
 <script setup>
@@ -526,7 +531,7 @@ const tabs = computed(() => {
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
-const { tabIndex } = useActiveTabManager(tabs, 'lastLeadTab')
+const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
 
 watch(tabs, (value) => {
   if (value && route.params.tabName) {

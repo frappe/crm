@@ -309,7 +309,12 @@
     v-model="showFilesUploader"
     doctype="CRM Deal"
     :docname="deal.data.name"
-    @after="() => activities?.all_activities?.reload()"
+    @after="
+      () => {
+        activities?.all_activities?.reload()
+        changeTabTo('attachments')
+      }
+    "
   />
 </template>
 <script setup>
