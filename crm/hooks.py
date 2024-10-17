@@ -252,10 +252,9 @@ doc_events = {
 #	"crm.auth.validate"
 # ]
 fixtures = [ 
-    { "dt": "Custom Field", 
+    { "doctype": "Custom Field", 
         "filters": [ 
-            ["dt", "=", "Contact"], 
-            ["fieldname", "=", "buying_role"]
+            ["name", "=", "Contact-buying_role"]
         ]
     } ,
     {
