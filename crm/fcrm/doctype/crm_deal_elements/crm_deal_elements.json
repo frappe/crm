@@ -12,6 +12,9 @@
   {
    "fieldname": "deal_elements",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Deal Elements",
    "options": "CRM Deal Element"
   }
@@ -19,7 +22,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-13 13:07:29.615600",
+ "modified": "2024-10-17 09:22:29.942549",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal Elements",
