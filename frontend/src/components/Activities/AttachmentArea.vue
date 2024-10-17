@@ -1,59 +1,75 @@
 <template>
-  <div
-    class="flex justify-between gap-2 border rounded text-base px-3 py-2 cursor-pointer"
-    @click="openFile"
-  >
-    <div class="flex gap-2 truncate">
+  <div v-if="attachments.length">
+    <div v-for="(attachment, i) in attachments" :key="attachment.name">
       <div
-        class="size-11 rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
-        :class="{ border: !isImage(attachment.file_type) }"
+        class="activity flex justify-between gap-2 hover:bg-gray-50 rounded text-base p-2.5 cursor-pointer"
+        @click="openFile(attachment)"
       >
-        <img
-          v-if="isImage(attachment.file_type)"
-          class="size-full object-cover"
-          :src="attachment.file_url"
-          :alt="attachment.file_name"
-        />
-        <component v-else class="size-4" :is="fileIcon(attachment.file_type)" />
-      </div>
-      <div class="flex flex-col justify-center gap-1 truncate">
-        <div class="text-base text-gray-800 truncate">
-          {{ attachment.file_name }}
-        </div>
-        <div class="mb-1 text-sm text-gray-600">
-          {{ convertSize(attachment.file_size) }}
-        </div>
-      </div>
-    </div>
-    <div class="flex flex-col items-end gap-2 flex-shrink-0">
-      <Tooltip :text="dateFormat(attachment.creation, dateTooltipFormat)">
-        <div class="text-sm text-gray-600">
-          {{ __(timeAgo(attachment.creation)) }}
-        </div>
-      </Tooltip>
-      <div class="flex gap-1">
-        <Tooltip
-          :text="attachment.is_private ? __('Make public') : __('Make private')"
-        >
-          <Button
-            class="!size-5"
-            @click.stop="togglePrivate(attachment.name, attachment.is_private)"
+        <div class="flex gap-2 truncate">
+          <div
+            class="size-11 bg-white rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
+            :class="{ border: !isImage(attachment.file_type) }"
           >
-            <FeatherIcon
-              :name="attachment.is_private ? 'lock' : 'unlock'"
-              class="size-3 text-gray-700"
+            <img
+              v-if="isImage(attachment.file_type)"
+              class="size-full object-cover"
+              :src="attachment.file_url"
+              :alt="attachment.file_name"
             />
-          </Button>
-        </Tooltip>
-        <Tooltip :text="__('Delete attachment')">
-          <Button
-            class="!size-5"
-            @click.stop="() => deleteAttachment(attachment.name)"
-          >
-            <FeatherIcon name="trash-2" class="size-3 text-gray-700" />
-          </Button>
-        </Tooltip>
+            <component
+              v-else
+              class="size-4"
+              :is="fileIcon(attachment.file_type)"
+            />
+          </div>
+          <div class="flex flex-col justify-center gap-1 truncate">
+            <div class="text-base text-gray-800 truncate">
+              {{ attachment.file_name }}
+            </div>
+            <div class="mb-1 text-sm text-gray-600">
+              {{ convertSize(attachment.file_size) }}
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col items-end gap-2 flex-shrink-0">
+          <Tooltip :text="dateFormat(attachment.creation, dateTooltipFormat)">
+            <div class="text-sm text-gray-600">
+              {{ __(timeAgo(attachment.creation)) }}
+            </div>
+          </Tooltip>
+          <div class="flex gap-1">
+            <Tooltip
+              :text="
+                attachment.is_private ? __('Make public') : __('Make private')
+              "
+            >
+              <Button
+                class="!size-5"
+                @click.stop="
+                  togglePrivate(attachment.name, attachment.is_private)
+                "
+              >
+                <FeatherIcon
+                  :name="attachment.is_private ? 'lock' : 'unlock'"
+                  class="size-3 text-gray-700"
+                />
+              </Button>
+            </Tooltip>
+            <Tooltip :text="__('Delete attachment')">
+              <Button
+                class="!size-5"
+                @click.stop="() => deleteAttachment(attachment.name)"
+              >
+                <FeatherIcon name="trash-2" class="size-3 text-gray-700" />
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
       </div>
+      <div
+        v-if="i < attachments.length - 1"
+        class="mx-2 h-px border-t border-gray-200"
+      />
     </div>
   </div>
 </template>
@@ -72,15 +88,15 @@ import {
 } from '@/utils'
 
 const props = defineProps({
-  attachment: Object,
+  attachments: Array,
 })
 
 const emit = defineEmits(['reload'])
 
 const { $dialog } = globalStore()
 
-function openFile() {
-  window.open(props.attachment.file_url, '_blank')
+function openFile(attachment) {
+  window.open(attachment.file_url, '_blank')
 }
 
 function togglePrivate(fileName, isPrivate) {

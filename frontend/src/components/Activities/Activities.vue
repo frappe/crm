@@ -67,13 +67,7 @@
         v-else-if="title == 'Tasks'"
         class="px-3 pb-3 sm:px-10 sm:pb-5 overflow-x-auto sm:w-full w-max"
       >
-        <TaskArea
-          v-model="all_activities"
-          v-model:doc="doc"
-          :modalRef="modalRef"
-          :tasks="activities"
-          :doctype="doctype"
-        />
+        <TaskArea :modalRef="modalRef" :tasks="activities" :doctype="doctype" />
       </div>
       <div v-else-if="title == 'Calls'" class="activity">
         <div v-for="(call, i) in activities">
@@ -104,19 +98,14 @@
           </div>
         </div>
       </div>
-      <div v-else-if="title == 'Attachments'">
-        <div class="flex flex-col gap-2 px-3 sm:px-10 mb-4">
-          <div
-            v-for="attachment in activities"
-            :key="attachment.name"
-            class="activity"
-          >
-            <AttachmentArea
-              :attachment="attachment"
-              @reload="all_activities.reload() && scroll()"
-            />
-          </div>
-        </div>
+      <div
+        v-else-if="title == 'Attachments'"
+        class="px-3 pb-3 sm:px-10 sm:pb-5 overflow-x-auto sm:w-full w-max"
+      >
+        <AttachmentArea
+          :attachments="activities"
+          @reload="all_activities.reload() && scroll()"
+        />
       </div>
       <div
         v-else

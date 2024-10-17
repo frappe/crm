@@ -1,6 +1,6 @@
 <template>
   <div v-if="tasks.length">
-    <div v-for="(task, i) in tasks">
+    <div v-for="(task, i) in tasks" :key="task.name">
       <div
         class="activity flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-gray-50"
         @click="modalRef.showTask(task)"
