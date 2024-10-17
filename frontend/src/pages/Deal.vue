@@ -377,6 +377,9 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: async (data) => {
+    if (data.probability || data.probability === 0) {
+      data.probability = data.probability + '%'; 
+    }
     if (data.organization) {
       organization.update({
         params: { doctype: 'CRM Organization', name: data.organization },
