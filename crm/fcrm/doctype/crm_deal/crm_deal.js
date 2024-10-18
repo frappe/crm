@@ -4,5 +4,17 @@
 frappe.ui.form.on("CRM Deal", {
 	refresh(frm) {
 		frm.add_web_link(`/crm/deals/${frm.doc.name}`, __("Open in Portal"));
+		
+		// add '%' sign for probability
+		if (frm.doc.probability){
+			$('[data-fieldname="probability"] input').val(frm.doc.probability + "%")
+	    }
 	},
+	probability(frm){
+		// add '%' sign for probability
+		if (frm.doc.probability) {
+            $('[data-fieldname="probability"] input').val(frm.doc.probability + "%")
+        }
+	}
+	
 });
