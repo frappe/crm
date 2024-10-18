@@ -310,7 +310,7 @@ def get_data(
 
 		if doctype in include_child_tables_list:
 			meta = frappe.get_meta(doctype)
-			child_tables = [df for df in meta.fields if df.fieldtype == "Table"]
+			child_tables = [df for df in meta.fields if df.fieldtype in ["Table","Table MultiSelect" ] ]
 
 			for record in data:
 				record['child_tables'] = {}
