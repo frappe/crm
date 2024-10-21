@@ -251,3 +251,17 @@ doc_events = {
 # auth_hooks = [
 #	"crm.auth.validate"
 # ]
+fixtures = [ 
+    { "doctype": "Custom Field", 
+        "filters": [ 
+            ["name", "=", "Contact-buying_role"]
+        ]
+    } ,
+    {
+        "doctype": "CRM Buying Role", 
+        "filters": [
+            ["name", "in", ["Blocker", "Budget Holder", "Champion", "Decision Maker", "End user", 
+            "Influencer","Technical Evaluator","Procurement","Gatekeeper","User Advocate"]]  
+        ]
+    }
+]

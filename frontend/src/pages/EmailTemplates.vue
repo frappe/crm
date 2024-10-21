@@ -33,7 +33,7 @@
     :rows="rows"
     :columns="emailTemplates.data.columns"
     :options="{
-      showTooltip: false,
+      showTooltip: true,
       resizeColumn: true,
       rowCount: emailTemplates.data.row_count,
       totalCount: emailTemplates.data.total_count,

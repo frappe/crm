@@ -103,7 +103,7 @@ export function secondsToDuration(seconds) {
 
 export function formatNumberIntoCurrency(value, currency = 'INR') {
   if (value) {
-    return value.toLocaleString('en-IN', {
+    return value.toLocaleString('en-US', {
       maximumFractionDigits: 0,
       style: 'currency',
       currency: currency ? currency : 'INR',
