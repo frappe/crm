@@ -1,0 +1,34 @@
+[
+ {
+  "description": null,
+  "docstatus": 0,
+  "doctype": "CRM Deal Element",
+  "element": "Professional Services",
+  "modified": "2024-10-13 07:30:07.498734",
+  "name": "Professional Services"
+ },
+ {
+  "description": null,
+  "docstatus": 0,
+  "doctype": "CRM Deal Element",
+  "element": "Hardware",
+  "modified": "2024-10-13 07:30:17.092631",
+  "name": "Hardware"
+ },
+ {
+  "description": null,
+  "docstatus": 0,
+  "doctype": "CRM Deal Element",
+  "element": "Software",
+  "modified": "2024-10-13 07:30:59.080102",
+  "name": "Software"
+ },
+ {
+  "description": null,
+  "docstatus": 0,
+  "doctype": "CRM Deal Element",
+  "element": "Support",
+  "modified": "2024-10-13 07:31:19.032342",
+  "name": "Support"
+ }
+]
