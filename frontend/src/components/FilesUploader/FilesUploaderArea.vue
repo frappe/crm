@@ -60,9 +60,9 @@
       <div
         v-for="file in files"
         :key="file.name"
-        class="flex items-center justify-between py-3"
+        class="flex items-center justify-between gap-2 py-3"
       >
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 truncate">
           <div
             class="size-11 rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
             :class="{ border: !file.type?.startsWith('image') }"
@@ -75,8 +75,8 @@
             />
             <component v-else class="size-4" :is="fileIcon(file.type)" />
           </div>
-          <div class="flex flex-col gap-1 text-sm text-gray-600">
-            <div class="text-base text-gray-800">
+          <div class="flex flex-col gap-1 text-sm text-gray-600 truncate">
+            <div class="text-base text-gray-800 truncate">
               {{ file.name }}
             </div>
             <div class="mb-1">
