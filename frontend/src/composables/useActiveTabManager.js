@@ -7,6 +7,12 @@ export function useActiveTabManager(tabs, storageKey) {
   const route = useRoute()
   const router = useRouter()
 
+  const changeTabTo = (tabName) => {
+    let index = findTabIndex(tabName)
+    if (index == -1) return
+    tabIndex.value = index
+  }
+
   const preserveLastVisitedTab = useDebounceFn((tabName) => {
     activeTab.value = tabName.toLowerCase()
   }, 300)
@@ -78,5 +84,5 @@ export function useActiveTabManager(tabs, storageKey) {
     tabIndex.value = getActiveTab()
   })
 
-  return { tabIndex }
+  return { tabIndex, changeTabTo }
 }

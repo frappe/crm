@@ -150,6 +150,11 @@
                     />
                   </Button>
                 </Tooltip>
+                <Tooltip :text="__('Attach a file')">
+                  <Button class="h-7 w-7" @click="showFilesUploader = true">
+                    <AttachmentIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
               </div>
               <ErrorMessage :message="__(error)" />
             </div>
@@ -272,6 +277,18 @@
     v-model="showSidePanelModal"
     @reload="() => fieldsLayout.reload()"
   />
+  <FilesUploader
+    v-if="lead.data?.name"
+    v-model="showFilesUploader"
+    doctype="CRM Lead"
+    :docname="lead.data.name"
+    @after="
+      () => {
+        activities?.all_activities?.reload()
+        changeTabTo('attachments')
+      }
+    "
+  />
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -290,9 +307,11 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
@@ -382,6 +401,7 @@ onMounted(() => {
 const reload = ref(false)
 const showAssignmentModal = ref(false)
 const showSidePanelModal = ref(false)
+const showFilesUploader = ref(false)
 
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -497,6 +517,11 @@ const tabs = computed(() => {
       icon: NoteIcon,
     },
     {
+      name: 'Attachments',
+      label: __('Attachments'),
+      icon: AttachmentIcon,
+    },
+    {
       name: 'WhatsApp',
       label: __('WhatsApp'),
       icon: WhatsAppIcon,
@@ -506,7 +531,7 @@ const tabs = computed(() => {
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
-const { tabIndex } = useActiveTabManager(tabs, 'lastLeadTab')
+const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
 
 watch(tabs, (value) => {
   if (value && route.params.tabName) {
