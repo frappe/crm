@@ -28,7 +28,7 @@
             v-if="
               filesUploaderArea?.showWebLink || filesUploaderArea?.showCamera
             "
-            :label="__('Back to file upload')"
+            :label="isMobileView ? __('Back') : __('Back to file upload')"
             @click="
               () => {
                 filesUploaderArea.showWebLink = false
@@ -103,6 +103,7 @@
 <script setup>
 import FilesUploaderArea from '@/components/FilesUploader/FilesUploaderArea.vue'
 import FilesUploadHandler from './filesUploaderHandler'
+import { isMobileView } from '@/composables/settings'
 import { createToast } from '@/utils'
 import { ref, computed } from 'vue'
 
