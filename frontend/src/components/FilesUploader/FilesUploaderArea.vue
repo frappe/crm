@@ -201,21 +201,29 @@ function onFileInput(event) {
 
 const video = ref(null)
 const facingMode = ref('environment')
+const stream = ref(null)
 
 async function startCamera() {
   showCamera.value = true
 
-  let stream = await navigator.mediaDevices.getUserMedia({
+  stream.value = await navigator.mediaDevices.getUserMedia({
     video: {
       facingMode: facingMode.value,
     },
     audio: false,
   })
-  video.value.srcObject = stream
+  video.value.srcObject = stream.value
+}
+
+function stopStream() {
+  stream.value.getTracks().forEach((track) => track.stop())
+  showCamera.value = false
+  cameraImage.value = null
 }
 
 function switchCamera() {
   facingMode.value = facingMode.value === 'environment' ? 'user' : 'environment'
+  stopStream()
   startCamera()
 }
 
