@@ -25,5 +25,8 @@ frappe.query_reports["Recently Assigned Deals"] = {
 		    default:frappe.session.user
 		}
 
-	]
+	],
+	on_change: function() {
+	    frappe.query_report.refresh();
+	}
 };
