@@ -63,10 +63,7 @@
           </div>
         </div>
       </div>
-      <div
-        v-else-if="title == 'Tasks'"
-        class="px-3 pb-3 sm:px-10 sm:pb-5 overflow-x-auto sm:w-full w-max"
-      >
+      <div v-else-if="title == 'Tasks'" class="px-3 pb-3 sm:px-10 sm:pb-5">
         <TaskArea :modalRef="modalRef" :tasks="activities" :doctype="doctype" />
       </div>
       <div v-else-if="title == 'Calls'" class="activity">
@@ -100,7 +97,7 @@
       </div>
       <div
         v-else-if="title == 'Attachments'"
-        class="px-3 pb-3 sm:px-10 sm:pb-5 overflow-x-auto sm:w-full w-max"
+        class="px-3 pb-3 sm:px-10 sm:pb-5"
       >
         <AttachmentArea
           :attachments="activities"
