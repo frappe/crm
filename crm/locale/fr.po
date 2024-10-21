@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2024-10-15 20:07+0000\n"
-"PO-Revision-Date: 2024-10-16 23:27+0200\n"
+"PO-Revision-Date: 2024-10-21 20:51+0200\n"
 "Last-Translator: \n"
 "Language-Team: shariq@frappe.io\n"
 "Language: fr\n"
@@ -686,7 +686,7 @@ msgstr "Convertir en Opportunité"
 #. Label of the converted (Check) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Converted"
-msgstr "Conterti"
+msgstr "Converti"
 
 #: frontend/src/components/ListBulkActions.vue:79
 msgid "Converted successfully"
@@ -760,7 +760,7 @@ msgstr "Créer piste"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Currency"
-msgstr "Device"
+msgstr "Devise"
 
 #: frontend/src/pages/Deal.vue:417
 msgid "Customer created successfully"
@@ -1066,7 +1066,7 @@ msgstr "Email de la Piste"
 #: frontend/src/pages/Deal.vue:529 frontend/src/pages/Lead.vue:475
 #: frontend/src/pages/MobileDeal.vue:446 frontend/src/pages/MobileLead.vue:356
 msgid "Emails"
-msgstr "e-mails"
+msgstr "E-mails"
 
 #: frontend/src/components/ListViews/ListRows.vue:12
 msgid "Empty"
@@ -1355,7 +1355,7 @@ msgstr "Grouper Par Champ"
 
 #: frontend/src/components/GroupBy.vue:8
 msgid "Group By: "
-msgstr "Grouper Par:"
+msgstr "Grouper Par :"
 
 #: frontend/src/components/CommunicationArea.vue:58
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
@@ -1534,7 +1534,7 @@ msgstr "Est Principal"
 #. Label of the is_standard (Check) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Is Standard"
-msgstr "est la norme"
+msgstr "Est Standard"
 
 #. Label of the job_title (Data) field in DocType 'CRM Deal'
 #. Label of the job_title (Data) field in DocType 'CRM Lead'
@@ -1605,7 +1605,7 @@ msgstr "Dernier trimestre"
 #. Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "Last Status Change Log"
-msgstr "journal du dernier changement d'état"
+msgstr "Journal du dernier changement de Statut"
 
 #: frontend/src/components/Filter.vue:603
 msgid "Last Week"
@@ -1697,7 +1697,7 @@ msgstr "Liste"
 
 #: frontend/src/components/Activities/CallArea.vue:71
 msgid "Listen"
-msgstr "Écoutez"
+msgstr "Écouter"
 
 #. Label of the load_default_columns (Check) field in DocType 'CRM View
 #. Settings'
@@ -1774,7 +1774,7 @@ msgstr "Moyen"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr "Mentionner"
+msgstr ""
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -2141,7 +2141,7 @@ msgstr "Nom de l’organisation"
 
 #: frontend/src/pages/Deal.vue:57
 msgid "Organization logo"
-msgstr "Logo de l'organisation"
+msgstr "Logo de l’organisation"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
