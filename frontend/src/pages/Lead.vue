@@ -450,10 +450,14 @@ const breadcrumbs = computed(() => {
     }
   }
 
+  // Add the organization name in parentheses if it exists
+  const leadName = lead.data.lead_name || __('Untitled');
+  const organizationName = lead.data.organization ? ` (${lead.data.organization})` : '';
   items.push({
-    label: lead.data.lead_name || __('Untitled'),
+    label: leadName + organizationName,
     route: { name: 'Lead', params: { leadId: lead.data.name } },
-  })
+  });
+
   return items
 })
 
