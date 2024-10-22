@@ -279,7 +279,7 @@ const filteredSections = computed(() => {
                     _contact.value.email_id = option.value
                   }
                 } else {
-                  editOption('Contact Email', option.name, option.value)
+                  editOption('Contact Email', option.name, 'email_id', option.value)
                 }
               },
               onDelete: async (option, isNew) => {
@@ -332,7 +332,7 @@ const filteredSections = computed(() => {
                     _contact.value.actual_mobile_no = option.value
                   }
                 } else {
-                  editOption('Contact Phone', option.name, option.value)
+                  editOption('Contact Phone', option.name, 'phone', option.value)
                 }
               },
               onDelete: async (option, isNew) => {
@@ -415,11 +415,11 @@ async function createNew(field, value) {
   }
 }
 
-async function editOption(doctype, name, value) {
+async function editOption(doctype, name, fieldname, value) {
   let d = await call('frappe.client.set_value', {
     doctype,
     name,
-    fieldname: doctype == 'Contact Phone' ? 'phone' : 'email',
+    fieldname,
     value,
   })
   if (d) {
