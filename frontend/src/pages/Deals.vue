@@ -388,6 +388,8 @@ function parseRows(rows) {
   return rows.map((deal) => {
     let _rows = {}
     deals.value.data.rows.forEach((row) => {
+      console.log(deal);
+      
       _rows[row] = deal[row]
 
       if (row == 'organization') {
@@ -398,7 +400,7 @@ function parseRows(rows) {
       } else if (row === 'website') {
         _rows[row] = website(deal.website)
       } else if (row == 'annual_revenue') {
-        _rows[row] = formatNumberIntoCurrency(
+        _rows[row] = cutomFormatNumberIntoCurrency(
           deal.annual_revenue,
           deal.currency,
         )
@@ -532,5 +534,11 @@ const task = ref({
 function showTask(name) {
   docname.value = name
   showTaskModal.value = true
+}
+function cutomFormatNumberIntoCurrency(value, currency) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+        currency: currency
+    }).format(value);
 }
 </script>
