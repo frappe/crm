@@ -652,12 +652,12 @@ const activities = computed(() => {
     _activities = get_activities()
   } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
-    activities = all_activities.data.versions.filter(
+    _activities = all_activities.data.versions.filter(
       (activity) => activity.activity_type === 'communication',
     )
   } else if (title.value == 'Comments') {
     if (!all_activities.data?.versions) return []
-    activities = all_activities.data.versions.filter(
+    _activities = all_activities.data.versions.filter(
       (activity) => activity.activity_type === 'comment',
     )
   } else if (title.value == 'Calls') {
