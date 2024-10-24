@@ -79,6 +79,10 @@
             v-else-if="whatsapp.content_type == 'text'"
             v-html="formatWhatsAppMessage(whatsapp.message)"
           />
+          <div
+            v-else-if="whatsapp.content_type == 'button'"
+            v-html="formatWhatsAppMessage(whatsapp.message)"
+          />
           <div v-else-if="whatsapp.content_type == 'image'">
             <img
               :src="whatsapp.attach"
