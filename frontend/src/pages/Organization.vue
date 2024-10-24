@@ -195,14 +195,14 @@
           v-if="tab.label === 'Deals' && rows.length"
           :rows="rows"
           :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
+          :options="{ selectable: false, showTooltip: true }"
         />
         <ContactsListView
           class="mt-4"
           v-if="tab.label === 'Contacts' && rows.length"
           :rows="rows"
           :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
+          :options="{ selectable: false, showTooltip: true }"
         />
         <div
           v-if="!rows.length"

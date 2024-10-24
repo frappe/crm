@@ -238,7 +238,7 @@
     :rows="rows"
     :columns="leads.data.columns"
     :options="{
-      showTooltip: false,
+      showTooltip: true,
       resizeColumn: true,
       rowCount: leads.data.row_count,
       totalCount: leads.data.total_count,

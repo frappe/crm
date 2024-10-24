@@ -33,7 +33,7 @@
     :rows="rows"
     :columns="organizations.data.columns"
     :options="{
-      showTooltip: false,
+      showTooltip: true,
       resizeColumn: true,
       rowCount: organizations.data.row_count,
       totalCount: organizations.data.total_count,
