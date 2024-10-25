@@ -20,6 +20,20 @@ def get_deal(name):
 		frappe.throw(_("Deal not found"), frappe.DoesNotExistError)
 	deal = deal.pop()
 
+	# Get all child table doctypes linked to CRM Deal
+	meta = frappe.get_meta("CRM Deal")
+	child_tables = [df for df in meta.fields if df.fieldtype in ["Table","Table MultiSelect" ] ]
+
+	deal['child_tables'] = {}
+
+	for child_table in child_tables:
+		child_doctype = child_table.options
+		child_records = frappe.get_all(
+			child_doctype,
+			fields="*",
+			filters={"parent": deal['name']}
+		)
+		deal['child_tables'][child_table.fieldname] = child_records
 
 	deal["contacts"] = frappe.get_all(
 		"CRM Contacts",
@@ -64,3 +78,34 @@ def get_deal_contacts(name):
 		}
 		deal_contacts.append(_contact)
 	return deal_contacts
+
+@frappe.whitelist(methods=["POST", "PUT"])
+def update_crm_deal_elements(name, deal_elements):
+	# Fetch the CRM Deal by name
+	deal = frappe.get_doc("CRM Deal", name)
+	
+	# Clear the existing deal elements
+	deal.set("deal_elements", [])
+	
+	# Add new deal elements from the list of strings
+	for element in deal_elements:
+		deal.append("deal_elements", {
+			"deal_elements": element,  # now element is the string itself
+			"parent": name,
+			"parentfield": "deal_elements",
+			"parenttype": "CRM Deal",
+			"doctype": "CRM Deal Elements"
+		})
+	
+	# Save the updated CRM Deal document
+	deal.save(ignore_permissions=True)
+	frappe.db.commit()
+ 
+	return {"name":name, "deal_elements":deal.deal_elements}
+
+
+@frappe.whitelist(methods=["GET"])
+def get_deal_elements():
+	# Fetch all CRM Deal Elements
+	deal_elements = frappe.get_all("CRM Deal Element", fields=["name"])
+	return deal_elements
