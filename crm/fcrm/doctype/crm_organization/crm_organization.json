@@ -13,6 +13,7 @@
   "annual_revenue",
   "organization_logo",
   "column_break_pnpp",
+  "is_partner",
   "website",
   "territory",
   "industry",
@@ -74,12 +75,18 @@
    "fieldtype": "Link",
    "label": "Address",
    "options": "Address"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_partner",
+   "fieldtype": "Check",
+   "label": "Partner"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-17 18:37:10.341062",
+ "modified": "2024-10-25 00:20:51.677354",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
