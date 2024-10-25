@@ -1,0 +1,72 @@
+[
+ {
+  "buying_role": "Blocker",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:55:12.941775",
+  "name": "Blocker"
+ },
+ {
+  "buying_role": "Budget Holder",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:55:35.833456",
+  "name": "Budget Holder"
+ },
+ {
+  "buying_role": "Decision Maker",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:56:36.681461",
+  "name": "Decision Maker"
+ },
+ {
+  "buying_role": "End user",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:57:13.925815",
+  "name": "End user"
+ },
+ {
+  "buying_role": "Influencer",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:57:44.318486",
+  "name": "Influencer"
+ },
+ {
+  "buying_role": "Technical Evaluator",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:58:01.681582",
+  "name": "Technical Evaluator"
+ },
+ {
+  "buying_role": "Procurement",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:58:19.417494",
+  "name": "Procurement"
+ },
+ {
+  "buying_role": "Gatekeeper",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:58:35.509545",
+  "name": "Gatekeeper"
+ },
+ {
+  "buying_role": "User Advocate",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:58:52.456709",
+  "name": "User Advocate"
+ },
+ {
+  "buying_role": "Champion",
+  "docstatus": 0,
+  "doctype": "CRM Buying Role",
+  "modified": "2024-10-16 00:56:09.809283",
+  "name": "Champion"
+ }
+]
