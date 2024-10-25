@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe
+from frappe.boot import add_subscription_conf
 from frappe.utils.telemetry import capture
 
 no_cache = 1
@@ -32,6 +33,8 @@ def get_boot():
             "site_name": frappe.local.site,
             "read_only_mode": frappe.flags.read_only,
             "csrf_token": frappe.sessions.get_csrf_token(),
+            "telemetry_site_age": frappe.utils.telemetry.site_age(),
+            "subscription_conf": add_subscription_conf(),
         }
     )
 
