@@ -30,6 +30,8 @@ frappe.query_reports["Needs Email Follow Up For Deal"] = {
             "fieldtype": "Link",
             "options": 	"CRM Deal Status"
 		},
-
-	]
+	],
+	on_change: function() {
+	    frappe.query_report.refresh();
+	}
 };

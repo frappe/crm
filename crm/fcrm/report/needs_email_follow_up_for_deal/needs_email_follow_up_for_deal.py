@@ -24,22 +24,13 @@ def get_data(filters):
 								deal.status as status, 
 								deal.email as email,
 								deal.deal_owner as assigned_to,
-								MAX(C.communication_date) as last_email_date
+								C.communication_date as last_email_date
 							FROM `tabCRM Deal` deal
 							inner JOIN `tabCommunication` as C 
 								ON C.reference_doctype = 'CRM Deal' 
-								AND C.reference_name = deal.name
-								AND C.communication_type = 'Communication' 
-								AND C.communication_medium = 'Email'
 							WHERE 
 								deal.deal_owner = '{current_user}'
 								{conditions}
-						    GROUP BY 
-							    deal.name, 
-							    deal.organization, 
-							    deal.status, 
-							    deal.email, 
-							    deal.deal_owner
 							ORDER BY C.communication_date ASC""", debug=1, as_dict=True)
 	
 	for deal in deal_details:
