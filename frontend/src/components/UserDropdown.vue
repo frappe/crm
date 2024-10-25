@@ -44,15 +44,14 @@
       </button>
     </template>
   </Dropdown>
-  <SettingsModal v-if="showSettingsModal" v-model="showSettingsModal" />
 </template>
 
 <script setup>
-import SettingsModal from '@/components/Settings/SettingsModal.vue'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
+import { showSettingsModal } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
 import { computed, ref, markRaw} from 'vue'
 
@@ -67,8 +66,6 @@ const { logout } = sessionStore()
 const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
-
-const showSettingsModal = ref(false)
 
 let dropdownOptions = ref([
   {

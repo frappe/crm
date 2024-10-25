@@ -1,5 +1,9 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '5xl' }">
+  <Dialog
+    v-model="showSettingsModal"
+    :options="{ size: '5xl' }"
+    @close="activeSettingsPage = ''"
+  >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 p-2">
@@ -49,11 +53,13 @@ import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
-import { isWhatsappInstalled } from '@/composables/settings'
+import {
+  isWhatsappInstalled,
+  showSettingsModal,
+  activeSettingsPage,
+} from '@/composables/settings'
 import { Dialog, Plans, Billing } from 'frappe-ui'
-import { ref, markRaw, computed } from 'vue'
-
-const show = defineModel()
+import { ref, markRaw, computed, watch } from 'vue'
 
 const tabs = computed(() => {
   let _tabs = [
@@ -123,4 +129,16 @@ const tabs = computed(() => {
 })
 
 const activeTab = ref(tabs.value[0].items[0])
+
+function setActiveTab(tabName) {
+  activeTab.value =
+    (tabName &&
+      tabs.value
+        .map((tab) => tab.items)
+        .flat()
+        .find((tab) => tab.label === tabName)) ||
+    tabs.value[0].items[0]
+}
+
+watch(activeSettingsPage, (activePage) => setActiveTab(activePage))
 </script>

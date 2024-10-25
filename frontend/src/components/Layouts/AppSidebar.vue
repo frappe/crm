@@ -74,7 +74,10 @@
         </Section>
       </div>
     </div>
-    <TrialBanner :isSidebarCollapsed="isSidebarCollapsed" />
+    <TrialBanner
+      :isSidebarCollapsed="isSidebarCollapsed"
+      @upgradePlan="showBillingSettingPage"
+    />
     <div class="m-2 flex flex-col gap-1">
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
@@ -114,6 +117,7 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
+import { showSettingsModal, activeSettingsPage } from '@/composables/settings'
 import { FeatherIcon, TrialBanner } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
@@ -226,5 +230,10 @@ function getIcon(routeName, icon) {
     default:
       return PinIcon
   }
+}
+
+function showBillingSettingPage() {
+  showSettingsModal.value = true
+  activeSettingsPage.value = 'Billing'
 }
 </script>
