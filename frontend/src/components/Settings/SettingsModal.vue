@@ -41,6 +41,8 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import UpgradeIcon from '@/components/Icons/UpgradeIcon.vue'
+import WalletsIcon from '@/components/Icons/WalletsIcon.vue'
 import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
@@ -48,8 +50,8 @@ import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { isWhatsappInstalled } from '@/composables/settings'
-import { Dialog } from 'frappe-ui'
-import { ref, markRaw, computed, h } from 'vue'
+import { Dialog, Plans, Billing } from 'frappe-ui'
+import { ref, markRaw, computed } from 'vue'
 
 const show = defineModel()
 
@@ -68,6 +70,21 @@ const tabs = computed(() => {
           label: __('Invite Members'),
           icon: 'user-plus',
           component: markRaw(InviteMemberPage),
+        },
+      ],
+    },
+    {
+      label: __('Subscription'),
+      items: [
+        {
+          label: 'Plans',
+          icon: UpgradeIcon,
+          component: markRaw(Plans),
+        },
+        {
+          label: 'Billing',
+          icon: WalletsIcon,
+          component: markRaw(Billing),
         },
       ],
     },
