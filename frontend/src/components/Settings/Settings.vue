@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model="showSettingsModal"
+    v-model="showSettings"
     :options="{ size: '5xl' }"
     @close="activeSettingsPage = ''"
   >
@@ -55,7 +55,7 @@ import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import {
   isWhatsappInstalled,
-  showSettingsModal,
+  showSettings,
   activeSettingsPage,
 } from '@/composables/settings'
 import { Dialog, Plans, Billing } from 'frappe-ui'

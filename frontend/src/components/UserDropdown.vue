@@ -51,9 +51,9 @@ import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
-import { showSettingsModal } from '@/composables/settings'
+import { showSettings } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
-import { computed, ref, markRaw} from 'vue'
+import { computed, ref, markRaw } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -94,7 +94,7 @@ let dropdownOptions = ref([
       {
         icon: 'settings',
         label: computed(() => __('Settings')),
-        onClick: () => (showSettingsModal.value = true),
+        onClick: () => (showSettings.value = true),
       },
       {
         icon: 'log-out',

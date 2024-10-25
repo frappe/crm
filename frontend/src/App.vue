@@ -2,13 +2,11 @@
   <Layout v-if="session().isLoggedIn">
     <router-view />
   </Layout>
-  <SettingsModal />
   <Dialogs />
   <Toasts />
 </template>
 
 <script setup>
-import SettingsModal from '@/components/Settings/SettingsModal.vue'
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore as session } from '@/stores/session'
 import { Toasts } from 'frappe-ui'

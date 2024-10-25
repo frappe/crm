@@ -96,6 +96,7 @@
       </SidebarLink>
     </div>
     <Notifications />
+    <Settings />
   </div>
 </template>
 
@@ -115,9 +116,10 @@ import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
+import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
 import { notificationsStore } from '@/stores/notifications'
-import { showSettingsModal, activeSettingsPage } from '@/composables/settings'
+import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { FeatherIcon, TrialBanner } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
@@ -233,7 +235,7 @@ function getIcon(routeName, icon) {
 }
 
 function showBillingSettingPage() {
-  showSettingsModal.value = true
+  showSettings.value = true
   activeSettingsPage.value = 'Billing'
 }
 </script>
