@@ -1,0 +1,62 @@
+[
+ {
+  "deal_elements": "Hardware",
+  "docstatus": 0,
+  "doctype": "CRM Deal Elements",
+  "modified": "2024-10-17 09:22:47.352560",
+  "name": "ma6eg724u5",
+  "parent": "CRM-DEAL-2024-00088",
+  "parentfield": "deal_elements",
+  "parenttype": "CRM Deal"
+ },
+ {
+  "deal_elements": "Hardware",
+  "docstatus": 0,
+  "doctype": "CRM Deal Elements",
+  "modified": "2024-10-23 06:21:49.395705",
+  "name": "sh6eube00o",
+  "parent": "CRM-DEAL-2024-00090",
+  "parentfield": "deal_elements",
+  "parenttype": "CRM Deal"
+ },
+ {
+  "deal_elements": "Hardware",
+  "docstatus": 0,
+  "doctype": "CRM Deal Elements",
+  "modified": "2024-10-25 07:14:12.797667",
+  "name": "6sug6frlr1",
+  "parent": "CRM-DEAL-2024-00099",
+  "parentfield": "deal_elements",
+  "parenttype": "CRM Deal"
+ },
+ {
+  "deal_elements": "Software",
+  "docstatus": 0,
+  "doctype": "CRM Deal Elements",
+  "modified": "2024-10-17 09:22:47.352560",
+  "name": "ma99bg59od",
+  "parent": "CRM-DEAL-2024-00088",
+  "parentfield": "deal_elements",
+  "parenttype": "CRM Deal"
+ },
+ {
+  "deal_elements": "Professional Services xy",
+  "docstatus": 0,
+  "doctype": "CRM Deal Elements",
+  "modified": "2024-10-23 06:21:49.395705",
+  "name": "1fan9qrfr6",
+  "parent": "CRM-DEAL-2024-00090",
+  "parentfield": "deal_elements",
+  "parenttype": "CRM Deal"
+ },
+ {
+  "deal_elements": "Software",
+  "docstatus": 0,
+  "doctype": "CRM Deal Elements",
+  "modified": "2024-10-25 07:14:12.797667",
+  "name": "6sugg95rg5",
+  "parent": "CRM-DEAL-2024-00099",
+  "parentfield": "deal_elements",
+  "parenttype": "CRM Deal"
+ }
+]
