@@ -16,7 +16,7 @@ def get_data(filters):
 
 	# Get the current user if not provided
 	current_user = frappe.session.user if not filters.get("assigned_to") else filters.get("assigned_to")
-
+    
 	# Query to fetch deals
 	deal_details = frappe.db.sql(f"""SELECT 
 								DISTINCT(deal.name) as deal_name, 
@@ -24,29 +24,31 @@ def get_data(filters):
 								deal.status as status, 
 								deal.email as email,
 								deal.deal_owner as assigned_to,
-								C.communication_date as last_email_date
+								MAX(C.communication_date) as last_email_date
 							FROM `tabCRM Deal` deal
-							LEFT JOIN `tabCommunication` as C 
+							inner JOIN `tabCommunication` as C 
 								ON C.reference_doctype = 'CRM Deal' 
 								AND C.reference_name = deal.name
 								AND C.communication_type = 'Communication' 
 								AND C.communication_medium = 'Email'
 							WHERE 
 								deal.deal_owner = '{current_user}'
-								 {conditions}
+								{conditions}
+						    GROUP BY 
+							    deal.name, 
+							    deal.organization, 
+							    deal.status, 
+							    deal.email, 
+							    deal.deal_owner
 							ORDER BY C.communication_date ASC""", debug=1, as_dict=True)
 	
 	for deal in deal_details:
 		if not deal['email']:
 			email  = frappe.db.get_value("CRM Contacts", {'parent':deal['deal_name'], 'is_primary':1}, 'email') 
-			print(f"^^^^^^^^^^^^^^^^^^^^^email {email}")
 			if email:
 				deal['email'] = email
-				print(f"iiiiiiiiiiiiiiiiiiideal['email'] {deal['email']}")
 			else:
 				deal['email'] = frappe.db.get_value("CRM Contacts", {'parent':deal['deal_name']}, 'email') or ''
-				print(f"eeeeeeeeeeeeeeeeeeedeal['email'] {deal['email']}")
-	print(f"---------------deal_details {deal_details}")
 	return deal_details
 
 def get_columns():
@@ -67,4 +69,5 @@ def get_filter_conditions(filters):
 		conditions += f" and date(C.communication_date) <= '{filters.to_date}'"
 	if filters.status:
 		conditions += f" and deal.status = '{filters.status}'"
+
 	return conditions
