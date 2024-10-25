@@ -20,6 +20,20 @@ def get_deal(name):
 		frappe.throw(_("Deal not found"), frappe.DoesNotExistError)
 	deal = deal.pop()
 
+	# Get all child table doctypes linked to CRM Deal
+	meta = frappe.get_meta("CRM Deal")
+	child_tables = [df for df in meta.fields if df.fieldtype in ["Table","Table MultiSelect" ] ]
+
+	deal['child_tables'] = {}
+
+	for child_table in child_tables:
+		child_doctype = child_table.options
+		child_records = frappe.get_all(
+			child_doctype,
+			fields="*",
+			filters={"parent": deal['name']}
+		)
+		deal['child_tables'][child_table.fieldname] = child_records
 
 	deal["contacts"] = frappe.get_all(
 		"CRM Contacts",
@@ -61,6 +75,7 @@ def get_deal_contacts(name):
 			"email": get_primary_email(contact),
 			"mobile_no": get_primary_mobile_no(contact),
 			"is_primary": is_primary,
+			"buying_role":contact.custom_buying_role
 		}
 		deal_contacts.append(_contact)
 	return deal_contacts

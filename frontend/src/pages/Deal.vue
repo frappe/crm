@@ -249,6 +249,10 @@
                           <PhoneIcon class="h-4 w-4" />
                           {{ contact.mobile_no }}
                         </div>
+                        <div class="flex items-center gap-3 p-1 py-1.5">
+                          <PriceTagIcon class="h-4 w-4" />
+                          {{ contact.buying_role }}
+                        </div>
                       </div>
                     </Section>
                   </div>
@@ -355,6 +359,7 @@ import {
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import PriceTagIcon from '@/components/Icons/PriceTagIcon.vue'
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
