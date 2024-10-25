@@ -81,6 +81,7 @@ const tabs = computed(() => {
     },
     {
       label: __('Subscription'),
+      condition: () => window.subscription_conf,
       items: [
         {
           label: 'Plans',
@@ -117,14 +118,15 @@ const tabs = computed(() => {
     },
   ]
 
-  return _tabs.map((tab) => {
-    tab.items = tab.items.filter((item) => {
-      if (item.condition) {
-        return item.condition()
-      }
-      return true
-    })
-    return tab
+  return _tabs.filter((tab) => {
+    if (tab.condition && !tab.condition()) return false
+    if (tab.items) {
+      tab.items = tab.items.filter((item) => {
+        if (item.condition && !item.condition()) return false
+        return true
+      })
+    }
+    return true
   })
 })
 
