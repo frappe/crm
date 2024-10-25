@@ -53,6 +53,7 @@ import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
+import { usersStore } from '@/stores/users'
 import {
   isWhatsappInstalled,
   showSettings,
@@ -60,6 +61,8 @@ import {
 } from '@/composables/settings'
 import { Dialog, Plans, Billing } from 'frappe-ui'
 import { ref, markRaw, computed, watch } from 'vue'
+
+const { isManager } = usersStore()
 
 const tabs = computed(() => {
   let _tabs = [
@@ -76,6 +79,7 @@ const tabs = computed(() => {
           label: __('Invite Members'),
           icon: 'user-plus',
           component: markRaw(InviteMemberPage),
+          condition: () => isManager(),
         },
       ],
     },
