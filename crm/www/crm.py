@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.boot import add_subscription_conf
+from frappe.utils import cint
 from frappe.utils.telemetry import capture
 
 no_cache = 1
@@ -35,6 +36,7 @@ def get_boot():
             "csrf_token": frappe.sessions.get_csrf_token(),
             "telemetry_site_age": frappe.utils.telemetry.site_age(),
             "subscription_conf": add_subscription_conf(),
+            "setup_complete": cint(frappe.get_system_settings("setup_complete"))
         }
     )
 
