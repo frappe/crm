@@ -7,15 +7,18 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "organization_tab",
-  "naming_series",
-  "organization",
-  "next_step",
+  "tab_6_tab",
+  "details_section",
+  "deal_elements",
   "probability",
-  "column_break_ijan",
-  "status",
   "close_date",
+  "naming_series",
+  "column_break_tukx",
+  "next_step",
+  "status",
   "deal_owner",
+  "organization_tab",
+  "organization",
   "contacts_tab",
   "contacts",
   "contact",
@@ -260,10 +263,6 @@
    "label": "Lead Name"
   },
   {
-   "fieldname": "column_break_ijan",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "lead_details_tab",
    "fieldtype": "Tab Break",
    "label": "Lead Details"
@@ -334,11 +333,31 @@
    "fieldtype": "Link",
    "label": "Currency",
    "options": "Currency"
+  },
+  {
+   "fieldname": "tab_6_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "deal_elements",
+   "fieldtype": "Table MultiSelect",
+   "label": "Deal Elements",
+   "options": "CRM Deal Elements"
+  },
+  {
+   "fieldname": "column_break_tukx",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-17 18:34:15.873610",
+ "modified": "2024-10-17 09:18:00.677849",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

@@ -303,6 +303,26 @@ def get_data(
 			page_length=page_length,
 		) or []
 
+
+		# Fetch child table data if requested
+		include_child_tables = frappe.get_all('Data Doctype', fields=['name'])
+		include_child_tables_list = [entry['name'] for entry in include_child_tables]
+
+		if doctype in include_child_tables_list:
+			meta = frappe.get_meta(doctype)
+			child_tables = [df for df in meta.fields if df.fieldtype in ["Table","Table MultiSelect" ] ]
+
+			for record in data:
+				record['child_tables'] = {}
+				for child_table in child_tables:
+					child_doctype = child_table.options
+					child_records = frappe.get_all(
+						child_doctype,
+						fields="*",
+						filters={"parent": record['name']}
+					)
+					record['child_tables'][child_table.fieldname] = child_records
+
 	if view_type == "kanban":
 		if not rows:
 			rows = default_rows

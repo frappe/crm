@@ -25,3 +25,23 @@
 		prose-th:relative
 	}
 }
+
+.deal-chip .grid.items-center.space-x-4.rounded.px-2.hover\:bg-gray-50 {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    height: initial !important;
+    min-height: 40px;
+} 
+.chip-data{
+    display: grid;
+}
+.chip{
+    width: fit-content;
+    padding: 4px;
+    pointer-events: none;
+    border: none;
+    background-color: #f3f3f3 !important;
+    color: #000000 !important;
+    text-align: center;
+    text-decoration: none;
+}

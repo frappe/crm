@@ -397,6 +397,10 @@ function parseRows(rows) {
         }
       } else if (row === 'website') {
         _rows[row] = website(deal.website)
+      } else if (row === 'deal_elements') {
+        _rows[row] = {
+          data: getAllDealElementNames(deal.child_tables.deal_elements)
+        } 
       } else if (row == 'annual_revenue') {
         _rows[row] = customFormatNumberIntoCurrency(
           deal.annual_revenue,
@@ -484,6 +488,7 @@ function onNewClick(column) {
   showDealModal.value = true
 }
 
+
 function actions(itemName) {
   let mobile_no = getRow(itemName, 'mobile_no')?.label || ''
   let actions = [
@@ -507,6 +512,36 @@ function actions(itemName) {
   return actions.filter((action) =>
     action.condition ? action.condition() : true,
   )
+}
+
+/**
+ *  Convert proxy object into array
+ * @param proxyData 
+ */
+function unwrapProxy(proxyData) {
+  if (Array.isArray(proxyData)) {
+    return proxyData.map((item) => unwrapProxy(item));
+  } 
+  else if (proxyData !== null && typeof proxyData === 'object') {
+    return Object.keys(proxyData).reduce((acc, key) => {
+      acc[key] = unwrapProxy(proxyData[key]);
+      return acc;
+    }, {});
+  }
+  return proxyData;
+}
+
+/**
+ * Get deal elamenet and convert into array
+ * @param deals 
+ */
+function getAllDealElementNames(deals) {
+  deals = unwrapProxy(deals);
+    // Check if deals is an array
+    if (deals && !Array.isArray(deals)) {
+        return '';
+    }
+    return deals;
 }
 
 const docname = ref('')
