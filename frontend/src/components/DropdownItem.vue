@@ -2,7 +2,7 @@
   <div
     class="group flex w-full items-center justify-between rounded bg-transparent p-1 pl-2 text-base text-gray-800 transition-colors hover:bg-gray-200 active:bg-gray-300"
   >
-    <div class="flex items-center justify-between gap-7">
+    <div class="flex flex-1 items-center justify-between gap-7">
       <div v-show="!editMode">{{ option.value }}</div>
       <TextInput
         ref="inputRef"
@@ -60,13 +60,8 @@
         </Tooltip>
       </div>
     </div>
-    <div>
-      <FeatherIcon
-        v-if="option.selected"
-        name="check"
-        class="text-primary-500 h-4 w-6"
-        size="sm"
-      />
+    <div v-if="option.selected">
+      <FeatherIcon name="check" class="text-primary-500 h-4 w-6" size="sm" />
     </div>
   </div>
 </template>

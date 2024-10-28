@@ -35,7 +35,12 @@
                 :label="data[field.name]"
                 class="dropdown-button flex w-full items-center justify-between rounded border border-gray-100 bg-gray-100 px-2 py-1.5 text-base text-gray-800 placeholder-gray-500 transition-colors hover:border-gray-200 hover:bg-gray-200 focus:border-gray-500 focus:bg-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400"
               >
-                <div class="truncate">{{ data[field.name] }}</div>
+                <div v-if="data[field.name]" class="truncate">
+                  {{ data[field.name] }}
+                </div>
+                <div v-else class="text-base leading-5 text-gray-500">
+                  {{ field.placeholder }}
+                </div>
                 <template #suffix>
                   <FeatherIcon
                     :name="open ? 'chevron-up' : 'chevron-down'"
