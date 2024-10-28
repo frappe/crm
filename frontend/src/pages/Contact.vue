@@ -162,15 +162,12 @@
                   <ErrorMessage :message="__(error)" />
                 </div>
               </div>
-              <div class="flex gap-1.5">
+              <div v-if="contact.data.actual_mobile_no" class="flex gap-1.5">
                 <Button
                   :label="__('Make Call')"
                   size="sm"
                   @click="
-                    () => {
-                      detailMode = false
-                      showContactModal = true
-                    }
+                    callEnabled && makeCall(contact.data.actual_mobile_no)
                   "
                 >
                   <template #prefix>
