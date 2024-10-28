@@ -60,7 +60,7 @@ import {
   activeSettingsPage,
 } from '@/composables/settings'
 import { Dialog, Plans, Billing } from 'frappe-ui'
-import { ref, markRaw, computed, watch } from 'vue'
+import { ref, markRaw, computed, watch, h } from 'vue'
 
 const { isManager } = usersStore()
 
@@ -95,7 +95,9 @@ const tabs = computed(() => {
         {
           label: 'Billing',
           icon: WalletsIcon,
-          component: markRaw(Billing),
+          component: markRaw(
+            h(Billing, { onChangePlan: () => setActiveTab('Plans') }),
+          ),
         },
       ],
     },
