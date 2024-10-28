@@ -271,17 +271,12 @@
     doctype="Contact"
     @reload="() => fieldsLayout.reload()"
   />
-  <ContactModal
-    v-model="showContactModal"
-    v-model:quickEntry="showQuickEntryModal"
-    :contact="contact"
-    :options="{ detailMode }"
-  />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
     doctype="Contact"
   />
+  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
@@ -297,13 +292,14 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
-import ContactModal from '@/components/Modals/ContactModal.vue'
+import AddressModal from '@/components/Modals/AddressModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
   formatNumberIntoCurrency,
+  createToast,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global.js'
@@ -340,10 +336,13 @@ const props = defineProps({
 const route = useRoute()
 const router = useRouter()
 
+const showAddressModal = ref(false)
 const showSidePanelModal = ref(false)
 const showContactModal = ref(false)
 const showQuickEntryModal = ref(false)
 const detailMode = ref(false)
+const _contact = ref({})
+const _address = ref({})
 
 const contact = createResource({
   url: 'crm.api.contact.get_contact',
@@ -455,20 +454,226 @@ const rows = computed(() => {
   return deals.data.map((row) => getDealRowObject(row))
 })
 
-// const fieldsLayout = ref({
-//   data: {},
-// })
-
 const fieldsLayout = createResource({
   url: 'crm.api.doc.get_sidebar_fields',
   cache: ['fieldsLayout', props.contactId],
   params: { doctype: 'Contact', name: props.contactId },
   auto: true,
-  // transform: (data) => getParsedFields(data),
+  transform: (data) => getParsedFields(data),
 })
 
-function updateField(fieldname, value) {
-  call('frappe.client.set_value', {
+function getParsedFields(data) {
+  return data.map((section) => {
+    return {
+      ...section,
+      fields: computed(() =>
+        section.fields.map((field) => {
+          if (field.name === 'email_id') {
+            return {
+              ...field,
+              type: 'dropdown',
+              options:
+                contact.data?.email_ids?.map((email) => {
+                  return {
+                    name: email.name,
+                    value: email.email_id,
+                    selected: email.email_id === contact.data.email_id,
+                    placeholder: 'john@doe.com',
+                    onClick: () => {
+                      _contact.value.email_id = email.email_id
+                      setAsPrimary('email', email.email_id)
+                    },
+                    onSave: (option, isNew) => {
+                      if (isNew) {
+                        createNew('email', option.value)
+                        if (contact.data.email_ids.length === 1) {
+                          _contact.value.email_id = option.value
+                        }
+                      } else {
+                        editOption(
+                          'Contact Email',
+                          option.name,
+                          'email_id',
+                          option.value,
+                        )
+                      }
+                    },
+                    onDelete: async (option, isNew) => {
+                      contact.data.email_ids = contact.data.email_ids.filter(
+                        (email) => email.name !== option.name,
+                      )
+                      !isNew &&
+                        (await deleteOption('Contact Email', option.name))
+                      if (_contact.value.email_id === option.value) {
+                        if (contact.data.email_ids.length === 0) {
+                          _contact.value.email_id = ''
+                        } else {
+                          _contact.value.email_id = contact.data.email_ids.find(
+                            (email) => email.is_primary,
+                          )?.email_id
+                        }
+                      }
+                    },
+                  }
+                }) || [],
+              create: () => {
+                contact.data?.email_ids?.push({
+                  name: 'new-1',
+                  value: '',
+                  selected: false,
+                  isNew: true,
+                })
+              },
+            }
+          } else if (field.name === 'mobile_no') {
+            return {
+              ...field,
+              type: 'dropdown',
+              options:
+                contact.data?.phone_nos?.map((phone) => {
+                  return {
+                    name: phone.name,
+                    value: phone.phone,
+                    selected: phone.phone === contact.data.actual_mobile_no,
+                    onClick: () => {
+                      _contact.value.actual_mobile_no = phone.phone
+                      _contact.value.mobile_no = phone.phone
+                      setAsPrimary('mobile_no', phone.phone)
+                    },
+                    onSave: (option, isNew) => {
+                      if (isNew) {
+                        createNew('phone', option.value)
+                        if (contact.data.phone_nos.length === 1) {
+                          _contact.value.actual_mobile_no = option.value
+                        }
+                      } else {
+                        editOption(
+                          'Contact Phone',
+                          option.name,
+                          'phone',
+                          option.value,
+                        )
+                      }
+                    },
+                    onDelete: async (option, isNew) => {
+                      contact.data.phone_nos = contact.data.phone_nos.filter(
+                        (phone) => phone.name !== option.name,
+                      )
+                      !isNew &&
+                        (await deleteOption('Contact Phone', option.name))
+                      if (_contact.value.actual_mobile_no === option.value) {
+                        if (contact.data.phone_nos.length === 0) {
+                          _contact.value.actual_mobile_no = ''
+                        } else {
+                          _contact.value.actual_mobile_no =
+                            contact.data.phone_nos.find(
+                              (phone) => phone.is_primary_mobile_no,
+                            )?.phone
+                        }
+                      }
+                    },
+                  }
+                }) || [],
+              create: () => {
+                contact.data?.phone_nos?.push({
+                  name: 'new-1',
+                  value: '',
+                  selected: false,
+                  isNew: true,
+                })
+              },
+            }
+          } else if (field.name === 'address') {
+            return {
+              ...field,
+              create: (value, close) => {
+                _contact.value.address = value
+                _address.value = {}
+                showAddressModal.value = true
+                close()
+              },
+              edit: async (addr) => {
+                _address.value = await call('frappe.client.get', {
+                  doctype: 'Address',
+                  name: addr,
+                })
+                showAddressModal.value = true
+              },
+            }
+          } else {
+            return field
+          }
+        }),
+      ),
+    }
+  })
+}
+
+async function setAsPrimary(field, value) {
+  let d = await call('crm.api.contact.set_as_primary', {
+    contact: contact.data.name,
+    field,
+    value,
+  })
+  if (d) {
+    contact.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function createNew(field, value) {
+  if (!value) return
+  let d = await call('crm.api.contact.create_new', {
+    contact: contact.data.name,
+    field,
+    value,
+  })
+  if (d) {
+    contact.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function editOption(doctype, name, fieldname, value) {
+  let d = await call('frappe.client.set_value', {
+    doctype,
+    name,
+    fieldname,
+    value,
+  })
+  if (d) {
+    contact.reload()
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-green-600',
+    })
+  }
+}
+
+async function deleteOption(doctype, name) {
+  await call('frappe.client.delete', {
+    doctype,
+    name,
+  })
+  await contact.reload()
+  createToast({
+    title: 'Contact updated',
+    icon: 'check',
+    iconClasses: 'text-green-600',
+  })
+}
+
+async function updateField(fieldname, value) {
+  await call('frappe.client.set_value', {
     doctype: 'Contact',
     name: props.contactId,
     fieldname,

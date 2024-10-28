@@ -15,6 +15,14 @@
       />
 
       <div class="actions flex items-center justify-center">
+        <Button
+          v-if="editMode"
+          variant="ghost"
+          :label="__('Save')"
+          size="sm"
+          class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+          @click="saveOption"
+        />
         <Tooltip text="Set As Primary" v-if="!isNew && !option.selected">
           <div>
             <Button
@@ -27,7 +35,7 @@
             </Button>
           </div>
         </Tooltip>
-        <Tooltip text="Edit">
+        <Tooltip v-if="!editMode" text="Edit">
           <div>
             <Button
               variant="ghost"
@@ -93,7 +101,8 @@ const toggleEditMode = () => {
   editMode.value && nextTick(() => inputRef.value.el.focus())
 }
 
-const saveOption = () => {
+const saveOption = (e) => {
+  if (!e.target.value) return
   toggleEditMode()
   props.option.onSave(props.option, isNew.value)
   isNew.value = false
