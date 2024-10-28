@@ -265,6 +265,12 @@
       </template>
     </Tabs>
   </div>
+  <SidePanelModal
+    v-if="showSidePanelModal"
+    v-model="showSidePanelModal"
+    doctype="Contact"
+    @reload="() => fieldsLayout.reload()"
+  />
   <ContactModal
     v-model="showContactModal"
     v-model:quickEntry="showQuickEntryModal"
@@ -290,6 +296,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import {
@@ -333,6 +340,7 @@ const props = defineProps({
 const route = useRoute()
 const router = useRouter()
 
+const showSidePanelModal = ref(false)
 const showContactModal = ref(false)
 const showQuickEntryModal = ref(false)
 const detailMode = ref(false)
