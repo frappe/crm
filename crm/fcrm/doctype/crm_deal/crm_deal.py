@@ -149,6 +149,12 @@ class CRMDeal(Document):
 				'width': '9rem',
 			},
 			{
+				'label': 'Probability',
+				'type': 'Percent',
+				'key': 'probability',
+				'width': '6rem',
+			},
+			{
 				'label': 'Status',
 				'type': 'Select',
 				'key': 'status',
@@ -171,12 +177,6 @@ class CRMDeal(Document):
 				'type': 'Text',
 				'key': '_assign',
 				'width': '10rem',
-			},
-			{
-				'label': 'Last Modified',
-				'type': 'Datetime',
-				'key': 'modified',
-				'width': '8rem',
 			},
 		]
 		rows = [
