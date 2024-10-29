@@ -106,6 +106,12 @@ inline-flex.items-center.justify-center.gap-2.transition-colors.focus:outline-no
 background-color: var(--text-muted) !important;
 }
 
+.chip {
+        background-color: #e2d6eb !important;
+        color: #383838 !important;
+}
+
+
 /* Scrollbar */
 *::-webkit-scrollbar {
     width: 6px;
