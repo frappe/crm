@@ -8,10 +8,11 @@
       </Breadcrumbs>
     </template>
   </LayoutHeader>
-  <div class="flex h-full">
-    <div
+  <div ref="parentRef" class="flex h-full">
+    <Resizer
       v-if="contact.data"
-      class="flex h-full flex-col overflow-hidden border-r min-w-[352px]"
+      :parent="$refs.parentRef"
+      class="flex h-full flex-col overflow-hidden border-r"
     >
       <div class="border-b">
         <FileUploader
@@ -148,7 +149,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </Resizer>
     <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
@@ -203,6 +204,7 @@
 </template>
 
 <script setup>
+import Resizer from '@/components/Resizer.vue'
 import Icon from '@/components/Icon.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
