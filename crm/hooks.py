@@ -277,5 +277,9 @@ fixtures = [
     },
     {
         "dt": "CRM Deal Element"
+    },
+    {
+        "dt": "Data Doctype",
+        "filters": [["name", "=", "CRM Deal"]]
     }
 ]
