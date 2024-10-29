@@ -1,5 +1,5 @@
 <template>
-    <div class="flex gap-2 chip-data">
+    <div class="flex gap-2 flex-wrap">
       <!-- Iterate over deals array and generate HTML for each deal_element -->
       <div
         v-for="(deal, index) in deals"
