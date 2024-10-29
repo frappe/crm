@@ -280,6 +280,12 @@ class CRMLead(Document):
 				'width': '10rem',
 			},
 			{
+				'label': 'Buying Role',
+				'type': 'Data',
+				'key': 'buying_role',
+				'width': '8rem',
+			},
+			{
 				'label': 'Status',
 				'type': 'Select',
 				'key': 'status',
@@ -302,12 +308,6 @@ class CRMLead(Document):
 				'type': 'Text',
 				'key': '_assign',
 				'width': '10rem',
-			},
-			{
-				'label': 'Last Modified',
-				'type': 'Datetime',
-				'key': 'modified',
-				'width': '8rem',
 			},
 		]
 		rows = [
