@@ -32,16 +32,16 @@
     height: initial !important;
     min-height: 40px;
 } 
-.chip-data{
+.chip-data {
     display: grid;
 }
-.chip{
+.chip {
     width: fit-content;
     padding: 4px;
     pointer-events: none;
     border: none;
-    background-color: #f3f3f3 !important;
-    color: #000000 !important;
+    background-color: #f3f3f3;
+    color: #000000;
     text-align: center;
     text-decoration: none;
 }
