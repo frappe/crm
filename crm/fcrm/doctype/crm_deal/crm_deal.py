@@ -184,6 +184,7 @@ class CRMDeal(Document):
 			"organization",
 			"deal_elements",
 			"annual_revenue",
+			"probability",
 			"status",
 			"email",
 			"currency",
