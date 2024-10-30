@@ -267,7 +267,7 @@ fixtures = [
     {
         "dt": "Custom Field",
         "filters": [
-            ["name", "in", ["Contact-custom_business_unit", "Contact-buying_role"]],
+            ["name", "in", ["Contact-custom_business_unit", "Contact-custom-buying_role"]],
         ]
     },
     {
