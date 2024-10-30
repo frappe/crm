@@ -29,9 +29,11 @@
               :key="field.name"
               class="flex h-7 items-center gap-2 text-base text-gray-800"
             >
-              <div class="grid w-7 place-content-center">
-                <component :is="field.icon" />
-              </div>
+              <Tooltip :text="field.label">
+                <div class="grid w-7 place-content-center">
+                  <component :is="field.icon" />
+                </div>
+              </Tooltip>
               <div v-if="field.type == 'dropdown'">
                 <Dropdown
                   :options="field.options"
@@ -95,7 +97,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { call, FeatherIcon, createResource } from 'frappe-ui'
+import { call, FeatherIcon, Tooltip, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { createToast } from '@/utils'
 import { useRouter } from 'vue-router'
@@ -207,6 +209,7 @@ const detailFields = computed(() => {
     {
       icon: ContactIcon,
       name: 'full_name',
+      label: 'Full Name',
       value:
         (_contact.value.salutation ? _contact.value.salutation + '. ' : '') +
         _contact.value.full_name,
@@ -214,36 +217,43 @@ const detailFields = computed(() => {
     {
       icon: GenderIcon,
       name: 'gender',
+      label: 'Gender',
       value: _contact.value.gender,
     },
     {
       icon: Email2Icon,
       name: 'email_id',
+      label: 'Email',
       value: _contact.value.email_id,
     },
     {
       icon: PhoneIcon,
       name: 'mobile_no',
+      label: 'Mobile No',
       value: _contact.value.actual_mobile_no,
     },
     {
       icon: OrganizationsIcon,
       name: 'company_name',
+      label: 'Company Name',
       value: _contact.value.company_name,
     },
     {
       icon: CertificateIcon,
       name: 'designation',
+      label: 'Job Title',
       value: _contact.value.designation,
     },
     {
       icon: h(FeatherIcon, { name: 'divide-square', class: 'h-4 w-4' }),
       name: 'custom_business_unit',
+      label: 'Business Unit',
       value: _contact.value.custom_business_unit,
     },
     {
       icon: AddressIcon,
       name: 'address',
+      label: 'Address',
       value: _contact.value.address,
     },
   ]

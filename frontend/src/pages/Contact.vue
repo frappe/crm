@@ -64,55 +64,55 @@
             <div
               class="flex flex-col flex-wrap gap-3 text-base text-gray-700 sm:flex-row sm:items-center sm:gap-2"
             >
-              <div
-                v-if="contact.data.email_id"
-                class="flex items-center gap-1.5"
-              >
-                <Email2Icon class="h-4 w-4" />
-                <span class="">{{ contact.data.email_id }}</span>
-              </div>
-              <span
-                v-if="contact.data.email_id"
-                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
-              >
-                &middot;
-              </span>
-              <component
-                :is="callEnabled ? Tooltip : 'div'"
-                :text="__('Make Call')"
-                v-if="contact.data.actual_mobile_no"
-              >
+              <Tooltip text="Email">
                 <div
+                  v-if="contact.data.email_id"
                   class="flex items-center gap-1.5"
-                  :class="callEnabled ? 'cursor-pointer' : ''"
-                  @click="
-                    callEnabled && makeCall(contact.data.actual_mobile_no)
-                  "
                 >
-                  <PhoneIcon class="h-4 w-4" />
-                  <span class="">{{ contact.data.actual_mobile_no }}</span>
+                  <Email2Icon class="h-4 w-4" />
+                  <span class="">{{ contact.data.email_id }}</span>
                 </div>
-              </component>
+              </Tooltip>
+              <Tooltip text="Mobile No">
+                <component
+                  :is="callEnabled ? Tooltip : 'div'"
+                  :text="__('Make Call')"
+                  v-if="contact.data.actual_mobile_no"
+                >
+                  <div
+                    class="flex items-center gap-1.5"
+                    :class="callEnabled ? 'cursor-pointer' : ''"
+                    @click="
+                      callEnabled && makeCall(contact.data.actual_mobile_no)
+                    "
+                  >
+                    <PhoneIcon class="h-4 w-4" />
+                    <span class="">{{ contact.data.actual_mobile_no }}</span>
+                  </div>
+                </component>
+              </Tooltip>
               <span
                 v-if="contact.data.actual_mobile_no"
                 class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
               >
                 &middot;
               </span>
-              <div
-                v-if="contact.data.company_name"
-                class="flex items-center gap-1.5"
-              >
-                <Avatar
-                  size="xs"
-                  :label="contact.data.company_name"
-                  :image="
-                    getOrganization(contact.data.company_name)
-                      ?.organization_logo
-                  "
-                />
-                <span class="">{{ contact.data.company_name }}</span>
-              </div>
+              <Tooltip text="Organization">
+                <div
+                  v-if="contact.data.company_name"
+                  class="flex items-center gap-1.5"
+                >
+                  <Avatar
+                    size="xs"
+                    :label="contact.data.company_name"
+                    :image="
+                      getOrganization(contact.data.company_name)
+                        ?.organization_logo
+                    "
+                  />
+                  <span class="">{{ contact.data.company_name }}</span>
+                </div>
+              </Tooltip>
               <span
                 v-if="contact.data.company_name"
                 class="hidden text-3xl leading-[0] text-gray-600 sm:flex"

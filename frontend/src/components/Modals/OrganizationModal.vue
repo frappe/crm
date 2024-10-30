@@ -29,10 +29,12 @@
               v-for="field in fields"
               :key="field.name"
             >
-              <div class="grid w-7 place-content-center">
-                <component :is="field.icon" />
-              </div>
-              <div>{{ field.value }}</div>
+              <Tooltip :text="field.label">
+                <div class="grid w-7 place-content-center">
+                  <component :is="field.icon" />
+                </div>
+                <div>{{ field.value }}</div>
+              </Tooltip>
             </div>
           </div>
           <Fields
@@ -70,7 +72,7 @@ import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import { usersStore } from '@/stores/users'
 import { formatNumberIntoCurrency } from '@/utils'
 import { capture } from '@/telemetry'
-import { call, FeatherIcon, createResource } from 'frappe-ui'
+import { call, FeatherIcon, Tooltip, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -206,6 +208,7 @@ const fields = computed(() => {
     {
       icon: OrganizationsIcon,
       name: 'organization_name',
+      label: 'Organization',
       value: `${_organization.value.organization_name}${
         _organization.value.government_affiliation
           ? ` (${_organization.value.government_affiliation})`
@@ -215,16 +218,19 @@ const fields = computed(() => {
     {
       icon: WebsiteIcon,
       name: 'website',
+      label: 'Website',
       value: _organization.value.website,
     },
     {
       icon: TerritoryIcon,
       name: 'territory',
+      label: 'Territory',
       value: _organization.value.territory,
     },
     {
       icon: MoneyIcon,
       name: 'annual_revenue',
+      label: 'Amount',
       value: formatNumberIntoCurrency(
         _organization.value.annual_revenue,
         _organization.value.currency,
@@ -233,11 +239,13 @@ const fields = computed(() => {
     {
       icon: h(FeatherIcon, { name: 'hash', class: 'h-4 w-4' }),
       name: 'no_of_employees',
+      label: 'Employees',
       value: _organization.value.no_of_employees,
     },
     {
       icon: h(FeatherIcon, { name: 'briefcase', class: 'h-4 w-4' }),
       name: 'industry',
+      label: 'Industry',
       value: _organization.value.industry,
     },
   ]

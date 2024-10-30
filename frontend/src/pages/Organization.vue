@@ -64,45 +64,60 @@
             <div
               class="flex flex-col flex-wrap gap-3 text-base text-gray-700 sm:flex-row sm:items-center sm:gap-2"
             >
-              <div
-                v-if="organization.doc.website"
-                class="flex items-center gap-1.5"
-              >
-                <WebsiteIcon class="h-4 w-4" />
-                <span class="">{{ website(organization.doc.website) }}</span>
-              </div>
+              <Tooltip text="Website">
+                <div
+                  v-if="organization.doc.website"
+                  class="flex items-center gap-1.5"
+                >
+                  <WebsiteIcon class="h-4 w-4" />
+                  <span class="">{{ website(organization.doc.website) }}</span>
+                </div>
+              </Tooltip>
               <span
                 v-if="organization.doc.website"
                 class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
               >
                 &middot;
               </span>
-              <div
-                v-if="organization.doc.government_affiliation"
-                class="flex items-center gap-1.5"
-              >
-                <FeatherIcon name="crosshair" class="h-4 w-4" />
-                <span class="">{{ organization.doc.government_affiliation }}</span>
-              </div>
+              <Tooltip text="Government Affiliation">
+                <div
+                  v-if="organization.doc.government_affiliation"
+                  class="flex items-center gap-1.5"
+                >
+                  <FeatherIcon name="crosshair" class="h-4 w-4" />
+                  <span class="">{{ organization.doc.government_affiliation }}</span>
+                </div>
+              </Tooltip>
               <span
                 v-if="organization.doc.government_affiliation"
                 class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
               >
                 &middot;
               </span>
-              <div
-                v-if="organization.doc.industry"
-                class="flex items-center gap-1.5"
-              >
-                <FeatherIcon name="briefcase" class="h-4 w-4" />
-                <span class="">{{ organization.doc.industry }}</span>
-              </div>
+              <Tooltip text="Industry">
+                <div
+                  v-if="organization.doc.industry"
+                  class="flex items-center gap-1.5"
+                >
+                  <FeatherIcon name="briefcase" class="h-4 w-4" />
+                  <span class="">{{ organization.doc.industry }}</span>
+                </div>
+              </Tooltip>
               <span
                 v-if="organization.doc.industry"
                 class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
               >
                 &middot;
               </span>
+              <Tooltip text="Territory">
+                <div
+                  v-if="organization.doc.territory"
+                  class="flex items-center gap-1.5"
+                >
+                  <TerritoryIcon class="h-4 w-4" />
+                  <span class="">{{ organization.doc.territory }}</span>
+                </div>
+              </Tooltip>
               <div
                 v-if="organization.doc.territory"
                 class="flex items-center gap-1.5"
@@ -116,18 +131,20 @@
               >
                 &middot;
               </span>
-              <div
-                v-if="organization.doc.annual_revenue"
-                class="flex items-center gap-1.5"
-              >
-                <MoneyIcon class="size-4" />
-                <span class="">{{
-                  formatNumberIntoCurrency(
-                    organization.doc.annual_revenue,
-                    organization.doc.currency,
-                  )
-                }}</span>
-              </div>
+              <Tooltip text="Annual Revenue">
+                <div
+                  v-if="organization.doc.annual_revenue"
+                  class="flex items-center gap-1.5"
+                >
+                  <MoneyIcon class="size-4" />
+                  <span class="">{{
+                    formatNumberIntoCurrency(
+                      organization.doc.annual_revenue,
+                      organization.doc.currency,
+                    )
+                  }}</span>
+                </div>
+              </Tooltip>
               <span
                 v-if="organization.doc.annual_revenue"
                 class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
@@ -272,6 +289,7 @@ import {
   FileUploader,
   Dropdown,
   Tabs,
+  Tooltip,
   call,
   createListResource,
   createDocumentResource,
