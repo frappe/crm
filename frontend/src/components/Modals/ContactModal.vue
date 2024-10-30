@@ -95,8 +95,8 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { call, createResource } from 'frappe-ui'
-import { ref, nextTick, watch, computed } from 'vue'
+import { call, FeatherIcon, createResource } from 'frappe-ui'
+import { ref, nextTick, watch, computed, h } from 'vue'
 import { createToast } from '@/utils'
 import { useRouter } from 'vue-router'
 
@@ -235,6 +235,11 @@ const detailFields = computed(() => {
       icon: CertificateIcon,
       name: 'designation',
       value: _contact.value.designation,
+    },
+    {
+      icon: h(FeatherIcon, { name: 'divide-square', class: 'h-4 w-4' }),
+      name: 'custom_business_unit',
+      value: _contact.value.custom_business_unit,
     },
     {
       icon: AddressIcon,

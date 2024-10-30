@@ -266,7 +266,9 @@ notification_log.get_email_header = custom_get_email_header
 fixtures = [
     {
         "dt": "Custom Field",
-        "filters": [["name", "=", "Contact-buying_role"]]
+        "filters": [
+            ["name", "in", ["Contact-custom_business_unit", "Contact-buying_role"]],
+        ]
     },
     {
         "doctype": "CRM Buying Role",
