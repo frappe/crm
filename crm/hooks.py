@@ -280,6 +280,10 @@ fixtures = [
         "filters": [["name", "in", ["Hardware", "Software", "Support", "Professional Services"]]]
     },
     {
+        "dt": "CRM Government Affiliation",
+        "filters": [["name", "in", ["Federal", "State", "County", "City", "Tribal", "Other"]]]
+	},
+    {
         "dt": "Data Doctype",
         "filters": [["name", "=", "CRM Deal"]]
     }

@@ -1,1 +1,9 @@
-[]
+[
+ {
+  "data_doctype": "CRM Deal",
+  "docstatus": 0,
+  "doctype": "Data Doctype",
+  "modified": "2024-10-29 09:50:34.808699",
+  "name": "CRM Deal"
+ }
+]

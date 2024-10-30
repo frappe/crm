@@ -1,0 +1,44 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Government Affiliation",
+  "government_affiliation": "Federal",
+  "modified": "2024-10-30 08:18:11.924576",
+  "name": "Federal"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Government Affiliation",
+  "government_affiliation": "State",
+  "modified": "2024-10-30 08:18:20.223902",
+  "name": "State"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Government Affiliation",
+  "government_affiliation": "County",
+  "modified": "2024-10-30 08:18:28.438077",
+  "name": "County"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Government Affiliation",
+  "government_affiliation": "City",
+  "modified": "2024-10-30 08:18:34.602603",
+  "name": "City"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Government Affiliation",
+  "government_affiliation": "Tribal",
+  "modified": "2024-10-30 08:18:40.738841",
+  "name": "Tribal"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Government Affiliation",
+  "government_affiliation": "Other",
+  "modified": "2024-10-30 08:18:44.945072",
+  "name": "Other"
+ }
+]

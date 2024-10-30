@@ -15,6 +15,7 @@
   "website",
   "territory",
   "industry",
+  "government_affiliation",
   "job_title",
   "source",
   "lead_owner",
@@ -298,12 +299,18 @@
    "fieldname": "business_unit",
    "fieldtype": "Data",
    "label": "Business Unit"
+  },
+  {
+   "fieldname": "government_affiliation",
+   "fieldtype": "Link",
+   "label": "Government Affiliation",
+   "options": "CRM Government Affiliation"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-23 03:46:25.676765",
+ "modified": "2024-10-30 08:14:26.074844",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

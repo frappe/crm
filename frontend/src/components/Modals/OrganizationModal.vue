@@ -206,7 +206,11 @@ const fields = computed(() => {
     {
       icon: OrganizationsIcon,
       name: 'organization_name',
-      value: _organization.value.organization_name,
+      value: `${_organization.value.organization_name}${
+        _organization.value.government_affiliation
+          ? ` (${_organization.value.government_affiliation})`
+          : ''
+    }`,
     },
     {
       icon: WebsiteIcon,

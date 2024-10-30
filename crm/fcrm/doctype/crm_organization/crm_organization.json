@@ -17,6 +17,7 @@
   "website",
   "territory",
   "industry",
+  "government_affiliation",
   "address"
  ],
  "fields": [
@@ -81,12 +82,18 @@
    "fieldname": "is_partner",
    "fieldtype": "Check",
    "label": "Partner"
+  },
+  {
+   "fieldname": "government_affiliation",
+   "fieldtype": "Link",
+   "label": "Government Affiliation",
+   "options": "CRM Government Affiliation"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-25 00:20:51.677354",
+ "modified": "2024-10-30 08:20:25.512730",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
