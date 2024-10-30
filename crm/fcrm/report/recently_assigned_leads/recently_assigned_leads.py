@@ -29,7 +29,7 @@ def get_data(filters):
                                             l.email, l.creation, t.allocated_to AS assigned_to
                                      FROM `tabCRM Lead` l LEFT JOIN `tabToDo` t
                                      ON t.reference_type = 'CRM Lead' AND t.reference_name = l.name
-                                     WHERE l.docstatus < 2 {conditions}""", as_dict=1)
+                                     WHERE l.docstatus < 2 {conditions} order by l.creation desc""", as_dict=1)
     #fetch time if creation date is today else fetch date
     for lead in lead_details:
         if (lead.get('creation')).date() == date.today():

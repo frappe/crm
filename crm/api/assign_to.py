@@ -56,7 +56,6 @@ def add(args=None, *, ignore_permissions=False):
 
 	users_with_duplicate_todo = []
 	shared_with_users = []
-	print(f"-----------------args['name'] {args}")
 
 	description = escape_html(
 		args.get("description", _("Assignment for {0} {1}").format(args["doctype"], args["name"]))
@@ -273,13 +272,14 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 	# Search for email address in description -- i.e. assignee
 	user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
 	title = get_title(doc_type, doc_name)
-	
-	#Doctype and docname added on description-Anuradha
+	 
+	#Doctype and docname added on description
+	description_html = " "
 	if description and doc_name not in description:
 		description = f"Assignment for {(doc_type)} {doc_name}"
 		description_html = f"<div>{description}</div>"  
 	else:
-		None
+		description_html = f"<div>{description}</div>"
 
 	if action == "CLOSE":
 		subject = _("Your assignment on {0} {1} has been removed by {2}", lang=assigned_user.language).format(
@@ -290,7 +290,7 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 		document_type = frappe.bold(_(doc_type, lang=assigned_user.language))
 		title = get_title_html(title)
 		
-		#doctype name added on subject of mail - Anuradha
+		#doctype name added on subject of mail 
 		subject = _("{0} assigned a new task {1} {2}({3}) to you", lang=assigned_user.language).format(
 		user_name, document_type, title, doc_name)
 
@@ -302,7 +302,7 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 		"from_user": frappe.session.user,
 		"email_content": description_html,
 	}
-
+    
 	enqueue_create_notification(allocated_to, notification_doc)
 
 
