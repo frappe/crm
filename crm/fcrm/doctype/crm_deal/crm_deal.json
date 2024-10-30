@@ -16,6 +16,7 @@
   "column_break_tukx",
   "next_step",
   "status",
+  "sales_channel",
   "deal_owner",
   "organization_tab",
   "organization",
@@ -353,11 +354,17 @@
   {
    "fieldname": "column_break_tukx",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_channel",
+   "fieldtype": "Link",
+   "label": "Sales Channel",
+   "options": "CRM Sales Channel"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-17 09:18:00.677849",
+ "modified": "2024-10-30 10:03:54.968190",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

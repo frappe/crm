@@ -1,0 +1,44 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Sales Channel",
+  "modified": "2024-10-30 10:06:45.907824",
+  "name": "Direct",
+  "sales_channel": "Direct"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Sales Channel",
+  "modified": "2024-10-30 10:08:16.910097",
+  "name": "Distributor",
+  "sales_channel": "Distributor"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Sales Channel",
+  "modified": "2024-10-30 10:08:23.485337",
+  "name": "Reseller",
+  "sales_channel": "Reseller"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Sales Channel",
+  "modified": "2024-10-30 10:08:30.333312",
+  "name": "Retail",
+  "sales_channel": "Retail"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Sales Channel",
+  "modified": "2024-10-30 10:08:57.011273",
+  "name": "E-commerce",
+  "sales_channel": "E-commerce"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Sales Channel",
+  "modified": "2024-10-30 10:09:03.505473",
+  "name": "Other",
+  "sales_channel": "Other"
+ }
+]
