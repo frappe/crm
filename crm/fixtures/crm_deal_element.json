@@ -3,38 +3,6 @@
   "description": null,
   "docstatus": 0,
   "doctype": "CRM Deal Element",
-  "element": "vCISO Consulting",
-  "modified": "2024-10-29 07:16:28.819228",
-  "name": "vCISO Consulting"
- },
- {
-  "description": null,
-  "docstatus": 0,
-  "doctype": "CRM Deal Element",
-  "element": "Gold",
-  "modified": "2024-10-29 07:50:23.315424",
-  "name": "Gold"
- },
- {
-  "description": null,
-  "docstatus": 0,
-  "doctype": "CRM Deal Element",
-  "element": "Bronze",
-  "modified": "2024-10-29 07:50:28.554915",
-  "name": "Bronze"
- },
- {
-  "description": null,
-  "docstatus": 0,
-  "doctype": "CRM Deal Element",
-  "element": "CS Assessment",
-  "modified": "2024-10-29 07:51:06.605920",
-  "name": "CS Assessment"
- },
- {
-  "description": null,
-  "docstatus": 0,
-  "doctype": "CRM Deal Element",
   "element": "Professional Services",
   "modified": "2024-10-13 07:30:07.498734",
   "name": "Professional Services"
