@@ -286,5 +286,9 @@ fixtures = [
     {
         "dt": "Data Doctype",
         "filters": [["name", "=", "CRM Deal"]]
+    },
+    {
+        "dt": "CRM Sales Channel",
+        "filters": [["name", "in", ["Direct", "Reseller", "Distributor", "Retail", "E-commerce", "Other"]]]
     }
 ]
