@@ -208,9 +208,7 @@ import Resizer from '@/components/Resizer.vue'
 import Icon from '@/components/Icon.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
-import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
@@ -236,11 +234,11 @@ import {
   Breadcrumbs,
   Avatar,
   FileUploader,
-  Tooltip,
   Tabs,
   call,
   createResource,
   usePageMeta,
+  Dropdown,
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -263,9 +261,7 @@ const router = useRouter()
 
 const showAddressModal = ref(false)
 const showSidePanelModal = ref(false)
-const showContactModal = ref(false)
 const showQuickEntryModal = ref(false)
-const detailMode = ref(false)
 const _contact = ref({})
 const _address = ref({})
 
@@ -603,6 +599,11 @@ async function updateField(fieldname, value) {
     name: props.contactId,
     fieldname,
     value,
+  })
+  createToast({
+    title: 'Contact updated',
+    icon: 'check',
+    iconClasses: 'text-green-600',
   })
 
   contact.reload()
