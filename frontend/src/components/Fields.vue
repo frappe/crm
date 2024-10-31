@@ -130,55 +130,6 @@
                 </Tooltip>
               </template>
             </Link>
-            <div v-else-if="field.type === 'Dropdown'">
-              <NestedPopover>
-                <template #target="{ open }">
-                  <Button
-                    :label="data[field.name]"
-                    class="dropdown-button flex w-full items-center justify-between rounded border border-gray-100 bg-gray-100 px-2 py-1.5 text-base text-gray-800 placeholder-gray-500 transition-colors hover:border-gray-200 hover:bg-gray-200 focus:border-gray-500 focus:bg-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400"
-                  >
-                    <div class="truncate">{{ data[field.name] }}</div>
-                    <template #suffix>
-                      <FeatherIcon
-                        :name="open ? 'chevron-up' : 'chevron-down'"
-                        class="h-4 text-gray-600"
-                      />
-                    </template>
-                  </Button>
-                </template>
-                <template #body>
-                  <div
-                    class="my-2 space-y-1.5 divide-y rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl"
-                  >
-                    <div>
-                      <DropdownItem
-                        v-if="field.options?.length"
-                        v-for="option in field.options"
-                        :key="option.name"
-                        :option="option"
-                      />
-                      <div v-else>
-                        <div class="p-1.5 px-7 text-base text-gray-500">
-                          {{ __('No {0} Available', [field.label]) }}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="pt-1.5">
-                      <Button
-                        variant="ghost"
-                        class="w-full !justify-start"
-                        :label="__('Create New')"
-                        @click="field.create()"
-                      >
-                        <template #prefix>
-                          <FeatherIcon name="plus" class="h-4" />
-                        </template>
-                      </Button>
-                    </div>
-                  </div>
-                </template>
-              </NestedPopover>
-            </div>
             <DateTimePicker
               v-else-if="field.type === 'Datetime'"
               v-model="data[field.name]"
@@ -221,8 +172,6 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import NestedPopover from '@/components/NestedPopover.vue'
-import DropdownItem from '@/components/DropdownItem.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'

@@ -144,6 +144,14 @@ def add_default_fields_layout(force=False):
 			"doctype": "CRM Deal",
 			"layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Organization Details","name":"organization_tab","opened":true,"fields":["organization","website","territory","annual_revenue","close_date","probability","next_step","deal_owner"]}]'
 		},
+		"Contact-Side Panel": {
+			"doctype": "Contact",
+			"layout": '[{"label":"Details","name":"details","opened":true,"fields":["salutation","first_name","last_name","email_id","mobile_no","gender","company_name","designation","address"]}]'
+		},
+		"CRM Organization-Side Panel": {
+			"doctype": "CRM Organization",
+			"layout": '[{"label":"Details","name":"details","opened":true,"fields":["organization_name","website","territory","industry","no_of_employees","address"]}]'
+		},
 	}
 
 	for layout in quick_entry_layouts:
