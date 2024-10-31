@@ -12,7 +12,7 @@
         <div>
           <Button
             :label="__('Mark all as read')"
-            @click="() => notificationsStore().mark_as_read.reload()"
+            @click="() => mark_as_read.reload()"
           >
             <template #prefix>
               <MarkAsDoneIcon class="h-4 w-4" />
@@ -24,15 +24,15 @@
   </LayoutHeader>
   <div class="flex flex-col overflow-hidden">
     <div
-      v-if="notificationsStore().allNotifications?.length"
+      v-if="notifications.data?.length"
       class="divide-y overflow-y-auto text-base"
     >
       <RouterLink
-        v-for="n in notificationsStore().allNotifications"
+        v-for="n in notifications.data"
         :key="n.comment"
         :to="getRoute(n)"
         class="flex cursor-pointer items-start gap-3 px-2.5 py-3 hover:bg-gray-100"
-        @click="mark_as_read(n.comment || n.notification_type_doc)"
+        @click="mark_doc_as_read(n.comment || n.notification_type_doc)"
       >
         <div class="mt-1 flex items-center gap-2.5">
           <div
@@ -75,17 +75,14 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { notificationsStore } from '@/stores/notifications'
+import { notifications, notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { Breadcrumbs, Tooltip } from 'frappe-ui'
 import { onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
-
-function mark_as_read(doc) {
-  notificationsStore().mark_doc_as_read(doc)
-}
+const { mark_as_read, mark_doc_as_read } = notificationsStore()
 
 onBeforeUnmount(() => {
   $socket.off('crm_notification')
@@ -93,7 +90,7 @@ onBeforeUnmount(() => {
 
 onMounted(() => {
   $socket.on('crm_notification', () => {
-    notificationsStore().notifications.reload()
+    notifications.reload()
   })
 })
 
