@@ -25,7 +25,7 @@ class CRMOrganization(Document):
 					'label': 'Industry',
 					'type': 'Link',
 					'key': 'industry',
-					'options': 'CRM Industry',
+					'options': 'Industry Type',
 					'width': '14rem',
 				},
 				{
