@@ -100,7 +100,7 @@
    "color": "Grey",
    "doc_view": "List",
    "label": "Lead Sources",
-   "link_to": "CRM Lead Source",
+   "link_to": "Lead Source",
    "stats_filter": "[]",
    "type": "DocType"
   },
