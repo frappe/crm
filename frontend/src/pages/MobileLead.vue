@@ -119,27 +119,27 @@
   >
     <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-gray-600">
-        <OrganizationsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Organization') }}</label>
+        <CustomersIcon class="h-4 w-4" />
+        <label class="block text-base">{{ __('Customer') }}</label>
       </div>
       <div class="ml-6">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingOrganizationChecked" />
+          <Switch v-model="existingCustomerChecked" />
         </div>
         <Link
-          v-if="existingOrganizationChecked"
+          v-if="existingCustomerChecked"
           class="form-control mt-2.5"
           variant="outline"
           size="md"
-          :value="existingOrganization"
-          doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
+          :value="existingCustomer"
+          doctype="Customer"
+          @change="(data) => (existingCustomer = data)"
         />
         <div v-else class="mt-2.5 text-base">
           {{
             __(
-              'New organization will be created based on the data in details section',
+              'New customer will be created based on the data in details section',
             )
           }}
         </div>
@@ -182,7 +182,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
@@ -430,10 +430,10 @@ async function deleteLead(name) {
 // Convert to Deal
 const showConvertToDealModal = ref(false)
 const existingContactChecked = ref(false)
-const existingOrganizationChecked = ref(false)
+const existingCustomerChecked = ref(false)
 
 const existingContact = ref('')
-const existingOrganization = ref('')
+const existingCustomer = ref('')
 
 async function convertToDeal(updated) {
   let valueUpdated = false
@@ -448,10 +448,10 @@ async function convertToDeal(updated) {
     return
   }
 
-  if (existingOrganizationChecked.value && !existingOrganization.value) {
+  if (existingCustomerChecked.value && !existingCustomer.value) {
     createToast({
       title: __('Error'),
-      text: __('Please select an existing organization'),
+      text: __('Please select an existing customer'),
       icon: 'x',
       iconClasses: 'text-red-600',
     })
@@ -468,9 +468,9 @@ async function convertToDeal(updated) {
     valueUpdated = true
   }
 
-  if (existingOrganizationChecked.value && existingOrganization.value) {
-    lead.data.organization = existingOrganization.value
-    existingOrganizationChecked.value = false
+  if (existingCustomerChecked.value && existingCustomer.value) {
+    lead.data.customer = existingCustomer.value
+    existingCustomerChecked.value = false
     valueUpdated = true
   }
 
@@ -482,7 +482,7 @@ async function convertToDeal(updated) {
         last_name: lead.data.last_name,
         email_id: lead.data.email_id,
         mobile_no: lead.data.mobile_no,
-        organization: lead.data.organization,
+        customer: lead.data.customer,
       },
       '',
       () => convertToDeal(true),

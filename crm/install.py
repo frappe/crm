@@ -113,19 +113,19 @@ def add_default_fields_layout(force=False):
 	quick_entry_layouts = {
 		"CRM Lead-Quick Entry": {
 			"doctype": "CRM Lead",
-			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email","mobile_no", "gender"],"hideLabel":true},{"label":"Organization","fields":["organization","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
+			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email","mobile_no", "gender"],"hideLabel":true},{"label":"Customer","fields":["customer","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
 		},
 		"CRM Deal-Quick Entry": {
 			"doctype": "CRM Deal",
-			"layout": '[{"label": "Select Organization", "fields": ["organization"], "hideLabel": true, "editable": true}, {"label": "Organization Details", "fields": ["organization_name", "website", "no_of_employees", "territory", "annual_revenue", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact"], "hideLabel": true, "editable": true}, {"label": "Contact Details", "fields": ["salutation", "first_name", "last_name", "email", "mobile_no", "gender"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 2, "fields": ["status", "deal_owner"], "hideLabel": true}]'
+			"layout": '[{"label": "Select Customer", "fields": ["customer"], "hideLabel": true, "editable": true}, {"label": "Customer Details", "fields": ["customer_name", "website", "no_of_employees", "territory", "annual_revenue", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact"], "hideLabel": true, "editable": true}, {"label": "Contact Details", "fields": ["salutation", "first_name", "last_name", "email", "mobile_no", "gender"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 2, "fields": ["status", "deal_owner"], "hideLabel": true}]'
 		},
 		"Contact-Quick Entry": {
 			"doctype": "Contact",
-			"layout": '[{"label":"Salutation","columns":1,"fields":["salutation"],"hideLabel":true},{"label":"Full Name","columns":2,"hideBorder":true,"fields":["first_name","last_name"],"hideLabel":true},{"label":"Email","columns":1,"hideBorder":true,"fields":["email_id"],"hideLabel":true},{"label":"Mobile No. & Gender","columns":2,"hideBorder":true,"fields":["mobile_no","gender"],"hideLabel":true},{"label":"Organization","columns":1,"hideBorder":true,"fields":["company_name"],"hideLabel":true},{"label":"Designation","columns":1,"hideBorder":true,"fields":["designation"],"hideLabel":true},{"label":"Address","columns":1,"hideBorder":true,"fields":["address"],"hideLabel":true}]'
+			"layout": '[{"label":"Salutation","columns":1,"fields":["salutation"],"hideLabel":true},{"label":"Full Name","columns":2,"hideBorder":true,"fields":["first_name","last_name"],"hideLabel":true},{"label":"Email","columns":1,"hideBorder":true,"fields":["email_id"],"hideLabel":true},{"label":"Mobile No. & Gender","columns":2,"hideBorder":true,"fields":["mobile_no","gender"],"hideLabel":true},{"label":"Customer","columns":1,"hideBorder":true,"fields":["company_name"],"hideLabel":true},{"label":"Designation","columns":1,"hideBorder":true,"fields":["designation"],"hideLabel":true},{"label":"Address","columns":1,"hideBorder":true,"fields":["address"],"hideLabel":true}]'
 		},
-		"CRM Organization-Quick Entry": {
-			"doctype": "CRM Organization",
-			"layout": '[{"label":"Organization Name","columns":1,"fields":["organization_name"],"hideLabel":true},{"label":"Website & Revenue","columns":2,"hideBorder":true,"fields":["website","annual_revenue"],"hideLabel":true},{"label":"Territory","columns":1,"hideBorder":true,"fields":["territory"],"hideLabel":true},{"label":"No of Employees & Industry","columns":2,"hideBorder":true,"fields":["no_of_employees","industry"],"hideLabel":true},{"label":"Address","columns":1,"hideBorder":true,"fields":["address"],"hideLabel":true}]'
+		"Customer-Quick Entry": {
+			"doctype": "Customer",
+			"layout": '[{"label":"Customer Name","columns":1,"fields":["customer_name"],"hideLabel":true},{"label":"Website & Revenue","columns":2,"hideBorder":true,"fields":["website","custom_annual_revenue"],"hideLabel":true},{"label":"Territory","columns":1,"hideBorder":true,"fields":["territory"],"hideLabel":true},{"label":"No of Employees & Industry","columns":2,"hideBorder":true,"fields":["no_of_employees","industry"],"hideLabel":true},{"label":"Address","columns":1,"hideBorder":true,"fields":["customer_primary_address"],"hideLabel":true}]'
 		},
 		"Address-Quick Entry": {
 			"doctype": "Address",
@@ -136,19 +136,19 @@ def add_default_fields_layout(force=False):
 	sidebar_fields_layouts = {
 		"CRM Lead-Side Panel": {
 			"doctype": "CRM Lead",
-			"layout": '[{"label": "Details", "name": "details", "opened": true, "fields": ["organization", "website", "territory", "industry", "job_title", "source", "lead_owner"]}, {"label": "Person", "name": "person_tab", "opened": true, "fields": ["salutation", "first_name", "last_name", "email", "mobile_no"]}]'
+			"layout": '[{"label": "Details", "name": "details", "opened": true, "fields": ["customer", "website", "territory", "industry", "job_title", "source", "lead_owner"]}, {"label": "Person", "name": "person_tab", "opened": true, "fields": ["salutation", "first_name", "last_name", "email", "mobile_no"]}]'
 		},
 		"CRM Deal-Side Panel": {
 			"doctype": "CRM Deal",
-			"layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Organization Details","name":"organization_tab","opened":true,"fields":["organization","website","territory","annual_revenue","close_date","probability","next_step","deal_owner"]}]'
+			"layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Customer Details","name":"customer_tab","opened":true,"fields":["customer","website","territory","annual_revenue","close_date","probability","next_step","deal_owner"]}]'
 		},
 		"Contact-Side Panel": {
 			"doctype": "Contact",
 			"layout": '[{"label":"Details","name":"details","opened":true,"fields":["salutation","first_name","last_name","email_id","mobile_no","gender","company_name","designation","address"]}]'
 		},
-		"CRM Organization-Side Panel": {
-			"doctype": "CRM Organization",
-			"layout": '[{"label":"Details","name":"details","opened":true,"fields":["organization_name","website","territory","industry","no_of_employees","address"]}]'
+		"Customer-Side Panel": {
+			"doctype": "Customer",
+			"layout": '[{"label":"Details","name":"details","opened":true,"fields":["customer_name","website","territory","industry","custom_no_of_employees","customer_primary_address"]}]'
 		},
 	}
 

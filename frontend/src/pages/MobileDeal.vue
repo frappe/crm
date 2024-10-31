@@ -80,7 +80,7 @@
                         (value, close) => {
                           _contact = {
                             first_name: value,
-                            company_name: deal.data.organization,
+                            company_name: deal.data.customer,
                           }
                           showContactModal = true
                           close()
@@ -219,12 +219,12 @@
       />
     </Tabs>
   </div>
-  <OrganizationModal
-    v-model="showOrganizationModal"
-    v-model:organization="_organization"
+  <CustomerModal
+    v-model="showCustomerModal"
+    v-model:customer="_customer"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organization', doc.name),
+      afterInsert: (doc) => updateField('customer', doc.name),
     }"
   />
   <ContactModal
@@ -261,7 +261,7 @@ import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
-import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import CustomerModal from '@/components/Modals/CustomerModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
@@ -311,11 +311,11 @@ const deal = createResource({
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: async (data) => {
-    if (data.organization) {
-      organization.update({
-        params: { doctype: 'CRM Organization', name: data.organization },
+    if (data.customer) {
+      customer.update({
+        params: { doctype: 'Customer', name: data.customer },
       })
-      organization.fetch()
+      customer.fetch()
     }
 
     let obj = {
@@ -340,9 +340,9 @@ const deal = createResource({
   },
 })
 
-const organization = createResource({
+const customer = createResource({
   url: 'frappe.client.get',
-  onSuccess: (data) => (deal.data._organizationObj = data),
+  onSuccess: (data) => (deal.data._customersObj = data),
 })
 
 onMounted(() => {
@@ -351,9 +351,9 @@ onMounted(() => {
 })
 
 const reload = ref(false)
-const showOrganizationModal = ref(false)
+const showCustomerModal = ref(false)
 const showAssignmentModal = ref(false)
-const _organization = ref({})
+const _customer = ref({})
 
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -423,7 +423,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.data?.name || __('Untitled'),
+    label: customer.data?.name || __('Untitled'),
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -496,16 +496,16 @@ function getParsedFields(sections) {
   sections.forEach((section) => {
     if (section.name == 'contacts_section') return
     section.fields.forEach((field) => {
-      if (field.name == 'organization') {
+      if (field.name == 'customer') {
         field.create = (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
+          _customer.value.customer_name = value
+          showCustomerModal.value = true
           close()
         }
         field.link = (org) =>
           router.push({
-            name: 'Organization',
-            params: { organizationId: org },
+            name: 'Customer',
+            params: { customerId: org },
           })
       }
     })

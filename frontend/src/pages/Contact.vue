@@ -79,8 +79,8 @@
                       size="xs"
                       :label="contact.data.company_name"
                       :image="
-                        getOrganization(contact.data.company_name)
-                          ?.organization_logo
+                        getCustomer(contact.data.company_name)
+                          ?.image
                       "
                     />
                     <span class="">{{ contact.data.company_name }}</span>
@@ -221,7 +221,7 @@ import {
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
-import { organizationsStore } from '@/stores/organizations.js'
+import { customersStore } from '@/stores/customers.js'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
 import {
@@ -240,7 +240,7 @@ import { useRoute, useRouter } from 'vue-router'
 const { $dialog, makeCall } = globalStore()
 
 const { getUser, isManager } = usersStore()
-const { getOrganization } = organizationsStore()
+const { getCustomer } = customersStore()
 const { getDealStatus } = statusesStore()
 
 const props = defineProps({
@@ -607,9 +607,9 @@ const columns = computed(() => dealColumns)
 function getDealRowObject(deal) {
   return {
     name: deal.name,
-    organization: {
-      label: deal.organization,
-      logo: getOrganization(deal.organization)?.organization_logo,
+    customer: {
+      label: deal.customer,
+      logo: getCustomer(deal.customer)?.image,
     },
     annual_revenue: formatNumberIntoCurrency(
       deal.annual_revenue,
@@ -634,8 +634,8 @@ function getDealRowObject(deal) {
 
 const dealColumns = [
   {
-    label: __('Organization'),
-    key: 'organization',
+    label: __('Customer'),
+    key: 'customer',
     width: '11rem',
   },
   {

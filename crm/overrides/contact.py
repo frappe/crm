@@ -26,7 +26,7 @@ class CustomContact(Contact):
 				'width': '12rem',
 			},
 			{
-				'label': 'Organization',
+				'label': 'Customer',
 				'type': 'Data',
 				'key': 'company_name',
 				'width': '12rem',

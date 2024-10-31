@@ -53,7 +53,7 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 		doctype = doctype[4:].lower()
 
 	if doctype in ["lead", "deal"]:
-		name = reference_doc.lead_name or name if doctype == "lead" else reference_doc.organization or reference_doc.lead_name or name
+		name = reference_doc.lead_name or name if doctype == "lead" else reference_doc.customer or reference_doc.lead_name or name
 
 		if is_cancelled:
 			return f"""

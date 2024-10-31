@@ -121,8 +121,8 @@ const subject = computed(() => {
   let prefix = ''
   if (doc.value.data?.lead_name) {
     prefix = doc.value.data.lead_name
-  } else if (doc.value.data?.organization) {
-    prefix = doc.value.data.organization
+  } else if (doc.value.data?.customer) {
+    prefix = doc.value.data.customer
   }
   return `${prefix} (#${doc.value.data.name})`
 })

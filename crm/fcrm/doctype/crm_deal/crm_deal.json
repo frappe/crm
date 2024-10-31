@@ -7,9 +7,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "organization_tab",
+  "customer_tab",
   "naming_series",
-  "organization",
+  "customer",
   "next_step",
   "probability",
   "column_break_ijan",
@@ -24,8 +24,8 @@
   "source",
   "column_break_wsde",
   "lead_name",
-  "organization_details_section",
-  "organization_name",
+  "customer_details_section",
+  "customer_name",
   "website",
   "no_of_employees",
   "job_title",
@@ -59,10 +59,10 @@
  ],
  "fields": [
   {
-   "fieldname": "organization",
+   "fieldname": "customer",
    "fieldtype": "Link",
-   "label": "Organization",
-   "options": "CRM Organization"
+   "label": "Customer",
+   "options": "Customer"
   },
   {
    "fieldname": "probability",
@@ -145,9 +145,9 @@
    "options": "CRM Contacts"
   },
   {
-   "fieldname": "organization_tab",
+   "fieldname": "customer_tab",
    "fieldtype": "Tab Break",
-   "label": "Organization"
+   "label": "Customer"
   },
   {
    "fieldname": "sla_tab",
@@ -273,14 +273,14 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "organization_details_section",
+   "fieldname": "customer_details_section",
    "fieldtype": "Section Break",
-   "label": "Organization Details"
+   "label": "Customer Details"
   },
   {
-   "fieldname": "organization_name",
+   "fieldname": "customer_name",
    "fieldtype": "Data",
-   "label": "Organization Name"
+   "label": "Customer Name"
   },
   {
    "fieldname": "column_break_xbyf",
@@ -374,6 +374,6 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "organization",
+ "title_field": "customer",
  "track_changes": 1
 }

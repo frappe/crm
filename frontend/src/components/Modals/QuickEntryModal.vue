@@ -24,7 +24,7 @@
               'CRM Lead',
               'CRM Deal',
               'Contact',
-              'CRM Organization',
+              'Customer',
               'Address',
             ]"
             @change="reload"

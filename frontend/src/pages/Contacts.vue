@@ -80,11 +80,11 @@ import ContactModal from '@/components/Modals/ContactModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
-import { organizationsStore } from '@/stores/organizations.js'
+import { customersStore } from '@/stores/customers.js'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { ref, computed } from 'vue'
 
-const { getOrganization } = organizationsStore()
+const { getCustomer } = customersStore()
 
 const showContactModal = ref(false)
 const showQuickEntryModal = ref(false)
@@ -118,7 +118,7 @@ const rows = computed(() => {
       } else if (row == 'company_name') {
         _rows[row] = {
           label: contact.company_name,
-          logo: getOrganization(contact.company_name)?.organization_logo,
+          logo: getCustomer(contact.company_name)?.image,
         }
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {

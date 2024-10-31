@@ -49,7 +49,7 @@
         </div>
         <div
           v-else-if="
-            titleField === 'organization' && getRow(itemName, titleField).label
+            titleField === 'customer' && getRow(itemName, titleField).label
           "
         >
           <Avatar
@@ -115,7 +115,7 @@
         <div v-if="fieldName === 'status'">
           <IndicatorIcon :class="getRow(itemName, fieldName).color" />
         </div>
-        <div v-else-if="fieldName === 'organization'">
+        <div v-else-if="fieldName === 'customer'">
           <Avatar
             v-if="getRow(itemName, fieldName).label"
             class="flex items-center"
@@ -283,7 +283,7 @@ import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { organizationsStore } from '@/stores/organizations'
+import { customersStore } from '@/stores/customers'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
 import {
@@ -300,7 +300,7 @@ import { ref, reactive, computed, h } from 'vue'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
-const { getOrganization } = organizationsStore()
+const { getCustomer } = customersStore()
 const { getDealStatus } = statusesStore()
 
 const route = useRoute()
@@ -390,10 +390,10 @@ function parseRows(rows) {
     deals.value.data.rows.forEach((row) => {
       _rows[row] = deal[row]
 
-      if (row == 'organization') {
+      if (row == 'customer') {
         _rows[row] = {
-          label: deal.organization,
-          logo: getOrganization(deal.organization)?.organization_logo,
+          label: deal.customer,
+          logo: getCustomer(deal.customer)?.image,
         }
       } else if (row === 'website') {
         _rows[row] = website(deal.website)
