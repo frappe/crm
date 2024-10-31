@@ -61,7 +61,7 @@
    "fieldname": "territory",
    "fieldtype": "Link",
    "label": "Territory",
-   "options": "CRM Territory"
+   "options": "Territory"
   },
   {
    "fieldname": "currency",

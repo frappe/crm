@@ -68,7 +68,7 @@
    "color": "Grey",
    "doc_view": "Tree",
    "label": "Territories",
-   "link_to": "CRM Territory",
+   "link_to": "Territory",
    "stats_filter": "[]",
    "type": "DocType"
   },
