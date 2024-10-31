@@ -110,7 +110,7 @@
    "fieldname": "holiday_list",
    "fieldtype": "Link",
    "label": "Holiday List",
-   "options": "CRM Holiday List"
+   "options": "Holiday List"
   }
  ],
  "index_web_pages_for_search": 1,

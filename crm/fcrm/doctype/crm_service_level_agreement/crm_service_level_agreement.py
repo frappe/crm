@@ -219,7 +219,7 @@ class CRMServiceLevelAgreement(Document):
 		res = []
 		if not self.holiday_list:
 			return res
-		holiday_list = frappe.get_doc("CRM Holiday List", self.holiday_list)
+		holiday_list = frappe.get_doc("Holiday List", self.holiday_list)
 		for row in holiday_list.holidays:
 			res.append(row.date)
 		return res
