@@ -156,7 +156,7 @@
    "fieldname": "industry",
    "fieldtype": "Link",
    "label": "Industry",
-   "options": "CRM Industry"
+   "options": "Industry Type"
   },
   {
    "fieldname": "image",

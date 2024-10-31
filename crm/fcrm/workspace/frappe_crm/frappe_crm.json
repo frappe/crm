@@ -124,7 +124,7 @@
    "color": "Grey",
    "doc_view": "List",
    "label": "Industries",
-   "link_to": "CRM Industry",
+   "link_to": "Industry Type",
    "stats_filter": "[]",
    "type": "DocType"
   }
