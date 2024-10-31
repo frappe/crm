@@ -49,10 +49,6 @@ inline-flex.items-center.justify-center.gap-2.transition-colors.focus:outline-no
         background-color: (--heading-color) !important;
 }
 
-.prose {
-        color: var(--text-muted) !important;
-}
-
 .svg {
         color: var(--subheading-color) !important;
         stroke: var(--subheading-color);
