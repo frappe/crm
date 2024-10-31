@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="notificationsStore().visible"
+    v-if="visible"
     ref="target"
     class="absolute z-20 h-screen bg-white transition-all duration-300 ease-in-out"
     :style="{
@@ -27,7 +27,7 @@
           </Tooltip>
           <Tooltip :text="__('Close')">
             <div>
-              <Button variant="ghost" @click="() => toggleNotificationPanel()">
+              <Button variant="ghost" @click="() => toggle()">
                 <template #icon>
                   <FeatherIcon name="x" class="h-4 w-4" />
                 </template>
@@ -37,11 +37,11 @@
         </div>
       </div>
       <div
-        v-if="notificationsStore().allNotifications?.length"
+        v-if="notifications.data?.length"
         class="divide-y overflow-auto text-base"
       >
         <RouterLink
-          v-for="n in notificationsStore().allNotifications"
+          v-for="n in notifications.data"
           :key="n.comment"
           :to="getRoute(n)"
           class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-gray-100"
@@ -91,7 +91,11 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { notificationsStore } from '@/stores/notifications'
+import {
+  visible,
+  notifications,
+  notificationsStore,
+} from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
@@ -100,32 +104,27 @@ import { Tooltip } from 'frappe-ui'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
+const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
 
 const target = ref(null)
 onClickOutside(
   target,
   () => {
-    if (notificationsStore().visible) {
-      toggleNotificationPanel()
-    }
+    if (visible.value) toggle()
   },
   {
     ignore: ['#notifications-btn'],
   },
 )
 
-function toggleNotificationPanel() {
-  notificationsStore().toggle()
-}
-
 function markAsRead(doc) {
   capture('notification_mark_as_read')
-  notificationsStore().mark_doc_as_read(doc)
+  mark_doc_as_read(doc)
 }
 
 function markAllAsRead() {
   capture('notification_mark_all_as_read')
-  notificationsStore().mark_as_read.reload()
+  mark_as_read.reload()
 }
 
 onBeforeUnmount(() => {
@@ -134,7 +133,7 @@ onBeforeUnmount(() => {
 
 onMounted(() => {
   $socket.on('crm_notification', () => {
-    notificationsStore().notifications.reload()
+    notifications.reload()
   })
 })
 
@@ -154,6 +153,4 @@ function getRoute(notification) {
     hash: notification.hash,
   }
 }
-
-onMounted(() => {})
 </script>
