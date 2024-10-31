@@ -74,7 +74,7 @@ const routes = [
   {
     path: '/organizations/:organizationId',
     name: 'Organization',
-    component: () => import('@/pages/Organization.vue'),
+    component: () => import(`@/pages/${handleMobileView('Organization')}.vue`),
     props: true,
   },
   {

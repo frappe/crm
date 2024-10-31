@@ -670,37 +670,3 @@ const dealColumns = [
   },
 ]
 </script>
-
-<style scoped>
-:deep(.form-control input),
-:deep(.form-control select),
-:deep(.form-control button) {
-  border-color: transparent;
-  background: white;
-}
-
-:deep(.form-control button) {
-  gap: 0;
-}
-
-:deep(.form-control button > div) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-:deep(.form-control button svg) {
-  color: white;
-  width: 0;
-}
-
-:deep(:has(> .dropdown-button)) {
-  width: 100%;
-}
-
-:deep(.dropdown-button > button > span) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-</style>
