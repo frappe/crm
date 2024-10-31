@@ -21,6 +21,7 @@
         --scroll-color: #f8f5f5;
 }
 
+
 h1,h2,h3 {
         color: var(--subheading-color) !important;
 }
@@ -54,7 +55,8 @@ inline-flex.items-center.justify-center.gap-2.transition-colors.focus:outline-no
         stroke: var(--subheading-color);
 }
 
-.text-base {
+/* not(.rounded) avoids overriding email text color chooser */
+.text-base:not(.rounded) {
         color: var(--text-color) !important;
 }
 
@@ -99,7 +101,7 @@ inline-flex.items-center.justify-center.gap-2.transition-colors.focus:outline-no
 
 .text-white {
         color: #f3f9ff !important;
-background-color: var(--text-muted) !important;
+        background-color: var(--text-muted) !important;
 }
 
 .chip {
