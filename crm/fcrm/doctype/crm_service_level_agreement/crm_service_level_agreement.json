@@ -84,7 +84,7 @@
    "fieldname": "working_hours",
    "fieldtype": "Table",
    "label": "Working Hours",
-   "options": "CRM Service Day",
+   "options": "Service Day",
    "reqd": 1
   },
   {
