@@ -39,7 +39,7 @@
                   <div v-if="data[field.name]" class="truncate">
                     {{ data[field.name] }}
                   </div>
-                  <div v-else class="text-base leading-5 text-gray-500">
+                  <div v-else class="text-base leading-5 text-gray-500 truncate">
                     {{ field.placeholder }}
                   </div>
                   <template #suffix>
@@ -110,7 +110,7 @@
           />
           <FormControl
             v-else-if="field.type === 'select'"
-            class="form-control cursor-pointer [&_select]:cursor-pointer"
+            class="form-control cursor-pointer [&_select]:cursor-pointer truncate"
             type="select"
             v-model="data[field.name]"
             :options="field.options"

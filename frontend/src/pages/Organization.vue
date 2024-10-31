@@ -89,9 +89,13 @@
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
                   </template>
                 </Button>
-                <Button size="sm" @click="openWebsite">
-                  <FeatherIcon name="link" class="h-4 w-4" />
-                </Button>
+                <Tooltip :text="__('Open website')">
+                  <div>
+                    <Button @click="openWebsite">
+                      <FeatherIcon name="link" class="h-4 w-4" />
+                    </Button>
+                  </div>
+                </Tooltip>
               </div>
             </div>
           </template>
@@ -219,6 +223,7 @@ import {
   createToast,
 } from '@/utils'
 import {
+  Tooltip,
   Breadcrumbs,
   Avatar,
   FileUploader,
