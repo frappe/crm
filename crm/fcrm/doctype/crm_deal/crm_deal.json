@@ -223,7 +223,7 @@
    "fieldname": "source",
    "fieldtype": "Link",
    "label": "Source",
-   "options": "CRM Lead Source"
+   "options": "Lead Source"
   },
   {
    "fieldname": "no_of_employees",

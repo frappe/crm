@@ -16,7 +16,6 @@ def after_install(force=False):
 	add_default_fields_layout(force)
 	add_property_setter()
 	add_email_template_custom_fields()
-	add_default_lead_sources()
 	frappe.db.commit()
 
 def add_default_lead_statuses():
@@ -215,14 +214,3 @@ def add_email_template_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Email Template")
-
-def add_default_lead_sources():
-	lead_sources = ["Existing Customer", "Reference", "Advertisement", "Cold Calling", "Exhibition", "Supplier Reference", "Mass Mailing", "Customer's Vendor", "Campaign", "Walk In"]
-
-	for source in lead_sources:
-		if frappe.db.exists("CRM Lead Source", source):
-			continue
-
-		doc = frappe.new_doc("CRM Lead Source")
-		doc.source_name = source
-		doc.insert()

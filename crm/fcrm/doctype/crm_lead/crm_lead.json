@@ -150,7 +150,7 @@
    "fieldname": "source",
    "fieldtype": "Link",
    "label": "Source",
-   "options": "CRM Lead Source"
+   "options": "Lead Source"
   },
   {
    "fieldname": "industry",
