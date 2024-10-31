@@ -305,7 +305,7 @@ def get_data(
 
 
 		# Fetch child table data if requested
-		include_child_tables = frappe.get_all('Data Doctype', fields=['name'])
+		include_child_tables = frappe.get_all('CRM Child Data Mapping', fields=['name'])
 		include_child_tables_list = [entry['name'] for entry in include_child_tables]
 
 		if doctype in include_child_tables_list:

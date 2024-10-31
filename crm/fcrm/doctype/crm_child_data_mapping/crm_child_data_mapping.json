@@ -1,18 +1,18 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:data_doctype",
+ "autoname": "field:parent_doctype",
  "creation": "2024-10-18 05:14:39.520861",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "data_doctype"
+  "parent_doctype"
  ],
  "fields": [
   {
-   "fieldname": "data_doctype",
+   "fieldname": "parent_doctype",
    "fieldtype": "Link",
-   "label": "Data Doctype",
+   "label": "Parent Doctype",
    "link_filters": "[[\"DocType\",\"istable\",\"=\",0],[\"DocType\",\"issingle\",\"=\",0]]",
    "options": "DocType",
    "unique": 1
@@ -20,10 +20,10 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-18 05:16:12.696953",
+ "modified": "2024-10-31 07:44:30.569813",
  "modified_by": "Administrator",
  "module": "FCRM",
- "name": "Data Doctype",
+ "name": "CRM Child Data Mapping",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

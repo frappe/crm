@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class DataDoctype(Document):
+class CRMChildDataMapping(Document):
 	pass

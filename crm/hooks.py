@@ -286,7 +286,7 @@ fixtures = [
         "filters": [["name", "in", ["Federal", "State", "County", "City", "Tribal", "Other"]]]
 	},
     {
-        "dt": "Data Doctype",
+        "dt": "CRM Child Data Mapping",
         "filters": [["name", "=", "CRM Deal"]]
     },
     {
