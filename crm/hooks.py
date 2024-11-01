@@ -273,9 +273,6 @@ fixtures = [
     {
         "dt": "CRM Deal Element"
     },
-    {
-        "dt": "Role"
-    },
 	{
         "dt": "CRM Deal Element",
         "filters": [["name", "in", ["Hardware", "Software", "Support", "Professional Services"]]]
