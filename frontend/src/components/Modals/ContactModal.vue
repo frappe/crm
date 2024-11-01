@@ -251,6 +251,12 @@ const detailFields = computed(() => {
       value: _contact.value.custom_business_unit,
     },
     {
+      icon: h(FeatherIcon, { name: 'dollar-sign', class: 'h-4 w-4' }),
+      name: 'custom_buuying_role',
+      label: 'Buying Role',
+      value: _contact.value.custom_buying_role,
+    },
+    {
       icon: AddressIcon,
       name: 'address',
       label: 'Address',
