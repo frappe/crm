@@ -252,7 +252,7 @@ const detailFields = computed(() => {
     },
     {
       icon: h(FeatherIcon, { name: 'dollar-sign', class: 'h-4 w-4' }),
-      name: 'custom_buuying_role',
+      name: 'custom_buying_role',
       label: 'Buying Role',
       value: _contact.value.custom_buying_role,
     },

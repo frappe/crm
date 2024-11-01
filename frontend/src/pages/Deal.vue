@@ -265,9 +265,9 @@
                           <PhoneIcon class="h-4 w-4" />
                           {{ contact.mobile_no }}
                         </div>
-                        <div v-if="contact.buying_role" class="flex items-center gap-3 p-1 py-1.5">
+                        <div v-if="contact.custom_buying_role" class="flex items-center gap-3 p-1 py-1.5">
                           <PriceTagIcon class="h-4 w-4" />
-                          {{ contact.buying_role }}
+                          {{ contact.custom_buying_role }}
                         </div>
                       </div>
                     </Section>
@@ -703,7 +703,6 @@ const dealContacts = createResource({
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
   let mobile_no = primaryContact.mobile_no || null
-  let buying_role = primaryContact.custom_buying_role || null
 
   if (!primaryContact) {
     errorMessage(__('No primary contact set'))
