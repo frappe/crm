@@ -276,14 +276,15 @@ fixtures = [
     {
         "dt": "Role"
     },
+	{
         "dt": "CRM Deal Element",
         "filters": [["name", "in", ["Hardware", "Software", "Support", "Professional Services"]]]
     },
-    {
+	{
         "dt": "CRM Government Affiliation",
         "filters": [["name", "in", ["Federal", "State", "County", "City", "Tribal", "Other"]]]
-	  },
-    {
+	},
+	{
         "dt": "CRM Child Data Mapping",
         "filters": [["name", "=", "CRM Deal"]]
     },
