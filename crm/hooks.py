@@ -263,7 +263,7 @@ from crm.overrides.notification_log import send_notification_email, custom_get_e
 notification_log.send_notification_email = send_notification_email
 notification_log.get_email_header = custom_get_email_header
 
-fixtures = [
+fixtures = [ 
     {
         "dt": "Custom Field",
         "filters": [
@@ -271,20 +271,18 @@ fixtures = [
         ]
     },
     {
-        "doctype": "CRM Buying Role",
-        "filters": [
-            ["name", "in", ["Blocker", "Budget Holder", "Champion", "Decision Maker", "End user",
-            "Influencer","Technical Evaluator","Procurement","Gatekeeper","User Advocate"]]
-        ]
+        "dt": "CRM Deal Element"
     },
     {
+        "dt": "Role"
+    },
         "dt": "CRM Deal Element",
         "filters": [["name", "in", ["Hardware", "Software", "Support", "Professional Services"]]]
     },
     {
         "dt": "CRM Government Affiliation",
         "filters": [["name", "in", ["Federal", "State", "County", "City", "Tribal", "Other"]]]
-	},
+	  },
     {
         "dt": "CRM Child Data Mapping",
         "filters": [["name", "=", "CRM Deal"]]
