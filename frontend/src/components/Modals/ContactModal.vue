@@ -97,7 +97,6 @@ import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
-import { createToast } from '@/utils'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -259,110 +258,7 @@ const filteredSections = computed(() => {
 
   allSections.forEach((s) => {
     s.fields.forEach((field) => {
-      if (field.name == 'email_id') {
-        field.type = props.contact?.data?.name ? 'Dropdown' : 'Data'
-        field.options =
-          props.contact.data?.email_ids?.map((email) => {
-            return {
-              name: email.name,
-              value: email.email_id,
-              selected: email.email_id === props.contact.data.email_id,
-              placeholder: 'john@doe.com',
-              onClick: () => {
-                _contact.value.email_id = email.email_id
-                setAsPrimary('email', email.email_id)
-              },
-              onSave: (option, isNew) => {
-                if (isNew) {
-                  createNew('email', option.value)
-                  if (props.contact.data.email_ids.length === 1) {
-                    _contact.value.email_id = option.value
-                  }
-                } else {
-                  editOption('Contact Email', option.name, 'email_id', option.value)
-                }
-              },
-              onDelete: async (option, isNew) => {
-                props.contact.data.email_ids =
-                  props.contact.data.email_ids.filter(
-                    (email) => email.name !== option.name,
-                  )
-                !isNew && (await deleteOption('Contact Email', option.name))
-                if (_contact.value.email_id === option.value) {
-                  if (props.contact.data.email_ids.length === 0) {
-                    _contact.value.email_id = ''
-                  } else {
-                    _contact.value.email_id = props.contact.data.email_ids.find(
-                      (email) => email.is_primary,
-                    )?.email_id
-                  }
-                }
-              },
-            }
-          }) || []
-        field.create = () => {
-          props.contact.data?.email_ids?.push({
-            name: 'new-1',
-            value: '',
-            selected: false,
-            isNew: true,
-          })
-        }
-      } else if (
-        field.name == 'mobile_no' ||
-        field.name == 'actual_mobile_no'
-      ) {
-        field.type = props.contact?.data?.name ? 'Dropdown' : 'Data'
-        field.name = 'actual_mobile_no'
-        field.options =
-          props.contact.data?.phone_nos?.map((phone) => {
-            return {
-              name: phone.name,
-              value: phone.phone,
-              selected: phone.phone === props.contact.data.actual_mobile_no,
-              onClick: () => {
-                _contact.value.actual_mobile_no = phone.phone
-                _contact.value.mobile_no = phone.phone
-                setAsPrimary('mobile_no', phone.phone)
-              },
-              onSave: (option, isNew) => {
-                if (isNew) {
-                  createNew('phone', option.value)
-                  if (props.contact.data.phone_nos.length === 1) {
-                    _contact.value.actual_mobile_no = option.value
-                  }
-                } else {
-                  editOption('Contact Phone', option.name, 'phone', option.value)
-                }
-              },
-              onDelete: async (option, isNew) => {
-                props.contact.data.phone_nos =
-                  props.contact.data.phone_nos.filter(
-                    (phone) => phone.name !== option.name,
-                  )
-                !isNew && (await deleteOption('Contact Phone', option.name))
-                if (_contact.value.actual_mobile_no === option.value) {
-                  if (props.contact.data.phone_nos.length === 0) {
-                    _contact.value.actual_mobile_no = ''
-                  } else {
-                    _contact.value.actual_mobile_no =
-                      props.contact.data.phone_nos.find(
-                        (phone) => phone.is_primary_mobile_no,
-                      )?.phone
-                  }
-                }
-              },
-            }
-          }) || []
-        field.create = () => {
-          props.contact.data?.phone_nos?.push({
-            name: 'new-1',
-            value: '',
-            selected: false,
-            isNew: true,
-          })
-        }
-      } else if (field.name == 'address') {
+      if (field.name == 'address') {
         field.create = (value, close) => {
           _contact.value.address = value
           _address.value = {}
@@ -382,68 +278,6 @@ const filteredSections = computed(() => {
 
   return allSections
 })
-
-async function setAsPrimary(field, value) {
-  let d = await call('crm.api.contact.set_as_primary', {
-    contact: props.contact.data.name,
-    field,
-    value,
-  })
-  if (d) {
-    props.contact.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-green-600',
-    })
-  }
-}
-
-async function createNew(field, value) {
-  let d = await call('crm.api.contact.create_new', {
-    contact: props.contact.data.name,
-    field,
-    value,
-  })
-  if (d) {
-    props.contact.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-green-600',
-    })
-  }
-}
-
-async function editOption(doctype, name, fieldname, value) {
-  let d = await call('frappe.client.set_value', {
-    doctype,
-    name,
-    fieldname,
-    value,
-  })
-  if (d) {
-    props.contact.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-green-600',
-    })
-  }
-}
-
-async function deleteOption(doctype, name) {
-  await call('frappe.client.delete', {
-    doctype,
-    name,
-  })
-  await props.contact.reload()
-  createToast({
-    title: 'Contact updated',
-    icon: 'check',
-    iconClasses: 'text-green-600',
-  })
-}
 
 const dirty = computed(() => {
   return JSON.stringify(props.contact.data) !== JSON.stringify(_contact.value)

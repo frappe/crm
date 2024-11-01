@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader v-if="lead.data">
     <header
-      class="relative flex h-12 items-center justify-between gap-2 py-2.5 pl-5"
+      class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2"
     >
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">

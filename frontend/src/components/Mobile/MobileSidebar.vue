@@ -25,8 +25,8 @@
               >
                 <template #right>
                   <Badge
-                    v-if="notificationsStore().unreadNotificationsCount"
-                    :label="notificationsStore().unreadNotificationsCount"
+                    v-if="unreadNotificationsCount"
+                    :label="unreadNotificationsCount"
                     variant="subtle"
                   />
                 </template>
@@ -101,7 +101,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
-import { notificationsStore } from '@/stores/notifications'
+import { unreadNotificationsCount } from '@/stores/notifications'
 import { computed, h } from 'vue'
 import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
 

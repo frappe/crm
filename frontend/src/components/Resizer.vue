@@ -2,8 +2,12 @@
   <div class="relative" :style="{ width: `${sidebarWidth}px` }">
     <slot v-bind="{ sidebarResizing, sidebarWidth }" />
     <div
-      class="absolute left-0 z-10 h-full w-1 cursor-col-resize bg-gray-300 opacity-0 transition-opacity hover:opacity-100"
-      :class="{ 'opacity-100': sidebarResizing }"
+      class="absolute z-10 h-full w-1 cursor-col-resize bg-gray-300 opacity-0 transition-opacity hover:opacity-100"
+      :class="{
+        'opacity-100': sidebarResizing,
+        'left-0': side == 'right',
+        'right-0': side == 'left',
+      }"
       @mousedown="startResize"
     />
   </div>
@@ -81,6 +85,6 @@ function resize(e) {
 function distance() {
   if (!props.parent) return 0
   const rect = props.parent.getBoundingClientRect()
-  return window.innerWidth - rect[props.side]
+  return rect[props.side]
 }
 </script>
