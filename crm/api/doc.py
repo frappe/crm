@@ -341,8 +341,6 @@ def get_data(
 			page_length=page_length,
 		) or []
 
-
-		Fetch child table data if requested
 		include_child_tables = frappe.get_all('CRM Child Data Mapping', fields=['name'])
 		include_child_tables_list = [entry['name'] for entry in include_child_tables]
 
