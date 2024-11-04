@@ -113,7 +113,7 @@ def get_customer_link(crm_deal):
 
 
 @frappe.whitelist()
-def get_quotation_url(crm_deal, organization):
+def get_quotation_url(crm_deal, customer):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if not erpnext_crm_settings.enabled:
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
@@ -133,18 +133,18 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 		client = get_erpnext_site_client(erpnext_crm_settings)
 		doc = frappe.get_doc("CRM Deal", crm_deal)
 		contacts = get_contacts(doc)
-		address = get_organization_address(doc.organization)
+		address = get_customer_address(doc.customer)
 		return client.post_api("erpnext.crm.frappe_crm_api.create_prospect_against_crm_deal",
 			{
-				"organization": doc.organization,
+				"customer": doc.customer,
 				"lead_name": doc.lead_name,
-				"no_of_employees": doc.no_of_employees,
+				"custom_no_of_employees": doc.custom_no_of_employees,
 				"deal_owner": doc.deal_owner,
 				"crm_deal": doc.name,
 				"territory": doc.territory,
 				"industry": doc.industry,
 				"website": doc.website,
-				"annual_revenue": doc.annual_revenue,
+				"custom_annual_revenue": doc.custom_annual_revenue,
 				"contacts": json.dumps(contacts),
 				"erpnext_company": erpnext_crm_settings.erpnext_company,
 				"address": address.as_dict() if address else None
@@ -170,8 +170,8 @@ def get_contacts(doc):
 		})
 	return contacts
 
-def get_organization_address(organization):
-	address = frappe.db.get_value("CRM Organization", organization, "address")
+def get_customer_address(customer):
+	address = frappe.db.get_value("Customer", customer, "customer_primary_address")
 	address = frappe.get_doc("Address", address) if address else None
 	if not address:
 		return None
@@ -198,9 +198,9 @@ def create_customer_in_erpnext(doc, method):
 		return
 	
 	contacts = get_contacts(doc)
-	address = get_organization_address(doc.organization)
+	address = get_customer_address(doc.customer)
 	customer = {
-		"customer_name": doc.organization,
+		"customer_name": doc.customer,
 		"customer_group": "All Customer Groups",
 		"customer_type": "Company",
 		"territory": doc.territory,
@@ -244,7 +244,7 @@ async function setupForm({ doc, call, $dialog, updateField, createToast }) {
 					"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url", 
 					{
 						crm_deal: doc.name,
-						organization: doc.organization
+						customer: doc.customer
 					}
 				);
 

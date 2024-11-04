@@ -78,12 +78,12 @@ def get_lead_contacts():
 	return lead_contacts
 
 @frappe.whitelist()
-def get_organizations():
-	organizations = frappe.qb.get_query(
-		"CRM Organization",
+def get_customers():
+	customers = frappe.qb.get_query(
+		"Customer",
 		fields=['*'],
 		order_by="name asc",
 		distinct=True,
 	).run(as_dict=1)
 
-	return organizations
+	return customers

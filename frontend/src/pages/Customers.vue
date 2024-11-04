@@ -1,17 +1,17 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <ViewBreadcrumbs v-model="viewControls" routeName="Organizations" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="Customers" />
     </template>
     <template #right-header>
       <CustomActions
-        v-if="organizationsListView?.customListActions"
-        :actions="organizationsListView.customListActions"
+        v-if="customersListView?.customListActions"
+        :actions="customersListView.customListActions"
       />
       <Button
         variant="solid"
         :label="__('Create')"
-        @click="showOrganizationModal = true"
+        @click="showCustomerModal = true"
       >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -19,24 +19,24 @@
   </LayoutHeader>
   <ViewControls
     ref="viewControls"
-    v-model="organizations"
+    v-model="customers"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
-    doctype="CRM Organization"
+    doctype="Customer"
   />
-  <OrganizationsListView
-    ref="organizationsListView"
-    v-if="organizations.data && rows.length"
-    v-model="organizations.data.page_length_count"
-    v-model:list="organizations"
+  <CustomersListView
+    ref="customersListView"
+    v-if="customers.data && rows.length"
+    v-model="customers.data.page_length_count"
+    v-model:list="customers"
     :rows="rows"
-    :columns="organizations.data.columns"
+    :columns="customers.data.columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
-      rowCount: organizations.data.row_count,
-      totalCount: organizations.data.total_count,
+      rowCount: customers.data.row_count,
+      totalCount: customers.data.total_count,
     }"
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
@@ -46,37 +46,37 @@
     @likeDoc="(data) => viewControls.likeDoc(data)"
   />
   <div
-    v-else-if="organizations.data"
+    v-else-if="customers.data"
     class="flex h-full items-center justify-center"
   >
     <div
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
-      <OrganizationsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Organizations')]) }}</span>
-      <Button :label="__('Create')" @click="showOrganizationModal = true">
+      <CustomersIcon class="h-10 w-10" />
+      <span>{{ __('No {0} Found', [__('Customers')]) }}</span>
+      <Button :label="__('Create')" @click="showCustomerModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
   </div>
-  <OrganizationModal
-    v-model="showOrganizationModal"
+  <CustomerModal
+    v-model="showCustomerModal"
     v-model:quickEntry="showQuickEntryModal"
   />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
-    doctype="CRM Organization"
+    doctype="Customer"
   />
 </template>
 <script setup>
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import CustomerModal from '@/components/Modals/CustomerModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
-import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
+import CustomersListView from '@/components/ListViews/CustomersListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import {
   dateFormat,
@@ -87,12 +87,12 @@ import {
 } from '@/utils'
 import { ref, computed } from 'vue'
 
-const organizationsListView = ref(null)
-const showOrganizationModal = ref(false)
+const customersListView = ref(null)
+const showCustomerModal = ref(false)
 const showQuickEntryModal = ref(false)
 
-// organizations data is loaded in the ViewControls component
-const organizations = ref({})
+// customers data is loaded in the ViewControls component
+const customers = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
@@ -100,31 +100,31 @@ const viewControls = ref(null)
 
 const rows = computed(() => {
   if (
-    !organizations.value?.data?.data ||
-    !['list', 'group_by'].includes(organizations.value.data.view_type)
+    !customers.value?.data?.data ||
+    !['list', 'group_by'].includes(customers.value.data.view_type)
   )
     return []
-  return organizations.value?.data.data.map((organization) => {
+  return customers.value?.data.data.map((customer) => {
     let _rows = {}
-    organizations.value?.data.rows.forEach((row) => {
-      _rows[row] = organization[row]
+    customers.value?.data.rows.forEach((row) => {
+      _rows[row] = customer[row]
 
-      if (row === 'organization_name') {
+      if (row === 'customer_name') {
         _rows[row] = {
-          label: organization.organization_name,
-          logo: organization.organization_logo,
+          label: customer.customer_name,
+          logo: customer.image,
         }
       } else if (row === 'website') {
-        _rows[row] = website(organization.website)
-      } else if (row === 'annual_revenue') {
+        _rows[row] = website(customer.website)
+      } else if (row === 'custom_annual_revenue') {
         _rows[row] = formatNumberIntoCurrency(
-          organization.annual_revenue,
-          organization.currency,
+          customer.custom_annual_revenue,
+          customer.currency,
         )
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(organization[row], dateTooltipFormat),
-          timeAgo: __(timeAgo(organization[row])),
+          label: dateFormat(customer[row], dateTooltipFormat),
+          timeAgo: __(timeAgo(customer[row])),
         }
       }
     })

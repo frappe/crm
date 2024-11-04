@@ -90,7 +90,7 @@ const lead = reactive({
   email: '',
   mobile_no: '',
   gender: '',
-  organization: '',
+  customer: '',
   website: '',
   no_of_employees: '',
   territory: '',

@@ -88,7 +88,7 @@ def get_linked_deals(contact):
 			d.parent,
 			fields=[
 				"name",
-				"organization",
+				"customer",
 				"currency",
 				"annual_revenue",
 				"status",

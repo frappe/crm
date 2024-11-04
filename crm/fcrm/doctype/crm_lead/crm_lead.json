@@ -11,7 +11,7 @@
  "engine": "InnoDB",
  "field_order": [
   "details",
-  "organization",
+  "customer",
   "website",
   "territory",
   "industry",
@@ -24,7 +24,7 @@
   "last_name",
   "email",
   "mobile_no",
-  "organization_tab",
+  "customer_tab",
   "section_break_uixv",
   "naming_series",
   "lead_name",
@@ -177,15 +177,15 @@
    "label": "Job Title"
   },
   {
-   "fieldname": "organization_tab",
+   "fieldname": "customer_tab",
    "fieldtype": "Tab Break",
    "label": "Others",
    "read_only": 1
   },
   {
-   "fieldname": "organization",
+   "fieldname": "customer",
    "fieldtype": "Data",
-   "label": "Organization"
+   "label": "Customer"
   },
   {
    "default": "0",

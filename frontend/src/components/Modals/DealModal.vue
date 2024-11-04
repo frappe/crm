@@ -25,8 +25,8 @@
         <div>
           <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div class="flex items-center gap-3 text-sm text-gray-600">
-              <div>{{ __('Choose Existing Organization') }}</div>
-              <Switch v-model="chooseExistingOrganization" />
+              <div>{{ __('Choose Existing Customer') }}</div>
+              <Switch v-model="chooseExistingCustomer" />
             </div>
             <div class="flex items-center gap-3 text-sm text-gray-600">
               <div>{{ __('Choose Existing Contact') }}</div>
@@ -78,8 +78,8 @@ const router = useRouter()
 const error = ref(null)
 
 const deal = reactive({
-  organization: '',
-  organization_name: '',
+  customer: '',
+  customer_name: '',
   website: '',
   no_of_employees: '',
   territory: '',
@@ -98,7 +98,7 @@ const deal = reactive({
 
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
-const chooseExistingOrganization = ref(false)
+const chooseExistingCustomer = ref(false)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -126,13 +126,13 @@ const filteredSections = computed(() => {
 
   let _filteredSections = []
 
-  if (chooseExistingOrganization.value) {
+  if (chooseExistingCustomer.value) {
     _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Organization'),
+      allSections.find((s) => s.label === 'Select Customer'),
     )
   } else {
     _filteredSections.push(
-      allSections.find((s) => s.label === 'Organization Details'),
+      allSections.find((s) => s.label === 'Customer Details'),
     )
   }
 
@@ -149,8 +149,8 @@ const filteredSections = computed(() => {
   allSections.forEach((s) => {
     if (
       ![
-        'Select Organization',
-        'Organization Details',
+        'Select Customer',
+        'Customer Details',
         'Select Contact',
         'Contact Details',
       ].includes(s.label)

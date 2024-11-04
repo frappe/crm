@@ -4,8 +4,8 @@
     :rows="rows"
     :options="{
       getRowRoute: (row) => ({
-        name: 'Organization',
-        params: { organizationId: row.name },
+        name: 'Customer',
+        params: { customerId: row.name },
         query: { view: route.query.view, viewType: route.params.viewType },
       }),
       selectable: options.selectable,
@@ -41,7 +41,7 @@
       >
         <ListRowItem :item="item">
           <template #prefix>
-            <div v-if="column.key === 'organization_name'">
+            <div v-if="column.key === 'customer_name'">
               <Avatar
                 v-if="item.label"
                 class="flex items-center"
@@ -133,7 +133,7 @@
   <ListBulkActions
     ref="listBulkActionsRef"
     v-model="list"
-    doctype="CRM Organization"
+    doctype="Customer"
     :options="{
       hideAssign: true,
     }"

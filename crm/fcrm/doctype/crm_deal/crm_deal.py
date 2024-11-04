@@ -129,10 +129,10 @@ class CRMDeal(Document):
 	def default_list_data():
 		columns = [
 			{
-				'label': 'Organization',
+				'label': 'Customer',
 				'type': 'Link',
-				'key': 'organization',
-				'options': 'CRM Organization',
+				'key': 'customer',
+				'options': 'Customer',
 				'width': '11rem',
 			},
 			{
@@ -174,7 +174,7 @@ class CRMDeal(Document):
 		]
 		rows = [
 			"name",
-			"organization",
+			"customer",
 			"annual_revenue",
 			"status",
 			"email",
@@ -194,7 +194,7 @@ class CRMDeal(Document):
 	def default_kanban_settings():
 		return {
 			"column_field": "status",
-			"title_field": "organization",
+			"title_field": "customer",
 			"kanban_fields": '["annual_revenue", "email", "mobile_no", "_assign", "modified"]'
 		}
 
@@ -228,26 +228,26 @@ def set_primary_contact(deal, contact):
 	deal.save()
 	return True
 
-def create_organization(doc):
-	if not doc.get("organization_name"):
+def create_customer(doc):
+	if not doc.get("customer_name"):
 		return
 
-	existing_organization = frappe.db.exists("CRM Organization", {"organization_name": doc.get("organization_name")})
-	if existing_organization:
-		return existing_organization
+	existing_customer = frappe.db.exists("Customer", {"customer_name": doc.get("customer_name")})
+	if existing_customer:
+		return existing_customer
 
-	organization = frappe.new_doc("CRM Organization")
-	organization.update(
+	customer = frappe.new_doc("Customer")
+	customer.update(
 		{
-			"organization_name": doc.get("organization_name"),
+			"customer_name": doc.get("customer_name"),
 			"website": doc.get("website"),
 			"territory": doc.get("territory"),
 			"industry": doc.get("industry"),
-			"annual_revenue": doc.get("annual_revenue"),
+			"custom_annual_revenue": doc.get("custom_annual_revenue"),
 		}
 	)
-	organization.insert(ignore_permissions=True)
-	return organization.name
+	customer.insert(ignore_permissions=True)
+	return customer.name
 
 def contact_exists(doc):
 	email_exist = frappe.db.exists("Contact Email", {"email_id": doc.get("email")})
@@ -272,7 +272,7 @@ def create_contact(doc):
 			"first_name": doc.get("first_name"),
 			"last_name": doc.get("last_name"),
 			"salutation": doc.get("salutation"),
-			"company_name": doc.get("organization") or doc.get("organization_name"),
+			"company_name": doc.get("customer") or doc.get("customer_name"),
 		}
 	)
 
@@ -296,11 +296,11 @@ def create_deal(args):
 		contact = create_contact(args)
 
 	deal.update({
-		"organization": args.get("organization") or create_organization(args),
+		"customer": args.get("customer") or create_customer(args),
 		"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
 	})
 
-	args.pop("organization", None)
+	args.pop("customer", None)
 
 	deal.update(args)
 

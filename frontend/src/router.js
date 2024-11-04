@@ -65,16 +65,16 @@ const routes = [
     props: true,
   },
   {
-    alias: '/organizations',
-    path: '/organizations/view/:viewType?',
-    name: 'Organizations',
-    component: () => import('@/pages/Organizations.vue'),
+    alias: '/customers',
+    path: '/customers/view/:viewType?',
+    name: 'Customers',
+    component: () => import('@/pages/Customers.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
-    path: '/organizations/:organizationId',
-    name: 'Organization',
-    component: () => import(`@/pages/${handleMobileView('Organization')}.vue`),
+    path: '/customers/:customerId',
+    name: 'Customer',
+    component: () => import(`@/pages/${handleMobileView('Customer')}.vue`),
     props: true,
   },
   {

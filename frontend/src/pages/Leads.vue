@@ -50,7 +50,7 @@
         </div>
         <div
           v-else-if="
-            titleField === 'organization' && getRow(itemName, titleField).label
+            titleField === 'customer' && getRow(itemName, titleField).label
           "
         >
           <Avatar
@@ -132,7 +132,7 @@
         </div>
         <div
           v-else-if="
-            fieldName === 'organization' && getRow(itemName, fieldName).label
+            fieldName === 'customer' && getRow(itemName, fieldName).label
           "
         >
           <Avatar
@@ -415,8 +415,8 @@ function parseRows(rows) {
           image: lead.image,
           image_label: lead.first_name,
         }
-      } else if (row == 'organization') {
-        _rows[row] = lead.organization
+      } else if (row == 'customer') {
+        _rows[row] = lead.customer
       } else if (row === 'website') {
         _rows[row] = website(lead.website)
       } else if (row == 'status') {

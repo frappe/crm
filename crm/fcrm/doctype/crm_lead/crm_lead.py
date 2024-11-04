@@ -43,17 +43,17 @@ class CRMLead(Document):
 	def set_lead_name(self):
 		if not self.lead_name:
 			# Check for leads being created through data import
-			if not self.organization and not self.email and not self.flags.ignore_mandatory:
-				frappe.throw(_("A Lead requires either a person's name or an organization's name"))
-			elif self.organization:
-				self.lead_name = self.organization
+			if not self.customer and not self.email and not self.flags.ignore_mandatory:
+				frappe.throw(_("A Lead requires either a person's name or an customer's name"))
+			elif self.customer:
+				self.lead_name = self.customer
 			elif self.email:
 				self.lead_name = self.email.split("@")[0]
 			else:
 				self.lead_name = "Unnamed Lead"
 
 	def set_title(self):
-		self.title = self.organization or self.lead_name
+		self.title = self.customer or self.lead_name
 
 	def validate_email(self):
 		if self.email:
@@ -116,7 +116,7 @@ class CRMLead(Document):
 				"salutation": self.salutation,
 				"gender": self.gender,
 				"designation": self.job_title,
-				"company_name": self.organization,
+				"company_name": self.customer,
 				"image": self.image or "",
 			}
 		)
@@ -135,26 +135,26 @@ class CRMLead(Document):
 
 		return contact.name
 
-	def create_organization(self):
-		if not self.organization:
+	def create_customer(self):
+		if not self.customer:
 			return
 
-		existing_organization = frappe.db.exists("CRM Organization", {"organization_name": self.organization})
-		if existing_organization:
-			return existing_organization
+		existing_customer = frappe.db.exists("Customer", {"customer_name": self.customer})
+		if existing_customer:
+			return existing_customer
 
-		organization = frappe.new_doc("CRM Organization")
-		organization.update(
+		customer = frappe.new_doc("Customer")
+		customer.update(
 			{
-				"organization_name": self.organization,
+				"customer_name": self.customer,
 				"website": self.website,
 				"territory": self.territory,
 				"industry": self.industry,
-				"annual_revenue": self.annual_revenue,
+				"custom_annual_revenue": self.custom_annual_revenue,
 			}
 		)
-		organization.insert(ignore_permissions=True)
-		return organization.name
+		customer.insert(ignore_permissions=True)
+		return customer.name
 
 	def contact_exists(self, throw=True):
 		email_exist = frappe.db.exists("Contact Email", {"email_id": self.email})
@@ -181,7 +181,7 @@ class CRMLead(Document):
 
 		return False
 
-	def create_deal(self, contact, organization):
+	def create_deal(self, contact, customer):
 		deal = frappe.new_doc("CRM Deal")
 
 		lead_deal_map = {
@@ -202,8 +202,8 @@ class CRMLead(Document):
 				fieldname = lead_deal_map[field.fieldname]
 
 			if hasattr(deal, fieldname):
-				if fieldname == "organization":
-					deal.update({fieldname: organization})
+				if fieldname == "customer":
+					deal.update({fieldname: customer})
 				else:
 					deal.update({fieldname: self.get(field.fieldname)})
 
@@ -269,10 +269,10 @@ class CRMLead(Document):
 				'width': '12rem',
 			},
 			{
-				'label': 'Organization',
+				'label': 'Customer',
 				'type': 'Link',
-				'key': 'organization',
-				'options': 'CRM Organization',
+				'key': 'customer',
+				'options': 'Customer',
 				'width': '10rem',
 			},
 			{
@@ -309,7 +309,7 @@ class CRMLead(Document):
 		rows = [
 			"name",
 			"lead_name",
-			"organization",
+			"customer",
 			"status",
 			"email",
 			"mobile_no",
@@ -330,7 +330,7 @@ class CRMLead(Document):
 		return {
 			"column_field": "status",
 			"title_field": "lead_name",
-			"kanban_fields": '["organization", "email", "mobile_no", "_assign", "modified"]'
+			"kanban_fields": '["customer", "email", "mobile_no", "_assign", "modified"]'
 		}
 
 
@@ -347,6 +347,6 @@ def convert_to_deal(lead, doc=None):
 		lead.communication_status = "Replied"
 	lead.save(ignore_permissions=True)
 	contact = lead.create_contact(False)
-	organization = lead.create_organization()
-	deal = lead.create_deal(contact, organization)
+	customer = lead.create_customer()
+	deal = lead.create_deal(contact, customer)
 	return deal

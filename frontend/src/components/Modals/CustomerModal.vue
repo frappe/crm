@@ -38,7 +38,7 @@
           <Fields
             v-else-if="filteredSections"
             :sections="filteredSections"
-            :data="_organization"
+            :data="_customer"
           />
         </div>
       </div>
@@ -65,7 +65,7 @@ import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import MoneyIcon from '@/components/Icons/MoneyIcon.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
 import TerritoryIcon from '@/components/Icons/TerritoryIcon.vue'
 import { usersStore } from '@/stores/users'
 import { formatNumberIntoCurrency } from '@/utils'
@@ -89,18 +89,18 @@ const { isManager } = usersStore()
 
 const router = useRouter()
 const show = defineModel()
-const organization = defineModel('organization')
+const customer = defineModel('customer')
 
 const loading = ref(false)
 const title = ref(null)
 const detailMode = ref(false)
 const editMode = ref(false)
 let _address = ref({})
-let _organization = ref({
-  organization_name: '',
+let _customer = ref({
+  customer_name: '',
   website: '',
-  annual_revenue: '',
-  no_of_employees: '1-10',
+  custom_annual_revenue: '',
+  custom_no_of_employees: '1-10',
   industry: '',
 })
 
@@ -108,13 +108,13 @@ const showAddressModal = ref(false)
 
 let doc = ref({})
 
-async function updateOrganization() {
+async function updateCustomer() {
   const old = { ...doc.value }
-  const newOrg = { ..._organization.value }
+  const newOrg = { ..._customer.value }
 
-  const nameChanged = old.organization_name !== newOrg.organization_name
-  delete old.organization_name
-  delete newOrg.organization_name
+  const nameChanged = old.customer_name !== newOrg.customer_name
+  delete old.customer_name
+  delete newOrg.customer_name
 
   const otherFieldChanged = JSON.stringify(old) !== JSON.stringify(newOrg)
   const values = newOrg
@@ -132,14 +132,14 @@ async function updateOrganization() {
   if (otherFieldChanged) {
     name = await callSetValue(values)
   }
-  handleOrganizationUpdate({ name }, nameChanged)
+  handleCustomerUpdate({ name }, nameChanged)
 }
 
 async function callRenameDoc() {
   const d = await call('frappe.client.rename_doc', {
-    doctype: 'CRM Organization',
-    old_name: doc.value?.organization_name,
-    new_name: _organization.value.organization_name,
+    doctype: 'Customer',
+    old_name: doc.value?.customer_name,
+    new_name: _customer.value.customer_name,
   })
   loading.value = false
   return d
@@ -147,8 +147,8 @@ async function callRenameDoc() {
 
 async function callSetValue(values) {
   const d = await call('frappe.client.set_value', {
-    doctype: 'CRM Organization',
-    name: _organization.value.name,
+    doctype: 'Customer',
+    name: _customer.value.name,
     fieldname: values,
   })
   loading.value = false
@@ -158,25 +158,25 @@ async function callSetValue(values) {
 async function callInsertDoc() {
   const doc = await call('frappe.client.insert', {
     doc: {
-      doctype: 'CRM Organization',
-      ..._organization.value,
+      doctype: 'Customer',
+      ..._customer.value,
     },
   })
   loading.value = false
   if (doc.name) {
-    capture('organization_created')
-    handleOrganizationUpdate(doc)
+    capture('customer_created')
+    handleCustomerUpdate(doc)
   }
 }
 
-function handleOrganizationUpdate(doc, renamed = false) {
+function handleCustomerUpdate(doc, renamed = false) {
   if (doc.name && (props.options.redirect || renamed)) {
     router.push({
-      name: 'Organization',
-      params: { organizationId: doc.name },
+      name: 'Customer',
+      params: { customerId: doc.name },
     })
   } else {
-    organization.value.reload?.()
+    customer.value.reload?.()
   }
   show.value = false
   props.options.afterInsert && props.options.afterInsert(doc)
@@ -184,8 +184,8 @@ function handleOrganizationUpdate(doc, renamed = false) {
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
-    ? __('New Organization')
-    : __(_organization.value.organization_name)
+    ? __('New Customer')
+    : __(_customer.value.customer_name)
   let size = detailMode.value ? '' : 'xl'
   let actions = detailMode.value
     ? []
@@ -194,7 +194,7 @@ const dialogOptions = computed(() => {
           label: editMode.value ? __('Save') : __('Create'),
           variant: 'solid',
           onClick: () =>
-            editMode.value ? updateOrganization() : callInsertDoc(),
+            editMode.value ? updateCustomer() : callInsertDoc(),
         },
       ]
 
@@ -204,37 +204,37 @@ const dialogOptions = computed(() => {
 const fields = computed(() => {
   let details = [
     {
-      icon: OrganizationsIcon,
-      name: 'organization_name',
-      value: _organization.value.organization_name,
+      icon: CustomersIcon,
+      name: 'customer_name',
+      value: _customer.value.customer_name,
     },
     {
       icon: WebsiteIcon,
       name: 'website',
-      value: _organization.value.website,
+      value: _customer.value.website,
     },
     {
       icon: TerritoryIcon,
       name: 'territory',
-      value: _organization.value.territory,
+      value: _customer.value.territory,
     },
     {
       icon: MoneyIcon,
-      name: 'annual_revenue',
+      name: 'custom_annual_revenue',
       value: formatNumberIntoCurrency(
-        _organization.value.annual_revenue,
-        _organization.value.currency,
+        _customer.value.custom_annual_revenue,
+        _customer.value.currency,
       ),
     },
     {
       icon: h(FeatherIcon, { name: 'hash', class: 'h-4 w-4' }),
-      name: 'no_of_employees',
-      value: _organization.value.no_of_employees,
+      name: 'custom_no_of_employees',
+      value: _customer.value.custom_no_of_employees,
     },
     {
       icon: h(FeatherIcon, { name: 'briefcase', class: 'h-4 w-4' }),
       name: 'industry',
-      value: _organization.value.industry,
+      value: _customer.value.industry,
     },
   ]
 
@@ -243,8 +243,8 @@ const fields = computed(() => {
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Organization'],
-  params: { doctype: 'CRM Organization', type: 'Quick Entry' },
+  cache: ['quickEntryFields', 'Customer'],
+  params: { doctype: 'Customer', type: 'Quick Entry' },
   auto: true,
 })
 
@@ -256,7 +256,7 @@ const filteredSections = computed(() => {
     s.fields.forEach((field) => {
       if (field.name == 'address') {
         field.create = (value, close) => {
-          _organization.value.address = value
+          _customer.value.address = value
           _address.value = {}
           showAddressModal.value = true
           close()
@@ -284,9 +284,9 @@ watch(
     nextTick(() => {
       // TODO: Issue with FormControl
       // title.value.el.focus()
-      doc.value = organization.value?.doc || organization.value || {}
-      _organization.value = { ...doc.value }
-      if (_organization.value.name) {
+      doc.value = customer.value?.doc || customer.value || {}
+      _customer.value = { ...doc.value }
+      if (_customer.value.name) {
         editMode.value = true
       }
     })

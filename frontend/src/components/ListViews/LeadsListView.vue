@@ -67,7 +67,7 @@
               size="sm"
             />
           </div>
-          <div v-else-if="column.key === 'organization'">
+          <div v-else-if="column.key === 'customer'">
             <Avatar
               v-if="item"
               class="flex items-center"
