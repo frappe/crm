@@ -85,18 +85,21 @@ const tabs = computed(() => {
     },
     {
       label: __('Subscription'),
-      condition: () => window.subscription_conf,
+      condition: () => window.fc_communication_secret && isManager(),
       items: [
         {
           label: 'Plans',
           icon: UpgradeIcon,
-          component: markRaw(Plans),
+          component: markRaw(h(Plans, { baseAPIPath: 'crm.api.saas_billing' })),
         },
         {
           label: 'Billing',
           icon: WalletsIcon,
           component: markRaw(
-            h(Billing, { onChangePlan: () => setActiveTab('Plans') }),
+            h(Billing, {
+              baseAPIPath: 'crm.api.saas_billing',
+              onChangePlan: () => setActiveTab('Plans'),
+            }),
           ),
         },
       ],

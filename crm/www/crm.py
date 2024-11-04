@@ -3,7 +3,6 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe.boot import add_subscription_conf
 from frappe.utils import cint
 from frappe.utils.telemetry import capture
 
@@ -34,8 +33,7 @@ def get_boot():
             "site_name": frappe.local.site,
             "read_only_mode": frappe.flags.read_only,
             "csrf_token": frappe.sessions.get_csrf_token(),
-            "telemetry_site_age": frappe.utils.telemetry.site_age(),
-            "subscription_conf": add_subscription_conf(),
+            "fc_communication_secret": frappe.conf.fc_communication_secret,
             "setup_complete": cint(frappe.get_system_settings("setup_complete"))
         }
     )
