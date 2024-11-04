@@ -213,7 +213,7 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import DealElement from '../frappe-ui/DealElement.vue'
 
@@ -251,6 +251,12 @@ const route = useRoute()
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')
+
+
+onMounted(() => {
+    // Apply the default filter when the component is mounted
+    emit('applyDefaultStatusFilter');
+});
 
 const isLikeFilterApplied = computed(() => {
   return list.value.params?.filters?._liked_by ? true : false

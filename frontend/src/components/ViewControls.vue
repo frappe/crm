@@ -1076,6 +1076,12 @@ function applyLikeFilter() {
   updateFilter(filters)
 }
 
+function applyDefaultStatusFilter(value) {
+    let filters = { ...list.value.params.filters }
+  filters['status'] = ['not in', `Won, Lost`]
+  updateFilter(filters)
+}
+
 function likeDoc({ name, liked }) {
   createResource({
     url: 'frappe.desk.like.toggle_like',
@@ -1088,6 +1094,7 @@ function likeDoc({ name, liked }) {
 defineExpose({
   applyFilter,
   applyLikeFilter,
+  applyDefaultStatusFilter,
   likeDoc,
   updateKanbanSettings,
   loadMoreKanban,
