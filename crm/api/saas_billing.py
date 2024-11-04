@@ -2,7 +2,7 @@ import frappe
 import requests
 
 def get_base_url():
-    url = "https://frappecloud.com"
+    url = frappe.conf.get("saas_billing_base_url") or "https://frappecloud.com"
     if frappe.conf.developer_mode and frappe.conf.get("saas_billing_base_url"):
         url = frappe.conf.get("saas_billing_base_url")
     return url
