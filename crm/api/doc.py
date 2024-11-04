@@ -8,7 +8,13 @@ from frappe.utils import make_filter_tuple
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
-
+# for report
+import json
+import os
+import re
+from frappe.modules import get_module_path, scrub
+from frappe.desk.query_report import get_script,get_report_doc,run
+from frappe.utils import cint, cstr, flt, format_duration, get_html_format, sbool
 
 @frappe.whitelist()
 def sort_options(doctype: str):
@@ -215,6 +221,8 @@ def get_data(
 	kanban_fields=[],
 	view=None,
 	default_filters=None,
+	report_name=None,
+	report_filters=None,
 ):
 	custom_view = False
 	filters = frappe._dict(filters)
@@ -226,6 +234,36 @@ def get_data(
 	custom_view_name = view.get('custom_view_name') if view else None
 	view_type = view.get('view_type') if view else None
 	group_by_field = view.get('group_by_field') if view else None
+ 
+	report_filters = frappe.parse_json(report_filters or {})
+	report_filter_structure = {}
+	report_data = []
+
+	if view_type == "report" and report_name:
+
+		report = get_report_doc(report_name)
+		module = report.module or frappe.db.get_value("DocType", report.ref_doctype, "module")
+		is_custom_module = frappe.get_cached_value("Module Def", module, "custom")
+		module_path = "" if is_custom_module else get_module_path(module)
+		report_folder = module_path and os.path.join(module_path, "report", scrub(report.name))
+		script_path = report_folder and os.path.join(report_folder, scrub(report.name) + ".js")
+		print_path = report_folder and os.path.join(report_folder, scrub(report.name) + ".html")
+		script = None
+		if os.path.exists(script_path):
+			with open(script_path) as f:
+				script = f.read()
+				script += f"\n\n//# sourceURL={scrub(report.name)}.js"
+		html_format = get_html_format(print_path)
+		if not script and report.javascript:
+			script = report.javascript
+			script += f"\n\n//# sourceURL={scrub(report.name)}__custom"
+		if not script:
+			script = "frappe.query_reports['%s']={}" % report_name
+   
+		report_filter_structure = parse_js_to_dict(script)
+		report_data = run(report_name,report_filters)
+
+
 
 	for key in filters:
 		value = filters[key]
@@ -304,7 +342,7 @@ def get_data(
 		) or []
 
 
-		# Fetch child table data if requested
+		Fetch child table data if requested
 		include_child_tables = frappe.get_all('CRM Child Data Mapping', fields=['name'])
 		include_child_tables_list = [entry['name'] for entry in include_child_tables]
 
@@ -485,6 +523,8 @@ def get_data(
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),
 		"view_type": view_type,
+		"report_data":report_data,
+		"report_filter_structure":report_filter_structure,
 	}
 
 def convert_filter_to_tuple(doctype, filters):
@@ -720,3 +760,29 @@ def getCounts(d, doctype):
 	d["_task_count"] = frappe.db.count("CRM Task", filters={"reference_doctype": doctype, "reference_docname": d.get("name")})
 	d["_note_count"] = frappe.db.count("FCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")})
 	return d
+
+
+
+@frappe.whitelist()
+def get_reports_for_doctype(doctype):
+    reports = frappe.get_list('Report', filters={'ref_doctype': doctype}, fields=['name'])
+    return reports
+
+def parse_js_to_dict(js_code):
+    # Extract the JSON-like part of the JavaScript code using regex
+    match = re.search(r'\{.*\}', js_code, re.DOTALL)
+    if not match:
+        return None
+
+    # Replace JavaScript-specific elements with Python-compatible JSON
+    json_str = match.group(0)
+    json_str = json_str.replace("frappe.session.user", "\"frappe.session.user\"")  # Handle frappe session user
+    json_str = json_str.replace(";", "")  # Remove trailing semicolon if present
+    # Convert to JSON (or Python dict)
+    try:
+        parsed_dict = json.loads(json_str)
+    except json.JSONDecodeError as e:
+        print("Error parsing JSON:", e)
+        return None
+
+    return parsed_dict
