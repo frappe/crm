@@ -264,6 +264,8 @@ notification_log.send_notification_email = send_notification_email
 notification_log.get_email_header = custom_get_email_header
 
 fixtures = [ 
+    "CRM Deal Status",
+    "CRM Deal Status Detail",     
     {
         "dt": "Custom Field",
         "filters": [

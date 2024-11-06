@@ -1,0 +1,222 @@
+[
+ {
+  "active": 1,
+  "crm_deal_status": "Closed",
+  "description": "Indicates a successful outcome.",
+  "detail_name": "Won",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.801763",
+  "name": "Won"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Closed",
+  "description": "The deal was actively pursued but ultimately lost to a competitor or other reason.",
+  "detail_name": "Lost",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.782728",
+  "name": "Lost"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Closed",
+  "description": "The decision was made to not pursue this deal further.",
+  "detail_name": "Passed",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.767262",
+  "name": "Passed"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Closed",
+  "description": "Closed but with potential to reopen in the future, e.g., for upsell opportunities.",
+  "detail_name": "Pending Resale",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.750460",
+  "name": "Pending Resale"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Closed",
+  "description": "The client or company withdrew from the deal.",
+  "detail_name": "Withdrawn",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.727558",
+  "name": "Withdrawn"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Qualification",
+  "description": "Qualified with clear interest from the client.",
+  "detail_name": "Confirmed Interest",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.707136",
+  "name": "Confirmed Interest"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Qualification",
+  "description": "Gathering requirements and understanding client needs.",
+  "detail_name": "Discovery Phase",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.687724",
+  "name": "Discovery Phase"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Qualification",
+  "description": "The client has confirmed budget alignment.",
+  "detail_name": "Budget Established",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.664944",
+  "name": "Budget Established"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Qualification",
+  "description": "The first formal meeting is scheduled.",
+  "detail_name": "Initial Meeting Scheduled",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.641662",
+  "name": "Initial Meeting Scheduled"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Qualification",
+  "description": "Qualified but waiting on the client to proceed.",
+  "detail_name": "Qualified and Waiting",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.622064",
+  "name": "Qualified and Waiting"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Proposal/Quotation",
+  "description": "Proposal sent and awaiting client feedback.",
+  "detail_name": "Awaiting Feedback",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.603307",
+  "name": "Awaiting Feedback"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Proposal/Quotation",
+  "description": "Client actively reviewing the proposal.",
+  "detail_name": "Under Client Review",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.584428",
+  "name": "Under Client Review"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Proposal/Quotation",
+  "description": "Client has requested changes or revisions.",
+  "detail_name": "Pending Modifications",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.561696",
+  "name": "Pending Modifications"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Proposal/Quotation",
+  "description": "Follow-up has been scheduled to discuss the proposal.",
+  "detail_name": "Follow-Up Scheduled",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.542136",
+  "name": "Follow-Up Scheduled"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Proposal/Quotation",
+  "description": "A revised version of the proposal has been sent.",
+  "detail_name": "Revised Proposal Sent",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.522663",
+  "name": "Revised Proposal Sent"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Negotiation",
+  "description": "Awaiting internal or client-side approval.",
+  "detail_name": "Pending Approval",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.505571",
+  "name": "Pending Approval"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Negotiation",
+  "description": "The client is evaluating a proposal.",
+  "detail_name": "Reviewing Proposal",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.487539",
+  "name": "Reviewing Proposal"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Negotiation",
+  "description": "Initial discussions with no formal proposal yet.",
+  "detail_name": "Under Discussion",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.468553",
+  "name": "Under Discussion"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Negotiation",
+  "description": "Developing or customizing a solution for the client.",
+  "detail_name": "Solution Design",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.450659",
+  "name": "Solution Design"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Negotiation",
+  "description": "Awaiting final decision from the client.",
+  "detail_name": "Final Decision Pending",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.428257",
+  "name": "Final Decision Pending"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Ready to Close",
+  "description": "The client needs more time to make a decision.",
+  "detail_name": "Client Decision Pending",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.392592",
+  "name": "Client Decision Pending"
+ },
+ {
+  "active": 1,
+  "crm_deal_status": "Ready to Close",
+  "description": "Internal review or approval process is ongoing.",
+  "detail_name": "Internal Review",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status Detail",
+  "modified": "2024-11-05 11:27:12.120500",
+  "name": "Internal Review"
+ }
+]

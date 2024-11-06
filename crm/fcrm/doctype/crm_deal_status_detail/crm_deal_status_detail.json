@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:detail_name",
+ "creation": "2024-11-05 08:49:54.245508",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "crm_deal_status",
+  "detail_name",
+  "column_break_hahf",
+  "active",
+  "section_break_bzjc",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "crm_deal_status",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "CRM Deal Status",
+   "options": "CRM Deal Status",
+   "reqd": 1
+  },
+  {
+   "fieldname": "detail_name",
+   "fieldtype": "Data",
+   "label": "Detail Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_hahf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_bzjc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_filter": 1,
+   "label": "Description"
+  },
+  {
+   "default": "0",
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Active"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-05 11:04:13.836240",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Deal Status Detail",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "description",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -16,6 +16,7 @@
   "column_break_tukx",
   "next_step",
   "status",
+  "status_detail",
   "sales_channel",
   "deal_owner",
   "organization_tab",
@@ -59,7 +60,8 @@
   "first_response_time",
   "first_responded_on",
   "log_tab",
-  "status_change_log"
+  "status_change_log",
+  "amended_from"
  ],
  "fields": [
   {
@@ -360,11 +362,29 @@
    "fieldtype": "Link",
    "label": "Sales Channel",
    "options": "CRM Sales Channel"
+  },
+  {
+   "depends_on": "eval:doc.status",
+   "fieldname": "status_detail",
+   "fieldtype": "Link",
+   "label": "Status Detail",
+   "options": "CRM Deal Status Detail"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "CRM Deal",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2024-10-30 10:03:54.968190",
+ "modified": "2024-11-05 11:05:30.671900",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

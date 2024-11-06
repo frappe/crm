@@ -1,0 +1,74 @@
+[
+ {
+  "color": "gray",
+  "deal_status": "Qualification",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2024-10-10 09:09:55.118677",
+  "name": "Qualification",
+  "position": 1
+ },
+ {
+  "color": "orange",
+  "deal_status": "Demo/Making",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2024-10-10 09:09:55.122644",
+  "name": "Demo/Making",
+  "position": 2
+ },
+ {
+  "color": "blue",
+  "deal_status": "Proposal/Quotation",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2024-10-10 09:09:55.126618",
+  "name": "Proposal/Quotation",
+  "position": 3
+ },
+ {
+  "color": "yellow",
+  "deal_status": "Negotiation",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2024-10-10 09:09:55.130506",
+  "name": "Negotiation",
+  "position": 4
+ },
+ {
+  "color": "purple",
+  "deal_status": "Ready to Close",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2024-10-10 09:09:55.134303",
+  "name": "Ready to Close",
+  "position": 5
+ },
+ {
+  "color": "green",
+  "deal_status": "Won",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2024-10-10 09:09:55.138196",
+  "name": "Won",
+  "position": 6
+ },
+ {
+  "color": "red",
+  "deal_status": "Lost",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2024-10-10 09:09:55.142032",
+  "name": "Lost",
+  "position": 7
+ },
+ {
+  "color": "gray",
+  "deal_status": "Closed",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2024-11-05 11:20:41.126091",
+  "name": "Closed",
+  "position": 0
+ }
+]

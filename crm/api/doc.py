@@ -784,3 +784,9 @@ def parse_js_to_dict(js_code):
         return None
 
     return parsed_dict
+
+
+@frappe.whitelist()
+def get_crm_deal_status_for_status(status):
+    doc_list = frappe.get_list('CRM Deal Status Detail', filters={'crm_deal_status': status}, fields=['detail_name','description'])
+    return doc_list

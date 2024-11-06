@@ -9,6 +9,19 @@ frappe.ui.form.on("CRM Deal", {
 		if (frm.doc.probability){
 			$('[data-fieldname="probability"] input').val(frm.doc.probability + "%")
 	    }
+
+		frm.set_query('status_detail', () => {
+			return {
+				filters:[
+					['crm_deal_status', '=', frm.doc.status],
+					['active', '=', 1],
+				]
+			}
+		})
+
+
+
+
 	},
 	probability(frm){
 		// add '%' sign for probability
