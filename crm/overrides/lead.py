@@ -5,66 +5,85 @@ import json
 import frappe
 from frappe import _
 from frappe.desk.form.assign_to import add as assign
-from frappe.model.document import Document
 
-from frappe.utils import has_gravatar, validate_email_address
+from erpnext.crm.doctype.lead.lead import Lead
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
 
 
-class CRMLead(Document):
+class Lead(Lead):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from erpnext.crm.doctype.crm_note.crm_note import CRMNote
+		from frappe.types import DF
+
+		annual_revenue: DF.Currency
+		blog_subscriber: DF.Check
+		campaign_name: DF.Link | None
+		city: DF.Data | None
+		company: DF.Link | None
+		company_name: DF.Data | None
+		country: DF.Link | None
+		customer: DF.Link | None
+		disabled: DF.Check
+		email_id: DF.Data | None
+		fax: DF.Data | None
+		first_name: DF.Data | None
+		gender: DF.Link | None
+		image: DF.AttachImage | None
+		industry: DF.Link | None
+		job_title: DF.Data | None
+		language: DF.Link | None
+		last_name: DF.Data | None
+		lead_name: DF.Data | None
+		lead_owner: DF.Link | None
+		market_segment: DF.Link | None
+		middle_name: DF.Data | None
+		mobile_no: DF.Data | None
+		naming_series: DF.Literal["CRM-LEAD-.YYYY.-"]
+		no_of_employees: DF.Literal["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"]
+		notes: DF.Table[CRMNote]
+		phone: DF.Data | None
+		phone_ext: DF.Data | None
+		qualification_status: DF.Literal["Unqualified", "In Process", "Qualified"]
+		qualified_by: DF.Link | None
+		qualified_on: DF.Date | None
+		request_type: DF.Literal["", "Product Enquiry", "Request for Information", "Suggestions", "Other"]
+		salutation: DF.Link | None
+		source: DF.Link | None
+		state: DF.Data | None
+		status: DF.Literal["Lead", "Open", "Replied", "Opportunity", "Quotation", "Lost Quotation", "Interested", "Converted", "Do Not Contact"]
+		territory: DF.Link | None
+		title: DF.Data | None
+		type: DF.Literal["", "Client", "Channel Partner", "Consultant"]
+		unsubscribed: DF.Check
+		website: DF.Data | None
+		whatsapp_no: DF.Data | None
+	# end: auto-generated types
 	def before_validate(self):
 		self.set_sla()
+		super()
 
 	def validate(self):
-		self.set_full_name()
-		self.set_lead_name()
-		self.set_title()
-		self.validate_email()
+		super()
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
 			self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
-		if self.has_value_changed("status"):
-			add_status_change_log(self)
+		# if self.has_value_changed("status"):
+		# 	add_status_change_log(self)
 
 	def after_insert(self):
 		if self.lead_owner:
 			self.assign_agent(self.lead_owner)
+		super()
 
 	def before_save(self):
 		self.apply_sla()
-
-	def set_full_name(self):
-		if self.first_name:
-			self.lead_name = " ".join(
-				filter(None, [self.salutation, self.first_name, self.middle_name, self.last_name])
-			)
-
-	def set_lead_name(self):
-		if not self.lead_name:
-			# Check for leads being created through data import
-			if not self.customer and not self.email and not self.flags.ignore_mandatory:
-				frappe.throw(_("A Lead requires either a person's name or an customer's name"))
-			elif self.customer:
-				self.lead_name = self.customer
-			elif self.email:
-				self.lead_name = self.email.split("@")[0]
-			else:
-				self.lead_name = "Unnamed Lead"
-
-	def set_title(self):
-		self.title = self.customer or self.lead_name
-
-	def validate_email(self):
-		if self.email:
-			if not self.flags.ignore_email_validation:
-				validate_email_address(self.email, throw=True)
-
-			if self.email == self.lead_owner:
-				frappe.throw(_("Lead Owner cannot be same as the Lead Email Address"))
-
-			if self.is_new() or not self.image:
-				self.image = has_gravatar(self.email)
+		super()
 
 	def assign_agent(self, agent):
 		if not agent:
@@ -77,7 +96,7 @@ class CRMLead(Document):
 					# the agent is already set as an assignee
 					return
 
-		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name})
+		assign({"assign_to": [agent], "doctype": "Lead", "name": self.name})
 
 	def share_with_agent(self, agent):
 		if not agent:
@@ -121,8 +140,8 @@ class CRMLead(Document):
 			}
 		)
 
-		if self.email:
-			contact.append("email_ids", {"email_id": self.email, "is_primary": 1})
+		if self.email_id:
+			contact.append("email_ids", {"email_id": self.email_id, "is_primary": 1})
 
 		if self.phone:
 			contact.append("phone_nos", {"phone": self.phone, "is_primary_phone": 1})
@@ -157,7 +176,7 @@ class CRMLead(Document):
 		return customer.name
 
 	def contact_exists(self, throw=True):
-		email_exist = frappe.db.exists("Contact Email", {"email_id": self.email})
+		email_exist = frappe.db.exists("Contact Email", {"email_id": self.email_id})
 		phone_exist = frappe.db.exists("Contact Phone", {"phone": self.phone})
 		mobile_exist = frappe.db.exists("Contact Phone", {"phone": self.mobile_no})
 
@@ -166,7 +185,7 @@ class CRMLead(Document):
 
 		if name:
 			text = "Email" if email_exist else "Phone" if phone_exist else "Mobile No"
-			data = self.email if email_exist else self.phone if phone_exist else self.mobile_no
+			data = self.email_id if email_exist else self.phone if phone_exist else self.mobile_no
 
 			value = "{0}: {1}".format(text, data)
 
@@ -189,7 +208,7 @@ class CRMLead(Document):
 		}
 
 		restricted_fieldtypes = ["Tab Break", "Section Break", "Column Break", "HTML", "Button", "Attach", "Table"]
-		restricted_map_fields = ["name", "naming_series", "creation", "owner", "modified", "modified_by", "idx", "docstatus", "status", "email", "mobile_no", "phone", "sla", "sla_status", "response_by", "first_response_time", "first_responded_on", "communication_status", "sla_creation"]
+		restricted_map_fields = ["name", "naming_series", "creation", "owner", "modified", "modified_by", "idx", "docstatus", "status", "email_id", "mobile_no", "phone", "sla", "sla_status", "response_by", "first_response_time", "first_responded_on", "communication_status", "sla_creation"]
 
 		for field in self.meta.fields:
 			if field.fieldtype in restricted_fieldtypes:
@@ -284,7 +303,7 @@ class CRMLead(Document):
 			{
 				'label': 'Email',
 				'type': 'Data',
-				'key': 'email',
+				'key': 'email_id',
 				'width': '12rem',
 			},
 			{
@@ -311,7 +330,7 @@ class CRMLead(Document):
 			"lead_name",
 			"customer",
 			"status",
-			"email",
+			"email_id",
 			"mobile_no",
 			"lead_owner",
 			"first_name",
@@ -330,17 +349,17 @@ class CRMLead(Document):
 		return {
 			"column_field": "status",
 			"title_field": "lead_name",
-			"kanban_fields": '["customer", "email", "mobile_no", "_assign", "modified"]'
+			"kanban_fields": '["customer", "email_id", "mobile_no", "_assign", "modified"]'
 		}
 
 
 @frappe.whitelist()
 def convert_to_deal(lead, doc=None):
-	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission("CRM Lead", "write", lead):
+	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission("Lead", "write", lead):
 		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
 
-	lead = frappe.get_cached_doc("CRM Lead", lead)
-	if frappe.db.exists("CRM Lead Status", "Qualified"):
+	lead = frappe.get_cached_doc("Lead", lead)
+	if frappe.db.exists("Lead Status", "Qualified"):
 		lead.status = "Qualified"
 	lead.converted = 1
 	if lead.sla and frappe.db.exists("CRM Communication Status", "Replied"):

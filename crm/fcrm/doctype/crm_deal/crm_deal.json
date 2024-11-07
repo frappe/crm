@@ -96,7 +96,7 @@
    "fieldname": "lead",
    "fieldtype": "Link",
    "label": "Lead",
-   "options": "CRM Lead"
+   "options": "Lead"
   },
   {
    "fieldname": "deal_owner",

@@ -1,0 +1,34 @@
+[
+ {
+  "default_value": null,
+  "doc_type": "Lead",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "status",
+  "is_system_generated": 0,
+  "modified": "2024-11-07 16:23:36.279752",
+  "module": "FCRM",
+  "name": "Lead-status-options",
+  "property": "options",
+  "property_type": "Text",
+  "row_name": null,
+  "value": "CRM Lead Status"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Lead",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "status",
+  "is_system_generated": 0,
+  "modified": "2024-11-07 16:23:48.881723",
+  "module": "FCRM",
+  "name": "Lead-status-fieldtype",
+  "property": "fieldtype",
+  "property_type": "Select",
+  "row_name": null,
+  "value": "Link"
+ }
+]

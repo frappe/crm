@@ -192,7 +192,7 @@ const props = defineProps({
   },
   doctype: {
     type: String,
-    default: 'CRM Lead',
+    default: 'Lead',
   },
   subject: {
     type: String,

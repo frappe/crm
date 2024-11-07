@@ -44,7 +44,9 @@ add_to_apps_screen = [
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+    "Lead": "public/js/lead.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -133,7 +135,9 @@ override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 	"User": "crm.overrides.user.CustomUser",
-    "Customer": "crm.overrides.customer.Customer",
+	"Customer": "crm.overrides.customer.Customer",
+	"Lead": "crm.overrides.lead.Lead",
+	"Customize Form": "crm.overrides.customize_form.CustomizeFormOverride",
 }
 
 # Document Events
@@ -252,3 +256,26 @@ doc_events = {
 # auth_hooks = [
 #	"crm.auth.validate"
 # ]
+
+fixtures = [
+	{
+		"dt": "Property Setter",
+		"filters": [
+			[
+				"module",
+				"in",
+				["FCRM"],
+			]
+		],
+	},
+	{
+		"dt": "Custom Field",
+		"filters": [
+			[
+				"module",
+				"in",
+				["FCRM"],
+			]
+		],
+	},
+]

@@ -44,7 +44,7 @@
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
       <Activities
         ref="activities"
-        doctype="CRM Lead"
+        doctype="Lead"
         :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
@@ -204,7 +204,7 @@
     v-model="showAssignmentModal"
     v-model:assignees="lead.data._assignedTo"
     :doc="lead.data"
-    doctype="CRM Lead"
+    doctype="Lead"
   />
   <Dialog
     v-model="showConvertToDealModal"
@@ -280,7 +280,7 @@
   <FilesUploader
     v-if="lead.data?.name"
     v-model="showFilesUploader"
-    doctype="CRM Lead"
+    doctype="Lead"
     :docname="lead.data.name"
     @after="
       () => {
@@ -368,7 +368,7 @@ const customActions = ref([])
 const customStatuses = ref([])
 
 const lead = createResource({
-  url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
+  url: '/api/method/crm.api.lead.get_lead',
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   onSuccess: async (data) => {
@@ -411,7 +411,7 @@ function updateLead(fieldname, value, callback) {
   createResource({
     url: 'frappe.client.set_value',
     params: {
-      doctype: 'CRM Lead',
+      doctype: 'Lead',
       name: props.leadId,
       fieldname,
       value,
@@ -456,7 +456,7 @@ const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
   if (route.query.view || route.query.viewType) {
-    let view = getView(route.query.view, route.query.viewType, 'CRM Lead')
+    let view = getView(route.query.view, route.query.viewType, 'Lead')
     if (view) {
       items.push({
         label: __(view.label),
@@ -554,7 +554,7 @@ function validateFile(file) {
 const fieldsLayout = createResource({
   url: 'crm.api.doc.get_sidebar_fields',
   cache: ['fieldsLayout', props.leadId],
-  params: { doctype: 'CRM Lead', name: props.leadId },
+  params: { doctype: 'Lead', name: props.leadId },
   auto: true,
 })
 
@@ -567,7 +567,7 @@ function updateField(name, value, callback) {
 
 async function deleteLead(name) {
   await call('frappe.client.delete', {
-    doctype: 'CRM Lead',
+    doctype: 'Lead',
     name,
   })
   router.push({ name: 'Leads' })
@@ -636,7 +636,7 @@ async function convertToDeal(updated) {
     showConvertToDealModal.value = false
   } else {
     let deal = await call(
-      'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
+      'crm.overrides.lead.convert_to_deal',
       {
         lead: lead.data.name,
       },

@@ -70,7 +70,7 @@ def get_lead_or_deal_from_number(number):
 
     doc = find_record(doctype, number) or None
     if not doc:
-        doctype = "CRM Lead"
+        doctype = "Lead"
         doc = find_record(doctype, number, "AND converted is not True")
         if not doc:
             doc = find_record(doctype, number)
@@ -111,8 +111,8 @@ def get_whatsapp_messages(reference_doctype, reference_name):
             messages = frappe.get_all(
                 "WhatsApp Message",
                 filters={
-                    "reference_doctype": "CRM Lead",
-                    "reference_name": lead,
+                    "reference_doctype": "Lead",
+                    "reference_name": "Lead",
                 },
                 fields=[
                     "name",

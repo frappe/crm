@@ -79,20 +79,20 @@ class CRMCallLog(Document):
 
 @frappe.whitelist()
 def create_lead_from_call_log(call_log):
-	lead = frappe.new_doc("CRM Lead")
+	lead = frappe.new_doc("Lead")
 	lead.first_name = "Lead from call " + call_log.get("from")
 	lead.mobile_no = call_log.get("from")
 	lead.lead_owner = frappe.session.user
 	lead.save(ignore_permissions=True)
 
 	frappe.db.set_value("CRM Call Log", call_log.get("name"), {
-		"reference_doctype": "CRM Lead",
+		"reference_doctype": "Lead",
 		"reference_docname": lead.name
 	})
 
 	if call_log.get("note"):
 		frappe.db.set_value("FCRM Note", call_log.get("note"), {
-			"reference_doctype": "CRM Lead",
+			"reference_doctype": "Lead",
 			"reference_docname": lead.name
 		})
 

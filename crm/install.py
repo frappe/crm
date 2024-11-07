@@ -111,9 +111,9 @@ def add_default_communication_statuses():
 
 def add_default_fields_layout(force=False):
 	quick_entry_layouts = {
-		"CRM Lead-Quick Entry": {
-			"doctype": "CRM Lead",
-			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email","mobile_no", "gender"],"hideLabel":true},{"label":"Customer","fields":["customer","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
+		"Lead-Quick Entry": {
+			"doctype": "Lead",
+			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email_id","mobile_no", "gender"],"hideLabel":true},{"label":"Customer","fields":["customer","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
 		},
 		"CRM Deal-Quick Entry": {
 			"doctype": "CRM Deal",
@@ -134,9 +134,9 @@ def add_default_fields_layout(force=False):
 	}
 
 	sidebar_fields_layouts = {
-		"CRM Lead-Side Panel": {
-			"doctype": "CRM Lead",
-			"layout": '[{"label": "Details", "name": "details", "opened": true, "fields": ["customer", "website", "territory", "industry", "job_title", "source", "lead_owner"]}, {"label": "Person", "name": "person_tab", "opened": true, "fields": ["salutation", "first_name", "last_name", "email", "mobile_no"]}]'
+		"Lead-Side Panel": {
+			"doctype": "Lead",
+			"layout": '[{"label": "Details", "name": "details", "opened": true, "fields": ["customer", "website", "territory", "industry", "job_title", "source", "lead_owner"]}, {"label": "Person", "name": "person_tab", "opened": true, "fields": ["salutation", "first_name", "last_name", "email_id", "mobile_no"]}]'
 		},
 		"CRM Deal-Side Panel": {
 			"doctype": "CRM Deal",

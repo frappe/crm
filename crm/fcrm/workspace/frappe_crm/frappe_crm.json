@@ -37,8 +37,8 @@
    "color": "Grey",
    "doc_view": "List",
    "label": "Leads",
-   "link_to": "CRM Lead",
-   "stats_filter": "[[\"CRM Lead\",\"converted\",\"=\",0,false]]",
+   "link_to": "Lead",
+   "stats_filter": "[[\"Lead\",\"converted\",\"=\",0,false]]",
    "type": "DocType"
   },
   {
@@ -60,7 +60,7 @@
    "color": "Grey",
    "doc_view": "List",
    "label": "Lead Statuses",
-   "link_to": "CRM Lead Status",
+   "link_to": "Lead Status",
    "stats_filter": "[]",
    "type": "DocType"
   },
