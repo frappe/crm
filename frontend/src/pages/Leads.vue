@@ -23,7 +23,7 @@
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
-    doctype="CRM Lead"
+    doctype="Lead"
     :filters="{ converted: 0 }"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
@@ -271,14 +271,14 @@
     v-if="showNoteModal"
     v-model="showNoteModal"
     :note="note"
-    doctype="CRM Lead"
+    doctype="Lead"
     :doc="docname"
   />
   <TaskModal
     v-if="showTaskModal"
     v-model="showTaskModal"
     :task="task"
-    doctype="CRM Lead"
+    doctype="Lead"
     :doc="docname"
   />
   <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" />

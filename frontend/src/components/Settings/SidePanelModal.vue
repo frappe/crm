@@ -20,7 +20,7 @@
             type="select"
             class="w-1/4"
             v-model="_doctype"
-            :options="['CRM Lead', 'CRM Deal', 'Contact', 'Customer']"
+            :options="['Lead', 'CRM Deal', 'Contact', 'Customer']"
             @change="reload"
           />
           <Switch
@@ -85,7 +85,7 @@ import { ref, watch, onMounted, nextTick } from 'vue'
 const props = defineProps({
   doctype: {
     type: String,
-    default: 'CRM Lead',
+    default: 'Lead',
   },
 })
 

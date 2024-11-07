@@ -201,7 +201,7 @@
     }"
     @loadMore="emit('loadMore')"
   />
-  <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="CRM Lead" />
+  <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="Lead" />
 </template>
 
 <script setup>

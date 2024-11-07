@@ -6,7 +6,7 @@ from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 
 @frappe.whitelist()
 def get_lead(name):
-	Lead = frappe.qb.DocType("CRM Lead")
+	Lead = frappe.qb.DocType("Lead")
 
 	query = frappe.qb.from_(Lead).select("*").where(Lead.name == name).limit(1)
 
@@ -15,8 +15,8 @@ def get_lead(name):
 		frappe.throw(_("Lead not found"), frappe.DoesNotExistError)
 	lead = lead.pop()
 
-	lead["doctype"] = "CRM Lead"
-	lead["fields_meta"] = get_fields_meta("CRM Lead")
-	lead["_form_script"] = get_form_script('CRM Lead')
-	lead["_assign"] = get_assigned_users("CRM Lead", lead.name, lead.owner)
+	lead["doctype"] = "Lead"
+	lead["fields_meta"] = get_fields_meta("Lead")
+	lead["_form_script"] = get_form_script('Lead')
+	lead["_assign"] = get_assigned_users("Lead", lead.name, lead.owner)
 	return lead

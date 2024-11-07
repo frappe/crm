@@ -195,7 +195,7 @@ def get_quick_filters(doctype: str):
 			"options": field.options,
 		})
 
-	if doctype == "CRM Lead":
+	if doctype == "Lead":
 		quick_filters = [filter for filter in quick_filters if filter.get("name") != "converted"]
 
 	return quick_filters

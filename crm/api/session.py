@@ -61,7 +61,7 @@ def get_contacts():
 @frappe.whitelist()
 def get_lead_contacts():
 	lead_contacts = frappe.get_all(
-		"CRM Lead",
+		"Lead",
 		fields=[
 			"name",
 			"lead_name",

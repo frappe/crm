@@ -10,7 +10,7 @@ from frappe.desk.form.load import get_docinfo
 def get_activities(name):
 	if frappe.db.exists("CRM Deal", name):
 		return get_deal_activities(name)
-	elif frappe.db.exists("CRM Lead", name):
+	elif frappe.db.exists("Lead", name):
 		return get_lead_activities(name)
 	else:
 		frappe.throw(_("Document not found"), frappe.DoesNotExistError)
@@ -155,9 +155,9 @@ def get_deal_activities(name):
 	return activities, calls, notes, tasks, attachments
 
 def get_lead_activities(name):
-	get_docinfo('', "CRM Lead", name)
+	get_docinfo('', "Lead", name)
 	docinfo = frappe.response["docinfo"]
-	lead_meta = frappe.get_meta("CRM Lead")
+	lead_meta = frappe.get_meta("Lead")
 	lead_fields = {field.fieldname: {"label": field.label, "options": field.options} for field in lead_meta.fields}
 	avoid_fields = [
 		"converted",
@@ -168,7 +168,7 @@ def get_lead_activities(name):
 		"first_responded_on",
 	]
 
-	doc = frappe.db.get_values("CRM Lead", name, ["creation", "owner"])[0]
+	doc = frappe.db.get_values("Lead", name, ["creation", "owner"])[0]
 	activities = [{
 		"activity_type": "creation",
 		"creation": doc[0],
@@ -273,7 +273,7 @@ def get_lead_activities(name):
 	calls = get_linked_calls(name)
 	notes = get_linked_notes(name)
 	tasks = get_linked_tasks(name)
-	attachments = get_attachments('CRM Lead', name)
+	attachments = get_attachments('Lead', name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)

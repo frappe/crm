@@ -65,8 +65,8 @@ const isLeadCreating = ref(false)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Lead'],
-  params: { doctype: 'CRM Lead', type: 'Quick Entry' },
+  cache: ['quickEntryFields', 'Lead'],
+  params: { doctype: 'Lead', type: 'Quick Entry' },
   auto: true,
   transform: (data) => {
     return data.forEach((section) => {
@@ -87,7 +87,7 @@ const lead = reactive({
   salutation: '',
   first_name: '',
   last_name: '',
-  email: '',
+  email_id: '',
   mobile_no: '',
   gender: '',
   customer: '',
@@ -105,7 +105,7 @@ const createLead = createResource({
   makeParams(values) {
     return {
       doc: {
-        doctype: 'CRM Lead',
+        doctype: 'Lead',
         ...values,
       },
     }
@@ -143,7 +143,7 @@ function createNewLead() {
         error.value = __('Mobile No should be a number')
         return error.value
       }
-      if (lead.email && !lead.email.includes('@')) {
+      if (lead.email_id && !lead.email_id.includes('@')) {
         error.value = __('Invalid Email')
         return error.value
       }

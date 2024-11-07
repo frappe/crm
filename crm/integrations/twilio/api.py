@@ -174,7 +174,7 @@ def get_lead_or_deal_from_number(call):
 
 	doc = find_record(doctype, number) or None
 	if not doc:
-		doctype = "CRM Lead"
+		doctype = "Lead"
 		doc = find_record(doctype, number, 'AND converted is not True')
 		if not doc:
 			doc = find_record(doctype, number)

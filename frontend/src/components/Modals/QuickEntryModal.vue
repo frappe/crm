@@ -21,7 +21,7 @@
             class="w-1/4"
             v-model="_doctype"
             :options="[
-              'CRM Lead',
+              'Lead',
               'CRM Deal',
               'Contact',
               'Customer',
@@ -69,7 +69,7 @@ import { ref, watch, onMounted, nextTick } from 'vue'
 const props = defineProps({
   doctype: {
     type: String,
-    default: 'CRM Lead',
+    default: 'Lead',
   },
 })
 

@@ -72,7 +72,7 @@
    "label": "Description"
   },
   {
-   "default": "CRM Lead",
+   "default": "Lead",
    "fieldname": "reference_doctype",
    "fieldtype": "Link",
    "label": "Reference Document Type",

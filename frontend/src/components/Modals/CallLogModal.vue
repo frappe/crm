@@ -156,14 +156,14 @@ const detailFields = computed(() => {
     },
     {
       icon:
-        callLog.value.doc.reference_doctype == 'CRM Lead'
+        callLog.value.doc.reference_doctype == 'Lead'
           ? LeadsIcon
           : Dealsicon,
       name: 'reference_doctype',
       value:
-        callLog.value.doc.reference_doctype == 'CRM Lead' ? 'Lead' : 'Deal',
+        callLog.value.doc.reference_doctype == 'Lead' ? 'Lead' : 'Deal',
       link: () => {
-        if (callLog.value.doc.reference_doctype == 'CRM Lead') {
+        if (callLog.value.doc.reference_doctype == 'Lead') {
           router.push({
             name: 'Lead',
             params: { leadId: callLog.value.doc.reference_docname },

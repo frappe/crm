@@ -2,8 +2,8 @@ import json
 import frappe
 
 def execute():
-	if not frappe.db.exists("CRM Fields Layout", {"dt": "CRM Lead", "type": "Side Panel"}):
-		create_doctype_fields_layout("CRM Lead")
+	if not frappe.db.exists("CRM Fields Layout", {"dt": "Lead", "type": "Side Panel"}):
+		create_doctype_fields_layout("Lead")
 
 	if not frappe.db.exists("CRM Fields Layout", {"dt": "CRM Deal", "type": "Side Panel"}):
 		create_doctype_fields_layout("CRM Deal")
