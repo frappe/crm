@@ -502,6 +502,11 @@ def get_data(
 					"options": get_options(field.get("type"), field.get("options")),
 				}
 
+	default_report = ''
+	if frappe.db.exists("CRM View Settings", {'dt':doctype}):
+		default_report = frappe.db.get_value("CRM View Settings", {'dt':doctype},['report_name'])
+
+ 
 	return {
 		"data": data,
 		"columns": columns,
@@ -521,6 +526,7 @@ def get_data(
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),
 		"view_type": view_type,
+		"default_report":default_report,
 		"report_data":report_data,
 		"report_filter_structure":report_filter_structure,
 	}
@@ -790,3 +796,31 @@ def parse_js_to_dict(js_code):
 def get_crm_deal_status_for_status(status):
     doc_list = frappe.get_list('CRM Deal Status Detail', filters={'crm_deal_status': status}, fields=['detail_name','description'])
     return doc_list
+
+
+@frappe.whitelist()
+def set_default_report(doctype, report_name):
+    try:
+        frappe.db.set_value("CRM View Settings", {'dt': doctype}, {'report_name': report_name})
+        frappe.db.commit()
+        return {"status": "success", "message": "Default report set successfully."}
+    except Exception as e:
+        frappe.db.rollback()
+        return {"status": "failed", "message": f"An error occurred: {str(e)}"}
+	
+@frappe.whitelist()
+
+def get_default_report(doctype):
+    report_name = frappe.db.get_value("CRM View Settings", {'dt': doctype}, 'report_name')
+    # Check if a report is found in CRM View Settings
+    if report_name:
+        return report_name
+    else:
+        # Default reports if not found in CRM View Settings
+        if doctype == "CRM Lead":
+            return "My Leads"
+        elif doctype == "CRM Deal":
+            return "My Deals"
+        else:
+            return None  # Or a default value for other doctypes if needed
+ 
