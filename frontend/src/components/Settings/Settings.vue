@@ -45,8 +45,8 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import UpgradeIcon from '@/components/Icons/UpgradeIcon.vue'
-import WalletsIcon from '@/components/Icons/WalletsIcon.vue'
+import PlansIcon from '@/components/Icons/PlansIcon.vue'
+import BillingIcon from '@/components/Icons/BillingIcon.vue'
 import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
@@ -89,12 +89,12 @@ const tabs = computed(() => {
       items: [
         {
           label: 'Plans',
-          icon: UpgradeIcon,
+          icon: PlansIcon,
           component: markRaw(h(Plans, { baseAPIPath: 'crm.api.saas_billing' })),
         },
         {
           label: 'Billing',
-          icon: WalletsIcon,
+          icon: BillingIcon,
           component: markRaw(
             h(Billing, {
               baseAPIPath: 'crm.api.saas_billing',
