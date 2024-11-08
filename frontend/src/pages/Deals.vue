@@ -25,9 +25,10 @@
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Deal"
     :options="{
-      allowedViews: ['list', 'group_by', 'kanban'],
+      allowedViews: ['list', 'group_by', 'kanban', 'report'],
     }"
   />
+
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
     v-model="deals"
@@ -204,6 +205,24 @@
       </div>
     </template>
   </KanbanView>
+  <ReportView
+    ref="dealsListView"
+    v-else-if="deals.data && rows.length && route.params.viewType == 'report'"
+    v-model="deals.data.page_length_count"
+    v-model:list="deals"
+    :rows="rows"
+    :report_data="deals"
+    :columns="deals.data.columns"
+    :options="{
+      showTooltip: true,
+      resizeColumn: true,
+      rowCount: deals.data.row_count,
+      totalCount: deals.data.total_count,
+    }"
+    @loadMore="() => loadMore++"
+    @columnWidthUpdated="() => triggerResize++"
+    @updatePageCount="(count) => (updatedPageCount = count)"
+  />
   <DealsListView
     ref="dealsListView"
     v-else-if="deals.data && rows.length"
@@ -297,7 +316,8 @@ import {
 } from '@/utils'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, onMounted } from 'vue'
+import ReportView from '../components/ListViews/ReportView.vue'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
@@ -318,6 +338,7 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
 
 function getRow(name, field) {
   function getValue(value) {

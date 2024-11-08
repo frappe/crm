@@ -31,7 +31,8 @@
   "column_field",
   "title_field",
   "kanban_columns",
-  "kanban_fields"
+  "kanban_fields",
+  "report_name"
  ],
  "fields": [
   {
@@ -178,11 +179,16 @@
    "fieldname": "title_field",
    "fieldtype": "Data",
    "label": "Title Field"
+  },
+  {
+   "fieldname": "report_name",
+   "fieldtype": "Data",
+   "label": "Report Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-28 03:12:35.352488",
+ "modified": "2024-11-05 23:38:02.367163",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

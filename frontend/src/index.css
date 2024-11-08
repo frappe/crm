@@ -45,3 +45,7 @@
     text-align: center;
     text-decoration: none;
 }
+
+.report-filter select {
+	min-width: 260px !important;
+}

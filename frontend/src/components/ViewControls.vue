@@ -63,12 +63,24 @@
       class="flex flex-1 items-center overflow-x-auto -ml-1"
       orientation="horizontal"
     >
+        <template v-if="route.params.viewType === 'report'">
+          <FormControl
+          class="form-control cursor-pointer [&_select]:cursor-pointer m-1 min-w-30 report-filter"
+          type="select"
+          v-model="selectedOption"
+          :options="reports_option"
+          :placeholder="'Report Name'"
+          @change.stop="updateReport($event.target.value)"
+          />
+        </template>
+
       <div
+        v-if="route.params.viewType !== 'report'"
         v-for="filter in quickFilterList"
         :key="filter.name"
         class="m-1 min-w-36"
       >
-        <QuickFilterField
+        <QuickFilterField 
           :filter="filter"
           @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
         />
@@ -96,13 +108,14 @@
           @update="updateGroupBy"
         />
         <Filter
+        v-if="route.params.viewType !== 'report'"
           v-model="list"
           :doctype="doctype"
           :default_filters="filters"
           @update="updateFilter"
         />
         <SortBy
-          v-if="route.params.viewType !== 'kanban'"
+          v-if="route.params.viewType !== 'kanban' && route.params.viewType !== 'report'"
           v-model="list"
           :doctype="doctype"
           @update="updateSort"
@@ -114,14 +127,14 @@
           @update="updateKanbanSettings"
         />
         <ColumnSettings
-          v-else-if="!options.hideColumnsButton"
+          v-else-if="!options.hideColumnsButton && route.params.viewType !== 'report'"
           v-model="list"
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
         />
         <Dropdown
           v-if="
-            !options.hideColumnsButton && route.params.viewType !== 'kanban'
+            !options.hideColumnsButton && route.params.viewType !== 'kanban' && route.params.viewType !== 'report'
           "
           :options="[
             {
@@ -234,14 +247,20 @@ import {
   call,
   FeatherIcon,
   usePageMeta,
+  FormControl
 } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
 import _ from 'lodash'
+import Select from 'frappe-ui/src/components/Select.vue'
 
 const props = defineProps({
+  report:{
+    type: String,
+    value:""
+  },
   doctype: {
     type: String,
     required: true,
@@ -276,6 +295,8 @@ const defaultParams = ref('')
 
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
+const reports_option = ref([]);
+
 
 function getViewType() {
   let viewType = route.params.viewType || 'list'
@@ -294,6 +315,11 @@ function getViewType() {
       name: 'kanban',
       label: __('Kanban'),
       icon: markRaw(KanbanIcon),
+    },
+    report: {
+      name: 'report',
+      label: __('Report'),
+      icon: markRaw(ListIcon),
     },
   }
 
@@ -361,6 +387,8 @@ watch(updatedPageCount, (value) => {
 
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
+
+  const default_report = (props.doctype == 'CRM Deal') ? 'My Deals' : 'My Leads';
   const view_name = _view?.name || ''
   const view_type = _view?.type || route.params.viewType || 'list'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
@@ -372,7 +400,8 @@ function getParams() {
   const title_field = _view?.title_field || ''
   const kanban_columns = _view?.kanban_columns || ''
   const kanban_fields = _view?.kanban_fields || ''
-
+  const report_name = _view?.report_name || default_report
+  
   view.value = {
     name: view_name,
     label: _view?.label || getViewType().label,
@@ -385,6 +414,8 @@ function getParams() {
     title_field: title_field,
     kanban_columns: kanban_columns,
     kanban_fields: kanban_fields,
+    report_name: report_name,
+
     columns: columns,
     rows: rows,
     route_name: _view?.route_name || route.name,
@@ -407,6 +438,7 @@ function getParams() {
     title_field: title_field,
     kanban_columns: kanban_columns,
     kanban_fields: kanban_fields,
+    report_name: report_name,
     columns: columns,
     rows: rows,
     page_length: pageLength.value,
@@ -435,6 +467,7 @@ list.value = createResource({
       title_field: data.title_field,
       kanban_columns: data.kanban_columns,
       kanban_fields: data.kanban_fields,
+      report_name: defaultParams.value.report_name,
       columns: data.columns,
       rows: data.rows,
       page_length: params.page_length,
@@ -443,7 +476,30 @@ list.value = createResource({
   },
 })
 
-onMounted(() => useDebounceFn(reload, 100)())
+onMounted(async () => {
+  const resource = createResource({
+    params: {
+      doctype: props.doctype,
+    },
+    auto: true,
+    url: 'crm.api.doc.get_reports_for_doctype',
+    transform: (data) => {
+
+      const actualData = unwrapProxy(data);
+
+      if (!actualData || !Array.isArray(actualData)) {
+        return []; 
+      }
+
+      const namesArray = actualData.map((item) => item.name);
+
+      reports_option.value = namesArray;
+      return namesArray;
+    },
+  });
+
+  useDebounceFn(reload, 100)();
+});
 
 const isLoading = computed(() => list.value?.loading)
 
@@ -455,6 +511,9 @@ function reload() {
 const showExportDialog = ref(false)
 const export_type = ref('Excel')
 const export_all = ref(false)
+
+const selectedOption = ref((props.doctype == 'CRM Deal') ? 'My Deals' : 'My Leads')
+
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
@@ -504,6 +563,18 @@ if (allowedViews.includes('group_by')) {
     onClick() {
       viewUpdated.value = false
       router.push({ name: route.name, params: { viewType: 'group_by' } })
+    },
+  })
+}
+
+if (allowedViews.includes('report')) {
+  defaultViews.push({
+    name: 'report',
+    label: __(props.options?.defaultViewName) || __('Report'),
+    icon: markRaw(GroupByIcon),
+    onClick() {
+      viewUpdated.value = false
+      router.push({ name: route.name, params: { viewType: 'report' } })
     },
   })
 }
@@ -636,6 +707,17 @@ function applyQuickFilter(filter, value) {
     filter['value'] = ''
   }
   updateFilter(filters)
+}
+
+function updateReport(value) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  list.value.params.report_name = value
+  view.value.report_name = value
+  list.value.reload()
 }
 
 function updateFilter(filters) {
@@ -819,6 +901,7 @@ function create_or_update_default_view() {
       column_field: defaultParams.value.column_field,
       title_field: defaultParams.value.title_field,
       kanban_columns: defaultParams.value.kanban_columns,
+      report_name: defaultParams.value.report_name,
       kanban_fields: defaultParams.value.kanban_fields,
       columns: defaultParams.value.columns,
       rows: defaultParams.value.rows,
@@ -844,6 +927,7 @@ function update_custom_view() {
     title_field: defaultParams.value.title_field,
     kanban_columns: defaultParams.value.kanban_columns,
     kanban_fields: defaultParams.value.kanban_fields,
+    report_name: defaultParams.value.report_name,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,
@@ -1024,6 +1108,7 @@ function saveView() {
     title_field: defaultParams.value.title_field,
     kanban_columns: defaultParams.value.kanban_columns,
     kanban_fields: defaultParams.value.kanban_fields,
+    report_name: defaultParams.value.report_name,
     columns: defaultParams.value.columns,
     rows: defaultParams.value.rows,
     route_name: route.name,
@@ -1089,6 +1174,23 @@ function likeDoc({ name, liked }) {
     auto: true,
     onSuccess: () => reload(),
   })
+}
+
+/**
+ *  Convert proxy object into array
+ * @param proxyData 
+ */
+ function unwrapProxy(proxyData) {
+  if (Array.isArray(proxyData)) {
+    return proxyData.map((item) => unwrapProxy(item));
+  } 
+  else if (proxyData !== null && typeof proxyData === 'object') {
+    return Object.keys(proxyData).reduce((acc, key) => {
+      acc[key] = unwrapProxy(proxyData[key]);
+      return acc;
+    }, {});
+  }
+  return proxyData;
 }
 
 defineExpose({
