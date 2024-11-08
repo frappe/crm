@@ -133,20 +133,30 @@
           @update="(isDefault) => updateColumns(isDefault)"
         />
         <Dropdown
-          v-if="
-            !options.hideColumnsButton && route.params.viewType !== 'kanban' && route.params.viewType !== 'report'
-          "
+          v-if="!options.hideColumnsButton && route.params.viewType !== 'kanban'"
           :options="[
             {
               group: __('Options'),
               hideLabel: true,
               items: [
-                {
-                  label: __('Export'),
-                  icon: () =>
-                    h(FeatherIcon, { name: 'download', class: 'h-4 w-4' }),
-                  onClick: () => (showExportDialog = true),
-                },
+                ...(route.params.viewType !== 'report'
+                  ? [
+                      {
+                        label: __('Export'),
+                        icon: () => h(FeatherIcon, { name: 'download', class: 'h-4 w-4' }),
+                        onClick: () => (showExportDialog = true),
+                      },
+                    ]
+                  : []),
+                ...(route.params.viewType === 'report'
+                  ? [
+                      {
+                        label: __('Set As Default'),
+                        icon: () => h(DocumentIcon, { name: 'download', class: 'h-4 w-4' }),
+                        onClick: () => setDefaultReport(),
+                      },
+                    ]
+                  : []),
               ],
             },
           ]"
@@ -222,6 +232,7 @@
 </template>
 <script setup>
 import ListIcon from '@/components/Icons/ListIcon.vue'
+import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
@@ -296,6 +307,7 @@ const defaultParams = ref('')
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
 const reports_option = ref([]);
+const default_report_name = ref();
 
 
 function getViewType() {
@@ -389,7 +401,6 @@ watch(updatedPageCount, (value) => {
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
 
-  const default_report = (props.doctype == 'CRM Deal') ? 'My Deals' : 'My Leads';
   const view_name = _view?.name || ''
   const view_type = _view?.type || route.params.viewType || 'list'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
@@ -401,7 +412,7 @@ function getParams() {
   const title_field = _view?.title_field || ''
   const kanban_columns = _view?.kanban_columns || ''
   const kanban_fields = _view?.kanban_fields || ''
-  const report_name = _view?.report_name || default_report
+  const report_name = _view?.report_name || default_report_name
 
   view.value = {
     name: view_name,
@@ -498,7 +509,21 @@ onMounted(async () => {
       return namesArray;
     },
   });
+  createResource({
+  auto: true,
+  params: {
+      doctype: props.doctype,
+    },
+  url: 'crm.api.doc.get_default_report',
+  transform: (data) => {
+    // Access the actual data from the proxy object
+    const actualData = unwrapProxy(data);
 
+   default_report_name.value = actualData
+    
+  },
+
+});
   useDebounceFn(reload, 100)();
 });
 
@@ -513,7 +538,7 @@ const showExportDialog = ref(false)
 const export_type = ref('Excel')
 const export_all = ref(false)
 
-const selectedOption = ref((props.doctype == 'CRM Deal') ? 'My Deals' : 'My Leads')
+const selectedOption = ref(default_report_name)
 
 
 async function exportRows() {
@@ -1220,4 +1245,17 @@ watch([() => route, () => route.params.viewType], (value, old_value) => {
   if (value[0] === old_value[0] && value[1] === value[0]) return
   reload()
 })
+function setDefaultReport(){
+  createResource({
+  auto: true,
+  params: {
+      doctype: props.doctype,
+      report_name: list.value.params.report_name,
+    },
+  url: 'crm.api.doc.set_default_report',
+  transform: (data) => {
+    return true;
+  },
+});
+}
 </script>
