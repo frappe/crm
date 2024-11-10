@@ -28,10 +28,13 @@ def get_headers():
     }
 
 @frappe.whitelist()
-def generate_access_token():
+def get_token_and_base_url():
     request = requests.post(f"{get_base_url()}/api/method/press.saas.api.auth.generate_access_token", headers=get_headers())
     if request.status_code == 200:
-        return request.json()["message"]
+        return {
+            "base_url": get_base_url(),
+            "token": request.json()["message"],
+        }
     else:
         frappe.throw("Failed to generate access token")
 
@@ -52,5 +55,4 @@ def current_site_info():
 @frappe.whitelist()
 def saas_api(method, data={}):
     request = requests.post(f"{get_base_url()}/api/method/press.saas.api.{method}", headers=get_headers(), json=data)
-    print(request.json())
     return request.json().get("message")
