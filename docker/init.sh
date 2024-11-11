@@ -22,7 +22,7 @@ bench set-redis-socketio-host redis:6379
 sed -i '/redis/d' ./Procfile
 sed -i '/watch/d' ./Procfile
 
-bench get-app crm
+bench get-app crm --branch develop
 
 bench new-site crm.localhost \
     --force \
@@ -34,7 +34,6 @@ bench --site crm.localhost install-app crm
 bench --site crm.localhost set-config developer_mode 1
 bench --site crm.localhost clear-cache
 bench --site crm.localhost set-config mute_emails 1
-bench --site crm.localhost add-user alex@example.com --first-name Alex --last-name Scott --password 123 --user-type 'System User' --add-role 'crm Admin'
 bench use crm.localhost
 
 bench start

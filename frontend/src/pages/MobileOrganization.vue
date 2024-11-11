@@ -1,84 +1,73 @@
 <template>
   <LayoutHeader v-if="organization.doc">
-    <template #left-header>
+    <header
+      class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2"
+    >
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">
           <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
         </template>
       </Breadcrumbs>
-    </template>
+    </header>
   </LayoutHeader>
-  <div ref="parentRef" class="flex h-full">
-    <Resizer
-      v-if="organization.doc"
-      :parent="$refs.parentRef"
-      class="flex h-full flex-col overflow-hidden border-r"
+  <div v-if="organization.doc" class="flex flex-col h-full overflow-hidden">
+    <FileUploader
+      @success="changeOrganizationImage"
+      :validateFile="validateFile"
     >
-      <div class="border-b">
-        <FileUploader
-          @success="changeOrganizationImage"
-          :validateFile="validateFile"
-        >
-          <template #default="{ openFileSelector, error }">
-            <div class="flex flex-col items-start justify-start gap-4 p-5">
-              <div class="flex gap-4 items-center">
-                <div class="group relative h-15.5 w-15.5">
-                  <Avatar
-                    size="3xl"
-                    class="h-15.5 w-15.5"
-                    :label="organization.doc.organization_name"
-                    :image="organization.doc.organization_logo"
-                  />
-                  <component
-                    :is="organization.doc.image ? Dropdown : 'div'"
-                    v-bind="
-                      organization.doc.image
-                        ? {
-                            options: [
-                              {
-                                icon: 'upload',
-                                label: organization.doc.image
-                                  ? __('Change image')
-                                  : __('Upload image'),
-                                onClick: openFileSelector,
-                              },
-                              {
-                                icon: 'trash-2',
-                                label: __('Remove image'),
-                                onClick: () => changeOrganizationImage(''),
-                              },
-                            ],
-                          }
-                        : { onClick: openFileSelector }
-                    "
-                    class="!absolute bottom-0 left-0 right-0"
-                  >
-                    <div
-                      class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
-                      style="
-                        -webkit-clip-path: inset(22px 0 0 0);
-                        clip-path: inset(22px 0 0 0);
-                      "
-                    >
-                      <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
-                    </div>
-                  </component>
+      <template #default="{ openFileSelector, error }">
+        <div class="flex flex-col items-start justify-start gap-4 p-4">
+          <div class="flex gap-4 items-center">
+            <div class="group relative h-14.5 w-14.5">
+              <Avatar
+                size="3xl"
+                class="h-14.5 w-14.5"
+                :label="organization.doc.organization_name"
+                :image="organization.doc.organization_logo"
+              />
+              <component
+                :is="organization.doc.organization_logo ? Dropdown : 'div'"
+                v-bind="
+                  organization.doc.organization_logo
+                    ? {
+                        options: [
+                          {
+                            icon: 'upload',
+                            label: organization.doc.organization_logo
+                              ? __('Change image')
+                              : __('Upload image'),
+                            onClick: openFileSelector,
+                          },
+                          {
+                            icon: 'trash-2',
+                            label: __('Remove image'),
+                            onClick: () => changeOrganizationImage(''),
+                          },
+                        ],
+                      }
+                    : { onClick: openFileSelector }
+                "
+                class="!absolute bottom-0 left-0 right-0"
+              >
+                <div
+                  class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                  style="
+                    -webkit-clip-path: inset(22px 0 0 0);
+                    clip-path: inset(22px 0 0 0);
+                  "
+                >
+                  <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
                 </div>
-                <div class="flex flex-col gap-2 truncate">
-                  <div class="truncate text-2xl font-medium">
-                    <span>{{ organization.doc.name }}</span>
-                  </div>
-                  <div
-                    v-if="organization.doc.website"
-                    class="flex items-center gap-1.5 text-base text-gray-800"
-                  >
-                    <WebsiteIcon class="size-4" />
-                    <span>{{ website(organization.doc.website) }}</span>
-                  </div>
-                  <ErrorMessage :message="__(error)" />
-                </div>
+              </component>
+            </div>
+            <div class="flex flex-col gap-2 truncate">
+              <div class="truncate text-lg font-medium">
+                {{ organization.doc.name }}
               </div>
-              <div class="flex gap-1.5">
+              <div class="flex items-center gap-1.5">
+                <Button @click="openWebsite">
+                  <FeatherIcon name="link" class="h-4 w-4" />
+                </Button>
                 <Button
                   :label="__('Delete')"
                   theme="red"
@@ -89,55 +78,22 @@
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
                   </template>
                 </Button>
-                <Tooltip :text="__('Open website')">
-                  <div>
-                    <Button @click="openWebsite">
-                      <FeatherIcon name="link" class="h-4 w-4" />
-                    </Button>
-                  </div>
-                </Tooltip>
               </div>
+              <ErrorMessage :message="__(error)" />
             </div>
-          </template>
-        </FileUploader>
-      </div>
-      <div
-        v-if="fieldsLayout.data"
-        class="flex flex-1 flex-col justify-between overflow-hidden"
-      >
-        <div class="flex flex-col overflow-y-auto">
-          <div
-            v-for="(section, i) in fieldsLayout.data"
-            :key="section.label"
-            class="flex flex-col p-3"
-            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-          >
-            <Section :is-opened="section.opened" :label="section.label">
-              <template #actions>
-                <Button
-                  v-if="i == 0 && isManager()"
-                  variant="ghost"
-                  class="w-7"
-                  @click="showSidePanelModal = true"
-                >
-                  <EditIcon class="h-4 w-4" />
-                </Button>
-              </template>
-              <SectionFields
-                v-if="section.fields"
-                :fields="section.fields"
-                :isLastSection="i == fieldsLayout.data.length - 1"
-                v-model="organization.doc"
-                @update="updateField"
-              />
-            </Section>
           </div>
         </div>
-      </div>
-    </Resizer>
-    <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
+      </template>
+    </FileUploader>
+    <Tabs
+      v-model="tabIndex"
+      :tabs="tabs"
+      tablistClass="!px-4"
+      class="overflow-auto"
+    >
       <template #tab="{ tab, selected }">
         <button
+          v-if="tab.name !== 'Details'"
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
           :class="{ 'text-gray-900': selected }"
         >
@@ -155,6 +111,30 @@
         </button>
       </template>
       <template #default="{ tab }">
+        <div v-if="tab.name == 'Details'">
+          <div
+            v-if="fieldsLayout.data"
+            class="flex flex-1 flex-col justify-between overflow-hidden"
+          >
+            <div class="flex flex-col overflow-y-auto">
+              <div
+                v-for="(section, i) in fieldsLayout.data"
+                :key="section.label"
+                class="flex flex-col px-2 py-3 sm:p-3"
+                :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
+              >
+                <Section :is-opened="section.opened" :label="section.label">
+                  <SectionFields
+                    :fields="section.fields"
+                    :isLastSection="i == fieldsLayout.data.length - 1"
+                    v-model="organization.doc"
+                    @update="updateField"
+                  />
+                </Section>
+              </div>
+            </div>
+          </div>
+        </div>
         <DealsListView
           class="mt-4"
           v-if="tab.label === 'Deals' && rows.length"
@@ -170,7 +150,7 @@
           :options="{ selectable: false, showTooltip: false }"
         />
         <div
-          v-if="!rows.length"
+          v-if="!rows.length && tab.name !== 'Details'"
           class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
@@ -181,33 +161,18 @@
       </template>
     </Tabs>
   </div>
-  <SidePanelModal
-    v-if="showSidePanelModal"
-    v-model="showSidePanelModal"
-    doctype="CRM Organization"
-    @reload="() => fieldsLayout.reload()"
-  />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Organization"
-  />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
-import Resizer from '@/components/Resizer.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
-import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
@@ -223,7 +188,6 @@ import {
   createToast,
 } from '@/utils'
 import {
-  Tooltip,
   Breadcrumbs,
   Avatar,
   FileUploader,
@@ -245,11 +209,9 @@ const props = defineProps({
   },
 })
 
-const { getUser, isManager } = usersStore()
+const { getUser } = usersStore()
 const { $dialog } = globalStore()
 const { getDealStatus } = statusesStore()
-const showSidePanelModal = ref(false)
-const showQuickEntryModal = ref(false)
 
 const route = useRoute()
 const router = useRouter()
@@ -350,10 +312,6 @@ async function deleteOrganization() {
   })
 }
 
-function website(url) {
-  return url && url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
-}
-
 function openWebsite() {
   if (!organization.doc.website)
     createToast({
@@ -411,12 +369,19 @@ function getParsedFields(data) {
 const tabIndex = ref(0)
 const tabs = [
   {
-    label: 'Deals',
+    name: 'Details',
+    label: __('Details'),
+    icon: DetailsIcon,
+  },
+  {
+    name: 'Deals',
+    label: __('Deals'),
     icon: h(DealsIcon, { class: 'h-4 w-4' }),
     count: computed(() => deals.data?.length),
   },
   {
-    label: 'Contacts',
+    name: 'Contacts',
+    label: __('Contacts'),
     icon: h(ContactsIcon, { class: 'h-4 w-4' }),
     count: computed(() => contacts.data?.length),
   },

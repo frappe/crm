@@ -18,15 +18,12 @@
         >
           <template #right>
             <Badge
-              v-if="
-                !isSidebarCollapsed &&
-                notificationsStore().unreadNotificationsCount
-              "
-              :label="notificationsStore().unreadNotificationsCount"
+              v-if="!isSidebarCollapsed && unreadNotificationsCount"
+              :label="unreadNotificationsCount"
               variant="subtle"
             />
             <div
-              v-else-if="notificationsStore().unreadNotificationsCount"
+              v-else-if="unreadNotificationsCount"
               class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-gray-800 ring-1 ring-white"
             />
           </template>
