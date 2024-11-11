@@ -115,7 +115,10 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
-import { notificationsStore } from '@/stores/notifications'
+import {
+  unreadNotificationsCount,
+  notificationsStore,
+} from '@/stores/notifications'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { FeatherIcon, TrialBanner } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
