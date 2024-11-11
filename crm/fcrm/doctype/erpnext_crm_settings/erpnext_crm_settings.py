@@ -138,13 +138,13 @@ def create_prospect_in_remote_site(opportunity, erpnext_crm_settings):
 			{
 				"customer": doc.customer,
 				"lead_name": doc.lead_name,
-				"custom_no_of_employees": doc.custom_no_of_employees,
+				"no_of_employees": doc.no_of_employees,
 				"opportunity_owner": doc.opportunity_owner,
 				"opportunity": doc.name,
 				"territory": doc.territory,
 				"industry": doc.industry,
 				"website": doc.website,
-				"custom_annual_revenue": doc.custom_annual_revenue,
+				"annual_revenue": doc.annual_revenue,
 				"contacts": json.dumps(contacts),
 				"erpnext_company": erpnext_crm_settings.erpnext_company,
 				"address": address.as_dict() if address else None

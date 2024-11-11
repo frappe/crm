@@ -99,8 +99,8 @@ let _address = ref({})
 let _customer = ref({
   customer_name: '',
   website: '',
-  custom_annual_revenue: '',
-  custom_no_of_employees: '1-10',
+  annual_revenue: '',
+  no_of_employees: '1-10',
   industry: '',
 })
 
@@ -220,16 +220,16 @@ const fields = computed(() => {
     },
     {
       icon: MoneyIcon,
-      name: 'custom_annual_revenue',
+      name: 'annual_revenue',
       value: formatNumberIntoCurrency(
-        _customer.value.custom_annual_revenue,
+        _customer.value.annual_revenue,
         _customer.value.currency,
       ),
     },
     {
       icon: h(FeatherIcon, { name: 'hash', class: 'h-4 w-4' }),
-      name: 'custom_no_of_employees',
-      value: _customer.value.custom_no_of_employees,
+      name: 'no_of_employees',
+      value: _customer.value.no_of_employees,
     },
     {
       icon: h(FeatherIcon, { name: 'briefcase', class: 'h-4 w-4' }),

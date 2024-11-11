@@ -129,7 +129,7 @@ def add_default_fields_layout(force=False):
 		},
 		"Customer-Quick Entry": {
 			"doctype": "Customer",
-			"layout": '[{"label":"Customer Name","columns":1,"fields":["customer_name"],"hideLabel":true},{"label":"Website & Revenue","columns":2,"hideBorder":true,"fields":["website","custom_annual_revenue"],"hideLabel":true},{"label":"Territory","columns":1,"hideBorder":true,"fields":["territory"],"hideLabel":true},{"label":"No of Employees & Industry","columns":2,"hideBorder":true,"fields":["no_of_employees","industry"],"hideLabel":true},{"label":"Address","columns":1,"hideBorder":true,"fields":["customer_primary_address"],"hideLabel":true}]'
+			"layout": '[{"label":"Customer Name","columns":1,"fields":["customer_name"],"hideLabel":true},{"label":"Website & Revenue","columns":2,"hideBorder":true,"fields":["website","annual_revenue"],"hideLabel":true},{"label":"Territory","columns":1,"hideBorder":true,"fields":["territory"],"hideLabel":true},{"label":"No of Employees & Industry","columns":2,"hideBorder":true,"fields":["no_of_employees","industry"],"hideLabel":true},{"label":"Address","columns":1,"hideBorder":true,"fields":["customer_primary_address"],"hideLabel":true}]'
 		},
 		"Address-Quick Entry": {
 			"doctype": "Address",
@@ -152,7 +152,7 @@ def add_default_fields_layout(force=False):
 		},
 		"Customer-Side Panel": {
 			"doctype": "Customer",
-			"layout": '[{"label":"Details","name":"details","opened":true,"fields":["customer_name","website","territory","industry","custom_no_of_employees","customer_primary_address"]}]'
+			"layout": '[{"label":"Details","name":"details","opened":true,"fields":["customer_name","website","territory","industry","no_of_employees","customer_primary_address"]}]'
 		},
 	}
 
