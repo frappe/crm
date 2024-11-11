@@ -90,14 +90,15 @@ const tabs = computed(() => {
         {
           label: 'Plans',
           icon: PlansIcon,
-          component: markRaw(h(Plans, { baseAPIPath: 'crm.api.saas_billing' })),
+          component: markRaw(
+            h(Plans, { onSuccess: () => setActiveTab('Billing') }),
+          ),
         },
         {
           label: 'Billing',
           icon: BillingIcon,
           component: markRaw(
             h(Billing, {
-              baseAPIPath: 'crm.api.saas_billing',
               onChangePlan: () => setActiveTab('Plans'),
             }),
           ),

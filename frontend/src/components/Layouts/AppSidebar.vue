@@ -75,7 +75,6 @@
       </div>
     </div>
     <TrialBanner
-      baseAPIPath="crm.api.saas_billing"
       :isSidebarCollapsed="isSidebarCollapsed"
       @upgradePlan="showBillingSettingPage"
     />
