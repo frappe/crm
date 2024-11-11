@@ -33,7 +33,7 @@ jobs:
         run: |
           export APPS_JSON='[{"url": "https://github.com/${{ github.repository }}","branch": "${{ github.ref_name }}"}]'
           echo "APPS_JSON_BASE64=$(echo $APPS_JSON | base64 -w 0)" >> $GITHUB_ENV
-
+          echo "FRAPPE_BRANCH=${{ github.ref_type == 'tag' || github.ref_name == 'main' && 'version-15' || 'develop' }}" >> $GITHUB_ENV
       - name: Set Image Tag
         run: |
           echo "IMAGE_TAG=${{ github.ref_name == 'develop' && 'latest' || 'v15' }}" >> $GITHUB_ENV
@@ -55,5 +55,3 @@ jobs:
           build-args: |
             "FRAPPE_BRANCH=${{ env.FRAPPE_VERSION }}"
             "APPS_JSON_BASE64=${{ env.APPS_JSON_BASE64 }}"
-        env:
-            FRAPPE_BRANCH: ${{ github.ref_type == 'tag' || github.ref_name == 'main' && 'version-15' || 'develop' }}
