@@ -116,9 +116,9 @@ const rows = computed(() => {
         }
       } else if (row === 'website') {
         _rows[row] = website(customer.website)
-      } else if (row === 'custom_annual_revenue') {
+      } else if (row === 'annual_revenue') {
         _rows[row] = formatNumberIntoCurrency(
-          customer.custom_annual_revenue,
+          customer.annual_revenue,
           customer.currency,
         )
       } else if (['modified', 'creation'].includes(row)) {

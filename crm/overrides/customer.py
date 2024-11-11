@@ -88,7 +88,7 @@ class Customer(Customer):
 				{
 					'label': 'Annual Revenue',
 					'type': 'Currency',
-					'key': 'custom_annual_revenue',
+					'key': 'annual_revenue',
 					'width': '14rem',
 				},
 				{
@@ -105,7 +105,7 @@ class Customer(Customer):
 				"website",
 				"industry",
 				"default_currency",
-				"custom_annual_revenue",
+				"annual_revenue",
 				"modified",
 			]
 			return {'columns': columns, 'rows': rows}

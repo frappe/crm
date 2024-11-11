@@ -307,7 +307,7 @@ def create_customer(doc):
 			"website": doc.get("website"),
 			"territory": doc.get("territory"),
 			"industry": doc.get("industry"),
-			"custom_annual_revenue": doc.get("custom_annual_revenue"),
+			"annual_revenue": doc.get("annual_revenue"),
 		}
 	)
 	customer.insert(ignore_permissions=True)

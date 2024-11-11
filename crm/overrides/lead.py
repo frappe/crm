@@ -169,7 +169,7 @@ class Lead(Lead):
 				"website": self.website,
 				"territory": self.territory,
 				"industry": self.industry,
-				"custom_annual_revenue": self.custom_annual_revenue,
+				"annual_revenue": self.annual_revenue,
 			}
 		)
 		customer.insert(ignore_permissions=True)
