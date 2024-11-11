@@ -49,3 +49,15 @@
 .report-filter select {
 	min-width: 260px !important;
 }
+
+.status-option-detail {
+	min-width: 200px;
+}
+
+.status-option {
+	min-width: 200px;
+}
+
+.status-option button {
+	min-width: 200px;
+}
