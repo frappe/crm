@@ -90,9 +90,7 @@ const tabs = computed(() => {
         {
           label: 'Plans',
           icon: PlansIcon,
-          component: markRaw(
-            h(Plans, { onSuccess: () => setActiveTab('Billing') }),
-          ),
+          component: markRaw(Plans),
         },
         {
           label: 'Billing',
