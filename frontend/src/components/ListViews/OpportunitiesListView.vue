@@ -5,8 +5,8 @@
     :rows="rows"
     :options="{
       getRowRoute: (row) => ({
-        name: 'Deal',
-        params: { dealId: row.name },
+        name: 'Opportunity',
+        params: { opportunityId: row.name },
         query: { view: route.query.view, viewType: route.params.viewType },
       }),
       selectable: options.selectable,
@@ -67,7 +67,7 @@
               size="sm"
             />
           </div>
-          <div v-else-if="column.key === 'deal_owner'">
+          <div v-else-if="column.key === 'opportunity_owner'">
             <Avatar
               v-if="item.full_name"
               class="flex items-center"
@@ -188,7 +188,7 @@
     }"
     @loadMore="emit('loadMore')"
   />
-  <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="CRM Deal" />
+  <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="Opportunity" />
 </template>
 
 <script setup>

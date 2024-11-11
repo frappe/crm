@@ -20,7 +20,7 @@
             type="select"
             class="w-1/4"
             v-model="_doctype"
-            :options="['Lead', 'CRM Deal', 'Contact', 'Customer']"
+            :options="['Lead', 'Opportunity', 'Contact', 'Customer']"
             @change="reload"
           />
           <Switch

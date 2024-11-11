@@ -57,10 +57,10 @@ function editValues(selections, unselectAll) {
   unselectAllAction.value = unselectAll
 }
 
-function convertToDeal(selections, unselectAll) {
+function convertToOpportunity(selections, unselectAll) {
   $dialog({
-    title: __('Convert to Deal'),
-    message: __('Are you sure you want to convert {0} Lead(s) to Deal(s)?', [
+    title: __('Convert to Opportunity'),
+    message: __('Are you sure you want to convert {0} Lead(s) to Opportunity(s)?', [
       selections.size,
     ]),
     variant: 'solid',
@@ -70,9 +70,9 @@ function convertToDeal(selections, unselectAll) {
         label: __('Convert'),
         variant: 'solid',
         onClick: (close) => {
-          capture('bulk_convert_to_deal')
+          capture('bulk_convert_to_opportunity')
           Array.from(selections).forEach((name) => {
-            call('crm.overrides.lead.convert_to_deal', {
+            call('crm.overrides.lead.convert_to_opportunity', {
               lead: name,
             }).then(() => {
               createToast({
@@ -201,8 +201,8 @@ function bulkActions(selections, unselectAll) {
 
   if (props.doctype === 'Lead') {
     actions.push({
-      label: __('Convert to Deal'),
-      onClick: () => convertToDeal(selections, unselectAll),
+      label: __('Convert to Opportunity'),
+      onClick: () => convertToOpportunity(selections, unselectAll),
     })
   }
 

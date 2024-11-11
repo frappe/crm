@@ -58,33 +58,37 @@ def add_default_lead_statuses():
 
 def add_default_deal_statuses():
 	statuses = {
-		"Qualification": {
+		"Open": {
 			"color": "gray",
 			"position": 1,
 		},
+		"Qualification": {
+			"color": "gray",
+			"position": 2,
+		},
 		"Demo/Making": {
 			"color": "orange",
-			"position": 2,
+			"position": 3,
 		},
 		"Proposal/Quotation": {
 			"color": "blue",
-			"position": 3,
+			"position": 4,
 		},
 		"Negotiation": {
 			"color": "yellow",
-			"position": 4,
+			"position": 5,
 		},
 		"Ready to Close": {
 			"color": "purple",
-			"position": 5,
+			"position": 6,
 		},
 		"Won": {
 			"color": "green",
-			"position": 6,
+			"position": 7,
 		},
 		"Lost": {
 			"color": "red",
-			"position": 7,
+			"position": 8,
 		},
 	}
 
@@ -115,9 +119,9 @@ def add_default_fields_layout(force=False):
 			"doctype": "Lead",
 			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email_id","mobile_no", "gender"],"hideLabel":true},{"label":"Customer","fields":["customer","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
 		},
-		"CRM Deal-Quick Entry": {
-			"doctype": "CRM Deal",
-			"layout": '[{"label": "Select Customer", "fields": ["customer"], "hideLabel": true, "editable": true}, {"label": "Customer Details", "fields": ["customer_name", "website", "no_of_employees", "territory", "annual_revenue", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact"], "hideLabel": true, "editable": true}, {"label": "Contact Details", "fields": ["salutation", "first_name", "last_name", "email", "mobile_no", "gender"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 2, "fields": ["status", "deal_owner"], "hideLabel": true}]'
+		"Opportunity-Quick Entry": {
+			"doctype": "Opportunity",
+			"layout": '[{"label": "Select Customer", "fields": ["customer"], "hideLabel": true, "editable": true}, {"label": "Customer Details", "fields": ["customer_name", "website", "no_of_employees", "territory", "annual_revenue", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact_person"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 3, "fields": ["status", "opportunity_owner", "lead"], "hideLabel": true}]'
 		},
 		"Contact-Quick Entry": {
 			"doctype": "Contact",
@@ -138,9 +142,9 @@ def add_default_fields_layout(force=False):
 			"doctype": "Lead",
 			"layout": '[{"label": "Details", "name": "details", "opened": true, "fields": ["customer", "website", "territory", "industry", "job_title", "source", "lead_owner"]}, {"label": "Person", "name": "person_tab", "opened": true, "fields": ["salutation", "first_name", "last_name", "email_id", "mobile_no"]}]'
 		},
-		"CRM Deal-Side Panel": {
-			"doctype": "CRM Deal",
-			"layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Customer Details","name":"customer_tab","opened":true,"fields":["customer","website","territory","annual_revenue","close_date","probability","next_step","deal_owner"]}]'
+		"Opportunity-Side Panel": {
+			"doctype": "Opportunity",
+			"layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Customer Details","name":"customer_tab","opened":true,"fields":["customer","website","territory","annual_revenue","transaction_date","probability","opportunity_owner"]}]'
 		},
 		"Contact-Side Panel": {
 			"doctype": "Contact",

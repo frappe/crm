@@ -46,6 +46,7 @@ add_to_apps_screen = [
 # include js in doctype views
 doctype_js = {
     "Lead": "public/js/lead.js",
+    "Opportunity": "public/js/opportunity.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -138,6 +139,7 @@ override_doctype_class = {
 	"Customer": "crm.overrides.customer.Customer",
 	"Lead": "crm.overrides.lead.Lead",
 	"Customize Form": "crm.overrides.customize_form.CustomizeFormOverride",
+    "Opportunity": "crm.overrides.opportunity.Opportunity",
 }
 
 # Document Events
@@ -158,9 +160,6 @@ doc_events = {
 	"WhatsApp Message": {
 		"validate": ["crm.api.whatsapp.validate"],
 		"on_update": ["crm.api.whatsapp.on_update"],
-	},
-	"CRM Deal": {
-		"on_update": ["crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"],
 	},
 	"User": {
 		"before_validate": ["crm.api.demo.validate_user"],

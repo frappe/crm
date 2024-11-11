@@ -29,7 +29,7 @@ class ERPNextCRMSettings(Document):
 					doctype="Quotation",
 					fieldname="quotation_to",
 					property="link_filters",
-					value='[["DocType","name","in", ["Customer", "Lead", "Prospect", "CRM Deal"]]]',
+					value='[["DocType","name","in", ["Customer", "Lead", "Prospect", "Opportunity"]]]',
 					property_type="JSON",
 					validate_fields_for_doctype=False,
 				)
@@ -53,12 +53,12 @@ class ERPNextCRMSettings(Document):
 			frappe.throw("Error while creating custom field in ERPNext, check error log for more details")
 
 	def create_crm_form_script(self):
-		if not frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
+		if not frappe.db.exists("CRM Form Script", "Create Quotation from Opportunity"):
 			script = get_crm_form_script()
 			frappe.get_doc({
 				"doctype": "CRM Form Script",
-				"name": "Create Quotation from CRM Deal",
-				"dt": "CRM Deal",
+				"name": "Create Quotation from Opportunity",
+				"dt": "Opportunity",
 				"view": "Form",
 				"script": script,
 				"enabled": 1,
@@ -68,9 +68,9 @@ class ERPNextCRMSettings(Document):
 	@frappe.whitelist()
 	def reset_erpnext_form_script(self):
 		try:
-			if frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
+			if frappe.db.exists("CRM Form Script", "Create Quotation from Opportunity"):
 				script = get_crm_form_script()
-				frappe.db.set_value("CRM Form Script", "Create Quotation from CRM Deal", "script", script)
+				frappe.db.set_value("CRM Form Script", "Create Quotation from Opportunity", "script", script)
 				return True
 			return False
 		except Exception:
@@ -87,18 +87,18 @@ def get_erpnext_site_client(erpnext_crm_settings):
 	)
 
 @frappe.whitelist()
-def get_customer_link(crm_deal):
+def get_customer_link(opportunity):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if not erpnext_crm_settings.enabled:
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
-		customer = frappe.db.exists("Customer", {"crm_deal": crm_deal})
+		customer = frappe.db.exists("Customer", {"opportunity": opportunity})
 		return get_url_to_form("Customer", customer) if customer else ""
 	else:
 		client = get_erpnext_site_client(erpnext_crm_settings)
 		try:
-			customer = client.get_list("Customer", {"crm_deal": crm_deal})
+			customer = client.get_list("Customer", {"opportunity": opportunity})
 			customer = customer[0].get("name") if len(customer) else None
 			if customer:
 				return f"{erpnext_crm_settings.erpnext_site_url}/app/customer/{customer}"
@@ -113,34 +113,34 @@ def get_customer_link(crm_deal):
 
 
 @frappe.whitelist()
-def get_quotation_url(crm_deal, customer):
+def get_quotation_url(opportunity, customer):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if not erpnext_crm_settings.enabled:
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		quotation_url = get_url_to_list("Quotation")
-		return f"{quotation_url}/new?quotation_to=CRM Deal&crm_deal={crm_deal}&party_name={crm_deal}&company={erpnext_crm_settings.erpnext_company}"
+		return f"{quotation_url}/new?quotation_to=Opportunity&opportunity={opportunity}&party_name={opportunity}&company={erpnext_crm_settings.erpnext_company}"
 	else:
 		site_url = erpnext_crm_settings.get("erpnext_site_url")
 		quotation_url = f"{site_url}/app/quotation"
 
-		prospect = create_prospect_in_remote_site(crm_deal, erpnext_crm_settings)
-		return f"{quotation_url}/new?quotation_to=Prospect&crm_deal={crm_deal}&party_name={prospect}&company={erpnext_crm_settings.erpnext_company}"
+		prospect = create_prospect_in_remote_site(opportunity, erpnext_crm_settings)
+		return f"{quotation_url}/new?quotation_to=Prospect&opportunity={opportunity}&party_name={prospect}&company={erpnext_crm_settings.erpnext_company}"
 
-def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
+def create_prospect_in_remote_site(opportunity, erpnext_crm_settings):
 	try:
 		client = get_erpnext_site_client(erpnext_crm_settings)
-		doc = frappe.get_doc("CRM Deal", crm_deal)
+		doc = frappe.get_doc("Opportunity", opportunity)
 		contacts = get_contacts(doc)
 		address = get_customer_address(doc.customer)
-		return client.post_api("erpnext.crm.frappe_crm_api.create_prospect_against_crm_deal",
+		return client.post_api("erpnext.crm.frappe_crm_api.create_prospect_against_opportunity",
 			{
 				"customer": doc.customer,
 				"lead_name": doc.lead_name,
 				"custom_no_of_employees": doc.custom_no_of_employees,
-				"deal_owner": doc.deal_owner,
-				"crm_deal": doc.name,
+				"opportunity_owner": doc.opportunity_owner,
+				"opportunity": doc.name,
 				"territory": doc.territory,
 				"industry": doc.industry,
 				"website": doc.website,
@@ -207,7 +207,7 @@ def create_customer_in_erpnext(doc, method):
 		"default_currency": doc.currency,
 		"industry": doc.industry,
 		"website": doc.website,
-		"crm_deal": doc.name,
+		"opportunity": doc.name,
 		"contacts": json.dumps(contacts),
 		"address": json.dumps(address) if address else None,
 	}
@@ -243,7 +243,7 @@ async function setupForm({ doc, call, $dialog, updateField, createToast }) {
 				let quotation_url = await call(
 					"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url", 
 					{
-						crm_deal: doc.name,
+						opportunity: doc.name,
 						customer: doc.customer
 					}
 				);
@@ -256,7 +256,7 @@ async function setupForm({ doc, call, $dialog, updateField, createToast }) {
 	}
 	if (is_erpnext_integration_enabled) {
 		let customer_url = await call("crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_customer_link", {
-			crm_deal: doc.name
+			opportunity: doc.name
 		});
 		if (customer_url) {
 			actions.push({

@@ -118,7 +118,7 @@
             @change.stop="emit('update', field.name, $event.target.value)"
           />
           <Link
-            v-else-if="['lead_owner', 'deal_owner'].includes(field.name)"
+            v-else-if="['lead_owner', 'opportunity_owner'].includes(field.name)"
             class="form-control"
             :value="data[field.name] && getUser(data[field.name]).full_name"
             doctype="User"

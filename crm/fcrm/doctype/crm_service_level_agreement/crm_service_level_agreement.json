@@ -59,7 +59,7 @@
    "fieldname": "apply_on",
    "fieldtype": "Link",
    "label": "Apply On",
-   "link_filters": "[[{\"fieldname\":\"apply_on\",\"field_option\":\"DocType\"},\"name\",\"in\",[\"Lead\",\"CRM Deal\"]]]",
+   "link_filters": "[[{\"fieldname\":\"apply_on\",\"field_option\":\"DocType\"},\"name\",\"in\",[\"Lead\",\"Opportunity\"]]]",
    "options": "DocType",
    "reqd": 1
   },

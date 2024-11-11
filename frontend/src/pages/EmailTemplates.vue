@@ -123,7 +123,7 @@ function showEmailTemplate(name) {
       enabled: 1,
       use_html: 0,
       owner: '',
-      reference_doctype: 'CRM Deal',
+      reference_doctype: 'Opportunity',
     }
   } else {
     let et = rows.value?.find((row) => row.name === name)

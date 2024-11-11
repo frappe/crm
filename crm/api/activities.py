@@ -8,19 +8,20 @@ from frappe.desk.form.load import get_docinfo
 
 @frappe.whitelist()
 def get_activities(name):
-	if frappe.db.exists("CRM Deal", name):
-		return get_deal_activities(name)
+	if frappe.db.exists("Opportunity", name):
+		return get_opportunity_activities(name)
 	elif frappe.db.exists("Lead", name):
 		return get_lead_activities(name)
 	else:
 		frappe.throw(_("Document not found"), frappe.DoesNotExistError)
 
-def get_deal_activities(name):
-	get_docinfo('', "CRM Deal", name)
+def get_opportunity_activities(name):
+	get_docinfo('', "Opportunity", name)
 	docinfo = frappe.response["docinfo"]
-	deal_meta = frappe.get_meta("CRM Deal")
-	deal_fields = {field.fieldname: {"label": field.label, "options": field.options} for field in deal_meta.fields}
+	opportunity_meta = frappe.get_meta("Opportunity")
+	opportunity_fields = {field.fieldname: {"label": field.label, "options": field.options} for field in opportunity_meta.fields}
 	avoid_fields = [
+		"party_name",
 		"lead",
 		"response_by",
 		"sla_creation",
@@ -29,7 +30,7 @@ def get_deal_activities(name):
 		"first_responded_on",
 	]
 
-	doc = frappe.db.get_values("CRM Deal", name, ["creation", "owner", "lead"])[0]
+	doc = frappe.db.get_values("Opportunity", name, ["creation", "owner", "party_name"])[0]
 	lead = doc[2]
 
 	activities = []
@@ -37,11 +38,11 @@ def get_deal_activities(name):
 	notes = []
 	tasks = []
 	attachments = []
-	creation_text = "created this deal"
+	creation_text = "created this opportunity"
 
 	if lead:
 		activities, calls, notes, tasks, attachments = get_lead_activities(lead)
-		creation_text = "converted the lead to this deal"
+		creation_text = "converted the lead to this opportunity"
 
 	activities.append({
 		"activity_type": "creation",
@@ -59,7 +60,7 @@ def get_deal_activities(name):
 			continue
 
 		if change := data.get("changed")[0]:
-			field = deal_fields.get(change[0], None)
+			field = opportunity_fields.get(change[0], None)
 
 			if not field or change[0] in avoid_fields or (not change[1] and not change[2]):
 				continue
@@ -147,7 +148,7 @@ def get_deal_activities(name):
 	calls = calls + get_linked_calls(name)
 	notes = notes + get_linked_notes(name)
 	tasks = tasks + get_linked_tasks(name)
-	attachments = attachments + get_attachments('CRM Deal', name)
+	attachments = attachments + get_attachments('Opportunity', name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)

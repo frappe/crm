@@ -22,8 +22,8 @@
           variant="outline"
           size="sm"
           :label="
-            _note.reference_doctype == 'CRM Deal'
-              ? __('Open Deal')
+            _note.reference_doctype == 'Opportunity'
+              ? __('Open Opportunity')
               : __('Open Lead')
           "
           @click="redirect()"
@@ -135,10 +135,10 @@ async function updateNote() {
 
 function redirect() {
   if (!props.note?.reference_docname) return
-  let name = props.note.reference_doctype == 'CRM Deal' ? 'Deal' : 'Lead'
+  let name = props.note.reference_doctype == 'Opportunity' ? 'Opportunity' : 'Lead'
   let params = { leadId: props.note.reference_docname }
-  if (name == 'Deal') {
-    params = { dealId: props.note.reference_docname }
+  if (name == 'Opportunity') {
+    params = { opportunityId: props.note.reference_docname }
   }
   router.push({ name: name, params: params })
 }

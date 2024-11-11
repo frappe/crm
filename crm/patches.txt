@@ -8,4 +8,4 @@ crm.patches.v1_0.move_crm_note_data_to_fcrm_note
 crm.patches.v1_0.create_email_template_custom_fields
 crm.patches.v1_0.create_default_fields_layout #31/10/2024
 crm.patches.v1_0.create_default_sidebar_fields_layout
-crm.patches.v1_0.update_deal_quick_entry_layout
+crm.patches.v1_0.update_opportunity_quick_entry_layout

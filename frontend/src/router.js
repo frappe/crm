@@ -27,16 +27,16 @@ const routes = [
     props: true,
   },
   {
-    alias: '/deals',
-    path: '/deals/view/:viewType?',
-    name: 'Deals',
-    component: () => import('@/pages/Deals.vue'),
+    alias: '/opportunities',
+    path: '/opportunities/view/:viewType?',
+    name: 'Opportunities',
+    component: () => import('@/pages/Opportunities.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
-    path: '/deals/:dealId',
-    name: 'Deal',
-    component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
+    path: '/opportunities/:opportunityId',
+    name: 'Opportunity',
+    component: () => import(`@/pages/${handleMobileView('Opportunity')}.vue`),
     props: true,
   },
   {
@@ -148,8 +148,8 @@ router.beforeEach(async (to, from, next) => {
     window.location.href = '/login?redirect-to=/crm'
   } else if (to.matched.length === 0) {
     next({ name: 'Invalid Page' })
-  } else if (['Deal', 'Lead'].includes(to.name) && !to.hash) {
-    let storageKey = to.name === 'Deal' ? 'lastDealTab' : 'lastLeadTab'
+  } else if (['Opportunity', 'Lead'].includes(to.name) && !to.hash) {
+    let storageKey = to.name === 'Opportunity' ? 'lastOpportunityTab' : 'lastLeadTab'
     const activeTab = localStorage.getItem(storageKey) || 'activity'
     const hash = '#' + activeTab
     next({ ...to, hash })

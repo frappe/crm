@@ -155,9 +155,9 @@
         </button>
       </template>
       <template #default="{ tab }">
-        <DealsListView
+        <OpportunitiesListView
           class="mt-4"
-          v-if="tab.label === 'Deals' && rows.length"
+          v-if="tab.label === 'Opportunities' && rows.length"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
@@ -204,12 +204,12 @@ import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
-import DealsListView from '@/components/ListViews/DealsListView.vue'
+import OpportunitiesListView from '@/components/ListViews/OpportunitiesListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
@@ -411,9 +411,9 @@ function getParsedFields(data) {
 const tabIndex = ref(0)
 const tabs = [
   {
-    label: 'Deals',
-    icon: h(DealsIcon, { class: 'h-4 w-4' }),
-    count: computed(() => deals.data?.length),
+    label: 'Opportunities',
+    icon: h(OpportunitiesIcon, { class: 'h-4 w-4' }),
+    count: computed(() => opportunities.data?.length),
   },
   {
     label: 'Contacts',
@@ -422,19 +422,19 @@ const tabs = [
   },
 ]
 
-const deals = createListResource({
+const opportunities = createListResource({
   type: 'list',
-  doctype: 'CRM Deal',
-  cache: ['deals', props.customerId],
+  doctype: 'Opportunity',
+  cache: ['opportunities', props.customerId],
   fields: [
     'name',
     'customer',
     'currency',
     'annual_revenue',
     'status',
-    'email',
-    'mobile_no',
-    'deal_owner',
+    'contact_email',
+    'contact_mobile',
+    'opportunity_owner',
     'modified',
   ],
   filters: {
@@ -468,43 +468,43 @@ const contacts = createListResource({
 
 const rows = computed(() => {
   let list = []
-  list = !tabIndex.value ? deals : contacts
+  list = !tabIndex.value ? opportunities : contacts
 
   if (!list.data) return []
 
   return list.data.map((row) => {
-    return !tabIndex.value ? getDealRowObject(row) : getContactRowObject(row)
+    return !tabIndex.value ? getOpportunityRowObject(row) : getContactRowObject(row)
   })
 })
 
 const columns = computed(() => {
-  return tabIndex.value === 0 ? dealColumns : contactColumns
+  return tabIndex.value === 0 ? opportunityColumns : contactColumns
 })
 
-function getDealRowObject(deal) {
+function getOpportunityRowObject(opportunity) {
   return {
-    name: deal.name,
+    name: opportunity.name,
     customer: {
-      label: deal.customer,
+      label: opportunity.customer,
       logo: props.customer?.image,
     },
     annual_revenue: formatNumberIntoCurrency(
-      deal.annual_revenue,
-      deal.currency,
+      opportunity.annual_revenue,
+      opportunity.currency,
     ),
     status: {
-      label: deal.status,
-      color: getDealStatus(deal.status)?.iconColorClass,
+      label: opportunity.status,
+      color: getDealStatus(opportunity.status)?.iconColorClass,
     },
-    email: deal.email,
-    mobile_no: deal.mobile_no,
-    deal_owner: {
-      label: deal.deal_owner && getUser(deal.deal_owner).full_name,
-      ...(deal.deal_owner && getUser(deal.deal_owner)),
+    email: opportunity.email,
+    mobile_no: opportunity.mobile_no,
+    opportunity_owner: {
+      label: opportunity.opportunity_owner && getUser(opportunity.opportunity_owner).full_name,
+      ...(opportunity.opportunity_owner && getUser(opportunity.opportunity_owner)),
     },
     modified: {
-      label: dateFormat(deal.modified, dateTooltipFormat),
-      timeAgo: __(timeAgo(deal.modified)),
+      label: dateFormat(opportunity.modified, dateTooltipFormat),
+      timeAgo: __(timeAgo(opportunity.modified)),
     },
   }
 }
@@ -530,7 +530,7 @@ function getContactRowObject(contact) {
   }
 }
 
-const dealColumns = [
+const opportunityColumns = [
   {
     label: __('Customer'),
     key: 'customer',
@@ -548,17 +548,17 @@ const dealColumns = [
   },
   {
     label: __('Email'),
-    key: 'email',
+    key: 'contact_email',
     width: '12rem',
   },
   {
     label: __('Mobile no'),
-    key: 'mobile_no',
+    key: 'contact_mobile',
     width: '11rem',
   },
   {
-    label: __('Deal owner'),
-    key: 'deal_owner',
+    label: __('Opportunity owner'),
+    key: 'opportunity_owner',
     width: '10rem',
   },
   {

@@ -200,11 +200,11 @@ class Lead(Lead):
 
 		return False
 
-	def create_deal(self, contact, customer):
-		deal = frappe.new_doc("CRM Deal")
+	def create_opportunity(self, contact, customer):
+		opportunity = frappe.new_doc("Opportunity")
 
-		lead_deal_map = {
-			"lead_owner": "deal_owner",
+		lead_opportunity_map = {
+			"lead_owner": "opportunity_owner",
 		}
 
 		restricted_fieldtypes = ["Tab Break", "Section Break", "Column Break", "HTML", "Button", "Attach", "Table"]
@@ -217,24 +217,25 @@ class Lead(Lead):
 				continue
 
 			fieldname = field.fieldname
-			if field.fieldname in lead_deal_map:
-				fieldname = lead_deal_map[field.fieldname]
+			if field.fieldname in lead_opportunity_map:
+				fieldname = lead_opportunity_map[field.fieldname]
 
-			if hasattr(deal, fieldname):
+			if hasattr(opportunity, fieldname):
 				if fieldname == "customer":
-					deal.update({fieldname: customer})
+					opportunity.update({fieldname: customer})
 				else:
-					deal.update({fieldname: self.get(field.fieldname)})
+					opportunity.update({fieldname: self.get(field.fieldname)})
 
-		deal.update(
+		opportunity.update(
 			{
-				"lead": self.name,
+				"opportunity_from": "lead",
+				"party_name": self.name,
 				"contacts": [{"contact": contact}],
 			}
 		)
 
 		if self.first_responded_on:
-			deal.update(
+			opportunity.update(
 				{
 					"sla_creation": self.sla_creation,
 					"response_by": self.response_by,
@@ -245,8 +246,8 @@ class Lead(Lead):
 				}
 			)
 
-		deal.insert(ignore_permissions=True)
-		return deal.name
+		opportunity.insert(ignore_permissions=True)
+		return opportunity.name
 
 	def set_sla(self):
 		"""
@@ -271,8 +272,8 @@ class Lead(Lead):
 		if sla:
 			sla.apply(self)
 
-	def convert_to_deal(self):
-		return convert_to_deal(lead=self.name, doc=self)
+	def convert_to_opportunity(self):
+		return convert_to_opportunity(lead=self.name, doc=self)
 
 	@staticmethod
 	def get_non_filterable_fields():
@@ -354,12 +355,12 @@ class Lead(Lead):
 
 
 @frappe.whitelist()
-def convert_to_deal(lead, doc=None):
+def convert_to_opportunity(lead, doc=None):
 	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission("Lead", "write", lead):
-		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
+		frappe.throw(_("Not allowed to convert Lead to Opportunity"), frappe.PermissionError)
 
 	lead = frappe.get_cached_doc("Lead", lead)
-	if frappe.db.exists("Lead Status", "Qualified"):
+	if frappe.db.exists("CRM Lead Status", "Qualified"):
 		lead.status = "Qualified"
 	lead.converted = 1
 	if lead.sla and frappe.db.exists("CRM Communication Status", "Replied"):
@@ -367,5 +368,5 @@ def convert_to_deal(lead, doc=None):
 	lead.save(ignore_permissions=True)
 	contact = lead.create_contact(False)
 	customer = lead.create_customer()
-	deal = lead.create_deal(contact, customer)
-	return deal
+	opportunity = lead.create_opportunity(contact, customer)
+	return opportunity

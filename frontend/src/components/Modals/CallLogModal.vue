@@ -105,7 +105,7 @@ import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import Dealsicon from '@/components/Icons/DealsIcon.vue'
+import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
@@ -158,10 +158,10 @@ const detailFields = computed(() => {
       icon:
         callLog.value.doc.reference_doctype == 'Lead'
           ? LeadsIcon
-          : Dealsicon,
+          : OpportunitiesIcon,
       name: 'reference_doctype',
       value:
-        callLog.value.doc.reference_doctype == 'Lead' ? 'Lead' : 'Deal',
+        callLog.value.doc.reference_doctype == 'Lead' ? 'Lead' : 'Opportunity',
       link: () => {
         if (callLog.value.doc.reference_doctype == 'Lead') {
           router.push({
@@ -170,8 +170,8 @@ const detailFields = computed(() => {
           })
         } else {
           router.push({
-            name: 'Deal',
-            params: { dealId: callLog.value.doc.reference_docname },
+            name: 'Opportunity',
+            params: { opportunityId: callLog.value.doc.reference_docname },
           })
         }
       },

@@ -39,7 +39,7 @@
           variant="outline"
           size="md"
           type="text"
-          :placeholder="__('My Open Deals')"
+          :placeholder="__('My Open Opportunities')"
           v-model="view.label"
         />
       </div>

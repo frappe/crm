@@ -125,8 +125,8 @@
             variant="ghost"
             size="sm"
             :label="
-              getRow(itemName, 'reference_doctype').label == 'CRM Deal'
-                ? __('Deal')
+              getRow(itemName, 'reference_doctype').label == 'Opportunity'
+                ? __('Opportunity')
                 : __('Lead')
             "
             @click.stop="
@@ -350,10 +350,10 @@ async function deletetask(name) {
 
 function redirect(doctype, docname) {
   if (!docname) return
-  let name = doctype == 'CRM Deal' ? 'Deal' : 'Lead'
+  let name = doctype == 'Opportunity' ? 'Opportunity' : 'Lead'
   let params = { leadId: docname }
-  if (name == 'Deal') {
-    params = { dealId: docname }
+  if (name == 'Opportunity') {
+    params = { opportunityId: docname }
   }
   router.push({ name: name, params: params })
 }
