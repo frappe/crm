@@ -70,7 +70,7 @@ def create_call_log(call_details: TwilioCallDetails):
 		'doctype': 'CRM Call Log',
 		'medium': 'Twilio'
 	})
-	call_log.reference_docname, call_log.reference_doctype = get_lead_or_deal_from_number(call_log)
+	call_log.reference_docname, call_log.reference_doctype = get_lead_or_opportunity_from_number(call_log)
 	call_log.flags.ignore_permissions = True
 	call_log.save()
 	frappe.db.commit()
@@ -153,8 +153,8 @@ def add_note_to_call_log(call_sid, note):
 	frappe.db.set_value("CRM Call Log", sid, "note", note)
 	frappe.db.commit()
 
-def get_lead_or_deal_from_number(call):
-	"""Get lead/deal from the given number.
+def get_lead_or_opportunity_from_number(call):
+	"""Get lead/opportunity from the given number.
 	"""
 
 	def find_record(doctype, mobile_no, where=''):
@@ -169,7 +169,7 @@ def get_lead_or_deal_from_number(call):
 		data = frappe.db.sql(query + where, as_dict=True)
 		return data[0].name if data else None
 
-	doctype = "CRM Deal"
+	doctype = "Opportunity"
 	number = call.get('to') if call.type == 'Outgoing' else call.get('from')
 
 	doc = find_record(doctype, number) or None

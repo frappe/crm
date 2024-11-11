@@ -7,7 +7,7 @@ from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 def validate(doc, method):
     if doc.type == "Incoming" and doc.get("from"):
-        name, doctype = get_lead_or_deal_from_number(doc.get("from"))
+        name, doctype = get_lead_or_opportunity_from_number(doc.get("from"))
         doc.reference_doctype = doctype
         doc.reference_name = name
 
@@ -51,8 +51,8 @@ def notify_agent(doc):
             })
 
 
-def get_lead_or_deal_from_number(number):
-    """Get lead/deal from the given number."""
+def get_lead_or_opportunity_from_number(number):
+    """Get lead/opportunity from the given number."""
 
     def find_record(doctype, mobile_no, where=""):
         mobile_no = parse_mobile_no(mobile_no)
@@ -66,7 +66,7 @@ def get_lead_or_deal_from_number(number):
         data = frappe.db.sql(query + where, as_dict=True)
         return data[0].name if data else None
 
-    doctype = "CRM Deal"
+    doctype = "Opportunity"
 
     doc = find_record(doctype, number) or None
     if not doc:
@@ -105,7 +105,7 @@ def get_whatsapp_messages(reference_doctype, reference_name):
         return []
     messages = []
 
-    if reference_doctype == 'CRM Deal':
+    if reference_doctype == 'Opportunity':
         lead = frappe.db.get_value(reference_doctype, reference_name, 'lead')
         if lead:
             messages = frappe.get_all(
@@ -337,7 +337,7 @@ def parse_template_parameters(string, parameters):
 def get_from_name(message):
     doc = frappe.get_doc(message["reference_doctype"], message["reference_name"])
     from_name = ""
-    if message["reference_doctype"] == "CRM Deal":
+    if message["reference_doctype"] == "Opportunity":
         if doc.get("contacts"):
             for c in doc.get("contacts"):
                 if c.is_primary:

@@ -5,42 +5,42 @@ from crm.api.doc import get_fields_meta, get_assigned_users
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 
 @frappe.whitelist()
-def get_deal(name):
-	Deal = frappe.qb.DocType("CRM Deal")
+def get_opportunity(name):
+	Opportunity = frappe.qb.DocType("Opportunity")
 
 	query = (
-		frappe.qb.from_(Deal)
+		frappe.qb.from_(Opportunity)
 		.select("*")
-		.where(Deal.name == name)
+		.where(Opportunity.name == name)
 		.limit(1)
 	)
 
-	deal = query.run(as_dict=True)
-	if not len(deal):
-		frappe.throw(_("Deal not found"), frappe.DoesNotExistError)
-	deal = deal.pop()
+	opportunity = query.run(as_dict=True)
+	if not len(opportunity):
+		frappe.throw(_("Opportunity not found"), frappe.DoesNotExistError)
+	opportunity = opportunity.pop()
 
 
-	deal["contacts"] = frappe.get_all(
+	opportunity["contacts"] = frappe.get_all(
 		"CRM Contacts",
-		filters={"parenttype": "CRM Deal", "parent": deal.name},
+		filters={"parenttype": "Opportunity", "parent": opportunity.name},
 		fields=["contact", "is_primary"],
 	)
 
-	deal["doctype"] = "CRM Deal"
-	deal["fields_meta"] = get_fields_meta("CRM Deal") 
-	deal["_form_script"] = get_form_script('CRM Deal')
-	deal["_assign"] = get_assigned_users("CRM Deal", deal.name, deal.owner)
-	return deal
+	opportunity["doctype"] = "Opportunity"
+	opportunity["fields_meta"] = get_fields_meta("Opportunity") 
+	opportunity["_form_script"] = get_form_script('Opportunity')
+	opportunity["_assign"] = get_assigned_users("Opportunity", opportunity.name, opportunity.owner)
+	return opportunity
 
 @frappe.whitelist()
-def get_deal_contacts(name):
+def get_opportunity_contacts(name):
 	contacts = frappe.get_all(
 		"CRM Contacts",
-		filters={"parenttype": "CRM Deal", "parent": name},
+		filters={"parenttype": "Opportunity", "parent": name},
 		fields=["contact", "is_primary"],
 	)
-	deal_contacts = []
+	opportunity_contacts = []
 	for contact in contacts:
 		is_primary = contact.is_primary
 		contact = frappe.get_doc("Contact", contact.contact).as_dict()
@@ -62,5 +62,5 @@ def get_deal_contacts(name):
 			"mobile_no": get_primary_mobile_no(contact),
 			"is_primary": is_primary,
 		}
-		deal_contacts.append(_contact)
-	return deal_contacts
+		opportunity_contacts.append(_contact)
+	return opportunity_contacts

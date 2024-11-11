@@ -92,7 +92,7 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -114,9 +114,9 @@ const links = [
     to: 'Leads',
   },
   {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
+    label: 'Opportunities',
+    icon: OpportunitiesIcon,
+    to: 'Opportunities',
   },
   {
     label: 'Contacts',
@@ -197,8 +197,8 @@ function getIcon(routeName, icon) {
   switch (routeName) {
     case 'Leads':
       return LeadsIcon
-    case 'Deals':
-      return DealsIcon
+    case 'Opportunities':
+      return OpportunitiesIcon
     case 'Contacts':
       return ContactsIcon
     case 'Customers':

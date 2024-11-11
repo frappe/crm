@@ -22,7 +22,7 @@
             v-model="_doctype"
             :options="[
               'Lead',
-              'CRM Deal',
+              'Opportunity',
               'Contact',
               'Customer',
               'Address',

@@ -5,8 +5,8 @@ def execute():
 	if not frappe.db.exists("CRM Fields Layout", {"dt": "Lead", "type": "Side Panel"}):
 		create_doctype_fields_layout("Lead")
 
-	if not frappe.db.exists("CRM Fields Layout", {"dt": "CRM Deal", "type": "Side Panel"}):
-		create_doctype_fields_layout("CRM Deal")
+	if not frappe.db.exists("CRM Fields Layout", {"dt": "Opportunity", "type": "Side Panel"}):
+		create_doctype_fields_layout("Opportunity")
 
 def create_doctype_fields_layout(doctype):
 	not_allowed_fieldtypes = [

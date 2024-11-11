@@ -45,7 +45,7 @@
       <Button
         :label="__('Convert')"
         variant="solid"
-        @click="showConvertToDealModal = true"
+        @click="showConvertToOpportunityModal = true"
       />
     </div>
   </div>
@@ -104,15 +104,15 @@
     doctype="Lead"
   />
   <Dialog
-    v-model="showConvertToDealModal"
+    v-model="showConvertToOpportunityModal"
     :options="{
-      title: __('Convert to Deal'),
+      title: __('Convert to Opportunity'),
       size: 'xl',
       actions: [
         {
           label: __('Convert'),
           variant: 'solid',
-          onClick: convertToDeal,
+          onClick: convertToOpportunity,
         },
       ],
     }"
@@ -427,15 +427,15 @@ async function deleteLead(name) {
   router.push({ name: 'Leads' })
 }
 
-// Convert to Deal
-const showConvertToDealModal = ref(false)
+// Convert to Opportunity
+const showConvertToOpportunityModal = ref(false)
 const existingContactChecked = ref(false)
 const existingCustomerChecked = ref(false)
 
 const existingContact = ref('')
 const existingCustomer = ref('')
 
-async function convertToDeal(updated) {
+async function convertToOpportunity(updated) {
   let valueUpdated = false
 
   if (existingContactChecked.value && !existingContact.value) {
@@ -485,21 +485,21 @@ async function convertToDeal(updated) {
         customer: lead.data.customer,
       },
       '',
-      () => convertToDeal(true),
+      () => convertToOpportunity(true),
     )
-    showConvertToDealModal.value = false
+    showConvertToOpportunityModal.value = false
   } else {
-    let deal = await call(
-      'crm.overrides.lead.convert_to_deal',
+    let opportunity = await call(
+      'crm.overrides.lead.convert_to_opportunity',
       {
         lead: lead.data.name,
       },
     )
-    if (deal) {
+    if (opportunity) {
       if (updated) {
         await contacts.reload()
       }
-      router.push({ name: 'Deal', params: { dealId: deal } })
+      router.push({ name: 'Opportunity', params: { opportunityId: opportunity } })
     }
   }
 }

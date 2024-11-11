@@ -3,17 +3,17 @@ from frappe import _
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 def after_insert(doc, method):
-	if doc.reference_type in ["Lead", "CRM Deal"] and doc.reference_name and doc.allocated_to:
-		fieldname = "lead_owner" if doc.reference_type == "Lead" else "deal_owner"
+	if doc.reference_type in ["Lead", "Opportunity"] and doc.reference_name and doc.allocated_to:
+		fieldname = "lead_owner" if doc.reference_type == "Lead" else "opportunity_owner"
 		lead_owner = frappe.db.get_value(doc.reference_type, doc.reference_name, fieldname)
 		if not lead_owner:
 			frappe.db.set_value(doc.reference_type, doc.reference_name, fieldname, doc.allocated_to)
 
-	if doc.reference_type in ["Lead", "CRM Deal", "CRM Task"] and doc.reference_name and doc.allocated_to:
+	if doc.reference_type in ["Lead", "Opportunity", "CRM Task"] and doc.reference_name and doc.allocated_to:
 		notify_assigned_user(doc)
 
 def on_update(doc, method):
-	if doc.has_value_changed("status") and doc.status == "Cancelled" and doc.reference_type in ["Lead", "CRM Deal", "CRM Task"] and doc.reference_name and doc.allocated_to:
+	if doc.has_value_changed("status") and doc.status == "Cancelled" and doc.reference_type in ["Lead", "Opportunity", "CRM Task"] and doc.reference_name and doc.allocated_to:
 		notify_assigned_user(doc, is_cancelled=True)
 
 def notify_assigned_user(doc, is_cancelled=False):
@@ -52,7 +52,7 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 	if doctype.startswith("CRM "):
 		doctype = doctype[4:].lower()
 
-	if doctype in ["lead", "deal"]:
+	if doctype in ["lead", "opportunity"]:
 		name = reference_doc.lead_name or name if doctype == "lead" else reference_doc.customer or reference_doc.lead_name or name
 
 		if is_cancelled:

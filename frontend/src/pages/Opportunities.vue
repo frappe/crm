@@ -1,17 +1,17 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <ViewBreadcrumbs v-model="viewControls" routeName="Deals" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="Opportunities" />
     </template>
     <template #right-header>
       <CustomActions
-        v-if="dealsListView?.customListActions"
-        :actions="dealsListView.customListActions"
+        v-if="opportunitiesListView?.customListActions"
+        :actions="opportunitiesListView.customListActions"
       />
       <Button
         variant="solid"
         :label="__('Create')"
-        @click="showDealModal = true"
+        @click="showOpportunityModal = true"
       >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -19,22 +19,22 @@
   </LayoutHeader>
   <ViewControls
     ref="viewControls"
-    v-model="deals"
+    v-model="opportunities"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
-    doctype="CRM Deal"
+    doctype="Opportunity"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
   />
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
-    v-model="deals"
+    v-model="opportunities"
     :options="{
       getRoute: (row) => ({
-        name: 'Deal',
-        params: { dealId: row.name },
+        name: 'Opportunity',
+        params: { opportunityId: row.name },
         query: { view: route.query.view, viewType: route.params.viewType },
       }),
       onNewClick: (column) => onNewClick(column),
@@ -61,7 +61,7 @@
         </div>
         <div
           v-else-if="
-            titleField === 'deal_owner' &&
+            titleField === 'opportunity_owner' &&
             getRow(itemName, titleField).full_name
           "
         >
@@ -124,7 +124,7 @@
             size="xs"
           />
         </div>
-        <div v-else-if="fieldName === 'deal_owner'">
+        <div v-else-if="fieldName === 'opportunity_owner'">
           <Avatar
             v-if="getRow(itemName, fieldName).full_name"
             class="flex items-center"
@@ -204,18 +204,18 @@
       </div>
     </template>
   </KanbanView>
-  <DealsListView
-    ref="dealsListView"
-    v-else-if="deals.data && rows.length"
-    v-model="deals.data.page_length_count"
-    v-model:list="deals"
+  <OpportunitiesListView
+    ref="opportunitiesListView"
+    v-else-if="opportunities.data && rows.length"
+    v-model="opportunities.data.page_length_count"
+    v-model:list="opportunities"
     :rows="rows"
-    :columns="deals.data.columns"
+    :columns="opportunities.data.columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
-      rowCount: deals.data.row_count,
-      totalCount: deals.data.total_count,
+      rowCount: opportunities.data.row_count,
+      totalCount: opportunities.data.total_count,
     }"
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
@@ -224,20 +224,20 @@
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
   />
-  <div v-else-if="deals.data" class="flex h-full items-center justify-center">
+  <div v-else-if="opportunities.data" class="flex h-full items-center justify-center">
     <div
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
-      <DealsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Deals')]) }}</span>
-      <Button :label="__('Create')" @click="showDealModal = true">
+      <OpportunitiesIcon class="h-10 w-10" />
+      <span>{{ __('No {0} Found', [__('Opportunities')]) }}</span>
+      <Button :label="__('Create')" @click="showOpportunityModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
   </div>
-  <DealModal
-    v-if="showDealModal"
-    v-model="showDealModal"
+  <OpportunityModal
+    v-if="showOpportunityModal"
+    v-model="showOpportunityModal"
     v-model:quickEntry="showQuickEntryModal"
     :defaults="defaults"
   />
@@ -245,20 +245,20 @@
     v-if="showNoteModal"
     v-model="showNoteModal"
     :note="note"
-    doctype="CRM Deal"
+    doctype="Opportunity"
     :doc="docname"
   />
   <TaskModal
     v-if="showTaskModal"
     v-model="showTaskModal"
     :task="task"
-    doctype="CRM Deal"
+    doctype="Opportunity"
     :doc="docname"
   />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
-    doctype="CRM Deal"
+    doctype="Opportunity"
   />
 </template>
 
@@ -272,11 +272,11 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import DealsListView from '@/components/ListViews/DealsListView.vue'
+import OpportunitiesListView from '@/components/ListViews/OpportunitiesListView.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
-import DealModal from '@/components/Modals/DealModal.vue'
+import OpportunityModal from '@/components/Modals/OpportunityModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
@@ -305,14 +305,14 @@ const { getDealStatus } = statusesStore()
 
 const route = useRoute()
 
-const dealsListView = ref(null)
-const showDealModal = ref(false)
+const opportunitiesListView = ref(null)
+const showOpportunityModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
 
-// deals data is loaded in the ViewControls component
-const deals = ref({})
+// opportunities data is loaded in the ViewControls component
+const opportunities = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
@@ -330,17 +330,17 @@ function getRow(name, field) {
 
 // Rows
 const rows = computed(() => {
-  if (!deals.value?.data?.data) return []
-  if (deals.value.data.view_type === 'group_by') {
-    if (!deals.value?.data.group_by_field?.name) return []
+  if (!opportunities.value?.data?.data) return []
+  if (opportunities.value.data.view_type === 'group_by') {
+    if (!opportunities.value?.data.group_by_field?.name) return []
     return getGroupedByRows(
-      deals.value?.data.data,
-      deals.value?.data.group_by_field,
+      opportunities.value?.data.data,
+      opportunities.value?.data.group_by_field,
     )
-  } else if (deals.value.data.view_type === 'kanban') {
-    return getKanbanRows(deals.value.data.data)
+  } else if (opportunities.value.data.view_type === 'kanban') {
+    return getKanbanRows(opportunities.value.data.data)
   } else {
-    return parseRows(deals.value?.data.data)
+    return parseRows(opportunities.value?.data.data)
   }
 })
 
@@ -385,41 +385,41 @@ function getKanbanRows(data) {
 }
 
 function parseRows(rows) {
-  return rows.map((deal) => {
+  return rows.map((opportunity) => {
     let _rows = {}
-    deals.value.data.rows.forEach((row) => {
-      _rows[row] = deal[row]
+    opportunities.value.data.rows.forEach((row) => {
+      _rows[row] = opportunity[row]
 
       if (row == 'customer') {
         _rows[row] = {
-          label: deal.customer,
-          logo: getCustomer(deal.customer)?.image,
+          label: opportunity.customer,
+          logo: getCustomer(opportunity.customer)?.image,
         }
       } else if (row === 'website') {
-        _rows[row] = website(deal.website)
+        _rows[row] = website(opportunity.website)
       } else if (row == 'annual_revenue') {
         _rows[row] = formatNumberIntoCurrency(
-          deal.annual_revenue,
-          deal.currency,
+          opportunity.annual_revenue,
+          opportunity.currency,
         )
       } else if (row == 'status') {
         _rows[row] = {
-          label: deal.status,
-          color: getDealStatus(deal.status)?.iconColorClass,
+          label: opportunity.status,
+          color: getDealStatus(opportunity.status)?.iconColorClass,
         }
       } else if (row == 'sla_status') {
-        let value = deal.sla_status
+        let value = opportunity.sla_status
         let tooltipText = value
         let color =
-          deal.sla_status == 'Failed'
+          opportunity.sla_status == 'Failed'
             ? 'red'
-            : deal.sla_status == 'Fulfilled'
+            : opportunity.sla_status == 'Fulfilled'
               ? 'green'
               : 'orange'
         if (value == 'First Response Due') {
-          value = __(timeAgo(deal.response_by))
-          tooltipText = dateFormat(deal.response_by, dateTooltipFormat)
-          if (new Date(deal.response_by) < new Date()) {
+          value = __(timeAgo(opportunity.response_by))
+          tooltipText = dateFormat(opportunity.response_by, dateTooltipFormat)
+          if (new Date(opportunity.response_by) < new Date()) {
             color = 'red'
           }
         }
@@ -428,15 +428,15 @@ function parseRows(rows) {
           value: value,
           color: color,
         }
-      } else if (row == 'deal_owner') {
+      } else if (row == 'opportunity_owner') {
         _rows[row] = {
-          label: deal.deal_owner && getUser(deal.deal_owner).full_name,
-          ...(deal.deal_owner && getUser(deal.deal_owner)),
+          label: opportunity.opportunity_owner && getUser(opportunity.opportunity_owner).full_name,
+          ...(opportunity.opportunity_owner && getUser(opportunity.opportunity_owner)),
         }
       } else if (row == '_assign') {
-        let assignees = JSON.parse(deal._assign || '[]')
-        if (!assignees.length && deal.deal_owner) {
-          assignees = [deal.deal_owner]
+        let assignees = JSON.parse(opportunity._assign || '[]')
+        if (!assignees.length && opportunity.opportunity_owner) {
+          assignees = [opportunity.opportunity_owner]
         }
         _rows[row] = assignees.map((user) => ({
           name: user,
@@ -445,8 +445,8 @@ function parseRows(rows) {
         }))
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(deal[row], dateTooltipFormat),
-          timeAgo: __(timeAgo(deal[row])),
+          label: dateFormat(opportunity[row], dateTooltipFormat),
+          timeAgo: __(timeAgo(opportunity[row])),
         }
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
@@ -455,31 +455,31 @@ function parseRows(rows) {
       ) {
         let field = row == 'response_by' ? 'response_by' : 'first_responded_on'
         _rows[row] = {
-          label: deal[field] ? dateFormat(deal[field], dateTooltipFormat) : '',
-          timeAgo: deal[row]
+          label: opportunity[field] ? dateFormat(opportunity[field], dateTooltipFormat) : '',
+          timeAgo: opportunity[row]
             ? row == 'first_response_time'
-              ? formatTime(deal[row])
-              : __(timeAgo(deal[row]))
+              ? formatTime(opportunity[row])
+              : __(timeAgo(opportunity[row]))
             : '',
         }
       }
     })
-    _rows['_email_count'] = deal._email_count
-    _rows['_note_count'] = deal._note_count
-    _rows['_task_count'] = deal._task_count
-    _rows['_comment_count'] = deal._comment_count
+    _rows['_email_count'] = opportunity._email_count
+    _rows['_note_count'] = opportunity._note_count
+    _rows['_task_count'] = opportunity._task_count
+    _rows['_comment_count'] = opportunity._comment_count
     return _rows
   })
 }
 
 function onNewClick(column) {
-  let column_field = deals.value.params.column_field
+  let column_field = opportunities.value.params.column_field
 
   if (column_field) {
     defaults[column_field] = column.column.name
   }
 
-  showDealModal.value = true
+  showOpportunityModal.value = true
 }
 
 function actions(itemName) {

@@ -1,5 +1,5 @@
 <template>
-  <LayoutHeader v-if="deal.data">
+  <LayoutHeader v-if="opportunity.data">
     <header
       class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2"
     >
@@ -12,8 +12,8 @@
         <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
           <template #default="{ open }">
             <Button
-              :label="deal.data.status"
-              :class="getDealStatus(deal.data.status).colorClass"
+              :label="opportunity.data.status"
+              :class="getDealStatus(opportunity.data.status).colorClass"
             >
               <template #prefix>
                 <IndicatorIcon />
@@ -31,12 +31,12 @@
     </header>
   </LayoutHeader>
   <div
-    v-if="deal.data"
+    v-if="opportunity.data"
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
-    <component :is="deal.data._assignedTo?.length == 1 ? 'Button' : 'div'">
+    <component :is="opportunity.data._assignedTo?.length == 1 ? 'Button' : 'div'">
       <MultipleAvatar
-        :avatars="deal.data._assignedTo"
+        :avatars="opportunity.data._assignedTo"
         @click="showAssignmentModal = true"
       />
     </component>
@@ -44,7 +44,7 @@
       <CustomActions v-if="customActions" :actions="customActions" />
     </div>
   </div>
-  <div v-if="deal.data" class="flex h-full overflow-hidden">
+  <div v-if="opportunity.data" class="flex h-full overflow-hidden">
     <Tabs
       v-model="tabIndex"
       v-slot="{ tab }"
@@ -54,8 +54,8 @@
     >
       <div v-if="tab.name == 'Details'">
         <SLASection
-          v-if="deal.data.sla_status"
-          v-model="deal.data"
+          v-if="opportunity.data.sla_status"
+          v-model="opportunity.data"
           @updateField="updateField"
         />
         <div
@@ -80,7 +80,7 @@
                         (value, close) => {
                           _contact = {
                             first_name: value,
-                            company_name: deal.data.customer,
+                            company_name: opportunity.data.customer,
                           }
                           showContactModal = true
                           close()
@@ -102,13 +102,13 @@
                   v-if="section.fields"
                   :fields="section.fields"
                   :isLastSection="i == fieldsLayout.data.length - 1"
-                  v-model="deal.data"
+                  v-model="opportunity.data"
                   @update="updateField"
                 />
                 <div v-else>
                   <div
                     v-if="
-                      dealContacts?.loading && dealContacts?.data?.length == 0
+                      opportunityContacts?.loading && opportunityContacts?.data?.length == 0
                     "
                     class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-gray-500"
                   >
@@ -211,11 +211,11 @@
       </div>
       <Activities
         v-else
-        doctype="CRM Deal"
+        doctype="Opportunity"
         :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
-        v-model="deal"
+        v-model="opportunity"
       />
     </Tabs>
   </div>
@@ -238,9 +238,9 @@
   <AssignmentModal
     v-if="showAssignmentModal"
     v-model="showAssignmentModal"
-    v-model:assignees="deal.data._assignedTo"
-    :doc="deal.data"
-    doctype="CRM Deal"
+    v-model:assignees="opportunity.data._assignedTo"
+    :doc="opportunity.data"
+    doctype="Opportunity"
   />
 </template>
 <script setup>
@@ -297,7 +297,7 @@ const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  dealId: {
+  opportunityId: {
     type: String,
     required: true,
   },
@@ -306,10 +306,10 @@ const props = defineProps({
 const customActions = ref([])
 const customStatuses = ref([])
 
-const deal = createResource({
-  url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
-  params: { name: props.dealId },
-  cache: ['deal', props.dealId],
+const opportunity = createResource({
+  url: '/api/method/crm.api.opportunity.get_opportunity',
+  params: { name: props.opportunityId },
+  cache: ['opportunity', props.opportunityId],
   onSuccess: async (data) => {
     if (data.customer) {
       customer.update({
@@ -325,10 +325,10 @@ const deal = createResource({
       router,
       updateField,
       createToast,
-      deleteDoc: deleteDeal,
+      deleteDoc: deleteOpportunity,
       resource: {
-        deal,
-        dealContacts,
+        opportunity,
+        opportunityContacts,
         fieldsLayout,
       },
       call,
@@ -342,12 +342,12 @@ const deal = createResource({
 
 const customer = createResource({
   url: 'frappe.client.get',
-  onSuccess: (data) => (deal.data._customersObj = data),
+  onSuccess: (data) => (opportunity.data._customersObj = data),
 })
 
 onMounted(() => {
-  if (deal.data) return
-  deal.fetch()
+  if (opportunity.data) return
+  opportunity.fetch()
 })
 
 const reload = ref(false)
@@ -355,7 +355,7 @@ const showCustomerModal = ref(false)
 const showAssignmentModal = ref(false)
 const _customer = ref({})
 
-function updateDeal(fieldname, value, callback) {
+function updateOpportunity(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
 
   if (validateRequired(fieldname, value)) return
@@ -363,17 +363,17 @@ function updateDeal(fieldname, value, callback) {
   createResource({
     url: 'frappe.client.set_value',
     params: {
-      doctype: 'CRM Deal',
-      name: props.dealId,
+      doctype: 'Opportunity',
+      name: props.opportunityId,
       fieldname,
       value,
     },
     auto: true,
     onSuccess: () => {
-      deal.reload()
+      opportunity.reload()
       reload.value = true
       createToast({
-        title: __('Deal updated'),
+        title: __('Opportunity updated'),
         icon: 'check',
         iconClasses: 'text-green-600',
       })
@@ -381,7 +381,7 @@ function updateDeal(fieldname, value, callback) {
     },
     onError: (err) => {
       createToast({
-        title: __('Error updating deal'),
+        title: __('Error updating opportunity'),
         text: __(err.messages?.[0]),
         icon: 'x',
         iconClasses: 'text-red-600',
@@ -391,10 +391,10 @@ function updateDeal(fieldname, value, callback) {
 }
 
 function validateRequired(fieldname, value) {
-  let meta = deal.data.fields_meta || {}
+  let meta = opportunity.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
     createToast({
-      title: __('Error Updating Deal'),
+      title: __('Error Updating Opportunity'),
       text: __('{0} is a required field', [meta[fieldname].label]),
       icon: 'x',
       iconClasses: 'text-red-600',
@@ -405,16 +405,16 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
+  let items = [{ label: __('Opportunities'), route: { name: 'Opportunities' } }]
 
   if (route.query.view || route.query.viewType) {
-    let view = getView(route.query.view, route.query.viewType, 'CRM Deal')
+    let view = getView(route.query.view, route.query.viewType, 'Opportunity')
     if (view) {
       items.push({
         label: __(view.label),
         icon: view.icon,
         route: {
-          name: 'Deals',
+          name: 'Opportunities',
           params: { viewType: route.query.viewType },
           query: { view: route.query.view },
         },
@@ -424,7 +424,7 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: customer.data?.name || __('Untitled'),
-    route: { name: 'Deal', params: { dealId: deal.data.name } },
+    route: { name: 'Opportunity', params: { opportunityId: opportunity.data.name } },
   })
   return items
 })
@@ -482,12 +482,12 @@ const tabs = computed(() => {
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
-const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
+const { tabIndex } = useActiveTabManager(tabs, 'lastOpportunityTab')
 
 const fieldsLayout = createResource({
   url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.dealId],
-  params: { doctype: 'CRM Deal', name: props.dealId },
+  cache: ['fieldsLayout', props.opportunityId],
+  params: { doctype: 'Opportunity', name: props.opportunityId },
   auto: true,
   transform: (data) => getParsedFields(data),
 })
@@ -537,12 +537,12 @@ function contactOptions(contact) {
 }
 
 async function addContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.add_contact', {
-    deal: props.dealId,
+  let d = await call('crm.overrides.opportunity.add_contact', {
+    opportunity: props.opportunityId,
     contact,
   })
   if (d) {
-    dealContacts.reload()
+    opportunityContacts.reload()
     createToast({
       title: __('Contact added'),
       icon: 'check',
@@ -552,12 +552,12 @@ async function addContact(contact) {
 }
 
 async function removeContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
-    deal: props.dealId,
+  let d = await call('crm.overrides.opportunity.remove_contact', {
+    opportunity: props.opportunityId,
     contact,
   })
   if (d) {
-    dealContacts.reload()
+    opportunityContacts.reload()
     createToast({
       title: __('Contact removed'),
       icon: 'check',
@@ -567,12 +567,12 @@ async function removeContact(contact) {
 }
 
 async function setPrimaryContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
-    deal: props.dealId,
+  let d = await call('crm.overrides.opportunity.set_primary_contact', {
+    opportunity: props.opportunityId,
     contact,
   })
   if (d) {
-    dealContacts.reload()
+    opportunityContacts.reload()
     createToast({
       title: __('Primary contact set'),
       icon: 'check',
@@ -581,10 +581,10 @@ async function setPrimaryContact(contact) {
   }
 }
 
-const dealContacts = createResource({
-  url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
-  params: { name: props.dealId },
-  cache: ['deal_contacts', props.dealId],
+const opportunityContacts = createResource({
+  url: '/api/method/crm.api.opportunity.get_opportunity_contacts',
+  params: { name: props.opportunityId },
+  cache: ['opportunity_contacts', props.opportunityId],
   auto: true,
   onSuccess: (data) => {
     let contactSection = fieldsLayout.data?.find(
@@ -606,17 +606,17 @@ const dealContacts = createResource({
 })
 
 function updateField(name, value, callback) {
-  updateDeal(name, value, () => {
-    deal.data[name] = value
+  updateOpportunity(name, value, () => {
+    opportunity.data[name] = value
     callback?.()
   })
 }
 
-async function deleteDeal(name) {
+async function deleteOpportunity(name) {
   await call('frappe.client.delete', {
-    doctype: 'CRM Deal',
+    doctype: 'Opportunity',
     name,
   })
-  router.push({ name: 'Deals' })
+  router.push({ name: 'Opportunities' })
 }
 </script>

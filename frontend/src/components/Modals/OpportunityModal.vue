@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-              {{ __('Create Deal') }}
+              {{ __('Create Opportunity') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -28,16 +28,12 @@
               <div>{{ __('Choose Existing Customer') }}</div>
               <Switch v-model="chooseExistingCustomer" />
             </div>
-            <div class="flex items-center gap-3 text-sm text-gray-600">
-              <div>{{ __('Choose Existing Contact') }}</div>
-              <Switch v-model="chooseExistingContact" />
-            </div>
           </div>
           <Fields
             v-if="filteredSections"
             class="border-t pt-4"
             :sections="filteredSections"
-            :data="deal"
+            :data="opportunity"
           />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
@@ -47,8 +43,8 @@
           <Button
             variant="solid"
             :label="__('Create')"
-            :loading="isDealCreating"
-            @click="createDeal"
+            :loading="isOpportunityCreating"
+            @click="createOpportunity"
           />
         </div>
       </div>
@@ -77,7 +73,7 @@ const show = defineModel()
 const router = useRouter()
 const error = ref(null)
 
-const deal = reactive({
+const opportunity = reactive({
   customer: '',
   customer_name: '',
   website: '',
@@ -93,26 +89,26 @@ const deal = reactive({
   mobile_no: '',
   gender: '',
   status: '',
-  deal_owner: '',
+  opportunity_owner: '',
+  lead: '',
 })
 
-const isDealCreating = ref(false)
-const chooseExistingContact = ref(false)
+const isOpportunityCreating = ref(false)
 const chooseExistingCustomer = ref(false)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Deal'],
-  params: { doctype: 'CRM Deal', type: 'Quick Entry' },
+  cache: ['quickEntryFields', 'Opportunity'],
+  params: { doctype: 'Opportunity', type: 'Quick Entry' },
   auto: true,
   transform: (data) => {
     return data.forEach((section) => {
       section.fields.forEach((field) => {
         if (field.name == 'status') {
           field.type = 'Select'
-          field.options = dealStatuses.value
-          field.prefix = getDealStatus(deal.status).iconColorClass
-        } else if (field.name == 'deal_owner') {
+          field.options = opportunityStatuses.value
+          field.prefix = getDealStatus(opportunity.status).iconColorClass
+        } else if (field.name == 'opportunity_owner') {
           field.type = 'User'
         }
       })
@@ -136,15 +132,10 @@ const filteredSections = computed(() => {
     )
   }
 
-  if (chooseExistingContact.value) {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Contact'),
-    )
-  } else {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Contact Details'),
-    )
-  }
+  _filteredSections.push(
+    allSections.find((s) => s.label === 'Select Contact'),
+  )
+
 
   allSections.forEach((s) => {
     if (
@@ -152,7 +143,6 @@ const filteredSections = computed(() => {
         'Select Customer',
         'Customer Details',
         'Select Contact',
-        'Contact Details',
       ].includes(s.label)
     ) {
       _filteredSections.push(s)
@@ -162,53 +152,53 @@ const filteredSections = computed(() => {
   return _filteredSections
 })
 
-const dealStatuses = computed(() => {
+const opportunityStatuses = computed(() => {
   let statuses = statusOptions('deal')
-  if (!deal.status) {
-    deal.status = statuses[0].value
+  if (!opportunity.status) {
+    opportunity.status = statuses[0].value
   }
   return statuses
 })
 
-function createDeal() {
-  if (deal.website && !deal.website.startsWith('http')) {
-    deal.website = 'https://' + deal.website
+function createOpportunity() {
+  if (opportunity.website && !opportunity.website.startsWith('http')) {
+    opportunity.website = 'https://' + opportunity.website
   }
   createResource({
-    url: 'crm.fcrm.doctype.crm_deal.crm_deal.create_deal',
-    params: { args: deal },
+    url: 'crm.overrides.opportunity.create_opportunity',
+    params: { args: opportunity },
     auto: true,
     validate() {
       error.value = null
-      if (deal.annual_revenue) {
-        deal.annual_revenue = deal.annual_revenue.replace(/,/g, '')
-        if (isNaN(deal.annual_revenue)) {
+      if (opportunity.annual_revenue) {
+        opportunity.annual_revenue = opportunity.annual_revenue.replace(/,/g, '')
+        if (isNaN(opportunity.annual_revenue)) {
           error.value = __('Annual Revenue should be a number')
           return error.value
         }
       }
-      if (deal.mobile_no && isNaN(deal.mobile_no.replace(/[-+() ]/g, ''))) {
+      if (opportunity.mobile_no && isNaN(opportunity.mobile_no.replace(/[-+() ]/g, ''))) {
         error.value = __('Mobile No should be a number')
         return error.value
       }
-      if (deal.email && !deal.email.includes('@')) {
+      if (opportunity.email && !opportunity.email.includes('@')) {
         error.value = __('Invalid Email')
         return error.value
       }
-      if (!deal.status) {
+      if (!opportunity.status) {
         error.value = __('Status is required')
         return error.value
       }
-      isDealCreating.value = true
+      isOpportunityCreating.value = true
     },
     onSuccess(name) {
-      capture('deal_created')
-      isDealCreating.value = false
+      capture('opportunity_created')
+      isOpportunityCreating.value = false
       show.value = false
-      router.push({ name: 'Deal', params: { dealId: name } })
+      router.push({ name: 'Opportunity', params: { opportunityId: name } })
     },
     onError(err) {
-      isDealCreating.value = false
+      isOpportunityCreating.value = false
       if (!err.messages) {
         error.value = err.message
         return
@@ -228,12 +218,12 @@ function openQuickEntryModal() {
 }
 
 onMounted(() => {
-  Object.assign(deal, props.defaults)
-  if (!deal.deal_owner) {
-    deal.deal_owner = getUser().name
+  Object.assign(opportunity, props.defaults)
+  if (!opportunity.opportunity_owner) {
+    opportunity.opportunity_owner = getUser().name
   }
-  if (!deal.status && dealStatuses.value[0].value) {
-    deal.status = dealStatuses.value[0].value
+  if (!opportunity.status && opportunityStatuses.value[0].value) {
+    opportunity.status = opportunityStatuses.value[0].value
   }
 })
 </script>

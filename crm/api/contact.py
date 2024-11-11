@@ -7,7 +7,7 @@ def validate(doc, method):
 	set_primary_mobile_no(doc)
 	doc.set_primary_email()
 	doc.set_primary("mobile_no")
-	update_deals_email_mobile_no(doc)
+	update_opportunities_email_mobile_no(doc)
 
 
 def set_primary_email(doc):
@@ -26,19 +26,19 @@ def set_primary_mobile_no(doc):
 		doc.phone_nos[0].is_primary_mobile_no = 1
 
 
-def update_deals_email_mobile_no(doc):
-	linked_deals = frappe.get_all(
+def update_opportunities_email_mobile_no(doc):
+	linked_opportunities = frappe.get_all(
 		"CRM Contacts",
 		filters={"contact": doc.name, "is_primary": 1},
 		fields=["parent"],
 	)
 
-	for linked_deal in linked_deals:
-		deal = frappe.get_cached_doc("CRM Deal", linked_deal.parent)
-		if deal.email != doc.email_id or deal.mobile_no != doc.mobile_no:
-			deal.email = doc.email_id
-			deal.mobile_no = doc.mobile_no
-			deal.save(ignore_permissions=True)
+	for linked_opportunity in linked_opportunities:
+		opportunity = frappe.get_cached_doc("Opportunity", linked_opportunity.parent)
+		if opportunity.email != doc.email_id or opportunity.mobile_no != doc.mobile_no:
+			opportunity.email = doc.email_id
+			opportunity.mobile_no = doc.mobile_no
+			opportunity.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
@@ -67,24 +67,24 @@ def get_contact(name):
 	return contact
 
 @frappe.whitelist()
-def get_linked_deals(contact):
-	"""Get linked deals for a contact"""
+def get_linked_opportunities(contact):
+	"""Get linked opportunities for a contact"""
 
 	if not frappe.has_permission("Contact", "read", contact):
 		frappe.throw("Not permitted", frappe.PermissionError)
 
-	deal_names = frappe.get_all(
+	opportunity_names = frappe.get_all(
 		"CRM Contacts",
-		filters={"contact": contact, "parenttype": "CRM Deal"},
+		filters={"contact": contact, "parenttype": "Opportunity"},
 		fields=["parent"],
 		distinct=True,
 	)
 
-	# get deals data
-	deals = []
-	for d in deal_names:
-		deal = frappe.get_cached_doc(
-			"CRM Deal",
+	# get opportunities data
+	opportunities = []
+	for d in opportunity_names:
+		opportunity = frappe.get_cached_doc(
+			"Opportunity",
 			d.parent,
 			fields=[
 				"name",
@@ -92,15 +92,15 @@ def get_linked_deals(contact):
 				"currency",
 				"annual_revenue",
 				"status",
-				"email",
-				"mobile_no",
-				"deal_owner",
+				"contact_email",
+				"contact_mobile",
+				"opportunity_owner",
 				"modified",
 			],
 		)
-		deals.append(deal.as_dict())
+		opportunities.append(opportunity.as_dict())
 
-	return deals
+	return opportunities
 
 
 @frappe.whitelist()

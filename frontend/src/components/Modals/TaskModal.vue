@@ -22,8 +22,8 @@
           variant="outline"
           size="sm"
           :label="
-            task.reference_doctype == 'CRM Deal'
-              ? __('Open Deal')
+            task.reference_doctype == 'Opportunity'
+              ? __('Open Opportunity')
               : __('Open Lead')
           "
           @click="redirect()"
@@ -169,10 +169,10 @@ function updateTaskPriority(priority) {
 
 function redirect() {
   if (!props.task?.reference_docname) return
-  let name = props.task.reference_doctype == 'CRM Deal' ? 'Deal' : 'Lead'
+  let name = props.task.reference_doctype == 'Opportunity' ? 'Opportunity' : 'Lead'
   let params = { leadId: props.task.reference_docname }
-  if (name == 'Deal') {
-    params = { dealId: props.task.reference_docname }
+  if (name == 'Opportunity') {
+    params = { opportunityId: props.task.reference_docname }
   }
   router.push({ name: name, params: params })
 }
