@@ -79,7 +79,6 @@ const opportunity = reactive({
   website: '',
   no_of_employees: '',
   territory: '',
-  annual_revenue: '',
   industry: '',
   contact: '',
   salutation: '',
@@ -91,6 +90,7 @@ const opportunity = reactive({
   status: '',
   opportunity_owner: '',
   lead: '',
+  opportunity_amount: '',
 })
 
 const isOpportunityCreating = ref(false)
@@ -170,9 +170,9 @@ function createOpportunity() {
     auto: true,
     validate() {
       error.value = null
-      if (opportunity.annual_revenue) {
-        opportunity.annual_revenue = opportunity.annual_revenue.replace(/,/g, '')
-        if (isNaN(opportunity.annual_revenue)) {
+      if (opportunity.opportunity_amount) {
+        opportunity.opportunity_amount = opportunity.opportunity_amount.replace(/,/g, '')
+        if (isNaN(opportunity.opportunity_amount)) {
           error.value = __('Annual Revenue should be a number')
           return error.value
         }

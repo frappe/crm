@@ -591,8 +591,8 @@ function getOpportunityRowObject(opportunity) {
       label: opportunity.customer,
       logo: getCustomer(opportunity.customer)?.image,
     },
-    annual_revenue: formatNumberIntoCurrency(
-      opportunity.annual_revenue,
+    opportunity_amount: formatNumberIntoCurrency(
+      opportunity.opportunity_amount,
       opportunity.currency,
     ),
     status: {
@@ -620,7 +620,7 @@ const opportunityColumns = [
   },
   {
     label: __('Amount'),
-    key: 'annual_revenue',
+    key: 'opportunity_amount',
     width: '9rem',
   },
   {

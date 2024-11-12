@@ -13,68 +13,7 @@ from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_sta
 
 
 class Opportunity(Opportunity):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
 
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from erpnext.crm.doctype.competitor_detail.competitor_detail import CompetitorDetail
-		from erpnext.crm.doctype.crm_note.crm_note import CRMNote
-		from erpnext.crm.doctype.opportunity_item.opportunity_item import OpportunityItem
-		from erpnext.crm.doctype.opportunity_lost_reason_detail.opportunity_lost_reason_detail import OpportunityLostReasonDetail
-		from frappe.types import DF
-
-		address_display: DF.SmallText | None
-		amended_from: DF.Link | None
-		annual_revenue: DF.Currency
-		base_opportunity_amount: DF.Currency
-		base_total: DF.Currency
-		campaign: DF.Link | None
-		city: DF.Data | None
-		company: DF.Link
-		competitors: DF.TableMultiSelect[CompetitorDetail]
-		contact_display: DF.SmallText | None
-		contact_email: DF.Data | None
-		contact_mobile: DF.Data | None
-		contact_person: DF.Link | None
-		conversion_rate: DF.Float
-		country: DF.Link | None
-		currency: DF.Link | None
-		customer_address: DF.Link | None
-		customer_group: DF.Link | None
-		customer_name: DF.Data | None
-		expected_closing: DF.Date | None
-		first_response_time: DF.Duration | None
-		industry: DF.Link | None
-		items: DF.Table[OpportunityItem]
-		job_title: DF.Data | None
-		language: DF.Link | None
-		lost_reasons: DF.TableMultiSelect[OpportunityLostReasonDetail]
-		market_segment: DF.Link | None
-		naming_series: DF.Literal["CRM-OPP-.YYYY.-"]
-		no_of_employees: DF.Literal["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"]
-		notes: DF.Table[CRMNote]
-		opportunity_amount: DF.Currency
-		opportunity_from: DF.Link
-		opportunity_owner: DF.Link | None
-		opportunity_type: DF.Link | None
-		order_lost_reason: DF.SmallText | None
-		party_name: DF.DynamicLink
-		phone: DF.Data | None
-		phone_ext: DF.Data | None
-		probability: DF.Percent
-		sales_stage: DF.Link | None
-		source: DF.Link | None
-		state: DF.Data | None
-		status: DF.Literal["Open", "Quotation", "Converted", "Lost", "Replied", "Closed"]
-		territory: DF.Link | None
-		title: DF.Data | None
-		total: DF.Currency
-		transaction_date: DF.Date
-		website: DF.Data | None
-		whatsapp: DF.Data | None
-	# end: auto-generated types
 	def before_validate(self):
 		self.set_sla()
 
@@ -91,6 +30,7 @@ class Opportunity(Opportunity):
 	def after_insert(self):
 		if self.opportunity_owner:
 			self.assign_agent(self.opportunity_owner)
+		super().after_insert()
 
 	def before_save(self):
 		self.apply_sla()
@@ -202,7 +142,7 @@ class Opportunity(Opportunity):
 			{
 				'label': 'Amount',
 				'type': 'Currency',
-				'key': 'annual_revenue',
+				'key': 'opportunity_amount',
 				'width': '9rem',
 			},
 			{
@@ -239,7 +179,7 @@ class Opportunity(Opportunity):
 		rows = [
 			"name",
 			"customer",
-			"annual_revenue",
+			"opportunity_amount",
 			"status",
 			"contact_email",
 			"currency",
@@ -259,7 +199,7 @@ class Opportunity(Opportunity):
 		return {
 			"column_field": "status",
 			"title_field": "customer",
-			"kanban_fields": '["annual_revenue", "contact_email", "contact_mobile", "_assign", "modified"]'
+			"kanban_fields": '["opportunity_amount", "contact_email", "contact_mobile", "_assign", "modified"]'
 		}
 
 @frappe.whitelist()
@@ -307,7 +247,7 @@ def create_customer(doc):
 			"website": doc.get("website"),
 			"territory": doc.get("territory"),
 			"industry": doc.get("industry"),
-			"annual_revenue": doc.get("annual_revenue"),
+			"annual_revenue": doc.get("opportunity_amount"),
 		}
 	)
 	customer.insert(ignore_permissions=True)
