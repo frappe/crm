@@ -113,6 +113,7 @@
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
+                <!-- Phone Icon Section -->
                 <Tooltip v-if="callEnabled" :text="__('Make a call')">
                   <Button
                     class="h-7 w-7"
@@ -125,6 +126,27 @@
                   >
                     <PhoneIcon class="h-4 w-4" />
                   </Button>
+                </Tooltip>
+                <Tooltip v-else :text="__('Call via phone app')">
+                  <a
+                    v-if="lead.data.mobile_no"
+                    :href="`tel:${lead.data.mobile_no}`"
+                    class="h-7 w-7 flex items-center justify-center"
+                  >
+                    <PhoneIcon class="h-4 w-4" />
+                  </a>
+                </Tooltip>
+                <!-- WhatsApp Icon Section -->
+                <Tooltip :text="__('Open WhatsApp')">
+                  <a
+                    v-if="lead.data.mobile_no"
+                    :href="`https://wa.me/${lead.data.mobile_no}`"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="h-7 w-7 flex items-center justify-center"
+                  >
+                    <WhatsAppIcon class="h-4 w-4" />
+                  </a>
                 </Tooltip>
                 <Tooltip :text="__('Send an email')">
                   <Button class="h-7 w-7">
