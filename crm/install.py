@@ -117,7 +117,7 @@ def add_default_fields_layout(force=False):
 	quick_entry_layouts = {
 		"Lead-Quick Entry": {
 			"doctype": "Lead",
-			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email_id","mobile_no", "gender"],"hideLabel":true},{"label":"Customer","fields":["customer","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
+			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email_id","mobile_no", "gender"],"hideLabel":true},{"label":"Customer","fields":["company_name","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
 		},
 		"Opportunity-Quick Entry": {
 			"doctype": "Opportunity",
