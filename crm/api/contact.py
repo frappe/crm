@@ -90,7 +90,7 @@ def get_linked_opportunities(contact):
 				"name",
 				"customer",
 				"currency",
-				"annual_revenue",
+				"opportunity_amount",
 				"status",
 				"contact_email",
 				"contact_mobile",

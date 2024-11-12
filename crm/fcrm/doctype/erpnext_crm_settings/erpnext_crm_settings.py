@@ -144,7 +144,7 @@ def create_prospect_in_remote_site(opportunity, erpnext_crm_settings):
 				"territory": doc.territory,
 				"industry": doc.industry,
 				"website": doc.website,
-				"annual_revenue": doc.annual_revenue,
+				"opportunity_amount": doc.opportunity_amount,
 				"contacts": json.dumps(contacts),
 				"erpnext_company": erpnext_crm_settings.erpnext_company,
 				"address": address.as_dict() if address else None

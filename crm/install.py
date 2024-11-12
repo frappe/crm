@@ -121,7 +121,7 @@ def add_default_fields_layout(force=False):
 		},
 		"Opportunity-Quick Entry": {
 			"doctype": "Opportunity",
-			"layout": '[{"label": "Select Customer", "fields": ["customer"], "hideLabel": true, "editable": true}, {"label": "Customer Details", "fields": ["customer_name", "website", "no_of_employees", "territory", "annual_revenue", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact_person"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 3, "fields": ["status", "opportunity_owner", "lead"], "hideLabel": true}]'
+			"layout": '[{"label": "Select Customer", "fields": ["customer"], "hideLabel": true, "editable": true}, {"label": "Customer Details", "fields": ["customer_name", "website", "no_of_employees", "territory", "opportunity_amount", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact_person"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 3, "fields": ["status", "opportunity_owner", "lead"], "hideLabel": true}]'
 		},
 		"Contact-Quick Entry": {
 			"doctype": "Contact",
@@ -144,7 +144,7 @@ def add_default_fields_layout(force=False):
 		},
 		"Opportunity-Side Panel": {
 			"doctype": "Opportunity",
-			"layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Customer Details","name":"customer_tab","opened":true,"fields":["customer","website","territory","annual_revenue","transaction_date","probability","opportunity_owner"]}]'
+			"layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Customer Details","name":"customer_tab","opened":true,"fields":["customer","website","territory","opportunity_amount","transaction_date","probability","opportunity_owner"]}]'
 		},
 		"Contact-Side Panel": {
 			"doctype": "Contact",

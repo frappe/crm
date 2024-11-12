@@ -397,9 +397,9 @@ function parseRows(rows) {
         }
       } else if (row === 'website') {
         _rows[row] = website(opportunity.website)
-      } else if (row == 'annual_revenue') {
+      } else if (row == 'opportunity_amount') {
         _rows[row] = formatNumberIntoCurrency(
-          opportunity.annual_revenue,
+          opportunity.opportunity_amount,
           opportunity.currency,
         )
       } else if (row == 'status') {
