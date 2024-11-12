@@ -130,7 +130,7 @@
                 <Tooltip v-else :text="__('Call via phone app')">
                   <a
                     v-if="lead.data.mobile_no"
-                    :href="`tel:${lead.data.mobile_no}`"
+                    @click="trackPhoneCall(lead.data.mobile_no, 'phone')"
                     class="h-7 w-7 flex items-center justify-center"
                   >
                     <PhoneIcon class="h-4 w-4" />
@@ -140,9 +140,7 @@
                 <Tooltip :text="__('Open WhatsApp')">
                   <a
                     v-if="lead.data.mobile_no"
-                    :href="`https://wa.me/${lead.data.mobile_no}`"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    @click="trackPhoneCall(lead.data.mobile_no, 'whatsapp')"
                     class="h-7 w-7 flex items-center justify-center"
                   >
                     <WhatsAppIcon class="h-4 w-4" />
@@ -371,6 +369,7 @@ import {
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { trackCommunication } from '@/utils/communicationUtils'
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
@@ -677,5 +676,16 @@ const activities = ref(null)
 
 function openEmailBox() {
   activities.value.emailBox.show = true
+}
+
+function trackPhoneCall(phoneNumber, type = 'phone') {
+  trackCommunication({
+    type,
+    doctype: 'CRM Lead',
+    docname: lead.data.name,
+    phoneNumber,
+    activities: activities.value,
+    contactName: lead.data.lead_name,
+  })
 }
 </script>
