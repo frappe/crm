@@ -16,11 +16,11 @@ export function trackCommunication({ type, doctype, docname, phoneNumber, activi
 
   // First trigger the action
   if (type === 'phone') {
-    console.log('Initiating phone call to:', phoneNumber)
+    //console.log('Initiating phone call to:', phoneNumber)
     window.location.href = `tel:${phoneNumber}`
   } else {
-    console.log('Opening WhatsApp for:', phoneNumber)
-    window.location.href = `https://wa.me/${phoneNumber}`
+    //console.log('Opening WhatsApp for:', phoneNumber)
+    window.open(`https://wa.me/${phoneNumber}`, '_blank')
   }
 
   const params = {
@@ -44,14 +44,14 @@ export function trackCommunication({ type, doctype, docname, phoneNumber, activi
     }
   }
 
-  console.log('Attempting to log communication with params:', params)
+  //console.log('Attempting to log communication with params:', params)
 
   // Log communication using CRM's API
   const logCommunication = createResource({
     url: 'frappe.client.insert',
     params: params,
     onSuccess: (response) => {
-      console.log('Communication successfully logged:', response)
+      //console.log('Communication successfully logged:', response)
       console.log('Reloading activities:', activities)
       activities?.all_activities?.reload()
       capture(type === 'phone' ? 'phone_call_initiated' : 'whatsapp_chat_initiated')
@@ -74,13 +74,13 @@ export function trackCommunication({ type, doctype, docname, phoneNumber, activi
     }
   })
 
-  console.log('Submitting communication log request...')
+  //console.log('Submitting communication log request...')
   
   try {
     logCommunication.submit()
-    console.log('Request submitted successfully')
+    //console.log('Request submitted successfully')
   } catch (e) {
-    console.error('Error submitting request:', e)
+    //console.error('Error submitting request:', e)
   }
 }
 
