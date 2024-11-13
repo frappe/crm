@@ -50,8 +50,13 @@ export function trackCommunication({ type, doctype, docname, phoneNumber, activi
       reference_name: docname,
       phone_no: formattedNumber,
       content: type === 'phone' 
+<<<<<<< HEAD
         ? __('Call initiated to {0}', [formattedNumber])
         : __('Chat initiated with {0}', [formattedNumber]),
+=======
+        ? __(`Call initiated to {0}`,[phoneNumber])
+        : __(`Chat initiated with {0}`,[phoneNumber]),
+>>>>>>> 932b28c (Updating translations)
       subject: type === 'phone' 
         ? __('Phone call')
         : __('WhatsApp chat'),
