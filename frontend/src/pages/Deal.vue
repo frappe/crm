@@ -15,7 +15,7 @@
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
+      <Dropdown :options="statusOptions('deal', updateField, customStatuses)" class="status-option">
         <template #default="{ open }">
           <Button
             :label="deal.data.status"
@@ -33,7 +33,20 @@
           </Button>
         </template>
       </Dropdown>
+      <select v-model="deal.data.status_detail" class="rounded h-7 text-base px-2 border border-gray-100 bg-gray-100 hover:border-gray-200 hover:bg-gray-200 focus:border-gray-500 focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-800 transition-colors w-full py-0 status-option-detail" 
+      @change.stop="updateStatusDetail($event.target.value)"
+      >
+          <option 
+          v-for="(option, index) in staus_detail_option" 
+          :key="index" 
+          :title="option.dec" 
+          :value="option.name"
+          >
+          {{ option.name }}
+          </option>
+      </select>
     </template>
+
   </LayoutHeader>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" :tabs="tabs">
@@ -371,6 +384,7 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
+  FormControl
 } from 'frappe-ui'
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -395,6 +409,8 @@ const props = defineProps({
 
 const customActions = ref([])
 const customStatuses = ref([])
+const staus_detail_option = ref([]);
+
 
 const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
@@ -453,12 +469,63 @@ onMounted(() => {
     organization.data = deal.data._organizationObj
     return
   }
-  deal.fetch()
+  deal.fetch().then(() => {
+      getStatusDetail(deal.data.status)
+    })
+
 })
 
 onBeforeUnmount(() => {
   $socket.off('crm_customer_created')
 })
+
+function getStatusDetail(status) {
+  createResource({
+  auto: true,
+  params: {
+      status: status,
+    },
+  url: 'crm.api.doc.get_crm_deal_status_for_status',
+  transform: (data) => {
+    const actualData = unwrapProxy(data);
+
+    if (!actualData || !Array.isArray(actualData)) {
+    staus_detail_option.value = [];
+    }
+    // const status_array = actualData.map((item) => item.detail_name);
+    // staus_detail_option.value = status_array;
+    const status_array = actualData.map((item) => ({
+        name: item.detail_name, // Adjust if `detail_name` is not the correct key
+        dec: item.description || '' // Adjust if `detail_description` is not the correct key or needs a default
+      }));
+
+      staus_detail_option.value = status_array;
+  },
+
+});
+}
+function updateStatusDetail(value){
+updateDeal('status_detail', value, () => {
+    deal.data['status_detail'] = value
+  })
+}
+
+/**
+ *  Convert proxy object into array
+ * @param proxyData 
+ */
+ function unwrapProxy(proxyData) {
+  if (Array.isArray(proxyData)) {
+    return proxyData.map((item) => unwrapProxy(item));
+  } 
+  else if (proxyData !== null && typeof proxyData === 'object') {
+    return Object.keys(proxyData).reduce((acc, key) => {
+      acc[key] = unwrapProxy(proxyData[key]);
+      return acc;
+    }, {});
+  }
+  return proxyData;
+}
 
 const reload = ref(false)
 const showOrganizationModal = ref(false)
@@ -722,6 +789,7 @@ function updateField(name, value, callback) {
     deal.data[name] = value
     callback?.()
   })
+  getStatusDetail(value);
 }
 
 async function deleteDeal(name) {
