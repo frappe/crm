@@ -542,7 +542,7 @@ const changeTabTo = (tabName) => {
 }
 
 const all_activities = createResource({
-  url: 'crm.api.activities.get_activities',
+  url: 'next_crm.api.activities.get_activities',
   params: { name: doc.value.data.name },
   cache: ['activity', doc.value.data.name],
   auto: true,
@@ -588,7 +588,7 @@ const all_activities = createResource({
 const showWhatsappTemplates = ref(false)
 
 const whatsappMessages = createResource({
-  url: 'crm.api.whatsapp.get_whatsapp_messages',
+  url: 'next_crm.api.whatsapp.get_whatsapp_messages',
   cache: ['whatsapp_messages', doc.value.data.name],
   params: {
     reference_doctype: props.doctype,
@@ -626,7 +626,7 @@ function sendTemplate(template) {
   showWhatsappTemplates.value = false
   capture('send_whatsapp_template', { doctype: props.doctype })
   createResource({
-    url: 'crm.api.whatsapp.send_whatsapp_template',
+    url: 'next_crm.api.whatsapp.send_whatsapp_template',
     params: {
       reference_doctype: props.doctype,
       reference_name: doc.value.data.name,

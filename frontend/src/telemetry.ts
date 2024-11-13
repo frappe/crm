@@ -23,7 +23,7 @@ let posthog: typeof window.posthog = window.posthog
 
 // Posthog Settings
 let posthogSettings = createResource({
-  url: 'crm.api.get_posthog_settings',
+  url: 'next_crm.api.get_posthog_settings',
   cache: 'posthog_settings',
   onSuccess: (ps: PosthogSettings) => initPosthog(ps),
 })

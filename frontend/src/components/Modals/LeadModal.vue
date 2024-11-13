@@ -64,7 +64,7 @@ const error = ref(null)
 const isLeadCreating = ref(false)
 
 const sections = createResource({
-  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  url: 'next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['quickEntryFields', 'Lead'],
   params: { doctype: 'Lead', type: 'Quick Entry' },
   auto: true,

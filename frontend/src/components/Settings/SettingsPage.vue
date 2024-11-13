@@ -58,7 +58,7 @@ const props = defineProps({
 })
 
 const fields = createResource({
-  url: 'crm.api.doc.get_fields',
+  url: 'next_crm.api.doc.get_fields',
   cache: ['fields', props.doctype],
   params: {
     doctype: props.doctype,

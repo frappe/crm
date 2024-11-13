@@ -21,7 +21,7 @@
           "
         >
           <div class="text-base font-medium leading-none text-gray-900">
-            {{ __('CRM') }}
+            {{ __('Next CRM') }}
           </div>
           <div class="mt-1 text-sm leading-none text-gray-700">
             {{ user.full_name }}
@@ -81,7 +81,7 @@ let dropdownOptions = ref([
       {
         icon: 'life-buoy',
         label: computed(() => __('Support')),
-        onClick: () => window.open('https://t.me/frappecrm', '_blank'),
+        onClick: () => window.open('https://github.com/rtCamp/next-crm', '_blank'),
       },
       {
         icon: 'book-open',

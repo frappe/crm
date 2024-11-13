@@ -128,7 +128,7 @@ const subject = computed(() => {
 })
 
 const signature = createResource({
-  url: 'crm.api.get_user_signature',
+  url: 'next_crm.api.get_user_signature',
   cache: 'user-email-signature',
   auto: true,
 })
@@ -206,7 +206,7 @@ async function sendComment() {
   })
   if (comment && attachments.value.length) {
     capture('comment_attachments_added')
-    await call('crm.api.comment.add_attachments', {
+    await call('next_crm.api.comment.add_attachments', {
       name: comment.name,
       attachments: attachments.value.map((x) => x.name),
     })

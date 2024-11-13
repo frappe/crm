@@ -1,0 +1,133 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"1nr6UkvDiL\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h5\\\"><b>PORTAL</b></span>\",\"col\":12}},{\"id\":\"1hyi8SysUY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CRM Portal Page\",\"col\":3}},{\"id\":\"ktENiGaqXQ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"VgeWLYOuAS\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>SHORTCUTS</b>\",\"col\":12}},{\"id\":\"A66FpG-K3T\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"n9b6N5ebOj\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Opportunities\",\"col\":3}},{\"id\":\"sGHTXrludH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"uXZNCdqxy0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Contacts\",\"col\":3}},{\"id\":\"v1kkMwlntf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"SLA\",\"col\":3}},{\"id\":\"WRzt4SMh_b\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Assignment Rule\",\"col\":3}},{\"id\":\"TZ7cULX3Tk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"zpySv0nGVQ\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>META</b>\",\"col\":12}},{\"id\":\"fa-uKzobpp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead Statuses\",\"col\":3}},{\"id\":\"hxoZghUHP2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deal Statuses\",\"col\":3}},{\"id\":\"HbgghUpc8N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead Sources\",\"col\":3}},{\"id\":\"8cPs7Fohb4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Industries\",\"col\":3}},{\"id\":\"arT4xZ9HWR\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Territories\",\"col\":3}},{\"id\":\"ApHOcISpiJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Communication Statuses\",\"col\":3}}]",
+ "creation": "2023-11-27 13:55:17.090361",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "filter",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Next CRM",
+ "links": [],
+ "modified": "2024-01-04 19:08:27.799960",
+ "modified_by": "Administrator",
+ "module": "NCRM",
+ "name": "Next CRM",
+ "number_cards": [],
+ "owner": "shariq@frappe.io",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Communication Statuses",
+   "link_to": "CRM Communication Status",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Leads",
+   "link_to": "Lead",
+   "stats_filter": "[[\"Lead\",\"converted\",\"=\",0,false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "CRM Portal Page",
+   "type": "URL",
+   "url": "/next-crm"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "SLA",
+   "link_to": "CRM Service Level Agreement",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Lead Statuses",
+   "link_to": "Lead Status",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "Tree",
+   "label": "Territories",
+   "link_to": "Territory",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Assignment Rule",
+   "link_to": "Assignment Rule",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Opportunities",
+   "link_to": "Opportunity",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Deal Statuses",
+   "link_to": "CRM Deal Status",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Lead Sources",
+   "link_to": "Lead Source",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Customers",
+   "link_to": "Customer",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Contacts",
+   "link_to": "Contact",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Industries",
+   "link_to": "Industry Type",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Next CRM"
+}

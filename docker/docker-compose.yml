@@ -1,5 +1,5 @@
 version: "3.7"
-name: crm
+name: next_crm
 services:
   mariadb:
     image: mariadb:10.8

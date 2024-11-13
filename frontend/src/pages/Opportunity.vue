@@ -392,7 +392,7 @@ const customActions = ref([])
 const customStatuses = ref([])
 
 const opportunity = createResource({
-  url: '/api/method/crm.api.opportunity.get_opportunity',
+  url: '/api/method/next_crm.api.opportunity.get_opportunity',
   params: { name: props.opportunityId },
   cache: ['opportunity', props.opportunityId],
   onSuccess: async (data) => {
@@ -587,7 +587,7 @@ const tabs = computed(() => {
 const { tabIndex } = useActiveTabManager(tabs, 'lastOpportunityTab')
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
+  url: 'next_crm.api.doc.get_sidebar_fields',
   cache: ['fieldsLayout', props.opportunityId],
   params: { doctype: 'Opportunity', name: props.opportunityId },
   auto: true,
@@ -639,7 +639,7 @@ function contactOptions(contact) {
 }
 
 async function addContact(contact) {
-  let d = await call('crm.overrides.opportunity.add_contact', {
+  let d = await call('next_crm.overrides.opportunity.add_contact', {
     opportunity: props.opportunityId,
     contact,
   })
@@ -654,7 +654,7 @@ async function addContact(contact) {
 }
 
 async function removeContact(contact) {
-  let d = await call('crm.overrides.opportunity.remove_contact', {
+  let d = await call('next_crm.overrides.opportunity.remove_contact', {
     opportunity: props.opportunityId,
     contact,
   })
@@ -669,7 +669,7 @@ async function removeContact(contact) {
 }
 
 async function setPrimaryContact(contact) {
-  let d = await call('crm.overrides.opportunity.set_primary_contact', {
+  let d = await call('next_crm.overrides.opportunity.set_primary_contact', {
     opportunity: props.opportunityId,
     contact,
   })
@@ -684,7 +684,7 @@ async function setPrimaryContact(contact) {
 }
 
 const opportunityContacts = createResource({
-  url: '/api/method/crm.api.opportunity.get_opportunity_contacts',
+  url: '/api/method/next_crm.api.opportunity.get_opportunity_contacts',
   params: { name: props.opportunityId },
   cache: ['opportunity_contacts', props.opportunityId],
   auto: true,

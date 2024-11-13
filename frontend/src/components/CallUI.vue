@@ -229,7 +229,7 @@ const note = ref({
 async function updateNote(_note, insert_mode = false) {
   note.value = _note
   if (insert_mode && _note.name) {
-    await call('crm.integrations.twilio.api.add_note_to_call_log', {
+    await call('next_crm.integrations.twilio.api.add_note_to_call_log', {
       call_sid: _call.parameters.CallSid,
       note: _note.name,
     })
@@ -244,14 +244,14 @@ let { style } = useDraggable(callPopup, {
 })
 
 async function is_twilio_enabled() {
-  return await call('crm.integrations.twilio.api.is_enabled')
+  return await call('next_crm.integrations.twilio.api.is_enabled')
 }
 
 async function startupClient() {
   log.value = 'Requesting Access Token...'
 
   try {
-    const data = await call('crm.integrations.twilio.api.generate_access_token')
+    const data = await call('next_crm.integrations.twilio.api.generate_access_token')
     log.value = 'Got a token.'
     intitializeDevice(data.token)
   } catch (err) {
@@ -287,7 +287,7 @@ function addDeviceListeners() {
   device.on('incoming', handleIncomingCall)
 
   device.on('tokenWillExpire', async () => {
-    const data = await call('crm.integrations.twilio.api.generate_access_token')
+    const data = await call('next_crm.integrations.twilio.api.generate_access_token')
     device.updateToken(data.token)
   })
 }

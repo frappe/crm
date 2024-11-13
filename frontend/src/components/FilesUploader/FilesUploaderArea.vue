@@ -163,7 +163,7 @@ const makeAttachmentsPublic = ref(props.options.makeAttachmentsPublic || false)
 
 onMounted(() => {
   createResource({
-    url: 'crm.api.get_file_uploader_defaults',
+    url: 'next_crm.api.get_file_uploader_defaults',
     params: { doctype: props.doctype },
     cache: ['file_uploader_defaults', props.doctype],
     auto: true,

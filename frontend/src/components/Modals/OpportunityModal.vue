@@ -97,7 +97,7 @@ const isOpportunityCreating = ref(false)
 const chooseExistingCustomer = ref(false)
 
 const sections = createResource({
-  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  url: 'next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['quickEntryFields', 'Opportunity'],
   params: { doctype: 'Opportunity', type: 'Quick Entry' },
   auto: true,
@@ -165,7 +165,7 @@ function createOpportunity() {
     opportunity.website = 'https://' + opportunity.website
   }
   createResource({
-    url: 'crm.overrides.opportunity.create_opportunity',
+    url: 'next_crm.overrides.opportunity.create_opportunity',
     params: { args: opportunity },
     auto: true,
     validate() {

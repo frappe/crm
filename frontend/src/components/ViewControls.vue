@@ -415,7 +415,7 @@ function getParams() {
 }
 
 list.value = createResource({
-  url: 'crm.api.doc.get_data',
+  url: 'next_crm.api.doc.get_data',
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
   onSuccess(data) {
@@ -615,7 +615,7 @@ const quickFilterList = computed(() => {
 })
 
 const quickFilters = createResource({
-  url: 'crm.api.doc.get_quick_filters',
+  url: 'next_crm.api.doc.get_quick_filters',
   params: { doctype: props.doctype },
   cache: ['Quick Filters', props.doctype],
   auto: true,
@@ -802,7 +802,7 @@ function create_or_update_default_view() {
   if (route.query.view) return
   view.value.doctype = props.doctype
   call(
-    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
+    'next_crm.ncrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
     {
       view: view.value,
     },
@@ -849,7 +849,7 @@ function update_custom_view() {
     route_name: route.name,
     load_default_columns: view.value.load_default_columns,
   }
-  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
+  call('next_crm.ncrm.doctype.crm_view_settings.crm_view_settings.update', {
     view: view.value,
   }).then(() => reloadView())
 }
@@ -974,7 +974,7 @@ function editView(v) {
 }
 
 function publicView(v) {
-  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.public', {
+  call('next_crm.ncrm.doctype.crm_view_settings.crm_view_settings.public', {
     name: v.name,
     value: !v.public,
   }).then(() => {
@@ -985,7 +985,7 @@ function publicView(v) {
 }
 
 function pinView(v) {
-  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.pin', {
+  call('next_crm.ncrm.doctype.crm_view_settings.crm_view_settings.pin', {
     name: v.name,
     value: !v.pinned,
   }).then(() => {
@@ -996,7 +996,7 @@ function pinView(v) {
 }
 
 function deleteView(v, close) {
-  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete', {
+  call('next_crm.ncrm.doctype.crm_view_settings.crm_view_settings.delete', {
     name: v.name,
   }).then(() => {
     router.push({ name: route.name })

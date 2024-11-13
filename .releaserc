@@ -7,12 +7,12 @@
 		"@semantic-release/release-notes-generator",
 		[
 			"@semantic-release/exec", {
-				"prepareCmd": 'sed -ir "s/[0-9]*\.[0-9]*\.[0-9]*/${nextRelease.version}/" crm/__init__.py'
+				"prepareCmd": 'sed -ir "s/[0-9]*\.[0-9]*\.[0-9]*/${nextRelease.version}/" next_crm/__init__.py'
 			}
 		],
 		[
 			"@semantic-release/git", {
-				"assets": ["crm/__init__.py"],
+				"assets": ["next_crm/__init__.py"],
 				"message": "chore(release): Bumped to Version ${nextRelease.version}"
 			}
 		],

@@ -369,7 +369,7 @@ const _customer = ref({})
 const _address = ref({})
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
+  url: 'next_crm.api.doc.get_sidebar_fields',
   cache: ['fieldsLayout', props.customerId],
   params: { doctype: 'Customer', name: props.customerId },
   auto: true,

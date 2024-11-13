@@ -30,7 +30,7 @@ bench new-site crm.localhost \
     --admin-password admin \
     --no-mariadb-socket
 
-bench --site crm.localhost install-app crm
+bench --site crm.localhost install-app next_crm
 bench --site crm.localhost set-config developer_mode 1
 bench --site crm.localhost clear-cache
 bench --site crm.localhost set-config mute_emails 1

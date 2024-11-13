@@ -215,7 +215,7 @@ const detailFields = computed(() => {
 })
 
 function createLead() {
-  call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
+  call('next_crm.ncrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
     call_log: callLog.value.doc,
   }).then((d) => {
     if (d) {
@@ -258,7 +258,7 @@ watch(show, (val) => {
           return
         }
         callNoteDoc.value = createDocumentResource({
-          doctype: 'FCRM Note',
+          doctype: 'NCRM Note',
           name: doc.note,
           fields: ['title', 'content'],
           cache: ['note', doc.note],

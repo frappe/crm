@@ -14,7 +14,7 @@
     v-model="notes"
     v-model:loadMore="loadMore"
     v-model:updatedPageCount="updatedPageCount"
-    doctype="FCRM Note"
+    doctype="NCRM Note"
     :options="{
       hideColumnsButton: true,
       defaultViewName: __('Notes View'),
@@ -147,7 +147,7 @@ function editNote(note) {
 
 async function deleteNote(name) {
   await call('frappe.client.delete', {
-    doctype: 'FCRM Note',
+    doctype: 'NCRM Note',
     name,
   })
   notes.value.reload()

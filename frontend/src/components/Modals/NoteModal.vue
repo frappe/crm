@@ -106,7 +106,7 @@ async function updateNote() {
 
   if (_note.value.name) {
     let d = await call('frappe.client.set_value', {
-      doctype: 'FCRM Note',
+      doctype: 'NCRM Note',
       name: _note.value.name,
       fieldname: _note.value,
     })
@@ -117,7 +117,7 @@ async function updateNote() {
   } else {
     let d = await call('frappe.client.insert', {
       doc: {
-        doctype: 'FCRM Note',
+        doctype: 'NCRM Note',
         title: _note.value.title,
         content: _note.value.content,
         reference_doctype: props.doctype,

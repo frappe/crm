@@ -22,32 +22,32 @@ export default defineConfig({
       },
       manifest: {
         display: 'standalone',
-        name: 'Frappe CRM',
-        short_name: 'Frappe CRM',
-        start_url: '/crm',
+        name: 'Next CRM',
+        short_name: 'Next CRM',
+        start_url: '/next-crm',
         description:
           'Modern & 100% Open-source CRM tool to supercharge your sales operations',
         icons: [
           {
-            src: '/assets/crm/manifest/manifest-icon-192.maskable.png',
+            src: '/assets/next_crm/manifest/manifest-icon-192.maskable.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/assets/crm/manifest/manifest-icon-192.maskable.png',
+            src: '/assets/next_crm/manifest/manifest-icon-192.maskable.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'maskable',
           },
           {
-            src: '/assets/crm/manifest/manifest-icon-512.maskable.png',
+            src: '/assets/next_crm/manifest/manifest-icon-512.maskable.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/assets/crm/manifest/manifest-icon-512.maskable.png',
+            src: '/assets/next_crm/manifest/manifest-icon-512.maskable.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
@@ -81,7 +81,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: '../crm/public/frontend',
+    outDir: '../next_crm/public/frontend',
     emptyOutDir: true,
     commonjsOptions: {
       include: [/tailwind.config.js/, /node_modules/],

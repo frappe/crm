@@ -65,7 +65,7 @@ const { getUser } = usersStore()
 
 async function deleteNote(name) {
   await call('frappe.client.delete', {
-    doctype: 'FCRM Note',
+    doctype: 'NCRM Note',
     name,
   })
   notes.reload()

@@ -6,7 +6,7 @@ __pycache__
 dev-dist
 tags
 node_modules
-crm/public/frontend
+next_crm/public/frontend
 frontend/yarn.lock
-crm/www/crm.html
+next_crm/www/next-crm.html
 build

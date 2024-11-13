@@ -128,7 +128,7 @@ const scrollBehavior = (to, from, savedPosition) => {
 }
 
 let router = createRouter({
-  history: createWebHistory('/crm'),
+  history: createWebHistory('/next-crm'),
   routes,
   scrollBehavior,
 })
@@ -145,7 +145,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.name === 'Home' && isLoggedIn) {
     next({ name: 'Leads' })
   } else if (!isLoggedIn) {
-    window.location.href = '/login?redirect-to=/crm'
+    window.location.href = '/login?redirect-to=/next-crm'
   } else if (to.matched.length === 0) {
     next({ name: 'Invalid Page' })
   } else if (['Opportunity', 'Lead'].includes(to.name) && !to.hash) {

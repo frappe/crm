@@ -51,9 +51,9 @@ Get started with your personal or business site with a few clicks on [Frappe Clo
 
 ### Docker (Recommended)
 
-The quickest way to set up Frappe CRM and take it for a test ride.
+The quickest way to set up Next CRM and take it for a test ride.
 
-Frappe framework is multi-tenant and supports multiple apps by default. This docker compose is just a standalone version with Frappe CRM pre-installed. Just put it behind your desired reverse-proxy if needed, and you're good to go.  
+Frappe framework is multi-tenant and supports multiple apps by default. This docker compose is just a standalone version with Next CRM pre-installed. Just put it behind your desired reverse-proxy if needed, and you're good to go.  
   
 If you wish to use multiple Frappe apps or need multi-tenancy. Take a look at our production ready self-hosted workflow, or join us on Frappe Cloud to get first party support and hassle-free hosting.
 
@@ -68,7 +68,7 @@ Docker Compose File:
 
     wget -O docker-compose.yml https://raw.githubusercontent.com/frappe/crm/develop/docker/docker-compose.yml
 
-Frappe CRM bench setup script
+Next CRM bench setup script
 
     wget -O init.sh https://raw.githubusercontent.com/frappe/crm/develop/docker/init.sh
 
@@ -99,7 +99,7 @@ If you prefer self-hosting, follow the official [Frappe Bench Installation](http
 ### Local Setup
 
 1. [Install Bench](https://github.com/frappe/bench).
-2. Install Frappe CRM app:
+2. Install Next CRM app:
     ```sh
     $ bench get-app crm
     ```

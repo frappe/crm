@@ -120,7 +120,7 @@ async function sendWhatsAppMessage() {
   whatsapp.value.content_type = 'text'
   reply.value = {}
   createResource({
-    url: 'crm.api.whatsapp.create_whatsapp_message',
+    url: 'next_crm.api.whatsapp.create_whatsapp_message',
     params: args,
     auto: true,
   })

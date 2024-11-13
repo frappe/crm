@@ -103,7 +103,7 @@ function getParams() {
 }
 
 const sections = createResource({
-  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  url: 'next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['sidebar-sections', _doctype.value],
   params: getParams(),
   onSuccess(data) {
@@ -139,7 +139,7 @@ function saveChanges() {
   })
   loading.value = true
   call(
-    'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout',
+    'next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout',
     {
       doctype: _doctype.value,
       type: 'Side Panel',

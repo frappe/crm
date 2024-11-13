@@ -1,0 +1,141 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:sla_name",
+ "creation": "2023-12-04 13:07:18.426211",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "apply_on",
+  "column_break_uxua",
+  "sla_name",
+  "enabled",
+  "default",
+  "section_break_nevd",
+  "start_date",
+  "end_date",
+  "column_break_pzjg",
+  "condition",
+  "section_break_ufaf",
+  "priorities",
+  "section_break_rmgo",
+  "holiday_list",
+  "working_hours"
+ ],
+ "fields": [
+  {
+   "fieldname": "sla_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "SLA Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "default",
+   "fieldtype": "Check",
+   "label": "Default"
+  },
+  {
+   "fieldname": "column_break_uxua",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Simple Python Expression, Example: doc.status == 'Open' and doc.lead_source == 'Ads'",
+   "fieldname": "condition",
+   "fieldtype": "Code",
+   "label": "Condition",
+   "options": "Python"
+  },
+  {
+   "fieldname": "apply_on",
+   "fieldtype": "Link",
+   "label": "Apply On",
+   "link_filters": "[[{\"fieldname\":\"apply_on\",\"field_option\":\"DocType\"},\"name\",\"in\",[\"Lead\",\"Opportunity\"]]]",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_ufaf",
+   "fieldtype": "Section Break",
+   "label": "Response and Follow Up"
+  },
+  {
+   "fieldname": "priorities",
+   "fieldtype": "Table",
+   "label": "Priorities",
+   "options": "CRM Service Level Priority",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_rmgo",
+   "fieldtype": "Section Break",
+   "label": "Working Hours"
+  },
+  {
+   "fieldname": "working_hours",
+   "fieldtype": "Table",
+   "label": "Working Hours",
+   "options": "Service Day",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_nevd",
+   "fieldtype": "Section Break",
+   "label": "Validity"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "column_break_pzjg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "Holiday List"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-19 21:54:25.831753",
+ "modified_by": "Administrator",
+ "module": "NCRM",
+ "name": "CRM Service Level Agreement",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

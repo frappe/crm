@@ -161,7 +161,7 @@ const columnFields = computed(() => {
 })
 
 const fields = createResource({
-  url: 'crm.api.doc.get_fields_meta',
+  url: 'next_crm.api.doc.get_fields_meta',
   params: { doctype: props.doctype, as_array: true },
   cache: ['kanban_fields', props.doctype],
   auto: true,

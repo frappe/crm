@@ -49,7 +49,7 @@ const groupByValue = ref({
 })
 
 const groupByOptions = createResource({
-  url: 'crm.api.doc.get_group_by_fields',
+  url: 'next_crm.api.doc.get_group_by_fields',
   cache: ['groupByOptions', props.doctype],
   params: {
     doctype: props.doctype,

@@ -242,7 +242,7 @@ const fields = computed(() => {
 })
 
 const sections = createResource({
-  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  url: 'next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['quickEntryFields', 'Customer'],
   params: { doctype: 'Customer', type: 'Quick Entry' },
   auto: true,

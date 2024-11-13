@@ -232,7 +232,7 @@ const customActions = ref([])
 const customStatuses = ref([])
 
 const lead = createResource({
-  url: '/api/method/crm.api.lead.get_lead',
+  url: '/api/method/next_crm.api.lead.get_lead',
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   onSuccess: async (data) => {
@@ -406,7 +406,7 @@ watch(tabs, (value) => {
 })
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
+  url: 'next_crm.api.doc.get_sidebar_fields',
   cache: ['fieldsLayout', props.leadId],
   params: { doctype: 'Lead', name: props.leadId },
   auto: true,
@@ -490,7 +490,7 @@ async function convertToOpportunity(updated) {
     showConvertToOpportunityModal.value = false
   } else {
     let opportunity = await call(
-      'crm.overrides.lead.convert_to_opportunity',
+      'next_crm.overrides.lead.convert_to_opportunity',
       {
         lead: lead.data.name,
       },

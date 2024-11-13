@@ -259,7 +259,7 @@ const _contact = ref({})
 const _address = ref({})
 
 const contact = createResource({
-  url: 'crm.api.contact.get_contact',
+  url: 'next_crm.api.contact.get_contact',
   cache: ['contact', props.contactId],
   params: {
     name: props.contactId,
@@ -354,7 +354,7 @@ const tabs = [
 ]
 
 const opportunities = createResource({
-  url: 'crm.api.contact.get_linked_opportunities',
+  url: 'next_crm.api.contact.get_linked_opportunities',
   cache: ['opportunities', props.contactId],
   params: {
     contact: props.contactId,
@@ -369,7 +369,7 @@ const rows = computed(() => {
 })
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
+  url: 'next_crm.api.doc.get_sidebar_fields',
   cache: ['fieldsLayout', props.contactId],
   params: { doctype: 'Contact', name: props.contactId },
   auto: true,
@@ -524,7 +524,7 @@ function getParsedFields(data) {
 }
 
 async function setAsPrimary(field, value) {
-  let d = await call('crm.api.contact.set_as_primary', {
+  let d = await call('next_crm.api.contact.set_as_primary', {
     contact: contact.data.name,
     field,
     value,
@@ -541,7 +541,7 @@ async function setAsPrimary(field, value) {
 
 async function createNew(field, value) {
   if (!value) return
-  let d = await call('crm.api.contact.create_new', {
+  let d = await call('next_crm.api.contact.create_new', {
     contact: contact.data.name,
     field,
     value,

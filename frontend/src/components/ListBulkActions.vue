@@ -72,7 +72,7 @@ function convertToOpportunity(selections, unselectAll) {
         onClick: (close) => {
           capture('bulk_convert_to_opportunity')
           Array.from(selections).forEach((name) => {
-            call('crm.overrides.lead.convert_to_opportunity', {
+            call('next_crm.overrides.lead.convert_to_opportunity', {
               lead: name,
             }).then(() => {
               createToast({
