@@ -291,3 +291,14 @@ export function isImage(extention) {
     extention.toLowerCase(),
   )
 }
+
+export function getRandom(len) {
+  let text = ''
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+
+  Array.from({ length: len }).forEach(() => {
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
+  })
+
+  return text
+}
