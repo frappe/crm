@@ -551,7 +551,9 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 	fields_meta = {}
 	for field in fields:
 		fields_meta[field.get('fieldname')] = field
-
+		if field.get('fieldtype') == "Table":
+			_fields = frappe.get_meta(field.get('options')).fields
+			fields_meta[field.get('fieldname')] = {"df": field, "fields": _fields}
 	return fields_meta
 
 @frappe.whitelist()
