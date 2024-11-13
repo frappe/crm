@@ -115,7 +115,7 @@
               <div class="flex gap-1.5">
                 <Tooltip v-if="lead.data.mobile_no" :text="__('Call via phone app')">
                   <a
-                    @click="trackPhoneCall(lead.data.mobile_no, 'phone')"
+                    @click="trackPhoneActivities(lead.data.mobile_no, 'phone')"
                     class="h-7 w-7 flex items-center justify-center"
                   >
                     <PhoneIcon class="h-8 w-8" />
@@ -125,7 +125,7 @@
                 <Tooltip :text="__('Open WhatsApp')">
                   <a
                     v-if="lead.data.mobile_no"
-                    @click="trackPhoneCall(lead.data.mobile_no, 'whatsapp')"
+                    @click="trackPhoneActivities(lead.data.mobile_no, 'whatsapp')"
                     class="h-7 w-7 flex items-center justify-center"
                   >
                     <WhatsAppIcon class="h-6 w-6" />
@@ -678,7 +678,7 @@ function openEmailBox() {
   activities.value.emailBox.show = true
 }
 
-function trackPhoneCall(phoneNumber, type = 'phone') {
+function trackPhoneActivities(phoneNumber, type = 'phone') {
   trackCommunication({
     type,
     doctype: 'CRM Lead',

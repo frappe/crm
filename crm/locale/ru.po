@@ -8,15 +8,35 @@ msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2024-11-13 00:51+0000\n"
-"PO-Revision-Date: 2024-11-13 04:44+0400\n"
+"PO-Revision-Date: 2024-11-13 23:23+0400\n"
 "Last-Translator: AlexKuzin <dev@olimpicfresh.ru>\n"
-"Language: ru\n"
 "Language-Team: shariq@frappe.io\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.13.1\n"
+"X-Generator: Poedit 3.5\n"
+
+#: frontend/src/utils/communicationUtils.js:39
+#: frontend/src/utils/communicationUtils.js:38
+msgid "Call initiated to {0}"
+msgstr "Исходящий вызов на {0}"
+
+#: frontend/src/utils/communicationUtils.js:40
+#: frontend/src/utils/communicationUtils.js:39
+msgid "Chat initiated with {0}"
+msgstr "Чат инициирован с {0}"
+
+#: frontend/src/utils/communicationUtils.js:41
+msgid "Phone call"
+msgstr "Телефонный звонок"
+
+#: frontend/src/utils/communicationUtils.js:42
+msgid "WhatsApp chat"
+msgstr "WhatsApp чат"
 
 #: frontend/src/components/ViewControls.vue:964
 msgid " (New)"
@@ -97,8 +117,12 @@ msgid "<b>SHORTCUTS</b>"
 msgstr "<b>ЯРЛЫКИ</b>"
 
 #: frontend/src/components/Modals/EmailTemplateModal.vue:78
-msgid "<p>Dear {{ lead_name }},</p>\\n\\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\\n\\n<p>Thanks,</p>\\n<p>Frappé</p>"
-msgstr "<p>Уважаемый {{имя_клиента}},</p>\\n\\nЭто<p>напоминание о выплате {{сумма_итого}}.</p>\\n\\nСпасибо<p>,</p>\\n<p>Подпись</p>"
+msgid ""
+"<p>Dear {{ lead_name }},</p>\\n\\n<p>This is a reminder for the payment of "
+"{{ grand_total }}.</p>\\n\\n<p>Thanks,</p>\\n<p>Frappé</p>"
+msgstr ""
+"<p>Уважаемый {{имя_клиента}},</p>\\n\\nЭто<p>напоминание о выплате "
+"{{сумма_итого}}.</p>\\n\\nСпасибо<p>,</p>\\n<p>Подпись</p>"
 
 #. Header text in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -201,7 +225,9 @@ msgstr "Адрес"
 
 #: crm/integrations/twilio/twilio_handler.py:148
 msgid "Agent is unavailable to take the call, please call after some time."
-msgstr "Оператор не может ответить на звонок, пожалуйста, позвоните через некоторое время."
+msgstr ""
+"Оператор не может ответить на звонок, пожалуйста, позвоните через некоторое "
+"время."
 
 #. Label of a Currency field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Contact.vue:642
@@ -264,8 +290,10 @@ msgid "Are you sure you want to delete this task?"
 msgstr "Вы уверены, что хотите удалить эту задачу?"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
-msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
-msgstr "Вы уверены, что хотите сбросить скрипт формы 'Создать заявку из сделки CRM'?"
+msgid ""
+"Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
+msgstr ""
+"Вы уверены, что хотите сбросить скрипт формы 'Создать заявку из сделки CRM'?"
 
 #: frontend/src/components/ListBulkActions.vue:193
 #: frontend/src/components/Modals/AssignmentModal.vue:5
@@ -489,10 +517,6 @@ msgstr "Детализация звонков"
 msgid "Call Received By"
 msgstr "Вызов принят"
 
-#: frontend/src/utils/communicationUtils.js:38
-msgid "Call initiated to {0}"
-msgstr "Исходящий вызов на {0}"
-
 #: frontend/src/pages/Lead.vue:116
 msgid "Call via phone app"
 msgstr "Звонок через телефон"
@@ -549,10 +573,6 @@ msgstr "Изменить статус"
 #: frontend/src/pages/Organization.vue:41
 msgid "Change image"
 msgstr "Изменить изображение"
-
-#: frontend/src/utils/communicationUtils.js:39
-msgid "Chat initiated with {0}"
-msgstr "Чат инициирован с {0}"
 
 #: frontend/src/pages/Lead.vue:250 frontend/src/pages/Lead.vue:277
 #: frontend/src/pages/MobileLead.vue:127 frontend/src/pages/MobileLead.vue:154
@@ -861,8 +881,12 @@ msgid "Deals"
 msgstr "Сделки"
 
 #: frontend/src/components/Modals/EmailTemplateModal.vue:92
-msgid "Dear {{ lead_name }}, \\n\\nThis is a reminder for the payment of {{ grand_total }}. \\n\\nThanks, \\nFrappé"
-msgstr "Уважаемый {{имя_клиента }}, \\n\\nЭто напоминание о выплате {{ сумма_итого }}. \\n\\nСпасибо, \\nПодпись"
+msgid ""
+"Dear {{ lead_name }}, \\n\\nThis is a reminder for the payment of "
+"{{ grand_total }}. \\n\\nThanks, \\nFrappé"
+msgstr ""
+"Уважаемый {{имя_клиента }}, \\n\\nЭто напоминание о выплате "
+"{{ сумма_итого }}. \\n\\nСпасибо, \\nПодпись"
 
 #. Label of a Check field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -886,7 +910,8 @@ msgstr "Виды по умолчанию"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:18
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:30
 msgid "Default statuses, custom fields and layouts restored successfully."
-msgstr "Статусы по умолчанию, пользовательские поля и макеты успешно восстановлены."
+msgstr ""
+"Статусы по умолчанию, пользовательские поля и макеты успешно восстановлены."
 
 #: frontend/src/components/Activities/AttachmentArea.vue:137
 #: frontend/src/components/Activities/NoteArea.vue:12
@@ -1221,16 +1246,25 @@ msgid "Error updating lead"
 msgstr "Ошибка обновлении лида"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:231
-msgid "Error while creating customer in ERPNext, check error log for more details"
-msgstr "Ошибка при создании клиента в ERP, проверьте журнал ошибок для получения более подробной информации"
+msgid ""
+"Error while creating customer in ERPNext, check error log for more details"
+msgstr ""
+"Ошибка при создании клиента в ERP, проверьте журнал ошибок для получения "
+"более подробной информации"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:158
-msgid "Error while creating prospect in ERPNext, check error log for more details"
-msgstr "Ошибка при создании перспективы в ERP, проверьте журнал ошибок для получения более подробной информации"
+msgid ""
+"Error while creating prospect in ERPNext, check error log for more details"
+msgstr ""
+"Ошибка при создании перспективы в ERP, проверьте журнал ошибок для получения "
+"более подробной информации"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:112
-msgid "Error while fetching customer in ERPNext, check error log for more details"
-msgstr "Ошибка при получении клиента в ERP, проверьте журнал ошибок для получения более подробной информации"
+msgid ""
+"Error while fetching customer in ERPNext, check error log for more details"
+msgstr ""
+"Ошибка при получении клиента в ERP, проверьте журнал ошибок для получения "
+"более подробной информации"
 
 #: frontend/src/components/ViewControls.vue:189
 #: frontend/src/components/ViewControls.vue:198
@@ -1299,8 +1333,12 @@ msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
 msgstr "Файл \"{0}\" был пропущен, потому что разрешена загрузка только {1}"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:360
-msgid "File \"{0}\" was skipped because only {1} uploads are allowed for DocType \"{2}\""
-msgstr "Файл \"{0}\" был пропущен, потому что для ДокТайпа \"{2}\" разрешена загрузка только {1}"
+msgid ""
+"File \"{0}\" was skipped because only {1} uploads are allowed for DocType "
+"\"{2}\""
+msgstr ""
+"Файл \"{0}\" был пропущен, потому что для ДокТайпа \"{2}\" разрешена "
+"загрузка только {1}"
 
 #: frontend/src/components/Filter.vue:6
 msgid "Filter"
@@ -1442,7 +1480,9 @@ msgstr "Группировать по: "
 
 #: frontend/src/components/CommunicationArea.vue:58
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
-msgstr "Здравствуйте, Джон,\\n\\nМожете ли вы предоставить более подробную информацию об этом..."
+msgstr ""
+"Здравствуйте, Джон,\\n\\nМожете ли вы предоставить более подробную "
+"информацию об этом..."
 
 #: frontend/src/components/Activities/Activities.vue:230
 msgid "Hide"
@@ -1992,7 +2032,9 @@ msgstr "Новый контакт будет создан на основе да
 
 #: frontend/src/pages/Lead.vue:264 frontend/src/pages/MobileLead.vue:141
 msgid "New organization will be created based on the data in details section"
-msgstr "Новая организация будет создана на основе данных, указанных в разделе подробностей"
+msgstr ""
+"Новая организация будет создана на основе данных, указанных в разделе "
+"подробностей"
 
 #: frontend/src/components/Filter.vue:663
 msgid "Next 6 Months"
@@ -2339,10 +2381,6 @@ msgstr "Личность"
 #: frontend/src/pages/Organization.vue:583
 msgid "Phone"
 msgstr "Телефон"
-
-#: frontend/src/utils/communicationUtils.js:41
-msgid "Phone call"
-msgstr "Телефонный звонок"
 
 #: frontend/src/components/ViewControls.vue:904
 msgid "Pin View"
@@ -2789,8 +2827,12 @@ msgstr "Боковая панель"
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
-msgid "Simple Python Expression, Example: doc.status == 'Open' and doc.lead_source == 'Ads'"
-msgstr "Простое выражение Python, пример: doc.status == 'Open' и doc.lead_source == 'Ads'"
+msgid ""
+"Simple Python Expression, Example: doc.status == 'Open' and doc.lead_source "
+"== 'Ads'"
+msgstr ""
+"Простое выражение Python, пример: doc.status == 'Open' и doc.lead_source == "
+"'Ads'"
 
 #: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:22
 #: frontend/src/components/SortBy.vue:240
@@ -2811,8 +2853,10 @@ msgid "Source Name"
 msgstr "Название источника"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:15
-msgid "Standard Form Scripts can not be modified, duplicate the Form Script instead."
-msgstr "Стандартные скрипты форм не могут быть изменены, вместо этого дублируйте их."
+msgid ""
+"Standard Form Scripts can not be modified, duplicate the Form Script instead."
+msgstr ""
+"Стандартные скрипты форм не могут быть изменены, вместо этого дублируйте их."
 
 #. Label of a Date field in DocType 'CRM Service Level Agreement'
 #. Label of a Date field in DocType 'CRM Task'
@@ -2966,8 +3010,13 @@ msgid "This section is not editable"
 msgstr "Этот раздел нельзя редактировать"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:9
-msgid "This will restore (if not exist) all the default statuses, custom fields and layouts. Delete & Restore will delete default layouts and then restore them."
-msgstr "Это восстановит (если их нет) все статусы, пользовательские поля и макеты по умолчанию. \"Удаление и восстановление\" удалит макеты по умолчанию, а затем восстановит их."
+msgid ""
+"This will restore (if not exist) all the default statuses, custom fields and "
+"layouts. Delete & Restore will delete default layouts and then restore them."
+msgstr ""
+"Это восстановит (если их нет) все статусы, пользовательские поля и макеты по "
+"умолчанию. \"Удаление и восстановление\" удалит макеты по умолчанию, а затем "
+"восстановит их."
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -3230,10 +3279,6 @@ msgstr "WhatsApp"
 msgid "WhatsApp Templates"
 msgstr "Шаблоны WhatsApp"
 
-#: frontend/src/utils/communicationUtils.js:42
-msgid "WhatsApp chat"
-msgstr "WhatsApp чат"
-
 #: frontend/src/components/Filter.vue:42 frontend/src/components/Filter.vue:80
 msgid "Where"
 msgstr "Где"
@@ -3244,7 +3289,8 @@ msgstr "Ширина"
 
 #: frontend/src/components/ColumnSettings.vue:116
 msgid "Width can be in number, pixel or rem (eg. 3, 30px, 10rem)"
-msgstr "Ширина может быть в цифрах, пикселях или ремах (например, 3, 30px, 10rem)"
+msgstr ""
+"Ширина может быть в цифрах, пикселях или ремах (например, 3, 30px, 10rem)"
 
 #. Label of a Select field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
@@ -3273,7 +3319,9 @@ msgstr "У Вас есть несохраненные изменения. Хот
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:24
 msgid "You need to be in developer mode to edit a Standard Form Script"
-msgstr "Чтобы редактировать скрипт стандартной формы, Вам необходимо находиться в режиме разработчика"
+msgstr ""
+"Чтобы редактировать скрипт стандартной формы, Вам необходимо находиться в "
+"режиме разработчика"
 
 #: crm/api/todo.py:24
 msgid "Your assignment on {0} {1} has been removed by {2}"
@@ -3446,4 +3494,3 @@ msgstr "{0} - недопустимый адрес электронной поч�
 #: frontend/src/components/Settings/SettingsPage.vue:156
 msgid "{0} is mandatory"
 msgstr "{0} является обязательным"
-

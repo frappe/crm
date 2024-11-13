@@ -35,11 +35,11 @@ export function trackCommunication({ type, doctype, docname, phoneNumber, activi
       reference_name: docname,
       phone_no: phoneNumber,
       content: type === 'phone' 
-        ? __(`Call initiated to {0}`,[phoneNumber])
-        : __(`Chat initiated with {0}`,[phoneNumber]),
+        ? __('Call initiated to {0}', [phoneNumber])
+        : __('Chat initiated with {0}', [phoneNumber]),
       subject: type === 'phone' 
-        ? __(`Phone call`)
-        : __(`WhatsApp chat`),
+        ? __('Phone call')
+        : __('WhatsApp chat'),
       sender: getUser()?.full_name || undefined
     }
   }

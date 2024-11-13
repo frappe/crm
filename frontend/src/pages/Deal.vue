@@ -71,6 +71,22 @@
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
+            <Tooltip v-if="primaryContactMobileNo" :text="__('Call via phone app')">
+              <a 
+                @click="trackPhoneActivities('phone')"
+                class="h-7 w-7 flex items-center justify-center"
+              >
+                <PhoneIcon class="h-8 w-8" />
+              </a>
+            </Tooltip>
+            <Tooltip v-if="primaryContactMobileNo" :text="__('Open WhatsApp')">
+              <a 
+                @click="trackPhoneActivities('whatsapp')"
+                class="h-7 w-7 flex items-center justify-center"
+              >
+                <WhatsAppIcon class="h-6 w-6" />
+              </a>
+            </Tooltip>
             <Tooltip v-if="callEnabled" :text="__('Make a call')">
               <Button class="h-7 w-7" @click="triggerCall">
                 <PhoneIcon class="h-4 w-4" />
@@ -697,6 +713,22 @@ const dealContacts = createResource({
   },
 })
 
+function trackPhoneActivities(type) {
+  const primaryContact = dealContacts.data?.find(c => c.is_primary)
+  if (!primaryContact?.mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  trackCommunication({
+    type,
+    doctype: 'CRM Deal',
+    docname: deal.data.name,
+    phoneNumber: primaryContact.mobile_no,
+    activities: activities.value,
+    contactName: primaryContact.name
+  })
+}
+
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
   let mobile_no = primaryContact.mobile_no || null
@@ -735,15 +767,9 @@ function openEmailBox() {
   activities.value.emailBox.show = true
 }
 
-function trackPhoneCall(phoneNumber, type = 'phone') {
-  trackCommunication({
-    type,
-    doctype: 'CRM Deal',
-    docname: deal.data.name,
-    phoneNumber,
-    activities: activities.value
-  })
-}
+const primaryContactMobileNo = computed(() => {
+  return dealContacts.data?.find(c => c.is_primary)?.mobile_no
+})
 </script>
 
 <style scoped>
