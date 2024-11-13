@@ -36,7 +36,12 @@
     </template>
   </LayoutHeader>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
-    <Tabs v-model="tabIndex" :tabs="tabs">
+    <Tabs
+      v-model="tabIndex"
+      :tabs="tabs"
+      class="overflow-x-auto"
+      tablistClass="px-5"
+    >
       <Activities
         ref="activities"
         doctype="CRM Deal"
@@ -326,6 +331,7 @@ import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -553,6 +559,11 @@ const tabs = computed(() => {
       name: 'Comments',
       label: __('Comments'),
       icon: CommentIcon,
+    },
+    {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
     },
     {
       name: 'Calls',
