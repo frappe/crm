@@ -11,9 +11,10 @@
   "no_of_employees",
   "currency",
   "annual_revenue",
+  "referral_source",
+  "is_partner",
   "organization_logo",
   "column_break_pnpp",
-  "is_partner",
   "website",
   "territory",
   "industry",
@@ -88,12 +89,19 @@
    "fieldtype": "Link",
    "label": "Government Affiliation",
    "options": "CRM Government Affiliation"
+  },
+  {
+   "fieldname": "referral_source",
+   "fieldtype": "Link",
+   "label": "Referral Source",
+   "link_filters": "[[\"CRM Organization\",\"is_partner\",\"=\",1]]",
+   "options": "CRM Organization"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-30 08:20:25.512730",
+ "modified": "2024-11-13 07:13:35.841200",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
