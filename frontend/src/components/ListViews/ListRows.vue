@@ -59,7 +59,7 @@ watch(
 )
 
 let showGroupedRows = computed(() => {
-  return props.rows.every(
+  return props.rows?.every(
     (row) => row.group && row.rows && Array.isArray(row.rows)
   )
 })

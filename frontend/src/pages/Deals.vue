@@ -421,7 +421,7 @@ function parseRows(rows) {
         _rows[row] = website(deal.website)
       } else if (row === 'deal_elements') {
         _rows[row] = {
-          data: getAllDealElementNames(deal.child_tables.deal_elements)
+          data: getAllDealElementNames(deal.child_tables?.deal_elements)
         } 
       } else if (row == 'annual_revenue') {
         _rows[row] = customFormatNumberIntoCurrency(
