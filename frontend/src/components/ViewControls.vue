@@ -1189,7 +1189,7 @@ function applyLikeFilter() {
 
 function applyDefaultStatusFilter(value) {
     let filters = { ...list.value.params?.filters }
-  filters['status'] = ['not in', `Won, Lost`]
+  filters['status'] = ['not in', `Closed`]
   updateFilter(filters)
 }
 
