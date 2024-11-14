@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --base=/assets/next_crm/frontend/ && yarn copy-html-entry",
-    "copy-html-entry": "cp ../next_crm/public/frontend/index.html ../next_crm/www/index.html",
+    "copy-html-entry": "cp ../next_crm/public/frontend/index.html ../next_crm/www/next-crm/index.html",
     "serve": "vite preview"
   },
   "dependencies": {
