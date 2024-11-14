@@ -140,7 +140,30 @@
                 />
               </div>
             </Section>
-            
+           <div
+            v-for="(section, i) in fieldsLayout.data"
+            :key="section.label"
+            class="section flex flex-col p-3"
+            :class="{ '': i !== fieldsLayout.data.length - 1 }"
+          >
+            <SectionDeal :is-opened="section.opened" :label="section.label" v-if=" section.label  == 'Organization Details'">
+              <template #actions>
+                <div v-if="section.organization" class="pr-2">
+                 
+                </div>
+              
+              </template>
+              <SectionFieldsDetails
+                v-if="section.fields"
+                :fields="section.fields"
+                :crm_deal_probability="crm_deal_probability"
+                :crm_deal_annual_revenue="crm_deal_annual_revenue"
+                :isLastSection="i == fieldsLayout.data.length - 1"
+                v-model="deal.data"
+                @update="updateField"
+              />
+            </SectionDeal>
+          </div>
           </div>
           <div
             v-for="(section, i) in fieldsLayout.data"
@@ -187,7 +210,7 @@
                   <EditIcon class="h-4 w-4" />
                 </Button>
               </template>
-              <SectionFields
+              <SectionFieldsDeal
                 v-if="section.fields"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
@@ -359,7 +382,10 @@ import ContactModal from '@/components/Modals/ContactModal.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SectionDeal from '@/components/SectionDeal.vue'
+import SectionFieldsDeal from '@/components/SectionFieldsDeal.vue'
+import SectionFieldsDetails from '@/components/SectionFieldsDetail.vue'
+
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
@@ -410,14 +436,24 @@ const props = defineProps({
 const customActions = ref([])
 const customStatuses = ref([])
 const staus_detail_option = ref([]);
+const crm_deal_annual_revenue = ref();
+const crm_deal_probability = ref();
+
+
 
 
 const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   onSuccess: async (data) => {
+    crm_deal_probability.value = data.probability
+    crm_deal_annual_revenue.value = data.annual_revenue;
+
     if (data.probability || data.probability === 0) {
       data.probability = data.probability + '%'; 
+    }
+   if (data.annual_revenue ) {
+      data.annual_revenue = customFormatNumberIntoCurrency(data.annual_revenue, data.currency); 
     }
     if (data.organization) {
       organization.update({
@@ -455,6 +491,13 @@ const organization = createResource({
   url: 'frappe.client.get',
   onSuccess: (data) => (deal.data._organizationObj = data),
 })
+
+function customFormatNumberIntoCurrency(value, currency) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+        currency: currency
+    }).format(value);
+}
 
 onMounted(() => {
   $socket.on('crm_customer_created', () => {
