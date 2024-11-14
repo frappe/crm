@@ -13,6 +13,7 @@
   "probability",
   "close_date",
   "naming_series",
+  "weighted_amount",
   "column_break_tukx",
   "next_step",
   "status",
@@ -21,6 +22,7 @@
   "deal_owner",
   "organization_tab",
   "organization",
+  "referral_source",
   "contacts_tab",
   "contacts",
   "contact",
@@ -379,12 +381,26 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "weighted_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Weighted Amount"
+  },
+  {
+   "fieldname": "referral_source",
+   "fieldtype": "Link",
+   "label": "Referral Source",
+   "link_filters": "[[\"CRM Organization\",\"is_partner\",\"=\",1]]",
+   "options": "CRM Organization"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-05 11:05:30.671900",
+ "modified": "2024-11-14 09:04:15.569151",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

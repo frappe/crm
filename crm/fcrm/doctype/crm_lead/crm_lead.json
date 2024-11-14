@@ -12,6 +12,7 @@
  "field_order": [
   "details",
   "organization",
+  "referral_source",
   "website",
   "territory",
   "industry",
@@ -305,12 +306,19 @@
    "fieldtype": "Link",
    "label": "Government Affiliation",
    "options": "CRM Government Affiliation"
+  },
+  {
+   "fieldname": "referral_source",
+   "fieldtype": "Link",
+   "label": "Referral Source",
+   "link_filters": "[[\"CRM Organization\",\"is_partner\",\"=\",1]]",
+   "options": "CRM Organization"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-30 08:14:26.074844",
+ "modified": "2024-11-14 08:56:55.806003",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
