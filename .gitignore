@@ -8,5 +8,5 @@ tags
 node_modules
 next_crm/public/frontend
 frontend/yarn.lock
-next_crm/www/next-crm.html
+next_crm/www/next-crm/index.html
 build
