@@ -72,7 +72,7 @@
    "fieldname": "priorities",
    "fieldtype": "Table",
    "label": "Priorities",
-   "options": "CRM Service Level Priority",
+   "options": "Service Level Priority",
    "reqd": 1
   },
   {

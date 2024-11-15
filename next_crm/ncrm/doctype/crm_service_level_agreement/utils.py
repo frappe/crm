@@ -13,7 +13,7 @@ def get_sla(doc: Document) -> Document:
 	:return: Applicable SLA
 	"""
 	SLA = frappe.qb.DocType("CRM Service Level Agreement")
-	Priority = frappe.qb.DocType("CRM Service Level Priority")
+	Priority = frappe.qb.DocType("Service Level Priority")
 	now = now_datetime()
 	priority = doc.communication_status
 	q = (
