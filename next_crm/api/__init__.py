@@ -70,46 +70,6 @@ def check_app_permission():
 	return False
 
 
-@frappe.whitelist(allow_guest=True)
-def accept_invitation(key: str = None):
-	if not key:
-		frappe.throw("Invalid or expired key")
-
-	result = frappe.db.get_all("CRM Invitation", filters={"key": key}, pluck="name")
-	if not result:
-		frappe.throw("Invalid or expired key")
-
-	invitation = frappe.get_doc("CRM Invitation", result[0])
-	invitation.accept()
-	invitation.reload()
-
-	if invitation.status == "Accepted":
-		frappe.local.login_manager.login_as(invitation.email)
-		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = "/next-crm"
-
-
-@frappe.whitelist()
-def invite_by_email(emails: str, role: str):
-	if not emails:
-		return
-	email_string = validate_email_address(emails, throw=False)
-	email_list = split_emails(email_string)
-	if not email_list:
-		return
-	existing_members = frappe.db.get_all("User", filters={"email": ["in", email_list]}, pluck="email")
-	existing_invites = frappe.db.get_all(
-		"CRM Invitation",
-		filters={"email": ["in", email_list], "role": ["in", ["Sales Manager", "Sales User"]]},
-		pluck="email",
-	)
-
-	to_invite = list(set(email_list) - set(existing_members) - set(existing_invites))
-
-	for email in to_invite:
-		frappe.get_doc(doctype="CRM Invitation", email=email, role=role).insert(ignore_permissions=True)
-
-
 @frappe.whitelist()
 def get_file_uploader_defaults(doctype: str):
 	max_number_of_files = None
