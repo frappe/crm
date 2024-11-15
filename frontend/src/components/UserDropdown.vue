@@ -53,7 +53,7 @@ import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { showSettings } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
-import { computed, ref, markRaw } from 'vue'
+import { computed, ref, markRaw, inject } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -66,6 +66,8 @@ const { logout } = sessionStore()
 const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
+
+const isFCSite = inject('isFCSite')
 
 let dropdownOptions = ref([
   {
@@ -91,6 +93,12 @@ let dropdownOptions = ref([
     group: 'Others',
     hideLabel: true,
     items: [
+      {
+        icon: 'credit-card',
+        label: computed(() => __('Billing')),
+        onClick: () => (window.location.href = '/billing'),
+        condition: () => isFCSite.data,
+      },
       {
         icon: 'settings',
         label: computed(() => __('Settings')),

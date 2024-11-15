@@ -71,10 +71,7 @@
         </Section>
       </div>
     </div>
-    <TrialBanner
-      :isSidebarCollapsed="isSidebarCollapsed"
-      @upgradePlan="showBillingSettingPage"
-    />
+    <TrialBanner v-if="isFCSite.data" />
     <div class="m-2 flex flex-col gap-1">
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
@@ -119,10 +116,9 @@ import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
-import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { FeatherIcon, TrialBanner } from 'frappe-ui'
+import { FeatherIcon, TrialBanner, createResource } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
-import { computed, h } from 'vue'
+import { computed, h, provide } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -234,8 +230,12 @@ function getIcon(routeName, icon) {
   }
 }
 
-function showBillingSettingPage() {
-  showSettings.value = true
-  activeSettingsPage.value = 'Billing'
-}
+const isFCSite = createResource({
+  url: 'frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site',
+  cache: 'isFCSite',
+  auto: true,
+  transform: (data) => Boolean(data),
+})
+
+provide('isFCSite', isFCSite)
 </script>

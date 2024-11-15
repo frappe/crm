@@ -45,8 +45,6 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import PlansIcon from '@/components/Icons/PlansIcon.vue'
-import BillingIcon from '@/components/Icons/BillingIcon.vue'
 import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
@@ -59,8 +57,8 @@ import {
   showSettings,
   activeSettingsPage,
 } from '@/composables/settings'
-import { Dialog, Plans, Billing } from 'frappe-ui'
-import { ref, markRaw, computed, watch, h } from 'vue'
+import { Dialog } from 'frappe-ui'
+import { ref, markRaw, computed, watch } from 'vue'
 
 const { isManager } = usersStore()
 
@@ -80,26 +78,6 @@ const tabs = computed(() => {
           icon: 'user-plus',
           component: markRaw(InviteMemberPage),
           condition: () => isManager(),
-        },
-      ],
-    },
-    {
-      label: __('Subscription'),
-      condition: () => window.fc_communication_secret && isManager(),
-      items: [
-        {
-          label: 'Plans',
-          icon: PlansIcon,
-          component: markRaw(Plans),
-        },
-        {
-          label: 'Billing',
-          icon: BillingIcon,
-          component: markRaw(
-            h(Billing, {
-              onChangePlan: () => setActiveTab('Plans'),
-            }),
-          ),
         },
       ],
     },
