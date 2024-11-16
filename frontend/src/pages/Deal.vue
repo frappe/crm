@@ -76,6 +76,25 @@
                 <PhoneIcon class="h-4 w-4" />
               </Button>
             </Tooltip>
+
+            <Tooltip :text="__('Call via phone app')">
+              <Button
+                v-if="primaryContactMobileNo && !callEnabled"
+                size="sm"
+                @click="trackPhoneActivities('phone')"
+              >
+                <PhoneIcon class="h-4 w-4" />
+              </Button>
+            </Tooltip>
+            <Tooltip :text="__('Track WhatsApp activities')">
+              <Button
+                v-if="primaryContactMobileNo"
+                size="sm"
+                @click="trackPhoneActivities('Open WhatsApp')"
+              >
+                <WhatsAppIcon class="h-4 w-4" />
+              </Button>
+            </Tooltip>
             <Tooltip :text="__('Send an email')">
               <Button class="h-7 w-7">
                 <Email2Icon
@@ -374,6 +393,7 @@ import {
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { trackCommunication } from '@/utils/communicationUtils'
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
@@ -696,6 +716,22 @@ const dealContacts = createResource({
   },
 })
 
+function trackPhoneActivities(type) {
+  const primaryContact = dealContacts.data?.find(c => c.is_primary)
+  if (!primaryContact?.mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  trackCommunication({
+    type,
+    doctype: 'CRM Deal',
+    docname: deal.data.name,
+    phoneNumber: primaryContact.mobile_no,
+    activities: activities.value,
+    contactName: primaryContact.name
+  })
+}
+
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
   let mobile_no = primaryContact.mobile_no || null
@@ -733,6 +769,10 @@ const activities = ref(null)
 function openEmailBox() {
   activities.value.emailBox.show = true
 }
+
+const primaryContactMobileNo = computed(() => {
+  return dealContacts.data?.find(c => c.is_primary)?.mobile_no
+})
 </script>
 
 <style scoped>

@@ -506,6 +506,7 @@ import {
   onBeforeUnmount,
 } from 'vue'
 import { useRoute } from 'vue-router'
+import { filterEmailActivities } from '@/utils/activity_filters'
 
 const { makeCall, $socket } = globalStore()
 const { getUser } = usersStore()
@@ -652,9 +653,7 @@ const activities = computed(() => {
     _activities = get_activities()
   } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
-    _activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'communication',
-    )
+    _activities = all_activities.data.versions.filter(filterEmailActivities)
   } else if (title.value == 'Comments') {
     if (!all_activities.data?.versions) return []
     _activities = all_activities.data.versions.filter(

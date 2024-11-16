@@ -90,7 +90,7 @@
               </div>
               <div class="flex gap-1.5">
                 <Button
-                  v-if="contact.data.actual_mobile_no"
+                  v-if="contact.data.actual_mobile_no && callEnabled"
                   :label="__('Make Call')"
                   size="sm"
                   @click="
@@ -99,6 +99,27 @@
                 >
                   <template #prefix>
                     <PhoneIcon class="h-4 w-4" />
+                  </template>
+                </Button>
+
+                <Button
+                  v-if="contact.data.actual_mobile_no && !callEnabled"
+                  :label="__('Make Call')"
+                  size="sm"
+                  @click="trackPhoneActivities(contact.data.actual_mobile_no, 'phone')"
+                >
+                  <template #prefix>
+                    <PhoneIcon class="h-4 w-4" />
+                  </template>
+                </Button>
+                <Button
+                  v-if="contact.data.actual_mobile_no"
+                  :label="__('Chat')"
+                  size="sm"
+                  @click="trackPhoneActivities(contact.data.actual_mobile_no, 'whatsapp')"
+                >
+                  <template #prefix>
+                    <WhatsAppIcon class="h-4 w-4" />
                   </template>
                 </Button>
                 <Button
@@ -110,8 +131,7 @@
                   <template #prefix>
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
                   </template>
-                </Button>
-              </div>
+                </Button>              </div>
             </div>
           </template>
         </FileUploader>
@@ -205,6 +225,7 @@ import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -236,6 +257,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { normalizePhoneNumber } from '@/utils/communicationUtils'
 
 const { $dialog, makeCall } = globalStore()
 
@@ -669,4 +691,14 @@ const dealColumns = [
     width: '8rem',
   },
 ]
+
+function trackPhoneActivities(phoneNumber, type = 'phone') {
+  const formattedNumber = normalizePhoneNumber(phoneNumber)
+
+  if (type === 'phone') {
+    window.location.href = `tel:${formattedNumber}`
+  } else if (type === 'whatsapp') {
+    window.open(`https://wa.me/${formattedNumber}`, '_blank')
+  }
+}
 </script>

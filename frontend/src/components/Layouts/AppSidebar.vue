@@ -116,13 +116,14 @@ import {
 import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
+import { callEnabled } from '@/composables/settings'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
-const links = [
+const links = computed(() => [
   {
     label: 'Leads',
     icon: LeadsIcon,
@@ -153,17 +154,17 @@ const links = [
     icon: TaskIcon,
     to: 'Tasks',
   },
-  {
+  ...(callEnabled.value ? [{
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
-  },
+  }] : []),
   {
     label: 'Email Templates',
     icon: Email2Icon,
     to: 'Email Templates',
   },
-]
+])
 
 const allViews = computed(() => {
   let _views = [
@@ -171,7 +172,7 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links,
+      views: links.value,
     },
   ]
   if (getPublicViews().length) {

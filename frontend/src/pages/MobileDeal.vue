@@ -207,6 +207,54 @@
               </Section>
             </div>
           </div>
+          <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white p-3">
+            <Button
+              v-if="primaryContactMobileNo && callEnabled"
+              size="sm"
+              @click="triggerCall"
+            >
+              <template #prefix>
+                <PhoneIcon class="h-4 w-4" />
+              </template>
+              {{ __('Make Call') }}
+            </Button>
+
+            <Button
+              v-if="primaryContactMobileNo && !callEnabled"
+              size="sm"
+              @click="trackPhoneActivities('phone')"
+            >
+              <template #prefix>
+                <PhoneIcon class="h-4 w-4" />
+              </template>
+              {{ __('Make Call') }}
+            </Button>
+            
+            <Button
+              v-if="primaryContactMobileNo"
+              size="sm"
+              @click="trackPhoneActivities('whatsapp')"
+            >
+              <template #prefix>
+                <WhatsAppIcon class="h-4 w-4" />
+              </template>
+              {{ __('Chat') }}
+            </Button>
+
+            <Button
+              size="sm"
+              @click="
+                deal.data.website
+                  ? openWebsite(deal.data.website)
+                  : errorMessage(__('No website set'))
+              "
+            >
+              <template #prefix>
+                <LinkIcon class="h-4 w-4" />
+              </template>
+              {{ __('Website') }}
+            </Button>
+          </div>
         </div>
       </div>
       <Activities
@@ -290,8 +338,12 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { normalizePhoneNumber } from '@/utils/communicationUtils'
+import { errorMessage, openWebsite } from '@/utils'
+import LinkIcon from '@/components/Icons/LinkIcon.vue'
+import { trackCommunication } from '@/utils/communicationUtils'
 
-const { $dialog, $socket } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const route = useRoute()
 const router = useRouter()
@@ -619,4 +671,51 @@ async function deleteDeal(name) {
   })
   router.push({ name: 'Deals' })
 }
+
+const activities = ref(null)
+
+function trackPhoneActivities(type) {
+  const primaryContact = dealContacts.data?.find(c => c.is_primary)
+  if (!primaryContact?.mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  trackCommunication({
+    type,
+    doctype: 'CRM Deal',
+    docname: deal.data.name,
+    phoneNumber: primaryContact.mobile_no,
+    activities: activities.value,
+    contactName: primaryContact.name
+  })
+}
+
+function triggerCall() {
+  const primaryContact = dealContacts.data?.find((c) => c.is_primary)
+  const mobile_no = primaryContact?.mobile_no || null
+
+  if (!primaryContact) {
+    errorMessage(__('No primary contact set'))
+    return
+  }
+
+  if (!mobile_no) {
+    errorMessage(__('No mobile number set'))
+    return
+  }
+
+  makeCall(mobile_no)
+}
+
+
+
+const primaryContactMobileNo = computed(() => {
+  return dealContacts.data?.find(c => c.is_primary)?.mobile_no
+})
 </script>
+
+<style scoped>
+.flex-1 {
+  padding-bottom: 4rem;
+}
+</style>

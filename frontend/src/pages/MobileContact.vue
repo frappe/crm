@@ -66,7 +66,27 @@
               </div>
               <div class="flex items-center gap-1.5">
                 <Button
+                  v-if="contact.data.actual_mobile_no && !callEnabled"
+                  :label="__('Make Call')"
+                  size="sm"
+                  @click="trackPhoneActivities(contact.data.actual_mobile_no, 'phone')"
+                >
+                  <template #prefix>
+                    <PhoneIcon class="h-4 w-4" />
+                  </template>
+                </Button>
+                <Button
                   v-if="contact.data.actual_mobile_no"
+                  :label="__('Chat')"
+                  size="sm"
+                  @click="trackPhoneActivities(contact.data.actual_mobile_no, 'whatsapp')"
+                >
+                  <template #prefix>
+                    <WhatsAppIcon class="h-4 w-4" />
+                  </template>
+                </Button>                
+                <Button
+                  v-if="contact.data.actual_mobile_no && callEnabled"
                   :label="__('Make Call')"
                   size="sm"
                   @click="
@@ -78,14 +98,11 @@
                   </template>
                 </Button>
                 <Button
-                  :label="__('Delete')"
                   theme="red"
                   size="sm"
                   @click="deleteContact"
                 >
-                  <template #prefix>
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
-                  </template>
                 </Button>
                 <Avatar
                   v-if="contact.data.company_name"
@@ -182,6 +199,7 @@ import SectionFields from '@/components/SectionFields.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
@@ -211,6 +229,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { normalizePhoneNumber } from '@/utils/communicationUtils'
 
 const { $dialog, makeCall } = globalStore()
 
@@ -649,4 +668,13 @@ const dealColumns = [
     width: '8rem',
   },
 ]
+function trackPhoneActivities(phoneNumber, type = 'phone') {
+  const formattedNumber = normalizePhoneNumber(phoneNumber)
+
+  if (type === 'phone') {
+    window.location.href = `tel:${formattedNumber}`
+  } else if (type === 'whatsapp') {
+    window.open(`https://wa.me/${formattedNumber}`, '_blank')
+  }
+}
 </script>
