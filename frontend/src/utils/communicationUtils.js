@@ -4,23 +4,38 @@ import { capture } from '@/telemetry'
 import { usersStore } from '@/stores/users'
 const { getUser } = usersStore()
 
+function normalizePhoneNumber(phoneNumber) {
+  // Remove all non-digit characters
+  let normalizedNumber = phoneNumber.replace(/\D/g, '')
+  
+  // If number starts with 8, replace it with 7
+  if (normalizedNumber.startsWith('8')) {
+    normalizedNumber = '7' + normalizedNumber.slice(1)
+  }
+  
+  // Add plus sign if not present
+  return normalizedNumber.startsWith('+') ? normalizedNumber : `+${normalizedNumber}`
+}
+
 export function trackCommunication({ type, doctype, docname, phoneNumber, activities, contactName }) {
   if (!phoneNumber) return errorMessage(__('No phone number set'))
 
-  console.log('Starting communication tracking:', {
-    type,
-    doctype,
-    docname,
-    phoneNumber
-  })
+  const formattedNumber = normalizePhoneNumber(phoneNumber)
+
+  //console.log('Starting communication tracking:', {
+  //  type,
+  //  doctype,
+  //  docname,
+  //  phoneNumber: formattedNumber
+  //})
 
   // First trigger the action
   if (type === 'phone') {
-    //console.log('Initiating phone call to:', phoneNumber)
-    window.location.href = `tel:${phoneNumber}`
+    //console.log('Initiating phone call to:', formattedNumber)
+    window.location.href = `tel:${formattedNumber}`
   } else {
-    //console.log('Opening WhatsApp for:', phoneNumber)
-    window.open(`https://wa.me/${phoneNumber}`, '_blank')
+    //console.log('Opening WhatsApp for:', formattedNumber)
+    window.open(`https://wa.me/${formattedNumber}`, '_blank')
   }
 
   const params = {
@@ -33,10 +48,10 @@ export function trackCommunication({ type, doctype, docname, phoneNumber, activi
       status: 'Linked',
       reference_doctype: doctype,
       reference_name: docname,
-      phone_no: phoneNumber,
+      phone_no: formattedNumber,
       content: type === 'phone' 
-        ? __('Call initiated to {0}', [phoneNumber])
-        : __('Chat initiated with {0}', [phoneNumber]),
+        ? __('Call initiated to {0}', [formattedNumber])
+        : __('Chat initiated with {0}', [formattedNumber]),
       subject: type === 'phone' 
         ? __('Phone call')
         : __('WhatsApp chat'),
@@ -83,4 +98,6 @@ export function trackCommunication({ type, doctype, docname, phoneNumber, activi
     //console.error('Error submitting request:', e)
   }
 }
+
+export { normalizePhoneNumber }
 

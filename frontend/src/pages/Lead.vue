@@ -113,26 +113,6 @@
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
-                <Tooltip v-if="lead.data.mobile_no" :text="__('Call via phone app')">
-                  <a
-                    @click="trackPhoneActivities(lead.data.mobile_no, 'phone')"
-                    class="h-7 w-7 flex items-center justify-center"
-                  >
-                    <PhoneIcon class="h-8 w-8" />
-                  </a>
-                </Tooltip>
-                <!-- WhatsApp Icon Section -->
-                <Tooltip :text="__('Open WhatsApp')">
-                  <a
-                    v-if="lead.data.mobile_no"
-                    @click="trackPhoneActivities(lead.data.mobile_no, 'whatsapp')"
-                    class="h-7 w-7 flex items-center justify-center"
-                  >
-                    <WhatsAppIcon class="h-6 w-6" />
-                  </a>
-                </Tooltip>
-
-                <!-- Phone Icon Section -->
                 <Tooltip v-if="callEnabled" :text="__('Make a call')">
                   <Button
                     class="h-7 w-7"
@@ -144,6 +124,24 @@
                     "
                   >
                     <PhoneIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Tooltip :text="__('Call via phone app')">
+                  <Button
+                    v-if="lead.data.mobile_no && !callEnabled"
+                    size="sm"
+                    @click="trackPhoneActivities(lead.data.mobile_no, 'phone')"
+                  >
+                    <PhoneIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Tooltip :text="__('Open WhatsApp')">
+                  <Button
+                    v-if="lead.data.mobile_no"
+                    size="sm"
+                    @click="trackPhoneActivities(lead.data.mobile_no, 'whatsapp')"
+                  >
+                    <WhatsAppIcon class="h-4 w-4" />
                   </Button>
                 </Tooltip>
                 <Tooltip :text="__('Send an email')">
