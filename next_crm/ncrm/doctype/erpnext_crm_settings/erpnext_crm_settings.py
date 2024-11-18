@@ -12,7 +12,6 @@ import json
 class ERPNextCRMSettings(Document):
 	def validate(self):
 		self.add_quotation_to_option()
-		self.create_custom_fields()	
 		self.create_crm_form_script()
 
 	def add_quotation_to_option(self):
@@ -25,10 +24,6 @@ class ERPNextCRMSettings(Document):
 				property_type="JSON",
 				validate_fields_for_doctype=False,
 			)
-
-	def create_custom_fields(self):
-		from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm
-		create_custom_fields_for_frappe_crm()
 
 	def create_crm_form_script(self):
 		if not frappe.db.exists("CRM Form Script", "Create Quotation from Opportunity"):
@@ -127,7 +122,7 @@ def create_customer_in_erpnext(doc, method):
 		"contacts": json.dumps(contacts),
 		"address": json.dumps(address) if address else None,
 	}
-	from erpnext.crm.frappe_crm_api import create_customer
+	from next_crm.api.erpnext import create_customer
 	create_customer(customer)
 
 	frappe.publish_realtime("crm_customer_created")
