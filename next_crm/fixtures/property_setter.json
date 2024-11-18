@@ -78,5 +78,21 @@
   "property_type": "Text",
   "row_name": null,
   "value": "Lead"
+ },
+ {
+  "default_value": null,
+  "doc_type": "ToDo",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "status",
+  "is_system_generated": 0,
+  "modified": "2024-11-15 20:04:23.586502",
+  "module": "NCRM",
+  "name": "ToDo-status-options",
+  "property": "options",
+  "property_type": "Text",
+  "row_name": null,
+  "value": "Backlog\nOpen\nIn Progress\nClosed\nCancelled"
  }
 ]

@@ -1,5 +1,5 @@
-import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
-import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
+import ToDoStatusIcon from '@/components/Icons/ToDoStatusIcon.vue'
+import ToDoPriorityIcon from '@/components/Icons/ToDoPriorityIcon.vue'
 import { useDateFormat, useTimeAgo } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
 import { gemoji } from 'gemoji'
@@ -49,11 +49,11 @@ export function timeAgo(date) {
 
 export const dateTooltipFormat = 'ddd, MMM D, YYYY h:mm A'
 
-export function taskStatusOptions(action, data) {
-  return ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled'].map(
+export function todoStatusOptions(action, data) {
+  return ['Backlog', 'Open', 'In Progress', 'Closed', 'Cancelled'].map(
     (status) => {
       return {
-        icon: () => h(TaskStatusIcon, { status }),
+        icon: () => h(ToDoStatusIcon, { status }),
         label: status,
         onClick: () => action && action(status, data),
       }
@@ -61,11 +61,11 @@ export function taskStatusOptions(action, data) {
   )
 }
 
-export function taskPriorityOptions(action, data) {
+export function todoPriorityOptions(action, data) {
   return ['Low', 'Medium', 'High'].map((priority) => {
     return {
       label: priority,
-      icon: () => h(TaskPriorityIcon, { priority }),
+      icon: () => h(ToDoPriorityIcon, { priority }),
       onClick: () => action && action(priority, data),
     }
   })

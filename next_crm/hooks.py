@@ -140,6 +140,7 @@ override_doctype_class = {
 	"Lead": "next_crm.overrides.lead.Lead",
 	"Customize Form": "next_crm.overrides.customize_form.CustomizeFormOverride",
     "Opportunity": "next_crm.overrides.opportunity.Opportunity",
+    "ToDo": "next_crm.overrides.todo.ToDo",
 }
 
 # Document Events

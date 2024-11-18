@@ -46,14 +46,14 @@
       <span>{{ __('New Note') }}</span>
     </Button>
     <Button
-      v-else-if="title == 'Tasks'"
+      v-else-if="title == 'ToDos'"
       variant="solid"
-      @click="modalRef.showTask()"
+      @click="modalRef.showToDo()"
     >
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>{{ __('New Task') }}</span>
+      <span>{{ __('New ToDo') }}</span>
     </Button>
     <Button
       v-else-if="title == 'Attachments'"
@@ -100,7 +100,7 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { globalStore } from '@/stores/global'
@@ -147,9 +147,9 @@ const defaultActions = computed(() => {
       onClick: () => props.modalRef.showNote(),
     },
     {
-      icon: h(TaskIcon, { class: 'h-4 w-4' }),
-      label: __('New Task'),
-      onClick: () => props.modalRef.showTask(),
+      icon: h(ToDoIcon, { class: 'h-4 w-4' }),
+      label: __('New ToDo'),
+      onClick: () => props.modalRef.showToDo(),
     },
     {
       icon: h(AttachmentIcon, { class: 'h-4 w-4' }),

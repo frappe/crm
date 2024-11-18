@@ -1,35 +1,35 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <ViewBreadcrumbs v-model="viewControls" routeName="Tasks" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="ToDos" />
     </template>
     <template #right-header>
       <CustomActions
-        v-if="tasksListView?.customListActions"
-        :actions="tasksListView.customListActions"
+        v-if="todosListView?.customListActions"
+        :actions="todosListView.customListActions"
       />
-      <Button variant="solid" :label="__('Create')" @click="createTask">
+      <Button variant="solid" :label="__('Create')" @click="createToDo">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
   </LayoutHeader>
   <ViewControls
     ref="viewControls"
-    v-model="tasks"
+    v-model="todos"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
-    doctype="CRM Task"
+    doctype="ToDo"
     :options="{
       allowedViews: ['list', 'kanban'],
     }"
   />
   <KanbanView
     v-if="$route.params.viewType == 'kanban' && rows.length"
-    v-model="tasks"
+    v-model="todos"
     :options="{
-      onClick: (row) => showTask(row.name),
-      onNewClick: (column) => createTask(column),
+      onClick: (row) => showToDo(row.name),
+      onNewClick: (column) => createToDo(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
     @loadMore="(columnName) => viewControls.loadMoreKanban(columnName)"
@@ -37,12 +37,12 @@
     <template #title="{ titleField, itemName }">
       <div class="flex items-center gap-2">
         <div v-if="titleField === 'status'">
-          <TaskStatusIcon :status="getRow(itemName, titleField).label" />
+          <ToDoStatusIcon :status="getRow(itemName, titleField).label" />
         </div>
         <div v-else-if="titleField === 'priority'">
-          <TaskPriorityIcon :priority="getRow(itemName, titleField).label" />
+          <ToDoPriorityIcon :priority="getRow(itemName, titleField).label" />
         </div>
-        <div v-else-if="titleField === 'assigned_to'">
+        <div v-else-if="titleField === 'allocated_to'">
           <Avatar
             v-if="getRow(itemName, titleField).full_name"
             class="flex items-center"
@@ -74,15 +74,15 @@
         class="truncate flex items-center gap-2"
       >
         <div v-if="fieldName === 'status'">
-          <TaskStatusIcon
+          <ToDoStatusIcon
             class="size-3"
             :status="getRow(itemName, fieldName).label"
           />
         </div>
         <div v-else-if="fieldName === 'priority'">
-          <TaskPriorityIcon :priority="getRow(itemName, fieldName).label" />
+          <ToDoPriorityIcon :priority="getRow(itemName, fieldName).label" />
         </div>
-        <div v-else-if="fieldName === 'assigned_to'">
+        <div v-else-if="fieldName === 'allocated_to'">
           <Avatar
             v-if="getRow(itemName, fieldName).full_name"
             class="flex items-center"
@@ -121,18 +121,18 @@
         <div>
           <Button
             class="-ml-2"
-            v-if="getRow(itemName, 'reference_docname').label"
+            v-if="getRow(itemName, 'reference_name').label"
             variant="ghost"
             size="sm"
             :label="
-              getRow(itemName, 'reference_doctype').label == 'Opportunity'
+              getRow(itemName, 'reference_type').label == 'Opportunity'
                 ? __('Opportunity')
                 : __('Lead')
             "
             @click.stop="
               redirect(
-                getRow(itemName, 'reference_doctype').label,
-                getRow(itemName, 'reference_docname').label,
+                getRow(itemName, 'reference_type').label,
+                getRow(itemName, 'reference_name').label,
               )
             "
           >
@@ -152,43 +152,43 @@
       </div>
     </template>
   </KanbanView>
-  <TasksListView
-    ref="tasksListView"
-    v-else-if="tasks.data && rows.length"
-    v-model="tasks.data.page_length_count"
-    v-model:list="tasks"
+  <ToDosListView
+    ref="todosListView"
+    v-else-if="todos.data && rows.length"
+    v-model="todos.data.page_length_count"
+    v-model:list="todos"
     :rows="rows"
-    :columns="tasks.data.columns"
+    :columns="todos.data.columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
-      rowCount: tasks.data.row_count,
-      totalCount: tasks.data.total_count,
+      rowCount: todos.data.row_count,
+      totalCount: todos.data.total_count,
     }"
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
-    @showTask="showTask"
+    @showToDo="showToDo"
     @applyFilter="(data) => viewControls.applyFilter(data)"
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
   />
-  <div v-else-if="tasks.data" class="flex h-full items-center justify-center">
+  <div v-else-if="todos.data" class="flex h-full items-center justify-center">
     <div
       class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
     >
       <Email2Icon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Tasks')]) }}</span>
-      <Button :label="__('Create')" @click="showTaskModal = true">
+      <span>{{ __('No {0} Found', [__('ToDos')]) }}</span>
+      <Button :label="__('Create')" @click="showToDoModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
   </div>
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    v-model:reloadTasks="tasks"
-    :task="task"
+  <ToDoModal
+    v-if="showToDoModal"
+    v-model="showToDoModal"
+    v-model:reloadToDos="todos"
+    :todo="todo"
   />
 </template>
 
@@ -196,14 +196,14 @@
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
-import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
-import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
+import ToDoStatusIcon from '@/components/Icons/ToDoStatusIcon.vue'
+import ToDoPriorityIcon from '@/components/Icons/ToDoPriorityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
-import TasksListView from '@/components/ListViews/TasksListView.vue'
+import ToDosListView from '@/components/ListViews/ToDosListView.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
+import ToDoModal from '@/components/Modals/ToDoModal.vue'
 import { usersStore } from '@/stores/users'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
@@ -214,10 +214,10 @@ const { getUser } = usersStore()
 
 const router = useRouter()
 
-const tasksListView = ref(null)
+const todosListView = ref(null)
 
-// tasks data is loaded in the ViewControls component
-const tasks = ref({})
+// todos data is loaded in the ViewControls component
+const todos = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
@@ -234,13 +234,13 @@ function getRow(name, field) {
 }
 
 const rows = computed(() => {
-  if (!tasks.value?.data?.data) return []
+  if (!todos.value?.data?.data) return []
 
-  if (tasks.value.data.view_type === 'kanban') {
-    return getKanbanRows(tasks.value.data.data)
+  if (todos.value.data.view_type === 'kanban') {
+    return getKanbanRows(todos.value.data.data)
   }
 
-  return parseRows(tasks.value?.data.data)
+  return parseRows(todos.value?.data.data)
 })
 
 function getKanbanRows(data) {
@@ -254,20 +254,20 @@ function getKanbanRows(data) {
 }
 
 function parseRows(rows) {
-  return rows.map((task) => {
+  return rows.map((todo) => {
     let _rows = {}
-    tasks.value?.data.rows.forEach((row) => {
-      _rows[row] = task[row]
+    todos.value?.data.rows.forEach((row) => {
+      _rows[row] = todo[row]
 
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(task[row], dateTooltipFormat),
-          timeAgo: __(timeAgo(task[row])),
+          label: dateFormat(todo[row], dateTooltipFormat),
+          timeAgo: __(timeAgo(todo[row])),
         }
-      } else if (row == 'assigned_to') {
+      } else if (row == 'allocated_to') {
         _rows[row] = {
-          label: task.assigned_to && getUser(task.assigned_to).full_name,
-          ...(task.assigned_to && getUser(task.assigned_to)),
+          label: todo.allocated_to && getUser(todo.allocated_to).full_name,
+          ...(todo.allocated_to && getUser(todo.allocated_to)),
         }
       }
     })
@@ -275,57 +275,57 @@ function parseRows(rows) {
   })
 }
 
-const showTaskModal = ref(false)
+const showToDoModal = ref(false)
 
-const task = ref({
+const todo = ref({
   name: '',
   title: '',
   description: '',
-  assigned_to: '',
-  due_date: '',
+  allocated_to: '',
+  date: '',
   status: 'Backlog',
   priority: 'Low',
-  reference_doctype: 'Lead',
-  reference_docname: '',
+  reference_type: 'Lead',
+  reference_name: '',
 })
 
-function showTask(name) {
+function showToDo(name) {
   let t = rows.value?.find((row) => row.name === name)
-  task.value = {
+  todo.value = {
     name: t.name,
     title: t.title,
     description: t.description,
-    assigned_to: t.assigned_to?.email || '',
-    due_date: t.due_date,
+    allocated_to: t.allocated_to?.email || '',
+    date: t.date,
     status: t.status,
     priority: t.priority,
-    reference_doctype: t.reference_doctype,
-    reference_docname: t.reference_docname,
+    reference_type: t.reference_type,
+    reference_name: t.reference_name,
   }
-  showTaskModal.value = true
+  showToDoModal.value = true
 }
 
-function createTask(column) {
-  task.value = {
+function createToDo(column) {
+  todo.value = {
     name: '',
     title: '',
     description: '',
-    assigned_to: '',
-    due_date: '',
+    allocated_to: '',
+    date: '',
     status: 'Backlog',
     priority: 'Low',
-    reference_doctype: 'Lead',
-    reference_docname: '',
+    reference_type: 'Lead',
+    reference_name: '',
   }
 
   if (column.column?.name) {
-    let column_field = tasks.value.params.column_field
+    let column_field = todos.value.params.column_field
     if (column_field) {
-      task.value[column_field] = column.column.name
+      todo.value[column_field] = column.column.name
     }
   }
 
-  showTaskModal.value = true
+  showToDoModal.value = true
 }
 
 function actions(name) {
@@ -334,16 +334,16 @@ function actions(name) {
       label: __('Delete'),
       icon: 'trash-2',
       onClick: () => {
-        deletetask(name)
-        tasks.value.reload()
+        deleteToDo(name)
+        todos.value.reload()
       },
     },
   ]
 }
 
-async function deletetask(name) {
+async function deleteToDo(name) {
   await call('frappe.client.delete', {
-    doctype: 'CRM Task',
+    doctype: 'ToDo',
     name,
   })
 }

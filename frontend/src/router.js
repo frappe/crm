@@ -46,10 +46,10 @@ const routes = [
     component: () => import('@/pages/Notes.vue'),
   },
   {
-    alias: '/tasks',
-    path: '/tasks/view/:viewType?',
-    name: 'Tasks',
-    component: () => import('@/pages/Tasks.vue'),
+    alias: '/todos',
+    path: '/todos/view/:viewType?',
+    name: 'ToDos',
+    component: () => import('@/pages/ToDos.vue'),
   },
   {
     alias: '/contacts',
