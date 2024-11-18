@@ -6,50 +6,14 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
-  "is_erpnext_in_different_site",
   "column_break_vfru",
   "erpnext_company",
-  "section_break_oubd",
-  "erpnext_site_url",
-  "column_break_fllx",
-  "api_key",
-  "api_secret",
   "section_break_jnbn",
   "create_customer_on_status_change",
   "column_break_kbhw",
   "deal_status"
  ],
  "fields": [
-  {
-   "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
-   "fieldname": "api_key",
-   "fieldtype": "Data",
-   "label": "API Key",
-   "mandatory_depends_on": "is_erpnext_in_different_site"
-  },
-  {
-   "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
-   "fieldname": "api_secret",
-   "fieldtype": "Password",
-   "label": "API Secret",
-   "mandatory_depends_on": "is_erpnext_in_different_site"
-  },
-  {
-   "depends_on": "enabled",
-   "fieldname": "section_break_oubd",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_fllx",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
-   "fieldname": "erpnext_site_url",
-   "fieldtype": "Data",
-   "label": "ERPNext Site URL",
-   "mandatory_depends_on": "is_erpnext_in_different_site"
-  },
   {
    "depends_on": "enabled",
    "fieldname": "erpnext_company",
@@ -68,13 +32,6 @@
    "label": "Enabled"
   },
   {
-   "default": "0",
-   "depends_on": "enabled",
-   "fieldname": "is_erpnext_in_different_site",
-   "fieldtype": "Check",
-   "label": "Is ERPNext installed on a different site?"
-  },
-  {
    "fieldname": "section_break_jnbn",
    "fieldtype": "Section Break"
   },
@@ -83,7 +40,8 @@
    "depends_on": "enabled",
    "fieldname": "create_customer_on_status_change",
    "fieldtype": "Check",
-   "label": "Create customer on status change"
+   "label": "Create customer on status change",
+   "mandatory_depends_on": "enabled"
   },
   {
    "fieldname": "column_break_kbhw",
@@ -101,7 +59,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-17 19:21:11.060901",
+ "modified": "2024-11-18 23:36:37.037331",
  "modified_by": "Administrator",
  "module": "NCRM",
  "name": "ERPNext CRM Settings",

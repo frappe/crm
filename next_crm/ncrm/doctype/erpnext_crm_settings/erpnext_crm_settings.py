@@ -11,46 +11,24 @@ import json
 
 class ERPNextCRMSettings(Document):
 	def validate(self):
-		if self.enabled:
-			self.validate_if_erpnext_installed()
-			self.add_quotation_to_option()
-			self.create_custom_fields()	
-			self.create_crm_form_script()
-	
-	def validate_if_erpnext_installed(self):
-		if not self.is_erpnext_in_different_site:
-			if "erpnext" not in frappe.get_installed_apps():
-				frappe.throw(_("ERPNext is not installed in the current site"))
+		self.add_quotation_to_option()
+		self.create_custom_fields()	
+		self.create_crm_form_script()
 
 	def add_quotation_to_option(self):
-		if not self.is_erpnext_in_different_site:
-			if not frappe.db.exists("Property Setter", {"name": "Quotation-quotation_to-link_filters"}):
-				make_property_setter(
-					doctype="Quotation",
-					fieldname="quotation_to",
-					property="link_filters",
-					value='[["DocType","name","in", ["Customer", "Lead", "Prospect", "Opportunity"]]]',
-					property_type="JSON",
-					validate_fields_for_doctype=False,
-				)
+		if not frappe.db.exists("Property Setter", {"name": "Quotation-quotation_to-link_filters"}):
+			make_property_setter(
+				doctype="Quotation",
+				fieldname="quotation_to",
+				property="link_filters",
+				value='[["DocType","name","in", ["Customer", "Lead", "Prospect", "Opportunity"]]]',
+				property_type="JSON",
+				validate_fields_for_doctype=False,
+			)
 
 	def create_custom_fields(self):
-		if not self.is_erpnext_in_different_site:
-			from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm
-			create_custom_fields_for_frappe_crm()
-		else:
-			self.create_custom_fields_in_remote_site()
-
-	def create_custom_fields_in_remote_site(self):
-		client = get_erpnext_site_client(self)
-		try:
-			client.post_api("erpnext.crm.frappe_crm_api.create_custom_fields_for_frappe_crm")
-		except Exception:
-			frappe.log_error(
-				frappe.get_traceback(),
-				f"Error while creating custom field in the remote erpnext site: {self.erpnext_site_url}"
-			)
-			frappe.throw("Error while creating custom field in ERPNext, check error log for more details")
+		from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm
+		create_custom_fields_for_frappe_crm()
 
 	def create_crm_form_script(self):
 		if not frappe.db.exists("CRM Form Script", "Create Quotation from Opportunity"):
@@ -77,40 +55,14 @@ class ERPNextCRMSettings(Document):
 			frappe.log_error(frappe.get_traceback(), "Error while resetting form script")
 			return False
 
-def get_erpnext_site_client(erpnext_crm_settings):
-	site_url = erpnext_crm_settings.erpnext_site_url
-	api_key = erpnext_crm_settings.api_key
-	api_secret = erpnext_crm_settings.get_password("api_secret", raise_exception=False)
-
-	return FrappeClient(
-		site_url, api_key=api_key, api_secret=api_secret
-	)
-
 @frappe.whitelist()
 def get_customer_link(opportunity):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if not erpnext_crm_settings.enabled:
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
 
-	if not erpnext_crm_settings.is_erpnext_in_different_site:
-		customer = frappe.db.exists("Customer", {"opportunity": opportunity})
-		return get_url_to_form("Customer", customer) if customer else ""
-	else:
-		client = get_erpnext_site_client(erpnext_crm_settings)
-		try:
-			customer = client.get_list("Customer", {"opportunity": opportunity})
-			customer = customer[0].get("name") if len(customer) else None
-			if customer:
-				return f"{erpnext_crm_settings.erpnext_site_url}/app/customer/{customer}"
-			else:
-				return ""
-		except Exception:
-			frappe.log_error(
-				frappe.get_traceback(),
-				f"Error while fetching customer in remote site: {erpnext_crm_settings.erpnext_site_url}"
-			)
-			frappe.throw(_("Error while fetching customer in ERPNext, check error log for more details"))
-
+	customer = frappe.db.exists("Customer", {"opportunity": opportunity})
+	return get_url_to_form("Customer", customer) if customer else ""
 
 @frappe.whitelist()
 def get_quotation_url(opportunity, customer):
@@ -118,44 +70,9 @@ def get_quotation_url(opportunity, customer):
 	if not erpnext_crm_settings.enabled:
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
 
-	if not erpnext_crm_settings.is_erpnext_in_different_site:
-		quotation_url = get_url_to_list("Quotation")
-		return f"{quotation_url}/new?quotation_to=Opportunity&opportunity={opportunity}&party_name={opportunity}&company={erpnext_crm_settings.erpnext_company}"
-	else:
-		site_url = erpnext_crm_settings.get("erpnext_site_url")
-		quotation_url = f"{site_url}/app/quotation"
+	quotation_url = get_url_to_list("Quotation")
+	return f"{quotation_url}/new?quotation_to=Opportunity&opportunity={opportunity}&party_name={opportunity}&company={erpnext_crm_settings.erpnext_company}"
 
-		prospect = create_prospect_in_remote_site(opportunity, erpnext_crm_settings)
-		return f"{quotation_url}/new?quotation_to=Prospect&opportunity={opportunity}&party_name={prospect}&company={erpnext_crm_settings.erpnext_company}"
-
-def create_prospect_in_remote_site(opportunity, erpnext_crm_settings):
-	try:
-		client = get_erpnext_site_client(erpnext_crm_settings)
-		doc = frappe.get_doc("Opportunity", opportunity)
-		contacts = get_contacts(doc)
-		address = get_customer_address(doc.customer)
-		return client.post_api("erpnext.crm.frappe_crm_api.create_prospect_against_opportunity",
-			{
-				"customer": doc.customer,
-				"lead_name": doc.lead_name,
-				"no_of_employees": doc.no_of_employees,
-				"opportunity_owner": doc.opportunity_owner,
-				"opportunity": doc.name,
-				"territory": doc.territory,
-				"industry": doc.industry,
-				"website": doc.website,
-				"opportunity_amount": doc.opportunity_amount,
-				"contacts": json.dumps(contacts),
-				"erpnext_company": erpnext_crm_settings.erpnext_company,
-				"address": address.as_dict() if address else None
-			},
-		)
-	except Exception:
-		frappe.log_error(
-			frappe.get_traceback(),
-			f"Error while creating prospect in remote site: {erpnext_crm_settings.erpnext_site_url}"
-		)
-		frappe.throw(_("Error while creating prospect in ERPNext, check error log for more details"))
 
 def get_contacts(doc):
 	contacts = []
@@ -191,8 +108,7 @@ def get_customer_address(customer):
 def create_customer_in_erpnext(doc, method):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if (
-		not erpnext_crm_settings.enabled
-		or not erpnext_crm_settings.create_customer_on_status_change
+		not erpnext_crm_settings.create_customer_on_status_change
 		or doc.status != erpnext_crm_settings.deal_status
 	):
 		return
@@ -211,24 +127,10 @@ def create_customer_in_erpnext(doc, method):
 		"contacts": json.dumps(contacts),
 		"address": json.dumps(address) if address else None,
 	}
-	if not erpnext_crm_settings.is_erpnext_in_different_site:
-		from erpnext.crm.frappe_crm_api import create_customer
-		create_customer(customer)
-	else:
-		create_customer_in_remote_site(customer, erpnext_crm_settings)
+	from erpnext.crm.frappe_crm_api import create_customer
+	create_customer(customer)
 
 	frappe.publish_realtime("crm_customer_created")
-
-def create_customer_in_remote_site(customer, erpnext_crm_settings):
-	client = get_erpnext_site_client(erpnext_crm_settings)
-	try:
-		client.post_api("erpnext.crm.frappe_crm_api.create_customer", customer)
-	except Exception:
-		frappe.log_error(
-			frappe.get_traceback(),
-			"Error while creating customer in remote site"
-		)
-		frappe.throw(_("Error while creating customer in ERPNext, check error log for more details"))
 
 @frappe.whitelist()
 def get_crm_form_script():
