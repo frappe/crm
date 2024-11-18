@@ -5,19 +5,33 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "restore_defaults"
+  "restore_defaults",
+  "docs_link",
+  "support_link"
  ],
  "fields": [
   {
    "fieldname": "restore_defaults",
    "fieldtype": "Button",
    "label": "Restore Defaults"
+  },
+  {
+   "description": "Destination for the Docs link in the main navigation menu",
+   "fieldname": "docs_link",
+   "fieldtype": "Data",
+   "label": "Docs Link"
+  },
+  {
+   "description": "Destination for the Support link in the main navigation menu",
+   "fieldname": "support_link",
+   "fieldtype": "Data",
+   "label": "Support Link"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-29 13:49:07.835379",
+ "modified": "2024-11-15 01:06:02.064709",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

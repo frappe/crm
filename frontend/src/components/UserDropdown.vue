@@ -53,8 +53,8 @@ import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
-import { Dropdown } from 'frappe-ui'
-import { computed, ref, markRaw} from 'vue'
+import { Dropdown, createResource } from 'frappe-ui'
+import { computed, ref, markRaw, onMounted} from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -69,6 +69,8 @@ const { getUser } = usersStore()
 const user = computed(() => getUser() || {})
 
 const showSettingsModal = ref(false)
+const support_link = ref(null);
+const docs_link = ref(null);
 
 let dropdownOptions = ref([
   {
@@ -81,12 +83,12 @@ let dropdownOptions = ref([
       {
         icon: 'life-buoy',
         label: computed(() => __('Support')),
-        onClick: () => window.open('https://t.me/frappecrm', '_blank'),
+        onClick: () => window.open(support_link.value ? support_link.value : 'https://t.me/frappecrm', '_blank'),
       },
       {
         icon: 'book-open',
         label: computed(() => __('Docs')),
-        onClick: () => window.open('https://docs.frappe.io/crm', '_blank'),
+        onClick: () => window.open(docs_link.value ? docs_link.value : 'https://docs.frappe.io/crm' , '_blank'),
       },
     ],
   },
@@ -107,4 +109,15 @@ let dropdownOptions = ref([
     ],
   },
 ])
+onMounted(async () => {
+  const resource = createResource({
+    auto: true,
+    url: 'crm.fcrm.doctype.fcrm_settings.fcrm_settings.get_fcrm_settings',
+    transform: (data) => {
+      console.log(data);
+      support_link.value = data.support_link
+      docs_link.value = data.docs_link
+    },
+  });
+});
 </script>
