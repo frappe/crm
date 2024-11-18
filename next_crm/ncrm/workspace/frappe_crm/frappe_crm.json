@@ -60,7 +60,7 @@
    "color": "Grey",
    "doc_view": "List",
    "label": "Lead Statuses",
-   "link_to": "Lead Status",
+   "link_to": "CRM Lead Status",
    "stats_filter": "[]",
    "type": "DocType"
   },
