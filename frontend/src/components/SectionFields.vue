@@ -145,7 +145,6 @@ const _fields = computed(() => {
   let all_fields = []
   props.fields?.forEach((field) => {
     let df = field?.all_properties
-    let df = field?.all_properties
     if (df?.depends_on) evaluate_depends_on(df.depends_on, field)
     all_fields.push({
       ...field,
