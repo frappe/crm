@@ -9,11 +9,11 @@ def after_insert(doc, method):
 		if not lead_owner:
 			frappe.db.set_value(doc.reference_type, doc.reference_name, fieldname, doc.allocated_to)
 
-	if doc.reference_type in ["Lead", "Opportunity", "CRM Task"] and doc.reference_name and doc.allocated_to:
+	if doc.reference_type in ["Lead", "Opportunity", "ToDo"] and doc.reference_name and doc.allocated_to:
 		notify_assigned_user(doc)
 
 def on_update(doc, method):
-	if doc.has_value_changed("status") and doc.status == "Cancelled" and doc.reference_type in ["Lead", "Opportunity", "CRM Task"] and doc.reference_name and doc.allocated_to:
+	if doc.has_value_changed("status") and doc.status == "Cancelled" and doc.reference_type in ["Lead", "Opportunity", "ToDo"] and doc.reference_name and doc.allocated_to:
 		notify_assigned_user(doc, is_cancelled=True)
 
 def notify_assigned_user(doc, is_cancelled=False):
@@ -39,8 +39,8 @@ def notify_assigned_user(doc, is_cancelled=False):
 		"notification_type": "Assignment",
 		"message": message,
 		"notification_text": notification_text,
-		"reference_doctype": doc.reference_type,
-		"reference_docname": doc.reference_name,
+		"reference_type": doc.reference_type,
+		"reference_name": doc.reference_name,
 		"redirect_to_doctype": redirect_to_doctype,
 		"redirect_to_docname": redirect_to_name,
 	})
@@ -76,11 +76,11 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 			</div>
 		"""
 
-	if doctype == "task":
+	if doctype == "ToDo":
 		if is_cancelled:
 			return f"""
 				<div class="mb-2 leading-5 text-gray-600">
-					<span>{ _('Your assignment on task {0} has been removed by {1}').format(
+					<span>{ _('Your assignment on ToDo {0} has been removed by {1}').format(
 						f'<span class="font-medium text-gray-900">{ reference_doc.title }</span>',
 						f'<span class="font-medium text-gray-900">{ owner }</span>'
 					) }</span>
@@ -89,15 +89,15 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 		return f"""
 			<div class="mb-2 leading-5 text-gray-600">
 				<span class="font-medium text-gray-900">{ owner }</span>
-				<span>{ _('assigned a new task {0} to you').format(
+				<span>{ _('assigned a new ToDo {0} to you').format(
 					f'<span class="font-medium text-gray-900">{ reference_doc.title }</span>'
 				) }</span>
 			</div>
 		"""
 
 def get_redirect_to_doc(doc):
-	if doc.reference_type == "CRM Task":
+	if doc.reference_type == "ToDo":
 		reference_doc = frappe.get_doc(doc.reference_type, doc.reference_name)
-		return reference_doc.reference_doctype, reference_doc.reference_docname
+		return reference_doc.reference_type, reference_doc.reference_name
 
 	return doc.reference_type, doc.reference_name

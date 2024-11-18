@@ -7,7 +7,7 @@
         {
           label: editMode ? __('Update') : __('Create'),
           variant: 'solid',
-          onClick: () => updateTask(),
+          onClick: () => updateToDo(),
         },
       ],
     }"
@@ -15,14 +15,14 @@
     <template #body-title>
       <div class="flex items-center gap-3">
         <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-          {{ editMode ? __('Edit Task') : __('Create Task') }}
+          {{ editMode ? __('Edit ToDo') : __('Create ToDo') }}
         </h3>
         <Button
-          v-if="task?.reference_docname"
+          v-if="todo?.reference_name"
           variant="outline"
           size="sm"
           :label="
-            task.reference_doctype == 'Opportunity'
+            todo.reference_type == 'Opportunity'
               ? __('Open Opportunity')
               : __('Open Lead')
           "
@@ -41,7 +41,7 @@
           <TextInput
             ref="title"
             variant="outline"
-            v-model="_task.title"
+            v-model="_todo.title"
             :placeholder="__('Call with John Doe')"
           />
         </div>
@@ -54,31 +54,31 @@
             ref="description"
             editor-class="!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm focus:bg-white focus:border-gray-500 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-800 transition-colors"
             :bubbleMenu="true"
-            :content="_task.description"
-            @change="(val) => (_task.description = val)"
+            :content="_todo.description"
+            @change="(val) => (_todo.description = val)"
             :placeholder="
               __('Took a call with John Doe and discussed the new project.')
             "
           />
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <Dropdown :options="taskStatusOptions(updateTaskStatus)">
-            <Button :label="_task.status" class="w-full justify-between">
+          <Dropdown :options="todoStatusOptions(updateToDoStatus)">
+            <Button :label="_todo.status" class="w-full justify-between">
               <template #prefix>
-                <TaskStatusIcon :status="_task.status" />
+                <ToDoStatusIcon :status="_todo.status" />
               </template>
             </Button>
           </Dropdown>
           <Link
             class="form-control"
-            :value="getUser(_task.assigned_to).full_name"
+            :value="getUser(_todo.allocated_to).full_name"
             doctype="User"
-            @change="(option) => (_task.assigned_to = option)"
+            @change="(option) => (_todo.allocated_to = option)"
             :placeholder="__('John Doe')"
             :hideMe="true"
           >
             <template #prefix>
-              <UserAvatar class="mr-2 !h-4 !w-4" :user="_task.assigned_to" />
+              <UserAvatar class="mr-2 !h-4 !w-4" :user="_todo.allocated_to" />
             </template>
             <template #item-prefix="{ option }">
               <UserAvatar class="mr-2" :user="option.value" size="sm" />
@@ -93,14 +93,14 @@
           </Link>
           <DateTimePicker
             class="datepicker w-36"
-            v-model="_task.due_date"
+            v-model="_todo.date"
             :placeholder="__('01/04/2024 11:30 PM')"
             input-class="border-none"
           />
-          <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
-            <Button :label="_task.priority" class="w-full justify-between">
+          <Dropdown :options="todoPriorityOptions(updateToDoPriority)">
+            <Button :label="_todo.priority" class="w-full justify-between">
               <template #prefix>
-                <TaskPriorityIcon :priority="_task.priority" />
+                <ToDoPriorityIcon :priority="_todo.priority" />
               </template>
             </Button>
           </Dropdown>
@@ -111,12 +111,12 @@
 </template>
 
 <script setup>
-import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
-import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
+import ToDoStatusIcon from '@/components/Icons/ToDoStatusIcon.vue'
+import ToDoPriorityIcon from '@/components/Icons/ToDoPriorityIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
-import { taskStatusOptions, taskPriorityOptions } from '@/utils'
+import { todoStatusOptions, todoPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
 import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
@@ -124,7 +124,7 @@ import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  task: {
+  todo: {
     type: Object,
     default: {},
   },
@@ -139,69 +139,69 @@ const props = defineProps({
 })
 
 const show = defineModel()
-const tasks = defineModel('reloadTasks')
+const todos = defineModel('reloadToDos')
 
-const emit = defineEmits(['updateTask', 'after'])
+const emit = defineEmits(['updateToDo', 'after'])
 
 const router = useRouter()
 const { getUser } = usersStore()
 
 const title = ref(null)
 const editMode = ref(false)
-const _task = ref({
+const _todo = ref({
   title: '',
   description: '',
-  assigned_to: '',
-  due_date: '',
+  allocated_to: '',
+  date: '',
   status: 'Backlog',
   priority: 'Low',
-  reference_doctype: props.doctype,
-  reference_docname: null,
+  reference_type: props.doctype,
+  reference_name: null,
 })
 
-function updateTaskStatus(status) {
-  _task.value.status = status
+function updateToDoStatus(status) {
+  _todo.value.status = status
 }
 
-function updateTaskPriority(priority) {
-  _task.value.priority = priority
+function updateToDoPriority(priority) {
+  _todo.value.priority = priority
 }
 
 function redirect() {
-  if (!props.task?.reference_docname) return
-  let name = props.task.reference_doctype == 'Opportunity' ? 'Opportunity' : 'Lead'
-  let params = { leadId: props.task.reference_docname }
+  if (!props.todo?.reference_name) return
+  let name = props.todo.reference_type == 'Opportunity' ? 'Opportunity' : 'Lead'
+  let params = { leadId: props.todo.reference_name }
   if (name == 'Opportunity') {
-    params = { opportunityId: props.task.reference_docname }
+    params = { opportunityId: props.todo.reference_name }
   }
   router.push({ name: name, params: params })
 }
 
-async function updateTask() {
-  if (!_task.value.assigned_to) {
-    _task.value.assigned_to = getUser().name
+async function updateToDo() {
+  if (!_todo.value.allocated_to) {
+    _todo.value.allocated_to = getUser().name
   }
-  if (_task.value.name) {
+  if (_todo.value.name) {
     let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Task',
-      name: _task.value.name,
-      fieldname: _task.value,
+      doctype: 'ToDo',
+      name: _todo.value.name,
+      fieldname: _todo.value,
     })
     if (d.name) {
-      tasks.value.reload()
+      todos.value.reload()
     }
   } else {
     let d = await call('frappe.client.insert', {
       doc: {
-        doctype: 'CRM Task',
-        reference_doctype: props.doctype,
-        reference_docname: props.doc || null,
-        ..._task.value,
+        doctype: 'ToDo',
+        reference_type: props.doctype,
+        reference_name: props.doc || null,
+        ..._todo.value,
       },
     })
     if (d.name) {
-      capture('task_created')
-      tasks.value.reload()
+      capture('todo_created')
+      todos.value.reload()
       emit('after')
     }
   }
@@ -212,8 +212,8 @@ function render() {
   editMode.value = false
   nextTick(() => {
     title.value?.el?.focus?.()
-    _task.value = { ...props.task }
-    if (_task.value.title) {
+    _todo.value = { ...props.todo }
+    if (_todo.value.title) {
       editMode.value = true
     }
   })

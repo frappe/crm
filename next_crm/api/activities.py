@@ -36,12 +36,12 @@ def get_opportunity_activities(name):
 	activities = []
 	calls = []
 	notes = []
-	tasks = []
+	todos = []
 	attachments = []
 	creation_text = "created this opportunity"
 
 	if lead:
-		activities, calls, notes, tasks, attachments = get_lead_activities(lead)
+		activities, calls, notes, todos, attachments = get_lead_activities(lead)
 		creation_text = "converted the lead to this opportunity"
 
 	activities.append({
@@ -147,13 +147,13 @@ def get_opportunity_activities(name):
 
 	calls = calls + get_linked_calls(name)
 	notes = notes + get_linked_notes(name)
-	tasks = tasks + get_linked_tasks(name)
+	todos = todos + get_linked_todos(name)
 	attachments = attachments + get_attachments('Opportunity', name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities, calls, notes, tasks, attachments
+	return activities, calls, notes, todos, attachments
 
 def get_lead_activities(name):
 	get_docinfo('', "Lead", name)
@@ -273,13 +273,13 @@ def get_lead_activities(name):
 
 	calls = get_linked_calls(name)
 	notes = get_linked_notes(name)
-	tasks = get_linked_tasks(name)
+	todos = get_linked_todos(name)
 	attachments = get_attachments('Lead', name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
-	return activities, calls, notes, tasks, attachments
+	return activities, calls, notes, todos, attachments
 
 
 def get_attachments(doctype, name):
@@ -352,23 +352,22 @@ def get_linked_notes(name):
 	)
 	return notes or []
 
-def get_linked_tasks(name):
-	tasks = frappe.db.get_all(
-		"CRM Task",
-		filters={"reference_docname": name},
+def get_linked_todos(name):
+	todos = frappe.db.get_all(
+		"ToDo",
+		filters={"reference_name": name},
 		fields=[
 			"name",
 			"title",
 			"description",
-			"assigned_to",
-			"assigned_to",
-			"due_date",
+			"allocated_to",
+			"date",
 			"priority",
 			"status",
 			"modified",
 		],
 	)
-	return tasks or []
+	return todos or []
 
 def parse_attachment_log(html, type):
 	soup = BeautifulSoup(html, "html.parser")

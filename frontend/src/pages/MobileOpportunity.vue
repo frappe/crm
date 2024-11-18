@@ -252,7 +252,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
@@ -459,9 +459,9 @@ const tabs = computed(() => {
       condition: () => callEnabled.value,
     },
     {
-      name: 'Tasks',
-      label: __('Tasks'),
-      icon: TaskIcon,
+      name: 'ToDos',
+      label: __('ToDos'),
+      icon: ToDoIcon,
     },
     {
       name: 'Notes',

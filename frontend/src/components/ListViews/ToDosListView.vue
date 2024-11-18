@@ -3,7 +3,7 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      onRowClick: (row) => emit('showTask', row.name),
+      onRowClick: (row) => emit('showToDo', row.name),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
       resizeColumn: options.resizeColumn,
@@ -38,7 +38,7 @@
         v-slot="{ idx, column, item }"
         :row="row"
       >
-        <div v-if="column.key === 'due_date'">
+        <div v-if="column.key === 'date'">
           <Tooltip
             :text="item && dateFormat(item, 'ddd, MMM D, YYYY | hh:mm a')"
           >
@@ -53,12 +53,12 @@
         <ListRowItem v-else :item="item">
           <template #prefix>
             <div v-if="column.key === 'status'">
-              <TaskStatusIcon :status="item" />
+              <ToDoStatusIcon :status="item" />
             </div>
             <div v-else-if="column.key === 'priority'">
-              <TaskPriorityIcon :priority="item" />
+              <ToDoPriorityIcon :priority="item" />
             </div>
-            <div v-else-if="column.key === 'assigned_to'">
+            <div v-else-if="column.key === 'allocated_to'">
               <Avatar
                 v-if="item.full_name"
                 class="flex items-center"
@@ -155,7 +155,7 @@
   <ListBulkActions
     ref="listBulkActionsRef"
     v-model="list"
-    doctype="CRM Task"
+    doctype="ToDo"
     :options="{
       hideAssign: true,
     }"
@@ -163,8 +163,8 @@
 </template>
 <script setup>
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
-import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
-import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
+import ToDoStatusIcon from '@/components/Icons/ToDoStatusIcon.vue'
+import ToDoPriorityIcon from '@/components/Icons/ToDoPriorityIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import { dateFormat } from '@/utils'
@@ -208,7 +208,7 @@ const props = defineProps({
 const emit = defineEmits([
   'loadMore',
   'updatePageCount',
-  'showTask',
+  'showToDo',
   'columnWidthUpdated',
   'applyFilter',
   'applyLikeFilter',

@@ -697,6 +697,6 @@ def getCounts(d, doctype):
 	d["_email_count"] = frappe.db.count("Communication", filters={"reference_doctype": doctype, "reference_name": d.get("name"), "communication_type": "Communication"}) or 0
 	d["_email_count"] = d["_email_count"] + frappe.db.count("Communication", filters={"reference_doctype": doctype, "reference_name": d.get("name"), "communication_type": "Automated Message"})
 	d["_comment_count"] = frappe.db.count("Comment", filters={"reference_doctype": doctype, "reference_name": d.get("name"), "comment_type": "Comment"})
-	d["_task_count"] = frappe.db.count("CRM Task", filters={"reference_doctype": doctype, "reference_docname": d.get("name")})
+	d["_todo_count"] = frappe.db.count("ToDo", filters={"reference_type": doctype, "reference_name": d.get("name")})
 	d["_note_count"] = frappe.db.count("NCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")})
 	return d

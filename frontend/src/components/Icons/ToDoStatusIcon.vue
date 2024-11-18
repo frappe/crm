@@ -16,7 +16,7 @@
       clip-rule="evenodd"
     />
     <path
-      v-else-if="status == 'Todo'"
+      v-else-if="status == 'Open'"
       fill="currentColor"
       fill-rule="evenodd"
       d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10Zm0 2A7 7 0 1 0 8 1a7 7 0 0 0 0 14Z"
@@ -30,14 +30,14 @@
       clip-rule="evenodd"
     />
     <path
-      v-else-if="status == 'Done'"
+      v-else-if="status == 'Closed'"
       fill="currentColor"
       fill-rule="evenodd"
       d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm3.173-9.015a.5.5 0 0 0-.772-.636l-3.45 4.183L5.612 7.8a.5.5 0 1 0-.792.612l1.725 2.228a.5.5 0 0 0 .781.013l3.848-4.667Z"
       clip-rule="evenodd"
     />
     <path
-      v-else-if="status == 'Canceled'"
+      v-else-if="status == 'Cancelled'"
       fill="currentColor"
       fill-rule="evenodd"
       clip-rule="evenodd"

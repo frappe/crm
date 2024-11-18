@@ -96,7 +96,7 @@ import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
@@ -134,9 +134,9 @@ const links = [
     to: 'Notes',
   },
   {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
+    label: 'ToDos',
+    icon: ToDoIcon,
+    to: 'ToDos',
   },
   {
     label: 'Call Logs',
