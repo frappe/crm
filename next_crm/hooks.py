@@ -11,7 +11,8 @@ app_icon_route = "/next-crm"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["erpnext"]
+
 add_to_apps_screen = [
 	{
 		"name": "next_crm",
