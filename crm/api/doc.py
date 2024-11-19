@@ -237,11 +237,16 @@ def get_data(
  
 	report_filters = frappe.parse_json(report_filters or {})
 	report_filter_structure = {}
+	report_type = ''
+	builder_report_filter = {} 
 	report_data = []
 
 	if view_type == "report" and report_name:
 
 		report = get_report_doc(report_name)
+
+		report_type = report.report_type
+  
 		module = report.module or frappe.db.get_value("DocType", report.ref_doctype, "module")
 		is_custom_module = frappe.get_cached_value("Module Def", module, "custom")
 		module_path = "" if is_custom_module else get_module_path(module)
@@ -259,10 +264,12 @@ def get_data(
 			script += f"\n\n//# sourceURL={scrub(report.name)}__custom"
 		if not script:
 			script = "frappe.query_reports['%s']={}" % report_name
-   
-		report_filter_structure = parse_js_to_dict(script)
-		report_data = run(report_name,report_filters)
 
+		report_filter_structure = parse_js_to_dict(script)
+		if report.report_type == 'Report Builder':
+			builder_report_filter  =  convert_json_data(doctype,json.loads(report.json))
+		else:
+			report_data = run(report_name,report_filters)
 
 
 	for key in filters:
@@ -528,6 +535,8 @@ def get_data(
 		"view_type": view_type,
 		"default_report":default_report,
 		"report_data":report_data,
+		"report_type":report_type,
+		"builder_report_filter":builder_report_filter,
 		"report_filter_structure":report_filter_structure,
 	}
 
@@ -824,3 +833,56 @@ def get_default_report(doctype):
         else:
             return None  # Or a default value for other doctypes if needed
  
+
+
+
+
+@frappe.whitelist()
+def convert_json_data(doctype, data):
+    converted_data = {}
+    
+    # Add fields if present in the input data
+    if "fields" in data:
+        # Filter out _aggregate_column from fields
+        converted_data["fields"] = [
+            f"`tab{field[1]}`.`{field[0]}`" 
+            for field in data["fields"] 
+            if field[0] != "_aggregate_column"
+        ]
+    
+    # Add filters if present in the input data
+    if "filters" in data:
+        converted_data["filters"] = [
+            filter[:4]  # Take only the first 4 elements of each filter
+            for filter in data["filters"]
+        ]
+    
+    # Add static fields or fields with default values
+    converted_data["doctype"] = str(doctype)
+    # converted_data["order_by"] = "_aggregate_column desc"  # Override with default sorting
+    converted_data["start"] = 0
+    converted_data["view"] = "Report"
+    converted_data["with_comment_count"] = False
+    
+    # Add page_length if present, otherwise use the provided value
+    converted_data["page_length"] = data.get("page_lengths", 999999999)
+    
+    # Handle group_by data
+    group_by_data = data.get("group_by")
+    if group_by_data and isinstance(group_by_data, dict):
+        # Extract aggregate_on_field from the full path
+        if group_by_data.get("aggregate_on"):
+            aggregate_on_field = group_by_data["aggregate_on"].split("`")[-2]
+        else:
+            aggregate_on_field = "name"
+        
+        converted_data["aggregate_on_field"] = aggregate_on_field
+        converted_data["aggregate_on_doctype"] = str(doctype)
+        converted_data["aggregate_function"] = group_by_data.get("aggregate_function", "count")
+        
+        # Extract group_by field
+        if group_by_data.get("group_by"):
+            converted_data["group_by"] = group_by_data["group_by"]
+    
+    return converted_data
+
