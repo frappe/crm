@@ -35,7 +35,7 @@ export const sessionStore = defineStore('crm-session', () => {
     onSuccess() {
       userResource.reset()
       user.value = null
-      router.replace({ name: 'Home' })
+      window.location.href = '/login?redirect-to=/crm'
     },
   })
 

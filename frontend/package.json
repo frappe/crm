@@ -14,7 +14,7 @@
     "@vueuse/core": "^10.3.0",
     "@vueuse/integrations": "^10.3.0",
     "feather-icons": "^4.28.0",
-    "frappe-ui": "^0.1.71",
+    "frappe-ui": "^0.1.74",
     "gemoji": "^8.1.0",
     "lodash": "^4.17.21",
     "mime": "^4.0.1",
@@ -22,7 +22,6 @@
     "socket.io-client": "^4.7.2",
     "sortablejs": "^1.15.0",
     "tailwindcss": "^3.3.3",
-    "vite": "^4.4.9",
     "vue": "^3.4.12",
     "vue-router": "^4.2.2",
     "vuedraggable": "^4.1.0"

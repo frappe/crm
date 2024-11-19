@@ -1,5 +1,9 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '5xl' }">
+  <Dialog
+    v-model="showSettings"
+    :options="{ size: '5xl' }"
+    @close="activeSettingsPage = ''"
+  >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
         <div class="flex w-52 shrink-0 flex-col bg-gray-50 p-2">
@@ -47,11 +51,16 @@ import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
-import { isWhatsappInstalled } from '@/composables/settings'
+import { usersStore } from '@/stores/users'
+import {
+  isWhatsappInstalled,
+  showSettings,
+  activeSettingsPage,
+} from '@/composables/settings'
 import { Dialog } from 'frappe-ui'
-import { ref, markRaw, computed, h } from 'vue'
+import { ref, markRaw, computed, watch } from 'vue'
 
-const show = defineModel()
+const { isManager } = usersStore()
 
 const tabs = computed(() => {
   let _tabs = [
@@ -68,6 +77,7 @@ const tabs = computed(() => {
           label: __('Invite Members'),
           icon: 'user-plus',
           component: markRaw(InviteMemberPage),
+          condition: () => isManager(),
         },
       ],
     },
@@ -94,16 +104,29 @@ const tabs = computed(() => {
     },
   ]
 
-  return _tabs.map((tab) => {
-    tab.items = tab.items.filter((item) => {
-      if (item.condition) {
-        return item.condition()
-      }
-      return true
-    })
-    return tab
+  return _tabs.filter((tab) => {
+    if (tab.condition && !tab.condition()) return false
+    if (tab.items) {
+      tab.items = tab.items.filter((item) => {
+        if (item.condition && !item.condition()) return false
+        return true
+      })
+    }
+    return true
   })
 })
 
 const activeTab = ref(tabs.value[0].items[0])
+
+function setActiveTab(tabName) {
+  activeTab.value =
+    (tabName &&
+      tabs.value
+        .map((tab) => tab.items)
+        .flat()
+        .find((tab) => tab.label === tabName)) ||
+    tabs.value[0].items[0]
+}
+
+watch(activeSettingsPage, (activePage) => setActiveTab(activePage))
 </script>

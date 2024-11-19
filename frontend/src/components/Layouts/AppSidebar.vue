@@ -71,6 +71,7 @@
         </Section>
       </div>
     </div>
+    <TrialBanner v-if="isFCSite.data" />
     <div class="m-2 flex flex-col gap-1">
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
@@ -89,6 +90,7 @@
       </SidebarLink>
     </div>
     <Notifications />
+    <Settings />
   </div>
 </template>
 
@@ -108,14 +110,15 @@ import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
+import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, TrialBanner, createResource } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
-import { computed, h } from 'vue'
+import { computed, h, provide } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -226,4 +229,13 @@ function getIcon(routeName, icon) {
       return PinIcon
   }
 }
+
+const isFCSite = createResource({
+  url: 'frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site',
+  cache: 'isFCSite',
+  auto: true,
+  transform: (data) => Boolean(data),
+})
+
+provide('isFCSite', isFCSite)
 </script>

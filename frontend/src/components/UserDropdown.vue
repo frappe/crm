@@ -44,17 +44,16 @@
       </button>
     </template>
   </Dropdown>
-  <SettingsModal v-if="showSettingsModal" v-model="showSettingsModal" />
 </template>
 
 <script setup>
-import SettingsModal from '@/components/Settings/SettingsModal.vue'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
+import { showSettings } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
-import { computed, ref, markRaw} from 'vue'
+import { computed, ref, markRaw, inject } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -68,7 +67,7 @@ const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
-const showSettingsModal = ref(false)
+const isFCSite = inject('isFCSite')
 
 let dropdownOptions = ref([
   {
@@ -95,9 +94,15 @@ let dropdownOptions = ref([
     hideLabel: true,
     items: [
       {
+        icon: 'credit-card',
+        label: computed(() => __('Billing')),
+        onClick: () => (window.location.href = '/billing'),
+        condition: () => isFCSite.data,
+      },
+      {
         icon: 'settings',
         label: computed(() => __('Settings')),
-        onClick: () => (showSettingsModal.value = true),
+        onClick: () => (showSettings.value = true),
       },
       {
         icon: 'log-out',
