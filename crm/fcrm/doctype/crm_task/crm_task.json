@@ -17,6 +17,7 @@
   "assigned_to",
   "status",
   "due_date",
+  "task_overdue_notification_sent",
   "section_break_bzhd",
   "description"
  ],
@@ -83,11 +84,18 @@
    "fieldtype": "Dynamic Link",
    "label": "Reference Doc",
    "options": "reference_doctype"
+  },
+  {
+   "default": "0",
+   "fieldname": "task_overdue_notification_sent",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Task Overdue Notification Sent"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-08 12:04:00.955984",
+ "modified": "2024-11-11 21:33:10.438378",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Task",

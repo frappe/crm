@@ -7,11 +7,10 @@ from frappe.model.document import Document
 from frappe.desk.form.assign_to import add as assign, remove as unassign
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
-
 class CRMTask(Document):
 	def after_insert(self):
 		self.assign_to()
-
+	
 	def validate(self):
 		if self.is_new() or not self.assigned_to:
 			return
@@ -19,6 +18,10 @@ class CRMTask(Document):
 		if self.get_doc_before_save().assigned_to != self.assigned_to:
 			self.unassign_from_previous_user(self.get_doc_before_save().assigned_to)
 			self.assign_to()
+		
+		# uncheck field task_overdue_notification_sent if due date updated
+		if self.get_doc_before_save().due_date != self.due_date:
+			self.task_overdue_notification_sent = 0 
 
 	def unassign_from_previous_user(self, user):
 		unassign(self.doctype, self.name, user)
@@ -31,7 +34,6 @@ class CRMTask(Document):
 				"name": self.name,
 				"description": self.title or self.description,
 			})
-
 
 	@staticmethod
 	def default_list_data():

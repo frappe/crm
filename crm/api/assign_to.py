@@ -272,11 +272,14 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 	# Search for email address in description -- i.e. assignee
 	user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
 	title = get_title(doc_type, doc_name)
-	 
+	
 	#Doctype and docname added on description
 	description_html = " "
-	if description and doc_name not in description:
-		description = f"Assignment for {(doc_type)} {doc_name}"
+	if description and str(doc_name) not in description:
+		if doc_type == "CRM Task":
+			description = f"Task Due for {(doc_type)} {doc_name}"
+		else:
+			description = f"Assignment for {(doc_type)} {doc_name}"
 		description_html = f"<div>{description}</div>"  
 	else:
 		description_html = f"<div>{description}</div>"
@@ -302,7 +305,7 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 		"from_user": frappe.session.user,
 		"email_content": description_html,
 	}
-    
+	
 	enqueue_create_notification(allocated_to, notification_doc)
 
 
