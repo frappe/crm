@@ -112,6 +112,13 @@ export function formatNumberIntoCurrency(value, currency = 'INR') {
   return ''
 }
 
+export function customFormatNumberIntoCurrency(value, currency) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+        currency: currency
+    }).format(value);
+}
+
 export function startCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }

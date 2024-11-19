@@ -138,7 +138,7 @@
                 >
                   <MoneyIcon class="size-4" />
                   <span class="">{{
-                    formatNumberIntoCurrency(
+                    customFormatNumberIntoCurrency(
                       organization.doc.annual_revenue,
                       organization.doc.currency,
                     )
@@ -281,7 +281,7 @@ import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
-  formatNumberIntoCurrency,
+  customFormatNumberIntoCurrency,
 } from '@/utils'
 import {
   Breadcrumbs,
@@ -485,7 +485,7 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: props.organization?.organization_logo,
     },
-    annual_revenue: formatNumberIntoCurrency(
+    annual_revenue: customFormatNumberIntoCurrency(
       deal.annual_revenue,
       deal.currency,
     ),

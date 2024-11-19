@@ -311,7 +311,7 @@ import {
   dateTooltipFormat,
   timeAgo,
   website,
-  formatNumberIntoCurrency,
+  customFormatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
@@ -593,10 +593,5 @@ function showTask(name) {
   showTaskModal.value = true
 }
 
-function customFormatNumberIntoCurrency(value, currency) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-        currency: currency
-    }).format(value);
-}
+
 </script>
