@@ -181,16 +181,27 @@
       </template>
     </ListSelectBanner>
   </ListView>
-  <ListFooter
-    v-if="pageLengthCount"
-    class="border-t sm:px-5 px-3 py-2"
-    v-model="pageLengthCount"
-    :options="{
-      rowCount: options.rowCount,
-      totalCount: options.totalCount,
-    }"
-    @loadMore="emit('loadMore')"
-  />
+  <div class="flex items-center justify-between border-t sm:px-5 px-3 py-2">
+    <!-- Left side: Original pagination -->
+    <ListFooter 
+      v-if="pageLengthCount" 
+      v-model="pageLengthCount" 
+      :options="{ 
+        rowCount: options.rowCount, 
+        totalCount: options.totalCount 
+      }" 
+      @loadMore="emit('loadMore')"
+    />
+    
+    <!-- Center: Annual Revenue -->
+    <div class="flex-1 text-center text-base">
+      <span class="font-medium">Total Amount:</span>
+      <span class="ml-2">{{ formattedAnnualRevenueTotal }}</span>
+    </div>
+
+    <!-- Right side: Empty div for flex spacing -->
+    <div class="flex-1"></div>
+  </div>
   <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="CRM Deal" />
 </template>
 
@@ -212,6 +223,7 @@ import {
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
+import { customFormatNumberIntoCurrency } from '@/utils'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -283,4 +295,15 @@ defineExpose({
     () => listBulkActionsRef.value?.customListActions,
   ),
 })
+
+const displayedAnnualRevenueTotal = computed(() => {
+  return props.rows.reduce((total, row) => {
+    const revenue = parseFloat(row.annual_revenue?.replace(/[^0-9.-]+/g, '') || 0);
+    return total + revenue;
+  }, 0);
+});
+
+const formattedAnnualRevenueTotal = computed(() => {
+  return customFormatNumberIntoCurrency(displayedAnnualRevenueTotal.value, 'USD');
+});
 </script>
