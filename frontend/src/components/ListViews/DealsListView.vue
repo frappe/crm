@@ -181,16 +181,29 @@
       </template>
     </ListSelectBanner>
   </ListView>
-  <ListFooter
-    v-if="pageLengthCount"
-    class="border-t sm:px-5 px-3 py-2"
-    v-model="pageLengthCount"
-    :options="{
-      rowCount: options.rowCount,
-      totalCount: options.totalCount,
-    }"
-    @loadMore="emit('loadMore')"
-  />
+  <div class="flex items-center justify-between border-t sm:px-5 px-3 py-2">
+    <!-- Left side: Original pagination -->
+    <ListFooter 
+      v-if="pageLengthCount" 
+      v-model="pageLengthCount" 
+      :options="{ 
+        rowCount: options.rowCount, 
+        totalCount: options.totalCount 
+      }" 
+      @loadMore="emit('loadMore')"
+    />
+    
+    <!-- Center: Annual Revenue -->
+    <div class="flex-1 text-center text-base">
+      <span class="font-medium ml-6">Total Amount:</span>
+      <span class="font-bold ml-2">{{ formattedAmountTotal }}</span>
+      <span class="font-medium ml-2">(Weighted:</span>
+      <span class="ml-2">{{ formattedWeightedAmountTotal }})</span>
+    </div>
+
+    <!-- Right side: Empty div for flex spacing -->
+    <div class="flex-1"></div>
+  </div>
   <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="CRM Deal" />
 </template>
 
@@ -212,6 +225,7 @@ import {
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
+import { customFormatNumberIntoCurrency } from '@/utils'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -283,4 +297,29 @@ defineExpose({
     () => listBulkActionsRef.value?.customListActions,
   ),
 })
+
+const computedAmountTotal = computed(() => {
+  return props.rows.reduce((total, row) => {
+    const revenue = parseFloat(row.annual_revenue?.replace(/[^0-9.-]+/g, '') || 0);
+    return total + revenue;
+  }, 0);
+});
+
+const formattedAmountTotal = computed(() => {
+  return customFormatNumberIntoCurrency(computedAmountTotal.value, 'USD');
+});
+
+const computedWeightedAmountTotal = computed(() => {
+  return props.rows.reduce((total, row) => {
+    const annualRevenue = parseFloat(row.annual_revenue?.replace(/[^0-9.-]+/g, '') || 0);
+    const probability = parseFloat(row.probability || 0) / 100;
+    const weightedRevenue = annualRevenue * probability;
+    return total + weightedRevenue;
+  }, 0);
+});
+
+const formattedWeightedAmountTotal = computed(() => {
+  return customFormatNumberIntoCurrency(computedWeightedAmountTotal.value, 'USD');
+});
+
 </script>
