@@ -187,29 +187,16 @@
       </template>
     </ListSelectBanner>
   </ListView>
-  <div class="flex items-center justify-between border-t sm:px-5 px-3 py-2">
-    <!-- Left side: Original pagination -->
-    <ListFooter 
-      v-if="pageLengthCount" 
-      v-model="pageLengthCount" 
-      :options="{ 
-        rowCount: options.rowCount, 
-        totalCount: options.totalCount 
-      }" 
-      @loadMore="emit('loadMore')"
-    />
-    
-    <!-- Center: Annual Revenue -->
-    <div class="flex-1 text-center text-base">
-      <span class="font-medium ml-6">Total Amount:</span>
-      <span class="font-bold ml-2">{{ formattedAmountTotal }}</span>
-      <span class="font-medium ml-2">(Weighted:</span>
-      <span class="ml-2">{{ formattedWeightedAmountTotal }})</span>
-    </div>
-
-    <!-- Right side: Empty div for flex spacing -->
-    <div class="flex-1"></div>
-  </div>
+  <ListFooter
+    v-if="pageLengthCount"
+    class="border-t sm:px-5 px-3 py-2"
+    v-model="pageLengthCount"
+    :options="{
+      rowCount: options.rowCount,
+      totalCount: options.totalCount,
+    }"
+    @loadMore="emit('loadMore')"
+  />
   <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="CRM Deal" />
 </template>
 
