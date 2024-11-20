@@ -171,6 +171,12 @@
         </template>
       </ListRowItem>
     </ListRows>
+    <div class="bg-gray-100 p-4 text-base">
+      <span class="font-medium">Total Amount:</span>
+      <span class="font-bold ml-2">{{ formattedAmountTotal }}</span>
+      <span class="font-medium ml-2">(Weighted:</span>
+      <span class="ml-2">{{ formattedWeightedAmountTotal }})</span>
+    </div>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
         <Dropdown
