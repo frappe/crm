@@ -36,7 +36,18 @@
                 <div>{{ field.value }}</div>
               </Tooltip>
             </div>
+            <div
+              class="flex h-7 items-center gap-2 text-base text-gray-800" v-if=" _organization.is_partner == 1">
+              <Tooltip :text="'Partner'">
+                <div class="grid w-7 place-content-center">
+                  <PartnerIcon class="h-4 w-4" />
+                </div>
+                <div>Partner</div>
+              </Tooltip>
+            </div>
+           
           </div>
+   
           <Fields
             v-else-if="filteredSections"
             :sections="filteredSections"
@@ -76,6 +87,7 @@ import { capture } from '@/telemetry'
 import { call, FeatherIcon, Tooltip, createResource } from 'frappe-ui'
 import { ref, nextTick, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
+import PartnerIcon from '@/components/Icons/PartnerIcon.vue'
 
 const props = defineProps({
   options: {

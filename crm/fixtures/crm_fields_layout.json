@@ -1,0 +1,11 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Organization",
+  "layout": "[{\"label\":\"Organization Name\",\"columns\":1,\"fields\":[\"organization_name\",\"is_partner\"],\"hideLabel\":true},{\"label\":\"Website & Revenue\",\"columns\":2,\"hideBorder\":true,\"fields\":[\"website\",\"annual_revenue\"],\"hideLabel\":true},{\"label\":\"Territory\",\"columns\":1,\"hideBorder\":true,\"fields\":[\"territory\"],\"hideLabel\":true},{\"label\":\"No of Employees & Industry\",\"columns\":2,\"hideBorder\":true,\"fields\":[\"no_of_employees\",\"industry\"],\"hideLabel\":true},{\"label\":\"Address\",\"columns\":1,\"hideBorder\":true,\"fields\":[\"address\"],\"hideLabel\":true}]",
+  "modified": "2024-11-18 05:33:13.272423",
+  "name": "CRM Organization-Quick Entry",
+  "type": "Quick Entry"
+ }
+]
