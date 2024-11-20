@@ -16,6 +16,9 @@ def after_install(force=False):
 	add_default_fields_layout(force)
 	add_property_setter()
 	add_email_template_custom_fields()
+	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
+	erpnext_crm_settings.enabled = True
+	erpnext_crm_settings.save()
 	frappe.db.commit()
 
 def add_default_lead_statuses():
