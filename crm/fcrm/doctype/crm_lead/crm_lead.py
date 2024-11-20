@@ -147,6 +147,7 @@ class CRMLead(Document):
 
 		existing_organization = frappe.db.exists("CRM Organization", {"organization_name": self.organization})
 		if existing_organization:
+			update_organization_leads_status(self.organization)
 			return existing_organization
 
 		organization = frappe.new_doc("CRM Organization")
@@ -162,6 +163,7 @@ class CRMLead(Document):
 			}
 		)
 		organization.insert(ignore_permissions=True)
+		update_organization_leads_status(organization.name)
 		return organization.name
 
 	def contact_exists(self, throw=True):
@@ -358,3 +360,22 @@ def convert_to_deal(lead, doc=None):
 	organization = lead.create_organization()
 	deal = lead.create_deal(contact, organization)
 	return deal
+
+
+
+
+@frappe.whitelist()
+def update_organization_leads_status(organization_name):
+    # Get the merge_deals_org value
+    merge_deals_org = frappe.db.get_value("CRM Organization", {'organization_name': organization_name}, ['merge_deals_org'])
+    
+    if merge_deals_org:
+        # Check if "Contacted" status exists in "CRM Lead Status", if not, create it
+        if not frappe.db.exists("CRM Lead Status", "Contacted"):
+            status = frappe.new_doc("CRM Lead Status")
+            status.update({"status": "Contacted"})    
+            status.insert(ignore_permissions=True)
+
+        # Update the status of all leads for the given organization
+        frappe.db.sql(""" UPDATE `tabCRM Lead` SET status = %s WHERE organization = %s """, ("Contacted", organization_name))
+        frappe.db.commit()

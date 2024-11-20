@@ -19,7 +19,8 @@
   "territory",
   "industry",
   "government_affiliation",
-  "address"
+  "address",
+  "merge_deals_org"
  ],
  "fields": [
   {
@@ -96,12 +97,18 @@
    "label": "Referral Source",
    "link_filters": "[[\"CRM Organization\",\"is_partner\",\"=\",1]]",
    "options": "CRM Organization"
+  },
+  {
+   "default": "1",
+   "fieldname": "merge_deals_org",
+   "fieldtype": "Check",
+   "label": "Convert all Leads from same Organization"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-13 07:13:35.841200",
+ "modified": "2024-11-14 09:28:24.032939",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
