@@ -195,8 +195,10 @@
     
     <!-- Center: Annual Revenue -->
     <div class="flex-1 text-center text-base">
-      <span class="font-medium">Total Amount:</span>
-      <span class="ml-2">{{ formattedAnnualRevenueTotal }}</span>
+      <span class="font-medium ml-6">Total Amount:</span>
+      <span class="font-bold ml-2">{{ formattedAmountTotal }}</span>
+      <span class="font-medium ml-2">(Weighted:</span>
+      <span class="ml-2">{{ formattedWeightedAmountTotal }})</span>
     </div>
 
     <!-- Right side: Empty div for flex spacing -->
@@ -296,14 +298,28 @@ defineExpose({
   ),
 })
 
-const displayedAnnualRevenueTotal = computed(() => {
+const computedAmountTotal = computed(() => {
   return props.rows.reduce((total, row) => {
     const revenue = parseFloat(row.annual_revenue?.replace(/[^0-9.-]+/g, '') || 0);
     return total + revenue;
   }, 0);
 });
 
-const formattedAnnualRevenueTotal = computed(() => {
-  return customFormatNumberIntoCurrency(displayedAnnualRevenueTotal.value, 'USD');
+const formattedAmountTotal = computed(() => {
+  return customFormatNumberIntoCurrency(computedAmountTotal.value, 'USD');
 });
+
+const computedWeightedAmountTotal = computed(() => {
+  return props.rows.reduce((total, row) => {
+    const annualRevenue = parseFloat(row.annual_revenue?.replace(/[^0-9.-]+/g, '') || 0);
+    const probability = parseFloat(row.probability || 0) / 100;
+    const weightedRevenue = annualRevenue * probability;
+    return total + weightedRevenue;
+  }, 0);
+});
+
+const formattedWeightedAmountTotal = computed(() => {
+  return customFormatNumberIntoCurrency(computedWeightedAmountTotal.value, 'USD');
+});
+
 </script>
