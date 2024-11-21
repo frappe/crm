@@ -36,7 +36,7 @@ def get_notifications():
                 ),
                 "reference_name": notification.reference_name,
                 "route_name": (
-                    "Deal" if notification.reference_doctype == "Opportunity" else "Lead"
+                    "Opportunity" if notification.reference_doctype == "Opportunity" else "Lead"
                 ),
             }
         )
