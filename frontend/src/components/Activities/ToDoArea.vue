@@ -7,7 +7,7 @@
       >
         <div class="flex flex-1 flex-col gap-1.5 text-base truncate">
           <div class="font-medium text-gray-900 truncate">
-            {{ todo.title }}
+            {{ todo.custom_title }}
           </div>
           <div class="flex gap-1.5 text-gray-800">
             <div class="flex items-center gap-1.5">

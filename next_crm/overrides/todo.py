@@ -31,7 +31,7 @@ class ToDo(ToDo):
 	# 			"assign_to": [self.allocated_to],
 	# 			"doctype": self.doctype,
 	# 			"name": self.name,
-	# 			"description": self.title or self.description,
+	# 			"description": self.custom_title or self.description,
 	# 		})
 
 
@@ -41,7 +41,7 @@ class ToDo(ToDo):
 			{
 				'label': 'Title',
 				'type': 'Data',
-				'key': 'title',
+				'key': 'custom_title',
 				'width': '16rem',
 			},
 			{
@@ -78,7 +78,7 @@ class ToDo(ToDo):
 
 		rows = [
 			"name",
-			"title",
+			"custom_title",
 			"description",
 			"allocated_to",
 			"date",
@@ -94,6 +94,6 @@ class ToDo(ToDo):
 	def default_kanban_settings():
 		return {
 			"column_field": "status",
-			"title_field": "title",
+			"title_field": "custom_title",
 			"kanban_fields": '["description", "priority", "creation"]'
 		}

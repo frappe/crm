@@ -16,6 +16,7 @@ def after_install(force=False):
 	add_default_fields_layout(force)
 	add_property_setter()
 	add_email_template_custom_fields()
+	add_todo_custom_title_field()
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	erpnext_crm_settings.enabled = True
 	erpnext_crm_settings.save()
@@ -221,3 +222,18 @@ def add_email_template_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Email Template")
+
+def add_todo_custom_title_field():
+	if not frappe.db.field_exists("Custom Field", {"name": "ToDo-custom_title"}):
+		custom_fields = {
+			"ToDo": [
+				{
+					"fieldname": "custom_title",
+					"fieldtype": "Data",
+					"label": "Title",
+					"insert_after": "description_and_status",
+				}
+			],
+		}
+		create_custom_fields(custom_fields, ignore_validate=True)
+

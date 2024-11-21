@@ -101,3 +101,16 @@ def get_redirect_to_doc(doc):
 		return reference_doc.reference_type, reference_doc.reference_name
 
 	return doc.reference_type, doc.reference_name
+
+def before_insert(doc, method=None):
+    from frappe import get_value
+    from frappe.desk.doctype.notification_log.notification_log import get_title
+
+    if not doc.custom_title and (doc.reference_type and doc.reference_name):
+        title = get_title(doc.reference_type, doc.reference_name)
+        doc.custom_title = title
+
+    if not doc.reference_type == "Task":
+        return
+    ref_doc_desc = get_value(doc.reference_type, doc.reference_name, "description")
+    doc.description = ref_doc_desc
