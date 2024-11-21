@@ -306,12 +306,25 @@ async function deleteContact() {
         theme: 'red',
         variant: 'solid',
         async onClick(close) {
-          await call('frappe.client.delete', {
-            doctype: 'Contact',
-            name: props.contactId,
-          })
-          close()
-          router.push({ name: 'Contacts' })
+          try {
+            await call('frappe.client.delete', {
+              doctype: 'Contact',
+              name: props.contactId,
+            })
+            close()
+            router.push({ name: 'Contacts' })
+          } catch (error) {
+            const errorMessage = 
+              error.name === 'LinkExistsError' || error.message.includes('LinkExistsError')
+                ? __('Cannot delete this contact because it is linked to other records.')
+                : __('Failed to delete the contact. Please try again later.');
+            createToast({
+              title: __('Error'),
+              text: errorMessage,
+              icon: 'x',
+              iconClasses: 'text-red-600',
+            });
+          }
         },
       },
     ],
