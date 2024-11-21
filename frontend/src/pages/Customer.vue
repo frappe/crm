@@ -338,12 +338,25 @@ async function deleteCustomer() {
         theme: 'red',
         variant: 'solid',
         async onClick(close) {
-          await call('frappe.client.delete', {
-            doctype: 'Customer',
-            name: props.customerId,
-          })
-          close()
-          router.push({ name: 'Customers' })
+          try {
+            await call('frappe.client.delete', {
+              doctype: 'Customer',
+              name: props.customerId,
+            })
+            close()
+            router.push({ name: 'Customers' })
+          } catch (error) {
+            const errorMessage = 
+              error.name === 'LinkExistsError' || error.message.includes('LinkExistsError')
+                ? __('Cannot delete this customer because it is linked to other records.')
+                : __('Failed to delete the customer. Please try again later.');
+            createToast({
+              title: __('Error'),
+              text: errorMessage,
+              icon: 'x',
+              iconClasses: 'text-red-600',
+            });
+          }
         },
       },
     ],
