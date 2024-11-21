@@ -153,7 +153,7 @@ const filteredSections = computed(() => {
 })
 
 const opportunityStatuses = computed(() => {
-  let statuses = statusOptions('deal')
+  let statuses = statusOptions('opportunity')
   if (!opportunity.status) {
     opportunity.status = statuses[0].value
   }

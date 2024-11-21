@@ -15,7 +15,7 @@
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
+      <Dropdown :options="statusOptions('opportunity', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
             :label="opportunity.data.status"

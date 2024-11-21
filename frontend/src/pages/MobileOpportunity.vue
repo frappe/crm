@@ -9,7 +9,7 @@
         </template>
       </Breadcrumbs>
       <div class="absolute right-0">
-        <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
+        <Dropdown :options="statusOptions('opportunity', updateField, customStatuses)">
           <template #default="{ open }">
             <Button
               :label="opportunity.data.status"
