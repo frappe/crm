@@ -358,7 +358,7 @@ def get_linked_todos(name):
 		filters={"reference_name": name},
 		fields=[
 			"name",
-			"title",
+			"custom_title",
 			"description",
 			"allocated_to",
 			"date",

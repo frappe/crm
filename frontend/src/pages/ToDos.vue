@@ -279,7 +279,7 @@ const showToDoModal = ref(false)
 
 const todo = ref({
   name: '',
-  title: '',
+  custom_title: '',
   description: '',
   allocated_to: '',
   date: '',
@@ -293,7 +293,7 @@ function showToDo(name) {
   let t = rows.value?.find((row) => row.name === name)
   todo.value = {
     name: t.name,
-    title: t.title,
+    custom_title: t.custom_title,
     description: t.description,
     allocated_to: t.allocated_to?.email || '',
     date: t.date,
@@ -308,7 +308,7 @@ function showToDo(name) {
 function createToDo(column) {
   todo.value = {
     name: '',
-    title: '',
+    custom_title: '',
     description: '',
     allocated_to: '',
     date: '',

@@ -155,6 +155,7 @@ doc_events = {
 	"ToDo": {
 		"after_insert": ["next_crm.api.todo.after_insert"],
 		"on_update": ["next_crm.api.todo.on_update"],
+        "before_insert": ["next_crm.api.todo.before_insert"],
 	},
 	"Comment": {
 		"on_update": ["next_crm.api.comment.on_update"],

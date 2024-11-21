@@ -39,9 +39,9 @@
         <div>
           <div class="mb-1.5 text-sm text-gray-600">{{ __('Title') }}</div>
           <TextInput
-            ref="title"
+            ref="custom_title"
             variant="outline"
-            v-model="_todo.title"
+            v-model="_todo.custom_title"
             :placeholder="__('Call with John Doe')"
           />
         </div>
@@ -91,10 +91,10 @@
               </Tooltip>
             </template>
           </Link>
-          <DateTimePicker
+          <DatePicker
             class="datepicker w-36"
             v-model="_todo.date"
-            :placeholder="__('01/04/2024 11:30 PM')"
+            :placeholder="__('01/04/2024')"
             input-class="border-none"
           />
           <Dropdown :options="todoPriorityOptions(updateToDoPriority)">
@@ -119,7 +119,7 @@ import Link from '@/components/Controls/Link.vue'
 import { todoStatusOptions, todoPriorityOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
+import { TextEditor, Dropdown, Tooltip, call, DatePicker } from 'frappe-ui'
 import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -213,7 +213,7 @@ function render() {
   nextTick(() => {
     title.value?.el?.focus?.()
     _todo.value = { ...props.todo }
-    if (_todo.value.title) {
+    if (_todo.value.custom_title) {
       editMode.value = true
     }
   })
