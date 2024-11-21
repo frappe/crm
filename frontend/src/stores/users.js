@@ -11,7 +11,7 @@ export const usersStore = defineStore('crm-users', () => {
   const router = useRouter()
 
   const users = createResource({
-    url: 'crm.api.session.get_users',
+    url: 'next_crm.api.session.get_users',
     cache: 'Users',
     initialData: [],
     auto: true,

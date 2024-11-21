@@ -6,7 +6,7 @@ export const customersStore = defineStore('customers', () => {
   let customersByName = reactive({})
 
   const customers = createResource({
-    url: 'crm.api.session.get_customers',
+    url: 'next_crm.api.session.get_customers',
     cache: 'customers',
     initialData: [],
     auto: true,

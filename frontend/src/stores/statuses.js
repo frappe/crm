@@ -93,7 +93,7 @@ export const statusesStore = defineStore('crm-statuses', () => {
 
   function statusOptions(doctype, action, statuses = []) {
     let statusesByName =
-      doctype == 'deal' ? dealStatusesByName : leadStatusesByName
+      doctype == 'opportunity' ? dealStatusesByName : leadStatusesByName
 
     if (statuses.length) {
       statusesByName = statuses.reduce((acc, status) => {

@@ -10,7 +10,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
 
   // Views
   const views = createResource({
-    url: 'crm.api.views.get_views',
+    url: 'next_crm.api.views.get_views',
     params: { doctype: doctype || '' },
     cache: 'crm-views',
     initialData: [],

@@ -9,7 +9,7 @@ export const contactsStore = defineStore('crm-contacts', () => {
   let allContacts = reactive([])
 
   const contacts = createResource({
-    url: 'crm.api.session.get_contacts',
+    url: 'next_crm.api.session.get_contacts',
     cache: 'contacts',
     initialData: [],
     auto: true,
@@ -33,7 +33,7 @@ export const contactsStore = defineStore('crm-contacts', () => {
   })
 
   const leadContacts = createResource({
-    url: 'crm.api.session.get_lead_contacts',
+    url: 'next_crm.api.session.get_lead_contacts',
     cache: 'lead_contacts',
     initialData: [],
     auto: true,
