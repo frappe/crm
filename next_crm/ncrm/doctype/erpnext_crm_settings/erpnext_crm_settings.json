@@ -6,20 +6,12 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
-  "erpnext_company",
   "section_break_jnbn",
   "create_customer_on_status_change",
   "column_break_kbhw",
   "deal_status"
  ],
  "fields": [
-  {
-   "depends_on": "enabled",
-   "fieldname": "erpnext_company",
-   "fieldtype": "Data",
-   "label": "Company in ERPNext Site",
-   "mandatory_depends_on": "enabled"
-  },
   {
    "default": "0",
    "fieldname": "enabled",
@@ -55,7 +47,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-20 14:27:11.622880",
+ "modified": "2024-11-22 12:08:08.092803",
  "modified_by": "Administrator",
  "module": "NCRM",
  "name": "ERPNext CRM Settings",
