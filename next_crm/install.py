@@ -224,8 +224,8 @@ def add_email_template_custom_fields():
 		frappe.clear_cache(doctype="Email Template")
 
 def add_todo_custom_title_field():
-	if not frappe.db.exists("Custom Field", {"label": "Title"}) or frappe.db.exists(
-		"DocField", {"label": "Title"}
+	if not frappe.db.exists("Custom Field", {"doctype": "ToDo", "label": "Title"}) or frappe.db.exists(
+		"DocField", {"doctype": "ToDo", "label": "Title"}
 	):
 		custom_fields = {
 			"ToDo": [
