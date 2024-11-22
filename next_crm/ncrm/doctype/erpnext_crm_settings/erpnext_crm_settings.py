@@ -66,7 +66,7 @@ def get_quotation_url(opportunity, customer):
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
 
 	quotation_url = get_url_to_list("Quotation")
-	return f"{quotation_url}/new?quotation_to=Opportunity&opportunity={opportunity}&party_name={opportunity}&company={erpnext_crm_settings.erpnext_company}"
+	return f"{quotation_url}/new?quotation_to=Opportunity&opportunity={opportunity}&party_name={opportunity}"
 
 
 def get_contacts(doc):
