@@ -28,6 +28,10 @@
               <div>{{ __('Choose Existing Customer') }}</div>
               <Switch v-model="chooseExistingCustomer" />
             </div>
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+              <div>{{ __('Choose Existing Contact') }}</div>
+              <Switch v-model="chooseExistingContact" />
+            </div>
           </div>
           <Fields
             v-if="filteredSections"
@@ -95,6 +99,7 @@ const opportunity = reactive({
 
 const isOpportunityCreating = ref(false)
 const chooseExistingCustomer = ref(false)
+const chooseExistingContact = ref(false)
 
 const sections = createResource({
   url: 'next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -132,9 +137,15 @@ const filteredSections = computed(() => {
     )
   }
 
-  _filteredSections.push(
-    allSections.find((s) => s.label === 'Select Contact'),
-  )
+  if (chooseExistingContact.value) {
+    _filteredSections.push(
+      allSections.find((s) => s.label === 'Select Contact'),
+    )
+  } else {
+    _filteredSections.push(
+      allSections.find((s) => s.label === 'Contact Details'),
+    )
+  }
 
 
   allSections.forEach((s) => {
@@ -143,6 +154,7 @@ const filteredSections = computed(() => {
         'Select Customer',
         'Customer Details',
         'Select Contact',
+        'Contact Details',
       ].includes(s.label)
     ) {
       _filteredSections.push(s)
