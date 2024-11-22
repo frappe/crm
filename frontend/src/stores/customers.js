@@ -12,7 +12,7 @@ export const customersStore = defineStore('customers', () => {
     auto: true,
     transform(customers) {
       for (let customer of customers) {
-        customerByName[customer.name] = customer
+        customersByName[customer.name] = customer
       }
       return customers
     },
