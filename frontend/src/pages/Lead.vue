@@ -41,7 +41,7 @@
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
-    <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
+    <Tabs v-model="tabIndex" class="!h-full" :tabs="tabs">
       <Activities
         ref="activities"
         doctype="CRM Lead"
