@@ -50,8 +50,3 @@
     $ bench browse sitename.localhost --user Administrator
     ```
 5. Access the crm page at `sitename.localhost:8000/next-crm` in your web browser.
-
-
-## License
-
-[GNU Affero General Public License v3.0](LICENSE)
