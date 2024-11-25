@@ -11,6 +11,12 @@ from erpnext.crm.doctype.opportunity.opportunity import Opportunity
 from next_crm.ncrm.doctype.crm_service_level_agreement.utils import get_sla
 from next_crm.ncrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
 
+from erpnext.crm.utils import (
+	copy_comments,
+	link_communications,
+	link_open_events,
+	link_open_tasks,
+)
 
 class Opportunity(Opportunity):
 
@@ -23,14 +29,20 @@ class Opportunity(Opportunity):
 		if not self.is_new() and self.has_value_changed("opportunity_owner") and self.opportunity_owner:
 			self.share_with_agent(self.opportunity_owner)
 			self.assign_agent(self.opportunity_owner)
-		# if self.has_value_changed("status"):
-		# 	add_status_change_log(self)
+		if self.has_value_changed("status"):
+			add_status_change_log(self)
 		super().validate()
 
 	def after_insert(self):
 		if self.opportunity_owner:
 			self.assign_agent(self.opportunity_owner)
-		super().after_insert()
+
+		if self.opportunity_from == "Lead":
+			link_open_tasks(self.opportunity_from, self.party_name, self)
+			link_open_events(self.opportunity_from, self.party_name, self)
+			if frappe.db.get_single_value("CRM Settings", "carry_forward_communication_and_comments"):
+				copy_comments(self.opportunity_from, self.party_name, self)
+				link_communications(self.opportunity_from, self.party_name, self)
 
 	def before_save(self):
 		self.apply_sla()
