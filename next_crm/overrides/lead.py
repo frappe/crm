@@ -162,36 +162,13 @@ class Lead(Lead):
 		return False
 
 	def create_opportunity(self, contact, customer):
-		opportunity = frappe.new_doc("Opportunity")
-
-		lead_opportunity_map = {
-			"lead_owner": "opportunity_owner",
-		}
-
-		restricted_fieldtypes = ["Tab Break", "Section Break", "Column Break", "HTML", "Button", "Attach", "Table"]
-		restricted_map_fields = ["name", "naming_series", "creation", "owner", "modified", "modified_by", "idx", "docstatus", "status", "email_id", "mobile_no", "phone", "sla", "sla_status", "response_by", "first_response_time", "first_responded_on", "communication_status", "sla_creation"]
-
-		for field in self.meta.fields:
-			if field.fieldtype in restricted_fieldtypes:
-				continue
-			if field.fieldname in restricted_map_fields:
-				continue
-
-			fieldname = field.fieldname
-			if field.fieldname in lead_opportunity_map:
-				fieldname = lead_opportunity_map[field.fieldname]
-
-			if hasattr(opportunity, fieldname):
-				if fieldname == "customer":
-					opportunity.update({fieldname: customer})
-				else:
-					opportunity.update({fieldname: self.get(field.fieldname)})
+		from erpnext.crm.doctype.lead.lead import make_opportunity
+		opportunity = make_opportunity(self.name)
 
 		opportunity.update(
 			{
-				"opportunity_from": "lead",
-				"party_name": self.name,
 				"contacts": [{"contact": contact}],
+				"customer": customer
 			}
 		)
 
