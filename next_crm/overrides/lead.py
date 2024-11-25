@@ -90,10 +90,10 @@ class Lead(Lead):
             elif user != agent:
                 frappe.share.remove(self.doctype, self.name, user)
 
-	def create_contact(self, throw=False):
-		if not self.lead_name:
-			self.set_full_name()
-			self.set_lead_name()
+    def create_contact(self, throw=False):
+        if not self.lead_name:
+            self.set_full_name()
+            self.set_lead_name()
 
         existing_contact = self.contact_exists(throw)
         if existing_contact:
@@ -180,16 +180,12 @@ class Lead(Lead):
 
         return False
 
-	def create_opportunity(self, contact, customer):
-		from erpnext.crm.doctype.lead.lead import make_opportunity
-		opportunity = make_opportunity(self.name)
+    def create_opportunity(self, contact, customer):
+        from erpnext.crm.doctype.lead.lead import make_opportunity
 
-		opportunity.update(
-			{
-				"contacts": [{"contact": contact}],
-				"customer": customer
-			}
-		)
+        opportunity = make_opportunity(self.name)
+
+        opportunity.update({"contacts": [{"contact": contact}], "customer": customer})
 
         if self.first_responded_on:
             opportunity.update(
