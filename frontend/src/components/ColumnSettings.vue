@@ -11,9 +11,7 @@
       </Button>
     </template>
     <template #body="{ close }">
-      <div
-        class="my-2 rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl"
-      >
+      <div class="my-2 rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl">
         <div v-if="!edit">
           <Draggable
             :list="columns"
@@ -31,18 +29,10 @@
                   <div>{{ __(element.label) }}</div>
                 </div>
                 <div class="flex cursor-pointer items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    class="!h-5 w-5 !p-1"
-                    @click="editColumn(element)"
-                  >
+                  <Button variant="ghost" class="!h-5 w-5 !p-1" @click="editColumn(element)">
                     <EditIcon class="h-3.5" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    class="!h-5 w-5 !p-1"
-                    @click="removeColumn(element)"
-                  >
+                  <Button variant="ghost" class="!h-5 w-5 !p-1" @click="removeColumn(element)">
                     <FeatherIcon name="x" class="h-3.5" />
                   </Button>
                 </div>
@@ -50,11 +40,7 @@
             </template>
           </Draggable>
           <div class="mt-1.5 flex flex-col gap-1 border-t pt-1.5">
-            <Autocomplete
-              value=""
-              :options="fields"
-              @change="(e) => addColumn(e)"
-            >
+            <Autocomplete value="" :options="fields" @change="(e) => addColumn(e)">
               <template #target="{ togglePopover }">
                 <Button
                   class="w-full !justify-start !text-gray-600"
@@ -93,9 +79,7 @@
           </div>
         </div>
         <div v-else>
-          <div
-            class="flex flex-col items-center justify-between gap-2 rounded px-2 py-1.5 text-base text-gray-800"
-          >
+          <div class="flex flex-col items-center justify-between gap-2 rounded px-2 py-1.5 text-base text-gray-800">
             <div class="flex flex-col items-center gap-3">
               <FormControl
                 type="text"
@@ -112,27 +96,13 @@
                 class="sm:w-full w-52"
                 v-model="column.width"
                 placeholder="10rem"
-                :description="
-                  __(
-                    'Width can be in number, pixel or rem (eg. 3, 30px, 10rem)'
-                  )
-                "
+                :description="__('Width can be in number, pixel or rem (eg. 3, 30px, 10rem)')"
                 :debounce="500"
               />
             </div>
             <div class="flex w-full gap-2 border-t pt-2">
-              <Button
-                variant="subtle"
-                :label="__('Cancel')"
-                class="w-full flex-1"
-                @click="cancelUpdate"
-              />
-              <Button
-                variant="solid"
-                :label="__('Update')"
-                class="w-full flex-1"
-                @click="updateColumn(column)"
-              />
+              <Button variant="subtle" :label="__('Cancel')" class="w-full flex-1" @click="cancelUpdate" />
+              <Button variant="solid" :label="__('Update')" class="w-full flex-1" @click="updateColumn(column)" />
             </div>
           </div>
         </div>
@@ -295,6 +265,6 @@ watchOnce(
     oldValues.value.columns = JSON.parse(JSON.stringify(val.columns))
     oldValues.value.rows = JSON.parse(JSON.stringify(val.rows))
     oldValues.value.isDefault = val.is_default
-  }
+  },
 )
 </script>

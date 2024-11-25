@@ -21,11 +21,7 @@
           v-if="_note?.reference_docname"
           variant="outline"
           size="sm"
-          :label="
-            _note.reference_doctype == 'Opportunity'
-              ? __('Open Opportunity')
-              : __('Open Lead')
-          "
+          :label="_note.reference_doctype == 'Opportunity' ? __('Open Opportunity') : __('Open Lead')"
           @click="redirect()"
         >
           <template #suffix>
@@ -38,12 +34,7 @@
       <div class="flex flex-col gap-4">
         <div>
           <div class="mb-1.5 text-sm text-gray-600">{{ __('Title') }}</div>
-          <TextInput
-            ref="title"
-            variant="outline"
-            v-model="_note.title"
-            :placeholder="__('Call with John Doe')"
-          />
+          <TextInput ref="title" variant="outline" v-model="_note.title" :placeholder="__('Call with John Doe')" />
         </div>
         <div>
           <div class="mb-1.5 text-sm text-gray-600">{{ __('Content') }}</div>
@@ -54,9 +45,7 @@
             :bubbleMenu="true"
             :content="_note.content"
             @change="(val) => (_note.content = val)"
-            :placeholder="
-              __('Took a call with John Doe and discussed the new project.')
-            "
+            :placeholder="__('Took a call with John Doe and discussed the new project.')"
           />
         </div>
       </div>
@@ -98,11 +87,7 @@ const editMode = ref(false)
 let _note = ref({})
 
 async function updateNote() {
-  if (
-    props.note.title === _note.value.title &&
-    props.note.content === _note.value.content
-  )
-    return
+  if (props.note.title === _note.value.title && props.note.content === _note.value.content) return
 
   if (_note.value.name) {
     let d = await call('frappe.client.set_value', {
@@ -155,6 +140,6 @@ watch(
         editMode.value = true
       }
     })
-  }
+  },
 )
 </script>

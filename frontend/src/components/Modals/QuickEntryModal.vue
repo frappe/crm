@@ -1,16 +1,9 @@
 <template>
   <Dialog v-model="show" :options="{ size: '3xl' }">
     <template #body-title>
-      <h3
-        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-gray-900"
-      >
+      <h3 class="flex items-center gap-2 text-2xl font-semibold leading-6 text-gray-900">
         <div>{{ __('Edit Quick Entry Layout') }}</div>
-        <Badge
-          v-if="dirty"
-          :label="__('Not Saved')"
-          variant="subtle"
-          theme="orange"
-        />
+        <Badge v-if="dirty" :label="__('Not Saved')" variant="subtle" theme="orange" />
       </h3>
     </template>
     <template #body-content>
@@ -20,39 +13,20 @@
             type="select"
             class="w-1/4"
             v-model="_doctype"
-            :options="[
-              'Lead',
-              'Opportunity',
-              'Contact',
-              'Customer',
-              'Address',
-            ]"
+            :options="['Lead', 'Opportunity', 'Contact', 'Customer', 'Address']"
             @change="reload"
           />
-          <Switch
-            v-model="preview"
-            :label="preview ? __('Hide preview') : __('Show preview')"
-            size="sm"
-          />
+          <Switch v-model="preview" :label="preview ? __('Hide preview') : __('Show preview')" size="sm" />
         </div>
         <div v-if="sections?.data">
-          <QuickEntryLayoutBuilder
-            v-if="!preview"
-            :sections="sections.data"
-            :doctype="_doctype"
-          />
+          <QuickEntryLayoutBuilder v-if="!preview" :sections="sections.data" :doctype="_doctype" />
           <Fields v-else :sections="sections.data" :data="{}" />
         </div>
       </div>
     </template>
     <template #actions>
       <div class="flex flex-row-reverse gap-2">
-        <Button
-          :loading="loading"
-          :label="__('Save')"
-          variant="solid"
-          @click="saveChanges"
-        />
+        <Button :loading="loading" :label="__('Save')" variant="solid" @click="saveChanges" />
         <Button :label="__('Reset')" @click="reload" />
       </div>
     </template>
@@ -95,8 +69,7 @@ const sections = createResource({
 watch(
   () => sections?.data,
   () => {
-    dirty.value =
-      JSON.stringify(sections?.data) !== JSON.stringify(sections?.originalData)
+    dirty.value = JSON.stringify(sections?.data) !== JSON.stringify(sections?.originalData)
   },
   { deep: true },
 )
@@ -114,19 +87,14 @@ function saveChanges() {
   let _sections = JSON.parse(JSON.stringify(sections.data))
   _sections.forEach((section) => {
     if (!section.fields) return
-    section.fields = section.fields.map(
-      (field) => field.fieldname || field.name,
-    )
+    section.fields = section.fields.map((field) => field.fieldname || field.name)
   })
   loading.value = true
-  call(
-    'next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout',
-    {
-      doctype: _doctype.value,
-      type: 'Quick Entry',
-      layout: JSON.stringify(_sections),
-    },
-  ).then(() => {
+  call('next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout', {
+    doctype: _doctype.value,
+    type: 'Quick Entry',
+    layout: JSON.stringify(_sections),
+  }).then(() => {
     loading.value = false
     show.value = false
     capture('quick_entry_layout_builder', { doctype: _doctype.value })

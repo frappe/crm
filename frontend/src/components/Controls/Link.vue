@@ -42,12 +42,7 @@
           </Button>
         </div>
         <div>
-          <Button
-            variant="ghost"
-            class="w-full !justify-start"
-            :label="__('Clear')"
-            @click="() => clearValue(close)"
-          >
+          <Button variant="ghost" class="w-full !justify-start" :label="__('Clear')" @click="() => clearValue(close)">
             <template #prefix>
               <FeatherIcon name="x" class="h-4" />
             </template>
@@ -92,10 +87,7 @@ const valuePropPassed = computed(() => 'value' in attrs)
 const value = computed({
   get: () => (valuePropPassed.value ? attrs.value : props.modelValue),
   set: (val) => {
-    return (
-      val?.value &&
-      emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value)
-    )
+    return val?.value && emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value)
   },
 })
 
@@ -110,13 +102,13 @@ watchDebounced(
     text.value = val
     reload(val)
   },
-  { debounce: 300, immediate: true }
+  { debounce: 300, immediate: true },
 )
 
 watchDebounced(
   () => props.doctype,
   () => reload(''),
-  { debounce: 300, immediate: true }
+  { debounce: 300, immediate: true },
 )
 
 const options = createResource({
@@ -146,12 +138,7 @@ const options = createResource({
 })
 
 function reload(val) {
-  if (
-    options.data?.length &&
-    val === options.params?.txt &&
-    props.doctype === options.params?.doctype
-  )
-    return
+  if (options.data?.length && val === options.params?.txt && props.doctype === options.params?.doctype) return
 
   options.update({
     params: {

@@ -20,21 +20,14 @@
             >
               <div class="flex items-center">
                 <slot name="prefix" />
-                <span
-                  class="overflow-hidden text-ellipsis whitespace-nowrap text-base leading-5"
-                  v-if="selectedValue"
-                >
+                <span class="overflow-hidden text-ellipsis whitespace-nowrap text-base leading-5" v-if="selectedValue">
                   {{ displayValue(selectedValue) }}
                 </span>
                 <span class="text-base leading-5 text-gray-500" v-else>
                   {{ placeholder || '' }}
                 </span>
               </div>
-              <FeatherIcon
-                name="chevron-down"
-                class="h-4 w-4 text-gray-600"
-                aria-hidden="true"
-              />
+              <FeatherIcon name="chevron-down" class="h-4 w-4 text-gray-600" aria-hidden="true" />
             </button>
           </div>
         </slot>
@@ -63,20 +56,9 @@
                 <FeatherIcon name="x" class="w-4" />
               </button>
             </div>
-            <ComboboxOptions
-              class="my-1 max-h-[12rem] overflow-y-auto px-1.5"
-              static
-            >
-              <div
-                class="mt-1.5"
-                v-for="group in groups"
-                :key="group.key"
-                v-show="group.items.length > 0"
-              >
-                <div
-                  v-if="group.group && !group.hideLabel"
-                  class="px-2.5 py-1.5 text-sm font-medium text-gray-500"
-                >
+            <ComboboxOptions class="my-1 max-h-[12rem] overflow-y-auto px-1.5" static>
+              <div class="mt-1.5" v-for="group in groups" :key="group.key" v-show="group.items.length > 0">
+                <div v-if="group.group && !group.hideLabel" class="px-2.5 py-1.5 text-sm font-medium text-gray-500">
                   {{ group.group }}
                 </div>
                 <ComboboxOption
@@ -86,37 +68,20 @@
                   :value="option"
                   v-slot="{ active, selected }"
                 >
-                  <li
-                    :class="[
-                      'flex items-center rounded px-2.5 py-1.5 text-base',
-                      { 'bg-gray-100': active },
-                    ]"
-                  >
-                    <slot
-                      name="item-prefix"
-                      v-bind="{ active, selected, option }"
-                    />
-                    <slot
-                      name="item-label"
-                      v-bind="{ active, selected, option }"
-                    >
+                  <li :class="['flex items-center rounded px-2.5 py-1.5 text-base', { 'bg-gray-100': active }]">
+                    <slot name="item-prefix" v-bind="{ active, selected, option }" />
+                    <slot name="item-label" v-bind="{ active, selected, option }">
                       {{ option.label }}
                     </slot>
                   </li>
                 </ComboboxOption>
               </div>
-              <li
-                v-if="groups.length == 0"
-                class="mt-1.5 rounded-md px-2.5 py-1.5 text-base text-gray-600"
-              >
+              <li v-if="groups.length == 0" class="mt-1.5 rounded-md px-2.5 py-1.5 text-base text-gray-600">
                 No results found
               </li>
             </ComboboxOptions>
             <div v-if="slots.footer" class="border-t p-1.5 pb-0.5">
-              <slot
-                name="footer"
-                v-bind="{ value: search?.el._value, close }"
-              ></slot>
+              <slot name="footer" v-bind="{ value: search?.el._value, close }"></slot>
             </div>
           </div>
         </div>
@@ -126,12 +91,7 @@
 </template>
 
 <script setup>
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxOptions,
-  ComboboxOption,
-} from '@headlessui/vue'
+import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from '@headlessui/vue'
 import { Popover, Button, FeatherIcon } from 'frappe-ui'
 import { ref, computed, useAttrs, useSlots, watch, nextTick } from 'vue'
 
@@ -196,9 +156,7 @@ function close() {
 const groups = computed(() => {
   if (!props.options || props.options.length == 0) return []
 
-  let groups = props.options[0]?.group
-    ? props.options
-    : [{ group: '', items: props.options }]
+  let groups = props.options[0]?.group ? props.options : [{ group: '', items: props.options }]
 
   return groups
     .map((group, i) => {
@@ -218,9 +176,7 @@ function filterOptions(options) {
   }
   return options.filter((option) => {
     let searchTexts = [option.label, option.value]
-    return searchTexts.some((text) =>
-      (text || '').toString().toLowerCase().includes(query.value.toLowerCase())
-    )
+    return searchTexts.some((text) => (text || '').toString().toLowerCase().includes(query.value.toLowerCase()))
   })
 }
 
@@ -276,13 +232,7 @@ const inputClasses = computed(() => {
     ],
   }[variant]
 
-  return [
-    sizeClasses,
-    paddingClasses,
-    variantClasses,
-    textColor.value,
-    'transition-colors w-full',
-  ]
+  return [sizeClasses, paddingClasses, variantClasses, textColor.value, 'transition-colors w-full']
 })
 
 defineExpose({ query })

@@ -9,12 +9,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager()"
-              variant="ghost"
-              class="w-7"
-              @click="openQuickEntryModal"
-            >
+            <Button v-if="isManager()" variant="ghost" class="w-7" @click="openQuickEntryModal">
               <EditIcon class="h-4 w-4" />
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
@@ -33,23 +28,13 @@
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
-          <Fields
-            v-if="filteredSections"
-            class="border-t pt-4"
-            :sections="filteredSections"
-            :data="opportunity"
-          />
+          <Fields v-if="filteredSections" class="border-t pt-4" :sections="filteredSections" :data="opportunity" />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="flex flex-row-reverse gap-2">
-          <Button
-            variant="solid"
-            :label="__('Create')"
-            :loading="isOpportunityCreating"
-            @click="createOpportunity"
-          />
+          <Button variant="solid" :label="__('Create')" :loading="isOpportunityCreating" @click="createOpportunity" />
         </div>
       </div>
     </template>
@@ -128,35 +113,19 @@ const filteredSections = computed(() => {
   let _filteredSections = []
 
   if (chooseExistingCustomer.value) {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Customer'),
-    )
+    _filteredSections.push(allSections.find((s) => s.label === 'Select Customer'))
   } else {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Customer Details'),
-    )
+    _filteredSections.push(allSections.find((s) => s.label === 'Customer Details'))
   }
 
   if (chooseExistingContact.value) {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Contact'),
-    )
+    _filteredSections.push(allSections.find((s) => s.label === 'Select Contact'))
   } else {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Contact Details'),
-    )
+    _filteredSections.push(allSections.find((s) => s.label === 'Contact Details'))
   }
 
-
   allSections.forEach((s) => {
-    if (
-      ![
-        'Select Customer',
-        'Customer Details',
-        'Select Contact',
-        'Contact Details',
-      ].includes(s.label)
-    ) {
+    if (!['Select Customer', 'Customer Details', 'Select Contact', 'Contact Details'].includes(s.label)) {
       _filteredSections.push(s)
     }
   })

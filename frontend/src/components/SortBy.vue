@@ -38,30 +38,20 @@
           class="rounded-r-none border-r"
           @click.stop="
             () => {
-              Array.from(sortValues)[0].direction =
-                Array.from(sortValues)[0].direction == 'asc' ? 'desc' : 'asc'
+              Array.from(sortValues)[0].direction = Array.from(sortValues)[0].direction == 'asc' ? 'desc' : 'asc'
               apply()
             }
           "
         >
-          <AscendingIcon
-            v-if="Array.from(sortValues)[0].direction == 'asc'"
-            class="h-4"
-          />
+          <AscendingIcon v-if="Array.from(sortValues)[0].direction == 'asc'" class="h-4" />
           <DesendingIcon v-else class="h-4" />
         </Button>
-        <Button
-          :label="getSortLabel()"
-          :class="sortValues.size ? 'rounded-l-none' : ''"
-        >
+        <Button :label="getSortLabel()" :class="sortValues.size ? 'rounded-l-none' : ''">
           <template v-if="!hideLabel && !sortValues?.size" #prefix>
             <SortIcon class="h-4" />
           </template>
           <template v-if="sortValues?.size" #suffix>
-            <FeatherIcon
-              :name="open ? 'chevron-up' : 'chevron-down'"
-              class="h-4 text-gray-600"
-            />
+            <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4 text-gray-600" />
           </template>
         </Button>
       </div>
@@ -69,16 +59,8 @@
     <template #body="{ close }">
       <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
         <div class="min-w-60 p-2">
-          <div
-            v-if="sortValues?.size"
-            id="sort-list"
-            class="mb-3 flex flex-col gap-2"
-          >
-            <div
-              v-for="(sort, i) in sortValues"
-              :key="sort.fieldname"
-              class="flex items-center gap-1"
-            >
+          <div v-if="sortValues?.size" id="sort-list" class="mb-3 flex flex-col gap-2">
+            <div v-for="(sort, i) in sortValues" :key="sort.fieldname" class="flex items-center gap-1">
               <div class="handle flex h-7 w-7 items-center justify-center">
                 <DragIcon class="h-4 w-4 cursor-grab text-gray-600" />
               </div>
@@ -103,9 +85,7 @@
                   @change="(e) => updateSort(e, i)"
                   :placeholder="__('First Name')"
                 >
-                  <template
-                    #target="{ togglePopover, selectedValue, displayValue }"
-                  >
+                  <template #target="{ togglePopover, selectedValue, displayValue }">
                     <Button
                       class="flex w-full items-center justify-between rounded-l-none !text-gray-600"
                       size="md"
@@ -113,10 +93,7 @@
                     >
                       {{ displayValue(selectedValue) }}
                       <template #suffix>
-                        <FeatherIcon
-                          name="chevron-down"
-                          class="h-4 text-gray-600"
-                        />
+                        <FeatherIcon name="chevron-down" class="h-4 text-gray-600" />
                       </template>
                     </Button>
                   </template>
@@ -125,26 +102,13 @@
               <Button variant="ghost" icon="x" @click="removeSort(i)" />
             </div>
           </div>
-          <div
-            v-else
-            class="mb-3 flex h-7 items-center px-3 text-sm text-gray-600"
-          >
+          <div v-else class="mb-3 flex h-7 items-center px-3 text-sm text-gray-600">
             {{ __('Empty - Choose a field to sort by') }}
           </div>
           <div class="flex items-center justify-between gap-2">
-            <Autocomplete
-              :options="options"
-              value=""
-              :placeholder="__('First Name')"
-              @change="(e) => setSort(e)"
-            >
+            <Autocomplete :options="options" value="" :placeholder="__('First Name')" @change="(e) => setSort(e)">
               <template #target="{ togglePopover }">
-                <Button
-                  class="!text-gray-600"
-                  variant="ghost"
-                  @click="togglePopover()"
-                  :label="__('Add Sort')"
-                >
+                <Button class="!text-gray-600" variant="ghost" @click="togglePopover()" :label="__('Add Sort')">
                   <template #prefix>
                     <FeatherIcon name="plus" class="h-4" />
                   </template>
@@ -239,9 +203,7 @@ const sortSortable = useSortable('#sort-list', sortValues, {
 function getSortLabel() {
   if (!sortValues.value.size) return __('Sort')
   let values = Array.from(sortValues.value)
-  let label = sortOptions.data?.find(
-    (option) => option.value === values[0].fieldname
-  )?.label
+  let label = sortOptions.data?.find((option) => option.value === values[0].fieldname)?.label
 
   return label || sort.fieldname
 }

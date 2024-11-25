@@ -70,7 +70,7 @@ const fields = createResource({
   },
   transform: (data) => {
     return data.filter((f) => f.hidden == 0 && f.read_only == 0)
-  }
+  },
 })
 
 onMounted(() => {
@@ -96,17 +96,14 @@ function updateValues() {
     fieldVal = fieldVal == 'Yes' ? 1 : 0
   }
   loading.value = true
-  call(
-    'frappe.desk.doctype.bulk_update.bulk_update.submit_cancel_or_update_docs',
-    {
-      doctype: props.doctype,
-      docnames: Array.from(props.selectedValues),
-      action: 'update',
-      data: {
-        [field.value.value]: fieldVal || null,
-      },
-    }
-  ).then(() => {
+  call('frappe.desk.doctype.bulk_update.bulk_update.submit_cancel_or_update_docs', {
+    doctype: props.doctype,
+    docnames: Array.from(props.selectedValues),
+    action: 'update',
+    data: {
+      [field.value.value]: fieldVal || null,
+    },
+  }).then(() => {
     field.value = {
       label: '',
       type: '',

@@ -9,10 +9,7 @@
       @mouseover="onMouseover"
       @mouseleave="onMouseleave"
     >
-      <slot
-        name="target"
-        v-bind="{ togglePopover, updatePosition, open, close, isOpen }"
-      />
+      <slot name="target" v-bind="{ togglePopover, updatePosition, open, close, isOpen }" />
     </div>
     <teleport to="#frappeui-popper-root">
       <div
@@ -25,10 +22,7 @@
       >
         <transition v-bind="popupTransition">
           <div v-show="isOpen">
-            <slot
-              name="body"
-              v-bind="{ togglePopover, updatePosition, open, close, isOpen }"
-            >
+            <slot name="body" v-bind="{ togglePopover, updatePosition, open, close, isOpen }">
               <div class="rounded-lg border border-gray-100 bg-white shadow-xl">
                 <slot
                   name="body-main"
@@ -133,10 +127,7 @@ export default {
       const bodyClass = `.${this.popoverContainerClass}`
       const clickedElementBody = clickedElement?.closest(bodyClass)
       const currentPopoverBody = reference?.closest(bodyClass)
-      const isSiblingClicked =
-        clickedElementBody &&
-        currentPopoverBody &&
-        clickedElementBody === currentPopoverBody
+      const isSiblingClicked = clickedElementBody && currentPopoverBody && clickedElementBody === currentPopoverBody
 
       if (isSiblingClicked) {
         this.close()
@@ -239,11 +230,14 @@ export default {
       }
       if (this.trigger === 'hover') {
         if (this.hoverDelay) {
-          this.hoverTimer = setTimeout(() => {
-            if (this.pointerOverTargetOrPopup) {
-              this.open()
-            }
-          }, Number(this.hoverDelay) * 1000)
+          this.hoverTimer = setTimeout(
+            () => {
+              if (this.pointerOverTargetOrPopup) {
+                this.open()
+              }
+            },
+            Number(this.hoverDelay) * 1000,
+          )
         } else {
           this.open()
         }
@@ -260,11 +254,14 @@ export default {
           clearTimeout(this.leaveTimer)
         }
         if (this.leaveDelay) {
-          this.leaveTimer = setTimeout(() => {
-            if (!this.pointerOverTargetOrPopup) {
-              this.close()
-            }
-          }, Number(this.leaveDelay) * 1000)
+          this.leaveTimer = setTimeout(
+            () => {
+              if (!this.pointerOverTargetOrPopup) {
+                this.close()
+              }
+            },
+            Number(this.leaveDelay) * 1000,
+          )
         } else {
           if (!this.pointerOverTargetOrPopup) {
             this.close()

@@ -1,8 +1,5 @@
 <template>
-  <FadedScrollableDiv
-    class="flex flex-col gap-1.5 overflow-y-auto"
-    :class="[isLastSection ? '' : 'max-h-[300px]']"
-  >
+  <FadedScrollableDiv class="flex flex-col gap-1.5 overflow-y-auto" :class="[isLastSection ? '' : 'max-h-[300px]']">
     <div
       v-for="field in _fields"
       :key="field.label"
@@ -16,13 +13,9 @@
         </div>
       </Tooltip>
       <div class="flex items-center justify-between w-[65%]">
-        <div
-          class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
-        >
+        <div class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base">
           <div
-            v-if="
-              field.read_only && !['checkbox', 'dropdown'].includes(field.type)
-            "
+            v-if="field.read_only && !['checkbox', 'dropdown'].includes(field.type)"
             class="flex h-7 cursor-pointer items-center px-2 py-1 text-gray-600"
           >
             <Tooltip :text="__(field.tooltip)">
@@ -43,17 +36,12 @@
                     {{ field.placeholder }}
                   </div>
                   <template #suffix>
-                    <FeatherIcon
-                      :name="open ? 'chevron-up' : 'chevron-down'"
-                      class="h-4 text-gray-600"
-                    />
+                    <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4 text-gray-600" />
                   </template>
                 </Button>
               </template>
               <template #body>
-                <div
-                  class="my-2 space-y-1.5 divide-y rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl"
-                >
+                <div class="my-2 space-y-1.5 divide-y rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl">
                   <div>
                     <DropdownItem
                       v-if="field.options?.length"
@@ -92,15 +80,10 @@
             :disabled="Boolean(field.read_only)"
           />
           <FormControl
-            v-else-if="
-              ['email', 'number', 'date', 'password', 'textarea'].includes(
-                field.type,
-              )
-            "
+            v-else-if="['email', 'number', 'date', 'password', 'textarea'].includes(field.type)"
             class="form-control"
             :class="{
-              '[&_input]:text-gray-500':
-                field.type === 'date' && !data[field.name],
+              '[&_input]:text-gray-500': field.type === 'date' && !data[field.name],
             }"
             :type="field.type"
             :value="data[field.name]"

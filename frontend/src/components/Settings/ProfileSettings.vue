@@ -1,11 +1,7 @@
 <template>
   <div v-if="profile" class="flex w-full items-center justify-between p-12 pt-14">
     <div class="flex items-center gap-4">
-      <Avatar
-        class="!size-16"
-        :image="profile.user_image"
-        :label="profile.full_name"
-      />
+      <Avatar class="!size-16" :image="profile.user_image" :label="profile.full_name" />
       <div class="flex flex-col gap-1">
         <span class="text-2xl font-semibold">{{ profile.full_name }}</span>
         <span class="text-base text-gray-700">{{ profile.email }}</span>
@@ -22,15 +18,8 @@
           <ProfileImageEditor v-model="profile" v-if="editingProfilePhoto" />
           <template v-else>
             <div class="flex items-center gap-4">
-              <Avatar
-                size="lg"
-                :image="profile.user_image"
-                :label="profile.full_name"
-              />
-              <Button
-                :label="__('Edit Profile Photo')"
-                @click="editingProfilePhoto = true"
-              />
+              <Avatar size="lg" :image="profile.user_image" :label="profile.full_name" />
+              <Button :label="__('Edit Profile Photo')" @click="editingProfilePhoto = true" />
             </div>
             <FormControl label="First Name" v-model="profile.first_name" />
             <FormControl label="Last Name" v-model="profile.last_name" />
@@ -44,13 +33,7 @@
           @click="editingProfilePhoto = false"
           :label="__('Back')"
         />
-        <Button
-          variant="solid"
-          class="w-full"
-          :loading="loading"
-          @click="updateUser"
-          :label="__('Save')"
-        />
+        <Button variant="solid" class="w-full" :loading="loading" @click="updateUser" :label="__('Save')" />
       </template>
     </Dialog>
   </div>

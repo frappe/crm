@@ -15,10 +15,7 @@
     }"
     row-key="name"
   >
-    <ListHeader
-      class="sm:mx-5 mx-3"
-      @columnWidthUpdated="emit('columnWidthUpdated')"
-    >
+    <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="emit('columnWidthUpdated')">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
@@ -59,13 +56,7 @@
             <IndicatorIcon :class="item.color" />
           </div>
           <div v-else-if="column.key === 'customer'">
-            <Avatar
-              v-if="item.label"
-              class="flex items-center"
-              :image="item.logo"
-              :label="item.label"
-              size="sm"
-            />
+            <Avatar v-if="item.label" class="flex items-center" :image="item.logo" :label="item.label" size="sm" />
           </div>
           <div v-else-if="column.key === 'opportunity_owner'">
             <Avatar
@@ -84,9 +75,7 @@
               v-if="column.key == '_liked_by'"
               variant="ghosted"
               :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
-              @click.stop.prevent="
-                () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
-              "
+              @click.stop.prevent="() => emit('likeDoc', { name: row.name, liked: isLiked(item) })"
             >
               <HeartIcon class="h-4 w-4" />
             </Button>
@@ -95,13 +84,7 @@
         <template #default="{ label }">
           <div
             v-if="
-              [
-                'modified',
-                'creation',
-                'first_response_time',
-                'first_responded_on',
-                'response_by',
-              ].includes(column.key)
+              ['modified', 'creation', 'first_response_time', 'first_responded_on', 'response_by'].includes(column.key)
             "
             class="truncate text-base"
             @click="
@@ -119,10 +102,7 @@
               <div>{{ item.timeAgo }}</div>
             </Tooltip>
           </div>
-          <div
-            v-else-if="column.key === 'sla_status'"
-            class="truncate text-base"
-          >
+          <div v-else-if="column.key === 'sla_status'" class="truncate text-base">
             <Badge
               v-if="item.value"
               :variant="'subtle'"
@@ -142,12 +122,7 @@
             />
           </div>
           <div v-else-if="column.type === 'Check'">
-            <FormControl
-              type="checkbox"
-              :modelValue="item"
-              :disabled="true"
-              class="text-gray-900"
-            />
+            <FormControl type="checkbox" :modelValue="item" :disabled="true" class="text-gray-900" />
           </div>
           <div
             v-else
@@ -170,9 +145,7 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Dropdown
-          :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
-        >
+        <Dropdown :options="listBulkActionsRef.bulkActions(selections, unselectAll)">
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
@@ -269,8 +242,6 @@ watch(pageLengthCount, (val, old_value) => {
 const listBulkActionsRef = ref(null)
 
 defineExpose({
-  customListActions: computed(
-    () => listBulkActionsRef.value?.customListActions,
-  ),
+  customListActions: computed(() => listBulkActionsRef.value?.customListActions),
 })
 </script>

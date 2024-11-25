@@ -54,9 +54,7 @@
       v-model:attachments="attachments"
       :doctype="doctype"
       :subject="subject"
-      :placeholder="
-        __('Hi John, \n\nCan you please provide more details on this...')
-      "
+      :placeholder="__('Hi John, \n\nCan you please provide more details on this...')"
     />
   </div>
   <div v-show="showCommentBox">
@@ -137,9 +135,7 @@ function setSignature(editor) {
   if (!signature.data) return
   signature.data = signature.data.replace(/\n/g, '<br>')
   let emailContent = editor.getHTML()
-  emailContent = emailContent.startsWith('<p></p>')
-    ? emailContent.slice(7)
-    : emailContent
+  emailContent = emailContent.startsWith('<p></p>') ? emailContent.slice(7) : emailContent
   editor.commands.setContent(signature.data + emailContent)
   editor.commands.focus('start')
 }
@@ -152,7 +148,7 @@ watch(
       editor.commands.focus()
       setSignature(editor)
     }
-  }
+  },
 )
 
 watch(
@@ -161,7 +157,7 @@ watch(
     if (value) {
       newCommentEditor.value.editor.commands.focus()
     }
-  }
+  },
 )
 
 const commentEmpty = computed(() => {

@@ -12,11 +12,7 @@
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
-            @click.stop="removeValue(value)"
-          />
+          <FeatherIcon class="h-3.5" name="x" @click.stop="removeValue(value)" />
         </template>
       </Button>
       <div class="flex-1">
@@ -42,27 +38,15 @@
             <template #body="{ isOpen }">
               <div v-show="isOpen">
                 <div class="mt-1 rounded-lg bg-white py-1 text-base shadow-2xl">
-                  <ComboboxOptions
-                    class="my-1 max-h-[12rem] overflow-y-auto px-1.5"
-                    static
-                  >
-                    <ComboboxOption
-                      v-for="option in options"
-                      :key="option.value"
-                      :value="option"
-                      v-slot="{ active }"
-                    >
+                  <ComboboxOptions class="my-1 max-h-[12rem] overflow-y-auto px-1.5" static>
+                    <ComboboxOption v-for="option in options" :key="option.value" :value="option" v-slot="{ active }">
                       <li
                         :class="[
                           'flex cursor-pointer items-center rounded px-2 py-1 text-base',
                           { 'bg-gray-100': active },
                         ]"
                       >
-                        <UserAvatar
-                          class="mr-2"
-                          :user="option.value"
-                          size="lg"
-                        />
+                        <UserAvatar class="mr-2" :user="option.value" size="lg" />
                         <div class="flex flex-col gap-1 p-1 text-gray-800">
                           <div class="text-base font-medium">
                             {{ option.label }}
@@ -86,12 +70,7 @@
 </template>
 
 <script setup>
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxOptions,
-  ComboboxOption,
-} from '@headlessui/vue'
+import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from '@headlessui/vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Popover from '@/components/frappe-ui/Popover.vue'
 import { createResource } from 'frappe-ui'
@@ -146,16 +125,15 @@ const filterOptions = createResource({
   cache: [text.value, 'Contact'],
   params: { txt: text.value },
   transform: (data) => {
-    let allData = data
-      .map((option) => {
-        let fullName = option[0]
-        let email = option[1]
-        let name = option[2]
-        return {
-          label: fullName || name || email,
-          value: email,
-        }
-      })
+    let allData = data.map((option) => {
+      let fullName = option[0]
+      let email = option[1]
+      let name = option[2]
+      return {
+        label: fullName || name || email,
+        value: email,
+      }
+    })
     return allData
   },
 })

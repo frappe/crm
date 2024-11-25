@@ -1,0 +1,30 @@
+# Common large paths
+node_modules/
+build/
+dist/
+vendor/
+.env/
+.venv/
+.tox/
+*.min.js
+.npm/
+.yarn/
+
+# Common test paths
+test/
+tests/
+testsuite/
+*_test.go
+test*.py
+
+# Semgrep rules folder
+.frappe-semgrep
+
+# Semgrep-action log folder
+.semgrep_logs/
+
+# Github Actions
+.github/
+
+# Markdown files
+*.md

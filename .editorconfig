@@ -1,0 +1,20 @@
+# Root editor config file
+root = true
+
+# Common settings
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# pythonindentation settings
+[{*.py}]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+[{*.js,*.tsx,*.jsx,*.vue,*.css,*.scss,*.html}]
+indent_style = space
+indent_size = 2
+max_line_length = 120
