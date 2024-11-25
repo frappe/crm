@@ -23,6 +23,7 @@
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
+    @updateCrmCustomData="updateCrmCustomData"
     :report="test"
     doctype="CRM Lead"
     :filters="{ converted: 0}"
@@ -233,12 +234,30 @@
   </KanbanView>
   <ReportView
     ref="leadsListView"
-    v-else-if="leads.data && rows.length && route.params.viewType == 'report'"
+    v-else-if="leads.data && rows.length && route.params.viewType == 'report' && !crmColumns"
     v-model="leads.data.page_length_count"
     v-model:list="leads"
     :rows="rows"
     :columns="leads.data.columns"
     :report_data="leads"
+    :options="{
+      showTooltip: true,
+      resizeColumn: true,
+      rowCount: leads.data.row_count,
+      totalCount: leads.data.total_count,
+    }"
+    @loadMore="() => loadMore++"
+    @columnWidthUpdated="() => triggerResize++"
+    @updatePageCount="(count) => (updatedPageCount = count)"
+  />
+  <ReportCustomView
+  ref="leadsListView"
+    v-else-if="leads.data && rows.length && route.params.viewType == 'report' && crmColumns"
+    v-model="leads.data.page_length_count"
+    v-model:list="leads"
+    :rows="rows"
+    :columns="crmColumns"
+    :report_data="crmResults"
     :options="{
       showTooltip: true,
       resizeColumn: true,
@@ -337,6 +356,7 @@ import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
 import ReportView from '../components/ListViews/ReportView.vue'
+import ReportCustomView from '../components/ListViews/ReportCustomView.vue'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
@@ -356,6 +376,20 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+const crmColumns = ref()
+const crmResults = ref()
+
+function updateCrmCustomData(data) {
+  if(data){
+    crmColumns.value = transformToColumn(data.keys);
+    crmResults.value = transformToResult(data.values, data.keys)
+  }
+  else{
+    crmColumns.value = ''
+    crmResults.value = ''
+  }
+
+}
 
 function getRow(name, field) {
   function getValue(value) {
@@ -569,5 +603,28 @@ const task = ref({
 function showTask(name) {
   docname.value = name
   showTaskModal.value = true
+}
+
+function transformToResult(data, columns) {
+  return data.map(row => {
+        const obj = {};
+        
+        // Iterate over columns and map data to corresponding field using the index
+        columns.forEach((column, index) => {
+            const value = row[index];
+            obj[column] = value; // Directly map the value to the column name
+        });
+        
+        return obj;
+    });
+}
+
+function transformToColumn(test) {
+  return test.map(item => ({
+        label: item.charAt(0).toUpperCase() + item.slice(1).replace(/_/g, ' '), // Capitalize first letter and replace underscores with spaces
+        fieldname: item,
+        fieldtype: "Data",
+        width: item === "lead_name" ? 100 : 180 // Example of custom width based on the fieldname
+    }));
 }
 </script>
