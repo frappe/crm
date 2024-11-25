@@ -79,7 +79,7 @@ class Lead(Lead):
 			elif user != agent:
 				frappe.share.remove(self.doctype, self.name, user)
 
-	def create_contact(self, throw=True):
+	def create_contact(self, throw=False):
 		if not self.lead_name:
 			self.set_full_name()
 			self.set_lead_name()
