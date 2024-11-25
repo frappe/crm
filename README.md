@@ -21,14 +21,14 @@
     -   **Pinned View:** Pin important leads and deals in the sidebar.
     -   **Public View:** Share views with all users.
     -   **Saved View:** Save views for later use.
--   **Email Communication:** Send and receive emails directly from the Lead/Deal Page.
+-   **Email Communication:** Send and receive emails directly from the Lead/Opportunity Page.
 -   **Email Templates:** Create and use email templates for faster communication.
 -   **Comments:** Add comments to leads and deals to keep track of the conversation.
 -   **Notifications:** Get notified when someone mentions you in a comment.
 -   **Service Level Agreement:** Set SLA for leads and deals and get notified when the SLA is breached.
 -   **Assignment Rule:** Automatically assign leads and deals to users based on the criteria.
--   **ToDos:** Create todos for leads and deals.
--   **Notes:** Add notes to leads and deals.
+-   **ToDos:** Create todos for leads and opportunity.
+-   **Notes:** Add notes to leads and opportunity.
 -   **Call Logs:** See the call logs with call details and recordings.
 
 ## Getting Started
@@ -51,9 +51,6 @@
     ```
 5. Access the crm page at `sitename.localhost:8000/next-crm` in your web browser.
 
-## Need help?
-
-Reach out to us at [erp@rtcamp.com](mailto:erp@rtcamp.com) for help.
 
 ## License
 
