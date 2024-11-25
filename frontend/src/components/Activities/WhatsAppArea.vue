@@ -4,10 +4,7 @@
       v-for="whatsapp in messages"
       :key="whatsapp.name"
       class="activity group flex gap-2"
-      :class="[
-        whatsapp.type == 'Outgoing' ? 'flex-row-reverse' : '',
-        whatsapp.reaction ? 'mb-7' : 'mb-3',
-      ]"
+      :class="[whatsapp.type == 'Outgoing' ? 'flex-row-reverse' : '', whatsapp.reaction ? 'mb-7' : 'mb-3']"
     >
       <div
         :id="whatsapp.name"
@@ -17,19 +14,11 @@
           v-if="whatsapp.is_reply"
           @click="() => scrollToMessage(whatsapp.reply_to)"
           class="mb-1 cursor-pointer rounded border-0 border-l-4 bg-gray-200 p-2 text-gray-600"
-          :class="
-            whatsapp.reply_to_type == 'Incoming'
-              ? 'border-green-500'
-              : 'border-blue-400'
-          "
+          :class="whatsapp.reply_to_type == 'Incoming' ? 'border-green-500' : 'border-blue-400'"
         >
           <div
             class="mb-1 text-sm font-bold"
-            :class="
-              whatsapp.reply_to_type == 'Incoming'
-                ? 'text-green-500'
-                : 'text-blue-400'
-            "
+            :class="whatsapp.reply_to_type == 'Incoming' ? 'text-green-500' : 'text-blue-400'"
           >
             {{ whatsapp.reply_to_from || __('You') }}
           </div>
@@ -63,10 +52,7 @@
               {{ whatsapp.reaction }}
             </div>
           </div>
-          <div
-            class="flex flex-col gap-2"
-            v-if="whatsapp.message_type == 'Template'"
-          >
+          <div class="flex flex-col gap-2" v-if="whatsapp.message_type == 'Template'">
             <div v-if="whatsapp.header" class="text-base font-semibold">
               {{ whatsapp.header }}
             </div>
@@ -75,10 +61,7 @@
               {{ whatsapp.footer }}
             </div>
           </div>
-          <div
-            v-else-if="whatsapp.content_type == 'text'"
-            v-html="formatWhatsAppMessage(whatsapp.message)"
-          />
+          <div v-else-if="whatsapp.content_type == 'text'" v-html="formatWhatsAppMessage(whatsapp.message)" />
           <div v-else-if="whatsapp.content_type == 'image'">
             <img
               :src="whatsapp.attach"
@@ -91,31 +74,18 @@
               v-html="formatWhatsAppMessage(whatsapp.message)"
             />
           </div>
-          <div
-            v-else-if="whatsapp.content_type == 'document'"
-            class="flex items-center gap-2"
-          >
+          <div v-else-if="whatsapp.content_type == 'document'" class="flex items-center gap-2">
             <DocumentIcon
               class="size-10 cursor-pointer rounded-md text-gray-500"
               @click="() => openFileInAnotherTab(whatsapp.attach)"
             />
             <div class="text-gray-600">Document</div>
           </div>
-          <div
-            v-else-if="whatsapp.content_type == 'audio'"
-            class="flex items-center gap-2"
-          >
+          <div v-else-if="whatsapp.content_type == 'audio'" class="flex items-center gap-2">
             <audio :src="whatsapp.attach" controls class="cursor-pointer" />
           </div>
-          <div
-            v-else-if="whatsapp.content_type == 'video'"
-            class="flex-col items-center gap-2"
-          >
-            <video
-              :src="whatsapp.attach"
-              controls
-              class="h-40 cursor-pointer rounded-md"
-            />
+          <div v-else-if="whatsapp.content_type == 'video'" class="flex-col items-center gap-2">
+            <video :src="whatsapp.attach" controls class="h-40 cursor-pointer rounded-md" />
             <div
               v-if="!whatsapp.message.startsWith('/files/')"
               class="mt-1.5"
@@ -129,10 +99,7 @@
               </div>
             </Tooltip>
             <div v-if="whatsapp.type == 'Outgoing'">
-              <CheckIcon
-                v-if="['sent', 'Success'].includes(whatsapp.status)"
-                class="size-4"
-              />
+              <CheckIcon v-if="['sent', 'Success'].includes(whatsapp.status)" class="size-4" />
               <DoubleCheckIcon
                 v-else-if="['read', 'delivered'].includes(whatsapp.status)"
                 class="size-4"
@@ -142,19 +109,14 @@
           </div>
         </div>
       </div>
-      <div
-        class="flex items-center justify-center opacity-0 transition-all ease-in group-hover:opacity-100"
-      >
+      <div class="flex items-center justify-center opacity-0 transition-all ease-in group-hover:opacity-100">
         <IconPicker
           v-model="emoji"
           v-model:reaction="reaction"
           v-slot="{ togglePopover }"
           @update:modelValue="() => reactOnMessage(whatsapp.name, emoji)"
         >
-          <Button
-            @click="() => (reaction = true) && togglePopover()"
-            class="rounded-full !size-6 mt-0.5"
-          >
+          <Button @click="() => (reaction = true) && togglePopover()" class="rounded-full !size-6 mt-0.5">
             <ReactIcon class="text-gray-400" />
           </Button>
         </IconPicker>
@@ -236,7 +198,7 @@ function messageOptions(message) {
         replyMode.value = true
         reply.value = {
           ...message,
-          message: formatWhatsAppMessage(message.message)
+          message: formatWhatsAppMessage(message.message),
         }
       },
     },

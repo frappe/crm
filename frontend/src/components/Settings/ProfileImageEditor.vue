@@ -1,31 +1,14 @@
 <template>
-  <FileUploader
-    @success="(file) => setUserImage(file.file_url)"
-    :validateFile="validateFile"
-  >
+  <FileUploader @success="(file) => setUserImage(file.file_url)" :validateFile="validateFile">
     <template v-slot="{ file, progress, error, uploading, openFileSelector }">
       <div class="flex flex-col items-center">
-        <button
-          class="group relative rounded-full border-2"
-          @click="openFileSelector"
-        >
+        <button class="group relative rounded-full border-2" @click="openFileSelector">
           <div
             class="absolute inset-0 grid place-items-center rounded-full bg-gray-400/20 text-base text-gray-600 transition-opacity"
-            :class="[
-              uploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-              'drop-shadow-sm',
-            ]"
+            :class="[uploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100', 'drop-shadow-sm']"
           >
-            <span
-              class="inline-block rounded-md bg-gray-900/60 px-2 py-1 text-white"
-            >
-              {{
-                uploading
-                  ? `Uploading ${progress}%`
-                  : profile.user_image
-                  ? 'Change Image'
-                  : 'Upload Image'
-              }}
+            <span class="inline-block rounded-md bg-gray-900/60 px-2 py-1 text-white">
+              {{ uploading ? `Uploading ${progress}%` : profile.user_image ? 'Change Image' : 'Upload Image' }}
             </span>
           </div>
           <img
@@ -38,9 +21,7 @@
         </button>
         <ErrorMessage class="mt-4" :message="error" />
         <div class="mt-4 flex items-center gap-4">
-          <Button v-if="profile.user_image" @click="setUserImage(null)">
-            Remove
-          </Button>
+          <Button v-if="profile.user_image" @click="setUserImage(null)"> Remove </Button>
         </div>
       </div>
     </template>

@@ -6,10 +6,7 @@
       :style="style"
     >
       <div class="flex flex-row-reverse items-center gap-1">
-        <MinimizeIcon
-          class="h-4 w-4 cursor-pointer"
-          @click="toggleCallWindow"
-        />
+        <MinimizeIcon class="h-4 w-4 cursor-pointer" @click="toggleCallWindow" />
       </div>
       <div class="flex flex-col items-center justify-center gap-3">
         <Avatar
@@ -34,18 +31,14 @@
             callStatus == 'initiating'
               ? __('Initiating call...')
               : callStatus == 'ringing'
-              ? __('Ringing...')
-              : calling
-              ? __('Calling...')
-              : __('Incoming call...')
+                ? __('Ringing...')
+                : calling
+                  ? __('Calling...')
+                  : __('Incoming call...')
           }}
         </div>
         <div v-if="onCall" class="flex gap-2">
-          <Button
-            :icon="muted ? 'mic-off' : 'mic'"
-            class="rounded-full"
-            @click="toggleMute"
-          />
+          <Button :icon="muted ? 'mic-off' : 'mic'" class="rounded-full" @click="toggleMute" />
           <!-- <Button class="rounded-full">
           <template #icon>
             <DialpadIcon class="cursor-pointer rounded-full" />
@@ -53,18 +46,12 @@
         </Button> -->
           <Button class="rounded-full">
             <template #icon>
-              <NoteIcon
-                class="h-4 w-4 cursor-pointer rounded-full text-gray-900"
-                @click="showNoteModal = true"
-              />
+              <NoteIcon class="h-4 w-4 cursor-pointer rounded-full text-gray-900" @click="showNoteModal = true" />
             </template>
           </Button>
           <Button class="rounded-full bg-red-600 hover:bg-red-700">
             <template #icon>
-              <PhoneIcon
-                class="h-4 w-4 rotate-[135deg] fill-white text-white"
-                @click="hangUpCall"
-              />
+              <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white text-white" @click="hangUpCall" />
             </template>
           </Button>
         </div>
@@ -134,10 +121,7 @@
       </div>
       <Button variant="solid" theme="red" class="!h-6 !w-6 rounded-full">
         <template #icon>
-          <PhoneIcon
-            class="h-4 w-4 rotate-[135deg] fill-white"
-            @click.stop="hangUpCall"
-          />
+          <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" @click.stop="hangUpCall" />
         </template>
       </Button>
     </div>
@@ -145,12 +129,7 @@
       <div class="my-1">
         {{ callStatus == 'ringing' ? __('Ringing...') : __('Calling...') }}
       </div>
-      <Button
-        variant="solid"
-        theme="red"
-        class="!h-6 !w-6 rounded-full"
-        @click.stop="cancelCall"
-      >
+      <Button variant="solid" theme="red" class="!h-6 !w-6 rounded-full" @click.stop="cancelCall">
         <template #icon>
           <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
         </template>
@@ -167,24 +146,14 @@
           <PhoneIcon class="h-4 w-4 animate-pulse fill-white" />
         </template>
       </Button>
-      <Button
-        variant="solid"
-        theme="red"
-        class="!h-6 !w-6 rounded-full"
-        @click.stop="rejectIncomingCall"
-      >
+      <Button variant="solid" theme="red" class="!h-6 !w-6 rounded-full" @click.stop="rejectIncomingCall">
         <template #icon>
           <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
         </template>
       </Button>
     </div>
   </div>
-  <NoteModal
-    v-model="showNoteModal"
-    :note="note"
-    doctype="CRM Call Log"
-    @after="updateNote"
-  />
+  <NoteModal v-model="showNoteModal" :note="note" doctype="CRM Call Log" @after="updateNote" />
 </template>
 
 <script setup>
@@ -504,7 +473,7 @@ watch(
   (value) => {
     console.log(value)
   },
-  { immediate: true }
+  { immediate: true },
 )
 </script>
 

@@ -10,10 +10,7 @@
     }"
     row-key="name"
   >
-    <ListHeader
-      class="mx-3 sm:mx-5"
-      @columnWidthUpdated="emit('columnWidthUpdated')"
-    >
+    <ListHeader class="mx-3 sm:mx-5" @columnWidthUpdated="emit('columnWidthUpdated')">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
@@ -32,16 +29,9 @@
       </ListHeaderItem>
     </ListHeader>
     <ListRows class="mx-3 sm:mx-5" id="list-rows">
-      <ListRow
-        v-for="row in rows"
-        :key="row.name"
-        v-slot="{ idx, column, item }"
-        :row="row"
-      >
+      <ListRow v-for="row in rows" :key="row.name" v-slot="{ idx, column, item }" :row="row">
         <div v-if="column.key === 'date'">
-          <Tooltip
-            :text="item && dateFormat(item, 'ddd, MMM D, YYYY')"
-          >
+          <Tooltip :text="item && dateFormat(item, 'ddd, MMM D, YYYY')">
             <div class="flex items-center gap-2 truncate text-base">
               <div><CalendarIcon /></div>
               <div v-if="item" class="truncate">
@@ -93,22 +83,14 @@
               class="truncate text-base h-4 [&>p]:truncate"
             />
             <div v-else-if="column.type === 'Check'">
-              <FormControl
-                type="checkbox"
-                :modelValue="item"
-                :disabled="true"
-                class="text-gray-900"
-              />
+              <FormControl type="checkbox" :modelValue="item" :disabled="true" class="text-gray-900" />
             </div>
             <div v-else-if="column.key === '_liked_by'">
               <Button
                 v-if="column.key == '_liked_by'"
                 variant="ghosted"
                 :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
-                @click.stop.prevent="
-                  () =>
-                    emit('likeDoc', { name: row.name, liked: isLiked(item) })
-                "
+                @click.stop.prevent="() => emit('likeDoc', { name: row.name, liked: isLiked(item) })"
               >
                 <HeartIcon class="h-4 w-4" />
               </Button>
@@ -135,9 +117,7 @@
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Dropdown
-          :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
-        >
+        <Dropdown :options="listBulkActionsRef.bulkActions(selections, unselectAll)">
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
@@ -239,8 +219,6 @@ watch(pageLengthCount, (val, old_value) => {
 const listBulkActionsRef = ref(null)
 
 defineExpose({
-  customListActions: computed(
-    () => listBulkActionsRef.value?.customListActions,
-  ),
+  customListActions: computed(() => listBulkActionsRef.value?.customListActions),
 })
 </script>

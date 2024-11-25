@@ -21,9 +21,7 @@
           step="0.01"
           @input="(e) => (audio.currentTime = e.target.value)"
         />
-        <div class="shrink-0">
-          {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
-        </div>
+        <div class="shrink-0">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</div>
       </div>
       <div class="flex items-center gap-1">
         <div class="flex group gap-2 items-center">
@@ -42,21 +40,9 @@
           />
           <Button variant="ghost">
             <template #icon>
-              <MuteIcon
-                v-if="volumnProgress == 0"
-                class="size-4"
-                @click="updateVolumnProgress('1')"
-              />
-              <VolumnLowIcon
-                v-else-if="volumnProgress <= 40"
-                class="size-4"
-                @click="updateVolumnProgress('0')"
-              />
-              <VolumnHighIcon
-                v-else-if="volumnProgress > 20"
-                class="size-4"
-                @click="updateVolumnProgress('0')"
-              />
+              <MuteIcon v-if="volumnProgress == 0" class="size-4" @click="updateVolumnProgress('1')" />
+              <VolumnLowIcon v-else-if="volumnProgress <= 40" class="size-4" @click="updateVolumnProgress('0')" />
+              <VolumnHighIcon v-else-if="volumnProgress > 20" class="size-4" @click="updateVolumnProgress('0')" />
             </template>
           </Button>
         </div>

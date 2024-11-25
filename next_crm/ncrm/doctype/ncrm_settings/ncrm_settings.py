@@ -3,10 +3,11 @@
 
 import frappe
 from frappe.model.document import Document
+
 from next_crm.install import after_install
 
 
 class NCRMSettings(Document):
-	@frappe.whitelist()
-	def restore_defaults(self, force=False):
-		after_install(force)
+    @frappe.whitelist()
+    def restore_defaults(self, force=False):
+        after_install(force)

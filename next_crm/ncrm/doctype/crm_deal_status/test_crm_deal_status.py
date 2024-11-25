@@ -6,4 +6,4 @@ from frappe.tests import UnitTestCase
 
 
 class TestCRMDealStatus(UnitTestCase):
-	pass
+    pass

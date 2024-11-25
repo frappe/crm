@@ -1,24 +1,12 @@
 <template>
-  <svg 
-    width="264"
-    height="264"
-    viewBox="0 0 264 264"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-  <rect
-    width="264"
-    height="264"
-    rx="70"
-    fill="#AB3A6C"
-  />
-  <path
-    d="M196 88.2057V66H132H68V88.2218C68 99.428 73.2184 109.995 82.1164 116.807L116.602 143.207V201L153.654 186V138.37L181.863 116.807C190.773 109.995 196 99.4209 196 88.2057Z"
-    stroke="white"
-    stroke-width="14"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
-</svg>
-
+  <svg width="264" height="264" viewBox="0 0 264 264" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="264" height="264" rx="70" fill="#AB3A6C" />
+    <path
+      d="M196 88.2057V66H132H68V88.2218C68 99.428 73.2184 109.995 82.1164 116.807L116.602 143.207V201L153.654 186V138.37L181.863 116.807C190.773 109.995 196 99.4209 196 88.2057Z"
+      stroke="white"
+      stroke-width="14"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
 </template>

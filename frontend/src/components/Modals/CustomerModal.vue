@@ -24,22 +24,14 @@
         </div>
         <div>
           <div v-if="detailMode" class="flex flex-col gap-3.5">
-            <div
-              class="flex h-7 items-center gap-2 text-base text-gray-800"
-              v-for="field in fields"
-              :key="field.name"
-            >
+            <div class="flex h-7 items-center gap-2 text-base text-gray-800" v-for="field in fields" :key="field.name">
               <div class="grid w-7 place-content-center">
                 <component :is="field.icon" />
               </div>
               <div>{{ field.value }}</div>
             </div>
           </div>
-          <Fields
-            v-else-if="filteredSections"
-            :sections="filteredSections"
-            :data="_customer"
-          />
+          <Fields v-else-if="filteredSections" :sections="filteredSections" :data="_customer" />
         </div>
       </div>
       <div v-if="!detailMode" class="px-4 pb-7 pt-4 sm:px-6">
@@ -183,9 +175,7 @@ function handleCustomerUpdate(doc, renamed = false) {
 }
 
 const dialogOptions = computed(() => {
-  let title = !editMode.value
-    ? __('New Customer')
-    : __(_customer.value.customer_name)
+  let title = !editMode.value ? __('New Customer') : __(_customer.value.customer_name)
   let size = detailMode.value ? '' : 'xl'
   let actions = detailMode.value
     ? []
@@ -193,8 +183,7 @@ const dialogOptions = computed(() => {
         {
           label: editMode.value ? __('Save') : __('Create'),
           variant: 'solid',
-          onClick: () =>
-            editMode.value ? updateCustomer() : callInsertDoc(),
+          onClick: () => (editMode.value ? updateCustomer() : callInsertDoc()),
         },
       ]
 
@@ -221,10 +210,7 @@ const fields = computed(() => {
     {
       icon: MoneyIcon,
       name: 'annual_revenue',
-      value: formatNumberIntoCurrency(
-        _customer.value.annual_revenue,
-        _customer.value.currency,
-      ),
+      value: formatNumberIntoCurrency(_customer.value.annual_revenue, _customer.value.currency),
     },
     {
       icon: h(FeatherIcon, { name: 'hash', class: 'h-4 w-4' }),

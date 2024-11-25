@@ -1,7 +1,6 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and Contributors
 # GNU GPLv3 License. See license.txt
 
-from __future__ import unicode_literals
 import frappe
 from frappe.utils.telemetry import capture
 

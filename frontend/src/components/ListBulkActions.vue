@@ -60,9 +60,7 @@ function editValues(selections, unselectAll) {
 function convertToOpportunity(selections, unselectAll) {
   $dialog({
     title: __('Convert to Opportunity'),
-    message: __('Are you sure you want to convert {0} Lead(s) to Opportunity(s)?', [
-      selections.size,
-    ]),
+    message: __('Are you sure you want to convert {0} Lead(s) to Opportunity(s)?', [selections.size]),
     variant: 'solid',
     theme: 'blue',
     actions: [
@@ -94,9 +92,7 @@ function convertToOpportunity(selections, unselectAll) {
 function deleteValues(selections, unselectAll) {
   $dialog({
     title: __('Delete'),
-    message: __('Are you sure you want to delete {0} item(s)?', [
-      selections.size,
-    ]),
+    message: __('Are you sure you want to delete {0} item(s)?', [selections.size]),
     variant: 'solid',
     theme: 'red',
     actions: [
@@ -137,9 +133,7 @@ function assignValues(selections, unselectAll) {
 function clearAssignemnts(selections, unselectAll) {
   $dialog({
     title: __('Clear Assignment'),
-    message: __('Are you sure you want to clear assignment for {0} item(s)?', [
-      selections.size,
-    ]),
+    message: __('Are you sure you want to clear assignment for {0} item(s)?', [selections.size]),
     variant: 'solid',
     theme: 'red',
     actions: [
@@ -240,10 +234,8 @@ onMounted(async () => {
     $socket,
     router,
   })
-  customBulkActions.value =
-    customization?.bulkActions || list.value?.data?.bulkActions || []
-  customListActions.value =
-    customization?.actions || list.value?.data?.listActions || []
+  customBulkActions.value = customization?.bulkActions || list.value?.data?.bulkActions || []
+  customListActions.value = customization?.actions || list.value?.data?.listActions || []
 })
 
 defineExpose({

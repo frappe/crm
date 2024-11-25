@@ -14,13 +14,13 @@ app_icon_route = "/next-crm"
 required_apps = ["erpnext"]
 
 add_to_apps_screen = [
-	{
-		"name": "next_crm",
-		"logo": "/assets/next_crm/images/logo.svg",
-		"title": "Next CRM",
-		"route": "/next-crm",
-		"has_permission": "next_crm.api.check_app_permission",
-	}
+    {
+        "name": "next_crm",
+        "logo": "/assets/next_crm/images/logo.svg",
+        "title": "Next CRM",
+        "route": "/next-crm",
+        "has_permission": "next_crm.api.check_app_permission",
+    }
 ]
 
 # Includes in <head>
@@ -61,11 +61,11 @@ doctype_js = {
 
 # website user home page (by Role)
 # role_home_page = {
-#	"Role": "home_page"
+# 	"Role": "home_page"
 # }
 
 website_route_rules = [
-	{"from_route": "/next-crm/<path:app_path>", "to_route": "next-crm"},
+    {"from_route": "/next-crm/<path:app_path>", "to_route": "next-crm"},
 ]
 
 # Generators
@@ -79,8 +79,8 @@ website_route_rules = [
 
 # add methods and filters to jinja environment
 # jinja = {
-#	"methods": "next_crm.utils.jinja_methods",
-#	"filters": "next_crm.utils.jinja_filters"
+# 	"methods": "next_crm.utils.jinja_methods",
+# 	"filters": "next_crm.utils.jinja_filters"
 # }
 
 # Installation
@@ -122,11 +122,11 @@ before_uninstall = "next_crm.uninstall.before_uninstall"
 # Permissions evaluated in scripted ways
 
 # permission_query_conditions = {
-#	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
 #
 # has_permission = {
-#	"Event": "frappe.desk.doctype.event.event.has_permission",
+# 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
 # DocType Class
@@ -134,12 +134,12 @@ before_uninstall = "next_crm.uninstall.before_uninstall"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Contact": "next_crm.overrides.contact.CustomContact",
-	"Email Template": "next_crm.overrides.email_template.CustomEmailTemplate",
-	"User": "next_crm.overrides.user.CustomUser",
-	"Customer": "next_crm.overrides.customer.Customer",
-	"Lead": "next_crm.overrides.lead.Lead",
-	"Customize Form": "next_crm.overrides.customize_form.CustomizeFormOverride",
+    "Contact": "next_crm.overrides.contact.CustomContact",
+    "Email Template": "next_crm.overrides.email_template.CustomEmailTemplate",
+    "User": "next_crm.overrides.user.CustomUser",
+    "Customer": "next_crm.overrides.customer.Customer",
+    "Lead": "next_crm.overrides.lead.Lead",
+    "Customize Form": "next_crm.overrides.customize_form.CustomizeFormOverride",
     "Opportunity": "next_crm.overrides.opportunity.Opportunity",
     "ToDo": "next_crm.overrides.todo.ToDo",
 }
@@ -149,45 +149,45 @@ override_doctype_class = {
 # Hook on document methods and events
 
 doc_events = {
-	"Contact": {
-		"validate": ["next_crm.api.contact.validate"],
-	},
-	"ToDo": {
-		"after_insert": ["next_crm.api.todo.after_insert"],
-		"on_update": ["next_crm.api.todo.on_update"],
+    "Contact": {
+        "validate": ["next_crm.api.contact.validate"],
+    },
+    "ToDo": {
+        "after_insert": ["next_crm.api.todo.after_insert"],
+        "on_update": ["next_crm.api.todo.on_update"],
         "before_insert": ["next_crm.api.todo.before_insert"],
-	},
-	"Comment": {
-		"on_update": ["next_crm.api.comment.on_update"],
-	},
-	"WhatsApp Message": {
-		"validate": ["next_crm.api.whatsapp.validate"],
-		"on_update": ["next_crm.api.whatsapp.on_update"],
-	},
-	"User": {
-		"before_validate": ["next_crm.api.demo.validate_user"],
-	}
+    },
+    "Comment": {
+        "on_update": ["next_crm.api.comment.on_update"],
+    },
+    "WhatsApp Message": {
+        "validate": ["next_crm.api.whatsapp.validate"],
+        "on_update": ["next_crm.api.whatsapp.on_update"],
+    },
+    "User": {
+        "before_validate": ["next_crm.api.demo.validate_user"],
+    },
 }
 
 # Scheduled Tasks
 # ---------------
 
 # scheduler_events = {
-#	"all": [
-#		"next_crm.tasks.all"
-#	],
-#	"daily": [
-#		"next_crm.tasks.daily"
-#	],
-#	"hourly": [
-#		"next_crm.tasks.hourly"
-#	],
-#	"weekly": [
-#		"next_crm.tasks.weekly"
-#	],
-#	"monthly": [
-#		"next_crm.tasks.monthly"
-#	],
+# 	"all": [
+# 		"next_crm.tasks.all"
+# 	],
+# 	"daily": [
+# 		"next_crm.tasks.daily"
+# 	],
+# 	"hourly": [
+# 		"next_crm.tasks.hourly"
+# 	],
+# 	"weekly": [
+# 		"next_crm.tasks.weekly"
+# 	],
+# 	"monthly": [
+# 		"next_crm.tasks.monthly"
+# 	],
 # }
 
 # Testing
@@ -199,14 +199,14 @@ doc_events = {
 # ------------------------------
 #
 # override_whitelisted_methods = {
-#	"frappe.desk.doctype.event.event.get_events": "next_crm.event.get_events"
+# 	"frappe.desk.doctype.event.event.get_events": "next_crm.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-#	"Task": "next_crm.task.get_dashboard_data"
+# 	"Task": "next_crm.task.get_dashboard_data"
 # }
 
 # exempt linked doctypes from being automatically cancelled
@@ -232,52 +232,52 @@ doc_events = {
 # --------------------
 
 # user_data_fields = [
-#	{
-#		"doctype": "{doctype_1}",
-#		"filter_by": "{filter_by}",
-#		"redact_fields": ["{field_1}", "{field_2}"],
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_2}",
-#		"filter_by": "{filter_by}",
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_3}",
-#		"strict": False,
-#	},
-#	{
-#		"doctype": "{doctype_4}"
-#	}
+# 	{
+# 		"doctype": "{doctype_1}",
+# 		"filter_by": "{filter_by}",
+# 		"redact_fields": ["{field_1}", "{field_2}"],
+# 		"partial": 1,
+# 	},
+# 	{
+# 		"doctype": "{doctype_2}",
+# 		"filter_by": "{filter_by}",
+# 		"partial": 1,
+# 	},
+# 	{
+# 		"doctype": "{doctype_3}",
+# 		"strict": False,
+# 	},
+# 	{
+# 		"doctype": "{doctype_4}"
+# 	}
 # ]
 
 # Authentication and authorization
 # --------------------------------
 
 # auth_hooks = [
-#	"next_crm.auth.validate"
+# 	"next_crm.auth.validate"
 # ]
 
 fixtures = [
-	{
-		"dt": "Property Setter",
-		"filters": [
-			[
-				"module",
-				"in",
-				["NCRM"],
-			]
-		],
-	},
-	{
-		"dt": "Custom Field",
-		"filters": [
-			[
-				"module",
-				"in",
-				["NCRM"],
-			]
-		],
-	},
+    {
+        "dt": "Property Setter",
+        "filters": [
+            [
+                "module",
+                "in",
+                ["NCRM"],
+            ]
+        ],
+    },
+    {
+        "dt": "Custom Field",
+        "filters": [
+            [
+                "module",
+                "in",
+                ["NCRM"],
+            ]
+        ],
+    },
 ]

@@ -12,18 +12,11 @@
   <Dropdown v-if="groupedActions.length" :options="groupedActions">
     <Button icon="more-horizontal" />
   </Dropdown>
-  <div
-    v-if="groupedWithLabelActions.length && !isMobileView"
-    v-for="g in groupedWithLabelActions"
-    :key="g.label"
-  >
+  <div v-if="groupedWithLabelActions.length && !isMobileView" v-for="g in groupedWithLabelActions" :key="g.label">
     <Dropdown :options="g.action" v-slot="{ open }">
       <Button :label="g.label">
         <template #suffix>
-          <FeatherIcon
-            :name="open ? 'chevron-up' : 'chevron-down'"
-            class="h-4"
-          />
+          <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4" />
         </template>
       </Button>
     </Dropdown>
@@ -84,9 +77,7 @@ const groupedActions = computed(() => {
       group.action.forEach((action) => _actions.push(action))
     })
   }
-  _actions = _actions.concat(
-    props.actions.filter((action) => action.group && !action.buttonLabel)
-  )
+  _actions = _actions.concat(props.actions.filter((action) => action.group && !action.buttonLabel))
   return _actions
 })
 </script>

@@ -9,36 +9,18 @@
     </template>
     <template #body-content>
       <div class="flex flex-col gap-3.5">
-        <div
-          v-for="field in detailFields"
-          :key="field.name"
-          class="flex gap-2 text-base text-gray-800"
-        >
+        <div v-for="field in detailFields" :key="field.name" class="flex gap-2 text-base text-gray-800">
           <div class="grid size-7 place-content-center">
             <component :is="field.icon" />
           </div>
           <div class="flex min-h-7 w-full items-center gap-2">
-            <div
-              v-if="field.name == 'receiver'"
-              class="flex items-center gap-1"
-            >
-              <Avatar
-                :image="field.value.caller.image"
-                :label="field.value.caller.label"
-                size="sm"
-              />
+            <div v-if="field.name == 'receiver'" class="flex items-center gap-1">
+              <Avatar :image="field.value.caller.image" :label="field.value.caller.label" size="sm" />
               <div class="ml-1 flex flex-col gap-1">
                 {{ field.value.caller.label }}
               </div>
-              <FeatherIcon
-                name="arrow-right"
-                class="mx-1 h-4 w-4 text-gray-600"
-              />
-              <Avatar
-                :image="field.value.receiver.image"
-                :label="field.value.receiver.label"
-                size="sm"
-              />
+              <FeatherIcon name="arrow-right" class="mx-1 h-4 w-4 text-gray-600" />
+              <Avatar :image="field.value.receiver.image" :label="field.value.receiver.label" size="sm" />
               <div class="ml-1 flex flex-col gap-1">
                 {{ field.value.receiver.label }}
               </div>
@@ -47,11 +29,7 @@
               {{ field.value }}
             </Tooltip>
             <div class="w-full" v-else-if="field.name == 'recording_url'">
-              <audio
-                class="audio-control w-full"
-                controls
-                :src="field.value"
-              ></audio>
+              <audio class="audio-control w-full" controls :src="field.value"></audio>
             </div>
             <div
               class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-gray-700"
@@ -64,10 +42,7 @@
                   :class="[field.value?.content ? 'mb-1 font-bold' : '']"
                   v-html="field.value?.title"
                 />
-                <div
-                  v-if="field.value?.content"
-                  v-html="field.value?.content"
-                />
+                <div v-if="field.value?.content" v-html="field.value?.content" />
               </FadedScrollableDiv>
             </div>
             <div v-else :class="field.color ? `text-${field.color}-600` : ''">
@@ -83,18 +58,8 @@
         </div>
       </div>
     </template>
-    <template
-      v-if="
-        callLog.doc?.type.label == 'Incoming' && !callLog.doc?.reference_docname
-      "
-      #actions
-    >
-      <Button
-        class="w-full"
-        variant="solid"
-        :label="__('Create lead')"
-        @click="createLead"
-      />
+    <template v-if="callLog.doc?.type.label == 'Incoming' && !callLog.doc?.reference_docname" #actions>
+      <Button class="w-full" variant="solid" :label="__('Create lead')" @click="createLead" />
     </template>
   </Dialog>
   <NoteModal v-model="showNoteModal" :note="callNoteDoc?.doc" />
@@ -111,13 +76,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
-import {
-  FeatherIcon,
-  Avatar,
-  Tooltip,
-  createDocumentResource,
-  call,
-} from 'frappe-ui'
+import { FeatherIcon, Avatar, Tooltip, createDocumentResource, call } from 'frappe-ui'
 import { getCallLogDetail } from '@/utils/callLog'
 import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -155,13 +114,9 @@ const detailFields = computed(() => {
       },
     },
     {
-      icon:
-        callLog.value.doc.reference_doctype == 'Lead'
-          ? LeadsIcon
-          : OpportunitiesIcon,
+      icon: callLog.value.doc.reference_doctype == 'Lead' ? LeadsIcon : OpportunitiesIcon,
       name: 'reference_doctype',
-      value:
-        callLog.value.doc.reference_doctype == 'Lead' ? 'Lead' : 'Opportunity',
+      value: callLog.value.doc.reference_doctype == 'Lead' ? 'Lead' : 'Opportunity',
       link: () => {
         if (callLog.value.doc.reference_doctype == 'Lead') {
           router.push({
@@ -209,9 +164,7 @@ const detailFields = computed(() => {
     },
   ]
 
-  return details
-    .filter((detail) => detail.value)
-    .filter((detail) => (detail.condition ? detail.condition() : true))
+  return details.filter((detail) => detail.value).filter((detail) => (detail.condition ? detail.condition() : true))
 })
 
 function createLead() {

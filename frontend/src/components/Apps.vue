@@ -18,9 +18,7 @@
       </button>
     </template>
     <template #body>
-      <div
-        class="grid grid-cols-3 justify-between mx-3 p-2 rounded-lg border border-gray-100 bg-white shadow-xl"
-      >
+      <div class="grid grid-cols-3 justify-between mx-3 p-2 rounded-lg border border-gray-100 bg-white shadow-xl">
         <div v-for="app in apps.data" :key="app.name">
           <a
             :href="app.route"
@@ -39,8 +37,8 @@
 <script setup>
 import AppsIcon from '@/components/Icons/AppsIcon.vue'
 import { Popover, createResource } from 'frappe-ui'
-import { onUnmounted } from 'vue';
-import { stopRecording } from '@/telemetry';
+import { onUnmounted } from 'vue'
+import { stopRecording } from '@/telemetry'
 
 const props = defineProps({
   active: Boolean,

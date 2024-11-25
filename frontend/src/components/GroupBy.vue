@@ -2,21 +2,14 @@
   <Autocomplete :options="options" value="" @change="(e) => setGroupBy(e)">
     <template #target="{ togglePopover, isOpen }">
       <Button
-        :label="
-          hideLabel
-            ? groupByValue?.label
-            : __('Group By: ') + groupByValue?.label
-        "
+        :label="hideLabel ? groupByValue?.label : __('Group By: ') + groupByValue?.label"
         @click="togglePopover()"
       >
         <template #prefix>
           <DetailsIcon />
         </template>
         <template #suffix>
-          <FeatherIcon
-            :name="isOpen ? 'chevron-up' : 'chevron-down'"
-            class="h-4"
-          />
+          <FeatherIcon :name="isOpen ? 'chevron-up' : 'chevron-down'" class="h-4" />
         </template>
       </Button>
     </template>
@@ -70,8 +63,6 @@ const options = computed(() => {
   if (!groupByOptions.data) return []
   if (!list.value?.data?.group_by_field) return groupByOptions.data
   groupByValue.value = list.value.data.group_by_field
-  return groupByOptions.data.filter(
-    (option) => option !== groupByValue.value.value
-  )
+  return groupByOptions.data.filter((option) => option !== groupByValue.value.value)
 })
 </script>

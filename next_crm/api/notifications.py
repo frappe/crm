@@ -32,11 +32,15 @@ def get_notifications():
                 "notification_type_doctype": notification.notification_type_doctype,
                 "notification_type_doc": notification.notification_type_doc,
                 "reference_doctype": (
-                    "opportunity" if notification.reference_doctype == "Opportunity" else "lead"
+                    "opportunity"
+                    if notification.reference_doctype == "Opportunity"
+                    else "lead"
                 ),
                 "reference_name": notification.reference_name,
                 "route_name": (
-                    "Opportunity" if notification.reference_doctype == "Opportunity" else "Lead"
+                    "Opportunity"
+                    if notification.reference_doctype == "Opportunity"
+                    else "Lead"
                 ),
             }
         )
@@ -59,6 +63,7 @@ def mark_as_read(user=None, doc=None):
         d.read = True
         d.save()
 
+
 def get_hash(notification):
     _hash = ""
     if notification.type == "Mention" and notification.notification_type_doc:
@@ -67,7 +72,10 @@ def get_hash(notification):
     if notification.type == "WhatsApp":
         _hash = "#whatsapp"
 
-    if notification.type == "Assignment" and notification.notification_type_doctype == "ToDo":
+    if (
+        notification.type == "Assignment"
+        and notification.notification_type_doctype == "ToDo"
+    ):
         _hash = "#todos"
         if "has been removed by" in notification.message:
             _hash = ""

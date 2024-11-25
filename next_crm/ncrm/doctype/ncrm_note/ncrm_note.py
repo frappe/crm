@@ -6,15 +6,15 @@ from frappe.model.document import Document
 
 
 class NCRMNote(Document):
-	@staticmethod
-	def default_list_data():
-		rows = [
-			"name",
-			"title",
-			"content",
-			"reference_doctype",
-			"reference_docname",
-			"owner",
-			"modified",
-		]
-		return {'columns': [], 'rows': rows}
+    @staticmethod
+    def default_list_data():
+        rows = [
+            "name",
+            "title",
+            "content",
+            "reference_doctype",
+            "reference_docname",
+            "owner",
+            "modified",
+        ]
+        return {"columns": [], "rows": rows}
