@@ -4,8 +4,8 @@
     :class="[isLastSection ? '' : 'max-h-[300px]']"
   >
     <div
-       v-for="field in _fields.filter(field => ['Organization', 'Website', 'Territory'].includes(field.label))"
-      :key="field.label"
+     v-for="field in _fields.filter(field => !['Amount', 'Probability', 'Close Date', 'Next Step', 'Deal Owner', 'Weighted Amount'].includes(field.label))"
+    :key="field.label"
       :class="[field.hidden && 'hidden']"
       class="section-field flex items-center gap-2 px-3 leading-5 first:mt-3"
     >

@@ -155,6 +155,12 @@ class CRMDeal(Document):
 				'width': '6rem',
 			},
 			{
+				'label': 'Weighted Amount',
+				'type': 'Currency',
+				'key': 'weighted_amount',
+				'width': '9rem',
+			},
+			{
 				'label': 'Status',
 				'type': 'Select',
 				'key': 'status',
@@ -185,6 +191,7 @@ class CRMDeal(Document):
 			"deal_elements",
 			"annual_revenue",
 			"probability",
+			"weighted_amount",
 			"status",
 			"email",
 			"currency",

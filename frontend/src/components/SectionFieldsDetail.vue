@@ -121,7 +121,7 @@
     <div data-v-f76baccb="" class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base">
       <div data-v-f76baccb="" class="space-y-1.5 form-control"><!---->
         <div class="relative flex items-center" value="Close deal">
-          {{customFormatNumberIntoCurrency(crm_deal_annual_revenue*(crm_deal_probability/100), 'USD') }} 
+          {{crm_deal_weighted_amount ? customFormatNumberIntoCurrency(crm_deal_annual_revenue*(crm_deal_probability/100), 'USD') : 0}} 
         </div>
       </div>
     </div>
@@ -147,6 +147,9 @@ const props = defineProps({
     type: String,
   },
   crm_deal_annual_revenue: {
+    type: String,
+  },
+  crm_deal_weighted_amount:{
     type: String,
   },
   isLastSection: {

@@ -428,6 +428,11 @@ function parseRows(rows) {
           deal.annual_revenue,
           deal.currency,
         )
+      } else if (row == 'weighted_amount') {
+        _rows[row] = customFormatNumberIntoCurrency(
+          deal.weighted_amount,
+          deal.currency,
+        )
       } else if (row == 'probability') {
         _rows[row] = deal[row] + '%';
       } else if (row == 'status') {

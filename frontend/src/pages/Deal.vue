@@ -158,6 +158,7 @@
                 :fields="section.fields"
                 :crm_deal_probability="crm_deal_probability"
                 :crm_deal_annual_revenue="crm_deal_annual_revenue"
+                :crm_deal_weighted_amount="crm_deal_weighted_amount"
                 :isLastSection="i == fieldsLayout.data.length - 1"
                 v-model="deal.data"
                 @update="updateField"
@@ -440,7 +441,7 @@ const customStatuses = ref([])
 const staus_detail_option = ref([]);
 const crm_deal_annual_revenue = ref();
 const crm_deal_probability = ref();
-
+const crm_deal_weighted_amount = ref();
 
 
 
@@ -450,12 +451,17 @@ const deal = createResource({
   onSuccess: async (data) => {
     crm_deal_probability.value = data.probability
     crm_deal_annual_revenue.value = data.annual_revenue;
+    crm_deal_weighted_amount.value = data.weighted_amount;
+
 
     if (data.probability || data.probability === 0) {
       data.probability = data.probability + '%'; 
     }
    if (data.annual_revenue ) {
       data.annual_revenue = customFormatNumberIntoCurrency(data.annual_revenue, data.currency); 
+    }
+    if (data.weighted_amount ) {
+      data.weighted_amount = customFormatNumberIntoCurrency(data.weighted_amount, data.currency); 
     }
     if (data.organization) {
       organization.update({
@@ -823,13 +829,49 @@ function triggerCall() {
 }
 
 function updateField(name, value, callback) {
-  updateDeal(name, value, () => {
-    deal.data[name] = value
-    callback?.()
-  })
+  let annual_revenue_value = 0;
+  let probability_value = 0;
+
+  // Ensure 'annual_revenue' and 'probability' fields are processed correctly
+  if (name === 'annual_revenue' || name === 'probability') {
+    if (name === 'annual_revenue') {
+      // When updating 'annual_revenue', parse the value and use the current probability
+      annual_revenue_value = value ? parseFloat(value.replace(/[^0-9.-]+/g, '')) : 0;
+      probability_value = deal.data.probability ? parseFloat(deal.data.probability.replace(/[^0-9.-]+/g, '')) : 0;
+    } else {
+      // When updating 'probability', parse the value and use the current annual revenue
+      annual_revenue_value = deal.data.annual_revenue ? parseFloat(deal.data.annual_revenue.replace(/[^0-9.-]+/g, '')) : 0;
+      probability_value = value ? parseFloat(value.replace(/[^0-9.-]+/g, '')) : 0;
+    }
+
+    // Calculate the weighted amount
+    const weighted_amount_value = annual_revenue_value * (probability_value / 100);
+
+    // Update the weighted amount first
+    updateDeal('weighted_amount', weighted_amount_value, () => {
+      deal.data['weighted_amount'] = weighted_amount_value;
+
+      // Update the specified field
+      updateDeal(name, value, () => {
+        deal.data[name] = value;
+
+        // Execute the callback if provided
+        if (callback) callback();
+      });
+    });
+  } else {
+    // Update the specified field when not 'annual_revenue' or 'probability'
+    updateDeal(name, value, () => {
+      deal.data[name] = value;
+
+      // Execute the callback if provided
+      if (callback) callback();
+    });
+  }
+
+  // Call getStatusDetail with the new value
   getStatusDetail(value);
 }
-
 async function deleteDeal(name) {
   await call('frappe.client.delete', {
     doctype: 'CRM Deal',
@@ -853,3 +895,4 @@ function openEmailBox() {
   display: flex;
 }
 </style>
+
