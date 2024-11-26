@@ -61,3 +61,11 @@
 .status-option button {
 	min-width: 200px;
 }
+
+.pricetag polygon {
+    stroke: #7e368d !important;
+}
+
+.crm-field-custom path {
+    fill: #7e368d !important;
+}

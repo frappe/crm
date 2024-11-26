@@ -302,8 +302,8 @@
                           <PhoneIcon class="h-4 w-4" />
                           {{ contact.mobile_no }}
                         </div>
-                        <div v-if="contact.custom_buying_role" class="flex items-center gap-3 p-1 py-1.5">
-                          <PriceTagIcon class="h-4 w-4" />
+                        <div  class="flex items-center gap-3 p-1 py-1.5">
+                          <PriceTagIcon class="h-4 w-4 pricetag" />
                           {{ contact.custom_buying_role }}
                         </div>
                       </div>

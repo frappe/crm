@@ -27,7 +27,7 @@
             <div
               v-for="field in detailFields"
               :key="field.name"
-              class="flex h-7 items-center gap-2 text-base text-gray-800"
+              class="flex h-7 items-center gap-2 text-base text-gray-800 crm-field-custom"
             >
               <Tooltip :text="field.label">
                 <div class="grid w-7 place-content-center">
