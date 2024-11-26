@@ -50,3 +50,14 @@
     $ bench browse sitename.localhost --user Administrator
     ```
 5. Access the crm page at `sitename.localhost:8000/next-crm` in your web browser.
+
+### Changes other than DocType
+
+1. App renamed to Next CRM
+2. URL changed from /crm to /next-crm
+3. Lead is compulsory to create Opportunity (being reconsidered)
+4. ERPNext integration enabled by default
+
+### Removed Features:
+1. CRM Invitation –  Permissions from the ERPNext CRM module are used directly.
+2. Ability to link to ERPNext on a different site –  Not required as this is tightly integrated with the ERPNext CRM module.
