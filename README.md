@@ -58,6 +58,6 @@
 3. Lead is compulsory to create Opportunity (being reconsidered)
 4. ERPNext integration enabled by default
 
-### Removed Features:
+### Removed Features
 1. CRM Invitation –  Permissions from the ERPNext CRM module are used directly.
 2. Ability to link to ERPNext on a different site –  Not required as this is tightly integrated with the ERPNext CRM module.
