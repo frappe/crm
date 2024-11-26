@@ -20,6 +20,7 @@
     :value="filter.value"
     :doctype="filter.options"
     :placeholder="filter.label"
+    :filters="filter.filters"
     @change="(data) => updateFilter(filter, data)"
   />
   <component
