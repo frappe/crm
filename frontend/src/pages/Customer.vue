@@ -509,8 +509,8 @@ function getOpportunityRowObject(opportunity) {
       label: opportunity.status,
       color: getDealStatus(opportunity.status)?.iconColorClass,
     },
-    email: opportunity.email,
-    mobile_no: opportunity.mobile_no,
+    email: opportunity.contact_email,
+    mobile_no: opportunity.contact_mobile,
     opportunity_owner: {
       label: opportunity.opportunity_owner && getUser(opportunity.opportunity_owner).full_name,
       ...(opportunity.opportunity_owner && getUser(opportunity.opportunity_owner)),

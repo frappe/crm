@@ -35,9 +35,12 @@ def update_opportunities_email_mobile_no(doc):
 
     for linked_opportunity in linked_opportunities:
         opportunity = frappe.get_cached_doc("Opportunity", linked_opportunity.parent)
-        if opportunity.email != doc.email_id or opportunity.mobile_no != doc.mobile_no:
-            opportunity.email = doc.email_id
-            opportunity.mobile_no = doc.mobile_no
+        if (
+            opportunity.contact_email != doc.email_id
+            or opportunity.contact_mobile != doc.mobile_no
+        ):
+            opportunity.contact_email = doc.email_id
+            opportunity.contact_mobile = doc.mobile_no
             opportunity.save(ignore_permissions=True)
 
 
@@ -130,7 +133,7 @@ def set_as_primary(contact, field, value):
 
     contact = frappe.get_doc("Contact", contact)
 
-    if field == "email":
+    if field == "email_id":
         for email in contact.email_ids:
             if email.email_id == value:
                 email.is_primary = 1
