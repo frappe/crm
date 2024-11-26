@@ -18,15 +18,15 @@
 ## Key Features
 
 -   **Views:** Create custom views which is a combination of filters, sort and columns.
-    -   **Pinned View:** Pin important leads and deals in the sidebar.
+    -   **Pinned View:** Pin important leads and opportunities in the sidebar.
     -   **Public View:** Share views with all users.
     -   **Saved View:** Save views for later use.
 -   **Email Communication:** Send and receive emails directly from the Lead/Opportunity Page.
 -   **Email Templates:** Create and use email templates for faster communication.
--   **Comments:** Add comments to leads and deals to keep track of the conversation.
+-   **Comments:** Add comments to leads and opportunities to keep track of the conversation.
 -   **Notifications:** Get notified when someone mentions you in a comment.
--   **Service Level Agreement:** Set SLA for leads and deals and get notified when the SLA is breached.
--   **Assignment Rule:** Automatically assign leads and deals to users based on the criteria.
+-   **Service Level Agreement:** Set SLA for leads and opportunities and get notified when the SLA is breached.
+-   **Assignment Rule:** Automatically assign leads and opportunities to users based on the criteria.
 -   **ToDos:** Create todos for leads and opportunity.
 -   **Notes:** Add notes to leads and opportunity.
 -   **Call Logs:** See the call logs with call details and recordings.
