@@ -61,3 +61,5 @@
 ### Removed Features
 1. CRM Invitation –  Permissions from the ERPNext CRM module are used directly.
 2. Ability to link to ERPNext on a different site –  Not required as this is tightly integrated with the ERPNext CRM module.
+
+We’d love your feedback! Please check it out and share your thoughts on <a href="https://discuss.frappe.io/t/next-crm-integrating-frappe-crm-seamlessly-with-erpnexts-crm-module/138001">Discuss Forum</a>.
