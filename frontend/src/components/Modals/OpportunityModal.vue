@@ -158,11 +158,11 @@ function createOpportunity() {
           return error.value
         }
       }
-      if (opportunity.mobile_no && isNaN(opportunity.mobile_no.replace(/[-+() ]/g, ''))) {
+      if (opportunity.contact_mobile && isNaN(opportunity.contact_mobile.replace(/[-+() ]/g, ''))) {
         error.value = __('Mobile No should be a number')
         return error.value
       }
-      if (opportunity.email && !opportunity.email.includes('@')) {
+      if (opportunity.contact_email && !opportunity.contact_email.includes('@')) {
         error.value = __('Invalid Email')
         return error.value
       }
