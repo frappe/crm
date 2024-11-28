@@ -119,7 +119,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
+        <div class="text-ink-gray-4" v-else>{{ __('No Title') }}</div>
       </div>
     </template>
     <template #fields="{ fieldName, itemName }">
@@ -198,7 +198,7 @@
     </template>
     <template #actions="{ itemName }">
       <div class="flex gap-2 items-center justify-between">
-        <div class="text-gray-600 flex items-center gap-1.5">
+        <div class="text-ink-gray-5 flex items-center gap-1.5">
           <EmailAtIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_email_count').label">
             {{ getRow(itemName, '_email_count').label }}
@@ -252,7 +252,7 @@
   />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
     <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <LeadsIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Leads')]) }}</span>

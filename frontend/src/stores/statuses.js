@@ -60,7 +60,7 @@ export const statusesStore = defineStore('crm-statuses', () => {
   function colorClasses(color, onlyIcon = false) {
     let textColor = `!text-${color}-600`
     if (color == 'black') {
-      textColor = '!text-gray-900'
+      textColor = '!text-ink-gray-9'
     } else if (['gray', 'green'].includes(color)) {
       textColor = `!text-${color}-700`
     }

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex w-full items-center justify-between rounded bg-transparent p-1 pl-2 text-base text-gray-800 transition-colors hover:bg-gray-200 active:bg-gray-300"
+    class="group flex w-full items-center justify-between rounded bg-transparent p-1 pl-2 text-base text-ink-gray-8 transition-colors hover:bg-surface-gray-3 active:bg-surface-gray-4"
   >
     <div class="flex flex-1 items-center justify-between gap-7">
       <div v-show="!editMode">{{ option.value }}</div>
@@ -20,7 +20,7 @@
           variant="ghost"
           :label="__('Save')"
           size="sm"
-          class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+          class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
           @click="saveOption"
         />
         <Tooltip text="Set As Primary" v-if="!isNew && !option.selected">
@@ -28,7 +28,7 @@
             <Button
               variant="ghost"
               size="sm"
-              class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+              class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
               @click="option.onClick"
             >
               <SuccessIcon />
@@ -40,7 +40,7 @@
             <Button
               variant="ghost"
               size="sm"
-              class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+              class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
               @click="toggleEditMode"
             >
               <EditIcon />
@@ -53,7 +53,7 @@
               variant="ghost"
               icon="x"
               size="sm"
-              class="opacity-0 hover:bg-gray-300 group-hover:opacity-100"
+              class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
               @click="() => option.onDelete(option, isNew)"
             />
           </div>

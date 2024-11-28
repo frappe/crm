@@ -4,7 +4,7 @@
       <template #item="{ element: section }">
         <div class="flex flex-col gap-3">
           <div
-            class="flex items-center justify-between rounded px-2.5 py-2 bg-gray-50"
+            class="flex items-center justify-between rounded px-2.5 py-2 bg-surface-menu-bar"
           >
             <div
               class="flex max-w-fit cursor-pointer items-center gap-2 text-base leading-4"
@@ -12,7 +12,7 @@
             >
               <FeatherIcon
                 name="chevron-right"
-                class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+                class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': section.opened }"
               />
               <div v-if="!section.editingLabel">
@@ -62,7 +62,7 @@
             >
               <template #item="{ element: field }">
                 <div
-                  class="px-2.5 py-2 border rounded text-base leading-4 text-gray-800 flex items-center justify-between gap-2"
+                  class="px-2.5 py-2 border rounded text-base leading-4 text-ink-gray-8 flex items-center justify-between gap-2"
                 >
                   <div class="flex items-center gap-2">
                     <DragVerticalIcon class="h-3.5 cursor-grab" />
@@ -87,7 +87,7 @@
             >
               <template #target="{ togglePopover }">
                 <Button
-                  class="w-full h-8 mt-1.5 !border-gray-200 hover:!border-gray-300"
+                  class="w-full h-8 mt-1.5 !border-outline-gray-modals hover:!border-outline-gray-2"
                   variant="outline"
                   @click="togglePopover()"
                   :label="__('Add Field')"
@@ -100,7 +100,7 @@
               <template #item-label="{ option }">
                 <div class="flex flex-col gap-1">
                   <div>{{ option.label }}</div>
-                  <div class="text-gray-500 text-sm">
+                  <div class="text-ink-gray-4 text-sm">
                     {{ `${option.fieldname} - ${option.fieldtype}` }}
                   </div>
                 </div>
@@ -110,7 +110,7 @@
               v-else
               class="flex justify-center items-center border rounded border-dashed p-3"
             >
-              <div class="text-sm text-gray-500">
+              <div class="text-sm text-ink-gray-4">
                 {{ __('This section is not editable') }}
               </div>
             </div>

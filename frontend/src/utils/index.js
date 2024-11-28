@@ -194,7 +194,7 @@ export function errorMessage(title, message) {
     title: title || 'Error',
     text: message,
     icon: 'x',
-    iconClasses: 'text-red-600',
+    iconClasses: 'text-ink-red-4',
   })
 }
 
@@ -215,7 +215,7 @@ export function copyToClipboard(text) {
       title: 'Copied to clipboard',
       text: text,
       icon: 'check',
-      iconClasses: 'text-green-600',
+      iconClasses: 'text-ink-green-3',
     })
   }
 }

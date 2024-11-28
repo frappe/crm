@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex flex-wrap gap-1 min-h-20 p-1.5 cursor-text rounded h-7 text-base border border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-800 transition-colors w-full"
+      class="flex flex-wrap gap-1 min-h-20 p-1.5 cursor-text rounded h-7 text-base border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full"
       @click="setFocus"
     >
       <Button
@@ -25,7 +25,7 @@
       <div class="flex-1">
         <TextInput
           ref="search"
-          class="w-full border-none bg-white hover:bg-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
+          class="w-full border-none bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
           type="text"
           v-model="query"
           placeholder="example@email.com"

@@ -2,7 +2,7 @@
   <div v-show="showCallPopup" v-bind="$attrs">
     <div
       ref="callPopup"
-      class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-lg bg-gray-900 p-4 text-gray-300 shadow-2xl"
+      class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-lg bg-surface-gray-7 p-4 text-ink-gray-2 shadow-2xl"
       :style="style"
     >
       <div class="flex flex-row-reverse items-center gap-1">
@@ -22,7 +22,7 @@
           <div class="text-xl font-medium">
             {{ contact.full_name }}
           </div>
-          <div class="text-sm text-gray-600">{{ contact.mobile_no }}</div>
+          <div class="text-sm text-ink-gray-5">{{ contact.mobile_no }}</div>
         </div>
         <CountUpTimer ref="counterUp">
           <div v-if="onCall" class="my-1 text-base">
@@ -54,15 +54,15 @@
           <Button class="rounded-full">
             <template #icon>
               <NoteIcon
-                class="h-4 w-4 cursor-pointer rounded-full text-gray-900"
+                class="h-4 w-4 cursor-pointer rounded-full text-ink-gray-9"
                 @click="showNoteModal = true"
               />
             </template>
           </Button>
-          <Button class="rounded-full bg-red-600 hover:bg-red-700">
+          <Button class="rounded-full bg-surface-red-5 hover:bg-surface-red-6">
             <template #icon>
               <PhoneIcon
-                class="h-4 w-4 rotate-[135deg] fill-white text-white"
+                class="h-4 w-4 rotate-[135deg] fill-white text-ink-white"
                 @click="hangUpCall"
               />
             </template>
@@ -114,7 +114,7 @@
   </div>
   <div
     v-show="showSmallCallWindow"
-    class="ml-2 flex cursor-pointer select-none items-center justify-between gap-3 rounded-lg bg-gray-900 px-2 py-[7px] text-base text-gray-300"
+    class="ml-2 flex cursor-pointer select-none items-center justify-between gap-3 rounded-lg bg-surface-gray-7 px-2 py-[7px] text-base text-ink-gray-2"
     @click="toggleCallWindow"
     v-bind="$attrs"
   >

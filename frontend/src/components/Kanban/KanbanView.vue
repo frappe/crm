@@ -11,13 +11,13 @@
       <template #item="{ element: column }">
         <div
           v-if="!column.column.delete"
-          class="flex flex-col gap-2.5 min-w-72 w-72 hover:bg-gray-100 rounded-lg p-2.5"
+          class="flex flex-col gap-2.5 min-w-72 w-72 hover:bg-surface-gray-2 rounded-lg p-2.5"
         >
           <div class="flex gap-2 items-center group justify-between">
             <div class="flex items-center text-base">
               <NestedPopover>
                 <template #target>
-                  <Button variant="ghost" size="sm" class="hover:!bg-gray-100">
+                  <Button variant="ghost" size="sm" class="hover:!bg-surface-gray-2">
                     <IndicatorIcon
                       :class="colorClasses(column.column.color, true)"
                     />
@@ -25,7 +25,7 @@
                 </template>
                 <template #body="{ close }">
                   <div
-                    class="flex flex-col gap-3 px-3 py-2.5 rounded-lg border border-gray-100 bg-white shadow-xl"
+                    class="flex flex-col gap-3 px-3 py-2.5 rounded-lg border border-gray-100 bg-surface-white shadow-xl"
                   >
                     <div class="flex gap-1">
                       <Button
@@ -80,7 +80,7 @@
               <template #item="{ element: fields }">
                 <component
                   :is="options.getRoute ? 'router-link' : 'div'"
-                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-white text-base flex flex-col"
+                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-surface-white text-base flex flex-col"
                   :data-name="fields.name"
                   v-bind="{
                     to: options.getRoute ? options.getRoute(fields) : undefined,
@@ -97,7 +97,7 @@
                       <div v-if="fields[titleField]">
                         {{ fields[titleField] }}
                       </div>
-                      <div class="text-gray-500" v-else>
+                      <div class="text-ink-gray-4" v-else>
                         {{ __('No Title') }}
                       </div>
                     </div>
@@ -265,7 +265,7 @@ function updateColumn(d) {
 function colorClasses(color, onlyIcon = false) {
   let textColor = `!text-${color}-600`
   if (color == 'black') {
-    textColor = '!text-gray-900'
+    textColor = '!text-ink-gray-9'
   } else if (['gray', 'green'].includes(color)) {
     textColor = `!text-${color}-700`
   }

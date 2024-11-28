@@ -5,7 +5,7 @@
       :key="s.label"
       class="flex items-center gap-2 text-base leading-5"
     >
-      <div class="sm:w-[106px] w-36 text-sm text-gray-600">
+      <div class="sm:w-[106px] w-36 text-sm text-ink-gray-5">
         {{ __(s.label) }}
       </div>
       <div class="grid min-h-[28px] items-center">

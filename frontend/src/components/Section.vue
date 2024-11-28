@@ -7,7 +7,7 @@
       >
         <FeatherIcon
           name="chevron-right"
-          class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+          class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
           :class="{ 'rotate-90': opened }"
         />
         {{ __(label) || __('Untitled') }}

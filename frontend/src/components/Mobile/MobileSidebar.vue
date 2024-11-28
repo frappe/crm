@@ -11,7 +11,7 @@
         leave-to="-translate-x-full"
       >
         <div
-          class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-gray-50 transition-all duration-300 ease-in-out"
+          class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-surface-menu-bar transition-all duration-300 ease-in-out"
         >
           <div><UserDropdown class="p-2" /></div>
           <div class="flex-1 overflow-y-auto">
@@ -41,12 +41,12 @@
                 <template #header="{ opened, hide, toggle }">
                   <div
                     v-if="!hide"
-                    class="ml-2 mt-4 flex h-7 w-auto cursor-pointer gap-1.5 px-1 text-base font-medium text-gray-600 opacity-100 transition-all duration-300 ease-in-out"
+                    class="ml-2 mt-4 flex h-7 w-auto cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 opacity-100 transition-all duration-300 ease-in-out"
                     @click="toggle()"
                   >
                     <FeatherIcon
                       name="chevron-right"
-                      class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+                      class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                       :class="{ 'rotate-90': opened }"
                     />
                     <span>{{ __(view.name) }}</span>

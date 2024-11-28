@@ -14,7 +14,7 @@
   >
     <template #body-title>
       <div class="flex items-center gap-3">
-        <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+        <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
           {{ editMode ? __('Edit Note') : __('Create Note') }}
         </h3>
         <Button
@@ -37,7 +37,7 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">{{ __('Title') }}</div>
+          <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Title') }}</div>
           <TextInput
             ref="title"
             variant="outline"
@@ -46,11 +46,11 @@
           />
         </div>
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">{{ __('Content') }}</div>
+          <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Content') }}</div>
           <TextEditor
             variant="outline"
             ref="content"
-            editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm focus:bg-white focus:border-gray-500 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-800 transition-colors"
+            editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_note.content"
             @change="(val) => (_note.content = val)"

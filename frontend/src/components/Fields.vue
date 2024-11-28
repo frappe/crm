@@ -33,11 +33,11 @@
           >
             <div
               v-if="field.type != 'Check'"
-              class="mb-2 text-sm text-gray-600"
+              class="mb-2 text-sm text-ink-gray-5"
             >
               {{ __(field.label) }}
               <span
-                class="text-red-500"
+                class="text-ink-red-3"
                 v-if="
                   field.mandatory ||
                   (field.mandatory_depends_on && field.mandatory_via_depends_on)
@@ -77,11 +77,11 @@
                 :disabled="Boolean(field.read_only)"
               />
               <label
-                class="text-sm text-gray-600"
+                class="text-sm text-ink-gray-5"
                 @click="data[field.name] = !data[field.name]"
               >
                 {{ __(field.label) }}
-                <span class="text-red-500" v-if="field.mandatory">*</span>
+                <span class="text-ink-red-3" v-if="field.mandatory">*</span>
               </label>
             </div>
             <div class="flex gap-1" v-else-if="field.type === 'Link'">
