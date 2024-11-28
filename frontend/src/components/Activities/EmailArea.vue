@@ -22,7 +22,7 @@
           variant="subtle"
           :theme="status.color"
         />
-        <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+        <Tooltip :text="formatDate(activity.creation)">
           <div class="text-sm text-ink-gray-5">
             {{ __(timeAgo(activity.creation)) }}
           </div>
@@ -92,7 +92,7 @@ import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
 import { Badge, Tooltip } from 'frappe-ui'
-import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { timeAgo, formatDate } from '@/utils'
 import { computed } from 'vue'
 
 const props = defineProps({

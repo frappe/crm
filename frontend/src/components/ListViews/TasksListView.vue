@@ -40,12 +40,12 @@
       >
         <div v-if="column.key === 'due_date'">
           <Tooltip
-            :text="item && dateFormat(item, 'ddd, MMM D, YYYY | hh:mm a')"
+            :text="item && formatDate(item, 'E, MMM d, yyyy | hh:mm aaa')"
           >
             <div class="flex items-center gap-2 truncate text-base">
               <div><CalendarIcon /></div>
               <div v-if="item" class="truncate">
-                {{ dateFormat(item, 'D MMM, hh:mm a') }}
+                {{ formatDate(item, 'd MMM, hh:mm aaa') }}
               </div>
             </div>
           </Tooltip>
@@ -167,7 +167,7 @@ import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
-import { dateFormat } from '@/utils'
+import { formatDate } from '@/utils'
 import {
   Avatar,
   ListView,

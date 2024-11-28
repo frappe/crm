@@ -1,9 +1,8 @@
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
-import { useDateFormat, useTimeAgo } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
 import { gemoji } from 'gemoji'
-import { toast } from 'frappe-ui'
+import { toast, convertToUserTimezone, formatAsTimeAgo } from 'frappe-ui'
 import { h } from 'vue'
 
 export function createToast(options) {
@@ -38,16 +37,13 @@ export function formatTime(seconds) {
   return formattedTime.trim()
 }
 
-export function dateFormat(date, format) {
-  const _format = format || 'DD-MM-YYYY HH:mm:ss'
-  return useDateFormat(date, _format).value
+export function formatDate(date, format = 'E, MMM d, yyyy h:mm a') {
+  return convertToUserTimezone(date, format)
 }
 
 export function timeAgo(date) {
-  return useTimeAgo(date).value
+  return formatAsTimeAgo(date)
 }
-
-export const dateTooltipFormat = 'ddd, MMM D, YYYY h:mm A'
 
 export function taskStatusOptions(action, data) {
   return ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled'].map(

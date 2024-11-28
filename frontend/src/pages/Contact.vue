@@ -214,8 +214,7 @@ import DealsListView from '@/components/ListViews/DealsListView.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import {
-  dateFormat,
-  dateTooltipFormat,
+  formatDate,
   timeAgo,
   formatNumberIntoCurrency,
   createToast,
@@ -628,7 +627,7 @@ function getDealRowObject(deal) {
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
     modified: {
-      label: dateFormat(deal.modified, dateTooltipFormat),
+      label: formatDate(deal.modified),
       timeAgo: __(timeAgo(deal.modified)),
     },
   }

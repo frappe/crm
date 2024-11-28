@@ -17,7 +17,7 @@
         }}</span>
       </div>
       <div class="ml-auto whitespace-nowrap">
-        <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+        <Tooltip :text="formatDate(activity.creation)">
           <div class="text-sm text-ink-gray-5">
             {{ __(timeAgo(activity.creation)) }}
           </div>
@@ -56,7 +56,7 @@
         </div>
       </div>
       <div class="flex items-center flex-wrap gap-2">
-        <Badge :label="dateFormat(activity.creation, 'MMM D, dddd')">
+        <Badge :label="formatDate(activity.creation, 'MMM d, EEEE')">
           <template #prefix>
             <CalendarIcon class="size-3" />
           </template>
@@ -97,7 +97,7 @@ import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
 import { statusLabelMap, statusColorMap } from '@/utils/callLog.js'
-import { dateFormat, timeAgo, dateTooltipFormat } from '@/utils'
+import { formatDate, timeAgo } from '@/utils'
 import { Avatar, Badge, Tooltip } from 'frappe-ui'
 
 const props = defineProps({

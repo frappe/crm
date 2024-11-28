@@ -75,7 +75,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import EmailTemplatesListView from '@/components/ListViews/EmailTemplatesListView.vue'
 import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
-import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
+import { formatDate, timeAgo } from '@/utils'
 import { computed, ref } from 'vue'
 
 const emailTemplatesListView = ref(null)
@@ -100,7 +100,7 @@ const rows = computed(() => {
 
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(emailTemplate[row], dateTooltipFormat),
+          label: formatDate(emailTemplate[row]),
           timeAgo: timeAgo(emailTemplate[row]),
         }
       }

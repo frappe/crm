@@ -126,7 +126,7 @@
 import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
-import { createToast, dateFormat, convertSize } from '@/utils'
+import { createToast, formatDate, convertSize } from '@/utils'
 import { FormControl, CircularProgressBar, createResource } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 
@@ -242,7 +242,7 @@ function captureImage() {
 }
 
 function uploadViaCamera() {
-  const nowDatetime = dateFormat(new Date(), 'YYYY_MM_DD_HH_mm_ss')
+  const nowDatetime = formatDate(new Date(), 'yyyy_MM_dd_HH_mm_ss')
   let filename = `capture_${nowDatetime}.png`
   urlToFile(cameraImage.value, filename, 'image/png').then((file) => {
     addFiles([file])

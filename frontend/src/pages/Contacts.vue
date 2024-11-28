@@ -81,7 +81,7 @@ import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { organizationsStore } from '@/stores/organizations.js'
-import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
+import { formatDate, timeAgo } from '@/utils'
 import { ref, computed } from 'vue'
 
 const { getOrganization } = organizationsStore()
@@ -122,7 +122,7 @@ const rows = computed(() => {
         }
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(contact[row], dateTooltipFormat),
+          label: formatDate(contact[row]),
           timeAgo: __(timeAgo(contact[row])),
         }
       }

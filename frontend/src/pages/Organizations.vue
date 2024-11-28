@@ -78,13 +78,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
-import {
-  dateFormat,
-  dateTooltipFormat,
-  timeAgo,
-  website,
-  formatNumberIntoCurrency,
-} from '@/utils'
+import { formatDate, timeAgo, website, formatNumberIntoCurrency } from '@/utils'
 import { ref, computed } from 'vue'
 
 const organizationsListView = ref(null)
@@ -123,7 +117,7 @@ const rows = computed(() => {
         )
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(organization[row], dateTooltipFormat),
+          label: formatDate(organization[row]),
           timeAgo: __(timeAgo(organization[row])),
         }
       }

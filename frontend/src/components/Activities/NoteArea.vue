@@ -41,7 +41,7 @@
           {{ getUser(note.owner).full_name }}
         </div>
       </div>
-      <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
+      <Tooltip :text="formatDate(note.modified)">
         <div class="truncate text-sm text-ink-gray-7">
           {{ __(timeAgo(note.modified)) }}
         </div>
@@ -51,7 +51,7 @@
 </template>
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
-import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { timeAgo, formatDate } from '@/utils'
 import { Tooltip, Dropdown, TextEditor } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 

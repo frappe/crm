@@ -205,7 +205,7 @@ import TasksListView from '@/components/ListViews/TasksListView.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import { usersStore } from '@/stores/users'
-import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
+import { formatDate, timeAgo } from '@/utils'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -261,7 +261,7 @@ function parseRows(rows) {
 
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(task[row], dateTooltipFormat),
+          label: formatDate(task[row]),
           timeAgo: __(timeAgo(task[row])),
         }
       } else if (row == 'assigned_to') {
