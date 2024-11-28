@@ -96,15 +96,9 @@
           />
           <FormControl
             v-else-if="
-              ['email', 'number', 'date', 'password', 'textarea'].includes(
-                field.type,
-              )
+              ['email', 'number', 'password', 'textarea'].includes(field.type)
             "
             class="form-control"
-            :class="{
-              '[&_input]:text-ink-gray-4':
-                field.type === 'date' && !data[field.name],
-            }"
             :type="field.type"
             :value="data[field.name]"
             :placeholder="field.placeholder"
@@ -154,6 +148,24 @@
             @change="(data) => emit('update', field.name, data)"
             :onCreate="field.create"
           />
+          <div v-else-if="field.type === 'datetime'" class="form-control">
+            <DateTimePicker
+              icon-left=""
+              :value="data[field.name]"
+              :placeholder="field.placeholder"
+              placement="left-start"
+              @change="(data) => emit('update', field.name, data)"
+            />
+          </div>
+          <div v-else-if="field.type === 'date'" class="form-control">
+            <DatePicker
+              icon-left=""
+              :value="data[field.name]"
+              :placeholder="field.placeholder"
+              placement="left-start"
+              @change="(data) => emit('update', field.name, data)"
+            />
+          </div>
           <FormControl
             v-else
             class="form-control"
@@ -190,7 +202,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
-import { Tooltip } from 'frappe-ui'
+import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
