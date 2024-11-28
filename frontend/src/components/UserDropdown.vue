@@ -80,11 +80,6 @@ let dropdownOptions = ref([
         component: markRaw(Apps),
       },
       {
-        icon: computed(() => (theme.value === 'dark' ? 'sun' : 'moon')),
-        label: computed(() => __('Toggle theme')),
-        onClick: toggleTheme,
-      },
-      {
         icon: 'life-buoy',
         label: computed(() => __('Support')),
         onClick: () => window.open('https://t.me/frappecrm', '_blank'),
@@ -100,6 +95,11 @@ let dropdownOptions = ref([
     group: 'Others',
     hideLabel: true,
     items: [
+      {
+        icon: computed(() => (theme.value === 'dark' ? 'moon' : 'sun')),
+        label: computed(() => __('Toggle theme')),
+        onClick: toggleTheme,
+      },
       {
         icon: 'credit-card',
         label: computed(() => __('Billing')),
