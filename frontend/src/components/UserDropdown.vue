@@ -53,7 +53,8 @@ import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { showSettings } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
-import { computed, ref, markRaw, inject } from 'vue'
+import { useStorage } from '@vueuse/core'
+import { computed, ref, markRaw, inject, onMounted } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -68,6 +69,7 @@ const { getUser } = usersStore()
 const user = computed(() => getUser() || {})
 
 const isFCSite = inject('isFCSite')
+const theme = useStorage('theme', 'light')
 
 let dropdownOptions = ref([
   {
@@ -76,6 +78,11 @@ let dropdownOptions = ref([
     items: [
       {
         component: markRaw(Apps),
+      },
+      {
+        icon: computed(() => (theme.value === 'dark' ? 'sun' : 'moon')),
+        label: computed(() => __('Toggle theme')),
+        onClick: toggleTheme,
       },
       {
         icon: 'life-buoy',
@@ -112,4 +119,16 @@ let dropdownOptions = ref([
     ],
   },
 ])
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme')
+  theme.value = currentTheme === 'dark' ? 'light' : 'dark'
+  document.documentElement.setAttribute('data-theme', theme.value)
+}
+
+onMounted(() => {
+  if (['light', 'dark'].includes(theme.value)) {
+    document.documentElement.setAttribute('data-theme', theme.value)
+  }
+})
 </script>
