@@ -10,7 +10,7 @@
       left: 'calc(100% + 1px)',
     }"
   >
-    <div class="flex h-screen flex-col">
+    <div class="flex h-screen flex-col text-ink-gray-9">
       <div
         class="z-20 flex items-center justify-between border-b bg-surface-white px-5 py-2.5"
       >
@@ -38,7 +38,7 @@
       </div>
       <div
         v-if="notifications.data?.length"
-        class="divide-y overflow-auto text-base"
+        class="divide-y divide-outline-gray-modals overflow-auto text-base"
       >
         <RouterLink
           v-for="n in notifications.data"

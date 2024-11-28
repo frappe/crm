@@ -48,7 +48,7 @@
     </Tabs>
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
-        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
+        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
         @click="copyToClipboard(deal.data.name)"
       >
         {{ __(deal.data.name) }}
@@ -64,7 +64,7 @@
             />
           </div>
         </Tooltip>
-        <div class="flex flex-col gap-2.5 truncate">
+        <div class="flex flex-col gap-2.5 truncate text-ink-gray-9">
           <Tooltip :text="organization.data?.name || __('Set an organization')">
             <div class="truncate text-2xl font-medium">
               {{ organization.data?.name || __('Untitled') }}

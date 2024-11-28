@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-8">
+  <div class="flex h-full flex-col gap-8 p-8 text-ink-gray-9">
     <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
       {{ __('Send Invites To') }}
     </h2>
@@ -18,7 +18,6 @@
         type="select"
         class="mt-4"
         v-model="role"
-        variant="outline"
         :label="__('Invite as')"
         :options="[
           { label: __('Regular Access'), value: 'Sales User' },
@@ -35,7 +34,7 @@
         </div>
         <ul class="flex flex-col gap-1">
           <li
-            class="flex items-center justify-between px-2 py-1 rounded-lg bg-surface-menu-bar"
+            class="flex items-center justify-between px-2 py-1 rounded-lg bg-surface-gray-2"
             v-for="user in pendingInvitations.data"
             :key="user.name"
           >

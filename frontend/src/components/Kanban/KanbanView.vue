@@ -17,7 +17,11 @@
             <div class="flex items-center text-base">
               <NestedPopover>
                 <template #target>
-                  <Button variant="ghost" size="sm" class="hover:!bg-surface-gray-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="hover:!bg-surface-gray-2"
+                  >
                     <IndicatorIcon
                       :class="colorClasses(column.column.color, true)"
                     />
@@ -25,7 +29,7 @@
                 </template>
                 <template #body="{ close }">
                   <div
-                    class="flex flex-col gap-3 px-3 py-2.5 rounded-lg border border-gray-100 bg-surface-white shadow-xl"
+                    class="flex flex-col gap-3 px-3 py-2.5 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
                     <div class="flex gap-1">
                       <Button
@@ -48,7 +52,7 @@
                   </div>
                 </template>
               </NestedPopover>
-              <div>{{ column.column.name }}</div>
+              <div class="text-ink-gray-9">{{ column.column.name }}</div>
             </div>
             <div class="flex">
               <Dropdown :options="actions(column)">
@@ -80,7 +84,7 @@
               <template #item="{ element: fields }">
                 <component
                   :is="options.getRoute ? 'router-link' : 'div'"
-                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-surface-white text-base flex flex-col"
+                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-surface-white text-base flex flex-col text-ink-gray-9"
                   :data-name="fields.name"
                   v-bind="{
                     to: options.getRoute ? options.getRoute(fields) : undefined,

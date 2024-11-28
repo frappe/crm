@@ -60,11 +60,13 @@
                         clip-path: inset(22px 0 0 0);
                       "
                     >
-                      <CameraIcon class="h-6 w-6 cursor-pointer text-ink-white" />
+                      <CameraIcon
+                        class="h-6 w-6 cursor-pointer text-white"
+                      />
                     </div>
                   </component>
                 </div>
-                <div class="flex flex-col gap-2 truncate">
+                <div class="flex flex-col gap-2 truncate text-ink-gray-9">
                   <div class="truncate text-2xl font-medium">
                     <span v-if="contact.data.salutation">
                       {{ contact.data.salutation + '. ' }}
@@ -150,7 +152,7 @@
         </div>
       </div>
     </Resizer>
-    <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
+    <Tabs class="!h-full" v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-outline-gray-3 hover:text-ink-gray-9"

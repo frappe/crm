@@ -1,31 +1,16 @@
 <template>
   <svg
     width="16"
-    height="17"
-    viewBox="0 0 16 17"
+    height="16"
+    viewBox="0 0 16 16"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M2 4.5H14"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M4 8.5H12"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M6.5 12.5H9.5"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M2 4.16675C1.72386 4.16675 1.5 4.39061 1.5 4.66675C1.5 4.94289 1.72386 5.16675 2 5.16675H14C14.2761 5.16675 14.5 4.94289 14.5 4.66675C14.5 4.39061 14.2761 4.16675 14 4.16675H2ZM3.49996 7.99761C3.49996 7.72147 3.72382 7.49761 3.99996 7.49761H12C12.2761 7.49761 12.5 7.72147 12.5 7.99761C12.5 8.27375 12.2761 8.49761 12 8.49761H3.99996C3.72382 8.49761 3.49996 8.27375 3.49996 7.99761ZM5.9 11.3289C5.9 11.0527 6.12386 10.8289 6.4 10.8289H9.6C9.87614 10.8289 10.1 11.0527 10.1 11.3289C10.1 11.605 9.87614 11.8289 9.6 11.8289H6.4C6.12386 11.8289 5.9 11.605 5.9 11.3289Z"
+      fill="currentColor"
     />
   </svg>
 </template>

@@ -41,9 +41,11 @@
             </template>
             <template #body="{ isOpen }">
               <div v-show="isOpen">
-                <div class="mt-1 rounded-lg bg-surface-white py-1 text-base shadow-2xl">
+                <div
+                  class="mt-1 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+                >
                   <ComboboxOptions
-                    class="my-1 max-h-[12rem] overflow-y-auto px-1.5"
+                    class="p-1.5 max-h-[12rem] overflow-y-auto"
                     static
                   >
                     <ComboboxOption
@@ -55,7 +57,7 @@
                       <li
                         :class="[
                           'flex cursor-pointer items-center rounded px-2 py-1 text-base',
-                          { 'bg-surface-gray-2': active },
+                          { 'bg-surface-gray-3': active },
                         ]"
                       >
                         <UserAvatar
@@ -146,16 +148,15 @@ const filterOptions = createResource({
   cache: [text.value, 'Contact'],
   params: { txt: text.value },
   transform: (data) => {
-    let allData = data
-      .map((option) => {
-        let fullName = option[0]
-        let email = option[1]
-        let name = option[2]
-        return {
-          label: fullName || name || email,
-          value: email,
-        }
-      })
+    let allData = data.map((option) => {
+      let fullName = option[0]
+      let email = option[1]
+      let name = option[2]
+      return {
+        label: fullName || name || email,
+        value: email,
+      }
+    })
     return allData
   },
 })

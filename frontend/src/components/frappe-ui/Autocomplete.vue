@@ -14,7 +14,7 @@
         >
           <div class="w-full">
             <button
-              class="flex w-full items-center justify-between focus:outline-none"
+              class="flex h-7 w-full items-center justify-between gap-2 rounded bg-surface-gray-2 px-2 py-1 transition-colors hover:bg-surface-gray-3 border border-transparent focus:border-outline-gray-4 focus:outline-none focus:ring-2 focus:ring-outline-gray-3"
               :class="inputClasses"
               @click="() => togglePopover()"
             >
@@ -41,11 +41,13 @@
       </template>
       <template #body="{ isOpen }">
         <div v-show="isOpen">
-          <div class="mt-1 rounded-lg bg-surface-white py-1 text-base shadow-2xl">
-            <div class="relative px-1.5 pt-0.5">
+          <div
+            class="relative mt-1 rounded-lg bg-surface-modal text-base shadow-2xl"
+          >
+            <div class="relative px-1.5 pt-1.5">
               <ComboboxInput
                 ref="search"
-                class="form-input w-full"
+                class="form-input w-full focus:bg-surface-gray-3 hover:bg-surface-gray-4 text-ink-gray-8"
                 type="text"
                 @change="
                   (e) => {
@@ -60,7 +62,7 @@
                 class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
                 @click="selectedValue = null"
               >
-                <FeatherIcon name="x" class="w-4" />
+                <FeatherIcon name="x" class="w-4 text-ink-gray-8" />
               </button>
             </div>
             <ComboboxOptions
@@ -75,7 +77,7 @@
               >
                 <div
                   v-if="group.group && !group.hideLabel"
-                  class="px-2.5 py-1.5 text-sm font-medium text-ink-gray-4"
+                  class="truncate bg-surface-modal px-2.5 py-1.5 text-sm font-medium text-ink-gray-5"
                 >
                   {{ group.group }}
                 </div>
@@ -88,8 +90,8 @@
                 >
                   <li
                     :class="[
-                      'flex items-center rounded px-2.5 py-1.5 text-base',
-                      { 'bg-surface-gray-2': active },
+                      'flex cursor-pointer items-center rounded px-2.5 py-1.5 text-base',
+                      { 'bg-surface-gray-3': active },
                     ]"
                   >
                     <slot
@@ -100,19 +102,24 @@
                       name="item-label"
                       v-bind="{ active, selected, option }"
                     >
-                      {{ option.label }}
+                      <div class="flex-1 truncate text-ink-gray-7">
+                        {{ option.label }}
+                      </div>
                     </slot>
                   </li>
                 </ComboboxOption>
               </div>
               <li
                 v-if="groups.length == 0"
-                class="mt-1.5 rounded-md px-2.5 py-1.5 text-base text-ink-gray-5"
+                class="my-1.5 rounded-md px-2.5 py-1.5 text-base text-ink-gray-5"
               >
                 No results found
               </li>
             </ComboboxOptions>
-            <div v-if="slots.footer" class="border-t p-1.5 pb-0.5">
+            <div
+              v-if="slots.footer"
+              class="border-t border-outline-gray-modals p-1.5"
+            >
               <slot
                 name="footer"
                 v-bind="{ value: search?.el._value, close }"
@@ -219,7 +226,7 @@ function filterOptions(options) {
   return options.filter((option) => {
     let searchTexts = [option.label, option.value]
     return searchTexts.some((text) =>
-      (text || '').toString().toLowerCase().includes(query.value.toLowerCase())
+      (text || '').toString().toLowerCase().includes(query.value.toLowerCase()),
     )
   })
 }
@@ -272,7 +279,9 @@ const inputClasses = computed(() => {
       'border border-outline-gray-2 bg-surface-white placeholder-ink-gray-4 hover:border-outline-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3',
     disabled: [
       'border bg-surface-menu-bar placeholder-ink-gray-3',
-      props.variant === 'outline' ? 'border-outline-gray-2' : 'border-transparent',
+      props.variant === 'outline'
+        ? 'border-outline-gray-2'
+        : 'border-transparent',
     ],
   }[variant]
 

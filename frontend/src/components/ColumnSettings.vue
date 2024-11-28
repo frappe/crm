@@ -12,7 +12,7 @@
     </template>
     <template #body="{ close }">
       <div
-        class="my-2 rounded-lg border border-gray-100 bg-surface-white p-1.5 shadow-xl"
+        class="my-2 p-1.5 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div v-if="!edit">
           <Draggable
@@ -49,7 +49,7 @@
               </div>
             </template>
           </Draggable>
-          <div class="mt-1.5 flex flex-col gap-1 border-t pt-1.5">
+          <div class="mt-1.5 flex flex-col gap-1 border-t border-outline-gray-modals pt-1.5">
             <Autocomplete
               value=""
               :options="fields"
@@ -114,7 +114,7 @@
                 placeholder="10rem"
                 :description="
                   __(
-                    'Width can be in number, pixel or rem (eg. 3, 30px, 10rem)'
+                    'Width can be in number, pixel or rem (eg. 3, 30px, 10rem)',
                   )
                 "
                 :debounce="500"
@@ -295,6 +295,6 @@ watchOnce(
     oldValues.value.columns = JSON.parse(JSON.stringify(val.columns))
     oldValues.value.rows = JSON.parse(JSON.stringify(val.rows))
     oldValues.value.isDefault = val.is_default
-  }
+  },
 )
 </script>

@@ -53,7 +53,7 @@
     </Tabs>
     <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
-        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
+        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
         @click="copyToClipboard(lead.data.name)"
       >
         {{ __(lead.data.name) }}
@@ -102,13 +102,13 @@
                     clip-path: inset(12px 0 0 0);
                   "
                 >
-                  <CameraIcon class="size-4 cursor-pointer text-ink-white" />
+                  <CameraIcon class="size-4 cursor-pointer text-white" />
                 </div>
               </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="lead.data.lead_name || __('Set first name')">
-                <div class="truncate text-2xl font-medium">
+                <div class="truncate text-2xl font-medium text-ink-gray-9">
                   {{ lead.data.lead_name || __('Untitled') }}
                 </div>
               </Tooltip>

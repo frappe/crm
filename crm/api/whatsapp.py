@@ -30,25 +30,27 @@ def notify_agent(doc):
         if doctype.startswith("CRM "):
             doctype = doctype[4:].lower()
         notification_text = f"""
-            <div class="mb-2 leading-5 text-gray-600">
-                <span class="font-medium text-gray-900">{ _('You') }</span>
+            <div class="mb-2 leading-5 text-ink-gray-5">
+                <span class="font-medium text-ink-gray-9">{ _('You') }</span>
                 <span>{ _('received a whatsapp message in {0}').format(doctype) }</span>
-                <span class="font-medium text-gray-900">{ doc.reference_name }</span>
+                <span class="font-medium text-ink-gray-9">{ doc.reference_name }</span>
             </div>
         """
         assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)
         for user in assigned_users:
-            notify_user({
-                "owner": doc.owner,
-                "assigned_to": user,
-                "notification_type": "WhatsApp",
-                "message": doc.message,
-                "notification_text": notification_text,
-                "reference_doctype": "WhatsApp Message",
-                "reference_docname": doc.name,
-                "redirect_to_doctype": doc.reference_doctype,
-                "redirect_to_docname": doc.reference_name,
-            })
+            notify_user(
+                {
+                    "owner": doc.owner,
+                    "assigned_to": user,
+                    "notification_type": "WhatsApp",
+                    "message": doc.message,
+                    "notification_text": notification_text,
+                    "reference_doctype": "WhatsApp Message",
+                    "reference_docname": doc.name,
+                    "redirect_to_doctype": doc.reference_doctype,
+                    "redirect_to_docname": doc.reference_name,
+                }
+            )
 
 
 def get_lead_or_deal_from_number(number):
@@ -92,6 +94,7 @@ def is_whatsapp_enabled():
         return False
     return frappe.get_cached_value("WhatsApp Settings", "WhatsApp Settings", "enabled")
 
+
 @frappe.whitelist()
 def is_whatsapp_installed():
     if not frappe.db.exists("DocType", "WhatsApp Settings"):
@@ -105,8 +108,8 @@ def get_whatsapp_messages(reference_doctype, reference_name):
         return []
     messages = []
 
-    if reference_doctype == 'CRM Deal':
-        lead = frappe.db.get_value(reference_doctype, reference_name, 'lead')
+    if reference_doctype == "CRM Deal":
+        lead = frappe.db.get_value(reference_doctype, reference_name, "lead")
         if lead:
             messages = frappe.get_all(
                 "WhatsApp Message",

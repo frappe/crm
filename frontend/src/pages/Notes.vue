@@ -31,7 +31,7 @@
         @click="editNote(note)"
       >
         <div class="flex items-center justify-between">
-          <div class="truncate text-lg font-medium">
+          <div class="truncate text-lg font-medium text-ink-gray-9">
             {{ note.title }}
           </div>
           <Dropdown

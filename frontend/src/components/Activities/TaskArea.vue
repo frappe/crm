@@ -2,7 +2,7 @@
   <div v-if="tasks.length">
     <div v-for="(task, i) in tasks" :key="task.name">
       <div
-        class="activity flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-surface-menu-bar"
+        class="activity flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-surface-gray-1"
         @click="modalRef.showTask(task)"
       >
         <div class="flex flex-1 flex-col gap-1.5 text-base truncate">
@@ -76,7 +76,7 @@
             <Button
               icon="more-horizontal"
               variant="ghosted"
-              class="hover:bg-surface-gray-4"
+              class="hover:bg-surface-gray-4 text-ink-gray-9"
             />
           </Dropdown>
         </div>

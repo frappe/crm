@@ -34,7 +34,9 @@
               variant="ghost"
               @click="toggleCC()"
               :class="[
-                cc ? '!bg-surface-gray-4 hover:bg-surface-gray-3' : '!text-ink-gray-4',
+                cc
+                  ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
+                  : '!text-ink-gray-4',
               ]"
             />
             <Button
@@ -42,7 +44,9 @@
               variant="ghost"
               @click="toggleBCC()"
               :class="[
-                bcc ? '!bg-surface-gray-4 hover:bg-surface-gray-3' : '!text-ink-gray-4',
+                bcc
+                  ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
+                  : '!text-ink-gray-4',
               ]"
             />
           </div>
@@ -73,8 +77,8 @@
         </div>
         <div class="sm:mx-10 mx-4 flex items-center gap-2 pb-2.5">
           <span class="text-xs text-ink-gray-4">{{ __('SUBJECT') }}:</span>
-          <TextInput
-            class="flex-1 border-none bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
+          <input
+            class="flex-1 border-none text-ink-gray-9 text-base bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
             v-model="subject"
           />
         </div>

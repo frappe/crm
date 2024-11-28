@@ -27,10 +27,8 @@
       </template>
       <template #item="{ item, active }">
         <button
-          :class="[
-            active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
-            'group flex gap-4 h-7 w-full justify-between items-center rounded px-2 text-base',
-          ]"
+          class="group flex text-ink-gray-6 gap-4 h-7 w-full justify-between items-center rounded px-2 text-base"
+          :class="{ 'bg-surface-gray-3': active }"
           @click="item.onClick"
         >
           <div class="flex items-center">

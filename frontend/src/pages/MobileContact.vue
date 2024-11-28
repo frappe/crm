@@ -53,12 +53,12 @@
                     clip-path: inset(22px 0 0 0);
                   "
                 >
-                  <CameraIcon class="h-6 w-6 cursor-pointer text-ink-white" />
+                  <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
                 </div>
               </component>
             </div>
             <div class="flex flex-col gap-2 truncate">
-              <div class="truncate text-lg font-medium">
+              <div class="truncate text-lg font-medium text-ink-gray-9">
                 <span v-if="contact.data.salutation">
                   {{ contact.data.salutation + '. ' }}
                 </span>

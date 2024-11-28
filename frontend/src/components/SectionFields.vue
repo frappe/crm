@@ -39,7 +39,10 @@
                   <div v-if="data[field.name]" class="truncate">
                     {{ data[field.name] }}
                   </div>
-                  <div v-else class="text-base leading-5 text-ink-gray-4 truncate">
+                  <div
+                    v-else
+                    class="text-base leading-5 text-ink-gray-4 truncate"
+                  >
                     {{ field.placeholder }}
                   </div>
                   <template #suffix>
@@ -52,7 +55,7 @@
               </template>
               <template #body>
                 <div
-                  class="my-2 space-y-1.5 divide-y rounded-lg border border-gray-100 bg-surface-white p-1.5 shadow-xl"
+                  class="my-2 p-1.5 min-w-40 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
                   <div>
                     <DropdownItem
@@ -161,16 +164,18 @@
             @change.stop="emit('update', field.name, $event.target.value)"
           />
         </div>
-        <ArrowUpRightIcon
-          v-if="field.type === 'link' && field.link && data[field.name]"
-          class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-          @click="field.link(data[field.name])"
-        />
-        <EditIcon
-          v-if="field.type === 'link' && field.edit && data[field.name]"
-          class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-          @click="field.edit(data[field.name])"
-        />
+        <div class="ml-1">
+          <ArrowUpRightIcon
+            v-if="field.type === 'link' && field.link && data[field.name]"
+            class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+            @click.stop="field.link(data[field.name])"
+          />
+          <EditIcon
+            v-if="field.type === 'link' && field.edit && data[field.name]"
+            class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+            @click.stop="field.edit(data[field.name])"
+          />
+        </div>
       </div>
     </div>
   </FadedScrollableDiv>
@@ -257,7 +262,7 @@ function evaluate(code, context = {}) {
 :deep(.form-control button),
 .dropdown-button {
   border-color: transparent;
-  background: white;
+  background: transparent;
 }
 
 :deep(.form-control button) {

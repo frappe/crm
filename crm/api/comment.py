@@ -5,6 +5,7 @@ from frappe import _
 from bs4 import BeautifulSoup
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
+
 def on_update(self, method):
     notify_mentions(self)
 
@@ -24,25 +25,31 @@ def notify_mentions(doc):
         doctype = doc.reference_doctype
         if doctype.startswith("CRM "):
             doctype = doctype[4:].lower()
-        name = reference_doc.lead_name or name if doctype == "lead" else reference_doc.organization or reference_doc.lead_name or name
+        name = (
+            reference_doc.lead_name
+            if doctype == "lead"
+            else reference_doc.organization or reference_doc.lead_name
+        )
         notification_text = f"""
-            <div class="mb-2 leading-5 text-gray-600">
-                <span class="font-medium text-gray-900">{ owner }</span>
+            <div class="mb-2 leading-5 text-ink-gray-5">
+                <span class="font-medium text-ink-gray-9">{ owner }</span>
                 <span>{ _('mentioned you in {0}').format(doctype) }</span>
-                <span class="font-medium text-gray-900">{ name }</span>
+                <span class="font-medium text-ink-gray-9">{ name }</span>
             </div>
         """
-        notify_user({
-            "owner": doc.owner,
-            "assigned_to": mention.email,
-            "notification_type": "Mention",
-            "message": doc.content,
-            "notification_text": notification_text,
-            "reference_doctype": "Comment",
-            "reference_docname": doc.name,
-            "redirect_to_doctype": doc.reference_doctype,
-            "redirect_to_docname": doc.reference_name,
-        })
+        notify_user(
+            {
+                "owner": doc.owner,
+                "assigned_to": mention.email,
+                "notification_type": "Mention",
+                "message": doc.content,
+                "notification_text": notification_text,
+                "reference_doctype": "Comment",
+                "reference_docname": doc.name,
+                "redirect_to_doctype": doc.reference_doctype,
+                "redirect_to_docname": doc.reference_name,
+            }
+        )
 
 
 def extract_mentions(html):
@@ -56,39 +63,42 @@ def extract_mentions(html):
         )
     return mentions
 
+
 @frappe.whitelist()
 def add_attachments(name: str, attachments: Iterable[str | dict]) -> None:
-	"""Add attachments to the given Comment
+    """Add attachments to the given Comment
 
-	:param name: Comment name
-	:param attachments: File names or dicts with keys "fname" and "fcontent"
-	"""
-	# loop through attachments
-	for a in attachments:
-		if isinstance(a, str):
-			attach = frappe.db.get_value("File", {"name": a}, ["file_url", "is_private"], as_dict=1)
-			file_args = {
-				"file_url": attach.file_url,
-				"is_private": attach.is_private,
-			}
-		elif isinstance(a, dict) and "fcontent" in a and "fname" in a:
-			# dict returned by frappe.attach_print()
-			file_args = {
-				"file_name": a["fname"],
-				"content": a["fcontent"],
-				"is_private": 1,
-			}
-		else:
-			continue
+    :param name: Comment name
+    :param attachments: File names or dicts with keys "fname" and "fcontent"
+    """
+    # loop through attachments
+    for a in attachments:
+        if isinstance(a, str):
+            attach = frappe.db.get_value(
+                "File", {"name": a}, ["file_url", "is_private"], as_dict=1
+            )
+            file_args = {
+                "file_url": attach.file_url,
+                "is_private": attach.is_private,
+            }
+        elif isinstance(a, dict) and "fcontent" in a and "fname" in a:
+            # dict returned by frappe.attach_print()
+            file_args = {
+                "file_name": a["fname"],
+                "content": a["fcontent"],
+                "is_private": 1,
+            }
+        else:
+            continue
 
-		file_args.update(
-			{
-				"attached_to_doctype": "Comment",
-				"attached_to_name": name,
-				"folder": "Home/Attachments",
-			}
-		)
+        file_args.update(
+            {
+                "attached_to_doctype": "Comment",
+                "attached_to_name": name,
+                "folder": "Home/Attachments",
+            }
+        )
 
-		_file = frappe.new_doc("File")
-		_file.update(file_args)
-		_file.save(ignore_permissions=True)
+        _file = frappe.new_doc("File")
+        _file.update(file_args)
+        _file.save(ignore_permissions=True)

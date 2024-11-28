@@ -3,7 +3,7 @@
     <template #target="{ togglePopover }">
       <button
         :class="[
-          active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
+          active ? 'bg-surface-gray-3' : 'text-ink-gray-6',
           'group w-full flex h-7 items-center justify-between rounded px-2 text-base hover:bg-surface-gray-2',
         ]"
         @click.prevent="togglePopover()"
@@ -19,7 +19,7 @@
     </template>
     <template #body>
       <div
-        class="grid grid-cols-3 justify-between mx-3 p-2 rounded-lg border border-gray-100 bg-surface-white shadow-xl"
+        class="grid grid-cols-3 justify-between mx-3 p-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div v-for="app in apps.data" :key="app.name">
           <a
@@ -39,8 +39,8 @@
 <script setup>
 import AppsIcon from '@/components/Icons/AppsIcon.vue'
 import { Popover, createResource } from 'frappe-ui'
-import { onUnmounted } from 'vue';
-import { stopRecording } from '@/telemetry';
+import { onUnmounted } from 'vue'
+import { stopRecording } from '@/telemetry'
 
 const props = defineProps({
   active: Boolean,

@@ -112,6 +112,6 @@ let slaSection = computed(() => {
 <style scoped>
 :deep(.form-control button) {
   border-color: transparent;
-  background: white;
+  background: transparent;
 }
 </style>

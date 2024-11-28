@@ -26,7 +26,7 @@
         <template v-if="!hideLabel" #prefix><SortIcon class="h-4" /></template>
         <template v-if="sortValues?.size" #suffix>
           <div
-            class="flex h-5 w-5 items-center justify-center rounded bg-surface-gray-7 pt-[1px] text-2xs font-medium text-ink-white"
+            class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
           >
             {{ sortValues.size }}
           </div>
@@ -52,6 +52,7 @@
         </Button>
         <Button
           :label="getSortLabel()"
+          class="shrink-0"
           :class="sortValues.size ? 'rounded-l-none' : ''"
         >
           <template v-if="!hideLabel && !sortValues?.size" #prefix>
@@ -67,7 +68,9 @@
       </div>
     </template>
     <template #body="{ close }">
-      <div class="my-2 rounded-lg border border-gray-100 bg-surface-white shadow-xl">
+      <div
+        class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+      >
         <div class="min-w-60 p-2">
           <div
             v-if="sortValues?.size"
@@ -82,7 +85,7 @@
               <div class="handle flex h-7 w-7 items-center justify-center">
                 <DragIcon class="h-4 w-4 cursor-grab text-ink-gray-5" />
               </div>
-              <div class="flex">
+              <div class="flex flex-1 [&>_div]:w-full">
                 <Button
                   size="md"
                   class="rounded-r-none border-r"
@@ -97,7 +100,6 @@
                   <DesendingIcon v-else class="h-4" />
                 </Button>
                 <Autocomplete
-                  class="!w-32"
                   :value="sort.fieldname"
                   :options="sortOptions.data"
                   @change="(e) => updateSort(e, i)"
@@ -240,7 +242,7 @@ function getSortLabel() {
   if (!sortValues.value.size) return __('Sort')
   let values = Array.from(sortValues.value)
   let label = sortOptions.data?.find(
-    (option) => option.value === values[0].fieldname
+    (option) => option.value === values[0].fieldname,
   )?.label
 
   return label || sort.fieldname

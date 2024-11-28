@@ -18,7 +18,7 @@
             />
             <component
               v-else
-              class="size-4"
+              class="size-4 text-ink-gray-7"
               :is="fileIcon(attachment.file_type)"
             />
           </div>

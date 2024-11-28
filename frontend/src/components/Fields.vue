@@ -3,7 +3,7 @@
     <div
       v-for="section in sections"
       :key="section.label"
-      class="section first:border-t-0 first:pt-0"
+      class="section first:border-t-0 border-outline-gray-modals first:pt-0"
       :class="section.hideBorder ? '' : 'border-t pt-4'"
     >
       <div

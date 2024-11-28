@@ -61,7 +61,7 @@
       </div>
     </div>
     <div v-if="option.selected">
-      <FeatherIcon name="check" class="text-primary-500 h-4 w-6" size="sm" />
+      <FeatherIcon name="check" class="text-ink-gray-5 h-4 w-6" size="sm" />
     </div>
   </div>
 </template>

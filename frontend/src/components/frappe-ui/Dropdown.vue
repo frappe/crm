@@ -16,14 +16,14 @@
 
       <template #body>
         <div
-          class="rounded-lg bg-surface-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="mt-2 min-w-40 divide-y divide-outline-gray-modals rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
           :class="{
             'mt-2': ['bottom', 'left', 'right'].includes(placement),
             'ml-2': placement == 'right-start',
           }"
         >
           <MenuItems
-            class="min-w-40 divide-y divide-gray-100"
+            class="min-w-40 divide-y divide-outline-gray-modals"
             :class="{
               'left-0 origin-top-left': placement == 'left',
               'right-0 origin-top-right': placement == 'right',
@@ -52,7 +52,7 @@
                   <button
                     v-else
                     :class="[
-                      active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
+                      active ? 'bg-surface-gray-3' : 'text-ink-gray-6',
                       'group flex h-7 w-full items-center rounded px-2 text-base',
                     ]"
                     @click="item.onClick"
@@ -68,7 +68,7 @@
                       v-else-if="item.icon"
                       :is="item.icon"
                     />
-                    <span class="whitespace-nowrap">
+                    <span class="whitespace-nowrap text-ink-gray-7">
                       {{ item.label }}
                     </span>
                   </button>

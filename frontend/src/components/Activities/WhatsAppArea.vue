@@ -11,7 +11,7 @@
     >
       <div
         :id="whatsapp.name"
-        class="group/message relative max-w-[90%] rounded-md bg-surface-menu-bar p-1.5 pl-2 text-base shadow-sm"
+        class="group/message relative max-w-[90%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 text-base shadow-sm"
       >
         <div
           v-if="whatsapp.is_reply"

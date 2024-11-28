@@ -7,7 +7,7 @@
         :label="profile.full_name"
       />
       <div class="flex flex-col gap-1">
-        <span class="text-2xl font-semibold">{{ profile.full_name }}</span>
+        <span class="text-2xl font-semibold text-ink-gray-9">{{ profile.full_name }}</span>
         <span class="text-base text-ink-gray-7">{{ profile.email }}</span>
       </div>
     </div>
