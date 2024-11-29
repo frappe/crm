@@ -11,7 +11,9 @@
   <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
     <template #body-content>
       <div>
-        <div class="text-base text-gray-800 mb-2">{{ __('Column Field') }}</div>
+        <div class="text-base text-ink-gray-8 mb-2">
+          {{ __('Column Field') }}
+        </div>
         <Autocomplete
           v-if="columnFields"
           value=""
@@ -21,13 +23,12 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full !justify-start"
-              variant="subtle"
               @click="togglePopover()"
               :label="columnField.label"
             />
           </template>
         </Autocomplete>
-        <div class="text-base text-gray-800 mb-2 mt-4">
+        <div class="text-base text-ink-gray-8 mb-2 mt-4">
           {{ __('Title Field') }}
         </div>
         <Autocomplete
@@ -39,7 +40,6 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full !justify-start"
-              variant="subtle"
               @click="togglePopover()"
               :label="titleField.label"
             />
@@ -47,7 +47,9 @@
         </Autocomplete>
       </div>
       <div class="mt-4">
-        <div class="text-base text-gray-800 mb-2">{{ __('Fields Order') }}</div>
+        <div class="text-base text-ink-gray-8 mb-2">
+          {{ __('Fields Order') }}
+        </div>
         <Draggable
           :list="allFields"
           @end="reorder"
@@ -57,7 +59,7 @@
         >
           <template #item="{ element: field }">
             <div
-              class="px-1 py-0.5 border rounded text-base text-gray-800 flex items-center justify-between gap-2"
+              class="px-1 py-0.5 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
             >
               <div class="flex items-center gap-2">
                 <DragVerticalIcon class="h-3.5 cursor-grab" />
@@ -78,7 +80,6 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full mt-2"
-              variant="outline"
               @click="togglePopover()"
               :label="__('Add Field')"
             >
@@ -90,7 +91,7 @@
           <template #item-label="{ option }">
             <div class="flex flex-col gap-1">
               <div>{{ option.label }}</div>
-              <div class="text-gray-500 text-sm">
+              <div class="text-ink-gray-4 text-sm">
                 {{ `${option.fieldname} - ${option.fieldtype}` }}
               </div>
             </div>

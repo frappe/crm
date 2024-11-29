@@ -14,12 +14,11 @@
   >
     <template #body-title>
       <div class="flex items-center gap-3">
-        <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+        <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
           {{ editMode ? __('Edit Task') : __('Create Task') }}
         </h3>
         <Button
           v-if="task?.reference_docname"
-          variant="outline"
           size="sm"
           :label="
             task.reference_doctype == 'CRM Deal'
@@ -37,22 +36,21 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">{{ __('Title') }}</div>
-          <TextInput
+          <FormControl
             ref="title"
-            variant="outline"
+            :label="__('Title')"
             v-model="_task.title"
             :placeholder="__('Call with John Doe')"
           />
         </div>
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">
+          <div class="mb-1.5 text-xs text-ink-gray-5">
             {{ __('Description') }}
           </div>
           <TextEditor
             variant="outline"
             ref="description"
-            editor-class="!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm focus:bg-white focus:border-gray-500 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-800 transition-colors"
+            editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_task.description"
             @change="(val) => (_task.description = val)"

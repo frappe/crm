@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="avatars?.length"
-    class="mr-1.5 flex cursor-pointer items-center"
+    class="mr-1.5 flex cursor-pointer items-center "
     :class="[
       avatars?.length > 1 ? 'flex-row-reverse' : 'truncate [&>div]:truncate',
     ]"
@@ -24,7 +24,7 @@
       :key="avatar.name"
     >
       <Avatar
-        class="user-avatar -mr-1.5 transform ring-2 ring-white transition hover:z-10 hover:scale-110"
+        class="user-avatar -mr-1.5 transform ring-2 ring-outline-white transition hover:z-10 hover:scale-110"
         shape="circle"
         :image="avatar.image"
         :label="avatar.label"

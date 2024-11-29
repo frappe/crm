@@ -4,7 +4,7 @@
       <Button
         ref="sendEmailRef"
         variant="ghost"
-        :class="[showEmailBox ? '!bg-gray-300 hover:!bg-gray-200' : '']"
+        :class="[showEmailBox ? '!bg-surface-gray-4 hover:!bg-surface-gray-3' : '']"
         :label="__('Reply')"
         @click="toggleEmailBox()"
       >
@@ -15,7 +15,7 @@
       <Button
         variant="ghost"
         :label="__('Comment')"
-        :class="[showCommentBox ? '!bg-gray-300 hover:!bg-gray-200' : '']"
+        :class="[showCommentBox ? '!bg-surface-gray-4 hover:!bg-surface-gray-3' : '']"
         @click="toggleCommentBox()"
       >
         <template #prefix>

@@ -2,12 +2,12 @@
   <slot name="header" v-bind="{ opened, hide, open, close, toggle }">
     <div v-if="!hide" class="flex items-center justify-between">
       <div
-        class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
+        class="flex h-7 text-ink-gray-9 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
         @click="toggle()"
       >
         <FeatherIcon
           name="chevron-right"
-          class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+          class="h-4 transition-all duration-300 ease-in-out"
           :class="{ 'rotate-90': opened }"
         />
         {{ __(label) || __('Untitled') }}

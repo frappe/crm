@@ -53,7 +53,7 @@
     </Tabs>
     <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
-        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
+        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
         @click="copyToClipboard(lead.data.name)"
       >
         {{ __(lead.data.name) }}
@@ -108,7 +108,7 @@
             </div>
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="lead.data.lead_name || __('Set first name')">
-                <div class="truncate text-2xl font-medium">
+                <div class="truncate text-2xl font-medium text-ink-gray-9">
                   {{ lead.data.lead_name || __('Untitled') }}
                 </div>
               </Tooltip>
@@ -221,7 +221,7 @@
     }"
   >
     <template #body-content>
-      <div class="mb-4 flex items-center gap-2 text-gray-600">
+      <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
       </div>
@@ -248,7 +248,7 @@
         </div>
       </div>
 
-      <div class="mb-4 mt-6 flex items-center gap-2 text-gray-600">
+      <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
         <ContactsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Contact') }}</label>
       </div>
@@ -423,7 +423,7 @@ function updateLead(fieldname, value, callback) {
       createToast({
         title: __('Lead updated'),
         icon: 'check',
-        iconClasses: 'text-green-600',
+        iconClasses: 'text-ink-green-3',
       })
       callback?.()
     },
@@ -432,7 +432,7 @@ function updateLead(fieldname, value, callback) {
         title: __('Error updating lead'),
         text: __(err.messages?.[0]),
         icon: 'x',
-        iconClasses: 'text-red-600',
+        iconClasses: 'text-ink-red-4',
       })
     },
   })
@@ -445,7 +445,7 @@ function validateRequired(fieldname, value) {
       title: __('Error Updating Lead'),
       text: __('{0} is a required field', [meta[fieldname].label]),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
     return true
   }
@@ -589,7 +589,7 @@ async function convertToDeal(updated) {
       title: __('Error'),
       text: __('Please select an existing contact'),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
     return
   }
@@ -599,7 +599,7 @@ async function convertToDeal(updated) {
       title: __('Error'),
       text: __('Please select an existing organization'),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
     return
   }

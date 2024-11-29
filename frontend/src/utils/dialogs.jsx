@@ -16,7 +16,7 @@ export let Dialogs = {
           'body-content': () => {
             return [
               dialog.message && (
-                <p class="text-p-base text-gray-700">{dialog.message}</p>
+                <p class="text-p-base text-ink-gray-7">{dialog.message}</p>
               ),
               dialog.html && (
                 <div v-html={dialog.html} />

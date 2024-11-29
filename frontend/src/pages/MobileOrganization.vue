@@ -61,7 +61,7 @@
               </component>
             </div>
             <div class="flex flex-col gap-2 truncate">
-              <div class="truncate text-lg font-medium">
+              <div class="truncate text-lg font-medium text-ink-gray-9">
                 {{ organization.doc.name }}
               </div>
               <div class="flex items-center gap-1.5">
@@ -94,14 +94,14 @@
       <template #tab="{ tab, selected }">
         <button
           v-if="tab.name !== 'Details'"
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
-          :class="{ 'text-gray-900': selected }"
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-outline-gray-3 hover:text-ink-gray-9"
+          :class="{ 'text-ink-gray-9': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
-            class="group-hover:bg-gray-900"
-            :class="[selected ? 'bg-gray-900' : 'bg-gray-600']"
+            class="group-hover:bg-surface-gray-7"
+            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
             variant="solid"
             theme="gray"
             size="sm"
@@ -151,7 +151,7 @@
         />
         <div
           v-if="!rows.length && tab.name !== 'Details'"
-          class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
+          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
@@ -231,7 +231,7 @@ async function updateField(fieldname, value) {
   createToast({
     title: __('Organization updated'),
     icon: 'check',
-    iconClasses: 'text-green-600',
+    iconClasses: 'text-ink-green-3',
   })
 }
 
@@ -317,7 +317,7 @@ function openWebsite() {
     createToast({
       title: __('Website not found'),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
   else window.open(organization.doc.website, '_blank')
 }

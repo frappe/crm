@@ -24,7 +24,7 @@
             />
             <div
               v-else-if="unreadNotificationsCount"
-              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-gray-800 ring-1 ring-white"
+              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-6 ring-1 ring-white"
             />
           </template>
         </SidebarLink>
@@ -42,7 +42,7 @@
           <template #header="{ opened, hide, toggle }">
             <div
               v-if="!hide"
-              class="flex cursor-pointer gap-1.5 px-1 text-base font-medium text-gray-600 transition-all duration-300 ease-in-out"
+              class="flex cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out"
               :class="
                 isSidebarCollapsed
                   ? 'ml-0 h-0 overflow-hidden opacity-0'
@@ -52,7 +52,7 @@
             >
               <FeatherIcon
                 name="chevron-right"
-                class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+                class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': opened }"
               />
               <span>{{ __(view.name) }}</span>
@@ -82,7 +82,7 @@
         <template #icon>
           <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
             <CollapseSidebar
-              class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
+              class="h-4.5 w-4.5 text-ink-gray-7 duration-300 ease-in-out"
               :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
             />
           </span>

@@ -6,14 +6,14 @@
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
-        <div class="flex w-52 shrink-0 flex-col bg-gray-50 p-2">
-          <h1 class="mb-3 px-2 pt-2 text-lg font-semibold">
+        <div class="flex w-52 shrink-0 flex-col bg-surface-gray-2 p-2">
+          <h1 class="mb-3 px-2 pt-2 text-lg font-semibold text-ink-gray-9">
             {{ __('Settings') }}
           </h1>
           <div v-for="tab in tabs">
             <div
               v-if="!tab.hideLabel"
-              class="mb-2 mt-3 flex cursor-pointer gap-1.5 px-1 text-base font-medium text-gray-600 transition-all duration-300 ease-in-out"
+              class="mb-2 mt-3 flex cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out"
             >
               <span>{{ __(tab.label) }}</span>
             </div>
@@ -25,15 +25,15 @@
                 class="w-full"
                 :class="
                   activeTab?.label == i.label
-                    ? 'bg-white shadow-sm'
-                    : 'hover:bg-gray-100'
+                    ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
+                    : 'hover:bg-surface-gray-3'
                 "
                 @click="activeTab = i"
               />
             </nav>
           </div>
         </div>
-        <div class="flex flex-1 flex-col overflow-y-auto">
+        <div class="flex flex-1 flex-col overflow-y-auto bg-surface-modal">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
@@ -41,7 +41,6 @@
   </Dialog>
 </template>
 <script setup>
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -57,10 +56,12 @@ import {
   showSettings,
   activeSettingsPage,
 } from '@/composables/settings'
-import { Dialog } from 'frappe-ui'
-import { ref, markRaw, computed, watch } from 'vue'
+import { Dialog, Avatar } from 'frappe-ui'
+import { ref, markRaw, computed, watch, h } from 'vue'
 
-const { isManager } = usersStore()
+const { isManager, getUser } = usersStore()
+
+const user = computed(() => getUser() || {})
 
 const tabs = computed(() => {
   let _tabs = [
@@ -70,7 +71,12 @@ const tabs = computed(() => {
       items: [
         {
           label: __('Profile'),
-          icon: ContactsIcon,
+          icon: () =>
+            h(Avatar, {
+              size: 'xs',
+              label: user.value.full_name,
+              image: user.value.user_image,
+            }),
           component: markRaw(ProfileSettings),
         },
         {

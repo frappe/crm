@@ -5,7 +5,7 @@
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    class="text-gray-700"
+    class="text-ink-gray-7"
     :aria-label="status"
   >
     <path

@@ -1,10 +1,10 @@
 <template>
   <Dialog v-model="show" :options="dialogOptions">
     <template #body>
-      <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
               {{ __(dialogOptions.title) || __('Untitled') }}
             </h3>
           </div>
@@ -25,7 +25,7 @@
         <div>
           <div v-if="detailMode" class="flex flex-col gap-3.5">
             <div
-              class="flex h-7 items-center gap-2 text-base text-gray-800"
+              class="flex h-7 items-center gap-2 text-base text-ink-gray-8"
               v-for="field in fields"
               :key="field.name"
             >

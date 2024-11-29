@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="mb-1 flex items-center justify-stretch gap-2 py-1 text-base">
-      <div class="inline-flex items-center flex-wrap gap-1 text-gray-600">
+      <div class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5">
         <Avatar
           :image="activity.caller.image"
           :label="activity.caller.label"
           size="md"
         />
-        <span class="font-medium text-gray-800 ml-1">
+        <span class="font-medium text-ink-gray-8 ml-1">
           {{ activity.caller.label }}
         </span>
         <span>{{
@@ -18,14 +18,14 @@
       </div>
       <div class="ml-auto whitespace-nowrap">
         <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-          <div class="text-sm text-gray-600">
+          <div class="text-sm text-ink-gray-5">
             {{ __(timeAgo(activity.creation)) }}
           </div>
         </Tooltip>
       </div>
     </div>
     <div
-      class="flex flex-col gap-2 border border-gray-200 rounded-md bg-white px-3 py-2.5"
+      class="flex flex-col gap-2 border border-outline-gray-modals rounded-md bg-surface-white px-3 py-2.5 text-ink-gray-9"
     >
       <div class="flex items-center justify-between">
         <div class="inline-flex gap-2 items-center text-base font-medium">
