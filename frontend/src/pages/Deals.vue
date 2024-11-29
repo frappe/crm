@@ -287,8 +287,7 @@ import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
 import {
-  dateFormat,
-  dateTooltipFormat,
+  formatDate,
   timeAgo,
   website,
   formatNumberIntoCurrency,
@@ -418,7 +417,7 @@ function parseRows(rows) {
               : 'orange'
         if (value == 'First Response Due') {
           value = __(timeAgo(deal.response_by))
-          tooltipText = dateFormat(deal.response_by, dateTooltipFormat)
+          tooltipText = formatDate(deal.response_by)
           if (new Date(deal.response_by) < new Date()) {
             color = 'red'
           }
@@ -445,7 +444,7 @@ function parseRows(rows) {
         }))
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(deal[row], dateTooltipFormat),
+          label: formatDate(deal[row]),
           timeAgo: __(timeAgo(deal[row])),
         }
       } else if (
@@ -455,7 +454,7 @@ function parseRows(rows) {
       ) {
         let field = row == 'response_by' ? 'response_by' : 'first_responded_on'
         _rows[row] = {
-          label: deal[field] ? dateFormat(deal[field], dateTooltipFormat) : '',
+          label: deal[field] ? formatDate(deal[field]) : '',
           timeAgo: deal[row]
             ? row == 'first_response_time'
               ? formatTime(deal[row])

@@ -204,7 +204,7 @@
               />
             </div>
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+              <Tooltip :text="formatDate(activity.creation)">
                 <div class="text-sm text-ink-gray-5">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
@@ -290,7 +290,7 @@
             </div>
 
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+              <Tooltip :text="formatDate(activity.creation)">
                 <div class="text-sm text-ink-gray-5">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
@@ -353,9 +353,7 @@
               </div>
 
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip
-                  :text="dateFormat(activity.creation, dateTooltipFormat)"
-                >
+                <Tooltip :text="formatDate(activity.creation)">
                   <div class="text-sm text-ink-gray-5">
                     {{ __(timeAgo(activity.creation)) }}
                   </div>
@@ -481,13 +479,7 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import {
-  timeAgo,
-  dateFormat,
-  dateTooltipFormat,
-  secondsToDuration,
-  startCase,
-} from '@/utils'
+import { timeAgo, formatDate, secondsToDuration, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'

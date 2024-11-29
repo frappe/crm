@@ -65,7 +65,7 @@
               {{ getUser(note.owner).full_name }}
             </div>
           </div>
-          <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
+          <Tooltip :text="formatDate(note.modified)">
             <div class="text-sm text-ink-gray-7">
               {{ __(timeAgo(note.modified)) }}
             </div>
@@ -110,7 +110,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
-import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { timeAgo, formatDate } from '@/utils'
 import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
 

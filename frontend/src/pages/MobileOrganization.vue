@@ -181,8 +181,7 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
-  dateFormat,
-  dateTooltipFormat,
+  formatDate,
   timeAgo,
   formatNumberIntoCurrency,
   createToast,
@@ -468,7 +467,7 @@ function getDealRowObject(deal) {
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
     modified: {
-      label: dateFormat(deal.modified, dateTooltipFormat),
+      label: formatDate(deal.modified),
       timeAgo: __(timeAgo(deal.modified)),
     },
   }
@@ -489,7 +488,7 @@ function getContactRowObject(contact) {
       logo: props.organization?.organization_logo,
     },
     modified: {
-      label: dateFormat(contact.modified, dateTooltipFormat),
+      label: formatDate(contact.modified),
       timeAgo: __(timeAgo(contact.modified)),
     },
   }

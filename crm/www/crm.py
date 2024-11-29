@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe.utils import cint
+from frappe.utils import add_user_info, cint, get_system_timezone
 from frappe.utils.telemetry import capture
 
 no_cache = 1
@@ -33,9 +33,24 @@ def get_boot():
             "site_name": frappe.local.site,
             "read_only_mode": frappe.flags.read_only,
             "csrf_token": frappe.sessions.get_csrf_token(),
-            "setup_complete": cint(frappe.get_system_settings("setup_complete"))
+            "setup_complete": cint(frappe.get_system_settings("setup_complete")),
+            "timezone": {
+                "system": get_system_timezone(),
+                "user": get_user_info()
+                .get(frappe.session.user, {})
+                .get("time_zone", None)
+                or get_system_timezone(),
+            }
         }
     )
+
+
+def get_user_info():
+    # get info for current user
+    user_info = frappe._dict()
+    add_user_info(frappe.session.user, user_info)
+
+    return user_info
 
 
 def get_default_route():

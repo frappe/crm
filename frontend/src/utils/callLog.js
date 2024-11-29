@@ -1,9 +1,4 @@
-import {
-  secondsToDuration,
-  dateFormat,
-  dateTooltipFormat,
-  timeAgo,
-} from '@/utils'
+import { secondsToDuration, formatDate, timeAgo } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 
@@ -52,7 +47,7 @@ export function getCallLogDetail(row, log) {
     }
   } else if (['modified', 'creation'].includes(row)) {
     return {
-      label: dateFormat(log[row], dateTooltipFormat),
+      label: formatDate(log[row]),
       timeAgo: __(timeAgo(log[row])),
     }
   }

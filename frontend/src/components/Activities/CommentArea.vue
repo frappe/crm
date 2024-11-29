@@ -12,7 +12,7 @@
         </span>
       </div>
       <div class="ml-auto whitespace-nowrap">
-        <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
+        <Tooltip :text="formatDate(activity.creation)">
           <div class="text-sm text-ink-gray-5">
             {{ __(timeAgo(activity.creation)) }}
           </div>
@@ -38,7 +38,7 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import { Tooltip } from 'frappe-ui'
-import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { timeAgo, formatDate } from '@/utils'
 const props = defineProps({
   activity: Object,
 })

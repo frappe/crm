@@ -307,13 +307,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
-import {
-  dateFormat,
-  dateTooltipFormat,
-  timeAgo,
-  website,
-  formatTime,
-} from '@/utils'
+import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
@@ -435,7 +429,7 @@ function parseRows(rows) {
               : 'orange'
         if (value == 'First Response Due') {
           value = __(timeAgo(lead.response_by))
-          tooltipText = dateFormat(lead.response_by, dateTooltipFormat)
+          tooltipText = formatDate(lead.response_by)
           if (new Date(lead.response_by) < new Date()) {
             color = 'red'
           }
@@ -462,7 +456,7 @@ function parseRows(rows) {
         }))
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(lead[row], dateTooltipFormat),
+          label: formatDate(lead[row]),
           timeAgo: __(timeAgo(lead[row])),
         }
       } else if (
@@ -472,7 +466,7 @@ function parseRows(rows) {
       ) {
         let field = row == 'response_by' ? 'response_by' : 'first_responded_on'
         _rows[row] = {
-          label: lead[field] ? dateFormat(lead[field], dateTooltipFormat) : '',
+          label: lead[field] ? formatDate(lead[field]) : '',
           timeAgo: lead[row]
             ? row == 'first_response_time'
               ? formatTime(lead[row])
