@@ -6,7 +6,13 @@ from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
 
 def before_install():
-    pass
+    installed_apps = frappe.get_installed_apps()
+    if "crm" in installed_apps:
+        frappe.throw(
+            frappe._(
+                "Next CRM is incompatible with Frappe CRM, please uninstall it before instaliing Next CRM."
+            )
+        )
 
 
 def after_install(force=False):
