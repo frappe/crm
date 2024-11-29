@@ -25,7 +25,7 @@
       </div>
     </div>
     <div
-      class="flex flex-col gap-2 border border-outline-gray-modals rounded-md bg-surface-white px-3 py-2.5 text-ink-gray-9"
+      class="flex flex-col gap-2 border border-outline-gray-modals rounded-md bg-surface-cards px-3 py-2.5 text-ink-gray-9"
     >
       <div class="flex items-center justify-between">
         <div class="inline-flex gap-2 items-center text-base font-medium">

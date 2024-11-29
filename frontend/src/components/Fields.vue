@@ -133,11 +133,13 @@
             <DateTimePicker
               v-else-if="field.type === 'Datetime'"
               v-model="data[field.name]"
+              icon-left=""
               :placeholder="getPlaceholder(field)"
               input-class="border-none"
             />
             <DatePicker
               v-else-if="field.type === 'Date'"
+              icon-left=""
               v-model="data[field.name]"
               :placeholder="getPlaceholder(field)"
               input-class="border-none"

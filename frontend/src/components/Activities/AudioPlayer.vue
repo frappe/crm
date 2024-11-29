@@ -11,7 +11,7 @@
         <input
           class="w-full slider !h-[0.5] bg-surface-gray-3 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb:hover]:outline [&::-webkit-slider-thumb:hover]:outline-[0.5px]"
           :style="{
-            background: `linear-gradient(to right, #171717 ${progress}%, #ededed ${progress}%)`,
+            background: `linear-gradient(to right, var(--surface-gray-7, #171717) ${progress}%, var(--surface-gray-3, #ededed) ${progress}%)`,
           }"
           type="range"
           id="track"
