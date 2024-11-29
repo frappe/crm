@@ -355,12 +355,28 @@ def create_opportunity(args):
     ):
         contact = create_contact(args)
 
+    customer = (
+        args.get("customer")
+        if args.get("customer") != ""
+        else args.get("customer_name")
+    )
+    if customer != "":
+        if args.get("lead") != "":
+            frappe.throw(_("Please enter only Customer or Lead details"))
+        opportunity_from = "customer"
+        party_name = customer
+    elif args.get("lead") != "":
+        opportunity_from = "lead"
+        party_name = args.get("lead")
+    else:
+        frappe.throw(_("Please enter either Customer or Lead details"))
+
     opportunity.update(
         {
             "customer": args.get("customer") or create_customer(args),
             "contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
-            "opportunity_from": "lead",
-            "party_name": args.get("lead"),
+            "opportunity_from": opportunity_from,
+            "party_name": party_name,
         }
     )
 
