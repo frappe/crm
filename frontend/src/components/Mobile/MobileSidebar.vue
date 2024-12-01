@@ -13,7 +13,9 @@
         <div
           class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-surface-menu-bar transition-all duration-300 ease-in-out"
         >
-          <div><UserDropdown class="p-2" /></div>
+          <div>
+            <UserDropdown class="p-2" :isCollapsed="!sidebarOpened" />
+          </div>
           <div class="flex-1 overflow-y-auto">
             <div class="mb-3 flex flex-col">
               <SidebarLink
@@ -64,6 +66,7 @@
               </Section>
             </div>
           </div>
+          <TrialBanner v-if="isFCSite.data" />
         </div>
       </TransitionChild>
       <TransitionChild
@@ -102,7 +105,8 @@ import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
 import { unreadNotificationsCount } from '@/stores/notifications'
-import { computed, h } from 'vue'
+import { TrialBanner, createResource } from 'frappe-ui'
+import { computed, h, provide } from 'vue'
 import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
@@ -211,4 +215,13 @@ function getIcon(routeName, icon) {
       return PinIcon
   }
 }
+
+const isFCSite = createResource({
+  url: 'frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site',
+  cache: 'isFCSite',
+  auto: true,
+  transform: (data) => Boolean(data),
+})
+
+provide('isFCSite', isFCSite)
 </script>
