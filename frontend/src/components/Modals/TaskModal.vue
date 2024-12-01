@@ -83,7 +83,7 @@
             </template>
             <template #item-label="{ option }">
               <Tooltip :text="option.value">
-                <div class="cursor-pointer">
+                <div class="cursor-pointer text-ink-gray-9">
                   {{ getUser(option.value).full_name }}
                 </div>
               </Tooltip>

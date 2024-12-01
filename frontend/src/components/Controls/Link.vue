@@ -70,8 +70,8 @@ const props = defineProps({
     required: true,
   },
   filters: {
-    type: Array,
-    default: () => [],
+    type: [Array, String],
+    default: [],
   },
   modelValue: {
     type: String,
@@ -110,13 +110,13 @@ watchDebounced(
     text.value = val
     reload(val)
   },
-  { debounce: 300, immediate: true }
+  { debounce: 300, immediate: true },
 )
 
 watchDebounced(
   () => props.doctype,
   () => reload(''),
-  { debounce: 300, immediate: true }
+  { debounce: 300, immediate: true },
 )
 
 const options = createResource({
