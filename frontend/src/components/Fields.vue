@@ -134,6 +134,7 @@
               v-else-if="field.type === 'Datetime'"
               v-model="data[field.name]"
               icon-left=""
+              :formatter="(date) => getFormat(date, '', true, true)"
               :placeholder="getPlaceholder(field)"
               input-class="border-none"
             />
@@ -141,6 +142,7 @@
               v-else-if="field.type === 'Date'"
               icon-left=""
               v-model="data[field.name]"
+              :formatter="(date) => getFormat(date, '', true)"
               :placeholder="getPlaceholder(field)"
               input-class="border-none"
             />
@@ -178,6 +180,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
+import { getFormat } from '@/utils'
 import { Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
 
 const { getUser } = usersStore()
