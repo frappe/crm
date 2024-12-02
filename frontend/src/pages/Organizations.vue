@@ -103,6 +103,23 @@ const rows = computed(() => {
     organizations.value?.data.rows.forEach((row) => {
       _rows[row] = organization[row]
 
+      let fieldType = organizations.value?.data.columns?.find(
+        (col) => (col.key || col.value) == row,
+      )?.type
+
+      if (
+        fieldType &&
+        ['Date', 'Datetime'].includes(fieldType) &&
+        !['modified', 'creation'].includes(row)
+      ) {
+        _rows[row] = formatDate(
+          organization[row],
+          '',
+          true,
+          fieldType == 'Datetime',
+        )
+      }
+
       if (row === 'organization_name') {
         _rows[row] = {
           label: organization.organization_name,

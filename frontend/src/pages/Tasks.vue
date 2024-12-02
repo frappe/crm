@@ -237,27 +237,39 @@ const rows = computed(() => {
   if (!tasks.value?.data?.data) return []
 
   if (tasks.value.data.view_type === 'kanban') {
-    return getKanbanRows(tasks.value.data.data)
+    return getKanbanRows(tasks.value.data.data, tasks.value.data.fields)
   }
 
-  return parseRows(tasks.value?.data.data)
+  return parseRows(tasks.value?.data.data, tasks.value?.data.columns)
 })
 
-function getKanbanRows(data) {
+function getKanbanRows(data, columns) {
   let _rows = []
   data.forEach((column) => {
     column.data?.forEach((row) => {
       _rows.push(row)
     })
   })
-  return parseRows(_rows)
+  return parseRows(_rows, columns)
 }
 
-function parseRows(rows) {
+function parseRows(rows, columns = []) {
   return rows.map((task) => {
     let _rows = {}
     tasks.value?.data.rows.forEach((row) => {
       _rows[row] = task[row]
+
+      let fieldType = columns?.find(
+        (col) => (col.key || col.value) == row,
+      )?.type
+
+      if (
+        fieldType &&
+        ['Date', 'Datetime'].includes(fieldType) &&
+        !['modified', 'creation'].includes(row)
+      ) {
+        _rows[row] = formatDate(task[row], '', true, fieldType == 'Datetime')
+      }
 
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {

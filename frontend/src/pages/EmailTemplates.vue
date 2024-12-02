@@ -98,6 +98,23 @@ const rows = computed(() => {
     emailTemplates.value?.data.rows.forEach((row) => {
       _rows[row] = emailTemplate[row]
 
+      let fieldType = emailTemplates.value?.data.columns?.find(
+        (col) => (col.key || col.value) == row,
+      )?.type
+
+      if (
+        fieldType &&
+        ['Date', 'Datetime'].includes(fieldType) &&
+        !['modified', 'creation'].includes(row)
+      ) {
+        _rows[row] = formatDate(
+          emailTemplate[row],
+          '',
+          true,
+          fieldType == 'Datetime',
+        )
+      }
+
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: formatDate(emailTemplate[row]),

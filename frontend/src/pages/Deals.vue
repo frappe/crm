@@ -335,15 +335,16 @@ const rows = computed(() => {
     return getGroupedByRows(
       deals.value?.data.data,
       deals.value?.data.group_by_field,
+      deals.value.data.columns,
     )
   } else if (deals.value.data.view_type === 'kanban') {
-    return getKanbanRows(deals.value.data.data)
+    return getKanbanRows(deals.value.data.data, deals.value.data.fields)
   } else {
-    return parseRows(deals.value?.data.data)
+    return parseRows(deals.value?.data.data, deals.value.data.columns)
   }
 })
 
-function getGroupedByRows(listRows, groupByField) {
+function getGroupedByRows(listRows, groupByField, columns) {
   let groupedRows = []
 
   groupByField.options?.forEach((option) => {
@@ -359,7 +360,7 @@ function getGroupedByRows(listRows, groupByField) {
       label: groupByField.label,
       group: option || __(' '),
       collapsed: false,
-      rows: parseRows(filteredRows),
+      rows: parseRows(filteredRows, columns),
     }
     if (groupByField.name == 'status') {
       groupDetail.icon = () =>
@@ -373,21 +374,33 @@ function getGroupedByRows(listRows, groupByField) {
   return groupedRows || listRows
 }
 
-function getKanbanRows(data) {
+function getKanbanRows(data, columns) {
   let _rows = []
   data.forEach((column) => {
     column.data?.forEach((row) => {
       _rows.push(row)
     })
   })
-  return parseRows(_rows)
+  return parseRows(_rows, columns)
 }
 
-function parseRows(rows) {
+function parseRows(rows, columns = []) {
   return rows.map((deal) => {
     let _rows = {}
     deals.value.data.rows.forEach((row) => {
       _rows[row] = deal[row]
+
+      let fieldType = columns?.find(
+        (col) => (col.key || col.value) == row,
+      )?.type
+
+      if (
+        fieldType &&
+        ['Date', 'Datetime'].includes(fieldType) &&
+        !['modified', 'creation'].includes(row)
+      ) {
+        _rows[row] = formatDate(deal[row], '', true, fieldType == 'Datetime')
+      }
 
       if (row == 'organization') {
         _rows[row] = {
