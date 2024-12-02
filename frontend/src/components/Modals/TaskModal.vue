@@ -93,6 +93,7 @@
             class="datepicker w-36"
             v-model="_task.due_date"
             :placeholder="__('01/04/2024 11:30 PM')"
+            :formatter="(date) => getFormat(date, '', true, true)"
             input-class="border-none"
           />
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
@@ -114,7 +115,7 @@ import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
-import { taskStatusOptions, taskPriorityOptions } from '@/utils'
+import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
 import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'

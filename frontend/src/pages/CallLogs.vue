@@ -82,7 +82,7 @@ const rows = computed(() => {
   return callLogs.value?.data.data.map((callLog) => {
     let _rows = {}
     callLogs.value?.data.rows.forEach((row) => {
-      _rows[row] = getCallLogDetail(row, callLog)
+      _rows[row] = getCallLogDetail(row, callLog, callLogs.value?.data.columns)
     })
     return _rows
   })

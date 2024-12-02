@@ -109,6 +109,18 @@ const rows = computed(() => {
     contacts.value?.data.rows.forEach((row) => {
       _rows[row] = contact[row]
 
+      let fieldType = contacts.value?.data.columns?.find(
+        (col) => (col.key || col.value) == row,
+      )?.type
+
+      if (
+        fieldType &&
+        ['Date', 'Datetime'].includes(fieldType) &&
+        !['modified', 'creation'].includes(row)
+      ) {
+        _rows[row] = formatDate(contact[row], '', true, fieldType == 'Datetime')
+      }
+
       if (row == 'full_name') {
         _rows[row] = {
           label: contact.full_name,

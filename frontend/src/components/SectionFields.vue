@@ -152,6 +152,7 @@
             <DateTimePicker
               icon-left=""
               :value="data[field.name]"
+              :formatter="(date) => getFormat(date, '', true, true)"
               :placeholder="field.placeholder"
               placement="left-start"
               @change="(data) => emit('update', field.name, data)"
@@ -161,6 +162,7 @@
             <DatePicker
               icon-left=""
               :value="data[field.name]"
+              :formatter="(date) => getFormat(date, '', true)"
               :placeholder="field.placeholder"
               placement="left-start"
               @change="(data) => emit('update', field.name, data)"
@@ -202,6 +204,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
+import { getFormat } from '@/utils'
 import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
 import { computed } from 'vue'
 
