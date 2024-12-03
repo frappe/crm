@@ -69,3 +69,7 @@
 .crm-field-custom path {
     fill: #7e368d !important;
 }
+
+.crm-lead-container > .flex-col {
+	height: calc(-1px + 100vh) !important;
+}
