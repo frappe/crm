@@ -40,7 +40,7 @@
       />
     </template>
   </LayoutHeader>
-  <div v-if="lead?.data" class="flex h-full overflow-hidden-rm crm-lead-container">
+  <div v-if="lead?.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
       <Activities
         ref="activities"
