@@ -242,7 +242,7 @@ function captureImage() {
 }
 
 function uploadViaCamera() {
-  const nowDatetime = formatDate(new Date(), 'yyyy_MM_dd_HH_mm_ss')
+  const nowDatetime = formatDate(new Date(), 'YYYY_MM_DD_HH_mm_ss')
   let filename = `capture_${nowDatetime}.png`
   urlToFile(cameraImage.value, filename, 'image/png').then((file) => {
     addFiles([file])
