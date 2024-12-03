@@ -48,7 +48,7 @@
     </template>
 
   </LayoutHeader>
-  <div v-if="deal.data" class="flex h-full overflow-hidden">
+  <div v-if="deal.data" class="flex h-full overflow-hidden crm-container">
     <Tabs v-model="tabIndex" :tabs="tabs">
       <Activities
         ref="activities"
@@ -501,6 +501,12 @@ const organization = createResource({
 })
 
 onMounted(() => {
+  setTimeout(() => {
+        const container = document.querySelector('.crm-container');
+        if (container) {
+          container.classList.remove('overflow-hidden');
+        }
+      }, 1000); 
   $socket.on('crm_customer_created', () => {
     createToast({
       title: __('Customer created successfully'),
