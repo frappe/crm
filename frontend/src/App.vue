@@ -26,5 +26,6 @@ const Layout = computed(() => {
   }
 })
 
-setConfig('timezone', window.timezone)
+setConfig('systemTimezone', window.timezone?.system || null)
+setConfig('localTimezone', window.timezone?.user || null)
 </script>
