@@ -127,7 +127,7 @@
             />
           </div>
           <div class="-mb-1 flex shrink-0 items-end gap-1 text-ink-gray-5">
-            <Tooltip :text="formatDate(whatsapp.creation, 'EEE, MMM d, yyyy')">
+            <Tooltip :text="formatDate(whatsapp.creation, 'ddd, MMM D, YYYY')">
               <div class="text-2xs">
                 {{ formatDate(whatsapp.creation, 'hh:mm a') }}
               </div>

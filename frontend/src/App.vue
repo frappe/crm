@@ -9,7 +9,7 @@
 <script setup>
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore as session } from '@/stores/session'
-import { Toasts } from 'frappe-ui'
+import { Toasts, setConfig } from 'frappe-ui'
 import { computed, defineAsyncComponent } from 'vue'
 
 const MobileLayout = defineAsyncComponent(
@@ -25,4 +25,7 @@ const Layout = computed(() => {
     return DesktopLayout
   }
 })
+
+setConfig('systemTimezone', window.timezone?.system || null)
+setConfig('localTimezone', window.timezone?.user || null)
 </script>

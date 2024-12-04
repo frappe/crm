@@ -40,12 +40,12 @@
       >
         <div v-if="column.key === 'due_date'">
           <Tooltip
-            :text="item && formatDate(item, 'EEE, MMM d, yyyy | hh:mm a')"
+            :text="item && formatDate(item, 'ddd, MMM D, YYYY | hh:mm a')"
           >
             <div class="flex items-center gap-2 truncate text-base">
               <div><CalendarIcon /></div>
               <div v-if="item" class="truncate">
-                {{ formatDate(item, 'd MMM, hh:mm a') }}
+                {{ formatDate(item, 'D MMM, hh:mm a') }}
               </div>
             </div>
           </Tooltip>

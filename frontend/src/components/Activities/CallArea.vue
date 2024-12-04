@@ -56,7 +56,7 @@
         </div>
       </div>
       <div class="flex items-center flex-wrap gap-2">
-        <Badge :label="formatDate(activity.creation, 'MMM d, EEEE')">
+        <Badge :label="formatDate(activity.creation, 'MMM D, dddd')">
           <template #prefix>
             <CalendarIcon class="size-3" />
           </template>
