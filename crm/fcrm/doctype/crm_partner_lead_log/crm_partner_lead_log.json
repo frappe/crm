@@ -1,0 +1,32 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-20 22:07:37.511753",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "lead"
+ ],
+ "fields": [
+  {
+   "fieldname": "lead",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Lead",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-20 22:27:04.097698",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Partner Lead log",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

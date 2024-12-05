@@ -265,6 +265,12 @@
           {{ __("New contact will be created based on the person's details") }}
         </div>
       </div>
+      <div class="flex items-center mb-4 my-6">
+        <input checked id="checked-checkbox"  type="checkbox"          
+        v-model="convertAllLeads"
+        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+        <label for="default-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Convert all leads from same organization</label>
+      </div>
     </template>
   </Dialog>
   <SidePanelModal
@@ -347,6 +353,8 @@ const props = defineProps({
 
 const customActions = ref([])
 const customStatuses = ref([])
+const convertAllLeads = ref(true)
+
 
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
@@ -377,6 +385,7 @@ const lead = createResource({
 onMounted(() => {
   if (lead.data) return
   lead.fetch()
+
 })
 
 const reload = ref(false)
@@ -433,6 +442,7 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
+
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
   if (route.query.view || route.query.viewType) {
@@ -561,6 +571,7 @@ const existingContact = ref('')
 const existingOrganization = ref('')
 
 async function convertToDeal(updated) {
+  
   let valueUpdated = false
 
   if (existingContactChecked.value && !existingContact.value) {
@@ -618,10 +629,26 @@ async function convertToDeal(updated) {
       'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
       {
         lead: lead.data.name,
+        convert_all_leads : convertAllLeads.value,
       },
     )
     if (deal) {
       capture('convert_lead_to_deal')
+      console.log(lead.data.partner_leads);
+      const actualData = unwrapProxy(lead.data.partner_leads);
+      const status_array = actualData.map((item) => item.name);
+
+      if (convertAllLeads.value){
+        status_array.forEach((leadName) => {
+          createToast({
+            title: __('Success'),
+            text: __(`Lead "${leadName}" successfully converted to Contacts`),
+            icon: 'check',
+            iconClasses: 'text-green-600',
+          });
+        });
+      }
+
       if (updated) {
         await contacts.reload()
       }
@@ -629,7 +656,22 @@ async function convertToDeal(updated) {
     }
   }
 }
-
+/**
+ *  Convert proxy object into array
+ * @param proxyData 
+ */
+ function unwrapProxy(proxyData) {
+  if (Array.isArray(proxyData)) {
+    return proxyData.map((item) => unwrapProxy(item));
+  } 
+  else if (proxyData !== null && typeof proxyData === 'object') {
+    return Object.keys(proxyData).reduce((acc, key) => {
+      acc[key] = unwrapProxy(proxyData[key]);
+      return acc;
+    }, {});
+  }
+  return proxyData;
+}
 const activities = ref(null)
 
 function openEmailBox() {
