@@ -12,14 +12,7 @@
       >
         {{ section.label }}
       </div>
-      <div
-        class="grid gap-4"
-        :class="
-          section.columns
-            ? 'grid-cols-' + section.columns
-            : 'grid-cols-2 sm:grid-cols-3'
-        "
-      >
+      <div class="grid gap-4" :class="gridClass(section.columns)">
         <div v-for="field in section.fields" :key="field.name">
           <div
             class="settings-field"
@@ -189,6 +182,17 @@ const props = defineProps({
   sections: Array,
   data: Object,
 })
+
+function gridClass(columns) {
+  columns = columns || 3
+  let griColsMap = {
+    1: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1',
+    2: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2',
+    3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+    4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+  }
+  return griColsMap[columns]
+}
 
 const getPlaceholder = (field) => {
   if (field.placeholder) {

@@ -453,6 +453,11 @@ const tabs = computed(() => {
       icon: CommentIcon,
     },
     {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
+    },
+    {
       name: 'Calls',
       label: __('Calls'),
       icon: PhoneIcon,

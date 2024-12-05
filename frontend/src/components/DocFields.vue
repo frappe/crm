@@ -33,7 +33,7 @@
   </div>
   <div
     v-else
-    class="flex flex-col gap-3 mb-3 border border-outline-gray-1 p-5 rounded-lg"
+    class="flex flex-col gap-3 mb-3 border border-outline-gray-1 p-3 sm:p-5 rounded-lg"
   >
     <Fields v-if="sections.data" :sections="sections.data" :data="data.doc" />
   </div>
