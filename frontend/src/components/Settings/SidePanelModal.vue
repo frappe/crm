@@ -42,7 +42,11 @@
               class="flex flex-col py-1.5 px-1"
               :class="{ 'border-b': i !== sections.data?.length - 1 }"
             >
-              <Section :is-opened="section.opened" :label="section.label">
+              <Section
+                class="p-2"
+                :label="section.label"
+                :opened="section.opened"
+              >
                 <SectionFields
                   :fields="section.fields"
                   :isLastSection="i == section.data?.length - 1"

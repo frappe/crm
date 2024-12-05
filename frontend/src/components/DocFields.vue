@@ -2,7 +2,7 @@
   <div
     class="my-3 flex items-center justify-between text-lg font-medium sm:mb-4 sm:mt-8"
   >
-    <div class="flex h-8 items-center text-xl font-semibold text-gray-800">
+    <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8 ">
       {{ __('Data') }}
       <Badge
         v-if="data.isDirty"
@@ -33,7 +33,7 @@
   </div>
   <div
     v-else
-    class="flex flex-col gap-3 mb-3 border border-outline-gray-1 p-3 sm:p-5 rounded-lg"
+    class="flex flex-col gap-3 border border-outline-gray-1 rounded-lg"
   >
     <Fields v-if="sections.data" :sections="sections.data" :data="data.doc" />
   </div>

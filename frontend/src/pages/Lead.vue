@@ -177,7 +177,11 @@
             class="flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
-            <Section :is-opened="section.opened" :label="section.label">
+            <Section
+              class="px-2 font-semibold"
+              :label="section.label"
+              :opened="section.opened"
+            >
               <SectionFields
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"

@@ -141,7 +141,7 @@
                 class="flex flex-col px-2 py-3 sm:p-3"
                 :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
               >
-                <Section :is-opened="section.opened" :label="section.label">
+                <Section :label="section.label" :opened="section.opened">
                   <SectionFields
                     :fields="section.fields"
                     :isLastSection="i == fieldsLayout.data.length - 1"

@@ -60,9 +60,7 @@
                         clip-path: inset(22px 0 0 0);
                       "
                     >
-                      <CameraIcon
-                        class="h-6 w-6 cursor-pointer text-white"
-                      />
+                      <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
                     </div>
                   </component>
                 </div>
@@ -129,7 +127,7 @@
             class="flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
-            <Section :is-opened="section.opened" :label="section.label">
+            <Section :label="section.label" :opened="section.opened">
               <template #actions>
                 <Button
                   v-if="i == 0 && isManager()"
