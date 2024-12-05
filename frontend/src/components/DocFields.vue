@@ -11,13 +11,18 @@
         theme="orange"
       />
     </div>
-    <Button
-      label="Save"
-      :disabled="!data.isDirty"
-      variant="solid"
-      :loading="data.save.loading"
-      @click="saveChanges"
-    />
+    <div class="flex gap-1">
+      <Button v-if="isManager()" @click="showDataFieldsModal = true">
+        <EditIcon class="h-4 w-4" />
+      </Button>
+      <Button
+        label="Save"
+        :disabled="!data.isDirty"
+        variant="solid"
+        :loading="data.save.loading"
+        @click="saveChanges"
+      />
+    </div>
   </div>
   <div
     v-if="data.get.loading"
@@ -32,13 +37,22 @@
   >
     <Fields v-if="sections.data" :sections="sections.data" :data="data.doc" />
   </div>
+  <DataFieldsModal
+    v-if="showDataFieldsModal"
+    v-model="showDataFieldsModal"
+    :doctype="doctype"
+  />
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import DataFieldsModal from '@/components/Modals/DataFieldsModal.vue'
 import Fields from '@/components/Fields.vue'
 import { Badge, createResource, createDocumentResource } from 'frappe-ui'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { createToast } from '@/utils'
+import { usersStore } from '@/stores/users'
+import { ref } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -50,6 +64,10 @@ const props = defineProps({
     required: true,
   },
 })
+
+const { isManager } = usersStore()
+
+const showDataFieldsModal = ref(false)
 
 const data = createDocumentResource({
   doctype: props.doctype,
