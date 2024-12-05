@@ -9,9 +9,15 @@
             >
               <div
                 v-if="!section.editingLabel"
+                class="flex items-center gap-2"
                 :class="{ 'text-ink-gray-3': section.hideLabel }"
               >
                 {{ __(section.label) || __('Untitled') }}
+                <FeatherIcon
+                  v-if="section.collapsible"
+                  name="chevron-down"
+                  class="h-4 transition-all duration-300 ease-in-out"
+                />
               </div>
               <div v-else class="flex gap-2 items-center">
                 <Input
@@ -165,6 +171,11 @@ function getOptions(section) {
       icon: 'edit',
       onClick: () => (section.editingLabel = true),
       condition: () => section.editable !== false,
+    },
+    {
+      label: section.collapsible ? 'Uncollapsible' : 'Collapsible',
+      icon: section.collapsible ? 'chevron-up' : 'chevron-down',
+      onClick: () => (section.collapsible = !section.collapsible),
     },
     {
       label: section.hideLabel ? 'Show Label' : 'Hide Label',

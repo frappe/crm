@@ -4,10 +4,10 @@
       <div
         class="flex text-ink-gray-9 max-w-fit cursor-pointer items-center gap-2 text-base"
         v-bind="$attrs"
-        @click="toggle()"
+        @click="collapsible && toggle()"
       >
         <FeatherIcon
-          v-if="collapseIconPosition === 'left'"
+          v-if="collapsible && collapseIconPosition === 'left'"
           name="chevron-right"
           class="h-4 transition-all duration-300 ease-in-out"
           :class="{ 'rotate-90': opened }"
@@ -16,7 +16,7 @@
           {{ __(label) || __('Untitled') }}
         </span>
         <FeatherIcon
-          v-if="collapseIconPosition === 'right'"
+          v-if="collapsible && collapseIconPosition === 'right'"
           name="chevron-right"
           class="h-4 transition-all duration-300 ease-in-out"
           :class="{ 'rotate-90': opened }"
@@ -51,6 +51,10 @@ const props = defineProps({
     default: false,
   },
   opened: {
+    type: Boolean,
+    default: true,
+  },
+  collapsible: {
     type: Boolean,
     default: true,
   },

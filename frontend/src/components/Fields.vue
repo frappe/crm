@@ -15,6 +15,7 @@
         :label="section.label"
         :hideLabel="section.hideLabel"
         :opened="section.opened"
+        :collapsible="section.collapsible"
         collapseIconPosition="right"
       >
         <div
