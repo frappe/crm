@@ -35,7 +35,12 @@
     v-else
     class="flex flex-col gap-3 border border-outline-gray-1 rounded-lg"
   >
-    <Fields v-if="sections.data" :sections="sections.data" :data="data.doc" />
+    <Fields
+      v-if="sections.data"
+      :sections="sections.data"
+      :data="data.doc"
+      :allowTabs="true"
+    />
   </div>
   <DataFieldsModal
     v-if="showDataFieldsModal"

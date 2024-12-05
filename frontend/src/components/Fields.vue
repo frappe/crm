@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col my-4 sm:my-6">
+  <div class="flex flex-col" :class="{ 'my-4 sm:my-6': allowTabs }">
     <div
       v-for="(section, i) in sections"
       :key="section.label"
@@ -10,15 +10,16 @@
         class="h-px w-full border-t my-5"
       />
       <Section
-        class="text-lg font-medium px-3 sm:px-5"
+        class="text-lg font-medium"
+        :class="{ 'px-3 sm:px-5': allowTabs }"
         :label="section.label"
         :hideLabel="section.hideLabel"
         :opened="section.opened"
         collapseIconPosition="right"
       >
         <div
-          class="grid gap-4 mt-6 px-3 sm:px-5"
-          :class="gridClass(section.columns)"
+          class="grid gap-4 mt-6"
+          :class="[gridClass(section.columns), { 'px-3 sm:px-5': allowTabs }]"
         >
           <div v-for="field in section.fields" :key="field.name">
             <div
@@ -191,6 +192,10 @@ const { getUser } = usersStore()
 const props = defineProps({
   sections: Array,
   data: Object,
+  allowTabs: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 function gridClass(columns) {
