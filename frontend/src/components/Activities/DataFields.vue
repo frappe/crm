@@ -31,16 +31,8 @@
     <LoadingIndicator class="h-6 w-6" />
     <span>{{ __('Loading...') }}</span>
   </div>
-  <div
-    v-else
-    class="flex flex-col gap-3 border border-outline-gray-1 rounded-lg"
-  >
-    <FieldLayout
-      v-if="sections.data"
-      :sections="sections.data"
-      :data="data.doc"
-      :allowTabs="true"
-    />
+  <div v-else>
+    <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="data.doc" />
   </div>
   <DataFieldsModal
     v-if="showDataFieldsModal"
@@ -98,7 +90,7 @@ const data = createDocumentResource({
   },
 })
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['DataFields', props.doctype],
   params: { doctype: props.doctype, type: 'Data Fields' },

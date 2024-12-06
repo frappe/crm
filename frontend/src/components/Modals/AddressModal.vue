@@ -22,8 +22,8 @@
             </Button>
           </div>
         </div>
-        <div v-if="sections.data">
-          <FieldLayout :sections="sections.data" :data="_address" />
+        <div v-if="tabs.data">
+          <FieldLayout :tabs="tabs.data" :data="_address" />
           <ErrorMessage class="mt-2" :message="error" />
         </div>
       </div>
@@ -106,7 +106,7 @@ const dialogOptions = computed(() => {
   return { title, size, actions }
 })
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['QuickEntry', 'Address'],
   params: { doctype: 'Address', type: 'Quick Entry' },

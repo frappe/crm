@@ -23,7 +23,7 @@
           </div>
         </div>
         <div>
-          <FieldLayout v-if="sections.data" :sections="sections.data" :data="lead" />
+          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead" />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
@@ -63,21 +63,23 @@ const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['QuickEntry', 'CRM Lead'],
   params: { doctype: 'CRM Lead', type: 'Quick Entry' },
   auto: true,
-  transform: (data) => {
-    return data.forEach((section) => {
-      section.fields.forEach((field) => {
-        if (field.name == 'status') {
-          field.type = 'Select'
-          field.options = leadStatuses.value
-          field.prefix = getLeadStatus(lead.status).iconColorClass
-        } else if (field.name == 'lead_owner') {
-          field.type = 'User'
-        }
+  transform: (_tabs) => {
+    return _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.fields.forEach((field) => {
+          if (field.name == 'status') {
+            field.type = 'Select'
+            field.options = leadStatuses.value
+            field.prefix = getLeadStatus(lead.status).iconColorClass
+          } else if (field.name == 'lead_owner') {
+            field.type = 'User'
+          }
+        })
       })
     })
   },

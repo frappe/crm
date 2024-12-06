@@ -12,11 +12,7 @@
       />
     </h2>
     <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
-      <FieldLayout
-        v-if="data?.doc && sections"
-        :sections="sections"
-        :data="data.doc"
-      />
+      <FieldLayout v-if="data?.doc && tabs" :tabs="tabs" :data="data.doc" />
       <ErrorMessage class="mt-2" :message="error" />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
@@ -98,7 +94,7 @@ const data = createDocumentResource({
   },
 })
 
-const sections = computed(() => {
+const tabs = computed(() => {
   if (!fields.data) return []
   let _sections = []
   let fieldsData = fields.data
@@ -138,7 +134,7 @@ const sections = computed(() => {
     }
   })
 
-  return _sections
+  return [{ no_tabs: true, sections: _sections }]
 })
 
 function update() {
@@ -148,7 +144,8 @@ function update() {
 }
 
 function validateMandatoryFields() {
-  for (let section of sections.value) {
+  if (!tabs.value) return false
+  for (let section of tabs.value[0].sections) {
     for (let field of section.fields) {
       if (
         (field.mandatory ||

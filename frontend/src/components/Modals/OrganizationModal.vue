@@ -37,7 +37,7 @@
           </div>
           <FieldLayout
             v-else-if="filteredSections.length"
-            :sections="filteredSections"
+            :tabs="filteredSections"
             :data="_organization"
           />
         </div>
@@ -241,7 +241,7 @@ const fields = computed(() => {
   return details.filter((field) => field.value)
 })
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['QuickEntry', 'CRM Organization'],
   params: { doctype: 'CRM Organization', type: 'Quick Entry' },
@@ -249,7 +249,7 @@ const sections = createResource({
 })
 
 const filteredSections = computed(() => {
-  let allSections = sections.data || []
+  let allSections = tabs.data?.[0]?.sections || []
   if (!allSections.length) return []
 
   allSections.forEach((s) => {
@@ -272,7 +272,7 @@ const filteredSections = computed(() => {
     })
   })
 
-  return allSections
+  return [{ no_tabs: true, sections: allSections }]
 })
 
 watch(

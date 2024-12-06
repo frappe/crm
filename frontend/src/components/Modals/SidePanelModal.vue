@@ -29,18 +29,20 @@
             size="sm"
           />
         </div>
-        <div v-if="sections.data" class="flex gap-4">
+        <div v-if="tabs.data?.[0]?.sections" class="flex gap-4">
           <SidePanelLayoutEditor
             class="flex flex-1 flex-col pr-2"
-            :sections="sections.data"
+            :sections="tabs.data[0].sections"
             :doctype="_doctype"
           />
           <div v-if="preview" class="flex flex-1 flex-col border rounded">
             <div
-              v-for="(section, i) in sections.data"
+              v-for="(section, i) in tabs.data[0].sections"
               :key="section.label"
               class="flex flex-col py-1.5 px-1"
-              :class="{ 'border-b': i !== sections.data?.length - 1 }"
+              :class="{
+                'border-b': i !== tabs.data[0].sections?.length - 1,
+              }"
             >
               <Section
                 class="p-2"
@@ -106,20 +108,20 @@ function getParams() {
   return { doctype: _doctype.value, type: 'Side Panel' }
 }
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['SidePanel', _doctype.value],
   params: getParams(),
   onSuccess(data) {
-    sections.originalData = JSON.parse(JSON.stringify(data))
+    tabs.originalData = JSON.parse(JSON.stringify(data))
   },
 })
 
 watch(
-  () => sections?.data,
+  () => tabs?.data,
   () => {
     dirty.value =
-      JSON.stringify(sections?.data) !== JSON.stringify(sections?.originalData)
+      JSON.stringify(tabs?.data) !== JSON.stringify(tabs?.originalData)
   },
   { deep: true },
 )
@@ -128,18 +130,20 @@ onMounted(() => useDebounceFn(reload, 100)())
 
 function reload() {
   nextTick(() => {
-    sections.params = getParams()
-    sections.reload()
+    tabs.params = getParams()
+    tabs.reload()
   })
 }
 
 function saveChanges() {
-  let _sections = JSON.parse(JSON.stringify(sections.data))
-  _sections.forEach((section) => {
-    if (!section.fields) return
-    section.fields = section.fields
-      .map((field) => field.fieldname || field.name)
-      .filter(Boolean)
+  let _tabs = JSON.parse(JSON.stringify(tabs.data))
+  _tabs.forEach((tab) => {
+    tab.sections.forEach((section) => {
+      if (!section.fields) return
+      section.fields = section.fields
+        .map((field) => field.fieldname || field.name)
+        .filter(Boolean)
+    })
   })
   loading.value = true
   call(
@@ -147,7 +151,7 @@ function saveChanges() {
     {
       doctype: _doctype.value,
       type: 'Side Panel',
-      layout: JSON.stringify(_sections),
+      layout: JSON.stringify(_tabs),
     },
   ).then(() => {
     loading.value = false
