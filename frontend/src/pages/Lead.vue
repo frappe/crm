@@ -182,7 +182,7 @@
               :label="section.label"
               :opened="section.opened"
             >
-              <SectionFields
+              <SidePanelLayout
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
                 v-model="lead.data"
@@ -317,11 +317,11 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {

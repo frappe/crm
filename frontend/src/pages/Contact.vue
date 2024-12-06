@@ -138,7 +138,7 @@
                   <EditIcon class="h-4 w-4" />
                 </Button>
               </template>
-              <SectionFields
+              <SidePanelLayout
                 v-if="section.fields"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
@@ -202,14 +202,14 @@
 import Resizer from '@/components/Resizer.vue'
 import Icon from '@/components/Icon.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import {
   formatDate,

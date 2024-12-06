@@ -124,7 +124,7 @@
                 :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
               >
                 <Section :label="section.label" :opened="section.opened">
-                  <SectionFields
+                  <SidePanelLayout
                     :fields="section.fields"
                     :isLastSection="i == fieldsLayout.data.length - 1"
                     v-model="organization.doc"
@@ -166,7 +166,7 @@
 
 <script setup>
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'

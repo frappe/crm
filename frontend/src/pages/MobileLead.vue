@@ -75,7 +75,7 @@
               :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
             >
               <Section :label="section.label" :opened="section.opened">
-                <SectionFields
+                <SidePanelLayout
                   :fields="section.fields"
                   :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="lead.data"
@@ -190,7 +190,7 @@ import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomizations } from '@/utils'

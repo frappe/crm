@@ -30,7 +30,7 @@
           />
         </div>
         <div v-if="sections.data" class="flex gap-4">
-          <SidePanelLayoutBuilder
+          <SidePanelLayoutEditor
             class="flex flex-1 flex-col pr-2"
             :sections="sections.data"
             :doctype="_doctype"
@@ -47,7 +47,7 @@
                 :label="section.label"
                 :opened="section.opened"
               >
-                <SectionFields
+                <SidePanelLayout
                   :fields="section.fields"
                   :isLastSection="i == section.data?.length - 1"
                   v-model="data"
@@ -79,8 +79,8 @@
 </template>
 <script setup>
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
-import SidePanelLayoutBuilder from '@/components/Settings/SidePanelLayoutBuilder.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
+import SidePanelLayoutEditor from '@/components/SidePanelLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { capture } from '@/telemetry'
 import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'

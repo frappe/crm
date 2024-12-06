@@ -365,7 +365,7 @@
       </div>
     </div>
     <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
-      <DocFields :doctype="doctype" :docname="doc.data.name" />
+      <DataFields :doctype="doctype" :docname="doc.data.name" />
     </div>
     <div
       v-else
@@ -457,7 +457,7 @@ import CallArea from '@/components/Activities/CallArea.vue'
 import NoteArea from '@/components/Activities/NoteArea.vue'
 import TaskArea from '@/components/Activities/TaskArea.vue'
 import AttachmentArea from '@/components/Activities/AttachmentArea.vue'
-import DocFields from '@/components/DocFields.vue'
+import DataFields from '@/components/Activities/DataFields.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'

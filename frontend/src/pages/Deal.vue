@@ -167,7 +167,7 @@
                   <EditIcon class="h-4 w-4" />
                 </Button>
               </template>
-              <SectionFields
+              <SidePanelLayout
                 v-if="section.fields"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
@@ -347,10 +347,10 @@ import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {

@@ -142,7 +142,7 @@
                 :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
               >
                 <Section :label="section.label" :opened="section.opened">
-                  <SectionFields
+                  <SidePanelLayout
                     :fields="section.fields"
                     :isLastSection="i == fieldsLayout.data.length - 1"
                     v-model="contact.data"
@@ -178,7 +178,7 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
