@@ -67,6 +67,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['reload'])
+
 const show = defineModel()
 const _doctype = ref(props.doctype)
 const loading = ref(false)
@@ -127,6 +129,7 @@ function saveChanges() {
     loading.value = false
     show.value = false
     capture('data_fields_layout_builder', { doctype: _doctype.value })
+    emit('reload')
   })
 }
 </script>

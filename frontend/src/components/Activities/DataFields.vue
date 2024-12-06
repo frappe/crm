@@ -38,6 +38,7 @@
     v-if="showDataFieldsModal"
     v-model="showDataFieldsModal"
     :doctype="doctype"
+    @reload="tabs.reload"
   />
 </template>
 
