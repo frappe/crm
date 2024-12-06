@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-5.5">
     <div
       class="flex justify-between items-center gap-1 text-base bg-surface-gray-2 rounded py-2 px-2.5"
     >
@@ -13,11 +13,11 @@
         >
           <template #item="{ element: tab, index: i }">
             <div
-              class="cursor-pointer"
+              class="cursor-pointer rounded"
               :class="[
                 tabIndex == i
-                  ? 'text-ink-gray-9 border border-outline-gray-modals bg-surface-white rounded shadow-sm'
-                  : 'text-ink-gray-5',
+                  ? 'text-ink-gray-9 bg-surface-white shadow-sm'
+                  : 'text-ink-gray-5 hover:text-ink-gray-9 hover:bg-surface-white hover:shadow-sm',
                 tab.editingLabel ? 'p-1' : 'px-2 py-1',
               ]"
               @click="tabIndex = i"
