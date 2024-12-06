@@ -320,5 +320,10 @@ def create_deal(args):
 
 	deal.update(args)
 
+	dealElementNames =  args.get("dealElementNames")
+	if dealElementNames:
+		for dealElement in dealElementNames:
+			deal.append("deal_elements", {'deal_elements':dealElement})
+
 	deal.insert(ignore_permissions=True)
 	return deal.name

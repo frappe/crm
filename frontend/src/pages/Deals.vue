@@ -352,6 +352,7 @@ const showDealModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
+const dealElementNames = ref([]);
 
 // deals data is loaded in the ViewControls component
 const deals = ref({})

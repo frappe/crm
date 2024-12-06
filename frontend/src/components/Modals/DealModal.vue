@@ -40,8 +40,23 @@
             :data="deal"
           />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+          
+            <div class="pt-4">
+              <div class="settings-field">
+                <div class="mb-2 text-sm text-gray-600">Deal Element</div>
+                <div class="space-y-1.5 form-control prefix"> 
+                  <MultiSelectDealElementForCreate
+                    class="flex-1"
+                    v-model="dealElementNames"
+                    @update:dealElements="dealElementNames = $event"
+
+                    /></div>
+              </div>
+             
+            </div>
         </div>
       </div>
+
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="flex flex-row-reverse gap-2">
           <Button
@@ -65,6 +80,8 @@ import { capture } from '@/telemetry'
 import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import MultiSelectDealElementForCreate from '@/components/Controls/MultiSelectDealElementForCreate.vue'  
+
 
 const props = defineProps({
   defaults: Object,
@@ -76,6 +93,7 @@ const { getDealStatus, statusOptions } = statusesStore()
 const show = defineModel()
 const router = useRouter()
 const error = ref(null)
+const dealElementNames = ref([]);
 
 const deal = reactive({
   organization: '',
@@ -176,7 +194,13 @@ function createDeal() {
   }
   createResource({
     url: 'crm.fcrm.doctype.crm_deal.crm_deal.create_deal',
-    params: { args: deal },
+    params: { args: 
+      {
+        ...deal, 
+        dealElementNames: dealElementNames.value, // Serialize if necessary
+
+      },
+    },
     auto: true,
     validate() {
       error.value = null
