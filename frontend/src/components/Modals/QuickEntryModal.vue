@@ -36,12 +36,12 @@
           />
         </div>
         <div v-if="sections?.data">
-          <QuickEntryLayoutBuilder
+          <FieldLayoutEditor
             v-if="!preview"
             :sections="sections.data"
             :doctype="_doctype"
           />
-          <Fields v-else :sections="sections.data" :data="{}" />
+          <FieldLayout v-else :sections="sections.data" :data="{}" />
         </div>
       </div>
     </template>
@@ -59,8 +59,8 @@
   </Dialog>
 </template>
 <script setup>
-import Fields from '@/components/Fields.vue'
-import QuickEntryLayoutBuilder from '@/components/QuickEntryLayoutBuilder.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
+import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { capture } from '@/telemetry'
 import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'
@@ -85,7 +85,7 @@ function getParams() {
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quick-entry-sections', _doctype.value],
+  cache: ['QuickEntryModal', _doctype.value],
   params: getParams(),
   onSuccess(data) {
     sections.originalData = JSON.parse(JSON.stringify(data))

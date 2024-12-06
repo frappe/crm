@@ -35,8 +35,8 @@
               <div>{{ field.value }}</div>
             </div>
           </div>
-          <Fields
-            v-else-if="filteredSections"
+          <FieldLayout
+            v-else-if="filteredSections.length"
             :sections="filteredSections"
             :data="_organization"
           />
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import MoneyIcon from '@/components/Icons/MoneyIcon.vue'
@@ -243,7 +243,7 @@ const fields = computed(() => {
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Organization'],
+  cache: ['QuickEntry', 'CRM Organization'],
   params: { doctype: 'CRM Organization', type: 'Quick Entry' },
   auto: true,
 })

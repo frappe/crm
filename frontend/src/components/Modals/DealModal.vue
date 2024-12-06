@@ -33,9 +33,9 @@
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
-          <Fields
-            v-if="filteredSections"
-            class="border-t pt-4"
+          <div class="h-px w-full border-t my-5" />
+          <FieldLayout
+            v-if="filteredSections.length"
             :sections="filteredSections"
             :data="deal"
           />
@@ -58,7 +58,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
@@ -102,7 +102,7 @@ const chooseExistingOrganization = ref(false)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Deal'],
+  cache: ['QuickEntry', 'CRM Deal'],
   params: { doctype: 'CRM Deal', type: 'Quick Entry' },
   auto: true,
   transform: (data) => {

@@ -23,7 +23,7 @@
           </div>
         </div>
         <div>
-          <Fields v-if="sections.data" :sections="sections.data" :data="lead" />
+          <FieldLayout v-if="sections.data" :sections="sections.data" :data="lead" />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
@@ -43,7 +43,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
@@ -65,7 +65,7 @@ const isLeadCreating = ref(false)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Lead'],
+  cache: ['QuickEntry', 'CRM Lead'],
   params: { doctype: 'CRM Lead', type: 'Quick Entry' },
   auto: true,
   transform: (data) => {

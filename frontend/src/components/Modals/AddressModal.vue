@@ -23,7 +23,7 @@
           </div>
         </div>
         <div v-if="sections.data">
-          <Fields :sections="sections.data" :data="_address" />
+          <FieldLayout :sections="sections.data" :data="_address" />
           <ErrorMessage class="mt-2" :message="error" />
         </div>
       </div>
@@ -50,7 +50,7 @@
 
 <script setup>
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
@@ -108,7 +108,7 @@ const dialogOptions = computed(() => {
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'Address'],
+  cache: ['QuickEntry', 'Address'],
   params: { doctype: 'Address', type: 'Quick Entry' },
   auto: true,
 })

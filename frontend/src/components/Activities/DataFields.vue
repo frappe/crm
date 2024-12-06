@@ -2,7 +2,7 @@
   <div
     class="my-3 flex items-center justify-between text-lg font-medium sm:mb-4 sm:mt-8"
   >
-    <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8 ">
+    <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
       {{ __('Data') }}
       <Badge
         v-if="data.isDirty"
@@ -35,7 +35,7 @@
     v-else
     class="flex flex-col gap-3 border border-outline-gray-1 rounded-lg"
   >
-    <Fields
+    <FieldLayout
       v-if="sections.data"
       :sections="sections.data"
       :data="data.doc"
@@ -52,7 +52,7 @@
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DataFieldsModal from '@/components/Modals/DataFieldsModal.vue'
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import { Badge, createResource, createDocumentResource } from 'frappe-ui'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { createToast } from '@/utils'

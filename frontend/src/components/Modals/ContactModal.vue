@@ -57,8 +57,8 @@
               <div v-else>{{ field.value }}</div>
             </div>
           </div>
-          <Fields
-            v-else-if="filteredSections"
+          <FieldLayout
+            v-else-if="filteredSections.length"
             :sections="filteredSections"
             :data="_contact"
           />
@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import ContactIcon from '@/components/Icons/ContactIcon.vue'
 import GenderIcon from '@/components/Icons/GenderIcon.vue'
@@ -247,7 +247,7 @@ const detailFields = computed(() => {
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'Contact'],
+  cache: ['QuickEntry', 'Contact'],
   params: { doctype: 'Contact', type: 'Quick Entry' },
   auto: true,
 })
