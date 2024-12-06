@@ -32,7 +32,7 @@
         <div v-if="tabs?.data">
           <FieldLayoutEditor
             v-if="!preview"
-            :sections="tabs.data"
+            :tabs="tabs.data"
             :doctype="_doctype"
           />
           <FieldLayout v-else :tabs="tabs.data" :data="{}" :modal="true" />
