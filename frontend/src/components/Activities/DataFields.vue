@@ -38,7 +38,12 @@
     v-if="showDataFieldsModal"
     v-model="showDataFieldsModal"
     :doctype="doctype"
-    @reload="tabs.reload"
+    @reload="
+      () => {
+        tabs.reload()
+        data.reload()
+      }
+    "
   />
 </template>
 
@@ -70,7 +75,7 @@ const showDataFieldsModal = ref(false)
 const data = createDocumentResource({
   doctype: props.doctype,
   name: props.docname,
-  cache: ['doc', props.docname],
+  cache: ['doc', props.doctype, props.docname],
   setValue: {
     onSuccess: () => {
       data.reload()
