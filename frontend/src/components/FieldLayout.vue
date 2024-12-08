@@ -112,7 +112,7 @@
                   </div>
                   <div class="flex gap-1" v-else-if="field.type === 'Link'">
                     <Link
-                      class="form-control flex-1"
+                      class="form-control flex-1 truncate"
                       :value="data[field.name]"
                       :doctype="field.options"
                       :filters="field.filters"
