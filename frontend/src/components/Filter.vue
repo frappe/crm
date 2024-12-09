@@ -206,6 +206,18 @@ const filterableFields = createResource({
         ...field,
       }
     })
+    if(props.doctype == 'CRM Deal'){
+      // Add the new 'deal_element' field
+      fields.push({
+        label: 'Deal Element',
+        value: 'deal_element',
+        fieldname: 'deal_element',
+        fieldtype: 'Text', // Adjust as per your requirement
+        name: 'custom_field_deal_element',
+        options: null,
+      });
+    }
+
     return fields
   },
 })
@@ -256,6 +268,7 @@ function convertFilters(data, allFilters) {
         operator: oppositeOperatorMap[value[0]],
         value: value[1],
       })
+      console.log(f);
     }
   }
   return new Set(f)

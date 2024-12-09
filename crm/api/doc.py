@@ -288,6 +288,10 @@ def get_data(
 		default_filters = frappe.parse_json(default_filters)
 		filters.update(default_filters)
 
+
+	if doctype == 'CRM Deal' and "deal_element" in filters:
+		filters= process_deal_elements_filters(filters)
+	
 	is_default = True
 	data = []
 	_list = get_controller(doctype)
@@ -906,3 +910,15 @@ def convert_json_data(doctype, data):
     
     return converted_data
 
+
+def process_deal_elements_filters(input_dict):
+    output = []
+
+    # Process status and deal_elements
+    for key, values in input_dict.items():
+        if key == "status":
+            output.append([key, *values])
+        elif key == "deal_element":
+            output.append(["CRM Deal Elements", 'deal_elements', values[0], values[1]])
+
+    return output
