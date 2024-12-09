@@ -130,14 +130,14 @@ def update_call_status_info(**kwargs):
 
 def get_datetime_from_timestamp(timestamp):
 	from datetime import datetime
-	from pytz import timezone
+	from zoneinfo import ZoneInfo
 
 	if not timestamp: return None
 
 	datetime_utc_tz_str = timestamp.strftime('%Y-%m-%d %H:%M:%S%z')
 	datetime_utc_tz = datetime.strptime(datetime_utc_tz_str, '%Y-%m-%d %H:%M:%S%z')
 	system_timezone = frappe.utils.get_system_timezone()
-	converted_datetime = datetime_utc_tz.astimezone(timezone(system_timezone))
+	converted_datetime = datetime_utc_tz.astimezone(ZoneInfo(system_timezone))
 	return frappe.utils.format_datetime(converted_datetime, 'yyyy-MM-dd HH:mm:ss')
 
 @frappe.whitelist()
