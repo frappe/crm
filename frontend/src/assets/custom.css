@@ -55,6 +55,11 @@ inline-flex.items-center.justify-center.gap-2.transition-colors.focus:outline-no
         stroke: var(--subheading-color);
 }
 
+.bg-surface-gray-7 {
+        background-color: var(--primary) !important;
+        color: #f8f5f5 !important;
+}
+
 /* not(.rounded) avoids overriding email text color chooser */
 .text-base:not(.rounded) {
         color: var(--text-color) !important;
