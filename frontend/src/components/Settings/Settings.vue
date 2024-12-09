@@ -33,7 +33,7 @@
             </nav>
           </div>
         </div>
-        <div class="flex flex-1 flex-col overflow-y-auto bg-surface-modal">
+        <div class="flex flex-1 flex-col overflow-y-auto bg-surface-modal dark-scrollbar">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>

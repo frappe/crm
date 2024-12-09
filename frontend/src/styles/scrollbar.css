@@ -1,0 +1,56 @@
+/* ==========================================================================
+   Scrollbar Styles for Light and Dark Themes
+   ========================================================================== */
+
+/**
+ * These styles customize the scrollbar appearance for both light and dark themes
+ * Compatible with both Webkit (Chrome, Safari, Edge) and Firefox
+ */
+
+/* Firefox scrollbar styling */
+.dark-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(82, 82, 91, 0.3) transparent;
+}
+
+/* Webkit scrollbar styling */
+/* Controls the overall scrollbar width */
+.dark-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Controls the scrollbar track (background) */
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Controls the scrollbar thumb (draggable part) */
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(82, 82, 91, 0.3);
+  border-radius: 4px;
+}
+
+/* Hover state for the scrollbar thumb */
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(82, 82, 91, 0.5);
+}
+
+/* Dark mode specific styles */
+[data-theme="dark"] .dark-scrollbar {
+  scrollbar-color: rgba(64, 64, 77, 0.5) transparent;
+}
+
+[data-theme="dark"] .dark-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(64, 64, 77, 0.5);
+}
+
+[data-theme="dark"] .dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(64, 64, 77, 0.7);
+}
+
+/* 
+ * Usage:
+ * Add the 'dark-scrollbar' class to any scrollable container
+ * Example: <div class="overflow-y-auto dark-scrollbar">
+ */ 

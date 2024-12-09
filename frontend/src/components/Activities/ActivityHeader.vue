@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mx-4 my-3 flex items-center justify-between text-lg font-medium sm:mx-10 sm:mb-4 sm:mt-8"
+    class="mx-4 my-3 flex items-center gap-4 justify-between text-lg font-medium sm:mx-10 sm:mb-4 sm:mt-8"
   >
     <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
       {{ __(title) }}
@@ -8,86 +8,97 @@
     <Button
       v-if="title == 'Emails'"
       variant="solid"
+      class="shrink-0 px-3"
       @click="emailBox.show = true"
     >
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>{{ __('New Email') }}</span>
+      <span class="whitespace-nowrap hidden sm:inline">{{ __('New Email') }}</span>
     </Button>
     <Button
       v-else-if="title == 'Comments'"
       variant="solid"
+      class="shrink-0 px-3"
       @click="emailBox.showComment = true"
     >
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>{{ __('New Comment') }}</span>
+      <span class="whitespace-nowrap hidden sm:inline">{{ __('New Comment') }}</span>
     </Button>
     <Button
       v-else-if="title == 'Calls'"
       variant="solid"
+      class="shrink-0"
       @click="makeCall(doc.data.mobile_no)"
     >
       <template #prefix>
         <PhoneIcon class="h-4 w-4" />
       </template>
-      <span>{{ __('Make a Call') }}</span>
+      <span class="whitespace-nowrap hidden sm:inline">{{ __('Make a Call') }}</span>
     </Button>
     <Button
       v-else-if="title == 'Notes'"
       variant="solid"
+      class="shrink-0"
       @click="modalRef.showNote()"
     >
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>{{ __('New Note') }}</span>
+      <span class="whitespace-nowrap hidden sm:inline">{{ __('New Note') }}</span>
     </Button>
     <Button
       v-else-if="title == 'Tasks'"
       variant="solid"
+      class="shrink-0"
       @click="modalRef.showTask()"
     >
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>{{ __('New Task') }}</span>
+      <span class="whitespace-nowrap hidden sm:inline">{{ __('New Task') }}</span>
     </Button>
     <Button
       v-else-if="title == 'Attachments'"
       variant="solid"
+      class="shrink-0"
       @click="showFilesUploader = true"
     >
       <template #prefix>
         <FeatherIcon name="plus" class="h-4 w-4" />
       </template>
-      <span>{{ __('Upload Attachment') }}</span>
+      <span class="whitespace-nowrap hidden sm:inline">{{ __('Upload Attachment') }}</span>
     </Button>
     <div class="flex gap-2 shrink-0" v-else-if="title == 'WhatsApp'">
       <Button
-        :label="__('Send Template')"
+        class="shrink-0"
         @click="showWhatsappTemplates = true"
-      />
-      <Button variant="solid" @click="whatsappBox.show()">
+      >
         <template #prefix>
           <FeatherIcon name="plus" class="h-4 w-4" />
         </template>
-        <span>{{ __('New Message') }}</span>
+        <span class="whitespace-nowrap hidden sm:inline">{{ __('Send Template') }}</span>
+      </Button>
+      <Button variant="solid" class="shrink-0" @click="whatsappBox.show()">
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4 w-4" />
+        </template>
+        <span class="whitespace-nowrap hidden sm:inline">{{ __('New Message') }}</span>
       </Button>
     </div>
     <Dropdown v-else :options="defaultActions" @click.stop>
       <template v-slot="{ open }">
-        <Button variant="solid" class="flex items-center gap-1">
+        <Button variant="solid" class="shrink-0">
           <template #prefix>
             <FeatherIcon name="plus" class="h-4 w-4" />
           </template>
-          <span>{{ __('New') }}</span>
+          <span class="whitespace-nowrap hidden sm:inline">{{ __('New') }}</span>
           <template #suffix>
             <FeatherIcon
               :name="open ? 'chevron-up' : 'chevron-down'"
-              class="h-4 w-4"
+              class="h-4 w-4 hidden sm:inline"
             />
           </template>
         </Button>

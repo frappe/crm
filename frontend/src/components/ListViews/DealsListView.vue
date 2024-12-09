@@ -158,7 +158,7 @@
                   event,
                   idx,
                   column,
-                  item,
+                  item: column.key === 'annual_revenue' ? item.value : item,
                   firstColumn: columns[0],
                 })
             "

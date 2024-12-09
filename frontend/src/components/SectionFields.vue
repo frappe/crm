@@ -1,6 +1,6 @@
 <template>
   <FadedScrollableDiv
-    class="flex flex-col gap-1.5 overflow-y-auto"
+    class="flex flex-col gap-1.5 overflow-y-auto dark-scrollbar"
     :class="[isLastSection ? '' : 'max-h-[300px]']"
   >
     <div

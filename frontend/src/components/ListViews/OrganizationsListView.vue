@@ -61,7 +61,11 @@
                     event,
                     idx,
                     column,
-                    item,
+                    item: column.type === 'Link' || column.key === 'industry' 
+                      ? item.value || item
+                      : column.key === 'website'
+                      ? ['LIKE', `%${item.value || item}%`]
+                      : ['LIKE', `%${item.label || item}%`],
                     firstColumn: columns[0],
                   })
               "
@@ -100,7 +104,11 @@
                     event,
                     idx,
                     column,
-                    item,
+                    item: column.type === 'Link' || column.key === 'industry' 
+                      ? item.value || item
+                      : column.key === 'website'
+                      ? ['LIKE', `%${item.value || item}%`]
+                      : ['LIKE', `%${item.label || item}%`],
                     firstColumn: columns[0],
                   })
               "

@@ -20,7 +20,7 @@
           :validateFile="validateFile"
         >
           <template #default="{ openFileSelector, error }">
-            <div class="flex flex-col items-start justify-start gap-4 p-5">
+            <div class="flex flex-col gap-4 p-5">
               <div class="flex gap-4 items-center">
                 <div class="group relative h-15.5 w-15.5">
                   <Avatar
@@ -90,28 +90,57 @@
                   <ErrorMessage :message="__(error)" />
                 </div>
               </div>
-              <div class="flex gap-1.5">
-                <Button
-                  v-if="contact.data.actual_mobile_no"
-                  :label="__('Make Call')"
-                  size="sm"
-                  @click="
-                    callEnabled && makeCall(contact.data.actual_mobile_no)
-                  "
-                >
-                  <template #prefix>
-                    <PhoneIcon class="h-4 w-4" />
-                  </template>
-                </Button>
+              <div class="flex p-3">
+                <div class="flex gap-1.5">
+                  <Button
+                    v-if="contact.data.actual_mobile_no && callEnabled"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="makeCall(contact.data.actual_mobile_no)"
+                  >
+                    <template #prefix>
+                      <PhoneIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Make Call') }}
+                  </Button>
+
+                  <Button
+                    v-if="contact.data.actual_mobile_no && !callEnabled"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="trackPhoneActivities('phone')"
+                  >
+                    <template #prefix>
+                      <PhoneIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Make Call') }}
+                  </Button>
+
+                  <Button
+                    v-if="contact.data.actual_mobile_no"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="trackPhoneActivities('whatsapp')"
+                  >
+                    <template #prefix>
+                      <WhatsAppIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Chat') }}
+                  </Button>
+                </div>
+
                 <Button
                   :label="__('Delete')"
+                  variant="ghost"
                   theme="red"
                   size="sm"
+                  class="dark:text-red-400 dark:hover:bg-gray-700"
                   @click="deleteContact"
                 >
                   <template #prefix>
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
                   </template>
+                  {{ __('Delete') }}  
                 </Button>
               </div>
             </div>
@@ -122,7 +151,7 @@
         v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
+        <div class="flex flex-col overflow-y-auto dark-scrollbar">
           <div
             v-for="(section, i) in fieldsLayout.data"
             :key="section.label"
@@ -207,6 +236,7 @@ import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -237,6 +267,8 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { normalizePhoneNumber } from '@/utils/communicationUtils'
+import { trackCommunication } from '@/utils/communicationUtils'
 
 const { $dialog, makeCall } = globalStore()
 
@@ -670,4 +702,19 @@ const dealColumns = [
     width: '8rem',
   },
 ]
+
+function trackPhoneActivities(type = 'phone') {
+  if (!contact.data.actual_mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  trackCommunication({
+    type,
+    doctype: 'Contact',
+    docname: contact.data.name,
+    phoneNumber: contact.data.actual_mobile_no,
+    activities: null,
+    contactName: contact.data.full_name
+  })
+}
 </script>

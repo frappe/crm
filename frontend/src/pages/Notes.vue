@@ -20,7 +20,7 @@
       defaultViewName: __('Notes View'),
     }"
   />
-  <div class="flex-1 overflow-y-auto">
+  <div class="flex-1 overflow-y-auto dark-scrollbar">
     <div
       v-if="notes.data?.data?.length"
       class="grid grid-cols-1 gap-2 px-3 pb-2 sm:grid-cols-4 sm:gap-4 sm:px-5 sm:pb-3"

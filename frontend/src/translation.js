@@ -41,7 +41,11 @@ function fetchTranslations(lang) {
     cache: 'translations',
     auto: true,
     transform: (data) => {
-      window.translatedMessages = data
+      window.translatedMessages = data || {}
     },
+    onError: (error) => {
+      console.warn('Translation fetch error:', error)
+      window.translatedMessages = {}
+    }
   })
 }

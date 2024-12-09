@@ -9,7 +9,7 @@
         theme="orange"
       />
     </h2>
-    <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
+    <div v-if="!data.get.loading" class="flex-1 overflow-y-auto dark-scrollbar">
       <Fields
         v-if="data?.doc && sections"
         :sections="sections"

@@ -38,7 +38,7 @@
       </div>
       <div
         v-if="notifications.data?.length"
-        class="divide-y divide-outline-gray-modals overflow-auto text-base"
+        class="divide-y divide-outline-gray-modals overflow-auto dark-scrollbar text-base"
       >
         <RouterLink
           v-for="n in notifications.data"

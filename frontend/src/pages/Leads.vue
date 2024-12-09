@@ -4,19 +4,34 @@
       <ViewBreadcrumbs v-model="viewControls" routeName="Leads" />
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="leadsListView?.customListActions"
-        :actions="leadsListView.customListActions"
-      />
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        @click="showLeadModal = true"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <div class="flex items-center gap-4">
+        <SmartFilterField
+          v-if="!isMobileView"
+          ref="desktopSmartFilter"
+          doctype="CRM Lead"
+          @update:filters="handleSmartFilter"
+        />
+        <CustomActions
+          v-if="leadsListView?.customListActions"
+          :actions="leadsListView.customListActions"
+        />
+        <Button
+          variant="solid"
+          :label="__('Create')"
+          @click="showLeadModal = true"
+        >
+          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+        </Button>
+      </div>
     </template>
   </LayoutHeader>
+  <div v-if="isMobileView" class="px-3 py-2 border-b">
+    <SmartFilterField
+      ref="mobileSmartFilter"
+      doctype="CRM Lead"
+      @update:filters="handleSmartFilter"
+    />
+  </div>
   <ViewControls
     ref="viewControls"
     v-model="leads"
@@ -24,11 +39,20 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Lead"
-    :filters="{ converted: 0 }"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
-  />
+  >
+    <template #filter-section>
+      <div v-if="isMobileView" class="w-full px-3 py-2 border-b">
+        <SmartFilterField
+          ref="mobileSmartFilter"
+          doctype="CRM Lead"
+          @update:filters="handleSmartFilter"
+        />
+      </div>
+    </template>
+  </ViewControls>
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
     v-model="leads"
@@ -246,7 +270,7 @@
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
-    @applyFilter="(data) => viewControls.applyFilter(data)"
+    @applyFilter="handleListFilter"
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
   />
@@ -288,6 +312,7 @@
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import SmartFilterField from '@/components/SmartFilterField.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -306,11 +331,11 @@ import ViewControls from '@/components/ViewControls.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
-import { callEnabled } from '@/composables/settings'
+import { callEnabled, isMobileView } from '@/composables/settings'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
-import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
+import { Avatar, Tooltip, Dropdown, Button, FeatherIcon } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, computed, reactive, h } from 'vue'
+import { ref, computed, reactive, h, watch } from 'vue'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
@@ -330,6 +355,24 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+const desktopSmartFilter = ref(null)
+const mobileSmartFilter = ref(null)
+const isResettingFilters = ref(false)
+
+// Watch for filter changes in the list
+watch(() => leads.value?.params?.filters, (newFilters) => {
+  // Skip if we're already resetting filters
+  if (isResettingFilters.value) return;
+  
+  // If filters are empty, clear the smart filter fields
+  if (!newFilters || Object.keys(newFilters).length === 0) {
+    isResettingFilters.value = true;
+    desktopSmartFilter.value?.clearSearch();
+    mobileSmartFilter.value?.clearSearch();
+    isResettingFilters.value = false;
+  }
+}, { deep: true })
 
 function getRow(name, field) {
   function getValue(value) {
@@ -556,5 +599,33 @@ const task = ref({
 function showTask(name) {
   docname.value = name
   showTaskModal.value = true
+}
+
+function handleListFilter(data) {
+  if (!viewControls.value || !leads.value || !leads.value.params) return;
+  
+  leads.value.params.filters = data;
+  leads.value.reload();
+}
+
+function handleSmartFilter(filters) {
+  if (!viewControls.value || !filters) return;
+  if (isResettingFilters.value) return;
+  if (!leads.value || !leads.value.params) return;
+
+  const currentFilters = leads.value.params.filters || {};
+  const standardFilters = {};
+  Object.entries(currentFilters).forEach(([key, value]) => {
+    if (!['mobile_no', 'email', 'lead_name'].includes(key)) {
+      standardFilters[key] = value;
+    }
+  });
+
+  leads.value.params.filters = {
+    ...standardFilters,
+    ...filters
+  };
+  
+  leads.value.reload();
 }
 </script>

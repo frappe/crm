@@ -1,5 +1,5 @@
 <template>
-  <div class="flex overflow-x-auto h-full">
+  <div class="flex overflow-x-auto h-full dark-scrollbar">
     <Draggable
       v-if="columns"
       :list="columns"
@@ -71,7 +71,7 @@
               />
             </div>
           </div>
-          <div class="overflow-y-auto flex flex-col gap-2 h-full">
+          <div class="overflow-y-auto flex flex-col gap-2 h-full dark-scrollbar">
             <Draggable
               :list="column.data"
               group="fields"

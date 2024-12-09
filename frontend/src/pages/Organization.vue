@@ -105,7 +105,7 @@
         v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
+        <div class="flex flex-col overflow-y-auto dark-scrollbar">
           <div
             v-for="(section, i) in fieldsLayout.data"
             :key="section.label"

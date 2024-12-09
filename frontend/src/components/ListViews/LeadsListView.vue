@@ -30,7 +30,7 @@
           variant="ghosted"
           class="!h-4"
           :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
-          @click="() => emit('applyLikeFilter')"
+          @click="applyLikeFilter"
         >
           <HeartIcon class="h-4 w-4" />
         </Button>
@@ -39,11 +39,11 @@
     <ListRows :rows="rows" v-slot="{ idx, column, item, row }">
       <div v-if="column.key === '_assign'" class="flex items-center">
         <MultipleAvatar
-          :avatars="item"
+          :avatars="item || []"
           size="sm"
           @click="
             (event) =>
-              emit('applyFilter', {
+              applyFilter({
                 event,
                 idx,
                 column,
@@ -56,14 +56,14 @@
       <ListRowItem v-else :item="item">
         <template #prefix>
           <div v-if="column.key === 'status'">
-            <IndicatorIcon :class="item.color" />
+            <IndicatorIcon :class="item?.color || ''" />
           </div>
           <div v-else-if="column.key === 'lead_name'">
             <Avatar
-              v-if="item.label"
+              v-if="item?.label"
               class="flex items-center"
-              :image="item.image"
-              :label="item.image_label"
+              :image="item?.image"
+              :label="item?.image_label || item?.label"
               size="sm"
             />
           </div>
@@ -78,10 +78,10 @@
           </div>
           <div v-else-if="column.key === 'lead_owner'">
             <Avatar
-              v-if="item.full_name"
+              v-if="item?.full_name"
               class="flex items-center"
-              :image="item.user_image"
-              :label="item.full_name"
+              :image="item?.user_image"
+              :label="item?.full_name"
               size="sm"
             />
           </div>
@@ -103,7 +103,7 @@
             class="truncate text-base"
             @click="
               (event) =>
-                emit('applyFilter', {
+                applyFilter({
                   event,
                   idx,
                   column,
@@ -112,13 +112,12 @@
                 })
             "
           >
-            <Tooltip :text="item.label">
-              <div>{{ item.timeAgo }}</div>
+            <Tooltip :text="item?.label || ''">
+              <div>{{ item?.timeAgo || '' }}</div>
             </Tooltip>
           </div>
           <div v-else-if="column.key === '_liked_by'">
             <Button
-              v-if="column.key == '_liked_by'"
               variant="ghosted"
               :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
               @click.stop.prevent="
@@ -137,14 +136,14 @@
             class="truncate text-base"
           >
             <Badge
-              v-if="item.value"
+              v-if="item?.value"
               :variant="'subtle'"
-              :theme="item.color"
+              :theme="item?.color || 'gray'"
               size="md"
-              :label="item.value"
+              :label="item?.value"
               @click="
                 (event) =>
-                  emit('applyFilter', {
+                  applyFilter({
                     event,
                     idx,
                     column,
@@ -157,7 +156,7 @@
           <div v-else-if="column.type === 'Check'">
             <FormControl
               type="checkbox"
-              :modelValue="item"
+              :modelValue="item || false"
               :disabled="true"
               class="text-ink-gray-9"
             />
@@ -167,7 +166,7 @@
             class="truncate text-base"
             @click="
               (event) =>
-                emit('applyFilter', {
+                applyFilter({
                   event,
                   idx,
                   column,
@@ -176,7 +175,7 @@
                 })
             "
           >
-            {{ label }}
+            {{ label || '' }}
           </div>
         </template>
       </ListRowItem>
@@ -272,6 +271,63 @@ function isLiked(item) {
     let likedByMe = JSON.parse(item)
     return likedByMe.includes(user)
   }
+  return false
+}
+
+function applyFilter({ event, idx, column, item, firstColumn }) {
+  let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
+  if (restrictedFieldtypes.includes(column.type) || idx === 0) return
+  if (idx === 1 && firstColumn.key == '_liked_by') return
+  if (!column.key) return
+
+  event.stopPropagation()
+  event.preventDefault()
+
+  let filters = { ...list.value.params?.filters } || {}
+  let value = item?.name || item?.label || item?.value || item || ''
+
+  // Handle special cases
+  if (column.key === '_assign') {
+    if (Array.isArray(item) && item.length > 1) {
+      let target = event.target.closest('.user-avatar')
+      if (target) {
+        let name = target.getAttribute('data-name')
+        if (name) {
+          filters['_assign'] = ['LIKE', `%${name}%`]
+        }
+      }
+    } else if (Array.isArray(item) && item.length === 1) {
+      filters['_assign'] = ['LIKE', `%${item[0].name}%`]
+    }
+  } else if (value) {
+    if (column.type === 'Link' || column.type === 'Select') {
+      filters[column.key] = value
+    } else {
+      filters[column.key] = ['LIKE', `%${value}%`]
+    }
+  } else {
+    delete filters[column.key]
+  }
+
+  emit('applyFilter', filters)
+}
+
+function applyLikeFilter() {
+  let filters = { ...list.value.params?.filters } || {}
+  if (!filters._liked_by) {
+    filters['_liked_by'] = ['LIKE', '%@me%']
+  } else {
+    delete filters['_liked_by']
+  }
+
+  // Remove any filters with undefined keys
+  Object.keys(filters).forEach(key => {
+    if (key === 'undefined' || key === undefined) {
+      delete filters[key]
+    }
+  })
+
+  emit('applyFilter', filters)
 }
 
 watch(pageLengthCount, (val, old_value) => {

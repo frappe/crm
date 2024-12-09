@@ -12,7 +12,7 @@
   />
   <FadedScrollableDiv
     :maskHeight="30"
-    class="flex flex-col flex-1 overflow-y-auto"
+    class="flex flex-col flex-1 overflow-y-auto dark-scrollbar"
   >
     <div
       v-if="all_activities?.loading"
@@ -498,6 +498,7 @@ import {
   onBeforeUnmount,
 } from 'vue'
 import { useRoute } from 'vue-router'
+import { filterEmailActivities } from '@/utils/activity_filters'
 
 const { makeCall, $socket } = globalStore()
 const { getUser } = usersStore()
@@ -633,9 +634,10 @@ const replyMessage = ref({})
 
 function get_activities() {
   if (!all_activities.data?.versions) return []
-  if (!all_activities.data?.calls.length)
-    return all_activities.data.versions || []
-  return [...all_activities.data.versions, ...all_activities.data.calls]
+  const versions = Array.isArray(all_activities.data.versions) ? all_activities.data.versions : []
+  const calls = Array.isArray(all_activities.data?.calls) ? all_activities.data.calls : []
+  if (!calls.length) return versions
+  return [...versions, ...calls]
 }
 
 const activities = computed(() => {
@@ -644,28 +646,28 @@ const activities = computed(() => {
     _activities = get_activities()
   } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
-    _activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'communication',
-    )
+    _activities = filterEmailActivities(all_activities.data.versions || [])
   } else if (title.value == 'Comments') {
     if (!all_activities.data?.versions) return []
-    _activities = all_activities.data.versions.filter(
+    _activities = (all_activities.data.versions || []).filter(
       (activity) => activity.activity_type === 'comment',
     )
   } else if (title.value == 'Calls') {
     if (!all_activities.data?.calls) return []
-    return sortByCreation(all_activities.data.calls)
+    return sortByCreation(all_activities.data.calls || [])
   } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
-    return sortByCreation(all_activities.data.tasks)
+    return sortByCreation(all_activities.data.tasks || [])
   } else if (title.value == 'Notes') {
     if (!all_activities.data?.notes) return []
-    return sortByCreation(all_activities.data.notes)
+    return sortByCreation(all_activities.data.notes || [])
   } else if (title.value == 'Attachments') {
     if (!all_activities.data?.attachments) return []
-    return sortByCreation(all_activities.data.attachments)
+    return sortByCreation(all_activities.data.attachments || [])
   }
 
+  if (!Array.isArray(_activities)) return []
+  
   _activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
 
@@ -714,21 +716,21 @@ function update_activities_details(activity) {
 }
 
 const emptyText = computed(() => {
-  let text = 'No Activities'
+  let text = __('No Activities')
   if (title.value == 'Emails') {
-    text = 'No Email Communications'
+    text = __('No Email Communications')
   } else if (title.value == 'Comments') {
-    text = 'No Comments'
+    text = __('No Comments')
   } else if (title.value == 'Calls') {
-    text = 'No Call Logs'
+    text = __('No Call Logs')
   } else if (title.value == 'Notes') {
-    text = 'No Notes'
+    text = __('No Notes')
   } else if (title.value == 'Tasks') {
-    text = 'No Tasks'
+    text = __('No Tasks')
   } else if (title.value == 'Attachments') {
-    text = 'No Attachments'
+    text = __('No Attachments')
   } else if (title.value == 'WhatsApp') {
-    text = 'No WhatsApp Messages'
+    text = __('No WhatsApp Messages')
   }
   return text
 })
