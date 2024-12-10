@@ -22,23 +22,21 @@
             </Button>
           </div>
         </div>
-        <div>
-          <FieldLayout
-            v-if="filteredSections.length"
-            :tabs="filteredSections"
-            :data="_organization"
-          />
+        <div v-if="filteredSections.length">
+          <FieldLayout :tabs="filteredSections" :data="_organization" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
-        <Button
-          class="w-full"
-          v-for="action in dialogOptions.actions"
-          :key="action.label"
-          v-bind="action"
-          :label="__(action.label)"
-          :loading="loading"
-        />
+        <div class="space-y-2">
+          <Button
+            class="w-full"
+            v-for="action in dialogOptions.actions"
+            :key="action.label"
+            v-bind="action"
+            :label="__(action.label)"
+            :loading="loading"
+          />
+        </div>
       </div>
     </template>
   </Dialog>
