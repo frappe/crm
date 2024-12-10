@@ -34,7 +34,7 @@
             variant="ghost"
             class="w-full !justify-start"
             :label="__('Create New')"
-            @click="attrs.onCreate(value, close)"
+            @click="() => attrs.onCreate(value, close)"
           >
             <template #prefix>
               <FeatherIcon name="plus" class="h-4" />
