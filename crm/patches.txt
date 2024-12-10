@@ -6,6 +6,6 @@ crm.patches.v1_0.move_crm_note_data_to_fcrm_note
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
 crm.patches.v1_0.create_email_template_custom_fields
-crm.patches.v1_0.create_default_fields_layout #31/10/2024
+crm.patches.v1_0.create_default_fields_layout #10/12/2024
 crm.patches.v1_0.create_default_sidebar_fields_layout
 crm.patches.v1_0.update_deal_quick_entry_layout
