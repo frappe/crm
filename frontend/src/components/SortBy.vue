@@ -242,7 +242,6 @@ function getSortLabel() {
   let label = sortOptions.data?.find(
     (option) => option.value === values[0].fieldname
   )?.label
-//Reference error sort is not defined
   return label || values[0].fieldname
 }
 
