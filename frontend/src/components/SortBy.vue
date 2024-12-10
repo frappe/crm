@@ -244,8 +244,7 @@ function getSortLabel() {
   let label = sortOptions.data?.find(
     (option) => option.value === values[0].fieldname,
   )?.label
-
-  return label || sort.fieldname
+  return label || values[0].fieldname
 }
 
 function setSort(data) {
