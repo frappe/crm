@@ -63,7 +63,7 @@
               </button>
             </div>
             <ComboboxOptions
-              class="my-1 max-h-[12rem] overflow-y-auto px-1.5"
+              class="my-1 max-h-[12rem] overflow-y-auto p-1.5 pt-0"
               static
             >
               <div

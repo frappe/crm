@@ -119,9 +119,7 @@
               group="fields"
               item-key="label"
               class="grid gap-1.5"
-              :class="
-                section.columns ? 'grid-cols-' + section.columns : 'grid-cols-3'
-              "
+              :class="gridClass(section.columns)"
               handle=".cursor-grab"
             >
               <template #item="{ element: field }">
@@ -347,6 +345,17 @@ function getSectionOptions(section) {
         section.editable !== false && props.tabs[tabIndex.value + 1],
     },
   ]
+}
+
+function gridClass(columns) {
+  columns = columns || 3
+  let griColsMap = {
+    1: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1',
+    2: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2',
+    3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+    4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+  }
+  return griColsMap[columns]
 }
 
 watch(
