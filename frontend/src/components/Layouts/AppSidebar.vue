@@ -37,7 +37,7 @@
         <Section
           :label="view.name"
           :hideLabel="view.hideLabel"
-          :isOpened="view.opened"
+          :opened="view.opened"
         >
           <template #header="{ opened, hide, toggle }">
             <div

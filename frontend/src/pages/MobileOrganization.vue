@@ -123,8 +123,8 @@
                 class="flex flex-col px-2 py-3 sm:p-3"
                 :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
               >
-                <Section :is-opened="section.opened" :label="section.label">
-                  <SectionFields
+                <Section :label="section.label" :opened="section.opened">
+                  <SidePanelLayout
                     :fields="section.fields"
                     :isLastSection="i == fieldsLayout.data.length - 1"
                     v-model="organization.doc"
@@ -166,7 +166,7 @@
 
 <script setup>
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'

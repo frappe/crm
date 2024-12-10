@@ -35,9 +35,9 @@
               <div>{{ field.value }}</div>
             </div>
           </div>
-          <Fields
-            v-else-if="filteredSections"
-            :sections="filteredSections"
+          <FieldLayout
+            v-else-if="filteredSections.length"
+            :tabs="filteredSections"
             :data="_organization"
           />
         </div>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import MoneyIcon from '@/components/Icons/MoneyIcon.vue'
@@ -241,15 +241,15 @@ const fields = computed(() => {
   return details.filter((field) => field.value)
 })
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Organization'],
+  cache: ['QuickEntry', 'CRM Organization'],
   params: { doctype: 'CRM Organization', type: 'Quick Entry' },
   auto: true,
 })
 
 const filteredSections = computed(() => {
-  let allSections = sections.data || []
+  let allSections = tabs.data?.[0]?.sections || []
   if (!allSections.length) return []
 
   allSections.forEach((s) => {
@@ -272,7 +272,7 @@ const filteredSections = computed(() => {
     })
   })
 
-  return allSections
+  return [{ no_tabs: true, sections: allSections }]
 })
 
 watch(

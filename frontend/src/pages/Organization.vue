@@ -112,7 +112,7 @@
             class="flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
-            <Section :is-opened="section.opened" :label="section.label">
+            <Section :label="section.label" :opened="section.opened">
               <template #actions>
                 <Button
                   v-if="i == 0 && isManager()"
@@ -123,7 +123,7 @@
                   <EditIcon class="h-4 w-4" />
                 </Button>
               </template>
-              <SectionFields
+              <SidePanelLayout
                 v-if="section.fields"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
@@ -198,8 +198,8 @@
 <script setup>
 import Resizer from '@/components/Resizer.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
+import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'

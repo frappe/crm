@@ -1,6 +1,8 @@
 <template>
   <div class="flex h-full flex-col gap-8">
-    <h2 class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-9">
+    <h2
+      class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-9"
+    >
       <div>{{ title || __(doctype) }}</div>
       <Badge
         v-if="data.isDirty"
@@ -10,11 +12,7 @@
       />
     </h2>
     <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
-      <Fields
-        v-if="data?.doc && sections"
-        :sections="sections"
-        :data="data.doc"
-      />
+      <FieldLayout v-if="data?.doc && tabs" :tabs="tabs" :data="data.doc" />
       <ErrorMessage class="mt-2" :message="error" />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
@@ -31,7 +29,7 @@
   </div>
 </template>
 <script setup>
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import {
   createDocumentResource,
   createResource,
@@ -96,7 +94,7 @@ const data = createDocumentResource({
   },
 })
 
-const sections = computed(() => {
+const tabs = computed(() => {
   if (!fields.data) return []
   let _sections = []
   let fieldsData = fields.data
@@ -136,7 +134,7 @@ const sections = computed(() => {
     }
   })
 
-  return _sections
+  return [{ no_tabs: true, sections: _sections }]
 })
 
 function update() {
@@ -146,7 +144,8 @@ function update() {
 }
 
 function validateMandatoryFields() {
-  for (let section of sections.value) {
+  if (!tabs.value) return false
+  for (let section of tabs.value[0].sections) {
     for (let field of section.fields) {
       if (
         (field.mandatory ||

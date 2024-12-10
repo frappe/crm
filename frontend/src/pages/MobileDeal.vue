@@ -69,7 +69,7 @@
               class="flex flex-col px-2 py-3 sm:p-3"
               :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
             >
-              <Section :is-opened="section.opened" :label="section.label">
+              <Section :label="section.label" :opened="section.opened">
                 <template #actions>
                   <div v-if="section.contacts" class="pr-2">
                     <Link
@@ -98,7 +98,7 @@
                     </Link>
                   </div>
                 </template>
-                <SectionFields
+                <SidePanelLayout
                   v-if="section.fields"
                   :fields="section.fields"
                   :isLastSection="i == fieldsLayout.data.length - 1"
@@ -124,7 +124,7 @@
                       class="px-2 pb-2.5"
                       :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
                     >
-                      <Section :is-opened="contact.opened">
+                      <Section :opened="contact.opened">
                         <template #header="{ opened, toggle }">
                           <div
                             class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
@@ -267,7 +267,7 @@ import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomizations } from '@/utils'
@@ -451,6 +451,11 @@ const tabs = computed(() => {
       name: 'Comments',
       label: __('Comments'),
       icon: CommentIcon,
+    },
+    {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
     },
     {
       name: 'Calls',

@@ -60,9 +60,7 @@
                         clip-path: inset(22px 0 0 0);
                       "
                     >
-                      <CameraIcon
-                        class="h-6 w-6 cursor-pointer text-white"
-                      />
+                      <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
                     </div>
                   </component>
                 </div>
@@ -129,7 +127,7 @@
             class="flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
-            <Section :is-opened="section.opened" :label="section.label">
+            <Section :label="section.label" :opened="section.opened">
               <template #actions>
                 <Button
                   v-if="i == 0 && isManager()"
@@ -140,7 +138,7 @@
                   <EditIcon class="h-4 w-4" />
                 </Button>
               </template>
-              <SectionFields
+              <SidePanelLayout
                 v-if="section.fields"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
@@ -204,14 +202,14 @@
 import Resizer from '@/components/Resizer.vue'
 import Icon from '@/components/Icon.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import {
   formatDate,

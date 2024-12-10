@@ -57,9 +57,9 @@
               <div v-else>{{ field.value }}</div>
             </div>
           </div>
-          <Fields
-            v-else-if="filteredSections"
-            :sections="filteredSections"
+          <FieldLayout
+            v-else-if="filteredSections.length"
+            :tabs="filteredSections"
             :data="_contact"
           />
         </div>
@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import ContactIcon from '@/components/Icons/ContactIcon.vue'
 import GenderIcon from '@/components/Icons/GenderIcon.vue'
@@ -245,15 +245,15 @@ const detailFields = computed(() => {
   return details.filter((detail) => detail.value)
 })
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'Contact'],
+  cache: ['QuickEntry', 'Contact'],
   params: { doctype: 'Contact', type: 'Quick Entry' },
   auto: true,
 })
 
 const filteredSections = computed(() => {
-  let allSections = sections.data || []
+  let allSections = tabs.data?.[0]?.sections || []
   if (!allSections.length) return []
 
   allSections.forEach((s) => {
@@ -276,7 +276,7 @@ const filteredSections = computed(() => {
     })
   })
 
-  return allSections
+  return [{ no_tabs: true, sections: allSections }]
 })
 
 const dirty = computed(() => {
