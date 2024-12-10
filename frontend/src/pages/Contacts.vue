@@ -59,16 +59,7 @@
       </Button>
     </div>
   </div>
-  <ContactModal
-    v-model="showContactModal"
-    v-model:quickEntry="showQuickEntryModal"
-    :contact="{}"
-  />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Contact"
-  />
+  <ContactModal v-model="showContactModal" :contact="{}" />
 </template>
 
 <script setup>
@@ -77,7 +68,6 @@ import CustomActions from '@/components/CustomActions.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { organizationsStore } from '@/stores/organizations.js'
@@ -87,7 +77,6 @@ import { ref, computed } from 'vue'
 const { getOrganization } = organizationsStore()
 
 const showContactModal = ref(false)
-const showQuickEntryModal = ref(false)
 
 const contactsListView = ref(null)
 

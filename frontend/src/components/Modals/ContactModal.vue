@@ -10,10 +10,10 @@
           </div>
           <div class="flex items-center gap-1">
             <Button
-              v-if="isManager() || detailMode"
+              v-if="isManager()"
               variant="ghost"
               class="w-7"
-              @click="detailMode ? (detailMode = false) : openQuickEntryModal()"
+              @click="openQuickEntryModal"
             >
               <EditIcon class="h-4 w-4" />
             </Button>
@@ -22,77 +22,36 @@
             </Button>
           </div>
         </div>
-        <div>
-          <div v-if="detailMode" class="flex flex-col gap-3.5">
-            <div
-              v-for="field in detailFields"
-              :key="field.name"
-              class="flex h-7 items-center gap-2 text-base text-ink-gray-8"
-            >
-              <div class="grid w-7 place-content-center">
-                <component :is="field.icon" />
-              </div>
-              <div v-if="field.type == 'dropdown'">
-                <Dropdown
-                  :options="field.options"
-                  class="form-control -ml-2 mr-2 w-full flex-1"
-                >
-                  <template #default="{ open }">
-                    <Button
-                      variant="ghost"
-                      :label="contact.data[field.name]"
-                      class="dropdown-button w-full justify-between truncate hover:bg-surface-white"
-                    >
-                      <div class="truncate">{{ contact.data[field.name] }}</div>
-                      <template #suffix>
-                        <FeatherIcon
-                          :name="open ? 'chevron-up' : 'chevron-down'"
-                          class="h-4 text-ink-gray-5"
-                        />
-                      </template>
-                    </Button>
-                  </template>
-                </Dropdown>
-              </div>
-              <div v-else>{{ field.value }}</div>
-            </div>
-          </div>
-          <Fields
-            v-else-if="filteredSections"
-            :sections="filteredSections"
-            :data="_contact"
-          />
+        <div v-if="filteredSections.length">
+          <FieldLayout :tabs="filteredSections" :data="_contact" />
         </div>
       </div>
-      <div v-if="!detailMode" class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
           <Button
             class="w-full"
             v-for="action in dialogOptions.actions"
             :key="action.label"
             v-bind="action"
-          >
-            {{ __(action.label) }}
-          </Button>
+            :label="__(action.label)"
+          />
         </div>
       </div>
     </template>
   </Dialog>
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="Contact"
+  />
 </template>
 
 <script setup>
-import Fields from '@/components/Fields.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
-import ContactIcon from '@/components/Icons/ContactIcon.vue'
-import GenderIcon from '@/components/Icons/GenderIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
-import AddressIcon from '@/components/Icons/AddressIcon.vue'
-import CertificateIcon from '@/components/Icons/CertificateIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
@@ -108,7 +67,6 @@ const props = defineProps({
     type: Object,
     default: {
       redirect: true,
-      detailMode: false,
       afterInsert: () => {},
     },
   },
@@ -119,7 +77,6 @@ const { isManager } = usersStore()
 const router = useRouter()
 const show = defineModel()
 
-const detailMode = ref(false)
 const editMode = ref(false)
 let _contact = ref({})
 let _address = ref({})
@@ -186,74 +143,28 @@ function handleContactUpdate(doc) {
 const dialogOptions = computed(() => {
   let title = !editMode.value ? 'New Contact' : _contact.value.full_name
 
-  let size = detailMode.value ? '' : 'xl'
-  let actions = detailMode.value
-    ? []
-    : [
-        {
-          label: editMode.value ? 'Save' : 'Create',
-          variant: 'solid',
-          disabled: !dirty.value,
-          onClick: () => (editMode.value ? updateContact() : callInsertDoc()),
-        },
-      ]
+  let size = 'xl'
+  let actions = [
+    {
+      label: editMode.value ? 'Save' : 'Create',
+      variant: 'solid',
+      disabled: !dirty.value,
+      onClick: () => (editMode.value ? updateContact() : callInsertDoc()),
+    },
+  ]
 
   return { title, size, actions }
 })
 
-const detailFields = computed(() => {
-  let details = [
-    {
-      icon: ContactIcon,
-      name: 'full_name',
-      value:
-        (_contact.value.salutation ? _contact.value.salutation + '. ' : '') +
-        _contact.value.full_name,
-    },
-    {
-      icon: GenderIcon,
-      name: 'gender',
-      value: _contact.value.gender,
-    },
-    {
-      icon: Email2Icon,
-      name: 'email_id',
-      value: _contact.value.email_id,
-    },
-    {
-      icon: PhoneIcon,
-      name: 'mobile_no',
-      value: _contact.value.actual_mobile_no,
-    },
-    {
-      icon: OrganizationsIcon,
-      name: 'company_name',
-      value: _contact.value.company_name,
-    },
-    {
-      icon: CertificateIcon,
-      name: 'designation',
-      value: _contact.value.designation,
-    },
-    {
-      icon: AddressIcon,
-      name: 'address',
-      value: _contact.value.address,
-    },
-  ]
-
-  return details.filter((detail) => detail.value)
-})
-
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'Contact'],
+  cache: ['QuickEntry', 'Contact'],
   params: { doctype: 'Contact', type: 'Quick Entry' },
   auto: true,
 })
 
 const filteredSections = computed(() => {
-  let allSections = sections.data || []
+  let allSections = tabs.data?.[0]?.sections || []
   if (!allSections.length) return []
 
   allSections.forEach((s) => {
@@ -276,7 +187,7 @@ const filteredSections = computed(() => {
     })
   })
 
-  return allSections
+  return [{ no_tabs: true, sections: allSections }]
 })
 
 const dirty = computed(() => {
@@ -287,7 +198,6 @@ watch(
   () => show.value,
   (value) => {
     if (!value) return
-    detailMode.value = props.options.detailMode
     editMode.value = false
     nextTick(() => {
       _contact.value = { ...props.contact.data }
@@ -298,13 +208,11 @@ watch(
   },
 )
 
-const showQuickEntryModal = defineModel('quickEntry')
+const showQuickEntryModal = ref(false)
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
-  nextTick(() => {
-    show.value = false
-  })
+  nextTick(() => (show.value = false))
 }
 </script>
 

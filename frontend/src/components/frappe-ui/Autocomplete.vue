@@ -18,15 +18,12 @@
               :class="inputClasses"
               @click="() => togglePopover()"
             >
-              <div class="flex items-center">
+              <div class="flex text-base leading-5 items-center truncate">
                 <slot name="prefix" />
-                <span
-                  class="overflow-hidden text-ellipsis whitespace-nowrap text-base leading-5"
-                  v-if="selectedValue"
-                >
+                <span v-if="selectedValue" class="truncate">
                   {{ displayValue(selectedValue) }}
                 </span>
-                <span class="text-base leading-5 text-ink-gray-4" v-else>
+                <span v-else class="text-ink-gray-4 truncate">
                   {{ placeholder || '' }}
                 </span>
               </div>
@@ -66,7 +63,7 @@
               </button>
             </div>
             <ComboboxOptions
-              class="my-1 max-h-[12rem] overflow-y-auto px-1.5"
+              class="my-1 max-h-[12rem] overflow-y-auto p-1.5 pt-0"
               static
             >
               <div

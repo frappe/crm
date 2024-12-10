@@ -33,10 +33,10 @@
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
-          <Fields
-            v-if="filteredSections"
-            class="border-t pt-4"
-            :sections="filteredSections"
+          <div class="h-px w-full border-t my-5" />
+          <FieldLayout
+            v-if="filteredSections.length"
+            :tabs="filteredSections"
             :data="deal"
           />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
@@ -58,7 +58,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
@@ -100,28 +100,30 @@ const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Deal'],
+  cache: ['QuickEntry', 'CRM Deal'],
   params: { doctype: 'CRM Deal', type: 'Quick Entry' },
   auto: true,
-  transform: (data) => {
-    return data.forEach((section) => {
-      section.fields.forEach((field) => {
-        if (field.name == 'status') {
-          field.type = 'Select'
-          field.options = dealStatuses.value
-          field.prefix = getDealStatus(deal.status).iconColorClass
-        } else if (field.name == 'deal_owner') {
-          field.type = 'User'
-        }
+  transform: (_tabs) => {
+    return _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.fields.forEach((field) => {
+          if (field.name == 'status') {
+            field.type = 'Select'
+            field.options = dealStatuses.value
+            field.prefix = getDealStatus(deal.status).iconColorClass
+          } else if (field.name == 'deal_owner') {
+            field.type = 'User'
+          }
+        })
       })
     })
   },
 })
 
 const filteredSections = computed(() => {
-  let allSections = sections.data || []
+  let allSections = tabs.data?.[0]?.sections || []
   if (!allSections.length) return []
 
   let _filteredSections = []
@@ -159,7 +161,7 @@ const filteredSections = computed(() => {
     }
   })
 
-  return _filteredSections
+  return [{ no_tabs: true, sections: _filteredSections }]
 })
 
 const dealStatuses = computed(() => {

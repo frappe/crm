@@ -177,8 +177,12 @@
             class="flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
-            <Section :is-opened="section.opened" :label="section.label">
-              <SectionFields
+            <Section
+              class="px-2 font-semibold"
+              :label="section.label"
+              :opened="section.opened"
+            >
+              <SidePanelLayout
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
                 v-model="lead.data"
@@ -298,6 +302,7 @@ import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -312,11 +317,11 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
@@ -499,6 +504,11 @@ const tabs = computed(() => {
       name: 'Comments',
       label: __('Comments'),
       icon: CommentIcon,
+    },
+    {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
     },
     {
       name: 'Calls',

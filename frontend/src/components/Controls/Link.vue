@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-1.5">
+  <div class="space-y-1.5 p-[2px] -m-[2px]">
     <label class="block" :class="labelClasses" v-if="attrs.label">
       {{ __(attrs.label) }}
     </label>
@@ -34,7 +34,7 @@
             variant="ghost"
             class="w-full !justify-start"
             :label="__('Create New')"
-            @click="attrs.onCreate(value, close)"
+            @click="() => attrs.onCreate(value, close)"
           >
             <template #prefix>
               <FeatherIcon name="plus" class="h-4" />

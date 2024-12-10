@@ -74,8 +74,8 @@
               class="flex flex-col px-2 py-3 sm:p-3"
               :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
             >
-              <Section :is-opened="section.opened" :label="section.label">
-                <SectionFields
+              <Section :label="section.label" :opened="section.opened">
+                <SidePanelLayout
                   :fields="section.fields"
                   :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="lead.data"
@@ -190,7 +190,7 @@ import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomizations } from '@/utils'
@@ -361,6 +361,11 @@ const tabs = computed(() => {
       name: 'Comments',
       label: __('Comments'),
       icon: CommentIcon,
+    },
+    {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
     },
     {
       name: 'Calls',

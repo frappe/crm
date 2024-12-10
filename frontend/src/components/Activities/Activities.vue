@@ -364,6 +364,9 @@
         </div>
       </div>
     </div>
+    <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
+      <DataFields :doctype="doctype" :docname="doc.data.name" />
+    </div>
     <div
       v-else
       class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
@@ -454,9 +457,11 @@ import CallArea from '@/components/Activities/CallArea.vue'
 import NoteArea from '@/components/Activities/NoteArea.vue'
 import TaskArea from '@/components/Activities/TaskArea.vue'
 import AttachmentArea from '@/components/Activities/AttachmentArea.vue'
+import DataFields from '@/components/Activities/DataFields.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -719,6 +724,8 @@ const emptyText = computed(() => {
     text = 'No Email Communications'
   } else if (title.value == 'Comments') {
     text = 'No Comments'
+  } else if (title.value == 'Data') {
+    text = 'No Data'
   } else if (title.value == 'Calls') {
     text = 'No Call Logs'
   } else if (title.value == 'Notes') {
@@ -739,6 +746,8 @@ const emptyTextIcon = computed(() => {
     icon = Email2Icon
   } else if (title.value == 'Comments') {
     icon = CommentIcon
+  } else if (title.value == 'Data') {
+    icon = DetailsIcon
   } else if (title.value == 'Calls') {
     icon = PhoneIcon
   } else if (title.value == 'Notes') {
