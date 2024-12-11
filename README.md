@@ -15,6 +15,7 @@
 
 ![Frappe CRM](.github/screenshots/FrappeCRMHero.png)
 [Live Demo](https://frappecrm-demo.frappe.cloud/api/method/crm.api.demo.login) - [Website](https://frappe.io/crm) - [Documentation](https://docs.frappe.io/crm)
+
 </div>
 
 ## Frappe CRM
@@ -27,19 +28,10 @@ The motivation behind building Frappe CRM stems from the need for a simple, cust
 
 ## Key Features
 
--   **Views:** Create custom views which is a combination of filters, sort and columns.
-    -   **Pinned View:** Pin important leads and deals in the sidebar.
-    -   **Public View:** Share views with all users.
-    -   **Saved View:** Save views for later use.
--   **Email Communication:** Send and receive emails directly from the Lead/Deal Page.
--   **Email Templates:** Create and use email templates for faster communication.
--   **Comments:** Add comments to leads and deals to keep track of the conversation.
--   **Notifications:** Get notified when someone mentions you in a comment.
--   **Service Level Agreement:** Set SLA for leads and deals and get notified when the SLA is breached.
--   **Assignment Rule:** Automatically assign leads and deals to users based on the criteria.
--   **Tasks:** Create tasks for leads and deals.
--   **Notes:** Add notes to leads and deals.
--   **Call Logs:** See the call logs with call details and recordings.
+-   **User-Friendly and Flexible:** A simple, intuitive interface that’s easy to navigate and highly customizable, enabling teams to adapt it to their specific processes effortlessly.
+-   **All-in-One Lead/Deal Page:** Consolidate all essential actions and details—like activities, comments, notes, tasks, and more—into a single page for a seamless workflow experience.
+-   **Kanban View:** Manage leads and deals visually with a drag-and-drop Kanban board, offering clarity and efficiency in tracking progress across stages.
+-   **Custom Views:** Design personalized views to organize and display leads and deals using custom filters, sorting, and columns, ensuring quick access to the most relevant information.
 
 ## Integrations
 
@@ -161,6 +153,38 @@ You need Docker, docker-compose and git setup on your machine. Refer [Docker doc
     $ bench browse sitename.localhost --user Administrator
     ```
 5. Access the crm page at `sitename.localhost:8000/crm` in your web browser.
+
+### Frontend Development Setup
+
+The Frappe CRM's frontend is a Vue.js application located in the `frontend/src` directory. Follow these steps to set up the frontend development environment:
+
+1. Navigate to the app directory:
+
+    ```bash
+    cd apps/crm
+    ```
+
+2. Install dependencies:
+
+    ```bash
+    yarn install
+    ```
+
+3. Add the following line in your site's `site_config.json` file
+
+    ```json
+    "ignore_csrf": 1
+    ```
+
+4. Start the development server:
+
+    ```bash
+    yarn dev
+    ```
+
+5. Access the development site:
+    - Open `http://crm.localhost:8080/crm` in your browser
+    - Any changes to files in `frontend/src` will automatically reload in the browser
 
 ## Learn and connect
 
