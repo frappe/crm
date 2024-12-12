@@ -287,7 +287,7 @@ fixtures = [
 	},
 	{
         "dt": "CRM Child Data Mapping",
-        "filters": [["name", "=", "CRM Deal"]]
+        "filters": [["name", "in", ["CRM Deal", "FCRM Note"]]]
     },
     {
         "dt": "CRM Lead Source",

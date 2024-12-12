@@ -58,6 +58,19 @@
           editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
           class="flex-1 overflow-hidden"
         />
+        <!-- {{ note.child_tables['attachments'] }} -->
+      <div v-if=" note.child_tables['attachments'] && note.child_tables['attachments'].length" class="overflow-auto">
+        <ul class="w-full rounded-lg mt-2 mb-3 text-blue-800">
+          <li  class="mb-1 text-sm"
+            v-for="attachment in note.child_tables['attachments']" >
+            <a :href="attachment.file_url" target="_blank"  class="w-fill flex p-3 pl-3 bg-gray-100 hover:bg-gray-200 rounded-lg">
+            <AttachmentIcon class="flex-none w-4 h-full"></AttachmentIcon>
+
+            <span class="ml-2 truncate"  target="_blank">{{ attachment.file_url }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
         <div class="mt-2 flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <UserAvatar :user="note.owner" size="xs" />
@@ -113,6 +126,7 @@ import { usersStore } from '@/stores/users'
 import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
 import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 
 const { getUser } = usersStore()
 

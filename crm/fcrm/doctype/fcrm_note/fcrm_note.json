@@ -11,7 +11,8 @@
   "title",
   "content",
   "reference_doctype",
-  "reference_docname"
+  "reference_docname",
+  "attachments"
  ],
  "fields": [
   {
@@ -40,6 +41,12 @@
    "fieldtype": "Dynamic Link",
    "label": "Reference Doc",
    "options": "reference_doctype"
+  },
+  {
+   "fieldname": "attachments",
+   "fieldtype": "Table",
+   "label": "Attachments",
+   "options": "CRM Note Attachments"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -49,7 +56,8 @@
    "link_fieldname": "note"
   }
  ],
- "modified": "2024-01-19 21:56:30.123334",
+ "make_attachments_public": 1,
+ "modified": "2024-12-02 23:02:23.045923",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Note",
