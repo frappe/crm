@@ -249,12 +249,12 @@ function addField(section, field) {
 function getTabOptions(tab) {
   return [
     {
-      label: 'Edit',
+      label: __('Edit'),
       icon: 'edit',
       onClick: () => (tab.editingLabel = true),
     },
     {
-      label: 'Remove tab',
+      label: __('Remove tab'),
       icon: 'trash-2',
       onClick: () => {
         if (props.tabs.length == 1) {
@@ -271,42 +271,42 @@ function getTabOptions(tab) {
 function getSectionOptions(section) {
   return [
     {
-      label: 'Edit',
+      label: __('Edit'),
       icon: 'edit',
       onClick: () => (section.editingLabel = true),
       condition: () => section.editable !== false,
     },
     {
-      label: section.collapsible ? 'Uncollapsible' : 'Collapsible',
+      label: section.collapsible ? __('Uncollapsible') : __('Collapsible'),
       icon: section.collapsible ? 'chevron-up' : 'chevron-down',
       onClick: () => (section.collapsible = !section.collapsible),
     },
     {
-      label: section.hideLabel ? 'Show label' : 'Hide label',
+      label: section.hideLabel ? __('Show label') : __('Hide label'),
       icon: section.hideLabel ? 'eye' : 'eye-off',
       onClick: () => (section.hideLabel = !section.hideLabel),
     },
     {
-      label: section.hideBorder ? 'Show border' : 'Hide border',
+      label: section.hideBorder ? __('Show border') : __('Hide border'),
       icon: 'minus',
       onClick: () => (section.hideBorder = !section.hideBorder),
     },
     {
-      label: 'Add column',
+      label: __('Add column'),
       icon: 'columns',
       onClick: () =>
         (section.columns = section.columns ? section.columns + 1 : 4),
       condition: () => !section.columns || section.columns < 4,
     },
     {
-      label: 'Remove column',
+      label: __('Remove column'),
       icon: 'columns',
       onClick: () =>
         (section.columns = section.columns ? section.columns - 1 : 2),
       condition: () => !section.columns || section.columns > 1,
     },
     {
-      label: 'Remove section',
+      label: __('Remove section'),
       icon: 'trash-2',
       onClick: () => {
         let currentTab = props.tabs[tabIndex.value]
@@ -315,7 +315,7 @@ function getSectionOptions(section) {
       condition: () => section.editable !== false,
     },
     {
-      label: 'Move to previous tab',
+      label: __('Move to previous tab'),
       icon: 'trash-2',
       onClick: () => {
         let previousTab = props.tabs[tabIndex.value - 1]
@@ -330,7 +330,7 @@ function getSectionOptions(section) {
         section.editable !== false && props.tabs[tabIndex.value - 1],
     },
     {
-      label: 'Move to next tab',
+      label: __('Move to next tab'),
       icon: 'trash-2',
       onClick: () => {
         let nextTab = props.tabs[tabIndex.value + 1]

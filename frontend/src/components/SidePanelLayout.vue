@@ -1,6 +1,6 @@
 <template>
   <FadedScrollableDiv
-    class="flex flex-col gap-1.5 overflow-y-auto"
+    class="flex flex-col gap-1.5 overflow-y-auto dark-scrollbar"
     :class="[isLastSection ? '' : 'max-h-[300px]']"
   >
     <div
@@ -26,7 +26,7 @@
             class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
           >
             <Tooltip :text="__(field.tooltip)">
-              <div>{{ data[field.name] }}</div>
+              <div>{{ localData[field.name] }}</div>
             </Tooltip>
           </div>
           <div v-else-if="field.type === 'dropdown'">
@@ -91,7 +91,7 @@
             class="form-control"
             :type="field.type"
             v-model="data[field.name]"
-            @change.stop="emit('update', field.name, $event.target.checked)"
+            @change.stop="handleChange(field.name, $event.target.checked)"
             :disabled="Boolean(field.read_only)"
           />
           <FormControl
@@ -103,7 +103,7 @@
             :value="data[field.name]"
             :placeholder="field.placeholder"
             :debounce="500"
-            @change.stop="emit('update', field.name, $event.target.value)"
+            @change.stop="handleChange(field.name, $event.target.value)"
           />
           <FormControl
             v-else-if="field.type === 'select'"
@@ -112,15 +112,19 @@
             v-model="data[field.name]"
             :options="field.options"
             :placeholder="field.placeholder"
-            @change.stop="emit('update', field.name, $event.target.value)"
-          />
+            @change.stop="handleChange(field.name, $event.target.value)"
+          >
+            <template v-if="field.prefix" #prefix>
+              <IndicatorIcon :class="field.prefix" />
+            </template>
+          </FormControl>
           <Link
             v-else-if="['lead_owner', 'deal_owner'].includes(field.name)"
             class="form-control"
             :value="data[field.name] && getUser(data[field.name]).full_name"
             doctype="User"
             :filters="field.filters"
-            @change="(data) => emit('update', field.name, data)"
+            @change="(data) => handleChange(field.name, data)"
             :placeholder="'Select' + ' ' + field.label + '...'"
             :hideMe="true"
           >
@@ -145,29 +149,25 @@
             :doctype="field.doctype"
             :filters="field.filters"
             :placeholder="field.placeholder"
-            @change="(data) => emit('update', field.name, data)"
+            @change="(data) => handleChange(field.name, data)"
             :onCreate="field.create"
           />
-          <div v-else-if="field.type === 'datetime'" class="form-control">
-            <DateTimePicker
-              icon-left=""
-              :value="data[field.name]"
-              :formatter="(date) => getFormat(date, '', true, true)"
-              :placeholder="field.placeholder"
-              placement="left-start"
-              @change="(data) => emit('update', field.name, data)"
-            />
-          </div>
-          <div v-else-if="field.type === 'date'" class="form-control">
-            <DatePicker
-              icon-left=""
-              :value="data[field.name]"
-              :formatter="(date) => getFormat(date, '', true)"
-              :placeholder="field.placeholder"
-              placement="left-start"
-              @change="(data) => emit('update', field.name, data)"
-            />
-          </div>
+          <input
+            v-else-if="field.type === 'Date'"
+            type="date"
+            :class="field.class"
+            :value="data[field.name]"
+            @input="handleChange(field.name, $event.target.value)"
+            :placeholder="field.placeholder"
+          />
+          <input
+            v-else-if="field.type === 'Datetime'"
+            type="datetime-local"
+            :class="field.class"
+            :value="data[field.name]"
+            @input="handleChange(field.name, $event.target.value)"
+            :placeholder="field.placeholder"
+          />
           <FormControl
             v-else
             class="form-control"
@@ -175,7 +175,7 @@
             :value="data[field.name]"
             :placeholder="field.placeholder"
             :debounce="500"
-            @change.stop="emit('update', field.name, $event.target.value)"
+            @change.stop="handleChange(field.name, $event.target.value)"
           />
         </div>
         <div class="ml-1">
@@ -203,10 +203,11 @@ import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { usersStore } from '@/stores/users'
 import { getFormat } from '@/utils'
-import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
-import { computed } from 'vue'
+import { Tooltip } from 'frappe-ui'
+import { computed, watch, ref } from 'vue'
 
 const props = defineProps({
   fields: {
@@ -220,23 +221,106 @@ const props = defineProps({
 
 const { getUser } = usersStore()
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'change'])
 
 const data = defineModel()
+const localData = ref({})
+const originalData = ref({})
+const isInternalChange = ref(false)
+
+// Initialize localData and originalData when modelValue changes
+watch(data, (newValue, oldValue) => {
+  if (!newValue) return
+  
+  if (isInternalChange.value) {
+    isInternalChange.value = false
+    return
+  }
+  
+  localData.value = { ...newValue }
+  if (Object.keys(originalData.value).length === 0) {
+    originalData.value = { ...newValue }
+  }
+  checkDirty()
+}, { deep: true })
+
+function checkDirty() {
+  const hasChanges = Object.keys(localData.value).some(key => {
+    if (key === '_organizationObj') {
+      const origOrg = originalData.value._organizationObj || {}
+      const currentOrg = localData.value._organizationObj || {}
+      return Object.keys(currentOrg).some(orgKey => {
+        if (orgKey === 'modified' || orgKey === 'modified_by') return false
+        return origOrg[orgKey] !== currentOrg[orgKey]
+      })
+    }
+    
+    if (key.startsWith('_')) return false
+    
+    const originalValue = originalData.value[key]
+    const currentValue = localData.value[key]
+    if (!originalValue && !currentValue) return false
+    if (originalValue === '' && currentValue === '') return false
+    if (originalValue === currentValue) return false
+    return true
+  })
+  emit('change', hasChanges)
+}
+
+function handleChange(fieldName, value) {
+  isInternalChange.value = true
+  localData.value[fieldName] = value
+  emit('update', fieldName, value)
+  checkDirty()
+}
+
+function resetOriginalData() {
+  originalData.value = { ...localData.value }
+  checkDirty()
+}
+
+defineExpose({
+  resetOriginalData
+})
 
 const _fields = computed(() => {
   let all_fields = []
   props.fields?.forEach((field) => {
     let df = field?.all_properties
+
+    // Handle special case for gender field
+    if (field.name === 'gender') {
+      all_fields.push({
+        ...field,
+        type: 'select',
+        options: [
+          { label: __('Male'), value: 'Male' },
+          { label: __('Female'), value: 'Female' }
+        ],
+        placeholder: `${__('Select')} ${__(field.label)}`
+      })
+      return
+    }
+
     if (df?.depends_on) evaluate_depends_on(df.depends_on, field)
     all_fields.push({
       ...field,
       filters: df?.link_filters && JSON.parse(df.link_filters),
-      placeholder: field.placeholder || field.label,
+      placeholder: getPlaceholder(field),
     })
   })
   return all_fields
 })
+
+function getPlaceholder(field) {
+  if (field.placeholder) {
+    return __(field.placeholder)
+  }
+  if (['select', 'link'].includes(field.type?.toLowerCase())) {
+    return __('Select {0}', [__(field.label)])
+  }
+  return field.label
+}
 
 function evaluate_depends_on(expression, field) {
   if (expression.substr(0, 5) == 'eval:') {

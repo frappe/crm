@@ -259,7 +259,7 @@ def get_data(
 		if not columns:
 			columns = [
 				{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
-				{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
+				{"label": _("Last Modified"), "type": "Datetime", "key": "modified", "width": "8rem"},
 			]
 
 		if not rows:
@@ -340,7 +340,7 @@ def get_data(
 		for kc in kanban_columns:
 			column_filters = {column_field: kc.get("name")}
 			order = kc.get("order")
-			if column_field in filters and filters.get(column_field) != kc.name or kc.get("delete"):
+			if column_field in filters and filters.get(column_field) != kc.get('name') or kc.get("delete"):
 				column_data = []
 			else:
 				column_filters.update(filters.copy())

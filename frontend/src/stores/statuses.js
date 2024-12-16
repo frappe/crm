@@ -1,8 +1,11 @@
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import { capture } from '@/telemetry'
 import { defineStore } from 'pinia'
 import { createListResource } from 'frappe-ui'
-import { reactive, h } from 'vue'
+import { h } from 'vue'
+import { reactive } from 'vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import { capture } from '@/telemetry'
+import { translateDealStatus, getOriginalDealStatus } from '@/utils/dealStatusTranslations'
+import { translateLeadStatus, getOriginalLeadStatus } from '@/utils/leadStatusTranslations'
 
 export const statusesStore = defineStore('crm-statuses', () => {
   let leadStatusesByName = reactive({})
@@ -72,52 +75,56 @@ export const statusesStore = defineStore('crm-statuses', () => {
 
   function getLeadStatus(name) {
     if (!name) {
-      name = leadStatuses.data[0].name
+      name = leadStatuses.data[0]?.name
     }
     return leadStatusesByName[name]
   }
 
   function getDealStatus(name) {
     if (!name) {
-      name = dealStatuses.data[0].name
+      name = dealStatuses.data[0]?.name
     }
     return dealStatusesByName[name]
   }
 
   function getCommunicationStatus(name) {
     if (!name) {
-      name = communicationStatuses.data[0].name
+      name = communicationStatuses.data[0]?.name
     }
-    return communicationStatuses[name]
+    return communicationStatusesByName[name]
   }
 
-  function statusOptions(doctype, action, statuses = []) {
-    let statusesByName =
-      doctype == 'deal' ? dealStatusesByName : leadStatusesByName
-
-    if (statuses.length) {
-      statusesByName = statuses.reduce((acc, status) => {
-        acc[status] = statusesByName[status]
-        return acc
-      }, {})
-    }
-
-    let options = []
-    for (const status in statusesByName) {
-      options.push({
-        label: statusesByName[status]?.name,
-        value: statusesByName[status]?.name,
-        icon: () =>
-          h(IndicatorIcon, {
-            class: statusesByName[status]?.iconColorClass,
-          }),
-        onClick: () => {
-          capture('status_changed', { doctype, status })
-          action && action('status', statusesByName[status]?.name)
-        },
+  function statusOptions(doctype, updateField, customStatuses = []) {
+    let statusesMap = doctype === 'deal' ? dealStatusesByName : leadStatusesByName
+    let statuses = customStatuses?.length ? customStatuses : Object.keys(statusesMap)
+    
+    return statuses.map((status) => ({
+      label: doctype === 'deal' 
+        ? translateDealStatus(statusesMap[status]?.name || status)
+        : translateLeadStatus(statusesMap[status]?.name || status),
+      value: status,
+      onClick: () => {
+        capture('status_changed', { doctype, status })
+        updateField?.('status', statusesMap[status]?.name || status)
+      },
+      icon: () => h(IndicatorIcon, {
+        class: statusesMap[status]?.iconColorClass || ['!text-gray-600']
       })
+    }))
+  }
+
+  function getStatusLabel(doctype, status) {
+    if (doctype === 'deal') {
+      return translateDealStatus(status)
     }
-    return options
+    return translateLeadStatus(status)
+  }
+
+  function getOriginalStatusValue(doctype, translatedStatus) {
+    if (doctype === 'deal') {
+      return getOriginalDealStatus(translatedStatus)
+    }
+    return getOriginalLeadStatus(translatedStatus)
   }
 
   return {
@@ -128,5 +135,7 @@ export const statusesStore = defineStore('crm-statuses', () => {
     getDealStatus,
     getCommunicationStatus,
     statusOptions,
+    getStatusLabel,
+    getOriginalStatusValue,
   }
 })

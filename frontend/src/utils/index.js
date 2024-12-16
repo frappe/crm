@@ -2,9 +2,11 @@ import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { usersStore } from '@/stores/users'
 import { gemoji } from 'gemoji'
-import { useTimeAgo } from '@vueuse/core'
-import { toast, dayjsLocal, dayjs } from 'frappe-ui'
+import { toast } from 'frappe-ui'
 import { h } from 'vue'
+import { formatDate as formatDateDayjs, timeAgo as timeAgoDayjs } from './dayjs'
+import { translateTaskStatus } from './taskStatusTranslations'
+import { translateTaskPriority } from './taskPriorityTranslations'
 
 export function createToast(options) {
   toast({
@@ -41,7 +43,7 @@ export function formatTime(seconds) {
 export function formatDate(date, format, onlyDate = false, onlyTime = false) {
   if (!date) return ''
   format = getFormat(date, format, onlyDate, onlyTime, false)
-  return dayjsLocal(date).format(format)
+  return formatDateDayjs(date, format)
 }
 
 export function getFormat(
@@ -53,33 +55,32 @@ export function getFormat(
 ) {
   if (!date) return ''
   let dateFormat =
-    window.sysdefaults.date_format
-      .replace('mm', 'MM')
-      .replace('yyyy', 'YYYY')
-      .replace('dd', 'DD') || 'YYYY-MM-DD'
-  let timeFormat = window.sysdefaults.time_format || 'HH:mm:ss'
-  format = format || 'ddd, MMM d, YYYY h:mm a'
+    window.sysdefaults?.date_format
+      ?.replace('mm', 'MM')
+      ?.replace('yyyy', 'YYYY')
+      ?.replace('dd', 'DD') || 'YYYY-MM-DD'
+  let timeFormat = window.sysdefaults?.time_format || 'HH:mm:ss'
+  format = format || 'ddd, MMM D, YYYY h:mm a'
 
   if (onlyDate) format = dateFormat
   if (onlyTime) format = timeFormat
   if (onlyTime && onlyDate) format = `${dateFormat} ${timeFormat}`
 
-  if (withDate) {
-    return dayjs(date).format(format)
-  }
   return format
 }
 
 export function timeAgo(date) {
-  return useTimeAgo(date).value
+  return timeAgoDayjs(date)
 }
 
 export function taskStatusOptions(action, data) {
   return ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled'].map(
     (status) => {
+      const translatedLabel = translateTaskStatus(status)
       return {
         icon: () => h(TaskStatusIcon, { status }),
-        label: status,
+        label: translatedLabel,
+        value: status,
         onClick: () => action && action(status, data),
       }
     },
@@ -88,8 +89,10 @@ export function taskStatusOptions(action, data) {
 
 export function taskPriorityOptions(action, data) {
   return ['Low', 'Medium', 'High'].map((priority) => {
+    const translatedLabel = translateTaskPriority(priority)
     return {
-      label: priority,
+      label: translatedLabel,
+      value: priority,
       icon: () => h(TaskPriorityIcon, { priority }),
       onClick: () => action && action(priority, data),
     }

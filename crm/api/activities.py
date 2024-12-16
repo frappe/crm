@@ -5,6 +5,7 @@ import frappe
 from frappe import _
 from frappe.utils.caching import redis_cache
 from frappe.desk.form.load import get_docinfo
+from ..utils import prepare_communication_activity
 
 @frappe.whitelist()
 def get_activities(name):
@@ -37,11 +38,11 @@ def get_deal_activities(name):
 	notes = []
 	tasks = []
 	attachments = []
-	creation_text = "created this deal"
+	creation_text = _("created this deal")
 
 	if lead:
 		activities, calls, notes, tasks, attachments = get_lead_activities(lead)
-		creation_text = "converted the lead to this deal"
+		creation_text = _("converted the lead to this deal")
 
 	activities.append({
 		"activity_type": "creation",
@@ -113,6 +114,10 @@ def get_deal_activities(name):
 		activities.append(activity)
 
 	for communication in docinfo.communications + docinfo.automated_messages:
+		activity = prepare_communication_activity(communication, is_lead=False)
+		activities.append(activity)
+
+	for attachment_log in docinfo.attachment_logs:
 		activity = {
 			"activity_type": "communication",
 			"communication_type": communication.communication_type,
@@ -173,7 +178,7 @@ def get_lead_activities(name):
 		"activity_type": "creation",
 		"creation": doc[0],
 		"owner": doc[1],
-		"data": "created this lead",
+		"data": _("created this lead"),
 		"is_lead": True,
 	}]
 
@@ -239,6 +244,10 @@ def get_lead_activities(name):
 		activities.append(activity)
 
 	for communication in docinfo.communications + docinfo.automated_messages:
+		activity = prepare_communication_activity(communication, is_lead=True)
+		activities.append(activity)
+
+	for attachment_log in docinfo.attachment_logs:
 		activity = {
 			"activity_type": "communication",
 			"communication_type": communication.communication_type,
@@ -279,7 +288,6 @@ def get_lead_activities(name):
 	activities = handle_multiple_versions(activities)
 
 	return activities, calls, notes, tasks, attachments
-
 
 def get_attachments(doctype, name):
 	return frappe.db.get_all(

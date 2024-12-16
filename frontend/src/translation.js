@@ -1,47 +1,64 @@
 import { createResource } from 'frappe-ui'
+import { ref } from 'vue'
 
-export default function translationPlugin(app) {
-  app.config.globalProperties.__ = translate
-  window.__ = translate
-  if (!window.translatedMessages) fetchTranslations()
-}
+// Create a reactive translation store
+const translations = ref({});
+const isInitialized = ref(false);
 
-function format(message, replace) {
-  return message.replace(/{(\d+)}/g, function (match, number) {
-    return typeof replace[number] != 'undefined' ? replace[number] : match
-  })
-}
+// Default translation function
+export const __ = (str) => {
+  if (!str) return '';
+  return translations.value[str] || str;
+};
 
-function translate(message, replace, context = null) {
-  let translatedMessages = window.translatedMessages || {}
-  let translatedMessage = ''
+// Add retry logic and better error handling
+async function fetchTranslations() {
+  const maxRetries = 3;
+  let retryCount = 0;
 
-  if (context) {
-    let key = `${message}:${context}`
-    if (translatedMessages[key]) {
-      translatedMessage = translatedMessages[key]
+  while (retryCount < maxRetries) {
+    try {
+      const response = createResource({
+        url: 'crm.api.get_translations',
+        onError: (error) => {
+          console.warn('Translation fetch warning:', error);
+          return {};
+        },
+        cache: ['translations'],
+      });
+
+      await response.fetch();
+      translations.value = response.data || {};
+      isInitialized.value = true;
+      return translations.value;
+    } catch (error) {
+      retryCount++;
+      if (retryCount === maxRetries) {
+        console.warn('Translation fetch failed after retries:', error);
+        isInitialized.value = true;
+        return {};
+      }
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
     }
   }
-
-  if (!translatedMessage) {
-    translatedMessage = translatedMessages[message] || message
-  }
-
-  const hasPlaceholders = /{\d+}/.test(message)
-  if (!hasPlaceholders) {
-    return translatedMessage
-  }
-
-  return format(translatedMessage, replace)
 }
 
-function fetchTranslations(lang) {
-  createResource({
-    url: 'crm.api.get_translations',
-    cache: 'translations',
-    auto: true,
-    transform: (data) => {
-      window.translatedMessages = data
-    },
-  })
-}
+// Single export for the translation plugin
+export default {
+  install: (app) => {
+    // Register the translation function globally
+    app.config.globalProperties.__ = __;
+    app.provide('__', __);
+
+    // Load translations in the background
+    fetchTranslations().then(() => {
+      // No need to update the function reference since we're using a reactive store
+      console.log('Translations loaded');
+    }).catch(error => {
+      console.warn('Translation plugin initialization warning:', error);
+    });
+  },
+};
+
+// Export initialization status
+export const translationsReady = isInitialized;

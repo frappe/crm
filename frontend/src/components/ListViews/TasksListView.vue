@@ -53,10 +53,10 @@
         <ListRowItem v-else :item="item">
           <template #prefix>
             <div v-if="column.key === 'status'">
-              <TaskStatusIcon :status="item" />
+              <TaskStatusIcon :status="item.value" />
             </div>
             <div v-else-if="column.key === 'priority'">
-              <TaskPriorityIcon :priority="item" />
+              <TaskPriorityIcon :priority="item.value" />
             </div>
             <div v-else-if="column.key === 'assigned_to'">
               <Avatar
@@ -137,6 +137,7 @@
       <template #actions="{ selections, unselectAll }">
         <Dropdown
           :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
+          placement="bottom-end"
         >
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
@@ -175,11 +176,12 @@ import {
   ListHeaderItem,
   ListRows,
   ListRow,
-  ListSelectBanner,
   ListRowItem,
   ListFooter,
-  Dropdown,
   Tooltip,
+  Dropdown,
+  Button,
+  ListSelectBanner,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'

@@ -12,7 +12,7 @@
         <Dropdown :options="statusOptions('lead', updateField, customStatuses)">
           <template #default="{ open }">
             <Button
-              :label="lead.data.status"
+              :label="translateLeadStatus(lead.data.status)"
               :class="getLeadStatus(lead.data.status).colorClass"
             >
               <template #prefix>
@@ -80,19 +80,80 @@
                   :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="lead.data"
                   @update="updateField"
+                  :doctype="'CRM Lead'"
+                  :doc="lead.data"
                 />
               </Section>
             </div>
+          </div>
+          <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white dark:bg-gray-900 dark:border-gray-700 p-3">
+            <Button
+              v-if="lead.data.mobile_no && callEnabled"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="
+                lead.data.mobile_no
+                  ? makeCall(lead.data.mobile_no)
+                  : errorMessage(__('No phone number set'))
+              "
+            >
+              <template #prefix>
+                <PhoneIcon class="h-4 w-4" />
+              </template>
+              {{ __('Make Call') }}
+            </Button>
+
+            <Button
+              v-if="lead.data.mobile_no && !callEnabled"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="trackPhoneActivities('phone')"
+            >
+              <template #prefix>
+                <PhoneIcon class="h-4 w-4" />
+              </template>
+              {{ __('Make Call') }}
+            </Button>
+            
+            <Button
+              v-if="lead.data.mobile_no"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700" 
+              @click="trackPhoneActivities('whatsapp')"
+            >
+              <template #prefix>
+                <WhatsAppIcon class="h-4 w-4" />
+              </template>
+              {{ __('Chat') }}
+            </Button>
+
+            <Button
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="
+                lead.data.website
+                  ? openWebsite(lead.data.website)
+                  : errorMessage(__('No website set'))
+              "
+            >
+            <template #prefix>
+                <LinkIcon class="h-4 w-4" />
+              </template>
+              {{ __('Website') }}
+            </Button>
           </div>
         </div>
       </div>
       <Activities
         v-else
+        ref="activities"
         doctype="CRM Lead"
         :tabs="tabs"
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
         v-model="lead"
+        :doc="lead.data"
+        v-if="lead.data && !lead.loading"
       />
     </Tabs>
   </div>
@@ -212,10 +273,16 @@ import {
   Breadcrumbs,
   call,
 } from 'frappe-ui'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { errorMessage } from '@/utils'
+import LinkIcon from '@/components/Icons/LinkIcon.vue'
+import { openWebsite } from '@/utils'
+import { trackCommunication } from '@/utils/communicationUtils'
+import { translateLeadStatus } from '@/utils/leadStatusTranslations'
+import { getParsedFields } from '@/utils/getParsedFields'
 
-const { $dialog, $socket } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const route = useRoute()
@@ -397,7 +464,7 @@ const tabs = computed(() => {
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
-const { tabIndex } = useActiveTabManager(tabs, 'lastLeadTab')
+const { tabIndex } = useActiveTabManager(tabs, 'lastLeadTab', 0)
 
 watch(tabs, (value) => {
   if (value && route.params.tabName) {
@@ -415,6 +482,7 @@ const fieldsLayout = createResource({
   cache: ['fieldsLayout', props.leadId],
   params: { doctype: 'CRM Lead', name: props.leadId },
   auto: true,
+  transform: (data) => getParsedFields(data, 'CRM Lead', lead.data)
 })
 
 function updateField(name, value, callback) {
@@ -508,4 +576,49 @@ async function convertToDeal(updated) {
     }
   }
 }
+
+const activities = ref(null)
+
+// Add cleanup function for activities component
+onBeforeUnmount(() => {
+  if (activities.value) {
+    // Ensure email editor is properly cleaned up
+    if (activities.value.emailBox) {
+      activities.value.emailBox.show = false
+    }
+    activities.value = null
+  }
+})
+
+function openEmailBox() {
+  if (activities.value?.emailBox) {
+    activities.value.emailBox.show = true
+  }
+}
+
+function trackPhoneActivities(type = 'phone') {
+  if (!activities.value) return
+  
+  trackCommunication({
+    type,
+    doctype: 'CRM Lead',
+    docname: lead.data.name,
+    phoneNumber: lead.data.mobile_no,
+    activities: activities.value,
+    contactName: lead.data.lead_name,
+  })
+}
+
+// Add proper cleanup for lead resource
+onBeforeUnmount(() => {
+  if (lead.data) {
+    lead.data = null
+  }
+})
 </script>
+
+<style scoped>
+.flex-1 {
+  padding-bottom: 4rem;
+}
+</style>

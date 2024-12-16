@@ -1,40 +1,44 @@
 <template>
   <Dialog v-model="show" :options="{ size: '3xl' }">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Create Lead') }}
-            </h3>
+      <div class="flex flex-col h-full">
+        <div class="flex flex-col flex-1 bg-surface-modal">
+          <div class="px-4 pb-6 pt-5 sm:px-6">
+            <div class="mb-5 flex items-center justify-between">
+              <div>
+                <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+                  {{ __('Create Lead') }}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1">
+                <Button
+                  v-if="isManager()"
+                  variant="ghost"
+                  class="w-7"
+                  @click="openQuickEntryModal"
+                >
+                  <EditIcon class="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" class="w-7" @click="show = false">
+                  <FeatherIcon name="x" class="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager()"
-              variant="ghost"
-              class="w-7"
-              @click="openQuickEntryModal"
-            >
-              <EditIcon class="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
-            </Button>
+          <div class="flex-1 overflow-y-auto px-4 sm:px-6 [&_[id^='headlessui-tabs-panel']]:!overflow-visible">
+            <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead" :modal="true" />
+            <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
           </div>
-        </div>
-        <div>
-          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead" />
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
-        </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
-          <Button
-            variant="solid"
-            :label="__('Create')"
-            :loading="isLeadCreating"
-            @click="createNewLead"
-          />
+          <div class="mt-auto px-4 pb-7 pt-4 sm:px-6">
+            <div class="flex flex-row-reverse gap-2">
+              <Button
+                variant="solid"
+                :label="__('Create')"
+                :loading="isLeadCreating"
+                @click="createNewLead"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -50,6 +54,9 @@ import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
 import { computed, onMounted, ref, reactive, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { Dropdown } from 'frappe-ui'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import { translateLeadStatus } from '@/utils/leadStatusTranslations'
 
 const props = defineProps({
   defaults: Object,
@@ -69,18 +76,25 @@ const tabs = createResource({
   params: { doctype: 'CRM Lead', type: 'Quick Entry' },
   auto: true,
   transform: (_tabs) => {
-    return _tabs.forEach((tab) => {
+    return _tabs.map((tab) => {
       tab.sections.forEach((section) => {
         section.fields.forEach((field) => {
           if (field.name == 'status') {
             field.type = 'Select'
-            field.options = leadStatuses.value
-            field.prefix = getLeadStatus(lead.status).iconColorClass
+            field.prefixFn = (value) => {
+              const statusInfo = getLeadStatus(value)
+              return statusInfo?.iconColorClass[0]
+            }
+            field.options = leadStatuses.value.map(status => ({
+              label: translateLeadStatus(status.value),
+              value: status.value
+            }))
           } else if (field.name == 'lead_owner') {
             field.type = 'User'
           }
         })
       })
+      return tab
     })
   },
 })

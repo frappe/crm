@@ -286,4 +286,12 @@ audio::-webkit-media-controls-panel {
 .audio-control::-webkit-media-controls-panel {
   background-color: white;
 }
+
+:deep(.overflow-y-auto) {
+  overflow: visible !important;
+}
+
+:deep(.flex-col.overflow-y-auto) {
+  overflow: visible !important;
+}
 </style>

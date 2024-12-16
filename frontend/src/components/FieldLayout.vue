@@ -38,12 +38,19 @@
             <div
               class="grid gap-4"
               :class="[
-                gridClass(section.columns),
+                gridClass(section.columns, section),
                 { 'px-3 sm:px-5': hasTabs },
                 { 'mt-6': !section.hideLabel },
               ]"
             >
-              <div v-for="field in section.fields" :key="field.name">
+              <div 
+                v-for="field in section.fields" 
+                :key="field.name"
+                :class="{
+                  'col-start-1 sm:col-start-2 lg:col-start-3 justify-self-end': field.name === 'status' || field.name === 'lead_owner' || field.name === 'deal_owner',
+                  'w-[180px]': field.name === 'status' || field.name === 'lead_owner' || field.name === 'deal_owner'
+                }"
+              >
                 <div
                   class="settings-field"
                   v-if="
@@ -77,16 +84,27 @@
                     :disabled="true"
                   />
                   <FormControl
-                    v-else-if="field.type === 'Select'"
+                    v-else-if="field.type === 'Select' || field.name === 'gender'"
                     type="select"
                     class="form-control"
-                    :class="field.prefix ? 'prefix' : ''"
-                    :options="field.options"
+                    :class="[
+                      field.prefix || field.prefixFn ? 'prefix' : ''
+                    ]"
+                    :options="field.name === 'gender' ? [
+                      { label: __('Male'), value: 'Male' },
+                      { label: __('Female'), value: 'Female' }
+                    ] : field.options"
                     v-model="data[field.name]"
                     :placeholder="getPlaceholder(field)"
                   >
-                    <template v-if="field.prefix" #prefix>
-                      <IndicatorIcon :class="field.prefix" />
+                    <template v-if="field.prefix || field.prefixFn" #prefix>
+                      <IndicatorIcon :class="field.prefixFn ? field.prefixFn(data[field.name]) : field.prefix" />
+                    </template>
+                    <template v-if="field.prefixFn" #option="{ option }">
+                      <div class="flex items-center gap-2">
+                        <IndicatorIcon :class="field.prefixFn(option.value)" />
+                        {{ option.label }}
+                      </div>
                     </template>
                   </FormControl>
                   <div
@@ -111,15 +129,28 @@
                     </label>
                   </div>
                   <div class="flex gap-1" v-else-if="field.type === 'Link'">
-                    <Link
-                      class="form-control flex-1 truncate"
-                      :value="data[field.name]"
-                      :doctype="field.options"
-                      :filters="field.filters"
-                      @change="(v) => (data[field.name] = v)"
-                      :placeholder="getPlaceholder(field)"
-                      :onCreate="field.create"
-                    />
+                    <template v-if="field.options === 'Country'">
+                      <CountryLink
+                        class="form-control flex-1 truncate"
+                        :value="data[field.name]"
+                        :doctype="field.options"
+                        :filters="field.filters"
+                        @change="(v) => (data[field.name] = v)"
+                        :placeholder="getPlaceholder(field)"
+                        :onCreate="field.create"
+                      />
+                    </template>
+                    <template v-else>
+                      <Link
+                        class="form-control flex-1 truncate"
+                        :value="data[field.name]"
+                        :doctype="field.options"
+                        :filters="field.filters"
+                        @change="(v) => (data[field.name] = v)"
+                        :placeholder="getPlaceholder(field)"
+                        :onCreate="field.create"
+                      />
+                    </template>
                     <Button
                       v-if="data[field.name] && field.edit"
                       class="shrink-0"
@@ -160,21 +191,19 @@
                       </Tooltip>
                     </template>
                   </Link>
-                  <DateTimePicker
-                    v-else-if="field.type === 'Datetime'"
-                    v-model="data[field.name]"
-                    icon-left=""
-                    :formatter="(date) => getFormat(date, '', true, true)"
-                    :placeholder="getPlaceholder(field)"
-                    input-class="border-none"
-                  />
-                  <DatePicker
+                  <input
                     v-else-if="field.type === 'Date'"
-                    icon-left=""
+                    type="date"
+                    class="form-input w-full"
                     v-model="data[field.name]"
-                    :formatter="(date) => getFormat(date, '', true)"
-                    :placeholder="getPlaceholder(field)"
-                    input-class="border-none"
+                    :placeholder="__('Set date')"
+                  />
+                  <input
+                    v-else-if="field.type === 'Datetime'"
+                    type="datetime-local"
+                    class="form-input w-full"
+                    v-model="data[field.name]"
+                    :placeholder="__('Set date and time')"
                   />
                   <FormControl
                     v-else-if="
@@ -213,10 +242,12 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
+import CountryLink from '@/components/Controls/CountryLink.vue'
 import { usersStore } from '@/stores/users'
 import { getFormat } from '@/utils'
-import { Tabs, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
+import { Tabs, Tooltip, DatePicker, DateTimePicker, Dropdown, Button } from 'frappe-ui'
 import { ref, computed } from 'vue'
+import { FeatherIcon } from 'frappe-ui'
 
 const { getUser } = usersStore()
 
@@ -233,8 +264,19 @@ const hasTabs = computed(() => !props.tabs[0].no_tabs)
 
 const tabIndex = ref(0)
 
-function gridClass(columns) {
+function gridClass(columns, section) {
   columns = columns || 3
+  if (columns === 2 && section?.fields?.length === 2 && 
+      section.fields.some(f => f.name === 'status') && 
+      (section.fields.some(f => f.name === 'lead_owner') || section.fields.some(f => f.name === 'deal_owner'))) {
+    return 'grid-cols-1 sm:grid-cols-2'
+  }
+  let hasLeadOwner = section?.fields?.some(f => f.name === 'lead_owner')
+  let hasDealOwner = section?.fields?.some(f => f.name === 'deal_owner')
+  let hasStatus = section?.fields?.some(f => f.name === 'status')
+  if (hasLeadOwner || hasDealOwner || hasStatus) {
+    return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 relative'
+  }
   let griColsMap = {
     1: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1',
     2: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2',
@@ -249,10 +291,44 @@ const getPlaceholder = (field) => {
     return __(field.placeholder)
   }
   if (['Select', 'Link'].includes(field.type)) {
-    return __('Select {0}', [__(field.label)])
+    return `${__('Select')} ${__(field.label)}`
   } else {
-    return __('Enter {0}', [__(field.label)])
+    return `${__('Enter')} ${__(field.label)}`
   }
+}
+
+function getFieldData(field) {
+  // Handle special case for gender field
+  if (field.fieldname === 'gender') {
+    return {
+      ...field,
+      type: 'select',
+      options: [
+        { label: __('Male'), value: 'Male' },
+        { label: __('Female'), value: 'Female' }
+      ],
+      placeholder: `${__('Select')} ${__(field.label)}`
+    }
+  }
+
+  // Handle field types that need special treatment
+  switch (field.fieldtype?.toLowerCase()) {
+    case 'select':
+      // Convert select fields to use Link component for better UX
+      field.type = 'link'
+      if (field.options) {
+        field.options = field.options.split('\n').map(option => ({
+          label: __(option),
+          value: option
+        }))
+        if (!field.options.find(opt => opt.value === '')) {
+          field.options.unshift({ label: '', value: '' })
+        }
+      }
+      break
+  }
+
+  return field
 }
 </script>
 
@@ -267,5 +343,13 @@ const getPlaceholder = (field) => {
 
 .section:has(.settings-field) {
   display: block;
+}
+
+:deep(:has(> .dropdown-button)) {
+  width: 100%;
+}
+
+:deep(.flex-col.overflow-y-auto) {
+  overflow: visible !important;
 }
 </style>

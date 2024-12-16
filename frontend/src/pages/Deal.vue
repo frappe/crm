@@ -18,7 +18,7 @@
       <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
-            :label="deal.data.status"
+            :label="translateDealStatus(deal.data.status)"
             :class="getDealStatus(deal.data.status).colorClass"
           >
             <template #prefix>
@@ -44,6 +44,7 @@
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
         v-model="deal"
+        :doc="deal"
       />
     </Tabs>
     <Resizer side="right" class="flex flex-col justify-between border-l">
@@ -59,21 +60,40 @@
             <Avatar
               size="3xl"
               class="size-12"
-              :label="organization.data?.name || __('Untitled')"
+              :label="displayName"
               :image="organization.data?.organization_logo"
             />
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate text-ink-gray-9">
-          <Tooltip :text="organization.data?.name || __('Set an organization')">
+          <Tooltip :text="displayName">
             <div class="truncate text-2xl font-medium">
-              {{ organization.data?.name || __('Untitled') }}
+              {{ displayName }}
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
             <Tooltip v-if="callEnabled" :text="__('Make a call')">
               <Button class="h-7 w-7" @click="triggerCall">
                 <PhoneIcon class="h-4 w-4" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip :text="__('Call via phone app')">
+              <Button
+                v-if="primaryContactMobileNo && !callEnabled"
+                size="sm"
+                @click="trackPhoneActivities('phone')"
+              >
+                <PhoneIcon class="h-4 w-4" />
+              </Button>
+            </Tooltip>
+            <Tooltip :text="__('Open WhatsApp')">
+              <Button
+                v-if="primaryContactMobileNo"
+                size="sm"
+                @click="trackPhoneActivities('whatsapp')"
+              >
+                <WhatsAppIcon class="h-4 w-4" />
               </Button>
             </Tooltip>
             <Tooltip :text="__('Send an email')">
@@ -117,7 +137,7 @@
         v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
+        <div class="flex flex-col overflow-y-auto dark-scrollbar">
           <div
             v-for="(section, i) in fieldsLayout.data"
             :key="section.label"
@@ -280,11 +300,12 @@
     </Resizer>
   </div>
   <OrganizationModal
+    v-if="showOrganizationModal"
     v-model="showOrganizationModal"
     v-model:organization="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organization', doc.name),
+      afterInsert: (doc) => updateField('organization', doc.name)
     }"
   />
   <ContactModal
@@ -320,6 +341,15 @@
       }
     "
   />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="CRM Organization"
+    :options="{
+      redirect: false,
+      afterInsert: (doc) => updateField('organization', doc.name),
+    }"
+  />
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -353,6 +383,7 @@ import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import {
   openWebsite,
   createToast,
@@ -375,10 +406,14 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
+  createDocumentResource,
 } from 'frappe-ui'
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { trackCommunication } from '@/utils/communicationUtils'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
+import { getParsedFields } from '@/utils/getParsedFields'
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
@@ -460,11 +495,11 @@ const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
 const showSidePanelModal = ref(false)
 const showFilesUploader = ref(false)
+const showQuickEntryModal = ref(false)
 const _organization = ref({})
+const _contact = ref({})
 
-function updateDeal(fieldname, value, callback) {
-  value = Array.isArray(fieldname) ? '' : value
-
+function updateField(fieldname, value) {
   if (validateRequired(fieldname, value)) return
 
   createResource({
@@ -484,7 +519,7 @@ function updateDeal(fieldname, value, callback) {
         icon: 'check',
         iconClasses: 'text-ink-green-3',
       })
-      callback?.()
+      
     },
     onError: (err) => {
       createToast({
@@ -511,6 +546,23 @@ function validateRequired(fieldname, value) {
   return false
 }
 
+const displayName = computed(() => {
+  if (!deal.data) return __('Loading...')
+  
+  if (organization.data?.name) {
+    return organization.data.name
+  }
+  
+  if (dealContacts.data) {
+    const primaryContact = dealContacts.data.find(c => c.is_primary)
+    if (primaryContact?.full_name) {
+      return primaryContact.full_name
+    }
+  }
+  
+  return __('Untitled')
+})
+
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
 
@@ -530,17 +582,15 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.data?.name || __('Untitled'),
+    label: displayName.value,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
 })
 
-usePageMeta(() => {
-  return {
-    title: organization.data?.name || deal.data?.name,
-  }
-})
+usePageMeta(() => ({
+  title: displayName.value,
+}))
 
 const tabs = computed(() => {
   let tabOptions = [
@@ -601,32 +651,22 @@ const fieldsLayout = createResource({
   cache: ['fieldsLayout', props.dealId],
   params: { doctype: 'CRM Deal', name: props.dealId },
   auto: true,
-  transform: (data) => getParsedFields(data),
+  transform: (data) => getParsedFields(data, 'CRM Deal', deal.data, {
+    organization: {
+      create: (value, close) => {
+        _organization.value = { organization_name: value }
+        showOrganizationModal.value = true
+        close()
+      },
+      link: (org) => router.push({
+        name: 'Organization',
+        params: { organizationId: org },
+      })
+    }
+  })
 })
 
-function getParsedFields(sections) {
-  sections.forEach((section) => {
-    if (section.name == 'contacts_section') return
-    section.fields.forEach((field) => {
-      if (field.name == 'organization') {
-        field.create = (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
-          close()
-        }
-        field.link = (org) =>
-          router.push({
-            name: 'Organization',
-            params: { organizationId: org },
-          })
-      }
-    })
-  })
-  return sections
-}
-
 const showContactModal = ref(false)
-const _contact = ref({})
 
 function contactOptions(contact) {
   let options = [
@@ -706,6 +746,22 @@ const dealContacts = createResource({
   },
 })
 
+function trackPhoneActivities(type = 'phone') {
+  const primaryContact = dealContacts.data?.find(c => c.is_primary)
+  if (!primaryContact?.mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  trackCommunication({
+    type,
+    doctype: 'CRM Deal',
+    docname: deal.data.name,
+    phoneNumber: primaryContact.mobile_no,
+    activities: activities.value,
+    contactName: primaryContact.name
+  })
+}
+
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
   let mobile_no = primaryContact.mobile_no || null
@@ -723,13 +779,6 @@ function triggerCall() {
   makeCall(mobile_no)
 }
 
-function updateField(name, value, callback) {
-  updateDeal(name, value, () => {
-    deal.data[name] = value
-    callback?.()
-  })
-}
-
 async function deleteDeal(name) {
   await call('frappe.client.delete', {
     doctype: 'CRM Deal',
@@ -743,6 +792,10 @@ const activities = ref(null)
 function openEmailBox() {
   activities.value.emailBox.show = true
 }
+
+const primaryContactMobileNo = computed(() => {
+  return dealContacts.data?.find(c => c.is_primary)?.mobile_no
+})
 </script>
 
 <style scoped>

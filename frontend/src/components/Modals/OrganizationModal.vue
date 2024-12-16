@@ -22,7 +22,7 @@
             </Button>
           </div>
         </div>
-        <div v-if="filteredSections.length">
+        <div v-if="filteredSections.length" class="flex flex-col">
           <FieldLayout :tabs="filteredSections" :data="_organization" />
         </div>
       </div>
@@ -239,3 +239,9 @@ function openQuickEntryModal() {
   nextTick(() => (show.value = false))
 }
 </script>
+
+<style scoped>
+:deep(.flex-col.overflow-y-auto) {
+  overflow: visible !important;
+}
+</style>

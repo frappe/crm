@@ -158,7 +158,7 @@
                   event,
                   idx,
                   column,
-                  item,
+                  item: column.key === 'annual_revenue' ? item.value : item,
                   firstColumn: columns[0],
                 })
             "
@@ -172,6 +172,7 @@
       <template #actions="{ selections, unselectAll }">
         <Dropdown
           :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
+          placement="bottom-end"
         >
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
@@ -204,10 +205,11 @@ import {
   ListHeader,
   ListHeaderItem,
   ListRowItem,
-  ListSelectBanner,
   ListFooter,
   Dropdown,
   Tooltip,
+  Button,
+  ListSelectBanner,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'

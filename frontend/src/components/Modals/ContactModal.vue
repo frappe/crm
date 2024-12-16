@@ -146,7 +146,7 @@ const dialogOptions = computed(() => {
   let size = 'xl'
   let actions = [
     {
-      label: editMode.value ? 'Save' : 'Create',
+      label: editMode.value ? __('Save') : __('Create'),
       variant: 'solid',
       disabled: !dirty.value,
       onClick: () => (editMode.value ? updateContact() : callInsertDoc()),
@@ -219,5 +219,9 @@ function openQuickEntryModal() {
 <style scoped>
 :deep(:has(> .dropdown-button)) {
   width: 100%;
+}
+
+:deep(.flex-col.overflow-y-auto) {
+  overflow: visible !important;
 }
 </style>

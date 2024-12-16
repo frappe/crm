@@ -4,19 +4,36 @@
       <ViewBreadcrumbs v-model="viewControls" routeName="Deals" />
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="dealsListView?.customListActions"
-        :actions="dealsListView.customListActions"
-      />
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        @click="showDealModal = true"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <div class="flex items-center gap-4">
+        <SmartFilterField
+          v-if="!isMobileView"
+          ref="desktopSmartFilter"
+          doctype="CRM Deal"
+          @update:filters="handleSmartFilter"
+          class="w-80"
+        />
+        <CustomActions
+          v-if="dealsListView?.customListActions"
+          :actions="dealsListView.customListActions"
+        />
+        <Button
+          variant="solid"
+          :label="__('Create')"
+          @click="showDealModal = true"
+        >
+          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+        </Button>
+      </div>
     </template>
   </LayoutHeader>
+  <div v-if="isMobileView" class="px-3 py-2 border-b">
+    <SmartFilterField
+      ref="mobileSmartFilter"
+      doctype="CRM Deal"
+      @update:filters="handleSmartFilter"
+      class="w-full"
+    />
+  </div>
   <ViewControls
     ref="viewControls"
     v-model="deals"
@@ -229,7 +246,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <DealsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Deals')]) }}</span>
+      <span>{{ __('No Deals Found') }}</span>
       <Button :label="__('Create')" @click="showDealModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -290,17 +307,20 @@ import {
   formatDate,
   timeAgo,
   website,
-  formatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
+import { formatNumberIntoCurrency } from '@/utils/formatters'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, watch } from 'vue'
+import SmartFilterField from '@/components/SmartFilterField.vue'
+import { isMobileView } from '@/composables/settings'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
-const { getDealStatus } = statusesStore()
+const { getDealStatus, getStatusLabel } = statusesStore()
 
 const route = useRoute()
 
@@ -317,14 +337,120 @@ const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
-function getRow(name, field) {
-  function getValue(value) {
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      return value
-    }
-    return { label: value }
+const desktopSmartFilter = ref(null)
+const mobileSmartFilter = ref(null)
+const isResettingFilters = ref(false)
+
+watch(() => deals.value?.params?.filters, (newFilters) => {
+  if (isResettingFilters.value) return;
+  
+  if (!newFilters || Object.keys(newFilters).length === 0) {
+    isResettingFilters.value = true;
+    desktopSmartFilter.value?.clearSearch();
+    mobileSmartFilter.value?.clearSearch();
+    isResettingFilters.value = false;
   }
-  return getValue(rows.value?.find((row) => row.name == name)[field])
+}, { deep: true })
+
+function handleSmartFilter(filters) {
+  if (!viewControls.value || !filters) return;
+  if (isResettingFilters.value) return;
+  if (!deals.value || !deals.value.params) return;
+
+  const currentFilters = deals.value.params.filters || {};
+  const standardFilters = {};
+  Object.entries(currentFilters).forEach(([key, value]) => {
+    if (!['mobile_no', 'email', 'organization'].includes(key)) {
+      standardFilters[key] = value;
+    }
+  });
+
+  deals.value.params.filters = {
+    ...standardFilters,
+    ...filters
+  };
+  
+  deals.value.reload();
+}
+
+function getRow(itemName, row) {
+  let deal = deals.value?.data?.data?.find((d) => d.name === itemName)
+  if (!deal) return {}
+
+  let _rows = {}
+  Object.keys(deal).forEach((row) => {
+    if (row === 'status') {
+      _rows[row] = {
+        label: getStatusLabel('deal', deal[row]),
+        value: deal[row],
+        color: getDealStatus(deal[row])?.iconColorClass,
+      }
+    } else if (row === 'organization') {
+      let primaryContact = deal.contacts?.find(c => c.is_primary)
+      _rows[row] = {
+        label: deal.organization || (primaryContact?.full_name || __('Untitled')),
+        logo: deal.organization ? getOrganization(deal.organization)?.organization_logo : null,
+      }
+    } else if (row === 'website') {
+      _rows[row] = website(deal.website)
+    } else if (row === 'sla_status') {
+      let value = deal.sla_status
+      let tooltipText = value
+      let color =
+        deal.sla_status == 'Failed'
+          ? 'red'
+          : deal.sla_status == 'Fulfilled'
+            ? 'green'
+            : 'orange'
+      if (value == 'First Response Due') {
+        value = __(timeAgo(deal.response_by))
+        tooltipText = formatDate(deal.response_by)
+        if (new Date(deal.response_by) < new Date()) {
+          color = 'red'
+        }
+      }
+      _rows[row] = {
+        label: tooltipText,
+        value: value,
+        color: color,
+      }
+    } else if (row === 'deal_owner') {
+      _rows[row] = {
+        label: deal.deal_owner && getUser(deal.deal_owner).full_name,
+        ...(deal.deal_owner && getUser(deal.deal_owner)),
+      }
+    } else if (row === '_assign') {
+      let assignees = JSON.parse(deal._assign || '[]')
+      if (!assignees.length && deal.deal_owner) {
+        assignees = [deal.deal_owner]
+      }
+      _rows[row] = assignees.map((user) => ({
+        name: user,
+        image: getUser(user).user_image,
+        label: getUser(user).full_name,
+      }))
+    } else if (['modified', 'creation'].includes(row)) {
+      _rows[row] = {
+        label: formatDate(deal[row]),
+        timeAgo: __(timeAgo(deal[row])),
+      }
+    } else if (
+      ['first_response_time', 'first_responded_on', 'response_by'].includes(
+        row,
+      )
+    ) {
+      let field = row == 'response_by' ? 'response_by' : 'first_responded_on'
+      _rows[row] = {
+        label: deal[field] ? formatDate(deal[field]) : '',
+        timeAgo: deal[row]
+          ? row == 'first_response_time'
+            ? formatTime(deal[row])
+            : __(timeAgo(deal[row]))
+          : '',
+      }
+    }
+  })
+  return _rows[row] || {}
 }
 
 // Rows
@@ -402,21 +528,22 @@ function parseRows(rows, columns = []) {
         _rows[row] = formatDate(deal[row], '', true, fieldType == 'Datetime')
       }
 
-      if (row == 'organization') {
+      if (row == 'annual_revenue') {
+        _rows[row] = {
+          label: formatNumberIntoCurrency(deal.annual_revenue, deal.currency),
+          value: deal.annual_revenue
+        }
+      } else if (row == 'organization') {
         _rows[row] = {
           label: deal.organization,
           logo: getOrganization(deal.organization)?.organization_logo,
         }
       } else if (row === 'website') {
         _rows[row] = website(deal.website)
-      } else if (row == 'annual_revenue') {
-        _rows[row] = formatNumberIntoCurrency(
-          deal.annual_revenue,
-          deal.currency,
-        )
       } else if (row == 'status') {
         _rows[row] = {
-          label: deal.status,
+          label: getStatusLabel('deal', deal.status),
+          value: deal.status,
           color: getDealStatus(deal.status)?.iconColorClass,
         }
       } else if (row == 'sla_status') {

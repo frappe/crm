@@ -16,7 +16,7 @@
           <div>
             <UserDropdown class="p-2" :isCollapsed="!sidebarOpened" />
           </div>
-          <div class="flex-1 overflow-y-auto">
+          <div class="flex-1 overflow-y-auto dark-scrollbar">
             <div class="mb-3 flex flex-col">
               <SidebarLink
                 id="notifications-btn"
@@ -108,6 +108,7 @@ import { unreadNotificationsCount } from '@/stores/notifications'
 import { TrialBanner, createResource } from 'frappe-ui'
 import { computed, h, provide } from 'vue'
 import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
+import { callEnabled } from '@/composables/settings'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 
@@ -142,11 +143,11 @@ const links = [
     icon: TaskIcon,
     to: 'Tasks',
   },
-  {
+  ...(callEnabled.value ? [{
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
-  },
+  }] : []),
   {
     label: 'Email Templates',
     icon: Email2Icon,

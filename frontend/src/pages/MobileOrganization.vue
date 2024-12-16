@@ -155,13 +155,17 @@
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
-            <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
+            <div>{{ __(`No ${tab.label} Found`) }}</div>
           </div>
         </div>
       </template>
     </Tabs>
   </div>
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
+  <AddressModal 
+    v-model="showAddressModal" 
+    v-model:address="_address"
+    @save="updateField('address', $event)"
+  />
 </template>
 
 <script setup>
@@ -224,9 +228,27 @@ const organization = createDocumentResource({
 })
 
 async function updateField(fieldname, value) {
-  await organization.setValue.submit({
-    [fieldname]: value,
-  })
+  if (fieldname === 'organization_name') {
+    // Handle renaming
+    const newName = await call('frappe.client.rename_doc', {
+      doctype: 'CRM Organization',
+      old_name: organization.doc.organization_name,
+      new_name: value,
+    })
+    router.push({
+      name: 'Organization',
+      params: { organizationId: newName }
+    })
+  } else {
+    await call('frappe.client.set_value', {
+      doctype: 'CRM Organization',
+      name: props.organizationId,
+      fieldname: fieldname,
+      value: value
+    })
+    organization.reload()
+  }
+  
   createToast({
     title: __('Organization updated'),
     icon: 'check',
@@ -339,25 +361,54 @@ function getParsedFields(data) {
       ...section,
       fields: computed(() =>
         section.fields.map((field) => {
-          if (field.name === 'address') {
+          // Get translated field label
+          const translatedLabel = __(field.label || field.name.split('_').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)).join(' '))
+
+          // Handle link fields
+          if (field.type === 'link') {
+            const baseField = {
+              ...field,
+              doctype: field.options || field.doctype,
+              options: field.options,
+              placeholder: `${__('Select')} ${translatedLabel}`
+            }
+
+            // Special handling for address field
+            if (field.name === 'address') {
+              return {
+                ...baseField,
+                doctype: 'Address',
+                create: (value, close) => {
+                  _address.value = { address_title: value }
+                  showAddressModal.value = true
+                  close()
+                },
+                edit: async (addr) => {
+                  _address.value = await call('frappe.client.get', {
+                    doctype: 'Address',
+                    name: addr,
+                  })
+                  showAddressModal.value = true
+                }
+              }
+            }
+
+            return baseField
+          }
+
+          // Handle select fields
+          if (field.type === 'select') {
             return {
               ...field,
-              create: (value, close) => {
-                _organization.value.address = value
-                _address.value = {}
-                showAddressModal.value = true
-                close()
-              },
-              edit: async (addr) => {
-                _address.value = await call('frappe.client.get', {
-                  doctype: 'Address',
-                  name: addr,
-                })
-                showAddressModal.value = true
-              },
+              placeholder: `${__('Select')} ${translatedLabel}`
             }
-          } else {
-            return field
+          }
+
+          // Default field handling
+          return {
+            ...field,
+            placeholder: `${__('Enter')} ${translatedLabel}`
           }
         }),
       ),

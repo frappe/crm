@@ -52,6 +52,16 @@
   </Dialog>
 </template>
 
+<style scoped>
+:deep(.overflow-y-auto) {
+  overflow: visible !important;
+}
+
+:deep(.flex-col.overflow-y-auto) {
+  overflow: visible !important;
+}
+</style>
+
 <script setup>
 import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'

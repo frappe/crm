@@ -12,7 +12,7 @@
   />
   <FadedScrollableDiv
     :maskHeight="30"
-    class="flex flex-col flex-1 overflow-y-auto"
+    class="flex flex-col flex-1 overflow-y-auto dark-scrollbar"
   >
     <div
       v-if="all_activities?.loading"
@@ -375,31 +375,40 @@
       <span>{{ __(emptyText) }}</span>
       <Button
         v-if="title == 'Calls'"
+        size="sm"
+        class="min-w-[90px] whitespace-nowrap"
         :label="__('Make a Call')"
         @click="makeCall(doc.data.mobile_no)"
       />
       <Button
         v-else-if="title == 'Notes'"
+        size="sm"
+        class="min-w-[90px] whitespace-nowrap"
         :label="__('Create Note')"
         @click="modalRef.showNote()"
       />
       <Button
         v-else-if="title == 'Emails'"
+        size="sm"
+        class="min-w-[90px] whitespace-nowrap"
         :label="__('New Email')"
         @click="emailBox.show = true"
       />
       <Button
         v-else-if="title == 'Comments'"
+        size="sm"
         :label="__('New Comment')"
         @click="emailBox.showComment = true"
       />
       <Button
         v-else-if="title == 'Tasks'"
+        size="sm"
         :label="__('Create Task')"
         @click="modalRef.showTask()"
       />
       <Button
         v-else-if="title == 'Attachments'"
+        size="sm"
         :label="__('Upload Attachment')"
         @click="showFilesUploader = true"
       />
@@ -503,6 +512,9 @@ import {
   onBeforeUnmount,
 } from 'vue'
 import { useRoute } from 'vue-router'
+import { filterEmailActivities } from '@/utils/activity_filters'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
+import { translateLeadStatus } from '@/utils/leadStatusTranslations'
 
 const { makeCall, $socket } = globalStore()
 const { getUser } = usersStore()
@@ -511,12 +523,16 @@ const { getContact, getLeadContact } = contactsStore()
 const props = defineProps({
   doctype: {
     type: String,
-    default: 'CRM Lead',
+    required: true
   },
   tabs: {
     type: Array,
-    default: () => [],
+    default: () => []
   },
+  doc: {
+    type: Object,
+    required: true
+  }
 })
 
 const route = useRoute()
@@ -638,9 +654,10 @@ const replyMessage = ref({})
 
 function get_activities() {
   if (!all_activities.data?.versions) return []
-  if (!all_activities.data?.calls.length)
-    return all_activities.data.versions || []
-  return [...all_activities.data.versions, ...all_activities.data.calls]
+  const versions = Array.isArray(all_activities.data.versions) ? all_activities.data.versions : []
+  const calls = Array.isArray(all_activities.data?.calls) ? all_activities.data.calls : []
+  if (!calls.length) return versions
+  return [...versions, ...calls]
 }
 
 const activities = computed(() => {
@@ -649,28 +666,28 @@ const activities = computed(() => {
     _activities = get_activities()
   } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
-    _activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'communication',
-    )
+    _activities = filterEmailActivities(all_activities.data.versions || [])
   } else if (title.value == 'Comments') {
     if (!all_activities.data?.versions) return []
-    _activities = all_activities.data.versions.filter(
+    _activities = (all_activities.data.versions || []).filter(
       (activity) => activity.activity_type === 'comment',
     )
   } else if (title.value == 'Calls') {
     if (!all_activities.data?.calls) return []
-    return sortByCreation(all_activities.data.calls)
+    return sortByCreation(all_activities.data.calls || [])
   } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
-    return sortByCreation(all_activities.data.tasks)
+    return sortByCreation(all_activities.data.tasks || [])
   } else if (title.value == 'Notes') {
     if (!all_activities.data?.notes) return []
-    return sortByCreation(all_activities.data.notes)
+    return sortByCreation(all_activities.data.notes || [])
   } else if (title.value == 'Attachments') {
     if (!all_activities.data?.attachments) return []
-    return sortByCreation(all_activities.data.attachments)
+    return sortByCreation(all_activities.data.attachments || [])
   }
 
+  if (!Array.isArray(_activities)) return []
+  
   _activities.forEach((activity) => {
     activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
 
@@ -715,27 +732,40 @@ function update_activities_details(activity) {
     activity.type = 'changed'
     activity.value = 'from'
     activity.to = 'to'
+    
+    if (activity.data?.field_label === 'Status') {
+      if (activity.data.old_value) {
+        activity.data.old_value = props.doctype === 'CRM Deal' 
+          ? translateDealStatus(activity.data.old_value)
+          : translateLeadStatus(activity.data.old_value)
+      }
+      if (activity.data.value) {
+        activity.data.value = props.doctype === 'CRM Deal'
+          ? translateDealStatus(activity.data.value)
+          : translateLeadStatus(activity.data.value)
+      }
+    }
   }
 }
 
 const emptyText = computed(() => {
-  let text = 'No Activities'
+  let text = __('No Activities')
   if (title.value == 'Emails') {
-    text = 'No Email Communications'
+    text = __('No Email Communications')
   } else if (title.value == 'Comments') {
-    text = 'No Comments'
+    text = __('No Comments')
   } else if (title.value == 'Data') {
-    text = 'No Data'
+    text = __('No Data')
   } else if (title.value == 'Calls') {
-    text = 'No Call Logs'
+    text = __('No Call Logs')
   } else if (title.value == 'Notes') {
-    text = 'No Notes'
+    text = __('No Notes')
   } else if (title.value == 'Tasks') {
-    text = 'No Tasks'
+    text = __('No Tasks')
   } else if (title.value == 'Attachments') {
-    text = 'No Attachments'
+    text = __('No Attachments')
   } else if (title.value == 'WhatsApp') {
-    text = 'No WhatsApp Messages'
+    text = __('No WhatsApp Messages')
   }
   return text
 })

@@ -61,7 +61,11 @@
                     event,
                     idx,
                     column,
-                    item,
+                    item: column.type === 'Link' || column.key === 'industry' 
+                      ? item.value || item
+                      : column.key === 'website'
+                      ? ['LIKE', `%${item.value || item}%`]
+                      : ['LIKE', `%${item.label || item}%`],
                     firstColumn: columns[0],
                   })
               "
@@ -100,7 +104,11 @@
                     event,
                     idx,
                     column,
-                    item,
+                    item: column.type === 'Link' || column.key === 'industry' 
+                      ? item.value || item
+                      : column.key === 'website'
+                      ? ['LIKE', `%${item.value || item}%`]
+                      : ['LIKE', `%${item.label || item}%`],
                     firstColumn: columns[0],
                   })
               "
@@ -115,6 +123,7 @@
       <template #actions="{ selections, unselectAll }">
         <Dropdown
           :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
+          placement="bottom-end"
         >
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
@@ -149,11 +158,12 @@ import {
   ListHeaderItem,
   ListRows,
   ListRow,
-  ListSelectBanner,
   ListRowItem,
   ListFooter,
   Tooltip,
   Dropdown,
+  Button,
+  ListSelectBanner,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'

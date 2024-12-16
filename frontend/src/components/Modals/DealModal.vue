@@ -1,55 +1,60 @@
 <template>
   <Dialog v-model="show" :options="{ size: '3xl' }">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Create Deal') }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager()"
-              variant="ghost"
-              class="w-7"
-              @click="openQuickEntryModal"
-            >
-              <EditIcon class="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-        <div>
-          <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div class="flex items-center gap-3 text-sm text-ink-gray-5">
-              <div>{{ __('Choose Existing Organization') }}</div>
-              <Switch v-model="chooseExistingOrganization" />
-            </div>
-            <div class="flex items-center gap-3 text-sm text-ink-gray-5">
-              <div>{{ __('Choose Existing Contact') }}</div>
-              <Switch v-model="chooseExistingContact" />
+      <div class="flex flex-col h-full">
+        <div class="flex flex-col flex-1 bg-surface-modal">
+          <div class="px-4 pb-6 pt-5 sm:px-6">
+            <div class="mb-5 flex items-center justify-between">
+              <div>
+                <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+                  {{ __('Create Deal') }}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1">
+                <Button
+                  v-if="isManager()"
+                  variant="ghost"
+                  class="w-7"
+                  @click="openQuickEntryModal"
+                >
+                  <EditIcon class="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" class="w-7" @click="show = false">
+                  <FeatherIcon name="x" class="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
-          <div class="h-px w-full border-t my-5" />
-          <FieldLayout
-            v-if="filteredSections.length"
-            :tabs="filteredSections"
-            :data="deal"
-          />
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
-        </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
-          <Button
-            variant="solid"
-            :label="__('Create')"
-            :loading="isDealCreating"
-            @click="createDeal"
-          />
+          <div class="flex-1 overflow-y-auto px-4 sm:px-6 [&_[id^='headlessui-tabs-panel']]:!overflow-visible">
+            <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div class="flex items-center gap-3 text-sm text-ink-gray-5">
+                <div>{{ __('Choose Existing Organization') }}</div>
+                <Switch v-model="chooseExistingOrganization" />
+              </div>
+              <div class="flex items-center gap-3 text-sm text-ink-gray-5">
+                <div>{{ __('Choose Existing Contact') }}</div>
+                <Switch v-model="chooseExistingContact" />
+              </div>
+            </div>
+            <div class="h-px w-full border-t my-5" />
+            <FieldLayout
+              v-if="filteredSections.length"
+              :tabs="filteredSections"
+              :data="deal"
+              :modal="true"
+            />
+            <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+          </div>
+          <div class="mt-auto px-4 pb-7 pt-4 sm:px-6">
+            <div class="flex flex-row-reverse gap-2">
+              <Button
+                variant="solid"
+                :label="__('Create')"
+                :loading="isDealCreating"
+                @click="createDeal"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -65,6 +70,8 @@ import { capture } from '@/telemetry'
 import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
+import { getParsedFields } from '@/utils/getParsedFields'
 
 const props = defineProps({
   defaults: Object,
@@ -106,19 +113,46 @@ const tabs = createResource({
   params: { doctype: 'CRM Deal', type: 'Quick Entry' },
   auto: true,
   transform: (_tabs) => {
-    return _tabs.forEach((tab) => {
+    // First transform the data using the common function
+    const transformedTabs = _tabs.map(tab => ({
+      ...tab,
+      sections: getParsedFields(_tabs, 'CRM Deal', deal, {
+        organization: {
+          create: (value, close) => {
+            _organization.value = { organization_name: value }
+            showOrganizationModal.value = true
+            close()
+          },
+          link: (org) => router.push({
+            name: 'Organization',
+            params: { organizationId: org },
+          })
+        }
+      })
+    }))
+
+    // Then apply any modal-specific transformations
+    transformedTabs.forEach((tab) => {
       tab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
+        section.fields?.forEach((field) => {
           if (field.name == 'status') {
             field.type = 'Select'
-            field.options = dealStatuses.value
-            field.prefix = getDealStatus(deal.status).iconColorClass
+            field.prefixFn = (value) => {
+              const statusInfo = getDealStatus(value)
+              return statusInfo?.iconColorClass[0]
+            }
+            field.options = dealStatuses.value.map(status => ({
+              label: translateDealStatus(status.value),
+              value: status.value
+            }))
           } else if (field.name == 'deal_owner') {
             field.type = 'User'
           }
         })
       })
     })
+
+    return transformedTabs
   },
 })
 
@@ -239,3 +273,9 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+:deep(.flex-col.overflow-y-auto) {
+  overflow: visible !important;
+}
+</style>

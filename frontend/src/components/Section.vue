@@ -2,8 +2,7 @@
   <slot name="header" v-bind="{ opened, hide, open, close, toggle }">
     <div v-if="!hide" class="flex items-center justify-between">
       <div
-        class="flex text-ink-gray-9 max-w-fit cursor-pointer items-center gap-2 text-base"
-        v-bind="$attrs"
+        :class="[$attrs.class, 'flex text-ink-gray-9 max-w-fit cursor-pointer items-center gap-2 text-base']"
         @click="collapsible && toggle()"
       >
         <FeatherIcon
@@ -40,6 +39,10 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+
+defineOptions({
+  inheritAttrs: false
+})
 
 const props = defineProps({
   label: {

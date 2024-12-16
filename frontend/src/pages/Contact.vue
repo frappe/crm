@@ -20,7 +20,7 @@
           :validateFile="validateFile"
         >
           <template #default="{ openFileSelector, error }">
-            <div class="flex flex-col items-start justify-start gap-4 p-5">
+            <div class="flex flex-col gap-4 p-5">
               <div class="flex gap-4 items-center">
                 <div class="group relative h-15.5 w-15.5">
                   <Avatar
@@ -88,28 +88,57 @@
                   <ErrorMessage :message="__(error)" />
                 </div>
               </div>
-              <div class="flex gap-1.5">
-                <Button
-                  v-if="contact.data.actual_mobile_no"
-                  :label="__('Make Call')"
-                  size="sm"
-                  @click="
-                    callEnabled && makeCall(contact.data.actual_mobile_no)
-                  "
-                >
-                  <template #prefix>
-                    <PhoneIcon class="h-4 w-4" />
-                  </template>
-                </Button>
+              <div class="flex p-3">
+                <div class="flex gap-1.5">
+                  <Button
+                    v-if="contact.data.actual_mobile_no && callEnabled"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="makeCall(contact.data.actual_mobile_no)"
+                  >
+                    <template #prefix>
+                      <PhoneIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Make Call') }}
+                  </Button>
+
+                  <Button
+                    v-if="contact.data.actual_mobile_no && !callEnabled"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="trackPhoneActivities('phone')"
+                  >
+                    <template #prefix>
+                      <PhoneIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Make Call') }}
+                  </Button>
+
+                  <Button
+                    v-if="contact.data.actual_mobile_no"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="trackPhoneActivities('whatsapp')"
+                  >
+                    <template #prefix>
+                      <WhatsAppIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Chat') }}
+                  </Button>
+                </div>
+
                 <Button
                   :label="__('Delete')"
+                  variant="ghost"
                   theme="red"
                   size="sm"
+                  class="dark:text-red-400 dark:hover:bg-gray-700"
                   @click="deleteContact"
                 >
                   <template #prefix>
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
                   </template>
+                  {{ __('Delete') }}  
                 </Button>
               </div>
             </div>
@@ -120,7 +149,7 @@
         v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
+        <div class="flex flex-col overflow-y-auto dark-scrollbar">
           <div
             v-for="(section, i) in fieldsLayout.data"
             :key="section.label"
@@ -183,7 +212,7 @@
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
-            <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
+            <div>{{ __('No Deals Found') }}</div>
           </div>
         </div>
       </template>
@@ -196,6 +225,7 @@
     @reload="() => fieldsLayout.reload()"
   />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
+  <ContactModal v-model="showContactModal" :contact="contact" :options="{ redirect: false, afterInsert: () => contact.reload() }" />
 </template>
 
 <script setup>
@@ -205,12 +235,14 @@ import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
 import {
   formatDate,
   timeAgo,
@@ -223,6 +255,7 @@ import { usersStore } from '@/stores/users.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
 import {
   Breadcrumbs,
   Avatar,
@@ -235,6 +268,8 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { normalizePhoneNumber } from '@/utils/communicationUtils'
+import { trackCommunication } from '@/utils/communicationUtils'
 
 const { $dialog, makeCall } = globalStore()
 
@@ -254,6 +289,7 @@ const router = useRouter()
 
 const showAddressModal = ref(false)
 const showSidePanelModal = ref(false)
+const showContactModal = ref(false)
 const _contact = ref({})
 const _address = ref({})
 
@@ -376,213 +412,282 @@ const fieldsLayout = createResource({
 })
 
 function getParsedFields(data) {
-  return data.map((section) => {
-    return {
-      ...section,
-      fields: computed(() =>
-        section.fields.map((field) => {
-          if (field.name === 'email_id') {
-            return {
-              ...field,
-              type: 'dropdown',
-              options:
-                contact.data?.email_ids?.map((email) => {
-                  return {
-                    name: email.name,
-                    value: email.email_id,
-                    selected: email.email_id === contact.data.email_id,
-                    placeholder: 'john@doe.com',
-                    onClick: () => {
-                      _contact.value.email_id = email.email_id
-                      setAsPrimary('email', email.email_id)
-                    },
-                    onSave: (option, isNew) => {
-                      if (isNew) {
-                        createNew('email', option.value)
-                        if (contact.data.email_ids.length === 1) {
-                          _contact.value.email_id = option.value
-                        }
-                      } else {
-                        editOption(
-                          'Contact Email',
-                          option.name,
-                          'email_id',
-                          option.value,
-                        )
-                      }
-                    },
-                    onDelete: async (option, isNew) => {
-                      contact.data.email_ids = contact.data.email_ids.filter(
-                        (email) => email.name !== option.name,
-                      )
-                      !isNew &&
-                        (await deleteOption('Contact Email', option.name))
-                      if (_contact.value.email_id === option.value) {
-                        if (contact.data.email_ids.length === 0) {
-                          _contact.value.email_id = ''
-                        } else {
-                          _contact.value.email_id = contact.data.email_ids.find(
-                            (email) => email.is_primary,
-                          )?.email_id
-                        }
-                      }
-                    },
-                  }
-                }) || [],
-              create: () => {
-                contact.data?.email_ids?.push({
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
-                })
-              },
-            }
-          } else if (field.name === 'mobile_no') {
-            return {
-              ...field,
-              type: 'dropdown',
-              options:
-                contact.data?.phone_nos?.map((phone) => {
-                  return {
-                    name: phone.name,
-                    value: phone.phone,
-                    selected: phone.phone === contact.data.actual_mobile_no,
-                    onClick: () => {
-                      _contact.value.actual_mobile_no = phone.phone
-                      _contact.value.mobile_no = phone.phone
-                      setAsPrimary('mobile_no', phone.phone)
-                    },
-                    onSave: (option, isNew) => {
-                      if (isNew) {
-                        createNew('phone', option.value)
-                        if (contact.data.phone_nos.length === 1) {
-                          _contact.value.actual_mobile_no = option.value
-                        }
-                      } else {
-                        editOption(
-                          'Contact Phone',
-                          option.name,
-                          'phone',
-                          option.value,
-                        )
-                      }
-                    },
-                    onDelete: async (option, isNew) => {
-                      contact.data.phone_nos = contact.data.phone_nos.filter(
-                        (phone) => phone.name !== option.name,
-                      )
-                      !isNew &&
-                        (await deleteOption('Contact Phone', option.name))
-                      if (_contact.value.actual_mobile_no === option.value) {
-                        if (contact.data.phone_nos.length === 0) {
-                          _contact.value.actual_mobile_no = ''
-                        } else {
-                          _contact.value.actual_mobile_no =
-                            contact.data.phone_nos.find(
-                              (phone) => phone.is_primary_mobile_no,
-                            )?.phone
-                        }
-                      }
-                    },
-                  }
-                }) || [],
-              create: () => {
-                contact.data?.phone_nos?.push({
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
-                })
-              },
-            }
-          } else if (field.name === 'address') {
-            return {
-              ...field,
-              create: (value, close) => {
-                _contact.value.address = value
-                _address.value = {}
-                showAddressModal.value = true
-                close()
-              },
-              edit: async (addr) => {
-                _address.value = await call('frappe.client.get', {
-                  doctype: 'Address',
-                  name: addr,
-                })
-                showAddressModal.value = true
-              },
-            }
-          } else {
-            return field
+  if (!data?.[0]?.sections) return []
+  
+  const sectionList = data[0].sections
+  sectionList.forEach((section) => {
+    // Convert array of field names to array of field objects if needed
+    if (Array.isArray(section.fields) && typeof section.fields[0] === 'string') {
+      section.fields = section.fields.map(fieldName => {
+        // Try to get field metadata from both the API response and fields_meta
+        const field = (typeof section.fields_meta === 'object' && section.fields_meta[fieldName]) || 
+                     (contact.data?.fields_meta && contact.data.fields_meta[fieldName]) || {}
+        
+        // Get translated field label
+        const translatedLabel = __(field.label || fieldName.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '))
+        
+        // Determine placeholder verb based on field type
+        const getPlaceholderVerb = (fieldtype) => {
+          switch(fieldtype?.toLowerCase()) {
+            case 'select':
+            case 'link':
+              return __('Select')
+            case 'date':
+            case 'datetime':
+              return __('Set')
+            default:
+              return __('Enter')
           }
-        }),
-      ),
+        }
+
+        // Base field data with translations
+        const fieldData = {
+          name: fieldName,
+          label: translatedLabel,
+          type: field.fieldtype || 'text',
+          all_properties: field || {},
+          placeholder: field.placeholder || `${getPlaceholderVerb(field.fieldtype)} ${translatedLabel}`,
+          create: (value, close) => {
+            showContactModal.value = true
+            close?.()
+          }
+        }
+
+        // Handle special case for email_id field
+        if (fieldName === 'email_id') {
+          const translatedLabel = __('Email')
+          return {
+            ...fieldData,
+            type: 'dropdown',
+            options: computed(() => 
+              contact.data?.email_ids?.map((email) => ({
+                name: email.name,
+                value: email.email_id,
+                selected: email.email_id === contact.data.email_id,
+                placeholder: `${__('Enter')} ${translatedLabel}`,
+                isNew: email.isNew,
+                onClick: () => {
+                  _contact.value.email_id = email.email_id
+                  setAsPrimary('email', email.email_id)
+                },
+                onSave: (option, isNew) => {
+                  if (isNew) {
+                    createNew('email', option.value)
+                    if (contact.data.email_ids.length === 1) {
+                      _contact.value.email_id = option.value
+                    }
+                  } else {
+                    editOption('email', option.name, option.value)
+                  }
+                },
+                onDelete: () => {
+                  if (email.isNew) {
+                    contact.data.email_ids = contact.data.email_ids.filter(e => e.name !== email.name)
+                    if (_contact.value.email_id === email.email_id) {
+                      _contact.value.email_id = contact.data.email_ids.find(e => e.is_primary)?.email_id || ''
+                    }
+                  } else {
+                    deleteOption('email', email.name)
+                  }
+                }
+              })) || []
+            ),
+            create: () => {
+              contact.data.email_ids = contact.data.email_ids || []
+              const newEmail = {
+                name: 'new-1',
+                email_id: '',
+                is_primary: contact.data.email_ids.length === 0,
+                selected: false,
+                isNew: true,
+              }
+              contact.data.email_ids.push(newEmail)
+            }
+          }
+        }
+
+        // Handle special case for gender field
+        if (fieldName === 'gender') {
+          return {
+            ...fieldData,
+            type: 'select',
+            options: [
+              { label: __('Male'), value: 'Male' },
+              { label: __('Female'), value: 'Female' }
+            ],
+            placeholder: `${__('Select')} ${translatedLabel}`
+          }
+        }
+
+        // Handle special case for mobile_no field
+        if (fieldName === 'mobile_no') {
+          const translatedLabel = __('Phone')
+          return {
+            ...fieldData,
+            type: 'dropdown',
+            options: computed(() => 
+              contact.data?.phone_nos?.map((phone) => ({
+                name: phone.name,
+                value: phone.phone,
+                selected: phone.phone === contact.data.actual_mobile_no,
+                placeholder: `${__('Enter')} ${translatedLabel}`,
+                isNew: phone.isNew,
+                onClick: () => {
+                  _contact.value.actual_mobile_no = phone.phone
+                  _contact.value.mobile_no = phone.phone
+                  setAsPrimary('mobile_no', phone.phone)
+                },
+                onSave: (option, isNew) => {
+                  if (isNew) {
+                    createNew('phone', option.value)
+                    if (contact.data.phone_nos.length === 1) {
+                      _contact.value.actual_mobile_no = option.value
+                    }
+                  } else {
+                    editOption('phone', option.name, option.value)
+                  }
+                },
+                onDelete: () => {
+                  if (phone.isNew) {
+                    contact.data.phone_nos = contact.data.phone_nos.filter(p => p.name !== phone.name)
+                    if (_contact.value.actual_mobile_no === phone.phone) {
+                      _contact.value.actual_mobile_no = contact.data.phone_nos.find(p => p.is_primary_mobile_no)?.phone || ''
+                    }
+                  } else {
+                    deleteOption('phone', phone.name)
+                  }
+                }
+              })) || []
+            ),
+            create: () => {
+              contact.data.phone_nos = contact.data.phone_nos || []
+              const newPhone = {
+                name: 'new-1',
+                phone: '',
+                is_primary_mobile_no: contact.data.phone_nos.length === 0,
+                selected: false,
+                isNew: true,
+              }
+              contact.data.phone_nos.push(newPhone)
+            }
+          }
+        }
+
+        // Handle special case for address field
+        if (fieldName === 'address') {
+          return {
+            ...fieldData,
+            type: 'link',
+            doctype: 'Address',
+            create: (value, close) => {
+              _address.value = { address_title: value }
+              showAddressModal.value = true
+              close()
+            },
+            edit: async (addr) => {
+              _address.value = await call('frappe.client.get', {
+                doctype: 'Address',
+                name: addr,
+              })
+              showAddressModal.value = true
+            }
+          }
+        }
+
+        // Handle field types that need special treatment
+        switch (field.fieldtype?.toLowerCase()) {
+          case 'select':
+            // Convert select fields to use Link component for better UX
+            fieldData.type = 'link'
+            if (field.options) {
+              fieldData.options = field.options.split('\n').map(option => ({
+                label: __(option),
+                value: option
+              }))
+              if (!fieldData.options.find(opt => opt.value === '')) {
+                fieldData.options.unshift({ label: '', value: '' })
+              }
+            }
+            break
+
+          case 'link':
+            fieldData.type = 'link'
+            fieldData.doctype = field.options
+            break
+
+          case 'date':
+            fieldData.type = 'Date'
+            break
+        }
+
+        return fieldData
+      })
     }
   })
+  
+  return sectionList
 }
 
-async function setAsPrimary(field, value) {
-  let d = await call('crm.api.contact.set_as_primary', {
+async function setAsPrimary(type, value) {
+  await call('crm.api.contact.set_as_primary', {
     contact: contact.data.name,
-    field,
+    field: type,
     value,
   })
-  if (d) {
-    contact.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-ink-green-3',
-    })
-  }
-}
-
-async function createNew(field, value) {
-  if (!value) return
-  let d = await call('crm.api.contact.create_new', {
-    contact: contact.data.name,
-    field,
-    value,
+  await contact.reload()
+  createToast({
+    title: __('Contact Updated'),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
   })
-  if (d) {
-    contact.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-ink-green-3',
-    })
-  }
 }
 
-async function editOption(doctype, name, fieldname, value) {
-  let d = await call('frappe.client.set_value', {
+async function editOption(type, name, value) {
+  const doctype = type === 'email' ? 'Contact Email' : 'Contact Phone'
+  const fieldname = type === 'email' ? 'email_id' : 'phone'
+  await call('frappe.client.set_value', {
     doctype,
     name,
     fieldname,
     value,
   })
-  if (d) {
-    contact.reload()
-    createToast({
-      title: 'Contact updated',
-      icon: 'check',
-      iconClasses: 'text-ink-green-3',
-    })
-  }
+  await contact.reload()
+  createToast({
+    title: __('Contact Updated'),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
 }
 
-async function deleteOption(doctype, name) {
+async function deleteOption(type, name) {
+  const doctype = type === 'email' ? 'Contact Email' : 'Contact Phone'
   await call('frappe.client.delete', {
     doctype,
     name,
   })
   await contact.reload()
   createToast({
-    title: 'Contact updated',
+    title: __('Contact Updated'),
     icon: 'check',
     iconClasses: 'text-ink-green-3',
   })
+}
+
+async function createNew(type, value) {
+  if (!value) return
+  let d = await call('crm.api.contact.create_new', {
+    contact: contact.data.name,
+    field: type,
+    value,
+  })
+  if (d) {
+    contact.reload()
+    createToast({
+      title: __('Contact Updated'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
+  }
 }
 
 async function updateField(fieldname, value) {
@@ -593,7 +698,7 @@ async function updateField(fieldname, value) {
     value,
   })
   createToast({
-    title: 'Contact updated',
+    title: __('Contact updated'),
     icon: 'check',
     iconClasses: 'text-ink-green-3',
   })
@@ -615,7 +720,7 @@ function getDealRowObject(deal) {
       deal.currency,
     ),
     status: {
-      label: deal.status,
+      label: translateDealStatus(deal.status),
       color: getDealStatus(deal.status)?.iconColorClass,
     },
     email: deal.email,
@@ -668,4 +773,19 @@ const dealColumns = [
     width: '8rem',
   },
 ]
+
+function trackPhoneActivities(type = 'phone') {
+  if (!contact.data.actual_mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  trackCommunication({
+    type,
+    doctype: 'Contact',
+    docname: contact.data.name,
+    phoneNumber: contact.data.actual_mobile_no,
+    activities: null,
+    contactName: contact.data.full_name
+  })
+}
 </script>

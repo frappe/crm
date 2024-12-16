@@ -41,22 +41,26 @@ def get_fields_layout(doctype: str, type: str):
 	for tab in tabs:
 		for section in tab.get("sections"):
 			for field in section.get("fields") if section.get("fields") else []:
-				field = next((f for f in fields if f.fieldname == field), None)
-				if field:
-					if field.fieldtype == "Select" and field.options:
-						field.options = field.options.split("\n")
-						field.options = [{"label": _(option), "value": option} for option in field.options]
-						field.options.insert(0, {"label": "", "value": ""})
-					field = {
-						"label": _(field.label),
-						"name": field.fieldname,
-						"type": field.fieldtype,
-						"options": field.options,
-						"mandatory": field.reqd,
-						"placeholder": field.get("placeholder"),
-						"filters": field.get("link_filters"),
+				field_meta = next((f for f in fields if f.fieldname == field), None)
+				if field_meta:
+					field_data = {
+						"label": _(field_meta.label),
+						"name": field_meta.fieldname,
+						"type": field_meta.fieldtype,
+						"fieldtype": field_meta.fieldtype,
+						"mandatory": field_meta.reqd,
+						"placeholder": field_meta.get("placeholder"),
+						"filters": field_meta.get("link_filters"),
 					}
-					section["fields"][section.get("fields").index(field["name"])] = field
+					
+					if field_meta.fieldtype == "Select" and field_meta.options:
+						options = field_meta.options.split("\n")
+						field_data["options"] = [{"label": _(option), "value": option} for option in options]
+						field_data["options"].insert(0, {"label": "", "value": ""})
+					else:
+						field_data["options"] = field_meta.options
+
+					section["fields"][section.get("fields").index(field)] = field_data
 
 	return tabs or []
 

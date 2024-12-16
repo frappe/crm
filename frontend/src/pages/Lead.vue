@@ -9,16 +9,16 @@
     </template>
     <template #right-header>
       <CustomActions v-if="customActions" :actions="customActions" />
-      <component :is="lead.data._assignedTo?.length == 1 ? 'Button' : 'div'">
+      <component :is="assignedToComponent">
         <MultipleAvatar
           :avatars="lead.data._assignedTo"
           @click="showAssignmentModal = true"
         />
       </component>
       <Dropdown :options="statusOptions('lead', updateField, customStatuses)">
-        <template #default="{ open }">
+        <template v-slot:default="{ open }">
           <Button
-            :label="lead.data.status"
+            :label="translateLeadStatus(lead.data.status)"
             :class="getLeadStatus(lead.data.status).colorClass"
           >
             <template #prefix>
@@ -35,9 +35,17 @@
       </Dropdown>
       <Button
         :label="__('Convert to Deal')"
+        :class="{ 'min-w-[90px]': true, 'overflow-hidden': true }"
         variant="solid"
         @click="showConvertToDealModal = true"
-      />
+      >
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4 w-4" />
+        </template>
+        <template #default>
+          <span class="truncate">{{ __('Convert') }}</span>
+        </template>
+      </Button>
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
@@ -49,6 +57,7 @@
         v-model:reload="reload"
         v-model:tabIndex="tabIndex"
         v-model="lead"
+        :doc="lead"
       />
     </Tabs>
     <Resizer class="flex flex-col justify-between border-l" side="right">
@@ -62,7 +71,7 @@
         @success="(file) => updateField('image', file.file_url)"
         :validateFile="validateFile"
       >
-        <template #default="{ openFileSelector, error }">
+        <template v-slot:default="{ openFileSelector, error }">
           <div class="flex items-center justify-start gap-5 border-b p-5">
             <div class="group relative size-12">
               <Avatar
@@ -116,14 +125,27 @@
                 <Tooltip v-if="callEnabled" :text="__('Make a call')">
                   <Button
                     class="h-7 w-7"
-                    @click="
-                      () =>
-                        lead.data.mobile_no
-                          ? makeCall(lead.data.mobile_no)
-                          : errorMessage(__('No phone number set'))
-                    "
+                    @click="handleMobileClick"
                   >
                     <PhoneIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Tooltip :text="__('Call via phone app')">
+                  <Button
+                    v-if="lead.data.mobile_no && !callEnabled"
+                    size="sm"
+                    @click.once="trackPhoneActivities('phone')"
+                  >
+                    <PhoneIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Tooltip :text="__('Open WhatsApp')">
+                  <Button
+                    v-if="lead.data.mobile_no"
+                    size="sm"
+                    @click.once="trackPhoneActivities('whatsapp')"
+                  >
+                    <WhatsAppIcon class="h-4 w-4" />
                   </Button>
                 </Tooltip>
                 <Tooltip :text="__('Send an email')">
@@ -170,7 +192,7 @@
         v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
+        <div class="flex flex-col overflow-y-auto dark-scrollbar">
           <div
             v-for="(section, i) in fieldsLayout.data"
             :key="section.label"
@@ -182,14 +204,35 @@
               :label="section.label"
               :opened="section.opened"
             >
-              <SidePanelLayout
-                :fields="section.fields"
-                :isLastSection="i == fieldsLayout.data.length - 1"
-                v-model="lead.data"
-                @update="updateField"
-              />
-              <template v-if="i == 0 && isManager()" #actions>
+              <template #actions>
+                <div v-if="section.contacts" class="pr-2">
+                  <Link
+                    value=""
+                    doctype="Contact"
+                    @change="(e) => addContact(e)"
+                    :onCreate="
+                      (value, close) => {
+                        _contact = {
+                          first_name: value,
+                          company_name: lead.data.organization,
+                        }
+                        showContactModal = true
+                        close()
+                      }
+                    "
+                  >
+                    <template #target="{ togglePopover }">
+                      <Button
+                        class="h-7 px-3"
+                        variant="ghost"
+                        icon="plus"
+                        @click="togglePopover()"
+                      />
+                    </template>
+                  </Link>
+                </div>
                 <Button
+                  v-else-if="((!section.contacts && i == 1) || i == 0) && isManager()"
                   variant="ghost"
                   class="w-7 mr-2"
                   @click="showSidePanelModal = true"
@@ -197,6 +240,13 @@
                   <EditIcon class="h-4 w-4" />
                 </Button>
               </template>
+              <SidePanelLayout
+                v-if="section.fields"
+                :fields="section.fields"
+                :isLastSection="i == fieldsLayout.data.length - 1"
+                v-model="lead.data"
+                @update="updateField"
+              />
             </Section>
           </div>
         </div>
@@ -212,17 +262,7 @@
   />
   <Dialog
     v-model="showConvertToDealModal"
-    :options="{
-      title: __('Convert to Deal'),
-      size: 'xl',
-      actions: [
-        {
-          label: __('Convert'),
-          variant: 'solid',
-          onClick: convertToDeal,
-        },
-      ],
-    }"
+    :options="convertToDealOptions"
   >
     <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
@@ -241,7 +281,7 @@
           size="md"
           :value="existingOrganization"
           doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
+          @change="(data) => existingOrganization = data"
         />
         <div v-else class="mt-2.5 text-base">
           {{
@@ -279,6 +319,7 @@
   <SidePanelModal
     v-if="showSidePanelModal"
     v-model="showSidePanelModal"
+    doctype="CRM Lead"
     @reload="() => fieldsLayout.reload()"
   />
   <FilesUploader
@@ -292,6 +333,14 @@
         changeTabTo('attachments')
       }
     "
+  />
+  <ContactModal
+    v-model="showContactModal"
+    :contact="_contact"
+    :options="{
+      redirect: false,
+      afterInsert: (doc) => addContact(doc.name),
+    }"
   />
 </template>
 <script setup>
@@ -354,10 +403,14 @@ import {
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { trackCommunication } from '@/utils/communicationUtils'
+import ContactModal from '@/components/Modals/ContactModal.vue'
+import { translateLeadStatus } from '@/utils/leadStatusTranslations'
+import { getParsedFields } from '@/utils/getParsedFields'
 
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
-const { statusOptions, getLeadStatus } = statusesStore()
+const { statusOptions, getLeadStatus, getStatusLabel } = statusesStore()
 const { isManager } = usersStore()
 const route = useRoute()
 const router = useRouter()
@@ -407,6 +460,8 @@ const reload = ref(false)
 const showAssignmentModal = ref(false)
 const showSidePanelModal = ref(false)
 const showFilesUploader = ref(false)
+const showContactModal = ref(false)
+const _contact = ref({})
 
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -566,9 +621,13 @@ const fieldsLayout = createResource({
   cache: ['fieldsLayout', props.leadId],
   params: { doctype: 'CRM Lead', name: props.leadId },
   auto: true,
+  transform: (data) => getParsedFields(data, 'CRM Lead', lead.data)
 })
 
 function updateField(name, value, callback) {
+  if (name === 'source') {
+    console.log('updateField for source:', { name, value })
+  }
   updateLead(name, value, () => {
     lead.data[name] = value
     callback?.()
@@ -590,6 +649,18 @@ const existingOrganizationChecked = ref(false)
 
 const existingContact = ref('')
 const existingOrganization = ref('')
+
+const convertToDealOptions = computed(() => ({
+  title: __('Convert to Deal'),
+  size: 'xl',
+  actions: [
+    {
+      label: __('Convert'),
+      variant: 'solid',
+      onClick: convertToDeal,
+    },
+  ],
+}))
 
 async function convertToDeal(updated) {
   let valueUpdated = false
@@ -666,4 +737,42 @@ const activities = ref(null)
 function openEmailBox() {
   activities.value.emailBox.show = true
 }
+
+function trackPhoneActivities(type = 'phone') {
+  trackCommunication({
+    type,
+    doctype: 'CRM Lead',
+    docname: lead.data.name,
+    phoneNumber: lead.data.mobile_no,
+    activities: activities.value,
+    contactName: lead.data.lead_name,
+  })
+}
+
+async function addContact(contact) {
+  let d = await call('crm.fcrm.doctype.crm_lead.crm_lead.add_contact', {
+    lead: props.leadId,
+    contact,
+  })
+  if (d) {
+    fieldsLayout.reload()
+    createToast({
+      title: __('Contact added'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
+  }
+}
+
+function handleMobileClick() {
+  if (lead.data.mobile_no) {
+    makeCall(lead.data.mobile_no)
+  } else {
+    errorMessage(__('No phone number set'))
+  }
+}
+
+const assignedToComponent = computed(() => 
+  lead.data._assignedTo?.length == 1 ? 'Button' : 'div'
+)
 </script>

@@ -20,7 +20,7 @@
             type="select"
             class="w-1/4"
             v-model="_doctype"
-            :options="['CRM Lead', 'CRM Deal']"
+            :options="[__('CRM Lead'), __('CRM Deal')]"
             @change="reload"
           />
           <Switch
@@ -59,11 +59,12 @@ import { useDebounceFn } from '@vueuse/core'
 import { capture } from '@/telemetry'
 import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
+import { __ } from '@/translation'
 
 const props = defineProps({
   doctype: {
     type: String,
-    default: 'CRM Lead',
+    default: __('CRM Lead'),
   },
 })
 

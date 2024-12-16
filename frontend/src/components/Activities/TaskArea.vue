@@ -32,7 +32,7 @@
             </div>
             <div class="flex gap-2">
               <TaskPriorityIcon class="!h-2 !w-2" :priority="task.priority" />
-              {{ task.priority }}
+              {{ translateTaskPriority(task.priority) }}
             </div>
           </div>
         </div>
@@ -95,6 +95,7 @@ import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { formatDate, taskStatusOptions } from '@/utils'
+import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { Tooltip, Dropdown } from 'frappe-ui'

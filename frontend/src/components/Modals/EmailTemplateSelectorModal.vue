@@ -136,3 +136,13 @@ const filteredTemplates = computed(() => {
 
 watch(show, (value) => value && nextTick(() => searchInput.value?.el?.focus()))
 </script>
+
+<style scoped>
+:deep(.overflow-y-auto) {
+  overflow: visible !important;
+}
+
+:deep(.flex-col.overflow-y-auto) {
+  overflow: visible !important;
+}
+</style>

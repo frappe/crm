@@ -11,7 +11,7 @@
         theme="orange"
       />
     </h2>
-    <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
+    <div v-if="!data.get.loading" class="flex-1 overflow-y-auto dark-scrollbar">
       <FieldLayout v-if="data?.doc && tabs" :tabs="tabs" :data="data.doc" />
       <ErrorMessage class="mt-2" :message="error" />
     </div>

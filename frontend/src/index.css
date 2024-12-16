@@ -26,4 +26,17 @@
 		prose-th:p-2
 		prose-th:relative
 	}
+
+	.btn-text-standard {
+		@apply whitespace-nowrap text-sm font-medium w-full sm:w-auto;
+		min-width: 120px;
+		padding: 0 1rem;
+	}
+
+	@media (max-width: 640px) {
+		.btn-text-standard {
+			min-width: 100px;
+			max-width: none;
+		}
+	}
 }

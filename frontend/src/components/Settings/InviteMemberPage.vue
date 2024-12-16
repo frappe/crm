@@ -3,7 +3,7 @@
     <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
       {{ __('Send Invites To') }}
     </h2>
-    <div class="flex-1 overflow-y-auto">
+    <div class="flex-1 overflow-y-auto dark-scrollbar">
       <label class="block text-xs text-ink-gray-5 mb-1.5">
         {{ __('Invite by email') }}
       </label>
