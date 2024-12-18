@@ -342,3 +342,15 @@ def get_linked_tasks(name):
 		],
 	)
 	return tasks or []
+
+#set value for last modified on reference doctype
+def update_last_activity(doc, method):
+    if doc.doctype == "CRM Task":
+        if doc.reference_doctype and doc.reference_docname:
+            frappe.db.set_value(doc.reference_doctype,{'name':doc.reference_docname}, 'modified' ,doc.modified)
+    elif doc.doctype == "Communication":
+        if doc.reference_doctype and doc.reference_name and doc.communication_medium == "Email" and doc.communication_type == "Communication":
+            frappe.db.set_value(doc.reference_doctype,{'name':doc.reference_name}, 'modified' ,doc.modified)
+    elif doc.doctype == "FCRM Note":
+        if doc.reference_doctype and doc.reference_docname :
+            frappe.db.set_value(doc.reference_doctype,{'name':doc.reference_docname}, 'modified' ,doc.modified)
