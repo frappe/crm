@@ -265,7 +265,7 @@ def get_data(
 		if not script:
 			script = "frappe.query_reports['%s']={}" % report_name
 
-		report_filter_structure = parse_js_to_dict(script)
+		report_filter_structure = transform_filters(parse_js_to_dict(script))
 		if report.report_type == 'Report Builder':
 			builder_report_filter  =  convert_json_data(doctype,json.loads(report.json))
 		else:
@@ -922,3 +922,15 @@ def process_deal_elements_filters(input_dict):
             output.append(["CRM Deal Elements", 'deal_elements', values[0], values[1]])
 
     return output
+
+@frappe.whitelist()
+def transform_filters(data):
+    if not data:  # Check if 'data' is None or an empty value
+        return {}  # or handle the case as required
+
+    for filter_item in data.get("filters", []):
+        if "fieldtype" in filter_item:
+            filter_item["type"] = filter_item.pop("fieldtype")
+        if "fieldname" in filter_item:
+            filter_item["name"] = filter_item.pop("fieldname")
+    return data

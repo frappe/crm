@@ -85,6 +85,17 @@
           @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
         />
       </div>
+      <div
+      v-if="route.params.viewType === 'report'"
+      v-for="filter in quickFilterListReport"
+        :key="filter.name"
+        class="m-1 min-w-36"
+      >
+        <QuickFilterFieldReport 
+          :filter="filter"
+          @applyQuickFilterReport="(f, v) => applyQuickFilterReport(f, v)"
+        />
+      </div>
     </FadedScrollableDiv>
     <div class="-ml-2 h-[70%] border-l" />
     <div class="flex items-center gap-2">
@@ -266,6 +277,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
 import _ from 'lodash'
 import Select from 'frappe-ui/src/components/Select.vue'
+import QuickFilterFieldReport from './QuickFilterFieldReport.vue'
 
 const props = defineProps({
   report:{
@@ -303,6 +315,8 @@ const route = useRoute()
 const router = useRouter()
 
 const defaultParams = ref('')
+const filter_custom = ref('')
+const quickFilterListReport = ref('');
 
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
@@ -469,6 +483,36 @@ list.value = createResource({
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
+    filter_custom.value = { ...data.report_filter_structure }; // Spread to trigger reactivity
+    const filters = [];
+    if (filter_custom.value?.filters) {
+      filters.push(...filter_custom.value['filters']);
+    }
+
+    filters.forEach((filter) => {
+      filter['value'] = filter.type === 'Check' ? false : '';
+      if (params.filters?.[filter.name]) {
+        let value = params.filters[filter.name];
+        if (Array.isArray(value)) {
+          if (
+            (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
+              filter.type,
+            ) &&
+              value[0]?.toLowerCase() === 'like') ||
+            value[0]?.toLowerCase() !== 'like'
+          )
+            return;
+          filter['value'] = value[1]?.replace(/%/g, '');
+        } else {
+          filter['value'] = value.replace(/%/g, '');
+        }
+      }
+    });
+    if(quickFilterListReport.value.length < 1){
+      quickFilterListReport.value = filters; // Update ref value
+    }
+
+
     defaultParams.value = {
       doctype: props.doctype,
       filters: params.filters,
@@ -741,6 +785,23 @@ const quickFilters = createResource({
   auto: true,
 })
 
+function applyQuickFilterReport(filter, value) {
+  let filters = { ...list.value.params.report_filters }
+  let field = filter.name
+  if (value) {
+    if (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.type)) {
+      filters[field] = value
+    } else {
+      filters[field] = ['LIKE', `%${value}%`]
+    }
+    filter['value'] = value
+  } else {
+    delete filters[field]
+    filter['value'] = ''
+  }
+  updateFilterReport(filters)
+}
+
 function applyQuickFilter(filter, value) {
   let filters = { ...list.value.params.filters }
   let field = filter.name
@@ -759,6 +820,7 @@ function applyQuickFilter(filter, value) {
 }
 
 function updateReport(value, reports_custom_option) {
+  quickFilterListReport.value = '';
   const reports = unwrapProxy(reports_option);
 
   const report = reports_custom_option.find((item) => item.name === value);
@@ -813,6 +875,22 @@ function updateFilter(filters) {
 
   if (!route.query.view) {
     create_or_update_default_view()
+  }
+}
+
+
+function updateFilterReport(filters) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  list.value.params.report_filters = filters
+  view.value.report_filters = filters
+  list.value.reload()
+
+  if (!route.query.view) {
+    // create_or_update_default_view()
   }
 }
 
