@@ -13,14 +13,14 @@
   </div>
   <div v-else>
     <div
-      class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed min-h-64 text-gray-600"
+      class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed min-h-64 text-ink-gray-5"
       @dragover.prevent="dragover"
       @dragleave.prevent="dragleave"
       @drop.prevent="dropfiles"
       v-show="files.length === 0"
     >
       <div v-if="!isDragging" class="flex flex-col gap-3">
-        <div class="text-center text-gray-600">
+        <div class="text-center text-ink-gray-5">
           {{ __('Drag and drop files here or upload from') }}
         </div>
         <div
@@ -75,8 +75,8 @@
             />
             <component v-else class="size-4" :is="fileIcon(file.type)" />
           </div>
-          <div class="flex flex-col gap-1 text-sm text-gray-600 truncate">
-            <div class="text-base text-gray-800 truncate">
+          <div class="flex flex-col gap-1 text-sm text-ink-gray-5 truncate">
+            <div class="text-base text-ink-gray-8 truncate">
               {{ file.name }}
             </div>
             <div class="mb-1">
@@ -85,7 +85,7 @@
             <FormControl
               v-model="file.private"
               type="checkbox"
-              class="[&>label]:text-sm [&>label]:text-gray-600"
+              class="[&>label]:text-sm [&>label]:text-ink-gray-5"
               :label="__('Private')"
             />
             <ErrorMessage
@@ -99,7 +99,7 @@
           <CircularProgressBar
             v-if="file.uploading || file.uploaded == file.total"
             :class="{
-              'text-green-500': file.uploaded == file.total,
+              'text-ink-green-2': file.uploaded == file.total,
             }"
             :theme="{
               primary: '#22C55E',
@@ -126,7 +126,7 @@
 import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
-import { createToast, dateFormat, convertSize } from '@/utils'
+import { createToast, formatDate, convertSize } from '@/utils'
 import { FormControl, CircularProgressBar, createResource } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 
@@ -242,7 +242,7 @@ function captureImage() {
 }
 
 function uploadViaCamera() {
-  const nowDatetime = dateFormat(new Date(), 'YYYY_MM_DD_HH_mm_ss')
+  const nowDatetime = formatDate(new Date(), 'YYYY_MM_DD_HH_mm_ss')
   let filename = `capture_${nowDatetime}.png`
   urlToFile(cameraImage.value, filename, 'image/png').then((file) => {
     addFiles([file])

@@ -51,7 +51,7 @@
     class="flex h-full items-center justify-center"
   >
     <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <Email2Icon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Email Templates')]) }}</span>
@@ -75,7 +75,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import EmailTemplatesListView from '@/components/ListViews/EmailTemplatesListView.vue'
 import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
-import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
+import { formatDate, timeAgo } from '@/utils'
 import { computed, ref } from 'vue'
 
 const emailTemplatesListView = ref(null)
@@ -98,9 +98,26 @@ const rows = computed(() => {
     emailTemplates.value?.data.rows.forEach((row) => {
       _rows[row] = emailTemplate[row]
 
+      let fieldType = emailTemplates.value?.data.columns?.find(
+        (col) => (col.key || col.value) == row,
+      )?.type
+
+      if (
+        fieldType &&
+        ['Date', 'Datetime'].includes(fieldType) &&
+        !['modified', 'creation'].includes(row)
+      ) {
+        _rows[row] = formatDate(
+          emailTemplate[row],
+          '',
+          true,
+          fieldType == 'Datetime',
+        )
+      }
+
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(emailTemplate[row], dateTooltipFormat),
+          label: formatDate(emailTemplate[row]),
           timeAgo: timeAgo(emailTemplate[row]),
         }
       }

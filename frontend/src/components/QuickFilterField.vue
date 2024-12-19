@@ -30,7 +30,7 @@
     @change="(v) => updateFilter(filter, v)"
     :placeholder="filter.label"
   />
-  <TextInput
+  <FormControl
     v-else
     v-model="filter.value"
     type="text"
@@ -40,7 +40,7 @@
 </template>
 <script setup>
 import Link from '@/components/Controls/Link.vue'
-import { TextInput, FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
+import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
 
 const props = defineProps({

@@ -5,7 +5,7 @@
       :key="s.label"
       class="flex items-center gap-2 text-base leading-5"
     >
-      <div class="sm:w-[106px] w-36 text-sm text-gray-600">
+      <div class="sm:w-[106px] w-36 text-sm text-ink-gray-5">
         {{ __(s.label) }}
       </div>
       <div class="grid min-h-[28px] items-center">
@@ -43,7 +43,7 @@
 </template>
 <script setup>
 import { Dropdown, Tooltip } from 'frappe-ui'
-import { timeAgo, dateFormat, formatTime, dateTooltipFormat } from '@/utils'
+import { timeAgo, formatDate, formatTime } from '@/utils'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
 import { computed, defineModel } from 'vue'
@@ -69,7 +69,7 @@ let slaSection = computed(() => {
     if (status == 'just now') {
       status = 'In less than a minute'
     }
-    tooltipText = dateFormat(data.value.response_by, dateTooltipFormat)
+    tooltipText = formatDate(data.value.response_by)
     if (new Date(data.value.response_by) < new Date()) {
       color = 'red'
       if (status == __('In less than a minute')) {
@@ -78,7 +78,7 @@ let slaSection = computed(() => {
     }
   } else if (['Fulfilled', 'Failed'].includes(status)) {
     status = __(status) + ' in ' + formatTime(data.value.first_response_time)
-    tooltipText = dateFormat(data.value.first_responded_on, dateTooltipFormat)
+    tooltipText = formatDate(data.value.first_responded_on)
   }
 
   sections.push(
@@ -112,6 +112,6 @@ let slaSection = computed(() => {
 <style scoped>
 :deep(.form-control button) {
   border-color: transparent;
-  background: white;
+  background: transparent;
 }
 </style>

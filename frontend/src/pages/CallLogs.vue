@@ -44,7 +44,7 @@
     class="flex h-full items-center justify-center"
   >
     <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <PhoneIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Logs')]) }}</span>
@@ -82,7 +82,7 @@ const rows = computed(() => {
   return callLogs.value?.data.data.map((callLog) => {
     let _rows = {}
     callLogs.value?.data.rows.forEach((row) => {
-      _rows[row] = getCallLogDetail(row, callLog)
+      _rows[row] = getCallLogDetail(row, callLog, callLogs.value?.data.columns)
     })
     return _rows
   })

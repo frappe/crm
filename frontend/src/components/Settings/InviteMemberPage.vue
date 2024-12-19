@@ -1,10 +1,10 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-8">
+  <div class="flex h-full flex-col gap-8 p-8 text-ink-gray-9">
     <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
       {{ __('Send Invites To') }}
     </h2>
     <div class="flex-1 overflow-y-auto">
-      <label class="block text-xs text-gray-600 mb-1.5">
+      <label class="block text-xs text-ink-gray-5 mb-1.5">
         {{ __('Invite by email') }}
       </label>
       <MultiValueInput
@@ -18,7 +18,6 @@
         type="select"
         class="mt-4"
         v-model="role"
-        variant="outline"
         :label="__('Invite as')"
         :options="[
           { label: __('Regular Access'), value: 'Sales User' },
@@ -35,15 +34,15 @@
         </div>
         <ul class="flex flex-col gap-1">
           <li
-            class="flex items-center justify-between px-2 py-1 rounded-lg bg-gray-50"
+            class="flex items-center justify-between px-2 py-1 rounded-lg bg-surface-gray-2"
             v-for="user in pendingInvitations.data"
             :key="user.name"
           >
             <div class="text-base">
-              <span class="text-gray-900">
+              <span class="text-ink-gray-9">
                 {{ user.email }}
               </span>
-              <span class="text-gray-600"> ({{ roleMap[user.role] }}) </span>
+              <span class="text-ink-gray-5"> ({{ roleMap[user.role] }}) </span>
             </div>
             <div>
               <Tooltip text="Delete Invitation">

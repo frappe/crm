@@ -9,14 +9,14 @@
 <script setup>
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore as session } from '@/stores/session'
-import { Toasts } from 'frappe-ui'
+import { Toasts, setConfig } from 'frappe-ui'
 import { computed, defineAsyncComponent } from 'vue'
 
-const MobileLayout = defineAsyncComponent(() =>
-  import('./components/Layouts/MobileLayout.vue')
+const MobileLayout = defineAsyncComponent(
+  () => import('./components/Layouts/MobileLayout.vue'),
 )
-const DesktopLayout = defineAsyncComponent(() =>
-  import('./components/Layouts/DesktopLayout.vue')
+const DesktopLayout = defineAsyncComponent(
+  () => import('./components/Layouts/DesktopLayout.vue'),
 )
 const Layout = computed(() => {
   if (window.innerWidth < 640) {
@@ -25,4 +25,7 @@ const Layout = computed(() => {
     return DesktopLayout
   }
 })
+
+setConfig('systemTimezone', window.timezone?.system || null)
+setConfig('localTimezone', window.timezone?.user || null)
 </script>

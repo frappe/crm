@@ -65,7 +65,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
+        <div class="text-ink-gray-4" v-else>{{ __('No Title') }}</div>
       </div>
     </template>
     <template #fields="{ fieldName, itemName }">
@@ -175,7 +175,7 @@
   />
   <div v-else-if="tasks.data" class="flex h-full items-center justify-center">
     <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <Email2Icon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Tasks')]) }}</span>
@@ -205,7 +205,7 @@ import TasksListView from '@/components/ListViews/TasksListView.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import { usersStore } from '@/stores/users'
-import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
+import { formatDate, timeAgo } from '@/utils'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -237,31 +237,43 @@ const rows = computed(() => {
   if (!tasks.value?.data?.data) return []
 
   if (tasks.value.data.view_type === 'kanban') {
-    return getKanbanRows(tasks.value.data.data)
+    return getKanbanRows(tasks.value.data.data, tasks.value.data.fields)
   }
 
-  return parseRows(tasks.value?.data.data)
+  return parseRows(tasks.value?.data.data, tasks.value?.data.columns)
 })
 
-function getKanbanRows(data) {
+function getKanbanRows(data, columns) {
   let _rows = []
   data.forEach((column) => {
     column.data?.forEach((row) => {
       _rows.push(row)
     })
   })
-  return parseRows(_rows)
+  return parseRows(_rows, columns)
 }
 
-function parseRows(rows) {
+function parseRows(rows, columns = []) {
   return rows.map((task) => {
     let _rows = {}
     tasks.value?.data.rows.forEach((row) => {
       _rows[row] = task[row]
 
+      let fieldType = columns?.find(
+        (col) => (col.key || col.value) == row,
+      )?.type
+
+      if (
+        fieldType &&
+        ['Date', 'Datetime'].includes(fieldType) &&
+        !['modified', 'creation', 'due_date'].includes(row)
+      ) {
+        _rows[row] = formatDate(task[row], '', true, fieldType == 'Datetime')
+      }
+
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
-          label: dateFormat(task[row], dateTooltipFormat),
+          label: formatDate(task[row]),
           timeAgo: __(timeAgo(task[row])),
         }
       } else if (row == 'assigned_to') {

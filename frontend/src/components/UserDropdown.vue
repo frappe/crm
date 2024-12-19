@@ -7,8 +7,8 @@
           isCollapsed
             ? 'w-auto px-0'
             : open
-              ? 'w-52 bg-white px-2 shadow-sm'
-              : 'w-52 px-2 hover:bg-gray-200'
+              ? 'w-52 bg-surface-white px-2 shadow-sm'
+              : 'w-52 px-2 hover:bg-surface-gray-3'
         "
       >
         <CRMLogo class="size-8 flex-shrink-0 rounded" />
@@ -20,10 +20,10 @@
               : 'ml-2 w-auto opacity-100'
           "
         >
-          <div class="text-base font-medium leading-none text-gray-900">
+          <div class="text-base font-medium leading-none text-ink-gray-9">
             {{ __('CRM') }}
           </div>
-          <div class="mt-1 text-sm leading-none text-gray-700">
+          <div class="mt-1 text-sm leading-none text-ink-gray-7">
             {{ user.full_name }}
           </div>
         </div>
@@ -37,24 +37,24 @@
         >
           <FeatherIcon
             name="chevron-down"
-            class="size-4 text-gray-600"
+            class="size-4 text-ink-gray-5"
             aria-hidden="true"
           />
         </div>
       </button>
     </template>
   </Dropdown>
-  <SettingsModal v-if="showSettingsModal" v-model="showSettingsModal" />
 </template>
 
 <script setup>
-import SettingsModal from '@/components/Settings/SettingsModal.vue'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
+import { showSettings } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
-import { computed, ref, markRaw} from 'vue'
+import { useStorage } from '@vueuse/core'
+import { computed, ref, markRaw, inject, onMounted } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -68,7 +68,8 @@ const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
-const showSettingsModal = ref(false)
+const isFCSite = inject('isFCSite')
+const theme = useStorage('theme', 'light')
 
 let dropdownOptions = ref([
   {
@@ -95,9 +96,20 @@ let dropdownOptions = ref([
     hideLabel: true,
     items: [
       {
+        icon: computed(() => (theme.value === 'dark' ? 'moon' : 'sun')),
+        label: computed(() => __('Toggle theme')),
+        onClick: toggleTheme,
+      },
+      {
+        icon: 'credit-card',
+        label: computed(() => __('Billing')),
+        onClick: () => (window.location.href = '/billing'),
+        condition: () => isFCSite.data,
+      },
+      {
         icon: 'settings',
         label: computed(() => __('Settings')),
-        onClick: () => (showSettingsModal.value = true),
+        onClick: () => (showSettings.value = true),
       },
       {
         icon: 'log-out',
@@ -107,4 +119,16 @@ let dropdownOptions = ref([
     ],
   },
 ])
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme')
+  theme.value = currentTheme === 'dark' ? 'light' : 'dark'
+  document.documentElement.setAttribute('data-theme', theme.value)
+}
+
+onMounted(() => {
+  if (['light', 'dark'].includes(theme.value)) {
+    document.documentElement.setAttribute('data-theme', theme.value)
+  }
+})
 </script>

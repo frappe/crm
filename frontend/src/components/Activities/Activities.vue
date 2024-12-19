@@ -16,7 +16,7 @@
   >
     <div
       v-if="all_activities?.loading"
-      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
+      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
@@ -50,13 +50,13 @@
             class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 px-3 sm:gap-4 sm:px-10"
           >
             <div
-              class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
+              class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-outline-gray-modals"
               :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
             >
               <div
-                class="z-10 flex h-8 w-7 items-center justify-center bg-white"
+                class="z-10 flex h-8 w-7 items-center justify-center bg-surface-white"
               >
-                <CommentIcon class="text-gray-800" />
+                <CommentIcon class="text-ink-gray-8" />
               </div>
             </div>
             <CommentArea class="mb-4" :activity="comment" />
@@ -72,15 +72,15 @@
             class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
           >
             <div
-              class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
+              class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-outline-gray-modals"
               :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
             >
               <div
-                class="z-10 flex h-8 w-7 items-center justify-center bg-white text-gray-800"
+                class="z-10 flex h-8 w-7 items-center justify-center bg-surface-white text-ink-gray-8"
               >
                 <MissedCallIcon
                   v-if="call.status == 'No Answer'"
-                  class="text-red-600"
+                  class="text-ink-red-4"
                 />
                 <DeclinedCallIcon v-else-if="call.status == 'Busy'" />
                 <component
@@ -116,14 +116,14 @@
       >
         <div
           v-if="['Activity', 'Emails'].includes(title)"
-          class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-gray-200"
+          class="relative flex justify-center before:absolute before:left-[50%] before:top-0 before:-z-10 before:border-l before:border-outline-gray-modals"
           :class="[i != activities.length - 1 ? 'before:h-full' : 'before:h-4']"
         >
           <div
-            class="z-10 flex h-7 w-7 items-center justify-center bg-white"
+            class="z-10 flex h-7 w-7 items-center justify-center bg-surface-white"
             :class="{
               'mt-2.5': ['communication'].includes(activity.activity_type),
-              'bg-white': ['added', 'removed', 'changed'].includes(
+              'bg-surface-white': ['added', 'removed', 'changed'].includes(
                 activity.activity_type,
               ),
               'h-8': [
@@ -145,7 +145,7 @@
                   activity.activity_type,
                 ) && activity.status == 'No Answer'
               "
-              class="text-red-600"
+              class="text-ink-red-4"
             />
             <DeclinedCallIcon
               v-else-if="
@@ -159,8 +159,8 @@
               :is="activity.icon"
               :class="
                 ['added', 'removed', 'changed'].includes(activity.activity_type)
-                  ? 'text-gray-500'
-                  : 'text-gray-800'
+                  ? 'text-ink-gray-4'
+                  : 'text-ink-gray-8'
               "
             />
           </div>
@@ -185,10 +185,10 @@
         >
           <div class="flex items-center justify-stretch gap-2 text-base">
             <div
-              class="inline-flex items-center flex-wrap gap-1.5 text-gray-800 font-medium"
+              class="inline-flex items-center flex-wrap gap-1.5 text-ink-gray-8 font-medium"
             >
               <span class="font-medium">{{ activity.owner_name }}</span>
-              <span class="text-gray-600">{{ __(activity.data.type) }}</span>
+              <span class="text-ink-gray-5">{{ __(activity.data.type) }}</span>
               <a
                 v-if="activity.data.file_url"
                 :href="activity.data.file_url"
@@ -204,8 +204,8 @@
               />
             </div>
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-sm text-gray-600">
+              <Tooltip :text="formatDate(activity.creation)">
+                <div class="text-sm text-ink-gray-5">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
@@ -225,7 +225,7 @@
           <div class="flex items-center justify-stretch gap-2 text-base">
             <div
               v-if="activity.other_versions"
-              class="inline-flex flex-wrap gap-1.5 text-gray-800 font-medium"
+              class="inline-flex flex-wrap gap-1.5 text-ink-gray-8 font-medium"
             >
               <span>{{ activity.show_others ? __('Hide') : __('Show') }}</span>
               <span> +{{ activity.other_versions.length + 1 }} </span>
@@ -243,22 +243,22 @@
             </div>
             <div
               v-else
-              class="inline-flex items-center flex-wrap gap-1 text-gray-600"
+              class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5"
             >
-              <span class="font-medium text-gray-800">
+              <span class="font-medium text-ink-gray-8">
                 {{ activity.owner_name }}
               </span>
               <span v-if="activity.type">{{ __(activity.type) }}</span>
               <span
                 v-if="activity.data.field_label"
-                class="max-w-xs truncate font-medium text-gray-800"
+                class="max-w-xs truncate font-medium text-ink-gray-8"
               >
                 {{ __(activity.data.field_label) }}
               </span>
               <span v-if="activity.value">{{ __(activity.value) }}</span>
               <span
                 v-if="activity.data.old_value"
-                class="max-w-xs font-medium text-gray-800"
+                class="max-w-xs font-medium text-ink-gray-8"
               >
                 <div
                   class="flex items-center gap-1"
@@ -274,7 +274,7 @@
               <span v-if="activity.to">{{ __('to') }}</span>
               <span
                 v-if="activity.data.value"
-                class="max-w-xs font-medium text-gray-800"
+                class="max-w-xs font-medium text-ink-gray-8"
               >
                 <div
                   class="flex items-center gap-1"
@@ -290,8 +290,8 @@
             </div>
 
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-                <div class="text-sm text-gray-600">
+              <Tooltip :text="formatDate(activity.creation)">
+                <div class="text-sm text-ink-gray-5">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
@@ -305,23 +305,23 @@
               v-for="activity in [activity, ...activity.other_versions]"
               class="flex items-start justify-stretch gap-2 py-1.5 text-base"
             >
-              <div class="inline-flex flex-wrap gap-1 text-gray-600">
+              <div class="inline-flex flex-wrap gap-1 text-ink-gray-5">
                 <span
                   v-if="activity.data.field_label"
-                  class="max-w-xs truncate text-gray-600"
+                  class="max-w-xs truncate text-ink-gray-5"
                 >
                   {{ __(activity.data.field_label) }}
                 </span>
                 <FeatherIcon
                   name="arrow-right"
-                  class="mx-1 h-4 w-4 text-gray-600"
+                  class="mx-1 h-4 w-4 text-ink-gray-5"
                 />
                 <span v-if="activity.type">
                   {{ startCase(__(activity.type)) }}
                 </span>
                 <span
                   v-if="activity.data.old_value"
-                  class="max-w-xs font-medium text-gray-800"
+                  class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
                     class="flex items-center gap-1"
@@ -337,7 +337,7 @@
                 <span v-if="activity.to">{{ __('to') }}</span>
                 <span
                   v-if="activity.data.value"
-                  class="max-w-xs font-medium text-gray-800"
+                  class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
                     class="flex items-center gap-1"
@@ -353,10 +353,8 @@
               </div>
 
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip
-                  :text="dateFormat(activity.creation, dateTooltipFormat)"
-                >
-                  <div class="text-sm text-gray-600">
+                <Tooltip :text="formatDate(activity.creation)">
+                  <div class="text-sm text-ink-gray-5">
                     {{ __(timeAgo(activity.creation)) }}
                   </div>
                 </Tooltip>
@@ -366,9 +364,12 @@
         </div>
       </div>
     </div>
+    <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
+      <DataFields :doctype="doctype" :docname="doc.data.name" />
+    </div>
     <div
       v-else
-      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
+      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <component :is="emptyTextIcon" class="h-10 w-10" />
       <span>{{ __(emptyText) }}</span>
@@ -456,9 +457,11 @@ import CallArea from '@/components/Activities/CallArea.vue'
 import NoteArea from '@/components/Activities/NoteArea.vue'
 import TaskArea from '@/components/Activities/TaskArea.vue'
 import AttachmentArea from '@/components/Activities/AttachmentArea.vue'
+import DataFields from '@/components/Activities/DataFields.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -481,13 +484,7 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import {
-  timeAgo,
-  dateFormat,
-  dateTooltipFormat,
-  secondsToDuration,
-  startCase,
-} from '@/utils'
+import { timeAgo, formatDate, secondsToDuration, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -727,6 +724,8 @@ const emptyText = computed(() => {
     text = 'No Email Communications'
   } else if (title.value == 'Comments') {
     text = 'No Comments'
+  } else if (title.value == 'Data') {
+    text = 'No Data'
   } else if (title.value == 'Calls') {
     text = 'No Call Logs'
   } else if (title.value == 'Notes') {
@@ -747,6 +746,8 @@ const emptyTextIcon = computed(() => {
     icon = Email2Icon
   } else if (title.value == 'Comments') {
     icon = CommentIcon
+  } else if (title.value == 'Data') {
+    icon = DetailsIcon
   } else if (title.value == 'Calls') {
     icon = PhoneIcon
   } else if (title.value == 'Notes') {
@@ -758,7 +759,7 @@ const emptyTextIcon = computed(() => {
   } else if (title.value == 'WhatsApp') {
     icon = WhatsAppIcon
   }
-  return h(icon, { class: 'text-gray-500' })
+  return h(icon, { class: 'text-ink-gray-4' })
 })
 
 function timelineIcon(activity_type, is_lead) {

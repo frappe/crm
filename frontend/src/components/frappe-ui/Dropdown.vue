@@ -16,14 +16,14 @@
 
       <template #body>
         <div
-          class="rounded-lg bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="mt-2 min-w-40 divide-y divide-outline-gray-modals rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
           :class="{
             'mt-2': ['bottom', 'left', 'right'].includes(placement),
             'ml-2': placement == 'right-start',
           }"
         >
           <MenuItems
-            class="min-w-40 divide-y divide-gray-100"
+            class="min-w-40 divide-y divide-outline-gray-modals"
             :class="{
               'left-0 origin-top-left': placement == 'left',
               'right-0 origin-top-right': placement == 'right',
@@ -34,7 +34,7 @@
             <div v-for="group in groups" :key="group.key" class="p-1.5">
               <div
                 v-if="group.group && !group.hideLabel"
-                class="flex h-7 items-center px-2 text-sm font-medium text-gray-500"
+                class="flex h-7 items-center px-2 text-sm font-medium text-ink-gray-4"
               >
                 {{ group.group }}
               </div>
@@ -52,7 +52,7 @@
                   <button
                     v-else
                     :class="[
-                      active ? 'bg-gray-100' : 'text-gray-800',
+                      active ? 'bg-surface-gray-3' : 'text-ink-gray-6',
                       'group flex h-7 w-full items-center rounded px-2 text-base',
                     ]"
                     @click="item.onClick"
@@ -60,15 +60,15 @@
                     <FeatherIcon
                       v-if="item.icon && typeof item.icon === 'string'"
                       :name="item.icon"
-                      class="mr-2 h-4 w-4 flex-shrink-0 text-gray-700"
+                      class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
                       aria-hidden="true"
                     />
                     <component
-                      class="mr-2 h-4 w-4 flex-shrink-0 text-gray-700"
+                      class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
                       v-else-if="item.icon"
                       :is="item.icon"
                     />
-                    <span class="whitespace-nowrap">
+                    <span class="whitespace-nowrap text-ink-gray-7">
                       {{ item.label }}
                     </span>
                   </button>

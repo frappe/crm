@@ -74,8 +74,8 @@
               class="flex flex-col px-2 py-3 sm:p-3"
               :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
             >
-              <Section :is-opened="section.opened" :label="section.label">
-                <SectionFields
+              <Section :label="section.label" :opened="section.opened">
+                <SidePanelLayout
                   :fields="section.fields"
                   :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="lead.data"
@@ -118,7 +118,7 @@
     }"
   >
     <template #body-content>
-      <div class="mb-4 flex items-center gap-2 text-gray-600">
+      <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
       </div>
@@ -145,7 +145,7 @@
         </div>
       </div>
 
-      <div class="mb-4 mt-6 flex items-center gap-2 text-gray-600">
+      <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
         <ContactsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Contact') }}</label>
       </div>
@@ -190,7 +190,7 @@ import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomizations } from '@/utils'
@@ -285,7 +285,7 @@ function updateLead(fieldname, value, callback) {
       createToast({
         title: __('Lead updated'),
         icon: 'check',
-        iconClasses: 'text-green-600',
+        iconClasses: 'text-ink-green-3',
       })
       callback?.()
     },
@@ -294,7 +294,7 @@ function updateLead(fieldname, value, callback) {
         title: __('Error updating lead'),
         text: __(err.messages?.[0]),
         icon: 'x',
-        iconClasses: 'text-red-600',
+        iconClasses: 'text-ink-red-4',
       })
     },
   })
@@ -307,7 +307,7 @@ function validateRequired(fieldname, value) {
       title: __('Error Updating Lead'),
       text: __('{0} is a required field', [meta[fieldname].label]),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
     return true
   }
@@ -361,6 +361,11 @@ const tabs = computed(() => {
       name: 'Comments',
       label: __('Comments'),
       icon: CommentIcon,
+    },
+    {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
     },
     {
       name: 'Calls',
@@ -443,7 +448,7 @@ async function convertToDeal(updated) {
       title: __('Error'),
       text: __('Please select an existing contact'),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
     return
   }
@@ -453,7 +458,7 @@ async function convertToDeal(updated) {
       title: __('Error'),
       text: __('Please select an existing organization'),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
     return
   }

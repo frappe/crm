@@ -1,11 +1,11 @@
 <template>
   <div
-    class="cursor-pointer flex flex-col rounded-md shadow bg-white px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
+    class="cursor-pointer flex flex-col rounded-md shadow bg-surface-cards px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
   >
-    <div class="-mb-0.5 flex items-center justify-between gap-2 truncate">
+    <div class="-mb-0.5 flex items-center justify-between gap-2 truncate text-ink-gray-9">
       <div class="flex items-center gap-2 truncate">
         <span>{{ activity.data.sender_full_name }}</span>
-        <span class="sm:flex hidden text-sm text-gray-600">
+        <span class="sm:flex hidden text-sm text-ink-gray-5">
           {{ '<' + activity.data.sender + '>' }}
         </span>
         <Badge
@@ -22,8 +22,8 @@
           variant="subtle"
           :theme="status.color"
         />
-        <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
-          <div class="text-sm text-gray-600">
+        <Tooltip :text="formatDate(activity.creation)">
+          <div class="text-sm text-ink-gray-5">
             {{ __(timeAgo(activity.creation)) }}
           </div>
         </Tooltip>
@@ -32,7 +32,7 @@
             <div>
               <Button
                 variant="ghost"
-                class="text-gray-700"
+                class="text-ink-gray-7"
                 @click="reply(activity.data)"
               >
                 <template #icon>
@@ -45,7 +45,7 @@
             <div>
               <Button
                 variant="ghost"
-                class="text-gray-700"
+                class="text-ink-gray-7"
                 @click="reply(activity.data, true)"
               >
                 <template #icon>
@@ -57,24 +57,24 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col gap-1 text-base leading-5 text-gray-800">
+    <div class="flex flex-col gap-1 text-base leading-5 text-ink-gray-8">
       <div>{{ activity.data.subject }}</div>
       <div>
-        <span class="mr-1 text-gray-600"> {{ __('To') }}: </span>
+        <span class="mr-1 text-ink-gray-5"> {{ __('To') }}: </span>
         <span>{{ activity.data.recipients }}</span>
         <span v-if="activity.data.cc">, </span>
-        <span v-if="activity.data.cc" class="mr-1 text-gray-600">
+        <span v-if="activity.data.cc" class="mr-1 text-ink-gray-5">
           {{ __('CC') }}:
         </span>
         <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
         <span v-if="activity.data.bcc">, </span>
-        <span v-if="activity.data.bcc" class="mr-1 text-gray-600">
+        <span v-if="activity.data.bcc" class="mr-1 text-ink-gray-5">
           {{ __('BCC') }}:
         </span>
         <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
       </div>
     </div>
-    <div class="border-0 border-t mt-3 mb-1 border-gray-200" />
+    <div class="border-0 border-t mt-3 mb-1 border-outline-gray-modals" />
     <EmailContent :content="activity.data.content" />
     <div v-if="activity.data?.attachments?.length" class="flex flex-wrap gap-2">
       <AttachmentItem
@@ -92,7 +92,7 @@ import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
 import { Badge, Tooltip } from 'frappe-ui'
-import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { timeAgo, formatDate } from '@/utils'
 import { computed } from 'vue'
 
 const props = defineProps({

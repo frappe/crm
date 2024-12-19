@@ -1,10 +1,10 @@
 <template>
   <Dialog v-model="show" :options="{ size: '3xl' }">
     <template #body>
-      <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
               {{ __('Create Deal') }}
             </h3>
           </div>
@@ -24,19 +24,19 @@
         </div>
         <div>
           <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div class="flex items-center gap-3 text-sm text-gray-600">
+            <div class="flex items-center gap-3 text-sm text-ink-gray-5">
               <div>{{ __('Choose Existing Organization') }}</div>
               <Switch v-model="chooseExistingOrganization" />
             </div>
-            <div class="flex items-center gap-3 text-sm text-gray-600">
+            <div class="flex items-center gap-3 text-sm text-ink-gray-5">
               <div>{{ __('Choose Existing Contact') }}</div>
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
-          <Fields
-            v-if="filteredSections"
-            class="border-t pt-4"
-            :sections="filteredSections"
+          <div class="h-px w-full border-t my-5" />
+          <FieldLayout
+            v-if="filteredSections.length"
+            :tabs="filteredSections"
             :data="deal"
           />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
@@ -58,7 +58,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
@@ -100,28 +100,30 @@ const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Deal'],
+  cache: ['QuickEntry', 'CRM Deal'],
   params: { doctype: 'CRM Deal', type: 'Quick Entry' },
   auto: true,
-  transform: (data) => {
-    return data.forEach((section) => {
-      section.fields.forEach((field) => {
-        if (field.name == 'status') {
-          field.type = 'Select'
-          field.options = dealStatuses.value
-          field.prefix = getDealStatus(deal.status).iconColorClass
-        } else if (field.name == 'deal_owner') {
-          field.type = 'User'
-        }
+  transform: (_tabs) => {
+    return _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.fields.forEach((field) => {
+          if (field.name == 'status') {
+            field.type = 'Select'
+            field.options = dealStatuses.value
+            field.prefix = getDealStatus(deal.status).iconColorClass
+          } else if (field.name == 'deal_owner') {
+            field.type = 'User'
+          }
+        })
       })
     })
   },
 })
 
 const filteredSections = computed(() => {
-  let allSections = sections.data || []
+  let allSections = tabs.data?.[0]?.sections || []
   if (!allSections.length) return []
 
   let _filteredSections = []
@@ -159,7 +161,7 @@ const filteredSections = computed(() => {
     }
   })
 
-  return _filteredSections
+  return [{ no_tabs: true, sections: _filteredSections }]
 })
 
 const dealStatuses = computed(() => {

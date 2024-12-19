@@ -1,17 +1,17 @@
 <template>
-  <div class="w-full text-sm text-gray-600">
+  <div class="w-full text-sm text-ink-gray-5">
     <div class="flex items-center gap-2">
       <Button variant="ghost" @click="playPause">
         <template #icon>
-          <PlayIcon v-if="isPaused" class="size-4 text-gray-600" />
-          <PauseIcon v-else class="size-4 text-gray-600" />
+          <PlayIcon v-if="isPaused" class="size-4 text-ink-gray-5" />
+          <PauseIcon v-else class="size-4 text-ink-gray-5" />
         </template>
       </Button>
       <div class="flex gap-2 items-center justify-between flex-1">
         <input
-          class="w-full slider !h-[0.5] bg-gray-200 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb:hover]:outline [&::-webkit-slider-thumb:hover]:outline-[0.5px]"
+          class="w-full slider !h-[0.5] bg-surface-gray-3 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb:hover]:outline [&::-webkit-slider-thumb:hover]:outline-[0.5px]"
           :style="{
-            background: `linear-gradient(to right, #171717 ${progress}%, #ededed ${progress}%)`,
+            background: `linear-gradient(to right, var(--surface-gray-7, #171717) ${progress}%, var(--surface-gray-3, #ededed) ${progress}%)`,
           }"
           type="range"
           id="track"

@@ -6,7 +6,7 @@
         variant="ghosted"
         @click="sidebarOpened = !sidebarOpened"
       >
-        <MenuIcon class="h-4" />
+        <MenuIcon class="h-4 text-ink-gray-9" />
       </Button>
     </div>
     <div id="app-header" class="flex-1" />

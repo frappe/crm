@@ -65,12 +65,12 @@
                   </component>
                 </div>
                 <div class="flex flex-col gap-2 truncate">
-                  <div class="truncate text-2xl font-medium">
+                  <div class="truncate text-2xl font-medium text-ink-gray-9">
                     <span>{{ organization.doc.name }}</span>
                   </div>
                   <div
                     v-if="organization.doc.website"
-                    class="flex items-center gap-1.5 text-base text-gray-800"
+                    class="flex items-center gap-1.5 text-base text-ink-gray-8"
                   >
                     <WebsiteIcon class="size-4" />
                     <span>{{ website(organization.doc.website) }}</span>
@@ -112,7 +112,7 @@
             class="flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
-            <Section :is-opened="section.opened" :label="section.label">
+            <Section :label="section.label" :opened="section.opened">
               <template #actions>
                 <Button
                   v-if="i == 0 && isManager()"
@@ -123,7 +123,7 @@
                   <EditIcon class="h-4 w-4" />
                 </Button>
               </template>
-              <SectionFields
+              <SidePanelLayout
                 v-if="section.fields"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
@@ -135,17 +135,17 @@
         </div>
       </div>
     </Resizer>
-    <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
+    <Tabs class="!h-full" v-model="tabIndex" :tabs="tabs">
       <template #tab="{ tab, selected }">
         <button
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
-          :class="{ 'text-gray-900': selected }"
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-outline-gray-3 hover:text-ink-gray-9"
+          :class="{ 'text-ink-gray-9': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
-            class="group-hover:bg-gray-900"
-            :class="[selected ? 'bg-gray-900' : 'bg-gray-600']"
+            class="group-hover:bg-surface-gray-7"
+            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
             variant="solid"
             theme="gray"
             size="sm"
@@ -171,7 +171,7 @@
         />
         <div
           v-if="!rows.length"
-          class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
+          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
@@ -198,8 +198,8 @@
 <script setup>
 import Resizer from '@/components/Resizer.vue'
 import Section from '@/components/Section.vue'
-import SectionFields from '@/components/SectionFields.vue'
-import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import SidePanelLayout from '@/components/SidePanelLayout.vue'
+import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
@@ -216,8 +216,7 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
-  dateFormat,
-  dateTooltipFormat,
+  formatDate,
   timeAgo,
   formatNumberIntoCurrency,
   createToast,
@@ -269,7 +268,7 @@ async function updateField(fieldname, value) {
   createToast({
     title: __('Organization updated'),
     icon: 'check',
-    iconClasses: 'text-green-600',
+    iconClasses: 'text-ink-green-3',
   })
 }
 
@@ -359,7 +358,7 @@ function openWebsite() {
     createToast({
       title: __('Website not found'),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
   else window.open(organization.doc.website, '_blank')
 }
@@ -503,7 +502,7 @@ function getDealRowObject(deal) {
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
     modified: {
-      label: dateFormat(deal.modified, dateTooltipFormat),
+      label: formatDate(deal.modified),
       timeAgo: __(timeAgo(deal.modified)),
     },
   }
@@ -524,7 +523,7 @@ function getContactRowObject(contact) {
       logo: props.organization?.organization_logo,
     },
     modified: {
-      label: dateFormat(contact.modified, dateTooltipFormat),
+      label: formatDate(contact.modified),
       timeAgo: __(timeAgo(contact.modified)),
     },
   }

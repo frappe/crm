@@ -26,7 +26,7 @@
         <template v-if="!hideLabel" #prefix><SortIcon class="h-4" /></template>
         <template v-if="sortValues?.size" #suffix>
           <div
-            class="flex h-5 w-5 items-center justify-center rounded bg-gray-900 pt-[1px] text-2xs font-medium text-white"
+            class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
           >
             {{ sortValues.size }}
           </div>
@@ -52,6 +52,7 @@
         </Button>
         <Button
           :label="getSortLabel()"
+          class="shrink-0"
           :class="sortValues.size ? 'rounded-l-none' : ''"
         >
           <template v-if="!hideLabel && !sortValues?.size" #prefix>
@@ -60,14 +61,16 @@
           <template v-if="sortValues?.size" #suffix>
             <FeatherIcon
               :name="open ? 'chevron-up' : 'chevron-down'"
-              class="h-4 text-gray-600"
+              class="h-4 text-ink-gray-5"
             />
           </template>
         </Button>
       </div>
     </template>
     <template #body="{ close }">
-      <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
+      <div
+        class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+      >
         <div class="min-w-60 p-2">
           <div
             v-if="sortValues?.size"
@@ -80,9 +83,9 @@
               class="flex items-center gap-1"
             >
               <div class="handle flex h-7 w-7 items-center justify-center">
-                <DragIcon class="h-4 w-4 cursor-grab text-gray-600" />
+                <DragIcon class="h-4 w-4 cursor-grab text-ink-gray-5" />
               </div>
-              <div class="flex">
+              <div class="flex flex-1 [&>_div]:w-full">
                 <Button
                   size="md"
                   class="rounded-r-none border-r"
@@ -97,7 +100,6 @@
                   <DesendingIcon v-else class="h-4" />
                 </Button>
                 <Autocomplete
-                  class="!w-32"
                   :value="sort.fieldname"
                   :options="sortOptions.data"
                   @change="(e) => updateSort(e, i)"
@@ -107,7 +109,7 @@
                     #target="{ togglePopover, selectedValue, displayValue }"
                   >
                     <Button
-                      class="flex w-full items-center justify-between rounded-l-none !text-gray-600"
+                      class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
                       size="md"
                       @click="togglePopover()"
                     >
@@ -115,7 +117,7 @@
                       <template #suffix>
                         <FeatherIcon
                           name="chevron-down"
-                          class="h-4 text-gray-600"
+                          class="h-4 text-ink-gray-5"
                         />
                       </template>
                     </Button>
@@ -127,7 +129,7 @@
           </div>
           <div
             v-else
-            class="mb-3 flex h-7 items-center px-3 text-sm text-gray-600"
+            class="mb-3 flex h-7 items-center px-3 text-sm text-ink-gray-5"
           >
             {{ __('Empty - Choose a field to sort by') }}
           </div>
@@ -140,7 +142,7 @@
             >
               <template #target="{ togglePopover }">
                 <Button
-                  class="!text-gray-600"
+                  class="!text-ink-gray-5"
                   variant="ghost"
                   @click="togglePopover()"
                   :label="__('Add Sort')"
@@ -153,7 +155,7 @@
             </Autocomplete>
             <Button
               v-if="sortValues?.size"
-              class="!text-gray-600"
+              class="!text-ink-gray-5"
               variant="ghost"
               :label="__('Clear Sort')"
               @click="clearSort(close)"
@@ -240,10 +242,9 @@ function getSortLabel() {
   if (!sortValues.value.size) return __('Sort')
   let values = Array.from(sortValues.value)
   let label = sortOptions.data?.find(
-    (option) => option.value === values[0].fieldname
+    (option) => option.value === values[0].fieldname,
   )?.label
-
-  return label || sort.fieldname
+  return label || values[0].fieldname
 }
 
 function setSort(data) {

@@ -3,7 +3,14 @@
 
 from __future__ import unicode_literals
 import frappe
+from frappe.utils import cint, get_system_timezone
 from frappe.utils.telemetry import capture
+from frappe.locale import (
+    get_date_format,
+    get_first_day_of_the_week,
+    get_number_format,
+    get_time_format,
+)
 
 no_cache = 1
 
@@ -32,6 +39,20 @@ def get_boot():
             "site_name": frappe.local.site,
             "read_only_mode": frappe.flags.read_only,
             "csrf_token": frappe.sessions.get_csrf_token(),
+            "setup_complete": cint(frappe.get_system_settings("setup_complete")),
+            "sysdefaults": {
+                "float_precision": cint(frappe.get_system_settings("float_precision"))
+                or 3,
+                "date_format": get_date_format(),
+                "time_format": get_time_format(),
+                "first_day_of_the_week": get_first_day_of_the_week(),
+                "number_format": get_number_format().string,
+            },
+            "timezone": {
+                "system": get_system_timezone(),
+                "user": frappe.db.get_value("User", frappe.session.user, "time_zone")
+                or get_system_timezone(),
+            },
         }
     )
 

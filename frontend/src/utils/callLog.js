@@ -1,16 +1,11 @@
-import {
-  secondsToDuration,
-  dateFormat,
-  dateTooltipFormat,
-  timeAgo,
-} from '@/utils'
+import { secondsToDuration, formatDate, timeAgo } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 
 const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
-export function getCallLogDetail(row, log) {
+export function getCallLogDetail(row, log, columns = []) {
   let incoming = log.type === 'Incoming'
 
   if (row === 'caller') {
@@ -52,10 +47,17 @@ export function getCallLogDetail(row, log) {
     }
   } else if (['modified', 'creation'].includes(row)) {
     return {
-      label: dateFormat(log[row], dateTooltipFormat),
+      label: formatDate(log[row]),
       timeAgo: __(timeAgo(log[row])),
     }
   }
+
+  let fieldType = columns?.find((col) => (col.key || col.value) == row)?.type
+
+  if (fieldType && ['Date', 'Datetime'].includes(fieldType)) {
+    return formatDate(log[row], '', true, fieldType == 'Datetime')
+  }
+
   return log[row]
 }
 

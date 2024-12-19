@@ -2,15 +2,25 @@
   <slot name="header" v-bind="{ opened, hide, open, close, toggle }">
     <div v-if="!hide" class="flex items-center justify-between">
       <div
-        class="flex h-7 max-w-fit cursor-pointer items-center gap-2 pl-2 pr-3 text-base font-semibold leading-5"
-        @click="toggle()"
+        class="flex text-ink-gray-9 max-w-fit cursor-pointer items-center gap-2 text-base"
+        v-bind="$attrs"
+        @click="collapsible && toggle()"
       >
         <FeatherIcon
+          v-if="collapsible && collapseIconPosition === 'left'"
           name="chevron-right"
-          class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+          class="h-4 transition-all duration-300 ease-in-out"
           :class="{ 'rotate-90': opened }"
         />
-        {{ __(label) || __('Untitled') }}
+        <span>
+          {{ __(label) || __('Untitled') }}
+        </span>
+        <FeatherIcon
+          v-if="collapsible && collapseIconPosition === 'right'"
+          name="chevron-right"
+          class="h-4 transition-all duration-300 ease-in-out"
+          :class="{ 'rotate-90': opened }"
+        />
       </div>
       <slot name="actions"></slot>
     </div>
@@ -23,13 +33,14 @@
     enter-from-class="max-h-0 overflow-hidden"
     leave-to-class="max-h-0 overflow-hidden"
   >
-    <div v-if="opened">
+    <div v-show="opened">
       <slot v-bind="{ opened, open, close, toggle }" />
     </div>
   </transition>
 </template>
 <script setup>
 import { ref } from 'vue'
+
 const props = defineProps({
   label: {
     type: String,
@@ -39,11 +50,23 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isOpened: {
+  opened: {
     type: Boolean,
     default: true,
   },
+  collapsible: {
+    type: Boolean,
+    default: true,
+  },
+  collapseIconPosition: {
+    type: String,
+    default: 'left',
+  },
 })
+
+const hide = ref(props.hideLabel)
+const opened = ref(props.opened)
+
 function toggle() {
   opened.value = !opened.value
 }
@@ -55,7 +78,4 @@ function open() {
 function close() {
   opened.value = false
 }
-
-let opened = ref(props.isOpened)
-let hide = ref(props.hideLabel)
 </script>

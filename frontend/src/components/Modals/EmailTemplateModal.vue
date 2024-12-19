@@ -17,60 +17,49 @@
       <div class="flex flex-col gap-4">
         <div class="flex sm:flex-row flex-col gap-4">
           <div class="flex-1">
-            <div class="mb-1.5 text-sm text-gray-600">
-              {{ __('Name') }}
-              <span class="text-red-500">*</span>
-            </div>
-            <TextInput
+            <FormControl
               ref="nameRef"
-              variant="outline"
               v-model="_emailTemplate.name"
               :placeholder="__('Payment Reminder')"
+              :label="__('Name')"
+              :required="true"
             />
           </div>
           <div class="flex-1">
-            <div class="mb-1.5 text-sm text-gray-600">{{ __('Doctype') }}</div>
-            <Select
-              variant="outline"
+            <FormControl
+              type="select"
               v-model="_emailTemplate.reference_doctype"
+              :label="__('Doctype')"
               :options="['CRM Deal', 'CRM Lead']"
               :placeholder="__('CRM Deal')"
             />
           </div>
         </div>
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">
-            {{ __('Subject') }}
-            <span class="text-red-500">*</span>
-          </div>
-          <TextInput
+          <FormControl
             ref="subjectRef"
-            variant="outline"
             v-model="_emailTemplate.subject"
+            :label="__('Subject')"
             :placeholder="__('Payment Reminder from Frappé - (#{{ name }})')"
+            :required="true"
           />
         </div>
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">
-            {{ __('Content Type') }}
-          </div>
-          <Select
-            variant="outline"
+          <FormControl
+            type="select"
             v-model="_emailTemplate.content_type"
+            :label="__('Content Type')"
             default="Rich Text"
             :options="['Rich Text', 'HTML']"
             :placeholder="__('Rich Text')"
           />
         </div>
         <div>
-          <div class="mb-1.5 text-sm text-gray-600">
-            {{ __('Content') }}
-            <span class="text-red-500">*</span>
-          </div>
           <FormControl
             v-if="_emailTemplate.content_type === 'HTML'"
             type="textarea"
-            variant="outline"
+            :label="__('Content')"
+            :required="true"
             ref="content"
             :rows="10"
             v-model="_emailTemplate.response_html"
@@ -80,20 +69,24 @@
               )
             "
           />
-          <TextEditor
-            v-else
-            variant="outline"
-            ref="content"
-            editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-gray-300 bg-white hover:border-gray-400 hover:shadow-sm focus:bg-white focus:border-gray-500 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400 text-gray-800 transition-colors"
-            :bubbleMenu="true"
-            :content="_emailTemplate.response"
-            @change="(val) => (_emailTemplate.response = val)"
-            :placeholder="
-              __(
-                'Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé',
-              )
-            "
-          />
+          <div v-else>
+            <div class="mb-1.5 text-xs text-ink-gray-5">
+              {{ __('Content') }}
+              <span class="text-ink-red-3">*</span>
+            </div>
+            <TextEditor
+              ref="content"
+              editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
+              :bubbleMenu="true"
+              :content="_emailTemplate.response"
+              @change="(val) => (_emailTemplate.response = val)"
+              :placeholder="
+                __(
+                  'Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé',
+                )
+              "
+            />
+          </div>
         </div>
         <div>
           <Checkbox v-model="_emailTemplate.enabled" :label="__('Enabled')" />
@@ -106,7 +99,7 @@
 
 <script setup>
 import { capture } from '@/telemetry'
-import { Checkbox, Select, TextEditor, call } from 'frappe-ui'
+import { Checkbox, TextEditor, call } from 'frappe-ui'
 import { ref, nextTick, watch } from 'vue'
 
 const props = defineProps({
@@ -229,9 +222,9 @@ watch(
     errorMessage.value = ''
     nextTick(() => {
       if (_emailTemplate.value.name) {
-        subjectRef.value.el.focus()
+        subjectRef.value?.el?.focus()
       } else {
-        nameRef.value.el.focus()
+        nameRef.value?.el?.focus()
       }
       _emailTemplate.value = { ...props.emailTemplate }
       _emailTemplate.value.content_type = _emailTemplate.value.use_html

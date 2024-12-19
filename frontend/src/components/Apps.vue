@@ -3,8 +3,8 @@
     <template #target="{ togglePopover }">
       <button
         :class="[
-          active ? 'bg-gray-100' : 'text-gray-800',
-          'group w-full flex h-7 items-center justify-between rounded px-2 text-base hover:bg-gray-100',
+          active ? 'bg-surface-gray-3' : 'text-ink-gray-6',
+          'group w-full flex h-7 items-center justify-between rounded px-2 text-base hover:bg-surface-gray-2',
         ]"
         @click.prevent="togglePopover()"
       >
@@ -14,20 +14,20 @@
             {{ __('Apps') }}
           </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-gray-600" />
+        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-5" />
       </button>
     </template>
     <template #body>
       <div
-        class="grid grid-cols-3 justify-between mx-3 p-2 rounded-lg border border-gray-100 bg-white shadow-xl"
+        class="grid grid-cols-3 justify-between mx-3 p-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div v-for="app in apps.data" :key="app.name">
           <a
             :href="app.route"
-            class="flex flex-col gap-1.5 rounded justify-center items-center py-2 px-1 hover:bg-gray-100"
+            class="flex flex-col gap-1.5 rounded justify-center items-center py-2 px-1 hover:bg-surface-gray-2"
           >
             <img class="size-8" :src="app.logo" />
-            <div class="text-sm text-gray-700" @click="app.onClick">
+            <div class="text-sm text-ink-gray-7" @click="app.onClick">
               {{ app.title }}
             </div>
           </a>
@@ -39,8 +39,8 @@
 <script setup>
 import AppsIcon from '@/components/Icons/AppsIcon.vue'
 import { Popover, createResource } from 'frappe-ui'
-import { onUnmounted } from 'vue';
-import { stopRecording } from '@/telemetry';
+import { onUnmounted } from 'vue'
+import { stopRecording } from '@/telemetry'
 
 const props = defineProps({
   active: Boolean,

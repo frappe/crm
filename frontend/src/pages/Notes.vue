@@ -27,11 +27,11 @@
     >
       <div
         v-for="note in notes.data.data"
-        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-gray-50"
+        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-menu-bar"
         @click="editNote(note)"
       >
         <div class="flex items-center justify-between">
-          <div class="truncate text-lg font-medium">
+          <div class="truncate text-lg font-medium text-ink-gray-9">
             {{ note.title }}
           </div>
           <Dropdown
@@ -47,7 +47,7 @@
             <Button
               icon="more-horizontal"
               variant="ghosted"
-              class="hover:bg-white"
+              class="hover:bg-surface-white"
             />
           </Dropdown>
         </div>
@@ -55,18 +55,18 @@
           v-if="note.content"
           :content="note.content"
           :editable="false"
-          editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
+          editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
           class="flex-1 overflow-hidden"
         />
         <div class="mt-2 flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <UserAvatar :user="note.owner" size="xs" />
-            <div class="text-sm text-gray-800">
+            <div class="text-sm text-ink-gray-8">
               {{ getUser(note.owner).full_name }}
             </div>
           </div>
-          <Tooltip :text="dateFormat(note.modified, dateTooltipFormat)">
-            <div class="text-sm text-gray-700">
+          <Tooltip :text="formatDate(note.modified)">
+            <div class="text-sm text-ink-gray-7">
               {{ __(timeAgo(note.modified)) }}
             </div>
           </Tooltip>
@@ -86,7 +86,7 @@
   />
   <div v-else class="flex h-full items-center justify-center">
     <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
+      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <NoteIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Notes')]) }}</span>
@@ -110,7 +110,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
-import { timeAgo, dateFormat, dateTooltipFormat } from '@/utils'
+import { timeAgo, formatDate } from '@/utils'
 import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
 

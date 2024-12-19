@@ -1,10 +1,10 @@
 <template>
   <Dialog v-model="show" :options="{ size: '3xl' }">
     <template #body>
-      <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
               {{ __('Create Lead') }}
             </h3>
           </div>
@@ -23,7 +23,7 @@
           </div>
         </div>
         <div>
-          <Fields v-if="sections.data" :sections="sections.data" :data="lead" />
+          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead" />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
@@ -43,7 +43,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Fields from '@/components/Fields.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
@@ -63,21 +63,23 @@ const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
 
-const sections = createResource({
+const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Lead'],
+  cache: ['QuickEntry', 'CRM Lead'],
   params: { doctype: 'CRM Lead', type: 'Quick Entry' },
   auto: true,
-  transform: (data) => {
-    return data.forEach((section) => {
-      section.fields.forEach((field) => {
-        if (field.name == 'status') {
-          field.type = 'Select'
-          field.options = leadStatuses.value
-          field.prefix = getLeadStatus(lead.status).iconColorClass
-        } else if (field.name == 'lead_owner') {
-          field.type = 'User'
-        }
+  transform: (_tabs) => {
+    return _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.fields.forEach((field) => {
+          if (field.name == 'status') {
+            field.type = 'Select'
+            field.options = leadStatuses.value
+            field.prefix = getLeadStatus(lead.status).iconColorClass
+          } else if (field.name == 'lead_owner') {
+            field.type = 'User'
+          }
+        })
       })
     })
   },

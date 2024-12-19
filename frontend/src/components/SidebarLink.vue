@@ -1,7 +1,7 @@
 <template>
   <button
-    class="flex h-7 cursor-pointer items-center rounded text-gray-700 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-gray-400"
-    :class="isActive ? 'bg-white shadow-sm' : 'hover:bg-gray-100'"
+    class="flex h-7 cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+    :class="isActive ? 'bg-surface-selected shadow-sm' : 'hover:bg-surface-gray-2'"
     @click="handleClick"
   >
     <div
@@ -15,9 +15,9 @@
               <FeatherIcon
                 v-if="typeof icon == 'string'"
                 :name="icon"
-                class="size-4 text-gray-700"
+                class="size-4 text-ink-gray-7"
               />
-              <component v-else :is="icon" class="size-4 text-gray-700" />
+              <component v-else :is="icon" class="size-4 text-ink-gray-7" />
             </span>
           </slot>
         </Tooltip>
@@ -55,7 +55,7 @@ const route = useRoute()
 
 const props = defineProps({
   icon: {
-    type: [Object, String],
+    type: [Object, String, Function],
   },
   label: {
     type: String,

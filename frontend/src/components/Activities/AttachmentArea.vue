@@ -2,12 +2,12 @@
   <div v-if="attachments.length">
     <div v-for="(attachment, i) in attachments" :key="attachment.name">
       <div
-        class="activity flex justify-between gap-2 hover:bg-gray-50 rounded text-base p-2.5 cursor-pointer"
+        class="activity flex justify-between gap-2 hover:bg-surface-menu-bar rounded text-base p-2.5 cursor-pointer"
         @click="openFile(attachment)"
       >
         <div class="flex gap-2 truncate">
           <div
-            class="size-11 bg-white rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
+            class="size-11 bg-surface-white rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
             :class="{ border: !isImage(attachment.file_type) }"
           >
             <img
@@ -18,22 +18,22 @@
             />
             <component
               v-else
-              class="size-4"
+              class="size-4 text-ink-gray-7"
               :is="fileIcon(attachment.file_type)"
             />
           </div>
           <div class="flex flex-col justify-center gap-1 truncate">
-            <div class="text-base text-gray-800 truncate">
+            <div class="text-base text-ink-gray-8 truncate">
               {{ attachment.file_name }}
             </div>
-            <div class="mb-1 text-sm text-gray-600">
+            <div class="mb-1 text-sm text-ink-gray-5">
               {{ convertSize(attachment.file_size) }}
             </div>
           </div>
         </div>
         <div class="flex flex-col items-end gap-2 flex-shrink-0">
-          <Tooltip :text="dateFormat(attachment.creation, dateTooltipFormat)">
-            <div class="text-sm text-gray-600">
+          <Tooltip :text="formatDate(attachment.creation)">
+            <div class="text-sm text-ink-gray-5">
               {{ __(timeAgo(attachment.creation)) }}
             </div>
           </Tooltip>
@@ -51,7 +51,7 @@
               >
                 <FeatherIcon
                   :name="attachment.is_private ? 'lock' : 'unlock'"
-                  class="size-3 text-gray-700"
+                  class="size-3 text-ink-gray-7"
                 />
               </Button>
             </Tooltip>
@@ -60,7 +60,7 @@
                 class="!size-5"
                 @click.stop="() => deleteAttachment(attachment.name)"
               >
-                <FeatherIcon name="trash-2" class="size-3 text-gray-700" />
+                <FeatherIcon name="trash-2" class="size-3 text-ink-gray-7" />
               </Button>
             </Tooltip>
           </div>
@@ -68,7 +68,7 @@
       </div>
       <div
         v-if="i < attachments.length - 1"
-        class="mx-2 h-px border-t border-gray-200"
+        class="mx-2 h-px border-t border-outline-gray-modals"
       />
     </div>
   </div>
@@ -79,13 +79,7 @@ import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
 import { globalStore } from '@/stores/global'
 import { call, Tooltip } from 'frappe-ui'
-import {
-  dateFormat,
-  timeAgo,
-  dateTooltipFormat,
-  convertSize,
-  isImage,
-} from '@/utils'
+import { formatDate, timeAgo, convertSize, isImage } from '@/utils'
 
 const props = defineProps({
   attachments: Array,

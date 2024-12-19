@@ -1,5 +1,8 @@
-@import './assets/Inter/inter.css';
-@import 'frappe-ui/src/style.css';
+@import 'frappe-ui/src/fonts/Inter/inter.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer components {
 	.prose-f {
@@ -14,12 +17,12 @@
 		prose-sm
 		prose-table:table-fixed
 		prose-td:border
-		prose-td:border-gray-300
+		prose-td:border-outline-gray-2
 		prose-td:p-2
 		prose-td:relative
-		prose-th:bg-gray-100
+		prose-th:bg-surface-gray-2
 		prose-th:border
-		prose-th:border-gray-300
+		prose-th:border-outline-gray-2
 		prose-th:p-2
 		prose-th:relative
 	}
