@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col text-base">
-    <div v-if="label" class="mb-1.5 text-sm text-gray-600">{{ label }}</div>
+    <div v-if="label" class="mb-1.5 text-sm text-gray-600">
+      {{ __(label) }}
+    </div>
 
     <div class="rounded border border-gray-100">
       <!-- Header -->
@@ -16,9 +18,10 @@
           />
         </div>
         <div class="inline-flex items-center justify-center border-r py-2 px-1">
-          No.
+          {{ __('No.') }}
         </div>
         <div
+          v-if="gridFields?.length"
           class="inline-flex items-center border-r p-2"
           v-for="field in gridFields"
           :key="field.name"
@@ -50,6 +53,7 @@
                 {{ index + 1 }}
               </div>
               <div
+                v-if="gridFields?.length"
                 class="border-r border-gray-100 h-full"
                 v-for="field in gridFields"
                 :key="field.name"
@@ -190,7 +194,11 @@
                 }"
               >
                 <template #body-content>
-                  <FieldLayout :tabs="fields" :data="row" />
+                  <FieldLayout
+                    v-if="fields?.length"
+                    :tabs="fields"
+                    :data="row"
+                  />
                 </template>
               </Dialog>
             </div>
@@ -202,11 +210,11 @@
         v-else
         class="flex flex-col items-center rounded p-5 text-sm text-gray-600"
       >
-        __("No Data")
+        {{ __('No Data') }}
       </div>
     </div>
 
-    <div class="mt-2 flex flex-row gap-2">
+    <div v-if="gridFields?.length" class="mt-2 flex flex-row gap-2">
       <Button
         v-if="showDeleteBtn"
         :label="__('Delete')"
@@ -248,6 +256,7 @@ const showRowList = ref(new Array(rows.value.length).fill(false))
 const selectedRows = reactive(new Set<string>())
 
 const gridTemplateColumns = computed(() => {
+  if (!props.gridFields?.length) return '1fr 1fr 9fr'
   // for the checkbox & sr no. columns
   let columns = '0.5fr 0.5fr'
   columns +=
@@ -284,7 +293,7 @@ const toggleSelectRow = (row: GridRow) => {
 
 const addRow = () => {
   const newRow = {} as GridRow
-  props.gridFields.forEach((field) => {
+  props.gridFields?.forEach((field) => {
     if (field.type === 'Check') newRow[field.name] = false
     else newRow[field.name] = ''
   })
