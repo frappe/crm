@@ -66,6 +66,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  meta: {
+    type: Object,
+    required: true,
+  },
 })
 
 const { isManager } = usersStore()
@@ -100,7 +104,57 @@ const tabs = createResource({
   cache: ['DataFields', props.doctype],
   params: { doctype: props.doctype, type: 'Data Fields' },
   auto: true,
+  transform: (_tabs) => parseTabs(_tabs),
 })
+
+function parseTabs(_tabs) {
+  _tabs.forEach((tab) => {
+    tab.sections.forEach((section) => {
+      section.fields.forEach((field) => {
+        if (field.type === 'Table') {
+          let name = props.meta[field.name].df.fieldname
+          let fields = props.meta[field.name].fields
+          let _fields = fields.map((field) => {
+            return {
+              ...getFieldObj(field),
+              onChange: (value, index) => {
+                data.doc[name][index][field.fieldname] = value
+              },
+            }
+          })
+
+          field.fields = [
+            {
+              no_tabs: true,
+              sections: [{ columns: 3, hideLabel: true, fields: _fields }],
+            },
+          ]
+          field.gridFields = _fields.filter((field) => field.in_list_view)
+        }
+      })
+    })
+  })
+
+  return _tabs
+}
+
+function getFieldObj(field) {
+  if (field.fieldtype === 'Select' && typeof field.options === 'string') {
+    field.options = field.options.split('\n').map((option) => {
+      return {
+        label: option,
+        value: option,
+      }
+    })
+  }
+  return {
+    label: field.label,
+    name: field.fieldname,
+    type: field.fieldtype,
+    options: field.options,
+    in_list_view: field.in_list_view,
+  }
+}
 
 function saveChanges() {
   data.save.submit()

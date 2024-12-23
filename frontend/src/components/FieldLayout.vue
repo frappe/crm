@@ -15,7 +15,7 @@
         !hasTabs ? 'hidden' : modal ? 'border-outline-gray-modals' : ''
       "
     >
-      <div :class="{ 'my-4 sm:my-6': hasTabs }">
+      <div class="overflow-hidden" :class="{ 'my-4 sm:my-6': hasTabs }">
         <div
           v-for="(section, i) in tab.sections"
           :key="section.label"
@@ -75,6 +75,12 @@
                     :placeholder="getPlaceholder(field)"
                     v-model="data[field.name]"
                     :disabled="true"
+                  />
+                  <Grid
+                    v-else-if="field.type === 'Table'"
+                    v-model="data[field.name]"
+                    :fields="field.fields"
+                    :gridFields="field.gridFields"
                   />
                   <FormControl
                     v-else-if="field.type === 'Select'"
@@ -178,7 +184,7 @@
                   />
                   <FormControl
                     v-else-if="
-                      ['Small Text', 'Text', 'Long Text'].includes(field.type)
+                      ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.type)
                     "
                     type="textarea"
                     :placeholder="getPlaceholder(field)"
@@ -213,6 +219,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
+import Grid from '@/components/Controls/Grid.vue'
 import { usersStore } from '@/stores/users'
 import { getFormat } from '@/utils'
 import { Tabs, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'

@@ -1,15 +1,16 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
-import json
 
 import frappe
 from frappe import _
 from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
-
 from frappe.utils import has_gravatar, validate_email_address
+
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
-from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
+from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
+	add_status_change_log,
+)
 
 
 class CRMLead(Document):
@@ -37,7 +38,15 @@ class CRMLead(Document):
 	def set_full_name(self):
 		if self.first_name:
 			self.lead_name = " ".join(
-				filter(None, [self.salutation, self.first_name, self.middle_name, self.last_name])
+				filter(
+					None,
+					[
+						self.salutation,
+						self.first_name,
+						self.middle_name,
+						self.last_name,
+					],
+				)
 			)
 
 	def set_lead_name(self):
@@ -92,9 +101,16 @@ class CRMLead(Document):
 		shared_with = [d.user for d in docshares] + [agent]
 
 		for user in shared_with:
-			if user == agent and not frappe.db.exists("DocShare", {"user": agent, "share_name": self.name, "share_doctype": self.doctype}):
+			if user == agent and not frappe.db.exists(
+				"DocShare",
+				{"user": agent, "share_name": self.name, "share_doctype": self.doctype},
+			):
 				frappe.share.add_docshare(
-					self.doctype, self.name, agent, write=1, flags={"ignore_share_permission": True}
+					self.doctype,
+					self.name,
+					agent,
+					write=1,
+					flags={"ignore_share_permission": True},
 				)
 			elif user != agent:
 				frappe.share.remove(self.doctype, self.name, user)
@@ -188,8 +204,36 @@ class CRMLead(Document):
 			"lead_owner": "deal_owner",
 		}
 
-		restricted_fieldtypes = ["Tab Break", "Section Break", "Column Break", "HTML", "Button", "Attach", "Table"]
-		restricted_map_fields = ["name", "naming_series", "creation", "owner", "modified", "modified_by", "idx", "docstatus", "status", "email", "mobile_no", "phone", "sla", "sla_status", "response_by", "first_response_time", "first_responded_on", "communication_status", "sla_creation"]
+		restricted_fieldtypes = [
+			"Tab Break",
+			"Section Break",
+			"Column Break",
+			"HTML",
+			"Button",
+			"Attach",
+			"Table",
+		]
+		restricted_map_fields = [
+			"name",
+			"naming_series",
+			"creation",
+			"owner",
+			"modified",
+			"modified_by",
+			"idx",
+			"docstatus",
+			"status",
+			"email",
+			"mobile_no",
+			"phone",
+			"sla",
+			"sla_status",
+			"response_by",
+			"first_response_time",
+			"first_responded_on",
+			"communication_status",
+			"sla_creation",
+		]
 
 		for field in self.meta.fields:
 			if field.fieldtype in restricted_fieldtypes:
@@ -222,7 +266,7 @@ class CRMLead(Document):
 					"sla_status": self.sla_status,
 					"communication_status": self.communication_status,
 					"first_response_time": self.first_response_time,
-					"first_responded_on": self.first_responded_on
+					"first_responded_on": self.first_responded_on,
 				}
 			)
 
@@ -233,7 +277,8 @@ class CRMLead(Document):
 		"""
 		Find an SLA to apply to the lead.
 		"""
-		if self.sla: return
+		if self.sla:
+			return
 
 		sla = get_sla(self)
 		if not sla:
@@ -263,47 +308,47 @@ class CRMLead(Document):
 	def default_list_data():
 		columns = [
 			{
-				'label': 'Name',
-				'type': 'Data',
-				'key': 'lead_name',
-				'width': '12rem',
+				"label": "Name",
+				"type": "Data",
+				"key": "lead_name",
+				"width": "12rem",
 			},
 			{
-				'label': 'Organization',
-				'type': 'Link',
-				'key': 'organization',
-				'options': 'CRM Organization',
-				'width': '10rem',
+				"label": "Organization",
+				"type": "Link",
+				"key": "organization",
+				"options": "CRM Organization",
+				"width": "10rem",
 			},
 			{
-				'label': 'Status',
-				'type': 'Select',
-				'key': 'status',
-				'width': '8rem',
+				"label": "Status",
+				"type": "Select",
+				"key": "status",
+				"width": "8rem",
 			},
 			{
-				'label': 'Email',
-				'type': 'Data',
-				'key': 'email',
-				'width': '12rem',
+				"label": "Email",
+				"type": "Data",
+				"key": "email",
+				"width": "12rem",
 			},
 			{
-				'label': 'Mobile No',
-				'type': 'Data',
-				'key': 'mobile_no',
-				'width': '11rem',
+				"label": "Mobile No",
+				"type": "Data",
+				"key": "mobile_no",
+				"width": "11rem",
 			},
 			{
-				'label': 'Assigned To',
-				'type': 'Text',
-				'key': '_assign',
-				'width': '10rem',
+				"label": "Assigned To",
+				"type": "Text",
+				"key": "_assign",
+				"width": "10rem",
 			},
 			{
-				'label': 'Last Modified',
-				'type': 'Datetime',
-				'key': 'modified',
-				'width': '8rem',
+				"label": "Last Modified",
+				"type": "Datetime",
+				"key": "modified",
+				"width": "8rem",
 			},
 		]
 		rows = [
@@ -323,20 +368,22 @@ class CRMLead(Document):
 			"_assign",
 			"image",
 		]
-		return {'columns': columns, 'rows': rows}
+		return {"columns": columns, "rows": rows}
 
 	@staticmethod
 	def default_kanban_settings():
 		return {
 			"column_field": "status",
 			"title_field": "lead_name",
-			"kanban_fields": '["organization", "email", "mobile_no", "_assign", "modified"]'
+			"kanban_fields": '["organization", "email", "mobile_no", "_assign", "modified"]',
 		}
 
 
 @frappe.whitelist()
 def convert_to_deal(lead, doc=None):
-	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission("CRM Lead", "write", lead):
+	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
+		"CRM Lead", "write", lead
+	):
 		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
 
 	lead = frappe.get_cached_doc("CRM Lead", lead)
