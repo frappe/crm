@@ -76,6 +76,12 @@
                     v-model="data[field.name]"
                     :disabled="true"
                   />
+                  <Grid
+                    v-else-if="field.type === 'Table'"
+                    v-model="data[field.name]"
+                    :fields="field.fields"
+                    :gridFields="field.gridFields"
+                  />
                   <FormControl
                     v-else-if="field.type === 'Select'"
                     type="select"
@@ -237,7 +243,8 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
-import { getMeta } from '../stores/meta'
+import Grid from '@/components/Controls/Grid.vue'
+import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { getFormat } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
