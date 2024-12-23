@@ -119,7 +119,7 @@ function parseTabs(_tabs) {
         if (field.type === 'Table') {
           let name = props.meta[field.name].df.fieldname
           let fields = props.meta[field.name].fields
-          field.fields = fields.map((field) => {
+          let _fields = fields.map((field) => {
             return {
               ...getFieldObj(field),
               onChange: (value, index) => {
@@ -127,7 +127,14 @@ function parseTabs(_tabs) {
               },
             }
           })
-          field.gridFields = field.fields.filter((field) => field.in_list_view)
+
+          field.fields = [
+            {
+              no_tabs: true,
+              sections: [{ columns: 3, hideLabel: true, fields: _fields }],
+            },
+          ]
+          field.gridFields = _fields.filter((field) => field.in_list_view)
         }
       })
     })
@@ -137,10 +144,18 @@ function parseTabs(_tabs) {
 }
 
 function getFieldObj(field) {
+  if (field.fieldtype === 'Select' && typeof field.options === 'string') {
+    field.options = field.options.split('\n').map((option) => {
+      return {
+        label: option,
+        value: option,
+      }
+    })
+  }
   return {
     label: field.label,
-    fieldname: field.fieldname,
-    fieldtype: field.fieldtype,
+    name: field.fieldname,
+    type: field.fieldtype,
     options: field.options,
     in_list_view: field.in_list_view,
   }

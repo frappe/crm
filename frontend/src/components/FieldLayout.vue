@@ -15,7 +15,7 @@
         !hasTabs ? 'hidden' : modal ? 'border-outline-gray-modals' : ''
       "
     >
-      <div :class="{ 'my-4 sm:my-6': hasTabs }">
+      <div class="overflow-hidden" :class="{ 'my-4 sm:my-6': hasTabs }">
         <div
           v-for="(section, i) in tab.sections"
           :key="section.label"
@@ -184,7 +184,7 @@
                   />
                   <FormControl
                     v-else-if="
-                      ['Small Text', 'Text', 'Long Text'].includes(field.type)
+                      ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.type)
                     "
                     type="textarea"
                     :placeholder="getPlaceholder(field)"
