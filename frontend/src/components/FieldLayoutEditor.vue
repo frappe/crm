@@ -1,70 +1,70 @@
 <template>
   <div class="flex flex-col gap-5.5">
     <div
-      class="flex justify-between items-center gap-1 text-base bg-surface-gray-2 rounded py-2 px-2.5"
+      class="flex items-center gap-2 text-base bg-surface-gray-2 rounded py-2 px-2.5"
     >
-      <div class="flex items-center gap-1">
-        <Draggable
-          v-if="tabs.length && !tabs[tabIndex].no_tabs"
-          :list="tabs"
-          item-key="label"
-          class="flex items-center gap-1"
-          @end="(e) => (tabIndex = e.newIndex)"
-        >
-          <template #item="{ element: tab, index: i }">
-            <div
-              class="cursor-pointer rounded"
-              :class="[
-                tabIndex == i
-                  ? 'text-ink-gray-9 bg-surface-white shadow-sm'
-                  : 'text-ink-gray-5 hover:text-ink-gray-9 hover:bg-surface-white hover:shadow-sm',
-                tab.editingLabel ? 'p-1' : 'px-2 py-1',
-              ]"
-              @click="tabIndex = i"
-            >
-              <div @dblclick="() => (tab.editingLabel = true)">
-                <div v-if="!tab.editingLabel" class="flex items-center gap-2">
-                  {{ __(tab.label) || __('Untitled') }}
-                </div>
-                <div v-else class="flex gap-1 items-center">
-                  <Input
-                    v-model="tab.label"
-                    @keydown.enter="tab.editingLabel = false"
-                    @blur="tab.editingLabel = false"
-                    @click.stop
-                  />
-                  <Button
-                    v-if="tab.editingLabel"
-                    icon="check"
-                    variant="ghost"
-                    @click="tab.editingLabel = false"
-                  />
-                </div>
+      <Draggable
+        v-if="tabs.length && !tabs[tabIndex].no_tabs"
+        :list="tabs"
+        item-key="label"
+        class="flex items-center gap-2"
+        @end="(e) => (tabIndex = e.newIndex)"
+      >
+        <template #item="{ element: tab, index: i }">
+          <div
+            class="flex items-center gap-2 cursor-pointer rounded"
+            :class="[
+              tabIndex == i
+                ? 'text-ink-gray-9 bg-surface-white shadow-sm'
+                : 'text-ink-gray-5 hover:text-ink-gray-9 hover:bg-surface-white hover:shadow-sm',
+              tab.editingLabel ? 'p-1' : 'px-2 py-1',
+            ]"
+            @click="tabIndex = i"
+          >
+            <div @dblclick="() => (tab.editingLabel = true)">
+              <div v-if="!tab.editingLabel" class="flex items-center gap-2">
+                {{ __(tab.label) || __('Untitled') }}
+              </div>
+              <div v-else class="flex gap-1 items-center">
+                <Input
+                  v-model="tab.label"
+                  @keydown.enter="tab.editingLabel = false"
+                  @blur="tab.editingLabel = false"
+                  @click.stop
+                />
+                <Button
+                  v-if="tab.editingLabel"
+                  icon="check"
+                  variant="ghost"
+                  @click="tab.editingLabel = false"
+                />
               </div>
             </div>
-          </template>
-        </Draggable>
-        <Button
-          variant="ghost"
-          class="!h-6.5 !text-ink-gray-5 hover:!text-ink-gray-9"
-          @click="addTab"
-          :label="__('Add Tab')"
-        >
-          <template #prefix>
-            <FeatherIcon name="plus" class="h-4" />
-          </template>
-        </Button>
-      </div>
-      <Dropdown
-        v-if="tabs.length && !tabs[tabIndex].no_tabs"
-        :options="getTabOptions(tabs[tabIndex])"
-      >
-        <template #default>
-          <Button variant="ghost">
-            <FeatherIcon name="more-horizontal" class="h-4" />
-          </Button>
+            <Dropdown
+              v-if="!tab.no_tabs && tabIndex == i"
+              :options="getTabOptions(tab)"
+              class="!h-4"
+              @click.stop
+            >
+              <template #default>
+                <Button variant="ghost" class="!p-1 !h-4">
+                  <FeatherIcon name="more-horizontal" class="h-4" />
+                </Button>
+              </template>
+            </Dropdown>
+          </div>
         </template>
-      </Dropdown>
+      </Draggable>
+      <Button
+        variant="ghost"
+        class="!h-6.5 !text-ink-gray-5 hover:!text-ink-gray-9"
+        @click="addTab"
+        :label="__('Add Tab')"
+      >
+        <template v-slot:[slotName]>
+          <FeatherIcon name="plus" class="h-4" />
+        </template>
+      </Button>
     </div>
     <div v-show="tabIndex == i" v-for="(tab, i) in tabs" :key="tab.label">
       <Draggable
@@ -207,6 +207,12 @@ const props = defineProps({
 })
 
 const tabIndex = ref(0)
+const slotName = computed(() => {
+  if (props.tabs.length == 1 && props.tabs[0].no_tabs) {
+    return 'prefix'
+  }
+  return 'default'
+})
 
 const restrictedFieldTypes = [
   'Geolocation',
