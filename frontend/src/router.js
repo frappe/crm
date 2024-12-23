@@ -18,7 +18,6 @@ const routes = [
     path: '/leads/view/:viewType?',
     name: 'Leads',
     component: () => import('@/pages/Leads.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
     path: '/leads/:leadId',
@@ -31,7 +30,6 @@ const routes = [
     path: '/deals/view/:viewType?',
     name: 'Deals',
     component: () => import('@/pages/Deals.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
     path: '/deals/:dealId',
@@ -56,7 +54,6 @@ const routes = [
     path: '/contacts/view/:viewType?',
     name: 'Contacts',
     component: () => import('@/pages/Contacts.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
     path: '/contacts/:contactId',
@@ -69,7 +66,6 @@ const routes = [
     path: '/organizations/view/:viewType?',
     name: 'Organizations',
     component: () => import('@/pages/Organizations.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
     path: '/organizations/:organizationId',
@@ -82,14 +78,12 @@ const routes = [
     path: '/call-logs/view/:viewType?',
     name: 'Call Logs',
     component: () => import('@/pages/CallLogs.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
     alias: '/email-templates',
     path: '/email-templates/view/:viewType?',
     name: 'Email Templates',
     component: () => import('@/pages/EmailTemplates.vue'),
-    meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
     path: '/email-templates/:emailTemplateId',
@@ -108,39 +102,15 @@ const handleMobileView = (componentName) => {
   return window.innerWidth < 768 ? `Mobile${componentName}` : componentName
 }
 
-const scrollBehavior = (to, from, savedPosition) => {
-  if (to.name === from.name) {
-    to.meta?.scrollPos && (to.meta.scrollPos.top = 0)
-    return { left: 0, top: 0 }
-  }
-  const scrollpos = to.meta?.scrollPos || { left: 0, top: 0 }
-
-  if (scrollpos.top > 0) {
-    setTimeout(() => {
-      let el = document.querySelector('#list-rows')
-      el.scrollTo({
-        top: scrollpos.top,
-        left: scrollpos.left,
-        behavior: 'smooth',
-      })
-    }, 300)
-  }
-}
-
 let router = createRouter({
   history: createWebHistory('/crm'),
   routes,
-  scrollBehavior,
 })
 
 router.beforeEach(async (to, from, next) => {
   const { isLoggedIn } = sessionStore()
 
   isLoggedIn && (await userResource.promise)
-
-  if (from.meta?.scrollPos) {
-    from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop
-  }
 
   if (to.name === 'Home' && isLoggedIn) {
     next({ name: 'Leads' })
