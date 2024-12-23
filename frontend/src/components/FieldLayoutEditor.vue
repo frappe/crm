@@ -209,7 +209,6 @@ const props = defineProps({
 const tabIndex = ref(0)
 
 const restrictedFieldTypes = [
-  'Table',
   'Geolocation',
   'Attach',
   'Attach Image',
@@ -230,6 +229,34 @@ const fields = createResource({
   params: params.value,
   cache: ['fieldsMeta', props.doctype],
   auto: true,
+  transform: (data) => {
+    let restrictedFields = [
+      'name',
+      'owner',
+      'creation',
+      'modified',
+      'modified_by',
+      'docstatus',
+      '_comments',
+      '_user_tags',
+      '_assign',
+      '_liked_by',
+    ]
+    let existingFields = []
+
+    for (let tab of props.tabs) {
+      for (let section of tab.sections) {
+        existingFields = existingFields.concat(section.fields)
+      }
+    }
+
+    return data.filter((field) => {
+      return (
+        !existingFields.find((f) => f.name === field.fieldname) &&
+        !restrictedFields.includes(field.fieldname)
+      )
+    })
+  },
 })
 
 function addTab() {
@@ -243,7 +270,12 @@ function addTab() {
 
 function addField(section, field) {
   if (!field) return
-  section.fields.push(field)
+  let newFieldObj = {
+    ...field,
+    name: field.fieldname,
+    type: field.fieldtype,
+  }
+  section.fields.push(newFieldObj)
 }
 
 function getTabOptions(tab) {
