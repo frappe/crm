@@ -21,7 +21,7 @@
         <div
           class="inline-flex items-center border-r p-2"
           v-for="field in gridFields"
-          :key="field.fieldname"
+          :key="field.name"
         >
           {{ field.label }}
         </div>
@@ -52,26 +52,26 @@
               <div
                 class="border-r border-gray-100 h-full"
                 v-for="field in gridFields"
-                :key="field.fieldname"
+                :key="field.name"
               >
                 <Link
-                  v-if="field.fieldtype === 'Link'"
+                  v-if="field.type === 'Link'"
                   class="text-sm text-gray-800"
-                  :value="row[field.fieldname]"
+                  :value="row[field.name]"
                   :doctype="field.options"
-                  :placeholder="row.placeholder"
+                  :filters="field.filters"
                   @change="
                     (data: String) =>
                       field.onChange && field.onChange(data, index)
                   "
                 />
                 <div
-                  v-else-if="field.fieldtype === 'Check'"
+                  v-else-if="field.type === 'Check'"
                   class="flex h-full justify-center items-center"
                 >
                   <Checkbox
                     class="cursor-pointer duration-300"
-                    v-model="row[field.fieldname]"
+                    v-model="row[field.name]"
                     @change="
                       (e: Event) =>
                         field.onChange &&
@@ -82,14 +82,85 @@
                     "
                   />
                 </div>
+                <DatePicker
+                  v-else-if="field.type === 'Date'"
+                  :value="row[field.name]"
+                  icon-left=""
+                  variant="outline"
+                  :formatter="(date) => getFormat(date, '', true)"
+                  input-class="border-none text-sm text-gray-800"
+                  @change="
+                    (data: String) =>
+                      field.onChange && field.onChange(data, index)
+                  "
+                />
+                <DateTimePicker
+                  v-else-if="field.type === 'Datetime'"
+                  :value="row[field.name]"
+                  icon-left=""
+                  variant="outline"
+                  :formatter="(date) => getFormat(date, '', true, true)"
+                  input-class="border-none text-sm text-gray-800"
+                  @change="
+                    (data: String) =>
+                      field.onChange && field.onChange(data, index)
+                  "
+                />
+                <FormControl
+                  v-else-if="
+                    ['Small Text', 'Text', 'Long Text', 'Code'].includes(
+                      field.type,
+                    )
+                  "
+                  type="textarea"
+                  v-model="row[field.name]"
+                  variant="outline"
+                  @change="
+                    (e: Event) =>
+                      field.onChange &&
+                      field.onChange(
+                        (e.target as HTMLInputElement).value,
+                        index,
+                      )
+                  "
+                />
+                <FormControl
+                  v-else-if="['Int'].includes(field.type)"
+                  type="number"
+                  v-model="row[field.name]"
+                  variant="outline"
+                  @change="
+                    (e: Event) =>
+                      field.onChange &&
+                      field.onChange(
+                        (e.target as HTMLInputElement).value,
+                        index,
+                      )
+                  "
+                />
+                <FormControl
+                  v-else-if="field.type === 'Select'"
+                  class="text-sm text-gray-800"
+                  v-model="row[field.name]"
+                  type="select"
+                  :options="field.options"
+                  variant="outline"
+                  @change="
+                    (e: Event) =>
+                      field.onChange &&
+                      field.onChange(
+                        (e.target as HTMLInputElement).value,
+                        index,
+                      )
+                  "
+                />
                 <FormControl
                   v-else
                   class="text-sm text-gray-800"
-                  v-model="row[field.fieldname]"
-                  :type="field.fieldtype.toLowerCase()"
+                  v-model="row[field.name]"
+                  type="text"
                   :options="field.options"
                   variant="outline"
-                  size="md"
                   @change="
                     (e: Event) =>
                       field.onChange &&
@@ -113,12 +184,13 @@
               </div>
               <Dialog
                 v-model="showRowList[index]"
-                :options="{ title: `Editing Row ${index + 1}` }"
+                :options="{
+                  title: __('Editing Row {0}', [index + 1]),
+                  size: '4xl',
+                }"
               >
                 <template #body-content>
-                  <div v-for="field in fields" :key="field.fieldname">
-                    {{ field.label }}: {{ row[field.fieldname] }}
-                  </div>
+                  <FieldLayout :tabs="fields" :data="row" />
                 </template>
               </Dialog>
             </div>
@@ -130,28 +202,35 @@
         v-else
         class="flex flex-col items-center rounded p-5 text-sm text-gray-600"
       >
-        No Data
+        __("No Data")
       </div>
     </div>
 
     <div class="mt-2 flex flex-row gap-2">
       <Button
         v-if="showDeleteBtn"
-        label="Delete"
+        :label="__('Delete')"
         variant="solid"
         theme="red"
         @click="deleteRows"
       />
-      <Button label="Add Row" @click="addRow" />
+      <Button :label="__('Add Row')" @click="addRow" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import FieldLayout from '@/components/FieldLayout.vue'
 import Link from '@/components/Controls/Link.vue'
 import { GridColumn, GridRow } from '@/types/controls'
-import { getRandom } from '@/utils'
-import { Dialog, FormControl, Checkbox } from 'frappe-ui'
+import { getRandom, getFormat } from '@/utils'
+import {
+  Dialog,
+  FormControl,
+  Checkbox,
+  DateTimePicker,
+  DatePicker,
+} from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, PropType } from 'vue'
 
@@ -206,8 +285,8 @@ const toggleSelectRow = (row: GridRow) => {
 const addRow = () => {
   const newRow = {} as GridRow
   props.gridFields.forEach((field) => {
-    if (field.fieldtype === 'Check') newRow[field.fieldname] = false
-    else newRow[field.fieldname] = ''
+    if (field.type === 'Check') newRow[field.name] = false
+    else newRow[field.name] = ''
   })
   newRow.name = getRandom(10)
   showRowList.value.push(false)
