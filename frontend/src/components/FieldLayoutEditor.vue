@@ -126,9 +126,9 @@
                 <div
                   class="px-2.5 py-2 border border-outline-gray-2 rounded text-base bg-surface-modal text-ink-gray-8 flex items-center leading-4 justify-between gap-2"
                 >
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 truncate">
                     <DragVerticalIcon class="h-3.5 cursor-grab" />
-                    <div>{{ field.label }}</div>
+                    <div class="truncate">{{ field.label }}</div>
                   </div>
                   <Button
                     variant="ghost"
