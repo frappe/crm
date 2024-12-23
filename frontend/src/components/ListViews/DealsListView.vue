@@ -36,7 +36,11 @@
         </Button>
       </ListHeaderItem>
     </ListHeader>
-    <ListRows :rows="rows" v-slot="{ idx, column, item, row }">
+    <ListRows
+      :rows="rows"
+      v-slot="{ idx, column, item, row }"
+      doctype="CRM Deal"
+    >
       <div v-if="column.key === '_assign'" class="flex items-center">
         <MultipleAvatar
           :avatars="item"
