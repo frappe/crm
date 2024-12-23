@@ -52,7 +52,7 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import { timeAgo, formatDate } from '@/utils'
-import { Tooltip, Dropdown, TextEditor } from 'frappe-ui'
+import { Tooltip, Dropdown, TextEditor, call } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 
 const props = defineProps({
