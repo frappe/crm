@@ -42,7 +42,7 @@
       v-slot="{ idx, column, item }"
       doctype="Contact"
     >
-      <ListRowItem :item="item">
+      <ListRowItem :item="item" :align="column.align">
         <template #prefix>
           <div v-if="column.key === 'full_name'">
             <Avatar

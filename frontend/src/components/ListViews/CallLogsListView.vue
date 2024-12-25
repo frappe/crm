@@ -38,7 +38,7 @@
       v-slot="{ idx, column, item }"
       doctype="CRM Call Log"
     >
-      <ListRowItem :item="item">
+      <ListRowItem :item="item" :align="column.align">
         <template #prefix>
           <div v-if="['caller', 'receiver'].includes(column.key)">
             <Avatar
