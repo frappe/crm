@@ -28,13 +28,13 @@ export function getMeta(doctype) {
   function getFormattedFloat(fieldname, doc) {
     let df = doctypeMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
     let precision = df?.precision || null
-    return formatNumber(doc[fieldname], "", precision)
+    return formatNumber(doc[fieldname], '', precision)
   }
 
   function getFormattedCurrency(fieldname, doc) {
     let currency = window.sysdefaults.currency || 'USD'
-
     let df = doctypeMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
+    let precision = df?.precision || null
 
     if (df && df.options) {
       if (df.options.indexOf(':') != -1) {
@@ -44,7 +44,7 @@ export function getMeta(doctype) {
       }
     }
 
-    return formatCurrency(doc[fieldname], df, currency)
+    return formatCurrency(doc[fieldname], '', currency, precision)
   }
 
   return {

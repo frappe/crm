@@ -1,3 +1,5 @@
+import { get } from '@vueuse/core'
+
 const NUMBER_FORMAT_INFO = {
   '#,###.##': { decimalStr: '.', groupSep: ',' },
   '#.###,##': { decimalStr: ',', groupSep: '.' },
@@ -159,14 +161,11 @@ export function formatNumber(v, format, decimals) {
   return (isNegative ? '-' : '') + part[0] + part[1]
 }
 
-export function formatCurrency(value, df, currency = 'USD') {
-  if (!value || !df) return ''
+export function formatCurrency(value, format, currency = 'USD', precision = 2) {
+  value = value == null || value === '' ? 0 : value
 
-  let precision
-  if (typeof df.precision == 'number') {
-    precision = df.precision
-  } else {
-    precision = cint(df.precision || window.sysdefaults.currency_precision || 2)
+  if (typeof precision != 'number') {
+    precision = cint(precision || window.sysdefaults.currency_precision || 2)
   }
 
   // If you change anything below, it's going to hurt a company in UAE, a bit.
@@ -183,9 +182,7 @@ export function formatCurrency(value, df, currency = 'USD') {
     }
   }
 
-  value = value == null || value === '' ? '' : value
-
-  let format = getNumberFormat()
+  format = getNumberFormat(format)
   let symbol = getCurrencySymbol(currency)
 
   if (symbol) {
@@ -193,6 +190,10 @@ export function formatCurrency(value, df, currency = 'USD') {
   }
 
   return formatNumber(value, format, precision)
+}
+
+function getNumberFormat(format = null) {
+  return format || window.sysdefaults.number_format || '#,###.##'
 }
 
 function getCurrencySymbol(currencyCode) {
@@ -211,10 +212,6 @@ function getCurrencySymbol(currencyCode) {
     console.error(`Invalid currency code: ${currencyCode}`)
     return null
   }
-}
-
-function getNumberFormat() {
-  return window.sysdefaults.number_format || '#,###.##'
 }
 
 function getNumberFormatInfo(format) {
