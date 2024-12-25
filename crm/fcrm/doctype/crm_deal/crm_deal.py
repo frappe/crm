@@ -139,6 +139,7 @@ class CRMDeal(Document):
 				'label': 'Amount',
 				'type': 'Currency',
 				'key': 'annual_revenue',
+				'align': 'right',
 				'width': '9rem',
 			},
 			{

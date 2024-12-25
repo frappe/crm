@@ -37,7 +37,7 @@
       v-slot="{ idx, column, item }"
       doctype="Email Template"
     >
-      <ListRowItem :item="item">
+      <ListRowItem :item="item" :align="column.align">
         <!-- <template #prefix>
 
           </template> -->

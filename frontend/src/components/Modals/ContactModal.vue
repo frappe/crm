@@ -23,7 +23,11 @@
           </div>
         </div>
         <div v-if="filteredSections.length">
-          <FieldLayout :tabs="filteredSections" :data="_contact" />
+          <FieldLayout
+            :tabs="filteredSections"
+            :data="_contact"
+            doctype="Contact"
+          />
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">

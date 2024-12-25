@@ -125,9 +125,10 @@
               >
                 <Section :label="section.label" :opened="section.opened">
                   <SidePanelLayout
+                    v-model="organization.doc"
                     :fields="section.fields"
                     :isLastSection="i == fieldsLayout.data.length - 1"
-                    v-model="organization.doc"
+                    doctype="CRM Organization"
                     @update="updateField"
                   />
                 </Section>
@@ -176,16 +177,12 @@ import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
-import {
-  formatDate,
-  timeAgo,
-  formatNumberIntoCurrency,
-  createToast,
-} from '@/utils'
+import { formatDate, timeAgo, createToast } from '@/utils'
 import {
   Breadcrumbs,
   Avatar,
@@ -441,6 +438,8 @@ const rows = computed(() => {
   })
 })
 
+const { getFormattedCurrency } = getMeta('CRM Deal')
+
 const columns = computed(() => {
   return tabIndex.value === 0 ? dealColumns : contactColumns
 })
@@ -450,12 +449,9 @@ function getDealRowObject(deal) {
     name: deal.name,
     organization: {
       label: deal.organization,
-      logo: props.organization?.organization_logo,
+      logo: organization.doc?.organization_logo,
     },
-    annual_revenue: formatNumberIntoCurrency(
-      deal.annual_revenue,
-      deal.currency,
-    ),
+    annual_revenue: getFormattedCurrency('annual_revenue', deal),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.iconColorClass,
@@ -485,7 +481,7 @@ function getContactRowObject(contact) {
     mobile_no: contact.mobile_no,
     company_name: {
       label: contact.company_name,
-      logo: props.organization?.organization_logo,
+      logo: organization.doc?.organization_logo,
     },
     modified: {
       label: formatDate(contact.modified),
@@ -503,6 +499,7 @@ const dealColumns = [
   {
     label: __('Amount'),
     key: 'annual_revenue',
+    align: 'right',
     width: '9rem',
   },
   {

@@ -41,7 +41,7 @@
       v-slot="{ idx, column, item }"
       doctype="CRM Organization"
     >
-      <ListRowItem :item="item">
+      <ListRowItem :item="item" :align="column.align">
         <template #prefix>
           <div v-if="column.key === 'organization_name'">
             <Avatar

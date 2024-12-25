@@ -1,7 +1,10 @@
 import { secondsToDuration, formatDate, timeAgo } from '@/utils'
+import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 
+const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+  getMeta('CRM Call Log')
 const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
@@ -56,6 +59,18 @@ export function getCallLogDetail(row, log, columns = []) {
 
   if (fieldType && ['Date', 'Datetime'].includes(fieldType)) {
     return formatDate(log[row], '', true, fieldType == 'Datetime')
+  }
+
+  if (fieldType && fieldType == 'Currency') {
+    return getFormattedCurrency(row, log)
+  }
+
+  if (fieldType && fieldType == 'Float') {
+    return getFormattedFloat(row, log)
+  }
+
+  if (fieldType && fieldType == 'Percent') {
+    return getFormattedPercent(row, log)
   }
 
   return log[row]

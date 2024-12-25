@@ -23,7 +23,7 @@
           </div>
         </div>
         <div v-if="tabs.data">
-          <FieldLayout :tabs="tabs.data" :data="_address" />
+          <FieldLayout :tabs="tabs.data" :data="_address" doctype="Address" />
           <ErrorMessage class="mt-2" :message="error" />
         </div>
       </div>
@@ -54,7 +54,7 @@ import FieldLayout from '@/components/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { call, FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
+import { FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 
 const props = defineProps({

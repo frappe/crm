@@ -47,7 +47,7 @@
           </div>
         </Tooltip>
       </div>
-      <ListRowItem v-else :item="item">
+      <ListRowItem v-else :item="item" :align="column.align">
         <template #prefix>
           <div v-if="column.key === 'status'">
             <TaskStatusIcon :status="item" />

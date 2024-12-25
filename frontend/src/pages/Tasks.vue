@@ -204,12 +204,15 @@ import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
+import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { formatDate, timeAgo } from '@/utils'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+  getMeta('CRM Task')
 const { getUser } = usersStore()
 
 const router = useRouter()
@@ -269,6 +272,18 @@ function parseRows(rows, columns = []) {
         !['modified', 'creation', 'due_date'].includes(row)
       ) {
         _rows[row] = formatDate(task[row], '', true, fieldType == 'Datetime')
+      }
+
+      if (fieldType && fieldType == 'Currency') {
+        _rows[row] = getFormattedCurrency(row, task)
+      }
+
+      if (fieldType && fieldType == 'Float') {
+        _rows[row] = getFormattedFloat(row, task)
+      }
+
+      if (fieldType && fieldType == 'Percent') {
+        _rows[row] = getFormattedPercent(row, task)
       }
 
       if (['modified', 'creation'].includes(row)) {

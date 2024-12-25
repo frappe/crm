@@ -169,6 +169,33 @@
             />
           </div>
           <FormControl
+            v-else-if="field.type === 'percent'"
+            class="form-control"
+            type="text"
+            :value="getFormattedPercent(field.name, data)"
+            :placeholder="field.placeholder"
+            :debounce="500"
+            @change.stop="emit('update', field.name, flt($event.target.value))"
+          />
+          <FormControl
+            v-else-if="field.type === 'float'"
+            class="form-control"
+            type="text"
+            :value="getFormattedFloat(field.name, data)"
+            :placeholder="field.placeholder"
+            :debounce="500"
+            @change.stop="emit('update', field.name, flt($event.target.value))"
+          />
+          <FormControl
+            v-else-if="field.type === 'currency'"
+            class="form-control"
+            type="text"
+            :value="getFormattedCurrency(field.name, data)"
+            :placeholder="field.placeholder"
+            :debounce="500"
+            @change.stop="emit('update', field.name, flt($event.target.value))"
+          />
+          <FormControl
             v-else
             class="form-control"
             type="text"
@@ -203,8 +230,10 @@ import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { getFormat } from '@/utils'
+import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
 import { computed } from 'vue'
 
@@ -212,12 +241,18 @@ const props = defineProps({
   fields: {
     type: Object,
   },
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
+  },
   isLastSection: {
     type: Boolean,
     default: false,
   },
 })
 
+const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+  getMeta(props.doctype)
 const { getUser } = usersStore()
 
 const emit = defineEmits(['update'])
