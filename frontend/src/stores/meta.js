@@ -1,5 +1,5 @@
 import { createResource } from 'frappe-ui'
-import { formatCurrency } from '@/utils/numberFormat.js'
+import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
 import { reactive } from 'vue'
 
 const doctypeMeta = reactive({})
@@ -25,6 +25,12 @@ export function getMeta(doctype) {
     meta.fetch()
   }
 
+  function getFormattedFloat(fieldname, doc) {
+    let df = doctypeMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
+    let precision = df?.precision || null
+    return formatNumber(doc[fieldname], "", precision)
+  }
+
   function getFormattedCurrency(fieldname, doc) {
     let currency = window.sysdefaults.currency || 'USD'
 
@@ -44,6 +50,7 @@ export function getMeta(doctype) {
   return {
     meta,
     doctypeMeta,
+    getFormattedFloat,
     getFormattedCurrency,
   }
 }

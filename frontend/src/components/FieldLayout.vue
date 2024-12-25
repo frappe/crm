@@ -191,14 +191,20 @@
                     v-model="data[field.name]"
                   />
                   <FormControl
+                    v-else-if="field.type === 'Float'"
+                    type="text"
+                    :value="getFormattedFloat(field.name, data)"
+                    :placeholder="getPlaceholder(field)"
+                    :disabled="Boolean(field.read_only)"
+                    @change="data[field.name] = flt($event.target.value)"
+                  />
+                  <FormControl
                     v-else-if="field.type === 'Currency'"
                     type="text"
                     :value="getFormattedCurrency(field.name, data)"
                     :placeholder="getPlaceholder(field)"
                     :disabled="Boolean(field.read_only)"
-                    @change="
-                      data[field.name] = flt($event.target.value)
-                    "
+                    @change="data[field.name] = flt($event.target.value)"
                   />
                   <FormControl
                     v-else
@@ -243,7 +249,7 @@ const props = defineProps({
   },
 })
 
-const { getFormattedCurrency } = getMeta(props.doctype)
+const { getFormattedFloat, getFormattedCurrency } = getMeta(props.doctype)
 const { getUser } = usersStore()
 
 const hasTabs = computed(() => !props.tabs[0].no_tabs)

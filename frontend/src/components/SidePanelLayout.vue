@@ -169,15 +169,22 @@
             />
           </div>
           <FormControl
+            v-else-if="field.type === 'float'"
+            class="form-control"
+            type="text"
+            :value="getFormattedFloat(field.name, data)"
+            :placeholder="field.placeholder"
+            :debounce="500"
+            @change.stop="emit('update', field.name, flt($event.target.value))"
+          />
+          <FormControl
             v-else-if="field.type === 'currency'"
             class="form-control"
             type="text"
             :value="getFormattedCurrency(field.name, data)"
             :placeholder="field.placeholder"
             :debounce="500"
-            @change.stop="
-              emit('update', field.name, flt($event.target.value))
-            "
+            @change.stop="emit('update', field.name, flt($event.target.value))"
           />
           <FormControl
             v-else
@@ -235,7 +242,7 @@ const props = defineProps({
   },
 })
 
-const { getFormattedCurrency } = getMeta(props.doctype)
+const { getFormattedFloat, getFormattedCurrency } = getMeta(props.doctype)
 const { getUser } = usersStore()
 
 const emit = defineEmits(['update'])
