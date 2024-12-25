@@ -75,8 +75,11 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import EmailTemplatesListView from '@/components/ListViews/EmailTemplatesListView.vue'
 import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
+import { getMeta } from '@/stores/meta'
 import { formatDate, timeAgo } from '@/utils'
 import { computed, ref } from 'vue'
+
+const { getFormattedCurrency } = getMeta('Email Template')
 
 const emailTemplatesListView = ref(null)
 
@@ -113,6 +116,10 @@ const rows = computed(() => {
           true,
           fieldType == 'Datetime',
         )
+      }
+
+      if (fieldType && fieldType == 'Currency') {
+        _rows[row] = getFormattedCurrency(row, emailTemplate)
       }
 
       if (['modified', 'creation'].includes(row)) {

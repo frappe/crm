@@ -281,22 +281,18 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
-import {
-  formatDate,
-  timeAgo,
-  website,
-  formatNumberIntoCurrency,
-  formatTime,
-} from '@/utils'
+import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
 
+const { getFormattedCurrency } = getMeta('CRM Deal')
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
@@ -402,6 +398,10 @@ function parseRows(rows, columns = []) {
         _rows[row] = formatDate(deal[row], '', true, fieldType == 'Datetime')
       }
 
+      if (fieldType && fieldType == 'Currency') {
+        _rows[row] = getFormattedCurrency(row, deal)
+      }
+
       if (row == 'organization') {
         _rows[row] = {
           label: deal.organization,
@@ -409,11 +409,6 @@ function parseRows(rows, columns = []) {
         }
       } else if (row === 'website') {
         _rows[row] = website(deal.website)
-      } else if (row == 'annual_revenue') {
-        _rows[row] = formatNumberIntoCurrency(
-          deal.annual_revenue,
-          deal.currency,
-        )
       } else if (row == 'status') {
         _rows[row] = {
           label: deal.status,

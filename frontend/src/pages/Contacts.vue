@@ -70,10 +70,12 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { getMeta } from '@/stores/meta'
 import { organizationsStore } from '@/stores/organizations.js'
 import { formatDate, timeAgo } from '@/utils'
 import { ref, computed } from 'vue'
 
+const { getFormattedCurrency } = getMeta('Contact')
 const { getOrganization } = organizationsStore()
 
 const showContactModal = ref(false)
@@ -108,6 +110,10 @@ const rows = computed(() => {
         !['modified', 'creation'].includes(row)
       ) {
         _rows[row] = formatDate(contact[row], '', true, fieldType == 'Datetime')
+      }
+
+      if (fieldType && fieldType == 'Currency') {
+        _rows[row] = getFormattedCurrency(row, contact)
       }
 
       if (row == 'full_name') {

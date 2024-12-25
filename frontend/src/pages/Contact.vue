@@ -211,13 +211,9 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
-import {
-  formatDate,
-  timeAgo,
-  formatNumberIntoCurrency,
-  createToast,
-} from '@/utils'
+import { formatDate, timeAgo, createToast } from '@/utils'
 import { getView } from '@/utils/view'
+import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
 import { organizationsStore } from '@/stores/organizations.js'
@@ -601,6 +597,8 @@ async function updateField(fieldname, value) {
   contact.reload()
 }
 
+const { getFormattedCurrency } = getMeta('CRM Deal')
+
 const columns = computed(() => dealColumns)
 
 function getDealRowObject(deal) {
@@ -610,10 +608,7 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: getOrganization(deal.organization)?.organization_logo,
     },
-    annual_revenue: formatNumberIntoCurrency(
-      deal.annual_revenue,
-      deal.currency,
-    ),
+    annual_revenue: getFormattedCurrency('annual_revenue', deal),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.iconColorClass,
