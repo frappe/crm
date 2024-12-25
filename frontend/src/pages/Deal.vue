@@ -171,6 +171,7 @@
                 v-if="section.fields"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
+                doctype="CRM Deal"
                 v-model="deal.data"
                 @update="updateField"
               />

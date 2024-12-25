@@ -142,6 +142,7 @@
                 v-if="section.fields"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
+                doctype="Contact"
                 v-model="contact.data"
                 @update="updateField"
               />

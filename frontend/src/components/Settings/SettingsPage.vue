@@ -12,7 +12,12 @@
       />
     </h2>
     <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
-      <FieldLayout v-if="data?.doc && tabs" :tabs="tabs" :data="data.doc" />
+      <FieldLayout
+        v-if="data?.doc && tabs"
+        :tabs="tabs"
+        :data="data.doc"
+        :doctype="doctype"
+      />
       <ErrorMessage class="mt-2" :message="error" />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">

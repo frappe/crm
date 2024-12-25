@@ -59,7 +59,7 @@ export function cint(v, def) {
   return v
 }
 
-function flt(v, decimals, numberFormat, roundingMethod) {
+export function flt(v, decimals, numberFormat, roundingMethod) {
   if (v == null || v == '') return 0
 
   if (typeof v !== 'number') {

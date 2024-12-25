@@ -125,9 +125,10 @@
               </template>
               <SidePanelLayout
                 v-if="section.fields"
+                v-model="organization.doc"
                 :fields="section.fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
-                v-model="organization.doc"
+                doctype="CRM Organization"
                 @update="updateField"
               />
             </Section>
