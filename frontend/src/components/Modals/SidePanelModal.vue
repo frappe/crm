@@ -151,7 +151,7 @@ function saveChanges() {
     {
       doctype: _doctype.value,
       type: 'Side Panel',
-      layout: JSON.stringify(_tabs),
+      layout: JSON.stringify(_tabs[0].sections),
     },
   ).then(() => {
     loading.value = false
