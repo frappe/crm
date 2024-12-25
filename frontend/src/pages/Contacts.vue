@@ -75,7 +75,7 @@ import { organizationsStore } from '@/stores/organizations.js'
 import { formatDate, timeAgo } from '@/utils'
 import { ref, computed } from 'vue'
 
-const { getFormattedCurrency } = getMeta('Contact')
+const { getFormattedFloat, getFormattedCurrency } = getMeta('Contact')
 const { getOrganization } = organizationsStore()
 
 const showContactModal = ref(false)
@@ -114,6 +114,10 @@ const rows = computed(() => {
 
       if (fieldType && fieldType == 'Currency') {
         _rows[row] = getFormattedCurrency(row, contact)
+      }
+
+      if (fieldType && fieldType == 'Float') {
+        _rows[row] = getFormattedFloat(row, contact)
       }
 
       if (row == 'full_name') {

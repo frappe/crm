@@ -73,7 +73,7 @@ import { getMeta } from '@/stores/meta'
 import { formatDate, timeAgo, website } from '@/utils'
 import { ref, computed } from 'vue'
 
-const { getFormattedCurrency } = getMeta('CRM Organization')
+const { getFormattedFloat, getFormattedCurrency } = getMeta('CRM Organization')
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
@@ -115,6 +115,10 @@ const rows = computed(() => {
 
       if (fieldType && fieldType == 'Currency') {
         _rows[row] = getFormattedCurrency(row, organization)
+      }
+
+      if (fieldType && fieldType == 'Float') {
+        _rows[row] = getFormattedFloat(row, organization)
       }
 
       if (row === 'organization_name') {

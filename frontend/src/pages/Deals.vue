@@ -292,7 +292,7 @@ import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
 
-const { getFormattedCurrency } = getMeta('CRM Deal')
+const { getFormattedFloat, getFormattedCurrency } = getMeta('CRM Deal')
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
@@ -400,6 +400,10 @@ function parseRows(rows, columns = []) {
 
       if (fieldType && fieldType == 'Currency') {
         _rows[row] = getFormattedCurrency(row, deal)
+      }
+
+      if (fieldType && fieldType == 'Float') {
+        _rows[row] = getFormattedFloat(row, deal)
       }
 
       if (row == 'organization') {

@@ -616,6 +616,7 @@ const dealColumns = [
   {
     label: __('Amount'),
     key: 'annual_revenue',
+    align: 'right',
     width: '9rem',
   },
   {

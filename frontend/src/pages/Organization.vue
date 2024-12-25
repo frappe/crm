@@ -516,7 +516,7 @@ function getContactRowObject(contact) {
     mobile_no: contact.mobile_no,
     company_name: {
       label: contact.company_name,
-      logo: props.organization?.organization_logo,
+      logo: organization.doc?.organization_logo,
     },
     modified: {
       label: formatDate(contact.modified),
@@ -534,6 +534,7 @@ const dealColumns = [
   {
     label: __('Amount'),
     key: 'annual_revenue',
+    align: 'right',
     width: '9rem',
   },
   {

@@ -79,7 +79,7 @@ import { getMeta } from '@/stores/meta'
 import { formatDate, timeAgo } from '@/utils'
 import { computed, ref } from 'vue'
 
-const { getFormattedCurrency } = getMeta('Email Template')
+const { getFormattedFloat, getFormattedCurrency } = getMeta('Email Template')
 
 const emailTemplatesListView = ref(null)
 
@@ -120,6 +120,10 @@ const rows = computed(() => {
 
       if (fieldType && fieldType == 'Currency') {
         _rows[row] = getFormattedCurrency(row, emailTemplate)
+      }
+
+      if (fieldType && fieldType == 'Float') {
+        _rows[row] = getFormattedFloat(row, emailTemplate)
       }
 
       if (['modified', 'creation'].includes(row)) {

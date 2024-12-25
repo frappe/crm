@@ -3,7 +3,7 @@ import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 
-const { getFormattedCurrency } = getMeta('CRM Call Log')
+const { getFormattedFloat, getFormattedCurrency } = getMeta('CRM Call Log')
 const { getUser } = usersStore()
 const { getContact, getLeadContact } = contactsStore()
 
@@ -62,6 +62,10 @@ export function getCallLogDetail(row, log, columns = []) {
 
   if (fieldType && fieldType == 'Currency') {
     return getFormattedCurrency(row, log)
+  }
+
+  if (fieldType && fieldType == 'Float') {
+    return getFormattedFloat(row, log)
   }
 
   return log[row]
