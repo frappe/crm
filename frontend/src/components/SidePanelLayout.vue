@@ -169,6 +169,15 @@
             />
           </div>
           <FormControl
+            v-else-if="field.type === 'percent'"
+            class="form-control"
+            type="text"
+            :value="getFormattedPercent(field.name, data)"
+            :placeholder="field.placeholder"
+            :debounce="500"
+            @change.stop="emit('update', field.name, flt($event.target.value))"
+          />
+          <FormControl
             v-else-if="field.type === 'float'"
             class="form-control"
             type="text"
@@ -242,7 +251,8 @@ const props = defineProps({
   },
 })
 
-const { getFormattedFloat, getFormattedCurrency } = getMeta(props.doctype)
+const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+  getMeta(props.doctype)
 const { getUser } = usersStore()
 
 const emit = defineEmits(['update'])

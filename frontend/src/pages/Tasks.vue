@@ -211,7 +211,8 @@ import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const { getFormattedFloat, getFormattedCurrency } = getMeta('CRM Task')
+const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+  getMeta('CRM Task')
 const { getUser } = usersStore()
 
 const router = useRouter()
@@ -279,6 +280,10 @@ function parseRows(rows, columns = []) {
 
       if (fieldType && fieldType == 'Float') {
         _rows[row] = getFormattedFloat(row, task)
+      }
+
+      if (fieldType && fieldType == 'Percent') {
+        _rows[row] = getFormattedPercent(row, task)
       }
 
       if (['modified', 'creation'].includes(row)) {

@@ -25,6 +25,11 @@ export function getMeta(doctype) {
     meta.fetch()
   }
 
+  function getFormattedPercent(fieldname, doc) {
+    let value = getFormattedFloat(fieldname, doc)
+    return value + '%'
+  }
+
   function getFormattedFloat(fieldname, doc) {
     let df = doctypeMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
     let precision = df?.precision || null
@@ -51,6 +56,7 @@ export function getMeta(doctype) {
     meta,
     doctypeMeta,
     getFormattedFloat,
+    getFormattedPercent,
     getFormattedCurrency,
   }
 }
