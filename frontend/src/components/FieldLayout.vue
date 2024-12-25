@@ -191,6 +191,30 @@
                     v-model="data[field.name]"
                   />
                   <FormControl
+                    v-else-if="field.type === 'Percent'"
+                    type="text"
+                    :value="getFormattedPercent(field.name, data)"
+                    :placeholder="getPlaceholder(field)"
+                    :disabled="Boolean(field.read_only)"
+                    @change="data[field.name] = flt($event.target.value)"
+                  />
+                  <FormControl
+                    v-else-if="field.type === 'Float'"
+                    type="text"
+                    :value="getFormattedFloat(field.name, data)"
+                    :placeholder="getPlaceholder(field)"
+                    :disabled="Boolean(field.read_only)"
+                    @change="data[field.name] = flt($event.target.value)"
+                  />
+                  <FormControl
+                    v-else-if="field.type === 'Currency'"
+                    type="text"
+                    :value="getFormattedCurrency(field.name, data)"
+                    :placeholder="getPlaceholder(field)"
+                    :disabled="Boolean(field.read_only)"
+                    @change="data[field.name] = flt($event.target.value)"
+                  />
+                  <FormControl
                     v-else
                     type="text"
                     :placeholder="getPlaceholder(field)"
@@ -213,21 +237,29 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
+import { getMeta } from '../stores/meta'
 import { usersStore } from '@/stores/users'
 import { getFormat } from '@/utils'
+import { flt } from '@/utils/numberFormat.js'
 import { Tabs, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
 import { ref, computed } from 'vue'
-
-const { getUser } = usersStore()
 
 const props = defineProps({
   tabs: Array,
   data: Object,
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
+  },
   modal: {
     type: Boolean,
     default: false,
   },
 })
+
+const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+  getMeta(props.doctype)
+const { getUser } = usersStore()
 
 const hasTabs = computed(() => !props.tabs[0].no_tabs)
 

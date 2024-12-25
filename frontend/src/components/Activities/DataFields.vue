@@ -32,7 +32,12 @@
     <span>{{ __('Loading...') }}</span>
   </div>
   <div v-else>
-    <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="data.doc" />
+    <FieldLayout
+      v-if="tabs.data"
+      :tabs="tabs.data"
+      :data="data.doc"
+      :doctype="doctype"
+    />
   </div>
   <DataFieldsModal
     v-if="showDataFieldsModal"

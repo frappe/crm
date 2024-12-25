@@ -69,8 +69,12 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
-import { formatDate, timeAgo, website, formatNumberIntoCurrency } from '@/utils'
+import { getMeta } from '@/stores/meta'
+import { formatDate, timeAgo, website } from '@/utils'
 import { ref, computed } from 'vue'
+
+const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+  getMeta('CRM Organization')
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
@@ -110,6 +114,18 @@ const rows = computed(() => {
         )
       }
 
+      if (fieldType && fieldType == 'Currency') {
+        _rows[row] = getFormattedCurrency(row, organization)
+      }
+
+      if (fieldType && fieldType == 'Float') {
+        _rows[row] = getFormattedFloat(row, organization)
+      }
+
+      if (fieldType && fieldType == 'Percent') {
+        _rows[row] = getFormattedPercent(row, organization)
+      }
+
       if (row === 'organization_name') {
         _rows[row] = {
           label: organization.organization_name,
@@ -117,11 +133,6 @@ const rows = computed(() => {
         }
       } else if (row === 'website') {
         _rows[row] = website(organization.website)
-      } else if (row === 'annual_revenue') {
-        _rows[row] = formatNumberIntoCurrency(
-          organization.annual_revenue,
-          organization.currency,
-        )
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = {
           label: formatDate(organization[row]),

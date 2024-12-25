@@ -38,6 +38,7 @@
             v-if="filteredSections.length"
             :tabs="filteredSections"
             :data="deal"
+            doctype="CRM Deal"
           />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>

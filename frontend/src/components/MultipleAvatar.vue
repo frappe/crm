@@ -48,5 +48,5 @@ const props = defineProps({
     default: 'md',
   },
 })
-const reverseAvatars = computed(() => props.avatars.reverse())
+const reverseAvatars = computed(() => [...props.avatars].reverse())
 </script>

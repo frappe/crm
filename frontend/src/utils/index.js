@@ -126,17 +126,6 @@ export function secondsToDuration(seconds) {
   return `${hours}h ${minutes}m ${_seconds}s`
 }
 
-export function formatNumberIntoCurrency(value, currency = 'INR') {
-  if (value) {
-    return value.toLocaleString('en-IN', {
-      maximumFractionDigits: 0,
-      style: 'currency',
-      currency: currency ? currency : 'INR',
-    })
-  }
-  return ''
-}
-
 export function startCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
