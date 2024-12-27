@@ -11,7 +11,7 @@
               : 'w-52 px-2 hover:bg-surface-gray-3'
         "
       >
-        <CRMLogo class="size-8 flex-shrink-0 rounded" />
+        <BrandLogo v-model="brand" class="size-8 flex-shrink-0" />
         <div
           class="flex flex-1 flex-col text-left duration-300 ease-in-out"
           :class="
@@ -21,7 +21,7 @@
           "
         >
           <div class="text-base font-medium leading-none text-ink-gray-9">
-            {{ __('CRM') }}
+            {{ __(brand.name || 'CRM') }}
           </div>
           <div class="mt-1 text-sm leading-none text-ink-gray-7">
             {{ user.full_name }}
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import CRMLogo from '@/components/Icons/CRMLogo.vue'
+import BrandLogo from '@/components/BrandLogo.vue'
 import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
@@ -64,7 +64,7 @@ const props = defineProps({
   },
 })
 
-const { settings } = getSettings()
+const { settings, brand } = getSettings()
 const { logout } = sessionStore()
 const { getUser } = usersStore()
 
