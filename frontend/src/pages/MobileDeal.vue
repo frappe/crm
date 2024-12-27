@@ -273,6 +273,7 @@ import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
+import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import {
@@ -288,10 +289,12 @@ import {
   Tabs,
   Breadcrumbs,
   call,
+  usePageMeta
 } from 'frappe-ui'
 import { ref, computed, h, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const route = useRoute()
@@ -428,6 +431,13 @@ const breadcrumbs = computed(() => {
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
+})
+
+usePageMeta(() => {
+  return {
+    title: organization.data?.name || deal.data?.name,
+    icon: brand.favicon,
+  }
 })
 
 const tabs = computed(() => {

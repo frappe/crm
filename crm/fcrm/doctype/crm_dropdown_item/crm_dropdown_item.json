@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-27 17:42:33.089685",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "name1",
+  "label",
+  "type",
+  "route",
+  "open_in_new_window",
+  "hidden",
+  "is_standard",
+  "column_break_mvbq",
+  "icon"
+ ],
+ "fields": [
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label",
+   "mandatory_depends_on": "eval:doc.type == 'Route'"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Route\nSeparator",
+   "read_only_depends_on": "eval:doc.is_standard"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Route'",
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Route",
+   "mandatory_depends_on": "eval:doc.type == 'Route'"
+  },
+  {
+   "default": "0",
+   "fieldname": "hidden",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Hidden"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_standard",
+   "fieldtype": "Check",
+   "label": "Is Standard",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_mvbq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Add svg code or use feather icons e.g 'settings'",
+   "fieldname": "icon",
+   "fieldtype": "Code",
+   "label": "Icon"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.type == 'Route'",
+   "fieldname": "open_in_new_window",
+   "fieldtype": "Check",
+   "label": "Open in new window"
+  },
+  {
+   "depends_on": "eval:doc.is_standard",
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "label": "Name",
+   "read_only": 1,
+   "unique": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-12-27 19:35:53.012508",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Dropdown Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

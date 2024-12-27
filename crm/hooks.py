@@ -57,7 +57,7 @@ add_to_apps_screen = [
 
 # website user home page (by Role)
 # role_home_page = {
-#	"Role": "home_page"
+# "Role": "home_page"
 # }
 
 website_route_rules = [
@@ -75,8 +75,8 @@ website_route_rules = [
 
 # add methods and filters to jinja environment
 # jinja = {
-#	"methods": "crm.utils.jinja_methods",
-#	"filters": "crm.utils.jinja_filters"
+# "methods": "crm.utils.jinja_methods",
+# "filters": "crm.utils.jinja_filters"
 # }
 
 # Installation
@@ -118,11 +118,11 @@ before_uninstall = "crm.uninstall.before_uninstall"
 # Permissions evaluated in scripted ways
 
 # permission_query_conditions = {
-#	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+# "Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
 #
 # has_permission = {
-#	"Event": "frappe.desk.doctype.event.event.has_permission",
+# "Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
 # DocType Class
@@ -155,32 +155,34 @@ doc_events = {
 		"on_update": ["crm.api.whatsapp.on_update"],
 	},
 	"CRM Deal": {
-		"on_update": ["crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"],
+		"on_update": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+		],
 	},
 	"User": {
 		"before_validate": ["crm.api.demo.validate_user"],
-	}
+	},
 }
 
 # Scheduled Tasks
 # ---------------
 
 # scheduler_events = {
-#	"all": [
-#		"crm.tasks.all"
-#	],
-#	"daily": [
-#		"crm.tasks.daily"
-#	],
-#	"hourly": [
-#		"crm.tasks.hourly"
-#	],
-#	"weekly": [
-#		"crm.tasks.weekly"
-#	],
-#	"monthly": [
-#		"crm.tasks.monthly"
-#	],
+# "all": [
+# "crm.tasks.all"
+# ],
+# "daily": [
+# "crm.tasks.daily"
+# ],
+# "hourly": [
+# "crm.tasks.hourly"
+# ],
+# "weekly": [
+# "crm.tasks.weekly"
+# ],
+# "monthly": [
+# "crm.tasks.monthly"
+# ],
 # }
 
 # Testing
@@ -192,14 +194,14 @@ doc_events = {
 # ------------------------------
 #
 # override_whitelisted_methods = {
-#	"frappe.desk.doctype.event.event.get_events": "crm.event.get_events"
+# "frappe.desk.doctype.event.event.get_events": "crm.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-#	"Task": "crm.task.get_dashboard_data"
+# "Task": "crm.task.get_dashboard_data"
 # }
 
 # exempt linked doctypes from being automatically cancelled
@@ -225,29 +227,87 @@ doc_events = {
 # --------------------
 
 # user_data_fields = [
-#	{
-#		"doctype": "{doctype_1}",
-#		"filter_by": "{filter_by}",
-#		"redact_fields": ["{field_1}", "{field_2}"],
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_2}",
-#		"filter_by": "{filter_by}",
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_3}",
-#		"strict": False,
-#	},
-#	{
-#		"doctype": "{doctype_4}"
-#	}
+# {
+# "doctype": "{doctype_1}",
+# "filter_by": "{filter_by}",
+# "redact_fields": ["{field_1}", "{field_2}"],
+# "partial": 1,
+# },
+# {
+# "doctype": "{doctype_2}",
+# "filter_by": "{filter_by}",
+# "partial": 1,
+# },
+# {
+# "doctype": "{doctype_3}",
+# "strict": False,
+# },
+# {
+# "doctype": "{doctype_4}"
+# }
 # ]
 
 # Authentication and authorization
 # --------------------------------
 
 # auth_hooks = [
-#	"crm.auth.validate"
+# "crm.auth.validate"
 # ]
+
+after_migrate = ["crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate"]
+
+standard_dropdown_items = [
+	{
+		"name1": "app_selector",
+		"label": "Apps",
+		"type": "Route",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
+		"name1": "support_link",
+		"label": "Support",
+		"type": "Route",
+		"icon": "life-buoy",
+		"route": "https://t.me/frappecrm",
+		"is_standard": 1,
+	},
+	{
+		"name1": "docs_link",
+		"label": "Docs",
+		"type": "Route",
+		"icon": "book-open",
+		"route": "https://docs.frappe.io/crm",
+		"is_standard": 1,
+	},
+	{
+		"name1": "toggle_theme",
+		"label": "Toggle theme",
+		"type": "Route",
+		"icon": "moon",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
+		"name1": "settings",
+		"label": "Settings",
+		"type": "Route",
+		"icon": "settings",
+  		"route": "#",
+		"is_standard": 1,
+	},
+	{
+		"name1": "separator",
+		"label": "",
+		"type": "Separator",
+		"is_standard": 1,
+	},
+	{
+		"name1": "logout",
+		"label": "Log out",
+		"type": "Route",
+		"icon": "log-out",
+  		"route": "#",
+		"is_standard": 1,
+	},
+]

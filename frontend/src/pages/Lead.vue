@@ -333,6 +333,7 @@ import {
   copyToClipboard,
 } from '@/utils'
 import { getView } from '@/utils/view'
+import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
@@ -355,6 +356,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
+const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
@@ -485,6 +487,7 @@ const breadcrumbs = computed(() => {
 usePageMeta(() => {
   return {
     title: lead.data?.lead_name || lead.data?.name,
+    icon: brand.favicon,
   }
 })
 

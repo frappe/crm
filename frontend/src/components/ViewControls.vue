@@ -224,6 +224,7 @@ import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
+import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
@@ -260,6 +261,7 @@ const props = defineProps({
   },
 })
 
+const { brand } = getSettings()
 const { $dialog } = globalStore()
 const { reload: reloadView, getView } = viewsStore()
 const { isManager } = usersStore()
@@ -320,6 +322,7 @@ usePageMeta(() => {
   return {
     title: label,
     emoji: isEmoji(currentView.value.icon) ? currentView.value.icon : '',
+    icon: brand.favicon,
   }
 })
 

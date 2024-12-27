@@ -66,7 +66,6 @@
               </Section>
             </div>
           </div>
-          <TrialBanner v-if="isFCSite.data" />
         </div>
       </TransitionChild>
       <TransitionChild
@@ -215,13 +214,4 @@ function getIcon(routeName, icon) {
       return PinIcon
   }
 }
-
-const isFCSite = createResource({
-  url: 'frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site',
-  cache: 'isFCSite',
-  auto: true,
-  transform: (data) => Boolean(data),
-})
-
-provide('isFCSite', isFCSite)
 </script>
