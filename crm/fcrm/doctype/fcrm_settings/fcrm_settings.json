@@ -5,7 +5,13 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "defaults_tab",
   "restore_defaults",
+  "branding_tab",
+  "brand_name",
+  "brand_logo",
+  "favicon",
+  "dropdown_items_tab",
   "dropdown_items"
  ],
  "fields": [
@@ -17,14 +23,45 @@
   {
    "fieldname": "dropdown_items",
    "fieldtype": "Table",
-   "label": "Dropdown Items",
    "options": "CRM Dropdown Item"
+  },
+  {
+   "fieldname": "defaults_tab",
+   "fieldtype": "Tab Break",
+   "label": "Defaults"
+  },
+  {
+   "fieldname": "branding_tab",
+   "fieldtype": "Tab Break",
+   "label": "Branding"
+  },
+  {
+   "description": "An image with 1:1 ratio is preferred",
+   "fieldname": "brand_logo",
+   "fieldtype": "Attach",
+   "label": "Logo"
+  },
+  {
+   "fieldname": "dropdown_items_tab",
+   "fieldtype": "Tab Break",
+   "label": "Dropdown Items"
+  },
+  {
+   "fieldname": "brand_name",
+   "fieldtype": "Data",
+   "label": "Name"
+  },
+  {
+   "description": "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]",
+   "fieldname": "favicon",
+   "fieldtype": "Attach",
+   "label": "Favicon"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-27 17:47:29.196692",
+ "modified": "2024-12-27 21:16:47.251706",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

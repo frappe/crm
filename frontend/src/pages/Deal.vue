@@ -363,6 +363,7 @@ import {
   copyToClipboard,
 } from '@/utils'
 import { getView } from '@/utils/view'
+import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
@@ -381,6 +382,7 @@ import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
+const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { isManager } = usersStore()
@@ -540,6 +542,7 @@ const breadcrumbs = computed(() => {
 usePageMeta(() => {
   return {
     title: organization.data?.name || deal.data?.name,
+    icon: brand.favicon,
   }
 })
 
