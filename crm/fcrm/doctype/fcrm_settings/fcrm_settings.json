@@ -5,19 +5,26 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "restore_defaults"
+  "restore_defaults",
+  "dropdown_items"
  ],
  "fields": [
   {
    "fieldname": "restore_defaults",
    "fieldtype": "Button",
    "label": "Restore Defaults"
+  },
+  {
+   "fieldname": "dropdown_items",
+   "fieldtype": "Table",
+   "label": "Dropdown Items",
+   "options": "CRM Dropdown Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-29 13:49:07.835379",
+ "modified": "2024-12-27 17:47:29.196692",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
