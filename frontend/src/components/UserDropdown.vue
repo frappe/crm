@@ -107,11 +107,16 @@ const dropdownItems = createDocumentResource({
 
 function dropdownItemObj(item) {
   let openInNewWindow = item.open_in_new_window
+
+  let icon = item.icon || 'external-link'
+  item.icon = icon.startsWith('<svg') ? markRaw({ template: icon }) : icon
+
   if (item.is_standard) {
     return getStandardItem(item)
   }
+
   return {
-    icon: item.icon || 'external-link',
+    icon: item.icon,
     label: __(item.label),
     onClick: () => window.open(item.url, openInNewWindow ? '_blank' : ''),
   }
