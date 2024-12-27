@@ -214,6 +214,7 @@ import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import { formatDate, timeAgo, createToast } from '@/utils'
 import { getView } from '@/utils/view'
+import { getSettings } from '@/stores/settings'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
@@ -233,6 +234,7 @@ import {
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+const { brand } = getSettings()
 const { $dialog, makeCall } = globalStore()
 
 const { getUser, isManager } = usersStore()
@@ -298,6 +300,7 @@ const breadcrumbs = computed(() => {
 usePageMeta(() => {
   return {
     title: contact.data?.full_name || contact.data?.name,
+    icon: brand.favicon,
   }
 })
 

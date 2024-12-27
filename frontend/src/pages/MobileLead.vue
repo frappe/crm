@@ -195,6 +195,7 @@ import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
+import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
@@ -211,10 +212,12 @@ import {
   Switch,
   Breadcrumbs,
   call,
+  usePageMeta,
 } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
+const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
@@ -337,6 +340,13 @@ const breadcrumbs = computed(() => {
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
+})
+
+usePageMeta(() => {
+  return {
+    title: lead.data?.lead_name || lead.data?.name,
+    icon: brand.favicon,
+  }
 })
 
 const tabs = computed(() => {

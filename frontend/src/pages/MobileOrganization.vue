@@ -177,6 +177,7 @@ import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import { getSettings } from '@/stores/settings'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
@@ -205,6 +206,7 @@ const props = defineProps({
   },
 })
 
+const { brand } = getSettings()
 const { getUser } = usersStore()
 const { $dialog } = globalStore()
 const { getDealStatus } = statusesStore()
@@ -266,6 +268,7 @@ const breadcrumbs = computed(() => {
 usePageMeta(() => {
   return {
     title: props.organizationId,
+    icon: brand.favicon,
   }
 })
 
