@@ -1,5 +1,5 @@
 <template>
-  <Dropdown :options="dropdownOptions" v-bind="$attrs">
+  <Dropdown :options="dropdownItems.doc || []" v-bind="$attrs">
     <template v-slot="{ open }">
       <button
         class="flex h-12 items-center rounded-md py-2 duration-300 ease-in-out"
@@ -52,9 +52,9 @@ import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { showSettings } from '@/composables/settings'
-import { Dropdown } from 'frappe-ui'
+import { createDocumentResource, Dropdown } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
-import { computed, ref, markRaw, onMounted } from 'vue'
+import { computed, markRaw, onMounted } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -70,48 +70,91 @@ const user = computed(() => getUser() || {})
 
 const theme = useStorage('theme', 'light')
 
-let dropdownOptions = ref([
-  {
-    group: 'Manage',
-    hideLabel: true,
-    items: [
+const dropdownItems = createDocumentResource({
+  doctype: 'FCRM Settings',
+  name: 'FCRM Settings',
+  fields: ['dropdown_items'],
+  auto: true,
+  transform: (data) => {
+    let items = data.dropdown_items
+
+    let _dropdownItems = [
       {
+        group: 'Dropdown Items',
+        hideLabel: true,
+        items: [],
+      },
+    ]
+
+    items.forEach((item) => {
+      if (item.hidden) return
+      if (item.type !== 'Separator') {
+        _dropdownItems[_dropdownItems.length - 1].items.push(
+          dropdownItemObj(item),
+        )
+      } else {
+        _dropdownItems.push({
+          group: '',
+          hideLabel: true,
+          items: [],
+        })
+      }
+    })
+
+    return _dropdownItems
+  },
+})
+
+function dropdownItemObj(item) {
+  let openInNewWindow = item.open_in_new_window
+  if (item.is_standard) {
+    return getStandardItem(item)
+  }
+  return {
+    icon: item.icon || 'external-link',
+    label: __(item.label),
+    onClick: () => window.open(item.url, openInNewWindow ? '_blank' : ''),
+  }
+}
+
+function getStandardItem(item) {
+  switch (item.name1) {
+    case 'app_selector':
+      return {
         component: markRaw(Apps),
-      },
-      {
-        icon: 'life-buoy',
-        label: computed(() => __('Support')),
-        onClick: () => window.open('https://t.me/frappecrm', '_blank'),
-      },
-      {
-        icon: 'book-open',
-        label: computed(() => __('Docs')),
-        onClick: () => window.open('https://docs.frappe.io/crm', '_blank'),
-      },
-    ],
-  },
-  {
-    group: 'Others',
-    hideLabel: true,
-    items: [
-      {
-        icon: computed(() => (theme.value === 'dark' ? 'moon' : 'sun')),
-        label: computed(() => __('Toggle theme')),
+      }
+    case 'support_link':
+      return {
+        icon: item.icon,
+        label: __(item.label),
+        onClick: () => window.open(item.route, '_blank'),
+      }
+    case 'docs_link':
+      return {
+        icon: item.icon,
+        label: __(item.label),
+        onClick: () => window.open(item.route, '_blank'),
+      }
+    case 'toggle_theme':
+      return {
+        icon: computed(() => (theme.value === 'dark' ? 'sun' : item.icon)),
+        label: __(item.label),
         onClick: toggleTheme,
-      },
-      {
-        icon: 'settings',
-        label: computed(() => __('Settings')),
+      }
+    case 'settings':
+      return {
+        icon: item.icon,
+        label: __(item.label),
         onClick: () => (showSettings.value = true),
-      },
-      {
-        icon: 'log-out',
-        label: computed(() => __('Log out')),
+      }
+    case 'logout':
+      return {
+        icon: item.icon,
+        label: __(item.label),
         onClick: () => logout.submit(),
-      },
-    ],
-  },
-])
+      }
+  }
+}
 
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute('data-theme')
