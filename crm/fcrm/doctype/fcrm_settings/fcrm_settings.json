@@ -36,7 +36,7 @@
    "label": "Branding"
   },
   {
-   "description": "An image with 1:1 ratio is preferred",
+   "description": "An image with 1:1 & 2:1 ratio is preferred",
    "fieldname": "brand_logo",
    "fieldtype": "Attach",
    "label": "Logo"
@@ -61,7 +61,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-27 21:16:47.251706",
+ "modified": "2024-12-27 22:17:52.337109",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
