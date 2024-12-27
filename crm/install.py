@@ -18,6 +18,7 @@ def after_install(force=False):
 	add_email_template_custom_fields()
 	add_default_industries()
 	add_default_lead_sources()
+	add_standard_dropdown_items()
 	frappe.db.commit()
 
 
@@ -333,3 +334,18 @@ def add_default_lead_sources():
 		doc = frappe.new_doc("CRM Lead Source")
 		doc.source_name = source
 		doc.insert()
+
+
+def add_standard_dropdown_items():
+	crm_settings = frappe.get_single("FCRM Settings")
+
+	# don't add dropdown items if they're already present
+	if crm_settings.dropdown_items:
+		return
+
+	crm_settings.dropdown_items = []
+
+	for item in frappe.get_hooks("standard_dropdown_items"):
+		crm_settings.append("dropdown_items", item)
+
+	crm_settings.save()

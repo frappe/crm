@@ -71,7 +71,6 @@
         </Section>
       </div>
     </div>
-    <TrialBanner v-if="isFCSite.data" />
     <div class="m-2 flex flex-col gap-1">
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
@@ -229,13 +228,4 @@ function getIcon(routeName, icon) {
       return PinIcon
   }
 }
-
-const isFCSite = createResource({
-  url: 'frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site',
-  cache: 'isFCSite',
-  auto: true,
-  transform: (data) => Boolean(data),
-})
-
-provide('isFCSite', isFCSite)
 </script>
