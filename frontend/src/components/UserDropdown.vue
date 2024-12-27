@@ -54,7 +54,7 @@ import { usersStore } from '@/stores/users'
 import { showSettings } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
-import { computed, ref, markRaw, inject, onMounted } from 'vue'
+import { computed, ref, markRaw, onMounted } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -68,7 +68,6 @@ const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
-const isFCSite = inject('isFCSite')
 const theme = useStorage('theme', 'light')
 
 let dropdownOptions = ref([
@@ -99,12 +98,6 @@ let dropdownOptions = ref([
         icon: computed(() => (theme.value === 'dark' ? 'moon' : 'sun')),
         label: computed(() => __('Toggle theme')),
         onClick: toggleTheme,
-      },
-      {
-        icon: 'credit-card',
-        label: computed(() => __('Billing')),
-        onClick: () => (window.location.href = '/billing'),
-        condition: () => isFCSite.data,
       },
       {
         icon: 'settings',
