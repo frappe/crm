@@ -197,21 +197,14 @@
                   <EditIcon class="h-4 w-4 text-ink-gray-7" />
                 </Button>
               </div>
-              <Dialog
+              <GridRowModal
+                v-if="showRowList[index]"
                 v-model="showRowList[index]"
-                :options="{
-                  title: __('Editing Row {0}', [index + 1]),
-                  size: '4xl',
-                }"
-              >
-                <template #body-content>
-                  <FieldLayout
-                    v-if="fields?.length"
-                    :tabs="fields"
-                    :data="row"
-                  />
-                </template>
-              </Dialog>
+                v-model:showGridRowFieldsModal="showGridRowFieldsModal"
+                :index="index"
+                :data="row"
+                :doctype="doctype"
+              />
             </div>
           </template>
         </Draggable>
@@ -236,21 +229,21 @@
       <Button :label="__('Add Row')" @click="addRow" />
     </div>
   </div>
+  <GridRowFieldsModal
+    v-if="showGridRowFieldsModal"
+    v-model="showGridRowFieldsModal"
+    :doctype="doctype"
+  />
 </template>
 
 <script setup lang="ts">
+import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
+import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import FieldLayout from '@/components/FieldLayout.vue'
 import Link from '@/components/Controls/Link.vue'
 import { GridColumn, GridRow } from '@/types/controls'
 import { getRandom, getFormat } from '@/utils'
-import {
-  Dialog,
-  FormControl,
-  Checkbox,
-  DateTimePicker,
-  DatePicker,
-} from 'frappe-ui'
+import { FormControl, Checkbox, DateTimePicker, DatePicker } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, PropType } from 'vue'
 
@@ -258,6 +251,7 @@ const props = defineProps<{
   label?: string
   gridFields: GridColumn[]
   fields: GridColumn[]
+  doctype: string
 }>()
 
 const rows = defineModel({
@@ -266,6 +260,8 @@ const rows = defineModel({
 })
 const showRowList = ref(new Array(rows.value.length).fill(false))
 const selectedRows = reactive(new Set<string>())
+
+const showGridRowFieldsModal = ref(false)
 
 const gridTemplateColumns = computed(() => {
   if (!props.gridFields?.length) return '1fr'
