@@ -3,7 +3,7 @@ import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
 import { ref, reactive } from 'vue'
 
 const doctypeMeta = reactive({})
-const userSettings = ref({})
+const userSettings = reactive({})
 
 export function getMeta(doctype) {
   const meta = createResource({
@@ -20,7 +20,7 @@ export function getMeta(doctype) {
         doctypeMeta[dtMeta.name] = dtMeta
       }
 
-      userSettings.value = JSON.parse(res.user_settings)
+      userSettings[doctype] = JSON.parse(res.user_settings)
     },
   })
 
@@ -55,10 +55,10 @@ export function getMeta(doctype) {
     return formatCurrency(doc[fieldname], '', currency, precision)
   }
 
-  function getGridSettings(dt = null) {
+  function getGridSettings(parentDoctype, dt = null) {
     dt = dt || doctype
-    if (!userSettings.value['GridView']?.[doctype]) return {}
-    return userSettings.value['GridView'][doctype]
+    if (!userSettings[parentDoctype]['GridView']?.[doctype]) return {}
+    return userSettings[parentDoctype]['GridView'][doctype]
   }
 
   function getFields(dt = null) {
@@ -77,7 +77,7 @@ export function getMeta(doctype) {
   }
 
   function saveUserSettings(parentDoctype, key, value, callback) {
-    let oldUserSettings = userSettings.value
+    let oldUserSettings = userSettings[parentDoctype]
     let newUserSettings = JSON.parse(JSON.stringify(oldUserSettings))
 
     newUserSettings[key][doctype] = value

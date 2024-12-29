@@ -4,7 +4,10 @@
       {{ __(label) }}
     </div>
 
-    <div class="rounded border border-outline-gray-modals">
+    <div
+      v-if="fields?.length"
+      class="rounded border border-outline-gray-modals"
+    >
       <!-- Header -->
       <div
         class="grid-header flex items-center rounded-t-[7px] bg-surface-gray-2 text-ink-gray-5 truncate"
@@ -28,9 +31,8 @@
           :style="{ gridTemplateColumns: gridTemplateColumns }"
         >
           <div
-            v-if="fields?.length"
-            class="border-r border-outline-gray-2 p-2 truncate"
             v-for="field in fields"
+            class="border-r border-outline-gray-2 p-2 truncate"
             :key="field.name"
             :title="field.label"
           >
@@ -73,7 +75,6 @@
                 :style="{ gridTemplateColumns: gridTemplateColumns }"
               >
                 <div
-                  v-if="fields?.length"
                   class="border-r border-outline-gray-modals h-full"
                   v-for="field in fields"
                   :key="field.name"
@@ -242,7 +243,7 @@ const showGridFieldsEditorModal = ref(false)
 const showGridRowFieldsModal = ref(false)
 
 const fields = computed(() => {
-  let gridSettings = getGridSettings()
+  let gridSettings = getGridSettings(props.parentDoctype)
   let gridFields = getFields()
   if (gridSettings.length) {
     let d = gridSettings.map((gs) =>
@@ -266,7 +267,7 @@ function getFieldObj(field) {
 const gridTemplateColumns = computed(() => {
   if (!fields.value?.length) return '1fr'
   // for the checkbox & sr no. columns
-  let gridSettings = getGridSettings()
+  let gridSettings = getGridSettings(props.parentDoctype)
   if (gridSettings.length) {
     return gridSettings.map((gs) => `minmax(0, ${gs.columns || 2}fr)`).join(' ')
   }

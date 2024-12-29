@@ -123,7 +123,7 @@ const dirty = computed(() => {
 
 const oldFields = computed(() => {
   let _fields = getFields()
-  let gridSettings = getGridSettings()
+  let gridSettings = getGridSettings(props.parentDoctype)
 
   if (gridSettings.length) {
     return gridSettings.map((field) => {
@@ -161,7 +161,7 @@ function removeField(field) {
 function update() {
   loading.value = true
 
-  let updateFields = fields.value.map((field, idx) => {
+  let updateFields = fields.value.map((field) => {
     return {
       fieldname: field.fieldname,
       columns: field.columns,
@@ -176,7 +176,7 @@ function update() {
   saveUserSettings(props.parentDoctype, 'GridView', updateFields, () => {
     loading.value = false
     show.value = false
-    userSettings.value['GridView'][props.doctype] = updateFields
+    userSettings[props.parentDoctype]['GridView'][props.doctype] = updateFields
   })
 }
 
