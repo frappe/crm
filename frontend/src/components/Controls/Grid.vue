@@ -185,12 +185,11 @@
   />
 </template>
 
-<script setup lang="ts">
+<script setup>
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
 import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import { GridRow } from '@/types/controls'
 import { getRandom, getFormat } from '@/utils'
 import { getMeta } from '@/stores/meta'
 import {
@@ -203,19 +202,22 @@ import {
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, PropType } from 'vue'
 
-const props = defineProps<{
-  label?: string
-  doctype: string
-}>()
+const props = defineProps({
+  label: {
+    type: String,
+    default: '',
+  },
+  doctype: {
+    type: String,
+    required: true,
+  },
+})
 
 const { getGridSettings, getFields } = getMeta(props.doctype)
 
-const rows = defineModel({
-  type: Array as PropType<GridRow[]>,
-  default: () => [],
-})
+const rows = defineModel()
 const showRowList = ref(new Array(rows.value.length).fill(false))
-const selectedRows = reactive(new Set<string>())
+const selectedRows = reactive(new Set())
 
 const showGridRowFieldsModal = ref(false)
 
@@ -258,15 +260,15 @@ const allRowsSelected = computed(() => {
 
 const showDeleteBtn = computed(() => selectedRows.size > 0)
 
-const toggleSelectAllRows = (iSelected: boolean) => {
+const toggleSelectAllRows = (iSelected) => {
   if (iSelected) {
-    rows.value.forEach((row: GridRow) => selectedRows.add(row.name))
+    rows.value.forEach((row) => selectedRows.add(row.name))
   } else {
     selectedRows.clear()
   }
 }
 
-const toggleSelectRow = (row: GridRow) => {
+const toggleSelectRow = (row) => {
   if (selectedRows.has(row.name)) {
     selectedRows.delete(row.name)
   } else {
@@ -275,7 +277,7 @@ const toggleSelectRow = (row: GridRow) => {
 }
 
 const addRow = () => {
-  const newRow = {} as GridRow
+  const newRow = {}
   fields.value?.forEach((field) => {
     if (field.type === 'Check') newRow[field.name] = false
     else newRow[field.name] = ''
