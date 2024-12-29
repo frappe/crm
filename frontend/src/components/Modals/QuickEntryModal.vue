@@ -16,24 +16,19 @@
     <template #body-content>
       <div class="flex flex-col gap-3">
         <div class="flex justify-between gap-2">
-          <FormControl
-            type="select"
-            class="w-1/4"
-            v-model="_doctype"
-            :options="[
-              'CRM Lead',
-              'CRM Deal',
-              'Contact',
-              'CRM Organization',
-              'Address',
-            ]"
-            @change="reload"
-          />
-          <Switch
-            v-model="preview"
+          <Button
             :label="preview ? __('Hide preview') : __('Show preview')"
-            size="sm"
+            @click="preview = !preview"
           />
+          <div class="flex flex-row-reverse gap-2">
+            <Button
+              :loading="loading"
+              :label="__('Save')"
+              variant="solid"
+              @click="saveChanges"
+            />
+            <Button :label="__('Reset')" @click="reload" />
+          </div>
         </div>
         <div v-if="tabs?.data">
           <FieldLayoutEditor
@@ -43,17 +38,6 @@
           />
           <FieldLayout v-else :tabs="tabs.data" :data="{}" />
         </div>
-      </div>
-    </template>
-    <template #actions>
-      <div class="flex flex-row-reverse gap-2">
-        <Button
-          :loading="loading"
-          :label="__('Save')"
-          variant="solid"
-          @click="saveChanges"
-        />
-        <Button :label="__('Reset')" @click="reload" />
       </div>
     </template>
   </Dialog>
