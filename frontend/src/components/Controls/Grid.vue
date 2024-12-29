@@ -81,12 +81,6 @@
                         field.onChange && field.onChange(data, index)
                     "
                   />
-                  <Grid
-                    v-else-if="field.type === 'Table'"
-                    v-model="data[field.name]"
-                    :fields="field.fields || []"
-                    :gridFields="field.gridFields || []"
-                  />
                   <div
                     v-else-if="field.type === 'Check'"
                     class="flex h-full justify-center items-center"
@@ -248,7 +242,6 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import FieldLayout from '@/components/FieldLayout.vue'
 import Link from '@/components/Controls/Link.vue'
-import Grid from '@/components/Controls/Grid.vue'
 import { GridColumn, GridRow } from '@/types/controls'
 import { getRandom, getFormat } from '@/utils'
 import {
