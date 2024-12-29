@@ -176,7 +176,14 @@ function update() {
   saveUserSettings(props.parentDoctype, 'GridView', updateFields, () => {
     loading.value = false
     show.value = false
-    userSettings[props.parentDoctype]['GridView'][props.doctype] = updateFields
+    if (userSettings[props.parentDoctype]?.['GridView']) {
+      userSettings[props.parentDoctype]['GridView'][props.doctype] =
+        updateFields
+    } else {
+      userSettings[props.parentDoctype] = {
+        GridView: { [props.doctype]: updateFields },
+      }
+    }
   })
 }
 

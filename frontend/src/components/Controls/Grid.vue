@@ -251,7 +251,9 @@ const fields = computed(() => {
     )
     return d
   }
-  return gridFields?.map((f) => getFieldObj(f)) || []
+  return (
+    gridFields?.filter((f) => f.in_list_view).map((f) => getFieldObj(f)) || []
+  )
 })
 
 function getFieldObj(field) {
