@@ -166,9 +166,6 @@ const fields = createResource({
   params: { doctype: props.doctype, as_array: true },
   cache: ['kanban_fields', props.doctype],
   auto: true,
-  onSuccess: (data) => {
-    data
-  },
 })
 
 const allFields = computed({

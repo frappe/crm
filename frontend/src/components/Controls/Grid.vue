@@ -108,6 +108,7 @@
                         field.type,
                       )
                     "
+                    rows="1"
                     type="textarea"
                     variant="outline"
                     v-model="row[field.name]"
@@ -138,7 +139,7 @@
               </div>
               <div class="edit-row w-12">
                 <Button
-                  class="flex w-full items-center justify-center rounded"
+                  class="flex w-full items-center justify-center rounded border-0"
                   variant="outline"
                   @click="showRowList[index] = true"
                 >
@@ -189,17 +190,25 @@ import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
 import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import { GridColumn, GridRow } from '@/types/controls'
+import { GridRow } from '@/types/controls'
 import { getRandom, getFormat } from '@/utils'
-import { FormControl, Checkbox, DateTimePicker, DatePicker } from 'frappe-ui'
+import { getMeta } from '@/stores/meta'
+import {
+  FeatherIcon,
+  FormControl,
+  Checkbox,
+  DateTimePicker,
+  DatePicker,
+} from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, PropType } from 'vue'
 
 const props = defineProps<{
   label?: string
-  fields: GridColumn[]
   doctype: string
 }>()
+
+const { getGridSettings, getFields } = getMeta(props.doctype)
 
 const rows = defineModel({
   type: Array as PropType<GridRow[]>,
@@ -210,10 +219,36 @@ const selectedRows = reactive(new Set<string>())
 
 const showGridRowFieldsModal = ref(false)
 
+const fields = computed(() => {
+  let gridSettings = getGridSettings()
+  let gridFields = getFields()
+  if (gridSettings.length) {
+    let d = gridSettings.map((gs) =>
+      getFieldObj(gridFields.find((f) => f.fieldname === gs.fieldname)),
+    )
+    return d
+  }
+  return gridFields?.map((f) => getFieldObj(f)) || []
+})
+
+function getFieldObj(field) {
+  return {
+    label: field.label,
+    name: field.fieldname,
+    type: field.fieldtype,
+    options: field.options,
+    in_list_view: field.in_list_view,
+  }
+}
+
 const gridTemplateColumns = computed(() => {
-  if (!props.fields?.length) return '1fr'
+  if (!fields.value?.length) return '1fr'
   // for the checkbox & sr no. columns
-  return props.fields.map((col) => `minmax(0, ${col.width || 2}fr)`).join(' ')
+  let gridSettings = getGridSettings()
+  if (gridSettings.length) {
+    return gridSettings.map((gs) => `minmax(0, ${gs.columns || 2}fr)`).join(' ')
+  }
+  return fields.value.map((col) => `minmax(0, ${col.width || 2}fr)`).join(' ')
 })
 
 const allRowsSelected = computed(() => {
@@ -241,7 +276,7 @@ const toggleSelectRow = (row: GridRow) => {
 
 const addRow = () => {
   const newRow = {} as GridRow
-  props.fields?.forEach((field) => {
+  fields.value?.forEach((field) => {
     if (field.type === 'Check') newRow[field.name] = false
     else newRow[field.name] = ''
   })
@@ -260,17 +295,21 @@ const deleteRows = () => {
 
 <style scoped>
 /* For Input fields */
-:deep(.grid-row input:not([type='checkbox'])) {
+:deep(.grid-row input:not([type='checkbox'])),
+:deep(.grid-row textarea) {
   border: none;
   border-radius: 0;
   height: 38px;
 }
 
-:deep(.grid-row input:focus, .grid-row input:hover) {
+:deep(.grid-row input:focus),
+:deep(.grid-row input:hover),
+:deep(.grid-row textarea:focus),
+:deep(.grid-row textarea:hover) {
   box-shadow: none;
 }
 
-:deep(.grid-row input:focus-within) {
+:deep(.grid-row input:focus-within) :deep(.grid-row textarea:focus-within) {
   border: 1px solid var(--outline-gray-2);
 }
 
@@ -293,7 +332,7 @@ const deleteRows = () => {
   border-bottom-right-radius: 7px;
 }
 
-:deep(.grid-row button:focus, .grid-row button:hover) {
+:deep(.grid-row button:focus) :deep(.grid-row button:hover) {
   box-shadow: none;
   background-color: var(--surface-white);
 }

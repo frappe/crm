@@ -1,8 +1,9 @@
 import { createResource } from 'frappe-ui'
 import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 
 const doctypeMeta = reactive({})
+const userSettings = ref({})
 
 export function getMeta(doctype) {
   const meta = createResource({
@@ -18,6 +19,8 @@ export function getMeta(doctype) {
       for (let dtMeta of dtMetas) {
         doctypeMeta[dtMeta.name] = dtMeta
       }
+
+      userSettings.value = JSON.parse(res.user_settings)
     },
   })
 
@@ -52,9 +55,33 @@ export function getMeta(doctype) {
     return formatCurrency(doc[fieldname], '', currency, precision)
   }
 
+  function getGridSettings(dt = null) {
+    dt = dt || doctype
+    if (!userSettings.value['GridView']?.[doctype]) return {}
+    return userSettings.value['GridView'][doctype]
+  }
+
+  function getFields(dt = null) {
+    dt = dt || doctype
+    return doctypeMeta[dt]?.fields.map((f) => {
+      if (f.fieldtype === 'Select' && typeof f.options === 'string') {
+        f.options = f.options.split('\n').map((option) => {
+          return {
+            label: option,
+            value: option,
+          }
+        })
+      }
+      return f
+    })
+  }
+
   return {
     meta,
     doctypeMeta,
+    userSettings,
+    getFields,
+    getGridSettings,
     getFormattedFloat,
     getFormattedPercent,
     getFormattedCurrency,
