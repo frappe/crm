@@ -80,12 +80,7 @@ export function getMeta(doctype) {
     let oldUserSettings = userSettings.value
     let newUserSettings = JSON.parse(JSON.stringify(oldUserSettings))
 
-    if (typeof value === 'object') {
-      newUserSettings[key][doctype] = newUserSettings[key][doctype] || {}
-      Object.assign(newUserSettings[key][doctype], value)
-    } else {
-      newUserSettings[key][doctype] = value
-    }
+    newUserSettings[key][doctype] = value
 
     if (JSON.stringify(oldUserSettings) !== JSON.stringify(newUserSettings)) {
       return createResource({

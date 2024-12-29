@@ -19,31 +19,37 @@
           {{ __('Fields Order') }}
         </div>
         <Draggable
-          v-if="oldFields.length"
+          v-if="oldFields?.length"
           :list="fields"
           @end="reorder"
           group="fields"
-          item-key="name"
+          item-key="fieldname"
           class="flex flex-col gap-1"
         >
           <template #item="{ element: field }">
             <div
-              class="px-1 py-0.5 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
+              class="px-1 py-0.5 bg-surface-gray-2 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
             >
               <div class="flex items-center gap-2">
                 <DragVerticalIcon class="h-3.5 cursor-grab" />
                 <div>{{ field.label }}</div>
               </div>
-              <div>
+              <div class="flex items-center gap-2">
+                <TextInput
+                  variant="outline"
+                  type="number"
+                  v-model="field.columns"
+                  class="w-20"
+                />
                 <Button variant="ghost" icon="x" @click="removeField(field)" />
               </div>
             </div>
           </template>
         </Draggable>
         <Autocomplete
-          v-if="fields"
+          v-if="dropdownFields?.length"
           value=""
-          :options="fields"
+          :options="dropdownFields"
           @change="(e) => addField(e)"
         >
           <template #target="{ togglePopover }">
@@ -58,7 +64,7 @@
             </Button>
           </template>
           <template #item-label="{ option }">
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 text-ink-gray-9">
               <div>{{ option.label }}</div>
               <div class="text-ink-gray-4 text-sm">
                 {{ `${option.fieldname} - ${option.fieldtype}` }}
@@ -66,6 +72,7 @@
             </div>
           </template>
         </Autocomplete>
+        <ErrorMessage class="mt-3" v-if="error" :message="error" />
       </div>
     </template>
     <template #actions>
@@ -89,10 +96,11 @@
   </Dialog>
 </template>
 <script setup>
+import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { getMeta } from '@/stores/meta'
 import Draggable from 'vuedraggable'
-import { Dialog } from 'frappe-ui'
+import { Dialog, ErrorMessage } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -107,6 +115,7 @@ const { userSettings, getFields, getGridSettings, saveUserSettings } = getMeta(
 const show = defineModel()
 
 const loading = ref(false)
+const error = ref(null)
 
 const dirty = computed(() => {
   return JSON.stringify(fields.value) !== JSON.stringify(oldFields.value)
@@ -118,41 +127,67 @@ const oldFields = computed(() => {
 
   if (gridSettings.length) {
     return gridSettings.map((field) => {
-      return _fields.find((f) => f.fieldname === field.fieldname)
+      let f = _fields.find((f) => f.fieldname === field.fieldname)
+      if (f) {
+        f.columns = field.columns
+        return fieldObj(f)
+      }
     })
   }
-  return _fields?.filter((field) => field.in_list_view)
+  return _fields?.filter((field) => field.in_list_view).map((f) => fieldObj(f))
 })
 
-const fields = ref(JSON.parse(JSON.stringify(oldFields.value)) || [])
+const fields = ref(JSON.parse(JSON.stringify(oldFields.value || [])))
+
+const dropdownFields = computed(() => {
+  return getFields()?.filter(
+    (field) => !fields.value.find((f) => f.fieldname === field.fieldname),
+  )
+})
 
 function reset() {
-  fields.value = JSON.parse(JSON.stringify(oldFields.value))
+  fields.value = JSON.parse(JSON.stringify(oldFields.value || []))
 }
 
 function addField(field) {
-  fields.value.push(field)
+  fields.value.push(fieldObj(field))
 }
 
 function removeField(field) {
-  const index = fields.value.findIndex((f) => f.name === field.name)
+  const index = fields.value.findIndex((f) => f.fieldname === field.fieldname)
   fields.value.splice(index, 1)
 }
 
-const update = () => {
+function update() {
   loading.value = true
 
   let updateFields = fields.value.map((field, idx) => {
     return {
       fieldname: field.fieldname,
-      columns: 2,
+      columns: field.columns,
     }
   })
+
+  if (updateFields.length === 0) {
+    error.value = __('At least one field is required')
+    return
+  }
 
   saveUserSettings(props.parentDoctype, 'GridView', updateFields, () => {
     loading.value = false
     show.value = false
     userSettings.value['GridView'][props.doctype] = updateFields
   })
+}
+
+function fieldObj(field) {
+  return {
+    label: field.label,
+    fieldname: field.fieldname,
+    fieldtype: field.fieldtype,
+    options: field.options,
+    in_list_view: field.in_list_view,
+    columns: field.columns || 2,
+  }
 }
 </script>

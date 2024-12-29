@@ -89,7 +89,7 @@
             </Button>
           </template>
           <template #item-label="{ option }">
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 text-ink-gray-9">
               <div>{{ option.label }}</div>
               <div class="text-ink-gray-4 text-sm">
                 {{ `${option.fieldname} - ${option.fieldtype}` }}
