@@ -15,13 +15,16 @@ class CRMFieldsLayout(Document):
 @frappe.whitelist()
 def get_fields_layout(doctype: str, type: str):
 	tabs = []
+	layout = None
+
 	if frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": type}):
 		layout = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": type})
-	else:
-		return []
 
-	if layout.layout:
+	if layout and layout.layout:
 		tabs = json.loads(layout.layout)
+
+	if not tabs:
+		tabs = get_default_layout(doctype)
 
 	has_tabs = tabs[0].get("sections") if tabs and tabs[0] else False
 
@@ -78,3 +81,22 @@ def save_fields_layout(doctype: str, type: str, layout: str):
 	doc.save(ignore_permissions=True)
 
 	return doc.layout
+
+
+def get_default_layout(doctype: str):
+	fields = frappe.get_meta(doctype).fields
+	fields = [
+		{
+			"label": _(field.label),
+			"name": field.fieldname,
+			"type": field.fieldtype,
+			"options": field.options,
+			"mandatory": field.reqd,
+			"placeholder": field.get("placeholder"),
+			"filters": field.get("link_filters"),
+		}
+		for field in fields
+		if field.fieldtype not in ["Section Break", "Column Break"]
+	]
+
+	return [{"no_tabs": True, "sections": [{"hideLabel": True, "fields": fields}]}]
