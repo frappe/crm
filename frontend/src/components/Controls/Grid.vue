@@ -1,15 +1,17 @@
 <template>
   <div class="flex flex-col text-base">
-    <div v-if="label" class="mb-1.5 text-sm text-gray-600">
+    <div v-if="label" class="mb-1.5 text-sm text-ink-gray-5">
       {{ __(label) }}
     </div>
 
-    <div class="rounded border border-gray-100">
+    <div class="rounded border border-outline-gray-modals">
       <!-- Header -->
       <div
-        class="grid-header flex items-center rounded-t-sm bg-gray-100 text-gray-600 truncate"
+        class="grid-header flex items-center rounded-t-[7px] bg-surface-gray-2 text-ink-gray-5 truncate"
       >
-        <div class="inline-flex items-center justify-center border-r p-2 w-12">
+        <div
+          class="inline-flex items-center justify-center border-r border-outline-gray-2 h-8 p-2 w-12"
+        >
           <Checkbox
             class="cursor-pointer duration-300"
             :modelValue="allRowsSelected"
@@ -17,7 +19,7 @@
           />
         </div>
         <div
-          class="inline-flex items-center justify-center border-r py-2 px-1 w-12"
+          class="inline-flex items-center justify-center border-r border-outline-gray-2 py-2 px-1 w-12"
         >
           {{ __('No') }}
         </div>
@@ -27,7 +29,7 @@
         >
           <div
             v-if="gridFields?.length"
-            class="border-r p-2 truncate"
+            class="border-r border-outline-gray-2 p-2 truncate"
             v-for="field in gridFields"
             :key="field.name"
             :title="field.label"
@@ -42,10 +44,10 @@
         <Draggable class="w-full" v-model="rows" group="rows" item-key="name">
           <template #item="{ element: row, index }">
             <div
-              class="grid-row flex cursor-pointer items-center border-b border-gray-100 bg-white last:rounded-b last:border-b-0"
+              class="grid-row flex cursor-pointer items-center border-b border-outline-gray-modals bg-surface-modals last:rounded-b last:border-b-0"
             >
               <div
-                class="inline-flex h-9.5 items-center justify-center border-r p-2 w-12"
+                class="inline-flex h-9.5 items-center justify-center border-r border-outline-gray-modals p-2 w-12"
               >
                 <Checkbox
                   class="cursor-pointer duration-300"
@@ -54,7 +56,7 @@
                 />
               </div>
               <div
-                class="flex h-9.5 items-center justify-center border-r py-2 px-1 text-sm text-gray-800 w-12"
+                class="flex h-9.5 items-center justify-center border-r border-outline-gray-modals py-2 px-1 text-sm text-ink-gray-8 w-12"
               >
                 {{ index + 1 }}
               </div>
@@ -64,13 +66,13 @@
               >
                 <div
                   v-if="gridFields?.length"
-                  class="border-r border-gray-100 h-full"
+                  class="border-r border-outline-gray-modals h-full"
                   v-for="field in gridFields"
                   :key="field.name"
                 >
                   <Link
                     v-if="field.type === 'Link'"
-                    class="text-sm text-gray-800"
+                    class="text-sm text-ink-gray-8"
                     :value="row[field.name]"
                     :doctype="field.options"
                     :filters="field.filters"
@@ -108,7 +110,7 @@
                     icon-left=""
                     variant="outline"
                     :formatter="(date) => getFormat(date, '', true)"
-                    input-class="border-none text-sm text-gray-800"
+                    input-class="border-none text-sm text-ink-gray-8"
                     @change="
                       (data: String) =>
                         field.onChange && field.onChange(data, index)
@@ -120,7 +122,7 @@
                     icon-left=""
                     variant="outline"
                     :formatter="(date) => getFormat(date, '', true, true)"
-                    input-class="border-none text-sm text-gray-800"
+                    input-class="border-none text-sm text-ink-gray-8"
                     @change="
                       (data: String) =>
                         field.onChange && field.onChange(data, index)
@@ -160,7 +162,7 @@
                   />
                   <FormControl
                     v-else-if="field.type === 'Select'"
-                    class="text-sm text-gray-800"
+                    class="text-sm text-ink-gray-8"
                     v-model="row[field.name]"
                     type="select"
                     :options="field.options"
@@ -176,7 +178,7 @@
                   />
                   <FormControl
                     v-else
-                    class="text-sm text-gray-800"
+                    class="text-sm text-ink-gray-8"
                     v-model="row[field.name]"
                     type="text"
                     :options="field.options"
@@ -195,9 +197,10 @@
               <div class="edit-row w-12">
                 <Button
                   class="flex w-full items-center justify-center rounded"
+                  variant="outline"
                   @click="showRowList[index] = true"
                 >
-                  <EditIcon class="h-4 w-4 text-gray-700" />
+                  <EditIcon class="h-4 w-4 text-ink-gray-7" />
                 </Button>
               </div>
               <Dialog
@@ -222,7 +225,7 @@
 
       <div
         v-else
-        class="flex flex-col items-center rounded p-5 text-sm text-gray-600"
+        class="flex flex-col items-center rounded p-5 text-sm text-ink-gray-5"
       >
         {{ __('No Data') }}
       </div>
@@ -334,7 +337,7 @@ const deleteRows = () => {
 }
 
 :deep(.grid-row input:focus-within) {
-  border: 1px solid #d1d8dd;
+  border: 1px solid var(--outline-gray-2);
 }
 
 /* For select field */
@@ -348,7 +351,7 @@ const deleteRows = () => {
 :deep(.grid-row button) {
   border: none;
   border-radius: 0;
-  background-color: white;
+  background-color: var(--surface-white);
   height: 38px;
 }
 
@@ -358,10 +361,10 @@ const deleteRows = () => {
 
 :deep(.grid-row button:focus, .grid-row button:hover) {
   box-shadow: none;
-  background-color: white;
+  background-color: var(--surface-white);
 }
 
 :deep(.grid-row button:focus-within) {
-  border: 1px solid #d1d8dd;
+  border: 1px solid var(--outline-gray-2);
 }
 </style>
