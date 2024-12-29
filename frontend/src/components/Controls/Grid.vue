@@ -28,9 +28,9 @@
           :style="{ gridTemplateColumns: gridTemplateColumns }"
         >
           <div
-            v-if="gridFields?.length"
+            v-if="fields?.length"
             class="border-r border-outline-gray-2 p-2 truncate"
-            v-for="field in gridFields"
+            v-for="field in fields"
             :key="field.name"
             :title="field.label"
           >
@@ -65,21 +65,17 @@
                 :style="{ gridTemplateColumns: gridTemplateColumns }"
               >
                 <div
-                  v-if="gridFields?.length"
+                  v-if="fields?.length"
                   class="border-r border-outline-gray-modals h-full"
-                  v-for="field in gridFields"
+                  v-for="field in fields"
                   :key="field.name"
                 >
                   <Link
                     v-if="field.type === 'Link'"
                     class="text-sm text-ink-gray-8"
-                    :value="row[field.name]"
+                    v-model="row[field.name]"
                     :doctype="field.options"
                     :filters="field.filters"
-                    @change="
-                      (data: String) =>
-                        field.onChange && field.onChange(data, index)
-                    "
                   />
                   <div
                     v-else-if="field.type === 'Check'"
@@ -88,39 +84,23 @@
                     <Checkbox
                       class="cursor-pointer duration-300"
                       v-model="row[field.name]"
-                      @change="
-                        (e: Event) =>
-                          field.onChange &&
-                          field.onChange(
-                            (e.target as HTMLInputElement).checked,
-                            index,
-                          )
-                      "
                     />
                   </div>
                   <DatePicker
                     v-else-if="field.type === 'Date'"
-                    :value="row[field.name]"
+                    v-model="row[field.name]"
                     icon-left=""
                     variant="outline"
                     :formatter="(date) => getFormat(date, '', true)"
                     input-class="border-none text-sm text-ink-gray-8"
-                    @change="
-                      (data: String) =>
-                        field.onChange && field.onChange(data, index)
-                    "
                   />
                   <DateTimePicker
                     v-else-if="field.type === 'Datetime'"
-                    :value="row[field.name]"
+                    v-model="row[field.name]"
                     icon-left=""
                     variant="outline"
                     :formatter="(date) => getFormat(date, '', true, true)"
                     input-class="border-none text-sm text-ink-gray-8"
-                    @change="
-                      (data: String) =>
-                        field.onChange && field.onChange(data, index)
-                    "
                   />
                   <FormControl
                     v-else-if="
@@ -129,62 +109,30 @@
                       )
                     "
                     type="textarea"
-                    v-model="row[field.name]"
                     variant="outline"
-                    @change="
-                      (e: Event) =>
-                        field.onChange &&
-                        field.onChange(
-                          (e.target as HTMLInputElement).value,
-                          index,
-                        )
-                    "
+                    v-model="row[field.name]"
                   />
                   <FormControl
                     v-else-if="['Int'].includes(field.type)"
                     type="number"
-                    v-model="row[field.name]"
                     variant="outline"
-                    @change="
-                      (e: Event) =>
-                        field.onChange &&
-                        field.onChange(
-                          (e.target as HTMLInputElement).value,
-                          index,
-                        )
-                    "
+                    v-model="row[field.name]"
                   />
                   <FormControl
                     v-else-if="field.type === 'Select'"
                     class="text-sm text-ink-gray-8"
-                    v-model="row[field.name]"
                     type="select"
-                    :options="field.options"
                     variant="outline"
-                    @change="
-                      (e: Event) =>
-                        field.onChange &&
-                        field.onChange(
-                          (e.target as HTMLInputElement).value,
-                          index,
-                        )
-                    "
+                    v-model="row[field.name]"
+                    :options="field.options"
                   />
                   <FormControl
                     v-else
                     class="text-sm text-ink-gray-8"
-                    v-model="row[field.name]"
                     type="text"
-                    :options="field.options"
                     variant="outline"
-                    @change="
-                      (e: Event) =>
-                        field.onChange &&
-                        field.onChange(
-                          (e.target as HTMLInputElement).value,
-                          index,
-                        )
-                    "
+                    v-model="row[field.name]"
+                    :options="field.options"
                   />
                 </div>
               </div>
@@ -218,7 +166,7 @@
       </div>
     </div>
 
-    <div v-if="gridFields?.length" class="mt-2 flex flex-row gap-2">
+    <div v-if="fields?.length" class="mt-2 flex flex-row gap-2">
       <Button
         v-if="showDeleteBtn"
         :label="__('Delete')"
@@ -249,7 +197,6 @@ import { ref, reactive, computed, PropType } from 'vue'
 
 const props = defineProps<{
   label?: string
-  gridFields: GridColumn[]
   fields: GridColumn[]
   doctype: string
 }>()
@@ -264,11 +211,9 @@ const selectedRows = reactive(new Set<string>())
 const showGridRowFieldsModal = ref(false)
 
 const gridTemplateColumns = computed(() => {
-  if (!props.gridFields?.length) return '1fr'
+  if (!props.fields?.length) return '1fr'
   // for the checkbox & sr no. columns
-  return props.gridFields
-    .map((col) => `minmax(0, ${col.width || 2}fr)`)
-    .join(' ')
+  return props.fields.map((col) => `minmax(0, ${col.width || 2}fr)`).join(' ')
 })
 
 const allRowsSelected = computed(() => {
@@ -296,7 +241,7 @@ const toggleSelectRow = (row: GridRow) => {
 
 const addRow = () => {
   const newRow = {} as GridRow
-  props.gridFields?.forEach((field) => {
+  props.fields?.forEach((field) => {
     if (field.type === 'Check') newRow[field.name] = false
     else newRow[field.name] = ''
   })

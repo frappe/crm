@@ -90,7 +90,7 @@ const data = createDocumentResource({
       createToast({
         title: 'Data Updated',
         icon: 'check',
-        iconClasses: 'text-green-600',
+        iconClasses: 'text-ink-green-3',
       })
     },
     onError: (err) => {
@@ -117,24 +117,9 @@ function parseTabs(_tabs) {
     tab.sections.forEach((section) => {
       section.fields.forEach((field) => {
         if (field.type === 'Table') {
-          let name = props.meta[field.name].df.fieldname
-          let fields = props.meta[field.name].fields
-          let _fields = fields.map((field) => {
-            return {
-              ...getFieldObj(field),
-              onChange: (value, index) => {
-                data.doc[name][index][field.fieldname] = value
-              },
-            }
-          })
-
-          field.fields = [
-            {
-              no_tabs: true,
-              sections: [{ columns: 3, hideLabel: true, fields: _fields }],
-            },
-          ]
-          field.gridFields = _fields.filter((field) => field.in_list_view)
+          field.fields = props.meta[field.name].fields
+            .filter((field) => field.in_list_view)
+            .map((field) => getFieldObj(field))
         }
       })
     })

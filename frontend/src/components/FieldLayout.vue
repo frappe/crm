@@ -80,7 +80,6 @@
                     v-else-if="field.type === 'Table'"
                     v-model="data[field.name]"
                     :fields="field.fields"
-                    :gridFields="field.gridFields"
                     :doctype="field.options"
                   />
                   <FormControl
@@ -185,7 +184,9 @@
                   />
                   <FormControl
                     v-else-if="
-                      ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.type)
+                      ['Small Text', 'Text', 'Long Text', 'Code'].includes(
+                        field.type,
+                      )
                     "
                     type="textarea"
                     :placeholder="getPlaceholder(field)"
