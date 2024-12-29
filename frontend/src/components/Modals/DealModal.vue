@@ -117,6 +117,10 @@ const tabs = createResource({
           } else if (field.name == 'deal_owner') {
             field.type = 'User'
           }
+
+          if (field.type === 'Table') {
+            deal[field.name] = []
+          }
         })
       })
     })

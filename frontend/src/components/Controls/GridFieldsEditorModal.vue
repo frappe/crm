@@ -21,7 +21,6 @@
         <Draggable
           v-if="oldFields?.length"
           :list="fields"
-          @end="reorder"
           group="fields"
           item-key="fieldname"
           class="flex flex-col gap-1"
@@ -176,7 +175,14 @@ function update() {
   saveUserSettings(props.parentDoctype, 'GridView', updateFields, () => {
     loading.value = false
     show.value = false
-    userSettings[props.parentDoctype]['GridView'][props.doctype] = updateFields
+    if (userSettings[props.parentDoctype]?.['GridView']) {
+      userSettings[props.parentDoctype]['GridView'][props.doctype] =
+        updateFields
+    } else {
+      userSettings[props.parentDoctype] = {
+        GridView: { [props.doctype]: updateFields },
+      }
+    }
   })
 }
 

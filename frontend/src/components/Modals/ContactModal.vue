@@ -1,11 +1,11 @@
 <template>
-  <Dialog v-model="show" :options="dialogOptions">
+  <Dialog v-model="show" :options="{ size: 'xl' }">
     <template #body>
       <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __(dialogOptions.title) || __('Untitled') }}
+              {{ __('New Contact') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -34,25 +34,19 @@
         <div class="space-y-2">
           <Button
             class="w-full"
-            v-for="action in dialogOptions.actions"
-            :key="action.label"
-            v-bind="action"
-            :label="__(action.label)"
+            variant="solid"
+            :label="__('Create')"
+            :loading="loading"
+            @click="createContact"
           />
         </div>
       </div>
     </template>
   </Dialog>
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Contact"
-  />
 </template>
 
 <script setup>
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import FieldLayout from '@/components/FieldLayout.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -81,35 +75,14 @@ const { isManager } = usersStore()
 const router = useRouter()
 const show = defineModel()
 
-const editMode = ref(false)
+const loading = ref(false)
+
 let _contact = ref({})
 let _address = ref({})
 
 const showAddressModal = ref(false)
 
-async function updateContact() {
-  if (!dirty.value) {
-    show.value = false
-    return
-  }
-
-  const values = { ..._contact.value }
-
-  let name = await callSetValue(values)
-
-  handleContactUpdate({ name })
-}
-
-async function callSetValue(values) {
-  const d = await call('frappe.client.set_value', {
-    doctype: 'Contact',
-    name: props.contact.data.name,
-    fieldname: values,
-  })
-  return d.name
-}
-
-async function callInsertDoc() {
+async function createContact() {
   if (_contact.value.email_id) {
     _contact.value.email_ids = [{ email_id: _contact.value.email_id }]
     delete _contact.value.email_id
@@ -144,27 +117,22 @@ function handleContactUpdate(doc) {
   props.options.afterInsert && props.options.afterInsert(doc)
 }
 
-const dialogOptions = computed(() => {
-  let title = !editMode.value ? 'New Contact' : _contact.value.full_name
-
-  let size = 'xl'
-  let actions = [
-    {
-      label: editMode.value ? 'Save' : 'Create',
-      variant: 'solid',
-      disabled: !dirty.value,
-      onClick: () => (editMode.value ? updateContact() : callInsertDoc()),
-    },
-  ]
-
-  return { title, size, actions }
-})
-
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['QuickEntry', 'Contact'],
   params: { doctype: 'Contact', type: 'Quick Entry' },
   auto: true,
+  transform: (_tabs) => {
+    return _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.fields.forEach((field) => {
+          if (field.type === 'Table') {
+            _contact.value[field.name] = []
+          }
+        })
+      })
+    })
+  },
 })
 
 const filteredSections = computed(() => {
@@ -194,25 +162,17 @@ const filteredSections = computed(() => {
   return [{ no_tabs: true, sections: allSections }]
 })
 
-const dirty = computed(() => {
-  return JSON.stringify(props.contact.data) !== JSON.stringify(_contact.value)
-})
-
 watch(
   () => show.value,
   (value) => {
     if (!value) return
-    editMode.value = false
     nextTick(() => {
       _contact.value = { ...props.contact.data }
-      if (_contact.value.name) {
-        editMode.value = true
-      }
     })
   },
 )
 
-const showQuickEntryModal = ref(false)
+const showQuickEntryModal = defineModel('showQuickEntryModal')
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true

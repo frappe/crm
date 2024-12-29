@@ -79,6 +79,10 @@ const tabs = createResource({
           } else if (field.name == 'lead_owner') {
             field.type = 'User'
           }
+
+          if (field.type === 'Table') {
+            lead[field.name] = []
+          }
         })
       })
     })
