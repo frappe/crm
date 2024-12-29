@@ -1,6 +1,5 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
-import json
 
 import frappe
 from frappe import _
@@ -8,7 +7,9 @@ from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
-from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
+from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
+	add_status_change_log,
+)
 
 
 class CRMDeal(Document):
@@ -94,19 +95,26 @@ class CRMDeal(Document):
 		shared_with = [d.user for d in docshares] + [agent]
 
 		for user in shared_with:
-			if user == agent and not frappe.db.exists("DocShare", {"user": agent, "share_name": self.name, "share_doctype": self.doctype}):
+			if user == agent and not frappe.db.exists(
+				"DocShare",
+				{"user": agent, "share_name": self.name, "share_doctype": self.doctype},
+			):
 				frappe.share.add_docshare(
-					self.doctype, self.name, agent, write=1, flags={"ignore_share_permission": True}
+					self.doctype,
+					self.name,
+					agent,
+					write=1,
+					flags={"ignore_share_permission": True},
 				)
 			elif user != agent:
 				frappe.share.remove(self.doctype, self.name, user)
-
 
 	def set_sla(self):
 		"""
 		Find an SLA to apply to the deal.
 		"""
-		if self.sla: return
+		if self.sla:
+			return
 
 		sla = get_sla(self)
 		if not sla:
@@ -129,48 +137,48 @@ class CRMDeal(Document):
 	def default_list_data():
 		columns = [
 			{
-				'label': 'Organization',
-				'type': 'Link',
-				'key': 'organization',
-				'options': 'CRM Organization',
-				'width': '11rem',
+				"label": "Organization",
+				"type": "Link",
+				"key": "organization",
+				"options": "CRM Organization",
+				"width": "11rem",
 			},
 			{
-				'label': 'Amount',
-				'type': 'Currency',
-				'key': 'annual_revenue',
-				'align': 'right',
-				'width': '9rem',
+				"label": "Annual Revenue",
+				"type": "Currency",
+				"key": "annual_revenue",
+				"align": "right",
+				"width": "9rem",
 			},
 			{
-				'label': 'Status',
-				'type': 'Select',
-				'key': 'status',
-				'width': '10rem',
+				"label": "Status",
+				"type": "Select",
+				"key": "status",
+				"width": "10rem",
 			},
 			{
-				'label': 'Email',
-				'type': 'Data',
-				'key': 'email',
-				'width': '12rem',
+				"label": "Email",
+				"type": "Data",
+				"key": "email",
+				"width": "12rem",
 			},
 			{
-				'label': 'Mobile No',
-				'type': 'Data',
-				'key': 'mobile_no',
-				'width': '11rem',
+				"label": "Mobile No",
+				"type": "Data",
+				"key": "mobile_no",
+				"width": "11rem",
 			},
 			{
-				'label': 'Assigned To',
-				'type': 'Text',
-				'key': '_assign',
-				'width': '10rem',
+				"label": "Assigned To",
+				"type": "Text",
+				"key": "_assign",
+				"width": "10rem",
 			},
 			{
-				'label': 'Last Modified',
-				'type': 'Datetime',
-				'key': 'modified',
-				'width': '8rem',
+				"label": "Last Modified",
+				"type": "Datetime",
+				"key": "modified",
+				"width": "8rem",
 			},
 		]
 		rows = [
@@ -189,15 +197,16 @@ class CRMDeal(Document):
 			"modified",
 			"_assign",
 		]
-		return {'columns': columns, 'rows': rows}
+		return {"columns": columns, "rows": rows}
 
 	@staticmethod
 	def default_kanban_settings():
 		return {
 			"column_field": "status",
 			"title_field": "organization",
-			"kanban_fields": '["annual_revenue", "email", "mobile_no", "_assign", "modified"]'
+			"kanban_fields": '["annual_revenue", "email", "mobile_no", "_assign", "modified"]',
 		}
+
 
 @frappe.whitelist()
 def add_contact(deal, contact):
@@ -209,6 +218,7 @@ def add_contact(deal, contact):
 	deal.save()
 	return True
 
+
 @frappe.whitelist()
 def remove_contact(deal, contact):
 	if not frappe.has_permission("CRM Deal", "write", deal):
@@ -218,6 +228,7 @@ def remove_contact(deal, contact):
 	deal.contacts = [d for d in deal.contacts if d.contact != contact]
 	deal.save()
 	return True
+
 
 @frappe.whitelist()
 def set_primary_contact(deal, contact):
@@ -229,11 +240,14 @@ def set_primary_contact(deal, contact):
 	deal.save()
 	return True
 
+
 def create_organization(doc):
 	if not doc.get("organization_name"):
 		return
 
-	existing_organization = frappe.db.exists("CRM Organization", {"organization_name": doc.get("organization_name")})
+	existing_organization = frappe.db.exists(
+		"CRM Organization", {"organization_name": doc.get("organization_name")}
+	)
 	if existing_organization:
 		return existing_organization
 
@@ -250,6 +264,7 @@ def create_organization(doc):
 	organization.insert(ignore_permissions=True)
 	return organization.name
 
+
 def contact_exists(doc):
 	email_exist = frappe.db.exists("Contact Email", {"email_id": doc.get("email")})
 	mobile_exist = frappe.db.exists("Contact Phone", {"phone": doc.get("mobile_no")})
@@ -261,6 +276,7 @@ def contact_exists(doc):
 		return frappe.db.get_value(doctype, name, "parent")
 
 	return False
+
 
 def create_contact(doc):
 	existing_contact = contact_exists(doc)
@@ -288,18 +304,23 @@ def create_contact(doc):
 
 	return contact.name
 
+
 @frappe.whitelist()
 def create_deal(args):
 	deal = frappe.new_doc("CRM Deal")
 
 	contact = args.get("contact")
-	if not contact and (args.get("first_name") or args.get("last_name") or args.get("email") or args.get("mobile_no")):
+	if not contact and (
+		args.get("first_name") or args.get("last_name") or args.get("email") or args.get("mobile_no")
+	):
 		contact = create_contact(args)
 
-	deal.update({
-		"organization": args.get("organization") or create_organization(args),
-		"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
-	})
+	deal.update(
+		{
+			"organization": args.get("organization") or create_organization(args),
+			"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
+		}
+	)
 
 	args.pop("organization", None)
 

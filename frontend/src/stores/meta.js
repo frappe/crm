@@ -1,8 +1,9 @@
 import { createResource } from 'frappe-ui'
 import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 
 const doctypeMeta = reactive({})
+const userSettings = reactive({})
 
 export function getMeta(doctype) {
   const meta = createResource({
@@ -18,6 +19,8 @@ export function getMeta(doctype) {
       for (let dtMeta of dtMetas) {
         doctypeMeta[dtMeta.name] = dtMeta
       }
+
+      userSettings[doctype] = JSON.parse(res.user_settings)
     },
   })
 
@@ -52,9 +55,54 @@ export function getMeta(doctype) {
     return formatCurrency(doc[fieldname], '', currency, precision)
   }
 
+  function getGridSettings(parentDoctype, dt = null) {
+    dt = dt || doctype
+    if (!userSettings[parentDoctype]['GridView']?.[doctype]) return {}
+    return userSettings[parentDoctype]['GridView'][doctype]
+  }
+
+  function getFields(dt = null) {
+    dt = dt || doctype
+    return doctypeMeta[dt]?.fields.map((f) => {
+      if (f.fieldtype === 'Select' && typeof f.options === 'string') {
+        f.options = f.options.split('\n').map((option) => {
+          return {
+            label: option,
+            value: option,
+          }
+        })
+      }
+      return f
+    })
+  }
+
+  function saveUserSettings(parentDoctype, key, value, callback) {
+    let oldUserSettings = userSettings[parentDoctype]
+    let newUserSettings = JSON.parse(JSON.stringify(oldUserSettings))
+
+    newUserSettings[key][doctype] = value
+
+    if (JSON.stringify(oldUserSettings) !== JSON.stringify(newUserSettings)) {
+      return createResource({
+        url: 'frappe.model.utils.user_settings.save',
+        params: {
+          doctype: parentDoctype,
+          user_settings: JSON.stringify(newUserSettings),
+        },
+        auto: true,
+        onSuccess: () => callback?.(),
+      })
+    }
+    return callback?.()
+  }
+
   return {
     meta,
     doctypeMeta,
+    userSettings,
+    getFields,
+    getGridSettings,
+    saveUserSettings,
     getFormattedFloat,
     getFormattedPercent,
     getFormattedCurrency,

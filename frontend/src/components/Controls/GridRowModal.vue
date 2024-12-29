@@ -1,0 +1,83 @@
+<template>
+  <Dialog v-model="show" :options="{ size: '4xl' }">
+    <template #body>
+      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+        <div class="mb-5 flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+              {{ __('Editing Row {0}', [index + 1]) }}
+            </h3>
+          </div>
+          <div class="flex items-center gap-1">
+            <Button
+              v-if="isManager()"
+              variant="ghost"
+              class="w-7"
+              @click="openGridRowFieldsModal"
+            >
+              <EditIcon class="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" class="w-7" @click="show = false">
+              <FeatherIcon name="x" class="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        <div>
+          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="data" />
+        </div>
+      </div>
+    </template>
+  </Dialog>
+</template>
+
+<script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
+import { getMeta } from '@/stores/meta'
+import { usersStore } from '@/stores/users'
+import { createResource } from 'frappe-ui'
+import { nextTick } from 'vue'
+
+const props = defineProps({
+  index: Number,
+  data: Object,
+  doctype: String,
+})
+
+const { getFields } = getMeta(props.doctype)
+const { isManager } = usersStore()
+
+const show = defineModel()
+const showGridRowFieldsModal = defineModel('showGridRowFieldsModal')
+
+const tabs = createResource({
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  cache: ['GridRow', props.doctype],
+  params: { doctype: props.doctype, type: 'Grid Row' },
+  auto: true,
+  transform: (data) => {
+    if (data.length) return data
+    let fields = getFields()
+    if (!fields) return []
+    return [
+      {
+        no_tabs: true,
+        sections: [
+          {
+            hideLabel: true,
+            opened: true,
+            fields: fields.map((f) => {
+              return { ...f, name: f.fieldname, type: f.fieldtype }
+            }),
+          },
+        ],
+      },
+    ]
+  },
+})
+
+function openGridRowFieldsModal() {
+  showGridRowFieldsModal.value = true
+  nextTick(() => (show.value = false))
+}
+</script>
