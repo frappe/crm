@@ -16,18 +16,19 @@
     <template #body-content>
       <div class="flex flex-col gap-3">
         <div class="flex justify-between gap-2">
-          <FormControl
-            type="select"
-            class="w-1/4"
-            v-model="_doctype"
-            :options="['CRM Lead', 'CRM Deal']"
-            @change="reload"
-          />
-          <Switch
-            v-model="preview"
+          <Button
             :label="preview ? __('Hide preview') : __('Show preview')"
-            size="sm"
+            @click="preview = !preview"
           />
+          <div class="flex flex-row-reverse gap-2">
+            <Button
+              :loading="loading"
+              :label="__('Save')"
+              variant="solid"
+              @click="saveChanges"
+            />
+            <Button :label="__('Reset')" @click="reload" />
+          </div>
         </div>
         <div v-if="tabs?.data">
           <FieldLayoutEditor
@@ -39,17 +40,6 @@
         </div>
       </div>
     </template>
-    <template #actions>
-      <div class="flex flex-row-reverse gap-2">
-        <Button
-          :loading="loading"
-          :label="__('Save')"
-          variant="solid"
-          @click="saveChanges"
-        />
-        <Button :label="__('Reset')" @click="reload" />
-      </div>
-    </template>
   </Dialog>
 </template>
 <script setup>
@@ -57,7 +47,7 @@ import FieldLayout from '@/components/FieldLayout.vue'
 import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { capture } from '@/telemetry'
-import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'
+import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({

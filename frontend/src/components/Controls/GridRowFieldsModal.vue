@@ -4,7 +4,7 @@
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
-        <div>{{ __('Edit Field Layout') }}</div>
+        <div>{{ __('Edit Grid Row Fields Layout') }}</div>
         <Badge
           v-if="dirty"
           :label="__('Not Saved')"
@@ -14,7 +14,7 @@
       </h3>
     </template>
     <template #body-content>
-      <div class="flex flex-col gap-5.5">
+      <div class="flex flex-col gap-3">
         <div class="flex justify-between gap-2">
           <Button
             :label="preview ? __('Hide preview') : __('Show preview')"
@@ -30,49 +30,21 @@
             <Button :label="__('Reset')" @click="reload" />
           </div>
         </div>
-        <div v-if="tabs.data?.[0]?.sections" class="flex gap-4">
-          <SidePanelLayoutEditor
-            class="flex flex-1 flex-col pr-2"
-            :sections="tabs.data[0].sections"
+        <div v-if="tabs?.data">
+          <FieldLayoutEditor
+            v-if="!preview"
+            :tabs="tabs.data"
             :doctype="_doctype"
           />
-          <div v-if="preview" class="flex flex-1 flex-col border rounded">
-            <div
-              v-for="(section, i) in tabs.data[0].sections"
-              :key="section.label"
-              class="flex flex-col py-1.5 px-1"
-              :class="{
-                'border-b': i !== tabs.data[0].sections?.length - 1,
-              }"
-            >
-              <Section
-                class="p-2"
-                :label="section.label"
-                :opened="section.opened"
-              >
-                <SidePanelLayout
-                  :fields="section.fields"
-                  :isLastSection="i == section.data?.length - 1"
-                  v-model="data"
-                />
-              </Section>
-            </div>
-          </div>
-          <div
-            v-else
-            class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded"
-          >
-            {{ __('Toggle on for preview') }}
-          </div>
+          <FieldLayout v-else :tabs="tabs.data" :data="{}" :modal="true" />
         </div>
       </div>
     </template>
   </Dialog>
 </template>
 <script setup>
-import Section from '@/components/Section.vue'
-import SidePanelLayout from '@/components/SidePanelLayout.vue'
-import SidePanelLayoutEditor from '@/components/SidePanelLayoutEditor.vue'
+import FieldLayout from '@/components/FieldLayout.vue'
+import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { capture } from '@/telemetry'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
@@ -92,15 +64,14 @@ const _doctype = ref(props.doctype)
 const loading = ref(false)
 const dirty = ref(false)
 const preview = ref(false)
-const data = ref({})
 
 function getParams() {
-  return { doctype: _doctype.value, type: 'Side Panel' }
+  return { doctype: _doctype.value, type: 'Grid Row' }
 }
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['SidePanel', _doctype.value],
+  cache: ['GridRowFieldsModal', _doctype.value],
   params: getParams(),
   onSuccess(data) {
     tabs.originalData = JSON.parse(JSON.stringify(data))
@@ -128,11 +99,12 @@ function reload() {
 function saveChanges() {
   let _tabs = JSON.parse(JSON.stringify(tabs.data))
   _tabs.forEach((tab) => {
+    if (!tab.sections) return
     tab.sections.forEach((section) => {
       if (!section.fields) return
-      section.fields = section.fields
-        .map((field) => field.fieldname || field.name)
-        .filter(Boolean)
+      section.fields = section.fields.map(
+        (field) => field.fieldname || field.name,
+      )
     })
   })
   loading.value = true
@@ -140,13 +112,13 @@ function saveChanges() {
     'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout',
     {
       doctype: _doctype.value,
-      type: 'Side Panel',
-      layout: JSON.stringify(_tabs[0].sections),
+      type: 'Grid Row',
+      layout: JSON.stringify(_tabs),
     },
   ).then(() => {
     loading.value = false
     show.value = false
-    capture('side_panel_layout_builder', { doctype: _doctype.value })
+    capture('data_fields_layout_builder', { doctype: _doctype.value })
     emit('reload')
   })
 }

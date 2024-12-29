@@ -31,7 +31,7 @@
     <LoadingIndicator class="h-6 w-6" />
     <span>{{ __('Loading...') }}</span>
   </div>
-  <div v-else>
+  <div v-else class="pb-8">
     <FieldLayout
       v-if="tabs.data"
       :tabs="tabs.data"
@@ -86,7 +86,7 @@ const data = createDocumentResource({
       createToast({
         title: 'Data Updated',
         icon: 'check',
-        iconClasses: 'text-green-600',
+        iconClasses: 'text-ink-green-3',
       })
     },
     onError: (err) => {
