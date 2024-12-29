@@ -21,7 +21,6 @@
         <Draggable
           v-if="oldFields?.length"
           :list="fields"
-          @end="reorder"
           group="fields"
           item-key="fieldname"
           class="flex flex-col gap-1"

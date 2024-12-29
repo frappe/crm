@@ -44,15 +44,9 @@
     </template>
   </Dialog>
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Contact"
-  />
 </template>
 
 <script setup>
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import FieldLayout from '@/components/FieldLayout.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -165,6 +159,17 @@ const tabs = createResource({
   cache: ['QuickEntry', 'Contact'],
   params: { doctype: 'Contact', type: 'Quick Entry' },
   auto: true,
+  transform: (_tabs) => {
+    return _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.fields.forEach((field) => {
+          if (field.type === 'Table') {
+            _contact.value[field.name] = []
+          }
+        })
+      })
+    })
+  },
 })
 
 const filteredSections = computed(() => {
@@ -212,7 +217,7 @@ watch(
   },
 )
 
-const showQuickEntryModal = ref(false)
+const showQuickEntryModal = defineModel('showQuickEntryModal')
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true

@@ -59,7 +59,16 @@
       </Button>
     </div>
   </div>
-  <OrganizationModal v-model="showOrganizationModal" />
+  <OrganizationModal
+    v-if="showOrganizationModal"
+    v-model="showOrganizationModal"
+    v-model:showQuickEntryModal="showQuickEntryModal"
+  />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="CRM Organization"
+  />
 </template>
 <script setup>
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
@@ -67,6 +76,7 @@ import CustomActions from '@/components/CustomActions.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
@@ -78,6 +88,7 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
+const showQuickEntryModal = ref(false)
 
 // organizations data is loaded in the ViewControls component
 const organizations = ref({})

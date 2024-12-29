@@ -50,7 +50,7 @@
         </div>
       </div>
       <!-- Rows -->
-      <template v-if="rows.length">
+      <template v-if="rows?.length">
         <Draggable class="w-full" v-model="rows" group="rows" item-key="name">
           <template #item="{ element: row, index }">
             <div
@@ -186,18 +186,18 @@
       />
       <Button :label="__('Add Row')" @click="addRow" />
     </div>
+    <GridRowFieldsModal
+      v-if="showGridRowFieldsModal"
+      v-model="showGridRowFieldsModal"
+      :doctype="doctype"
+    />
+    <GridFieldsEditorModal
+      v-if="showGridFieldsEditorModal"
+      v-model="showGridFieldsEditorModal"
+      :doctype="doctype"
+      :parentDoctype="parentDoctype"
+    />
   </div>
-  <GridRowFieldsModal
-    v-if="showGridRowFieldsModal"
-    v-model="showGridRowFieldsModal"
-    :doctype="doctype"
-  />
-  <GridFieldsEditorModal
-    v-if="showGridFieldsEditorModal"
-    v-model="showGridFieldsEditorModal"
-    :doctype="doctype"
-    :parentDoctype="parentDoctype"
-  />
 </template>
 
 <script setup>
@@ -236,7 +236,7 @@ const props = defineProps({
 const { getGridSettings, getFields } = getMeta(props.doctype)
 
 const rows = defineModel()
-const showRowList = ref(new Array(rows.value.length).fill(false))
+const showRowList = ref(new Array(rows.value?.length || []).fill(false))
 const selectedRows = reactive(new Set())
 
 const showGridFieldsEditorModal = ref(false)
@@ -277,7 +277,7 @@ const gridTemplateColumns = computed(() => {
 })
 
 const allRowsSelected = computed(() => {
-  if (!rows.value.length) return false
+  if (!rows.value?.length) return false
   return rows.value.length === selectedRows.size
 })
 
@@ -285,7 +285,7 @@ const showDeleteBtn = computed(() => selectedRows.size > 0)
 
 const toggleSelectAllRows = (iSelected) => {
   if (iSelected) {
-    rows.value.forEach((row) => selectedRows.add(row.name))
+    rows.value?.forEach((row) => selectedRows.add(row.name))
   } else {
     selectedRows.clear()
   }
