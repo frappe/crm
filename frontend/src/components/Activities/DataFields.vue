@@ -31,7 +31,7 @@
     <LoadingIndicator class="h-6 w-6" />
     <span>{{ __('Loading...') }}</span>
   </div>
-  <div v-else>
+  <div v-else class="pb-8">
     <FieldLayout
       v-if="tabs.data"
       :tabs="tabs.data"

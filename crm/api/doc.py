@@ -1,10 +1,11 @@
-import frappe
 import json
+
+import frappe
 from frappe import _
-from frappe.model.document import get_controller
 from frappe.model import no_value_fields
-from pypika import Criterion
+from frappe.model.document import get_controller
 from frappe.utils import make_filter_tuple
+from pypika import Criterion
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
@@ -675,7 +676,7 @@ def get_assigned_users(doctype, name, default_assigned_to=None):
 
 @frappe.whitelist()
 def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
-	not_allowed_fieldtypes = list(frappe.model.no_value_fields) + ["Read Only"]
+	not_allowed_fieldtypes = [*list(frappe.model.no_value_fields), "Read Only"]
 	if allow_all_fieldtypes:
 		not_allowed_fieldtypes = []
 	fields = frappe.get_meta(doctype).fields

@@ -37,7 +37,15 @@
             {{ __(field.label) }}
           </div>
         </div>
-        <div class="w-12" />
+        <div class="w-12">
+          <Button
+            class="flex w-full items-center justify-center rounded !bg-surface-gray-2 border-0"
+            variant="outline"
+            @click="showGridFieldsEditorModal = true"
+          >
+            <FeatherIcon name="settings" class="h-4 w-4 text-ink-gray-7" />
+          </Button>
+        </div>
       </div>
       <!-- Rows -->
       <template v-if="rows.length">
@@ -183,9 +191,16 @@
     v-model="showGridRowFieldsModal"
     :doctype="doctype"
   />
+  <GridFieldsEditorModal
+    v-if="showGridFieldsEditorModal"
+    v-model="showGridFieldsEditorModal"
+    :doctype="doctype"
+    :parentDoctype="parentDoctype"
+  />
 </template>
 
 <script setup>
+import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.vue'
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
 import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -200,7 +215,7 @@ import {
   DatePicker,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
-import { ref, reactive, computed, PropType } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 const props = defineProps({
   label: {
@@ -208,6 +223,10 @@ const props = defineProps({
     default: '',
   },
   doctype: {
+    type: String,
+    required: true,
+  },
+  parentDoctype: {
     type: String,
     required: true,
   },
@@ -219,6 +238,7 @@ const rows = defineModel()
 const showRowList = ref(new Array(rows.value.length).fill(false))
 const selectedRows = reactive(new Set())
 
+const showGridFieldsEditorModal = ref(false)
 const showGridRowFieldsModal = ref(false)
 
 const fields = computed(() => {
@@ -250,7 +270,7 @@ const gridTemplateColumns = computed(() => {
   if (gridSettings.length) {
     return gridSettings.map((gs) => `minmax(0, ${gs.columns || 2}fr)`).join(' ')
   }
-  return fields.value.map((col) => `minmax(0, ${col.width || 2}fr)`).join(' ')
+  return fields.value.map(() => `minmax(0, 2fr)`).join(' ')
 })
 
 const allRowsSelected = computed(() => {

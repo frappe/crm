@@ -76,12 +76,38 @@ export function getMeta(doctype) {
     })
   }
 
+  function saveUserSettings(parentDoctype, key, value, callback) {
+    let oldUserSettings = userSettings.value
+    let newUserSettings = JSON.parse(JSON.stringify(oldUserSettings))
+
+    if (typeof value === 'object') {
+      newUserSettings[key][doctype] = newUserSettings[key][doctype] || {}
+      Object.assign(newUserSettings[key][doctype], value)
+    } else {
+      newUserSettings[key][doctype] = value
+    }
+
+    if (JSON.stringify(oldUserSettings) !== JSON.stringify(newUserSettings)) {
+      return createResource({
+        url: 'frappe.model.utils.user_settings.save',
+        params: {
+          doctype: parentDoctype,
+          user_settings: JSON.stringify(newUserSettings),
+        },
+        auto: true,
+        onSuccess: () => callback?.(),
+      })
+    }
+    return callback?.()
+  }
+
   return {
     meta,
     doctypeMeta,
     userSettings,
     getFields,
     getGridSettings,
+    saveUserSettings,
     getFormattedFloat,
     getFormattedPercent,
     getFormattedCurrency,

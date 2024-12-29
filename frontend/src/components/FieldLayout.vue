@@ -81,6 +81,7 @@
                     v-model="data[field.name]"
                     :fields="field.fields"
                     :doctype="field.options"
+                    :parentDoctype="doctype"
                   />
                   <FormControl
                     v-else-if="field.type === 'Select'"
