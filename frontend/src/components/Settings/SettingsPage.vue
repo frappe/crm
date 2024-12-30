@@ -76,7 +76,6 @@ const data = createDocumentResource({
   doctype: props.doctype,
   name: props.doctype,
   fields: ['*'],
-  cache: props.doctype,
   auto: true,
   setValue: {
     onSuccess: () => {
@@ -101,19 +100,38 @@ const data = createDocumentResource({
 
 const tabs = computed(() => {
   if (!fields.data) return []
-  let _sections = []
+  let _tabs = []
   let fieldsData = fields.data
 
-  if (fieldsData[0].type !== 'Section Break') {
-    _sections.push({
-      label: 'General',
-      hideLabel: true,
-      columns: 1,
-      fields: [],
+  if (fieldsData[0].type != 'Tab Break') {
+    let _sections = []
+    if (fieldsData[0].type != 'Section Break') {
+      _sections.push({
+        hideLabel: true,
+        columns: 1,
+        fields: [],
+      })
+    }
+    _tabs.push({
+      no_tabs: true,
+      sections: _sections,
     })
   }
+
   fieldsData.forEach((field) => {
-    if (field.type === 'Section Break') {
+    let _sections = _tabs.length ? _tabs[_tabs.length - 1].sections : []
+    if (field.type === 'Tab Break') {
+      _tabs.push({
+        label: field.label,
+        sections: [
+          {
+            hideLabel: true,
+            columns: 1,
+            fields: [],
+          },
+        ],
+      })
+    } else if (field.type === 'Section Break') {
       _sections.push({
         label: field.value,
         hideLabel: true,
@@ -139,7 +157,7 @@ const tabs = computed(() => {
     }
   })
 
-  return [{ no_tabs: true, sections: _sections }]
+  return _tabs
 })
 
 function update() {
