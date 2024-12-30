@@ -9,7 +9,7 @@
     <Tabs
       v-model="tabIndex"
       class="!h-full"
-      :tabs="tabs"
+      :tabs="_tabs"
       v-slot="{ tab }"
       :tablistClass="
         !hasTabs ? 'hidden' : modal ? 'border-outline-gray-modals' : ''
@@ -44,16 +44,7 @@
               ]"
             >
               <div v-for="field in section.fields" :key="field.name">
-                <div
-                  class="settings-field"
-                  v-if="
-                    (field.type == 'Check' ||
-                      (field.read_only && data[field.name]) ||
-                      !field.read_only ||
-                      !field.hidden) &&
-                    (!field.depends_on || field.display_via_depends_on)
-                  "
-                >
+                <div class="settings-field">
                   <div
                     v-if="field.type != 'Check'"
                     class="mb-2 text-sm text-ink-gray-5"
@@ -277,6 +268,23 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { getUser } = usersStore()
 
 const hasTabs = computed(() => !props.tabs[0].no_tabs)
+
+const _tabs = computed(() => {
+  return props.tabs.map((tab) => {
+    tab.sections = tab.sections.map((section) => {
+      section.fields = section.fields.filter(
+        (field) =>
+          (field.type == 'Check' ||
+            (field.read_only && props.data[field.name]) ||
+            !field.read_only) &&
+          (!field.depends_on || field.display_via_depends_on) &&
+          !field.hidden,
+      )
+      return section
+    })
+    return tab
+  })
+})
 
 const tabIndex = ref(0)
 
