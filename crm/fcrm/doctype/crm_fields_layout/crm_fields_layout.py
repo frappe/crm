@@ -46,16 +46,13 @@ def get_fields_layout(doctype: str, type: str):
 			for field in section.get("fields") if section.get("fields") else []:
 				field = next((f for f in fields if f.fieldname == field), None)
 				if field:
-					if field.fieldtype == "Select" and field.options:
-						field.options = field.options.split("\n")
-						field.options = [{"label": _(option), "value": option} for option in field.options]
-						field.options.insert(0, {"label": "", "value": ""})
 					field = {
 						"label": _(field.label),
 						"name": field.fieldname,
 						"type": field.fieldtype,
-						"options": field.options,
+						"options": getOptions(field),
 						"mandatory": field.reqd,
+						"read_only": field.read_only,
 						"placeholder": field.get("placeholder"),
 						"filters": field.get("link_filters"),
 					}
@@ -86,17 +83,17 @@ def save_fields_layout(doctype: str, type: str, layout: str):
 def get_default_layout(doctype: str):
 	fields = frappe.get_meta(doctype).fields
 	fields = [
-		{
-			"label": _(field.label),
-			"name": field.fieldname,
-			"type": field.fieldtype,
-			"options": field.options,
-			"mandatory": field.reqd,
-			"placeholder": field.get("placeholder"),
-			"filters": field.get("link_filters"),
-		}
+		field.fieldname
 		for field in fields
-		if field.fieldtype not in ["Section Break", "Column Break"]
+		if field.fieldtype not in ["Tab Break", "Section Break", "Column Break"]
 	]
 
 	return [{"no_tabs": True, "sections": [{"hideLabel": True, "fields": fields}]}]
+
+
+def getOptions(field):
+	if field.fieldtype == "Select" and field.options:
+		field.options = field.options.split("\n")
+		field.options = [{"label": _(option), "value": option} for option in field.options]
+		field.options.insert(0, {"label": "", "value": ""})
+	return field.options

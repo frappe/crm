@@ -1,6 +1,6 @@
 import { createResource } from 'frappe-ui'
 import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 
 const doctypeMeta = reactive({})
 const userSettings = reactive({})
@@ -55,9 +55,13 @@ export function getMeta(doctype) {
     return formatCurrency(doc[fieldname], '', currency, precision)
   }
 
-  function getGridSettings(parentDoctype, dt = null) {
+  function getGridSettings() {
+    return doctypeMeta[doctype] || {}
+  }
+
+  function getGridViewSettings(parentDoctype, dt = null) {
     dt = dt || doctype
-    if (!userSettings[parentDoctype]['GridView']?.[doctype]) return {}
+    if (!userSettings[parentDoctype]?.['GridView']?.[doctype]) return {}
     return userSettings[parentDoctype]['GridView'][doctype]
   }
 
@@ -77,7 +81,7 @@ export function getMeta(doctype) {
   }
 
   function saveUserSettings(parentDoctype, key, value, callback) {
-    let oldUserSettings = userSettings[parentDoctype]
+    let oldUserSettings = userSettings[parentDoctype] || {}
     let newUserSettings = JSON.parse(JSON.stringify(oldUserSettings))
 
     if (newUserSettings[key] === undefined) {
@@ -94,9 +98,13 @@ export function getMeta(doctype) {
           user_settings: JSON.stringify(newUserSettings),
         },
         auto: true,
-        onSuccess: () => callback?.(),
+        onSuccess: () => {
+          userSettings[parentDoctype] = newUserSettings
+          callback?.()
+        },
       })
     }
+    userSettings[parentDoctype] = newUserSettings
     return callback?.()
   }
 
@@ -106,6 +114,7 @@ export function getMeta(doctype) {
     userSettings,
     getFields,
     getGridSettings,
+    getGridViewSettings,
     saveUserSettings,
     getFormattedFloat,
     getFormattedPercent,
