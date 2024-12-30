@@ -33,7 +33,14 @@
             </nav>
           </div>
         </div>
-        <div class="flex flex-1 flex-col overflow-y-auto bg-surface-modal">
+        <div
+          class="flex relative flex-1 flex-col overflow-y-auto bg-surface-modal"
+        >
+          <Button
+            class="absolute right-5 top-5"
+            icon="x"
+            @click="showSettings = false"
+          />
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
@@ -57,7 +64,7 @@ import {
   showSettings,
   activeSettingsPage,
 } from '@/composables/settings'
-import { Dialog, Avatar } from 'frappe-ui'
+import { Dialog, Button, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 
 const { isManager, getUser } = usersStore()
