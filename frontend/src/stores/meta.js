@@ -1,6 +1,6 @@
 import { createResource } from 'frappe-ui'
 import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 
 const doctypeMeta = reactive({})
 const userSettings = reactive({})
@@ -55,7 +55,11 @@ export function getMeta(doctype) {
     return formatCurrency(doc[fieldname], '', currency, precision)
   }
 
-  function getGridSettings(parentDoctype, dt = null) {
+  function getGridSettings() {
+    return doctypeMeta[doctype] || {}
+  }
+
+  function getGridViewSettings(parentDoctype, dt = null) {
     dt = dt || doctype
     if (!userSettings[parentDoctype]?.['GridView']?.[doctype]) return {}
     return userSettings[parentDoctype]['GridView'][doctype]
@@ -106,6 +110,7 @@ export function getMeta(doctype) {
     userSettings,
     getFields,
     getGridSettings,
+    getGridViewSettings,
     saveUserSettings,
     getFormattedFloat,
     getFormattedPercent,

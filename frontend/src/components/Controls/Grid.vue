@@ -55,6 +55,13 @@
           <template #item="{ element: row, index }">
             <div
               class="grid-row flex cursor-pointer items-center border-b border-outline-gray-modals bg-surface-modals last:rounded-b last:border-b-0"
+              @click.stop="
+                () => {
+                  if (!gridSettings.editable_grid) {
+                    showRowList[index] = true
+                  }
+                }
+              "
             >
               <div
                 class="grid-row-checkbox inline-flex h-9.5 items-center bg-surface-white justify-center border-r border-outline-gray-modals p-2 w-12"
@@ -93,6 +100,7 @@
                     <Checkbox
                       class="cursor-pointer duration-300"
                       v-model="row[field.name]"
+                      :disabled="!gridSettings.editable_grid"
                     />
                   </div>
                   <DatePicker
@@ -233,7 +241,9 @@ const props = defineProps({
   },
 })
 
-const { getGridSettings, getFields } = getMeta(props.doctype)
+const { getGridViewSettings, getFields, getGridSettings } = getMeta(
+  props.doctype,
+)
 
 const rows = defineModel()
 const showRowList = ref(new Array(rows.value?.length || []).fill(false))
@@ -242,11 +252,13 @@ const selectedRows = reactive(new Set())
 const showGridFieldsEditorModal = ref(false)
 const showGridRowFieldsModal = ref(false)
 
+const gridSettings = computed(() => getGridSettings())
+
 const fields = computed(() => {
-  let gridSettings = getGridSettings(props.parentDoctype)
+  let gridViewSettings = getGridViewSettings(props.parentDoctype)
   let gridFields = getFields()
-  if (gridSettings.length) {
-    let d = gridSettings.map((gs) =>
+  if (gridViewSettings.length) {
+    let d = gridViewSettings.map((gs) =>
       getFieldObj(gridFields.find((f) => f.fieldname === gs.fieldname)),
     )
     return d
@@ -269,9 +281,11 @@ function getFieldObj(field) {
 const gridTemplateColumns = computed(() => {
   if (!fields.value?.length) return '1fr'
   // for the checkbox & sr no. columns
-  let gridSettings = getGridSettings(props.parentDoctype)
-  if (gridSettings.length) {
-    return gridSettings.map((gs) => `minmax(0, ${gs.columns || 2}fr)`).join(' ')
+  let gridViewSettings = getGridViewSettings(props.parentDoctype)
+  if (gridViewSettings.length) {
+    return gridViewSettings
+      .map((gs) => `minmax(0, ${gs.columns || 2}fr)`)
+      .join(' ')
   }
   return fields.value.map(() => `minmax(0, 2fr)`).join(' ')
 })

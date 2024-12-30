@@ -107,7 +107,7 @@ const props = defineProps({
   parentDoctype: String,
 })
 
-const { userSettings, getFields, getGridSettings, saveUserSettings } = getMeta(
+const { userSettings, getFields, getGridViewSettings, saveUserSettings } = getMeta(
   props.doctype,
 )
 
@@ -122,10 +122,10 @@ const dirty = computed(() => {
 
 const oldFields = computed(() => {
   let _fields = getFields()
-  let gridSettings = getGridSettings(props.parentDoctype)
+  let gridViewSettings = getGridViewSettings(props.parentDoctype)
 
-  if (gridSettings.length) {
-    return gridSettings.map((field) => {
+  if (gridViewSettings.length) {
+    return gridViewSettings.map((field) => {
       let f = _fields.find((f) => f.fieldname === field.fieldname)
       if (f) {
         f.columns = field.columns
