@@ -107,7 +107,7 @@ const props = defineProps({
   parentDoctype: String,
 })
 
-const { userSettings, getFields, getGridViewSettings, saveUserSettings } = getMeta(
+const { getFields, getGridViewSettings, saveUserSettings } = getMeta(
   props.doctype,
 )
 
@@ -175,14 +175,6 @@ function update() {
   saveUserSettings(props.parentDoctype, 'GridView', updateFields, () => {
     loading.value = false
     show.value = false
-    if (userSettings[props.parentDoctype]?.['GridView']) {
-      userSettings[props.parentDoctype]['GridView'][props.doctype] =
-        updateFields
-    } else {
-      userSettings[props.parentDoctype] = {
-        GridView: { [props.doctype]: updateFields },
-      }
-    }
   })
 }
 

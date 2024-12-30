@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col text-base">
+  <div class="flex flex-col flex-1 text-base">
     <div v-if="label" class="mb-1.5 text-sm text-ink-gray-5">
       {{ __(label) }}
     </div>
@@ -244,6 +244,7 @@ const props = defineProps({
 const { getGridViewSettings, getFields, getGridSettings } = getMeta(
   props.doctype,
 )
+getMeta(props.parentDoctype)
 
 const rows = defineModel()
 const showRowList = ref(new Array(rows.value?.length || []).fill(false))
