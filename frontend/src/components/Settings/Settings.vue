@@ -44,6 +44,7 @@
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
@@ -78,6 +79,12 @@ const tabs = computed(() => {
               image: user.value.user_image,
             }),
           component: markRaw(ProfileSettings),
+        },
+        {
+          label: __('General'),
+          icon: 'settings',
+          component: markRaw(GeneralSettings),
+          condition: () => isManager(),
         },
         {
           label: __('Invite Members'),

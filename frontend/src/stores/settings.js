@@ -5,7 +5,7 @@ const settings = ref({})
 const brand = reactive({})
 
 export function getSettings() {
-  createDocumentResource({
+  const _settings = createDocumentResource({
     doctype: 'FCRM Settings',
     name: 'FCRM Settings',
     onSuccess: (data) => {
@@ -18,6 +18,7 @@ export function getSettings() {
   })
 
   return {
+    _settings,
     settings,
     brand,
   }

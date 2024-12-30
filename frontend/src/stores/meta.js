@@ -57,7 +57,7 @@ export function getMeta(doctype) {
 
   function getGridSettings(parentDoctype, dt = null) {
     dt = dt || doctype
-    if (!userSettings[parentDoctype]['GridView']?.[doctype]) return {}
+    if (!userSettings[parentDoctype]?.['GridView']?.[doctype]) return {}
     return userSettings[parentDoctype]['GridView'][doctype]
   }
 
