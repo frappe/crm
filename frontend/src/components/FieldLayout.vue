@@ -79,7 +79,6 @@
                   <Grid
                     v-else-if="field.type === 'Table'"
                     v-model="data[field.name]"
-                    :fields="field.fields"
                     :doctype="field.options"
                     :parentDoctype="doctype"
                   />

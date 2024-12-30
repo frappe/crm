@@ -33,7 +33,6 @@
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import FieldLayout from '@/components/FieldLayout.vue'
-import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { createResource } from 'frappe-ui'
 import { nextTick } from 'vue'
@@ -44,7 +43,6 @@ const props = defineProps({
   doctype: String,
 })
 
-const { getFields } = getMeta(props.doctype)
 const { isManager } = usersStore()
 
 const show = defineModel()
@@ -52,28 +50,9 @@ const showGridRowFieldsModal = defineModel('showGridRowFieldsModal')
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['GridRow', props.doctype],
+  cache: ['Grid Row', props.doctype],
   params: { doctype: props.doctype, type: 'Grid Row' },
   auto: true,
-  transform: (data) => {
-    if (data.length) return data
-    let fields = getFields()
-    if (!fields) return []
-    return [
-      {
-        no_tabs: true,
-        sections: [
-          {
-            hideLabel: true,
-            opened: true,
-            fields: fields.map((f) => {
-              return { ...f, name: f.fieldname, type: f.fieldtype }
-            }),
-          },
-        ],
-      },
-    ]
-  },
 })
 
 function openGridRowFieldsModal() {
