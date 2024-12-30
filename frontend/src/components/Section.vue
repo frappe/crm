@@ -81,3 +81,8 @@ function close() {
   opened.value = false
 }
 </script>
+<script>
+export default {
+  inheritAttrs: false,
+}
+</script>
