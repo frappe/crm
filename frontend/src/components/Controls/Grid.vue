@@ -57,7 +57,7 @@
               class="grid-row flex cursor-pointer items-center border-b border-outline-gray-modals bg-surface-modals last:rounded-b last:border-b-0"
             >
               <div
-                class="inline-flex h-9.5 items-center justify-center border-r border-outline-gray-modals p-2 w-12"
+                class="grid-row-checkbox inline-flex h-9.5 items-center bg-surface-white justify-center border-r border-outline-gray-modals p-2 w-12"
               >
                 <Checkbox
                   class="cursor-pointer duration-300"
@@ -66,7 +66,7 @@
                 />
               </div>
               <div
-                class="flex h-9.5 items-center justify-center border-r border-outline-gray-modals py-2 px-1 text-sm text-ink-gray-8 w-12"
+                class="flex h-9.5 items-center justify-center bg-surface-white border-r border-outline-gray-modals py-2 px-1 text-sm text-ink-gray-8 w-12"
               >
                 {{ index + 1 }}
               </div>
@@ -88,7 +88,7 @@
                   />
                   <div
                     v-else-if="field.type === 'Check'"
-                    class="flex h-full justify-center items-center"
+                    class="flex h-full bg-surface-white justify-center items-center"
                   >
                     <Checkbox
                       class="cursor-pointer duration-300"
@@ -351,6 +351,10 @@ const deleteRows = () => {
   border-radius: 0;
   background-color: var(--surface-white);
   height: 38px;
+}
+
+:deep(.grid-row:last-child .grid-row-checkbox) {
+  border-bottom-left-radius: 7px;
 }
 
 :deep(.grid-row .edit-row button) {
