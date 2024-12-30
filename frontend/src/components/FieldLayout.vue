@@ -108,7 +108,13 @@
                     />
                     <label
                       class="text-sm text-ink-gray-5"
-                      @click="data[field.name] = !data[field.name]"
+                      @click="
+                        () => {
+                          if (!Boolean(field.read_only)) {
+                            data[field.name] = !data[field.name]
+                          }
+                        }
+                      "
                     >
                       {{ __(field.label) }}
                       <span class="text-ink-red-3" v-if="field.mandatory"

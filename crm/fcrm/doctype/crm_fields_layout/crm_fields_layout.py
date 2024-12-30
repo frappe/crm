@@ -52,6 +52,7 @@ def get_fields_layout(doctype: str, type: str):
 						"type": field.fieldtype,
 						"options": getOptions(field),
 						"mandatory": field.reqd,
+						"read_only": field.read_only,
 						"placeholder": field.get("placeholder"),
 						"filters": field.get("link_filters"),
 					}
