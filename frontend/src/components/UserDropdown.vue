@@ -20,7 +20,9 @@
               : 'ml-2 w-auto opacity-100'
           "
         >
-          <div class="text-base font-medium leading-none text-ink-gray-9 truncate">
+          <div
+            class="text-base font-medium leading-none text-ink-gray-9 truncate"
+          >
             {{ __(brand.name || 'CRM') }}
           </div>
           <div class="mt-1 text-sm leading-none text-ink-gray-7 truncate">
@@ -55,7 +57,7 @@ import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
-import { computed, markRaw, onMounted } from 'vue'
+import { computed, h, markRaw, onMounted } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -104,22 +106,22 @@ const dropdownItems = computed(() => {
 })
 
 function dropdownItemObj(item) {
-  let openInNewWindow = item.open_in_new_window
-
-  let icon = item.icon || 'external-link'
+  let _item = JSON.parse(JSON.stringify(item))
+  let icon = _item.icon || 'external-link'
   if (typeof icon === 'string' && icon.startsWith('<svg')) {
-    icon = markRaw({ template: icon })
+    icon = markRaw(h('div', { innerHTML: icon }))
   }
-  item.icon = icon
+  _item.icon = icon
 
-  if (item.is_standard) {
-    return getStandardItem(item)
+  if (_item.is_standard) {
+    return getStandardItem(_item)
   }
 
   return {
-    icon: item.icon,
-    label: __(item.label),
-    onClick: () => window.open(item.url, openInNewWindow ? '_blank' : ''),
+    icon: _item.icon,
+    label: __(_item.label),
+    onClick: () =>
+      window.open(_item.route, _item.open_in_new_window ? '_blank' : ''),
   }
 }
 
@@ -133,13 +135,15 @@ function getStandardItem(item) {
       return {
         icon: item.icon,
         label: __(item.label),
-        onClick: () => window.open(item.route, '_blank'),
+        onClick: () =>
+          window.open(item.route, item.open_in_new_window ? '_blank' : ''),
       }
     case 'docs_link':
       return {
         icon: item.icon,
         label: __(item.label),
-        onClick: () => window.open(item.route, '_blank'),
+        onClick: () =>
+          window.open(item.route, item.open_in_new_window ? '_blank' : ''),
       }
     case 'toggle_theme':
       return {
