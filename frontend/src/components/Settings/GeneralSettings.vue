@@ -10,7 +10,7 @@
       />
     </h2>
 
-    <div v-if="settings.doc" class="flex-1 flex flex-col gap-6 overflow-y-auto">
+    <div v-if="settings.doc" class="flex-1 flex flex-col gap-8 overflow-y-auto">
       <div class="flex w-full">
         <FormControl
           type="text"
@@ -21,10 +21,9 @@
       </div>
 
       <!-- logo -->
-      <hr class="w-full border-outline-gray-2" />
 
-      <div class="flex flex-col justify-between gap-5">
-        <span class="text-lg font-semibold text-ink-gray-9">
+      <div class="flex flex-col justify-between gap-4">
+        <span class="text-base font-semibold text-ink-gray-9">
           {{ __('Logo') }}
         </span>
         <div class="flex flex-1 gap-5">
@@ -57,10 +56,9 @@
       </div>
 
       <!-- favicon -->
-      <hr class="w-full border-outline-gray-2" />
 
-      <div class="flex flex-col justify-between gap-5">
-        <span class="text-lg font-semibold text-ink-gray-9">
+      <div class="flex flex-col justify-between gap-4">
+        <span class="text-base font-semibold text-ink-gray-9">
           {{ __('Favicon') }}
         </span>
         <div class="flex flex-1 gap-5">
@@ -93,10 +91,9 @@
       </div>
 
       <!-- dropdown settings -->
-      <hr class="w-full border-outline-gray-2" />
 
-      <div class="flex flex-col justify-between gap-5">
-        <span class="text-lg font-semibold text-ink-gray-9">
+      <div class="flex flex-col justify-between gap-4">
+        <span class="text-base font-semibold text-ink-gray-9">
           {{ __('Dropdown settings') }}
         </span>
         <div class="flex flex-1">
@@ -107,10 +104,15 @@
           />
         </div>
       </div>
+    </div>
 
-      <div class="flex flex-row-reverse">
-        <Button :label="__('Save')" variant="solid" @click="updateSettings" />
-      </div>
+    <div class="flex flex-row-reverse">
+      <Button
+        variant="solid"
+        :label="__('Update')"
+        :disabled="!settings.isDirty"
+        @click="updateSettings"
+      />
     </div>
   </div>
 </template>
@@ -121,10 +123,11 @@ import { FormControl, Badge } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
 
-const { _settings: settings } = getSettings()
+const { _settings: settings, setupBrand } = getSettings()
 
 function updateSettings() {
   settings.save.submit()
   showSettings.value = false
+  setupBrand()
 }
 </script>

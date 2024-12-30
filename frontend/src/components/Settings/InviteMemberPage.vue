@@ -3,62 +3,68 @@
     <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
       {{ __('Send Invites To') }}
     </h2>
-    <div class="flex-1 overflow-y-auto">
-      <label class="block text-xs text-ink-gray-5 mb-1.5">
-        {{ __('Invite by email') }}
-      </label>
-      <MultiValueInput
-        v-model="invitees"
-        :validate="validateEmail"
-        :error-message="
-          (value) => __('{0} is an invalid email address', [value])
-        "
-      />
-      <FormControl
-        type="select"
-        class="mt-4"
-        v-model="role"
-        :label="__('Invite as')"
-        :options="[
-          { label: __('Regular Access'), value: 'Sales User' },
-          { label: __('Manager Access'), value: 'Sales Manager' },
-        ]"
-        :description="description"
-      />
-      <ErrorMessage class="mt-2" v-if="error" :message="error" />
+    <div class="flex-1 flex flex-col gap-8 overflow-y-auto">
+      <div>
+        <label class="block text-xs text-ink-gray-5 mb-1.5">
+          {{ __('Invite by email') }}
+        </label>
+        <MultiValueInput
+          v-model="invitees"
+          :validate="validateEmail"
+          :error-message="
+            (value) => __('{0} is an invalid email address', [value])
+          "
+        />
+        <FormControl
+          type="select"
+          class="mt-4"
+          v-model="role"
+          :label="__('Invite as')"
+          :options="[
+            { label: __('Regular Access'), value: 'Sales User' },
+            { label: __('Manager Access'), value: 'Sales Manager' },
+          ]"
+          :description="description"
+        />
+        <ErrorMessage class="mt-2" v-if="error" :message="error" />
+      </div>
       <template v-if="pendingInvitations.data?.length && !invitees.length">
-        <div
-          class="mt-6 flex items-center justify-between py-4 text-base font-semibold"
-        >
-          <div>{{ __('Pending Invites') }}</div>
-        </div>
-        <ul class="flex flex-col gap-1">
-          <li
-            class="flex items-center justify-between px-2 py-1 rounded-lg bg-surface-gray-2"
-            v-for="user in pendingInvitations.data"
-            :key="user.name"
+        <div class="flex flex-col gap-4">
+          <div
+            class="flex items-center justify-between text-base font-semibold"
           >
-            <div class="text-base">
-              <span class="text-ink-gray-9">
-                {{ user.email }}
-              </span>
-              <span class="text-ink-gray-5"> ({{ roleMap[user.role] }}) </span>
-            </div>
-            <div>
-              <Tooltip text="Delete Invitation">
-                <Button
-                  icon="x"
-                  variant="ghost"
-                  :loading="
-                    pendingInvitations.delete.loading &&
-                    pendingInvitations.delete.params.name === user.name
-                  "
-                  @click="pendingInvitations.delete.submit(user.name)"
-                />
-              </Tooltip>
-            </div>
-          </li>
-        </ul>
+            <div>{{ __('Pending Invites') }}</div>
+          </div>
+          <ul class="flex flex-col gap-1">
+            <li
+              class="flex items-center justify-between px-2 py-1 rounded-lg bg-surface-gray-2"
+              v-for="user in pendingInvitations.data"
+              :key="user.name"
+            >
+              <div class="text-base">
+                <span class="text-ink-gray-9">
+                  {{ user.email }}
+                </span>
+                <span class="text-ink-gray-5">
+                  ({{ roleMap[user.role] }})
+                </span>
+              </div>
+              <div>
+                <Tooltip text="Delete Invitation">
+                  <Button
+                    icon="x"
+                    variant="ghost"
+                    :loading="
+                      pendingInvitations.delete.loading &&
+                      pendingInvitations.delete.params.name === user.name
+                    "
+                    @click="pendingInvitations.delete.submit(user.name)"
+                  />
+                </Tooltip>
+              </div>
+            </li>
+          </ul>
+        </div>
       </template>
     </div>
     <div class="flex flex-row-reverse">

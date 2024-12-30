@@ -10,16 +10,21 @@ export function getSettings() {
     name: 'FCRM Settings',
     onSuccess: (data) => {
       settings.value = data
-      brand.name = settings.value?.brand_name
-      brand.logo = settings.value?.brand_logo
-      brand.favicon = settings.value?.favicon
+      setupBrand()
       return data
     },
   })
+
+  function setupBrand() {
+    brand.name = settings.value?.brand_name
+    brand.logo = settings.value?.brand_logo
+    brand.favicon = settings.value?.favicon
+  }
 
   return {
     _settings,
     settings,
     brand,
+    setupBrand,
   }
 }
