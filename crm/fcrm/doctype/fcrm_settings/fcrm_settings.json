@@ -61,7 +61,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-27 22:17:52.337109",
+ "modified": "2024-12-30 19:03:51.898913",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
@@ -76,6 +76,13 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "All",
+   "share": 1
   }
  ],
  "sort_field": "creation",
