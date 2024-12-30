@@ -121,6 +121,7 @@ const tabs = computed(() => {
           component: markRaw(ERPNextSettings),
         },
       ],
+      condition: () => isManager(),
     },
   ]
 
