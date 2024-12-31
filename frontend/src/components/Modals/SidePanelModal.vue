@@ -129,6 +129,7 @@ function saveChanges() {
   let _tabs = JSON.parse(JSON.stringify(tabs.data))
   _tabs.forEach((tab) => {
     tab.sections.forEach((section) => {
+      if (!section.columns) return
       section.columns.forEach((column) => {
         if (!column.fields) return
         column.fields = column.fields

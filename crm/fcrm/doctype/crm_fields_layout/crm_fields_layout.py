@@ -34,6 +34,8 @@ def get_fields_layout(doctype: str, type: str):
 	allowed_fields = []
 	for tab in tabs:
 		for section in tab.get("sections"):
+			if "columns" not in section:
+				continue
 			for column in section.get("columns"):
 				if not column.get("fields"):
 					continue

@@ -54,7 +54,7 @@
           </div>
           <div v-show="section.opened">
             <Draggable
-              :list="section.fields"
+              :list="section.columns?.[0].fields || []"
               group="fields"
               item-key="label"
               class="flex flex-col gap-1.5"
@@ -73,7 +73,10 @@
                     icon="x"
                     class="!size-4 rounded-sm"
                     @click="
-                      section.fields.splice(section.fields.indexOf(field), 1)
+                      section.columns[0].fields.splice(
+                        section.columns[0].fields.indexOf(field),
+                        1,
+                      )
                     "
                   />
                 </div>
@@ -124,7 +127,11 @@
         variant="subtle"
         :label="__('Add Section')"
         @click="
-          sections.push({ label: __('New Section'), opened: true, fields: [] })
+          sections.push({
+            label: __('New Section'),
+            opened: true,
+            columns: [{ fields: [] }],
+          })
         "
       >
         <template #prefix>
@@ -173,7 +180,7 @@ const fields = createResource({
 
 function addField(section, field) {
   if (!field) return
-  section.fields.push(field)
+  section.columns[0].fields.push(field)
 }
 
 watch(
