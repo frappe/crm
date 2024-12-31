@@ -37,7 +37,7 @@
    "fieldname": "layout",
    "fieldtype": "Code",
    "label": "Layout",
-   "options": "JS"
+   "options": "JSON"
   },
   {
    "fieldname": "column_break_post",
@@ -46,7 +46,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-29 12:58:54.280569",
+ "modified": "2024-12-31 19:06:24.679782",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Fields Layout",

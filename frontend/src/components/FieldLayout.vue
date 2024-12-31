@@ -36,196 +36,213 @@
             collapseIconPosition="right"
           >
             <div
-              class="grid gap-4"
+              class="column flex gap-4"
               :class="[
-                gridClass(section.columns),
-                { 'px-3 sm:px-5': hasTabs },
-                { 'mt-6': !section.hideLabel },
+                {
+                  'px-3 sm:px-5': hasTabs,
+                  'mt-6': !section.hideLabel || !section.label,
+                },
               ]"
             >
-              <div v-for="field in section.fields" :key="field.name">
-                <div class="settings-field">
-                  <div
-                    v-if="field.type != 'Check'"
-                    class="mb-2 text-sm text-ink-gray-5"
-                  >
-                    {{ __(field.label) }}
-                    <span
-                      class="text-ink-red-3"
-                      v-if="
-                        field.mandatory ||
-                        (field.mandatory_depends_on &&
-                          field.mandatory_via_depends_on)
-                      "
-                      >*</span
-                    >
-                  </div>
-                  <FormControl
-                    v-if="field.read_only && field.type !== 'Check'"
-                    type="text"
-                    :placeholder="getPlaceholder(field)"
-                    v-model="data[field.name]"
-                    :disabled="true"
-                  />
-                  <Grid
-                    v-else-if="field.type === 'Table'"
-                    v-model="data[field.name]"
-                    :doctype="field.options"
-                    :parentDoctype="doctype"
-                  />
-                  <FormControl
-                    v-else-if="field.type === 'Select'"
-                    type="select"
-                    class="form-control"
-                    :class="field.prefix ? 'prefix' : ''"
-                    :options="field.options"
-                    v-model="data[field.name]"
-                    :placeholder="getPlaceholder(field)"
-                  >
-                    <template v-if="field.prefix" #prefix>
-                      <IndicatorIcon :class="field.prefix" />
-                    </template>
-                  </FormControl>
-                  <div
-                    v-else-if="field.type == 'Check'"
-                    class="flex items-center gap-2"
-                  >
-                    <FormControl
-                      class="form-control"
-                      type="checkbox"
-                      v-model="data[field.name]"
-                      @change="(e) => (data[field.name] = e.target.checked)"
-                      :disabled="Boolean(field.read_only)"
-                    />
-                    <label
-                      class="text-sm text-ink-gray-5"
-                      @click="
-                        () => {
-                          if (!Boolean(field.read_only)) {
-                            data[field.name] = !data[field.name]
-                          }
-                        }
-                      "
+              <div
+                class="flex flex-col gap-4 w-full"
+                v-for="column in section.columns"
+                :key="column.name"
+              >
+                <div
+                  v-if="!column.hideLabel || !column.label"
+                  class="text-ink-gray-9 max-w-fit text-base"
+                >
+                  {{ column.label }}
+                </div>
+                <div v-for="field in column.fields" :key="field.name">
+                  <div class="settings-field">
+                    <div
+                      v-if="field.type != 'Check'"
+                      class="mb-2 text-sm text-ink-gray-5"
                     >
                       {{ __(field.label) }}
-                      <span class="text-ink-red-3" v-if="field.mandatory"
+                      <span
+                        class="text-ink-red-3"
+                        v-if="
+                          field.mandatory ||
+                          (field.mandatory_depends_on &&
+                            field.mandatory_via_depends_on)
+                        "
                         >*</span
                       >
-                    </label>
-                  </div>
-                  <div class="flex gap-1" v-else-if="field.type === 'Link'">
+                    </div>
+                    <FormControl
+                      v-if="field.read_only && field.type !== 'Check'"
+                      type="text"
+                      :placeholder="getPlaceholder(field)"
+                      v-model="data[field.name]"
+                      :disabled="true"
+                    />
+                    <Grid
+                      v-else-if="field.type === 'Table'"
+                      v-model="data[field.name]"
+                      :doctype="field.options"
+                      :parentDoctype="doctype"
+                    />
+                    <FormControl
+                      v-else-if="field.type === 'Select'"
+                      type="select"
+                      class="form-control"
+                      :class="field.prefix ? 'prefix' : ''"
+                      :options="field.options"
+                      v-model="data[field.name]"
+                      :placeholder="getPlaceholder(field)"
+                    >
+                      <template v-if="field.prefix" #prefix>
+                        <IndicatorIcon :class="field.prefix" />
+                      </template>
+                    </FormControl>
+                    <div
+                      v-else-if="field.type == 'Check'"
+                      class="flex items-center gap-2"
+                    >
+                      <FormControl
+                        class="form-control"
+                        type="checkbox"
+                        v-model="data[field.name]"
+                        @change="(e) => (data[field.name] = e.target.checked)"
+                        :disabled="Boolean(field.read_only)"
+                      />
+                      <label
+                        class="text-sm text-ink-gray-5"
+                        @click="
+                          () => {
+                            if (!Boolean(field.read_only)) {
+                              data[field.name] = !data[field.name]
+                            }
+                          }
+                        "
+                      >
+                        {{ __(field.label) }}
+                        <span class="text-ink-red-3" v-if="field.mandatory"
+                          >*</span
+                        >
+                      </label>
+                    </div>
+                    <div class="flex gap-1" v-else-if="field.type === 'Link'">
+                      <Link
+                        class="form-control flex-1 truncate"
+                        :value="data[field.name]"
+                        :doctype="field.options"
+                        :filters="field.filters"
+                        @change="(v) => (data[field.name] = v)"
+                        :placeholder="getPlaceholder(field)"
+                        :onCreate="field.create"
+                      />
+                      <Button
+                        v-if="data[field.name] && field.edit"
+                        class="shrink-0"
+                        :label="__('Edit')"
+                        @click="field.edit(data[field.name])"
+                      >
+                        <template #prefix>
+                          <EditIcon class="h-4 w-4" />
+                        </template>
+                      </Button>
+                    </div>
+
                     <Link
-                      class="form-control flex-1 truncate"
-                      :value="data[field.name]"
+                      v-else-if="field.type === 'User'"
+                      class="form-control"
+                      :value="getUser(data[field.name]).full_name"
                       :doctype="field.options"
                       :filters="field.filters"
                       @change="(v) => (data[field.name] = v)"
                       :placeholder="getPlaceholder(field)"
-                      :onCreate="field.create"
-                    />
-                    <Button
-                      v-if="data[field.name] && field.edit"
-                      class="shrink-0"
-                      :label="__('Edit')"
-                      @click="field.edit(data[field.name])"
+                      :hideMe="true"
                     >
                       <template #prefix>
-                        <EditIcon class="h-4 w-4" />
+                        <UserAvatar
+                          class="mr-2"
+                          :user="data[field.name]"
+                          size="sm"
+                        />
                       </template>
-                    </Button>
+                      <template #item-prefix="{ option }">
+                        <UserAvatar
+                          class="mr-2"
+                          :user="option.value"
+                          size="sm"
+                        />
+                      </template>
+                      <template #item-label="{ option }">
+                        <Tooltip :text="option.value">
+                          <div class="cursor-pointer">
+                            {{ getUser(option.value).full_name }}
+                          </div>
+                        </Tooltip>
+                      </template>
+                    </Link>
+                    <DateTimePicker
+                      v-else-if="field.type === 'Datetime'"
+                      v-model="data[field.name]"
+                      icon-left=""
+                      :formatter="(date) => getFormat(date, '', true, true)"
+                      :placeholder="getPlaceholder(field)"
+                      input-class="border-none"
+                    />
+                    <DatePicker
+                      v-else-if="field.type === 'Date'"
+                      icon-left=""
+                      v-model="data[field.name]"
+                      :formatter="(date) => getFormat(date, '', true)"
+                      :placeholder="getPlaceholder(field)"
+                      input-class="border-none"
+                    />
+                    <FormControl
+                      v-else-if="
+                        ['Small Text', 'Text', 'Long Text', 'Code'].includes(
+                          field.type,
+                        )
+                      "
+                      type="textarea"
+                      :placeholder="getPlaceholder(field)"
+                      v-model="data[field.name]"
+                    />
+                    <FormControl
+                      v-else-if="['Int'].includes(field.type)"
+                      type="number"
+                      :placeholder="getPlaceholder(field)"
+                      v-model="data[field.name]"
+                    />
+                    <FormControl
+                      v-else-if="field.type === 'Percent'"
+                      type="text"
+                      :value="getFormattedPercent(field.name, data)"
+                      :placeholder="getPlaceholder(field)"
+                      :disabled="Boolean(field.read_only)"
+                      @change="data[field.name] = flt($event.target.value)"
+                    />
+                    <FormControl
+                      v-else-if="field.type === 'Float'"
+                      type="text"
+                      :value="getFormattedFloat(field.name, data)"
+                      :placeholder="getPlaceholder(field)"
+                      :disabled="Boolean(field.read_only)"
+                      @change="data[field.name] = flt($event.target.value)"
+                    />
+                    <FormControl
+                      v-else-if="field.type === 'Currency'"
+                      type="text"
+                      :value="getFormattedCurrency(field.name, data)"
+                      :placeholder="getPlaceholder(field)"
+                      :disabled="Boolean(field.read_only)"
+                      @change="data[field.name] = flt($event.target.value)"
+                    />
+                    <FormControl
+                      v-else
+                      type="text"
+                      :placeholder="getPlaceholder(field)"
+                      v-model="data[field.name]"
+                      :disabled="Boolean(field.read_only)"
+                    />
                   </div>
-
-                  <Link
-                    v-else-if="field.type === 'User'"
-                    class="form-control"
-                    :value="getUser(data[field.name]).full_name"
-                    :doctype="field.options"
-                    :filters="field.filters"
-                    @change="(v) => (data[field.name] = v)"
-                    :placeholder="getPlaceholder(field)"
-                    :hideMe="true"
-                  >
-                    <template #prefix>
-                      <UserAvatar
-                        class="mr-2"
-                        :user="data[field.name]"
-                        size="sm"
-                      />
-                    </template>
-                    <template #item-prefix="{ option }">
-                      <UserAvatar class="mr-2" :user="option.value" size="sm" />
-                    </template>
-                    <template #item-label="{ option }">
-                      <Tooltip :text="option.value">
-                        <div class="cursor-pointer">
-                          {{ getUser(option.value).full_name }}
-                        </div>
-                      </Tooltip>
-                    </template>
-                  </Link>
-                  <DateTimePicker
-                    v-else-if="field.type === 'Datetime'"
-                    v-model="data[field.name]"
-                    icon-left=""
-                    :formatter="(date) => getFormat(date, '', true, true)"
-                    :placeholder="getPlaceholder(field)"
-                    input-class="border-none"
-                  />
-                  <DatePicker
-                    v-else-if="field.type === 'Date'"
-                    icon-left=""
-                    v-model="data[field.name]"
-                    :formatter="(date) => getFormat(date, '', true)"
-                    :placeholder="getPlaceholder(field)"
-                    input-class="border-none"
-                  />
-                  <FormControl
-                    v-else-if="
-                      ['Small Text', 'Text', 'Long Text', 'Code'].includes(
-                        field.type,
-                      )
-                    "
-                    type="textarea"
-                    :placeholder="getPlaceholder(field)"
-                    v-model="data[field.name]"
-                  />
-                  <FormControl
-                    v-else-if="['Int'].includes(field.type)"
-                    type="number"
-                    :placeholder="getPlaceholder(field)"
-                    v-model="data[field.name]"
-                  />
-                  <FormControl
-                    v-else-if="field.type === 'Percent'"
-                    type="text"
-                    :value="getFormattedPercent(field.name, data)"
-                    :placeholder="getPlaceholder(field)"
-                    :disabled="Boolean(field.read_only)"
-                    @change="data[field.name] = flt($event.target.value)"
-                  />
-                  <FormControl
-                    v-else-if="field.type === 'Float'"
-                    type="text"
-                    :value="getFormattedFloat(field.name, data)"
-                    :placeholder="getPlaceholder(field)"
-                    :disabled="Boolean(field.read_only)"
-                    @change="data[field.name] = flt($event.target.value)"
-                  />
-                  <FormControl
-                    v-else-if="field.type === 'Currency'"
-                    type="text"
-                    :value="getFormattedCurrency(field.name, data)"
-                    :placeholder="getPlaceholder(field)"
-                    :disabled="Boolean(field.read_only)"
-                    @change="data[field.name] = flt($event.target.value)"
-                  />
-                  <FormControl
-                    v-else
-                    type="text"
-                    :placeholder="getPlaceholder(field)"
-                    v-model="data[field.name]"
-                    :disabled="Boolean(field.read_only)"
-                  />
                 </div>
               </div>
             </div>
@@ -272,14 +289,23 @@ const hasTabs = computed(() => !props.tabs[0].no_tabs)
 const _tabs = computed(() => {
   return props.tabs.map((tab) => {
     tab.sections = tab.sections.map((section) => {
-      section.fields = section.fields.filter(
-        (field) =>
-          (field.type == 'Check' ||
-            (field.read_only && props.data[field.name]) ||
-            !field.read_only) &&
-          (!field.depends_on || field.display_via_depends_on) &&
-          !field.hidden,
-      )
+      section.columns = section.columns.map((column) => {
+        column.fields = column.fields.map((field) => {
+          if (field.type == 'Link' && field.options == 'User') {
+            field.type = 'User'
+          }
+          if (
+            (field.type == 'Check' ||
+              (field.read_only && props.data[field.name]) ||
+              !field.read_only) &&
+            (!field.depends_on || field.display_via_depends_on) &&
+            !field.hidden
+          ) {
+            return field
+          }
+        })
+        return column
+      })
       return section
     })
     return tab

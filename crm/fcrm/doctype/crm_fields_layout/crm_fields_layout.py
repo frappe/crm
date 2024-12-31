@@ -34,29 +34,31 @@ def get_fields_layout(doctype: str, type: str):
 	allowed_fields = []
 	for tab in tabs:
 		for section in tab.get("sections"):
-			if not section.get("fields"):
-				continue
-			allowed_fields.extend(section.get("fields"))
+			for column in section.get("columns"):
+				if not column.get("fields"):
+					continue
+				allowed_fields.extend(column.get("fields"))
 
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldname in allowed_fields]
 
 	for tab in tabs:
 		for section in tab.get("sections"):
-			for field in section.get("fields") if section.get("fields") else []:
-				field = next((f for f in fields if f.fieldname == field), None)
-				if field:
-					field = {
-						"label": _(field.label),
-						"name": field.fieldname,
-						"type": field.fieldtype,
-						"options": getOptions(field),
-						"mandatory": field.reqd,
-						"read_only": field.read_only,
-						"placeholder": field.get("placeholder"),
-						"filters": field.get("link_filters"),
-					}
-					section["fields"][section.get("fields").index(field["name"])] = field
+			for column in section.get("columns") if section.get("columns") else []:
+				for field in column.get("fields") if column.get("fields") else []:
+					field = next((f for f in fields if f.fieldname == field), None)
+					if field:
+						field = {
+							"label": _(field.label),
+							"name": field.fieldname,
+							"type": field.fieldtype,
+							"options": getOptions(field),
+							"mandatory": field.reqd,
+							"read_only": field.read_only,
+							"placeholder": field.get("placeholder"),
+							"filters": field.get("link_filters"),
+						}
+						column["fields"][column.get("fields").index(field["name"])] = field
 
 	return tabs or []
 
