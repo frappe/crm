@@ -76,7 +76,7 @@
             >
               <Section :label="section.label" :opened="section.opened">
                 <SidePanelLayout
-                  :fields="section.fields"
+                  :fields="section.columns[0].fields"
                   :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="lead.data"
                   @update="updateField"

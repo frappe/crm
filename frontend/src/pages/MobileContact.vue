@@ -143,7 +143,7 @@
               >
                 <Section :label="section.label" :opened="section.opened">
                   <SidePanelLayout
-                    :fields="section.fields"
+                    :fields="section.columns[0].fields"
                     :isLastSection="i == fieldsLayout.data.length - 1"
                     doctype="Contact"
                     v-model="contact.data"
@@ -357,148 +357,145 @@ const fieldsLayout = createResource({
 
 function getParsedFields(data) {
   return data.map((section) => {
-    return {
-      ...section,
-      fields: computed(() =>
-        section.fields.map((field) => {
-          if (field.name === 'email_id') {
-            return {
-              ...field,
-              type: 'dropdown',
-              options:
-                contact.data?.email_ids?.map((email) => {
-                  return {
-                    name: email.name,
-                    value: email.email_id,
-                    selected: email.email_id === contact.data.email_id,
-                    placeholder: 'john@doe.com',
-                    onClick: () => {
-                      _contact.value.email_id = email.email_id
-                      setAsPrimary('email', email.email_id)
-                    },
-                    onSave: (option, isNew) => {
-                      if (isNew) {
-                        createNew('email', option.value)
-                        if (contact.data.email_ids.length === 1) {
-                          _contact.value.email_id = option.value
-                        }
-                      } else {
-                        editOption(
-                          'Contact Email',
-                          option.name,
-                          'email_id',
-                          option.value,
-                        )
+    section.columns = section.columns.map((column) => {
+      column.fields = column.fields.map((field) => {
+        if (field.name === 'email_id') {
+          return {
+            ...field,
+            type: 'dropdown',
+            options:
+              contact.data?.email_ids?.map((email) => {
+                return {
+                  name: email.name,
+                  value: email.email_id,
+                  selected: email.email_id === contact.data.email_id,
+                  placeholder: 'john@doe.com',
+                  onClick: () => {
+                    _contact.value.email_id = email.email_id
+                    setAsPrimary('email', email.email_id)
+                  },
+                  onSave: (option, isNew) => {
+                    if (isNew) {
+                      createNew('email', option.value)
+                      if (contact.data.email_ids.length === 1) {
+                        _contact.value.email_id = option.value
                       }
-                    },
-                    onDelete: async (option, isNew) => {
-                      contact.data.email_ids = contact.data.email_ids.filter(
-                        (email) => email.name !== option.name,
+                    } else {
+                      editOption(
+                        'Contact Email',
+                        option.name,
+                        'email_id',
+                        option.value,
                       )
-                      !isNew &&
-                        (await deleteOption('Contact Email', option.name))
-                      if (_contact.value.email_id === option.value) {
-                        if (contact.data.email_ids.length === 0) {
-                          _contact.value.email_id = ''
-                        } else {
-                          _contact.value.email_id = contact.data.email_ids.find(
-                            (email) => email.is_primary,
-                          )?.email_id
-                        }
-                      }
-                    },
-                  }
-                }) || [],
-              create: () => {
-                contact.data?.email_ids?.push({
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
-                })
-              },
-            }
-          } else if (field.name === 'mobile_no') {
-            return {
-              ...field,
-              type: 'dropdown',
-              options:
-                contact.data?.phone_nos?.map((phone) => {
-                  return {
-                    name: phone.name,
-                    value: phone.phone,
-                    selected: phone.phone === contact.data.actual_mobile_no,
-                    onClick: () => {
-                      _contact.value.actual_mobile_no = phone.phone
-                      _contact.value.mobile_no = phone.phone
-                      setAsPrimary('mobile_no', phone.phone)
-                    },
-                    onSave: (option, isNew) => {
-                      if (isNew) {
-                        createNew('phone', option.value)
-                        if (contact.data.phone_nos.length === 1) {
-                          _contact.value.actual_mobile_no = option.value
-                        }
+                    }
+                  },
+                  onDelete: async (option, isNew) => {
+                    contact.data.email_ids = contact.data.email_ids.filter(
+                      (email) => email.name !== option.name,
+                    )
+                    !isNew && (await deleteOption('Contact Email', option.name))
+                    if (_contact.value.email_id === option.value) {
+                      if (contact.data.email_ids.length === 0) {
+                        _contact.value.email_id = ''
                       } else {
-                        editOption(
-                          'Contact Phone',
-                          option.name,
-                          'phone',
-                          option.value,
-                        )
+                        _contact.value.email_id = contact.data.email_ids.find(
+                          (email) => email.is_primary,
+                        )?.email_id
                       }
-                    },
-                    onDelete: async (option, isNew) => {
-                      contact.data.phone_nos = contact.data.phone_nos.filter(
-                        (phone) => phone.name !== option.name,
-                      )
-                      !isNew &&
-                        (await deleteOption('Contact Phone', option.name))
-                      if (_contact.value.actual_mobile_no === option.value) {
-                        if (contact.data.phone_nos.length === 0) {
-                          _contact.value.actual_mobile_no = ''
-                        } else {
-                          _contact.value.actual_mobile_no =
-                            contact.data.phone_nos.find(
-                              (phone) => phone.is_primary_mobile_no,
-                            )?.phone
-                        }
-                      }
-                    },
-                  }
-                }) || [],
-              create: () => {
-                contact.data?.phone_nos?.push({
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
-                })
-              },
-            }
-          } else if (field.name === 'address') {
-            return {
-              ...field,
-              create: (value, close) => {
-                _contact.value.address = value
-                _address.value = {}
-                showAddressModal.value = true
-                close()
-              },
-              edit: async (addr) => {
-                _address.value = await call('frappe.client.get', {
-                  doctype: 'Address',
-                  name: addr,
-                })
-                showAddressModal.value = true
-              },
-            }
-          } else {
-            return field
+                    }
+                  },
+                }
+              }) || [],
+            create: () => {
+              contact.data?.email_ids?.push({
+                name: 'new-1',
+                value: '',
+                selected: false,
+                isNew: true,
+              })
+            },
           }
-        }),
-      ),
-    }
+        } else if (field.name === 'mobile_no') {
+          return {
+            ...field,
+            type: 'dropdown',
+            options:
+              contact.data?.phone_nos?.map((phone) => {
+                return {
+                  name: phone.name,
+                  value: phone.phone,
+                  selected: phone.phone === contact.data.actual_mobile_no,
+                  onClick: () => {
+                    _contact.value.actual_mobile_no = phone.phone
+                    _contact.value.mobile_no = phone.phone
+                    setAsPrimary('mobile_no', phone.phone)
+                  },
+                  onSave: (option, isNew) => {
+                    if (isNew) {
+                      createNew('phone', option.value)
+                      if (contact.data.phone_nos.length === 1) {
+                        _contact.value.actual_mobile_no = option.value
+                      }
+                    } else {
+                      editOption(
+                        'Contact Phone',
+                        option.name,
+                        'phone',
+                        option.value,
+                      )
+                    }
+                  },
+                  onDelete: async (option, isNew) => {
+                    contact.data.phone_nos = contact.data.phone_nos.filter(
+                      (phone) => phone.name !== option.name,
+                    )
+                    !isNew && (await deleteOption('Contact Phone', option.name))
+                    if (_contact.value.actual_mobile_no === option.value) {
+                      if (contact.data.phone_nos.length === 0) {
+                        _contact.value.actual_mobile_no = ''
+                      } else {
+                        _contact.value.actual_mobile_no =
+                          contact.data.phone_nos.find(
+                            (phone) => phone.is_primary_mobile_no,
+                          )?.phone
+                      }
+                    }
+                  },
+                }
+              }) || [],
+            create: () => {
+              contact.data?.phone_nos?.push({
+                name: 'new-1',
+                value: '',
+                selected: false,
+                isNew: true,
+              })
+            },
+          }
+        } else if (field.name === 'address') {
+          return {
+            ...field,
+            create: (value, close) => {
+              _contact.value.address = value
+              _address.value = {}
+              showAddressModal.value = true
+              close()
+            },
+            edit: async (addr) => {
+              _address.value = await call('frappe.client.get', {
+                doctype: 'Address',
+                name: addr,
+              })
+              showAddressModal.value = true
+            },
+          }
+        } else {
+          return field
+        }
+      })
+      return column
+    })
+    return section
   })
 }
 

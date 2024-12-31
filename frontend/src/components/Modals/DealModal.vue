@@ -109,18 +109,20 @@ const tabs = createResource({
   transform: (_tabs) => {
     return _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          if (field.name == 'status') {
-            field.type = 'Select'
-            field.options = dealStatuses.value
-            field.prefix = getDealStatus(deal.status).iconColorClass
-          } else if (field.name == 'deal_owner') {
-            field.type = 'User'
-          }
+        section.columns.forEach((column) => {
+          column.fields.forEach((field) => {
+            if (field.name == 'status') {
+              field.type = 'Select'
+              field.options = dealStatuses.value
+              field.prefix = getDealStatus(deal.status).iconColorClass
+            } else if (field.name == 'deal_owner') {
+              field.type = 'User'
+            }
 
-          if (field.type === 'Table') {
-            deal[field.name] = []
-          }
+            if (field.type === 'Table') {
+              deal[field.name] = []
+            }
+          })
         })
       })
     })

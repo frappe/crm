@@ -124,9 +124,9 @@
                 </Button>
               </template>
               <SidePanelLayout
-                v-if="section.fields"
+                v-if="section.columns?.[0].fields"
                 v-model="organization.doc"
-                :fields="section.fields"
+                :fields="section.columns[0].fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
                 doctype="CRM Organization"
                 @update="updateField"
@@ -377,33 +377,32 @@ const fieldsLayout = createResource({
 
 function getParsedFields(data) {
   return data.map((section) => {
-    return {
-      ...section,
-      fields: computed(() =>
-        section.fields.map((field) => {
-          if (field.name === 'address') {
-            return {
-              ...field,
-              create: (value, close) => {
-                _organization.value.address = value
-                _address.value = {}
-                showAddressModal.value = true
-                close()
-              },
-              edit: async (addr) => {
-                _address.value = await call('frappe.client.get', {
-                  doctype: 'Address',
-                  name: addr,
-                })
-                showAddressModal.value = true
-              },
-            }
-          } else {
-            return field
+    section.columns = section.columns.map((column) => {
+      column.fields = column.fields.map((field) => {
+        if (field.name === 'address') {
+          return {
+            ...field,
+            create: (value, close) => {
+              _organization.value.address = value
+              _address.value = {}
+              showAddressModal.value = true
+              close()
+            },
+            edit: async (addr) => {
+              _address.value = await call('frappe.client.get', {
+                doctype: 'Address',
+                name: addr,
+              })
+              showAddressModal.value = true
+            },
           }
-        }),
-      ),
-    }
+        } else {
+          return field
+        }
+      })
+      return column
+    })
+    return section
   })
 }
 

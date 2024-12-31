@@ -124,10 +124,12 @@ const tabs = createResource({
   transform: (_tabs) => {
     return _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          if (field.type === 'Table') {
-            _organization.value[field.name] = []
-          }
+        section.columns.forEach((column) => {
+          column.fields.forEach((field) => {
+            if (field.type === 'Table') {
+              _organization.value[field.name] = []
+            }
+          })
         })
       })
     })

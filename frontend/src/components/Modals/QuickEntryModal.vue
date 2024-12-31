@@ -99,10 +99,12 @@ function saveChanges() {
   _tabs.forEach((tab) => {
     if (!tab.sections) return
     tab.sections.forEach((section) => {
-      if (!section.fields) return
-      section.fields = section.fields.map(
-        (field) => field.fieldname || field.name,
-      )
+      section.columns.forEach((column) => {
+        if (!column.fields) return
+        column.fields = column.fields.map(
+          (field) => field.fieldname || field.name,
+        )
+      })
     })
   })
   loading.value = true

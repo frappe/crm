@@ -51,7 +51,7 @@
                 :opened="section.opened"
               >
                 <SidePanelLayout
-                  :fields="section.fields"
+                  :fields="section.columns[0].fields"
                   :isLastSection="i == section.data?.length - 1"
                   v-model="data"
                 />
@@ -129,10 +129,12 @@ function saveChanges() {
   let _tabs = JSON.parse(JSON.stringify(tabs.data))
   _tabs.forEach((tab) => {
     tab.sections.forEach((section) => {
-      if (!section.fields) return
-      section.fields = section.fields
-        .map((field) => field.fieldname || field.name)
-        .filter(Boolean)
+      section.columns.forEach((column) => {
+        if (!column.fields) return
+        column.fields = column.fields
+          .map((field) => field.fieldname || field.name)
+          .filter(Boolean)
+      })
     })
   })
   loading.value = true

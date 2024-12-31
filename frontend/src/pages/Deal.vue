@@ -168,8 +168,8 @@
                 </Button>
               </template>
               <SidePanelLayout
-                v-if="section.fields"
-                :fields="section.fields"
+                v-if="section.columns?.[0].fields"
+                :fields="section.columns[0].fields"
                 :isLastSection="i == fieldsLayout.data.length - 1"
                 doctype="CRM Deal"
                 v-model="deal.data"
@@ -611,7 +611,7 @@ const fieldsLayout = createResource({
 function getParsedFields(sections) {
   sections.forEach((section) => {
     if (section.name == 'contacts_section') return
-    section.fields.forEach((field) => {
+    section.columns[0].fields.forEach((field) => {
       if (field.name == 'organization') {
         field.create = (value, close) => {
           _organization.value.organization_name = value

@@ -593,17 +593,18 @@ def get_sidebar_fields(doctype, name):
 
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
-		for field in section.get("fields") if section.get("fields") else []:
-			field_obj = next((f for f in fields if f.fieldname == field), None)
-			if field_obj:
-				if field_obj.permlevel > 0:
-					field_has_write_access = field_obj.permlevel in has_write_access_to_permlevels
-					field_has_read_access = field_obj.permlevel in has_read_access_to_permlevels
-					if not field_has_write_access and field_has_read_access:
-						field_obj.read_only = 1
-					if not field_has_read_access and not field_has_write_access:
-						field_obj.hidden = 1
-				section["fields"][section.get("fields").index(field)] = get_field_obj(field_obj)
+		for column in section.get("columns") if section.get("columns") else []:
+			for field in column.get("fields") if column.get("fields") else []:
+				field_obj = next((f for f in fields if f.fieldname == field), None)
+				if field_obj:
+					if field_obj.permlevel > 0:
+						field_has_write_access = field_obj.permlevel in has_write_access_to_permlevels
+						field_has_read_access = field_obj.permlevel in has_read_access_to_permlevels
+						if not field_has_write_access and field_has_read_access:
+							field_obj.read_only = 1
+						if not field_has_read_access and not field_has_write_access:
+							field_obj.hidden = 1
+					column["fields"][column.get("fields").index(field)] = get_field_obj(field_obj)
 
 	fields_meta = {}
 	for field in fields:
