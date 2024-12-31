@@ -30,7 +30,7 @@
             class="text-lg font-medium"
             :class="{ 'px-3 sm:px-5': hasTabs }"
             :label="section.label"
-            :hideLabel="section.hideLabel"
+            :hideLabel="section.hideLabel || !section.label"
             :opened="section.opened"
             :collapsible="section.collapsible"
             collapseIconPosition="right"
@@ -290,20 +290,22 @@ const _tabs = computed(() => {
   return props.tabs.map((tab) => {
     tab.sections = tab.sections.map((section) => {
       section.columns = section.columns.map((column) => {
-        column.fields = column.fields.map((field) => {
-          if (field.type == 'Link' && field.options == 'User') {
-            field.type = 'User'
-          }
-          if (
-            (field.type == 'Check' ||
-              (field.read_only && props.data[field.name]) ||
-              !field.read_only) &&
-            (!field.depends_on || field.display_via_depends_on) &&
-            !field.hidden
-          ) {
+        column.fields = column.fields
+          .map((field) => {
+            if (field.type == 'Link' && field.options == 'User') {
+              field.type = 'User'
+            }
             return field
-          }
-        })
+          })
+          .filter((field) => {
+            return (
+              (field.type == 'Check' ||
+                (field.read_only && props.data[field.name]) ||
+                !field.read_only) &&
+              (!field.depends_on || field.display_via_depends_on) &&
+              !field.hidden
+            )
+          })
         return column
       })
       return section
@@ -313,17 +315,6 @@ const _tabs = computed(() => {
 })
 
 const tabIndex = ref(0)
-
-function gridClass(columns) {
-  columns = columns || 3
-  let griColsMap = {
-    1: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1',
-    2: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2',
-    3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-  }
-  return griColsMap[columns]
-}
 
 const getPlaceholder = (field) => {
   if (field.placeholder) {
