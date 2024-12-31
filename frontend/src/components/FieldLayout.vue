@@ -40,7 +40,7 @@
               :class="[
                 {
                   'px-3 sm:px-5': hasTabs,
-                  'mt-6': !section.hideLabel || !section.label,
+                  'mt-6': section.label && !section.hideLabel,
                 },
               ]"
             >
@@ -50,7 +50,7 @@
                 :key="column.name"
               >
                 <div
-                  v-if="!column.hideLabel || !column.label"
+                  v-if="column.label && !column.hideLabel"
                   class="text-ink-gray-9 max-w-fit text-base"
                 >
                   {{ column.label }}
