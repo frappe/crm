@@ -161,7 +161,7 @@ const filteredSections = computed(() => {
     })
   })
 
-  return [{ no_tabs: true, sections: allSections }]
+  return [{ sections: allSections }]
 })
 
 watch(

@@ -30,6 +30,8 @@ def get_new_layout(old_layout, type):
 
 	for tab in old_layout:
 		new_tab = tab.copy()
+		if "no_tabs" in new_tab:
+			new_tab.pop("no_tabs")
 		new_tab["sections"] = []
 		for section in tab.get("sections"):
 			if "contacts" in section:
@@ -55,7 +57,7 @@ def get_new_layout(old_layout, type):
 				continue
 
 			if len(fields) == 1 and column_count > 1:
-				new_section["columns"].append({"fields": fields[0]})
+				new_section["columns"].append({"fields": [fields[0]]})
 				new_section["columns"].append({"fields": []})
 				new_tab["sections"].append(new_section)
 				continue
@@ -73,5 +75,9 @@ def get_new_layout(old_layout, type):
 		new_layout = new_layout[0].get("sections")
 
 	if already_converted:
-		return json.dumps(old_layout)
+		new_layout = old_layout
+
+	if type == "Side Panel" and "sections" in old_layout[0]:
+		new_layout = new_layout[0].get("sections")
+
 	return json.dumps(new_layout)

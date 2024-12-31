@@ -29,7 +29,7 @@ def get_fields_layout(doctype: str, type: str):
 	has_tabs = tabs[0].get("sections") if tabs and tabs[0] else False
 
 	if not has_tabs:
-		tabs = [{"no_tabs": True, "sections": tabs}]
+		tabs = [{"sections": tabs}]
 
 	allowed_fields = []
 	for tab in tabs:
@@ -92,7 +92,7 @@ def get_default_layout(doctype: str):
 		if field.fieldtype not in ["Tab Break", "Section Break", "Column Break"]
 	]
 
-	return [{"no_tabs": True, "sections": [{"hideLabel": True, "fields": fields}]}]
+	return [{"sections": [{"fields": fields}]}]
 
 
 def getOptions(field):

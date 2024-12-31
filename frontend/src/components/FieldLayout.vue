@@ -284,7 +284,11 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(props.doctype)
 const { getUser } = usersStore()
 
-const hasTabs = computed(() => !props.tabs[0].no_tabs)
+const hasTabs = computed(() => {
+  return (
+    props.tabs.length > 1 || (props.tabs.length == 1 && props.tabs[0].label)
+  )
+})
 
 const _tabs = computed(() => {
   return props.tabs.map((tab) => {

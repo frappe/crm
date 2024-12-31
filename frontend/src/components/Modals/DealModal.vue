@@ -168,7 +168,7 @@ const filteredSections = computed(() => {
     }
   })
 
-  return [{ no_tabs: true, sections: _filteredSections }]
+  return [{ sections: _filteredSections }]
 })
 
 const dealStatuses = computed(() => {

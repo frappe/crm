@@ -106,12 +106,9 @@ const tabs = computed(() => {
   if (fieldsData[0].type != 'Tab Break') {
     let _sections = []
     if (fieldsData[0].type != 'Section Break') {
-      _sections.push({ no_tabs: true, columns: [{ fields: [] }] })
+      _sections.push({ columns: [{ fields: [] }] })
     }
-    _tabs.push({
-      no_tabs: true,
-      sections: _sections,
-    })
+    _tabs.push({ sections: _sections })
   }
 
   fieldsData.forEach((field) => {
