@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Draggable :list="sections" item-key="label" class="flex flex-col gap-5.5">
+    <Draggable :list="sections" item-key="name" class="flex flex-col gap-5.5">
       <template #item="{ element: section }">
         <div class="flex flex-col gap-3">
           <div
@@ -56,7 +56,7 @@
             <Draggable
               :list="section.columns?.[0].fields || []"
               group="fields"
-              item-key="label"
+              item-key="name"
               class="flex flex-col gap-1.5"
               handle=".cursor-grab"
             >

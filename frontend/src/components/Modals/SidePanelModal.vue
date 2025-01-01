@@ -39,7 +39,7 @@
           <div v-if="preview" class="flex flex-1 flex-col border rounded">
             <div
               v-for="(section, i) in tabs.data[0].sections"
-              :key="section.label"
+              :key="section.name"
               class="flex flex-col py-1.5 px-1"
               :class="{
                 'border-b': i !== tabs.data[0].sections?.length - 1,
@@ -51,8 +51,8 @@
                 :opened="section.opened"
               >
                 <SidePanelLayout
-                  :fields="section.columns[0].fields"
-                  :isLastSection="i == section.data?.length - 1"
+                  :fields="section.columns?.[0].fields || []"
+                  :isLastSection="i == tabs.data[0].sections?.length - 1"
                   v-model="data"
                 />
               </Section>

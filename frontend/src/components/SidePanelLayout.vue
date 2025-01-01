@@ -5,7 +5,7 @@
   >
     <div
       v-for="field in _fields"
-      :key="field.label"
+      :key="field.name"
       :class="[field.hidden && 'hidden']"
       class="section-field flex items-center gap-2 px-3 leading-5 first:mt-3"
     >

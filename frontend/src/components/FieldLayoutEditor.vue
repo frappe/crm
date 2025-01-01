@@ -6,7 +6,7 @@
       <Draggable
         v-if="tabs.length && tabs[tabIndex].label"
         :list="tabs"
-        item-key="label"
+        item-key="name"
         class="flex items-center gap-2"
         @end="(e) => (tabIndex = e.newIndex)"
       >
@@ -66,10 +66,10 @@
         </template>
       </Button>
     </div>
-    <div v-show="tabIndex == i" v-for="(tab, i) in tabs" :key="tab.label">
+    <div v-show="tabIndex == i" v-for="(tab, i) in tabs" :key="tab.name">
       <Draggable
         :list="tab.sections"
-        item-key="label"
+        item-key="name"
         class="flex flex-col gap-5.5"
       >
         <template #item="{ element: section, index: i }">
@@ -123,7 +123,7 @@
               class="flex gap-2"
               :list="section.columns"
               group="columns"
-              item-key="fields"
+              item-key="name"
             >
               <template #item="{ element: column }">
                 <div
@@ -132,7 +132,7 @@
                   <Draggable
                     :list="column.fields"
                     group="fields"
-                    item-key="label"
+                    item-key="name"
                     class="flex flex-col gap-1.5"
                     handle=".cursor-grab"
                   >

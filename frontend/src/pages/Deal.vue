@@ -120,7 +120,7 @@
         <div class="flex flex-col overflow-y-auto">
           <div
             v-for="(section, i) in fieldsLayout.data"
-            :key="section.label"
+            :key="section.name"
             class="section flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
