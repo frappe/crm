@@ -42,7 +42,7 @@ import {
   Badge,
   ErrorMessage,
 } from 'frappe-ui'
-import { evaluateDependsOnValue, createToast } from '@/utils'
+import { evaluateDependsOnValue, createToast, getRandom } from '@/utils'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -121,13 +121,18 @@ const tabs = computed(() => {
       _tabs.push({
         label: field.label,
         name: field.value,
-        sections: [{ columns: [{ fields: [] }] }],
+        sections: [
+          {
+            name: 'section_' + getRandom(),
+            columns: [{ name: 'column_' + getRandom(), fields: [] }],
+          },
+        ],
       })
     } else if (field.type === 'Section Break') {
       _sections.push({
         label: field.label,
         name: field.value,
-        columns: [{ fields: [] }],
+        columns: [{ name: 'column_' + getRandom(), fields: [] }],
       })
     } else if (field.type === 'Column Break') {
       _sections[_sections.length - 1].columns.push({

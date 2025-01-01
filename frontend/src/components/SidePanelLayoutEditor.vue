@@ -130,7 +130,8 @@
           sections.push({
             label: __('New Section'),
             opened: true,
-            columns: [{ fields: [] }],
+            name: 'section_' + getRandom(),
+            columns: [{ name: 'column_' + getRandom(), fields: [] }],
           })
         "
       >
@@ -145,6 +146,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
+import { getRandom } from '@/utils'
 import Draggable from 'vuedraggable'
 import { Input, createResource } from 'frappe-ui'
 import { computed, watch } from 'vue'
