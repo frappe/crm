@@ -35,8 +35,9 @@
           </div>
           <div class="h-px w-full border-t my-5" />
           <FieldLayout
-            v-if="filteredSections.length"
-            :tabs="filteredSections"
+            ref="fieldLayoutRef"
+            v-if="tabs.data?.length"
+            :tabs="tabs.data"
             :data="deal"
             doctype="CRM Deal"
           />
@@ -64,7 +65,7 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
 import { Switch, createResource } from 'frappe-ui'
-import { computed, ref, reactive, onMounted, nextTick } from 'vue'
+import { computed, ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -100,6 +101,26 @@ const deal = reactive({
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
+const fieldLayoutRef = ref(null)
+
+watch(
+  [chooseExistingOrganization, chooseExistingContact],
+  ([organization, contact]) => {
+    tabs.data.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        if (section.name === 'organization_section') {
+          section.hidden = !organization
+        } else if (section.name === 'organization_details_section') {
+          section.hidden = organization
+        } else if (section.name === 'contact_section') {
+          section.hidden = !contact
+        } else if (section.name === 'contact_details_section') {
+          section.hidden = contact
+        }
+      })
+    })
+  },
+)
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -127,48 +148,6 @@ const tabs = createResource({
       })
     })
   },
-})
-
-const filteredSections = computed(() => {
-  let allSections = tabs.data?.[0]?.sections || []
-  if (!allSections.length) return []
-
-  let _filteredSections = []
-
-  if (chooseExistingOrganization.value) {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Organization'),
-    )
-  } else {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Organization Details'),
-    )
-  }
-
-  if (chooseExistingContact.value) {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Contact'),
-    )
-  } else {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Contact Details'),
-    )
-  }
-
-  allSections.forEach((s) => {
-    if (
-      ![
-        'Select Organization',
-        'Organization Details',
-        'Select Contact',
-        'Contact Details',
-      ].includes(s.label)
-    ) {
-      _filteredSections.push(s)
-    }
-  })
-
-  return [{ sections: _filteredSections }]
 })
 
 const dealStatuses = computed(() => {
