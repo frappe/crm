@@ -14,7 +14,7 @@ class CRMFieldsLayout(Document):
 
 
 @frappe.whitelist()
-def get_fields_layout(doctype: str, type: str):
+def get_fields_layout(doctype: str, type: str, no_reactivity=False):
 	tabs = []
 	layout = None
 
@@ -30,7 +30,7 @@ def get_fields_layout(doctype: str, type: str):
 	has_tabs = tabs[0].get("sections") if tabs and tabs[0] else False
 
 	if not has_tabs:
-		tabs = [{"sections": tabs}]
+		tabs = [{"name": "first_tab", "sections": tabs}]
 
 	allowed_fields = []
 	for tab in tabs:
@@ -60,6 +60,10 @@ def get_fields_layout(doctype: str, type: str):
 							"read_only": field.read_only,
 							"placeholder": field.get("placeholder"),
 							"filters": field.get("link_filters"),
+							"depends_on": "" if no_reactivity else field.get("depends_on"),
+							"mandatory_depends_on": ""
+							if no_reactivity
+							else field.get("mandatory_depends_on"),
 						}
 						column["fields"][column.get("fields").index(field["name"])] = field
 

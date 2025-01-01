@@ -201,8 +201,9 @@
           @click="
             tabs[tabIndex].sections.push({
               label: __('New Section'),
+              name: 'section_' + getRandom(),
               opened: true,
-              columns: [{ fields: [] }],
+              columns: [{ name: 'column_' + getRandom(), fields: [] }],
             })
           "
         >
@@ -218,6 +219,7 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'
+import { getRandom } from '@/utils'
 import { Dropdown, createResource } from 'frappe-ui'
 import { ref, computed, watch } from 'vue'
 
@@ -293,16 +295,31 @@ function addTab() {
     return
   }
 
-  props.tabs.push({ label: __('New Tab'), sections: [] })
+  props.tabs.push({
+    label: __('New Tab'),
+    name: 'tab_' + getRandom(),
+    sections: [],
+  })
   tabIndex.value = props.tabs.length ? props.tabs.length - 1 : 0
 }
 
 function addField(column, field) {
   if (!field) return
+  if (field.fieldtype === 'Select') {
+    field.options = field.options.split('\n')
+    field.options = field.options.map((option) => {
+      return { label: option, value: option }
+    })
+    if (field.options[0].value !== '') {
+      field.options.unshift({ label: '', value: '' })
+    }
+  }
   let newFieldObj = {
     ...field,
     name: field.fieldname,
     type: field.fieldtype,
+    depends_on: '',
+    mandatory_depends_on: '',
   }
   column.fields.push(newFieldObj)
 }
@@ -420,7 +437,11 @@ function getSectionOptions(i, section, tab) {
           label: __('Add column'),
           icon: 'columns',
           onClick: () => {
-            section.columns.push({ label: '', fields: [] })
+            section.columns.push({
+              label: '',
+              name: 'column_' + getRandom(),
+              fields: [],
+            })
           },
           condition: () => section.columns.length < 4,
         },

@@ -263,7 +263,7 @@ import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { getFormat } from '@/utils'
+import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tabs, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
 import { ref, computed } from 'vue'
@@ -300,7 +300,17 @@ const _tabs = computed(() => {
             if (field.type == 'Link' && field.options == 'User') {
               field.type = 'User'
             }
-            return field
+            return {
+              ...field,
+              display_via_depends_on: evaluateDependsOnValue(
+                field.depends_on,
+                props.data,
+              ),
+              mandatory_via_depends_on: evaluateDependsOnValue(
+                field.mandatory_depends_on,
+                props.data,
+              ),
+            }
           })
           .filter((field) => {
             return (

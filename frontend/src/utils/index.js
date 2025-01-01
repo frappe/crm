@@ -306,7 +306,7 @@ export function isImage(extention) {
   )
 }
 
-export function getRandom(len) {
+export function getRandom(len=4) {
   let text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 

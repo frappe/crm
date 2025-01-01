@@ -66,7 +66,7 @@ const dirty = ref(false)
 const preview = ref(false)
 
 function getParams() {
-  return { doctype: _doctype.value, type: 'Data Fields' }
+  return { doctype: _doctype.value, type: 'Data Fields', no_reactivity: 1 }
 }
 
 const tabs = createResource({

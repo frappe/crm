@@ -232,7 +232,7 @@ import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { getFormat } from '@/utils'
+import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
 import { computed } from 'vue'
@@ -263,7 +263,9 @@ const _fields = computed(() => {
   let all_fields = []
   props.fields?.forEach((field) => {
     let df = field?.all_properties
-    if (df?.depends_on) evaluate_depends_on(df.depends_on, field)
+    if (df?.depends_on && !evaluateDependsOnValue(df.depends_on, data.value)) {
+      field.hidden = true
+    }
     all_fields.push({
       ...field,
       filters: df?.link_filters && JSON.parse(df.link_filters),
@@ -273,32 +275,6 @@ const _fields = computed(() => {
   return all_fields
 })
 
-function evaluate_depends_on(expression, field) {
-  if (expression.substr(0, 5) == 'eval:') {
-    try {
-      let out = evaluate(expression.substr(5), { doc: data.value })
-      if (!out) {
-        field.hidden = true
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
-}
-
-function evaluate(code, context = {}) {
-  let variable_names = Object.keys(context)
-  let variables = Object.values(context)
-  code = `let out = ${code}; return out`
-  try {
-    let expression_function = new Function(...variable_names, code)
-    return expression_function(...variables)
-  } catch (error) {
-    console.log('Error evaluating the following expression:')
-    console.error(code)
-    throw error
-  }
-}
 </script>
 
 <style scoped>
