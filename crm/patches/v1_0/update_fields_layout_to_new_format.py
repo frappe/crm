@@ -2,6 +2,7 @@ import json
 from math import ceil
 
 import frappe
+from frappe.utils import random_string
 
 
 def execute():
@@ -33,7 +34,9 @@ def get_new_layout(old_layout, type):
 		if "no_tabs" in new_tab:
 			new_tab.pop("no_tabs")
 		new_tab["sections"] = []
+		new_tab["name"] = "tab_" + str(random_string(4))
 		for section in tab.get("sections"):
+			section["name"] = section.get("name") or "section_" + str(random_string(4))
 			if "contacts" in section:
 				new_tab["sections"].append(section)
 				continue
@@ -52,20 +55,23 @@ def get_new_layout(old_layout, type):
 			new_section["columns"] = []
 
 			if len(fields) == 0:
-				new_section["columns"].append({"fields": []})
+				new_section["columns"].append({"name": "column_" + str(random_string(4)), "fields": []})
 				new_tab["sections"].append(new_section)
 				continue
 
 			if len(fields) == 1 and column_count > 1:
-				new_section["columns"].append({"fields": [fields[0]]})
-				new_section["columns"].append({"fields": []})
+				new_section["columns"].append(
+					{"name": "column_" + str(random_string(4)), "fields": [fields[0]]}
+				)
+				new_section["columns"].append({"name": "column_" + str(random_string(4)), "fields": []})
 				new_tab["sections"].append(new_section)
 				continue
 
 			fields_per_column = ceil(len(fields) / column_count)
 			for i in range(column_count):
 				new_column = {
-					"fields": fields[i * fields_per_column: (i + 1) * fields_per_column]
+					"name": "column_" + str(random_string(4)),
+					"fields": fields[i * fields_per_column : (i + 1) * fields_per_column],
 				}
 				new_section["columns"].append(new_column)
 			new_tab["sections"].append(new_section)
