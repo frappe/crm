@@ -339,7 +339,6 @@ function getSectionOptions(i, section, tab) {
           label: __('Edit'),
           icon: 'edit',
           onClick: () => (section.editingLabel = true),
-          condition: () => section.editable !== false,
         },
         {
           label: section.collapsible ? __('Uncollapsible') : __('Collapsible'),
@@ -396,8 +395,7 @@ function getSectionOptions(i, section, tab) {
             )
             tabIndex.value -= 1
           },
-          condition: () =>
-            section.editable !== false && props.tabs[tabIndex.value - 1],
+          condition: () => props.tabs[tabIndex.value - 1],
         },
         {
           label: __('Move to next tab'),
@@ -411,8 +409,7 @@ function getSectionOptions(i, section, tab) {
             )
             tabIndex.value += 1
           },
-          condition: () =>
-            section.editable !== false && props.tabs[tabIndex.value + 1],
+          condition: () => props.tabs[tabIndex.value + 1],
         },
       ],
     },
