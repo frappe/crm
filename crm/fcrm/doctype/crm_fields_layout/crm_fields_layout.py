@@ -6,6 +6,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.utils import random_string
 
 
 class CRMFieldsLayout(Document):
@@ -86,13 +87,48 @@ def save_fields_layout(doctype: str, type: str, layout: str):
 
 def get_default_layout(doctype: str):
 	fields = frappe.get_meta(doctype).fields
-	fields = [
-		field.fieldname
-		for field in fields
-		if field.fieldtype not in ["Tab Break", "Section Break", "Column Break"]
-	]
 
-	return [{"sections": [{"fields": fields}]}]
+	tabs = []
+
+	if fields and fields[0].fieldtype != "Tab Break":
+		sections = []
+		if fields and fields[0].fieldtype != "Section Break":
+			sections.append(
+				{
+					"name": "section_" + str(random_string(4)),
+					"columns": [{"name": "column_" + str(random_string(4)), "fields": []}],
+				}
+			)
+		tabs.append({"name": "tab_" + str(random_string(4)), "sections": sections})
+
+	for field in fields:
+		if field.fieldtype == "Tab Break":
+			tabs.append(
+				{
+					"name": "tab_" + str(random_string(4)),
+					"sections": [
+						{
+							"name": "section_" + str(random_string(4)),
+							"columns": [{"name": "column_" + str(random_string(4)), "fields": []}],
+						}
+					],
+				}
+			)
+		elif field.fieldtype == "Section Break":
+			tabs[-1]["sections"].append(
+				{
+					"name": "section_" + str(random_string(4)),
+					"columns": [{"name": "column_" + str(random_string(4)), "fields": []}],
+				}
+			)
+		elif field.fieldtype == "Column Break":
+			tabs[-1]["sections"][-1]["columns"].append(
+				{"name": "column_" + str(random_string(4)), "fields": []}
+			)
+		else:
+			tabs[-1]["sections"][-1]["columns"][-1]["fields"].append(field.fieldname)
+
+	return tabs
 
 
 def getOptions(field):
