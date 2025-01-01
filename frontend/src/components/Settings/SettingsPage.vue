@@ -106,9 +106,12 @@ const tabs = computed(() => {
   if (fieldsData[0].type != 'Tab Break') {
     let _sections = []
     if (fieldsData[0].type != 'Section Break') {
-      _sections.push({ columns: [{ fields: [] }] })
+      _sections.push({
+        name: 'first_section',
+        columns: [{ name: 'first_column', fields: [] }],
+      })
     }
-    _tabs.push({ sections: _sections })
+    _tabs.push({ name: 'first_tab', sections: _sections })
   }
 
   fieldsData.forEach((field) => {
@@ -127,7 +130,10 @@ const tabs = computed(() => {
         columns: [{ fields: [] }],
       })
     } else if (field.type === 'Column Break') {
-      _sections[_sections.length - 1].columns.push({ fields: [] })
+      _sections[_sections.length - 1].columns.push({
+        name: field.value,
+        fields: [],
+      })
     } else {
       let last_section = _sections[_sections.length - 1]
       let last_column = last_section.columns[last_section.columns.length - 1]
