@@ -42,12 +42,10 @@
       </div>
     </template>
   </Dialog>
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
 import FieldLayout from '@/components/FieldLayout.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
@@ -65,6 +63,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['openAddressModal'])
+
 const { isManager } = usersStore()
 
 const router = useRouter()
@@ -74,8 +74,6 @@ const organization = defineModel('organization')
 const loading = ref(false)
 const title = ref(null)
 
-let _address = ref({})
-
 let _organization = ref({
   organization_name: '',
   website: '',
@@ -83,8 +81,6 @@ let _organization = ref({
   no_of_employees: '1-10',
   industry: '',
 })
-
-const showAddressModal = ref(false)
 
 let doc = ref({})
 
@@ -128,16 +124,13 @@ const tabs = createResource({
             if (field.name == 'address') {
               field.create = (value, close) => {
                 _organization.value.address = value
-                _address.value = {}
-                showAddressModal.value = true
+                emit('openAddressModal')
+                show.value = false
                 close()
               }
-              field.edit = (addr) => {
-                _address.value = await call('frappe.client.get', {
-                  doctype: 'Address',
-                  name: addr,
-                })
-                showAddressModal.value = true
+              field.edit = (address) => {
+                emit('openAddressModal', address)
+                show.value = false
               }
             } else if (field.type === 'Table') {
               _organization.value[field.name] = []

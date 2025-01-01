@@ -42,12 +42,10 @@
       </div>
     </template>
   </Dialog>
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
 import FieldLayout from '@/components/FieldLayout.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
@@ -69,6 +67,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['openAddressModal'])
+
 const { isManager } = usersStore()
 
 const router = useRouter()
@@ -77,9 +77,6 @@ const show = defineModel()
 const loading = ref(false)
 
 let _contact = ref({})
-let _address = ref({})
-
-const showAddressModal = ref(false)
 
 async function createContact() {
   if (_contact.value.email_id) {
@@ -133,16 +130,13 @@ const tabs = createResource({
             } else if (field.name == 'address') {
               field.create = (value, close) => {
                 _contact.value.address = value
-                _address.value = {}
-                showAddressModal.value = true
+                emit('openAddressModal')
+                show.value = false
                 close()
               }
-              field.edit = async (addr) => {
-                _address.value = await call('frappe.client.get', {
-                  doctype: 'Address',
-                  name: addr,
-                })
-                showAddressModal.value = true
+              field.edit = (address) => {
+                emit('openAddressModal', address)
+                show.value = false
               }
             } else if (field.type === 'Table') {
               _contact.value[field.name] = []
