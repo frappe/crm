@@ -23,17 +23,29 @@
           </div>
         </div>
         <div>
-          <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div class="flex items-center gap-3 text-sm text-ink-gray-5">
+          <div
+            v-if="hasOrganizationSections || hasContactSections"
+            class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3"
+          >
+            <div
+              v-if="hasOrganizationSections"
+              class="flex items-center gap-3 text-sm text-ink-gray-5"
+            >
               <div>{{ __('Choose Existing Organization') }}</div>
               <Switch v-model="chooseExistingOrganization" />
             </div>
-            <div class="flex items-center gap-3 text-sm text-ink-gray-5">
+            <div
+              v-if="hasContactSections"
+              class="flex items-center gap-3 text-sm text-ink-gray-5"
+            >
               <div>{{ __('Choose Existing Contact') }}</div>
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
-          <div class="h-px w-full border-t my-5" />
+          <div
+            v-if="hasOrganizationSections || hasContactSections"
+            class="h-px w-full border-t my-5"
+          />
           <FieldLayout
             ref="fieldLayoutRef"
             v-if="tabs.data?.length"
@@ -98,6 +110,9 @@ const deal = reactive({
   deal_owner: '',
 })
 
+const hasOrganizationSections = ref(false)
+const hasContactSections = ref(false)
+
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
@@ -131,6 +146,19 @@ const tabs = createResource({
     return _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
         section.columns.forEach((column) => {
+          if (
+            ['organization_section', 'organization_details_section'].includes(
+              section.name,
+            )
+          ) {
+            hasOrganizationSections.value = true
+          } else if (
+            ['contact_section', 'contact_details_section'].includes(
+              section.name,
+            )
+          ) {
+            hasContactSections.value = true
+          }
           column.fields.forEach((field) => {
             if (field.name == 'status') {
               field.type = 'Select'
