@@ -37,6 +37,16 @@ def get_new_layout(old_layout, type):
 		new_tab["name"] = "tab_" + str(random_string(4))
 		for section in tab.get("sections"):
 			section["name"] = section.get("name") or "section_" + str(random_string(4))
+
+			if section.get("label") == "Select Organization":
+				section["name"] = "organization_section"
+			elif section.get("label") == "Organization Details":
+				section["name"] = "organization_details_section"
+			elif section.get("label") == "Select Contact":
+				section["name"] = "contact_section"
+			elif section.get("label") == "Contact Details":
+				section["name"] = "contact_details_section"
+
 			if "contacts" in section:
 				new_tab["sections"].append(section)
 				continue
