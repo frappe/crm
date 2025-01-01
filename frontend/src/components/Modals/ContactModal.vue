@@ -22,13 +22,12 @@
             </Button>
           </div>
         </div>
-        <div v-if="filteredSections.length">
-          <FieldLayout
-            :tabs="filteredSections"
-            :data="_contact"
-            doctype="Contact"
-          />
-        </div>
+        <FieldLayout
+          v-if="tabs.data?.length"
+          :tabs="tabs.data"
+          :data="_contact"
+          doctype="Contact"
+        />
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
@@ -53,7 +52,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
-import { ref, nextTick, watch, computed } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -127,7 +126,25 @@ const tabs = createResource({
       tab.sections.forEach((section) => {
         section.columns.forEach((column) => {
           column.fields.forEach((field) => {
-            if (field.type === 'Table') {
+            if (field.name == 'email_id') {
+              field.read_only = false
+            } else if (field.name == 'mobile_no') {
+              field.read_only = false
+            } else if (field.name == 'address') {
+              field.create = (value, close) => {
+                _contact.value.address = value
+                _address.value = {}
+                showAddressModal.value = true
+                close()
+              }
+              field.edit = async (addr) => {
+                _address.value = await call('frappe.client.get', {
+                  doctype: 'Address',
+                  name: addr,
+                })
+                showAddressModal.value = true
+              }
+            } else if (field.type === 'Table') {
               _contact.value[field.name] = []
             }
           })
@@ -135,33 +152,6 @@ const tabs = createResource({
       })
     })
   },
-})
-
-const filteredSections = computed(() => {
-  let allSections = tabs.data?.[0]?.sections || []
-  if (!allSections.length) return []
-
-  allSections.forEach((s) => {
-    s.fields.forEach((field) => {
-      if (field.name == 'address') {
-        field.create = (value, close) => {
-          _contact.value.address = value
-          _address.value = {}
-          showAddressModal.value = true
-          close()
-        }
-        field.edit = async (addr) => {
-          _address.value = await call('frappe.client.get', {
-            doctype: 'Address',
-            name: addr,
-          })
-          showAddressModal.value = true
-        }
-      }
-    })
-  })
-
-  return [{ sections: allSections }]
 })
 
 watch(
