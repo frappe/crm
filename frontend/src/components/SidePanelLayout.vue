@@ -14,7 +14,7 @@
             :opened="section.opened"
           >
             <template v-if="!preview" #actions>
-              <div v-if="section.contacts" class="pr-2">
+              <div v-if="section.name == 'contacts_section'" class="pr-2">
                 <Link
                   value=""
                   doctype="Contact"
@@ -41,9 +41,7 @@
                 </Link>
               </div>
               <Button
-                v-else-if="
-                  ((!section.contacts && i == 1) || i == 0) && isManager()
-                "
+                v-else-if="section.showEditButton"
                 variant="ghost"
                 class="w-7 mr-2"
                 @click="showSidePanelModal = true"
@@ -389,7 +387,10 @@ const showSidePanelModal = ref(false)
 
 const _sections = computed(() => {
   if (!props.sections?.length) return []
+  let editButtonAdded = false
   return props.sections.map((section) => {
+    let isContactSection = section.name == 'contacts_section'
+
     if (section.columns?.length) {
       section.columns[0].fields = section.columns[0].fields.map((field) => {
         let df = field?.all_properties || {}
@@ -412,9 +413,20 @@ const _sections = computed(() => {
         return _field
       })
     }
+
+    section.showEditButton = !(
+      !isManager() ||
+      isContactSection ||
+      editButtonAdded
+    )
+    if (section.showEditButton) {
+      editButtonAdded = true
+    }
+
     section.visible =
-      section.name == 'contacts_section' ||
+      isContactSection ||
       section.columns?.[0].fields.filter((f) => f.visible).length
+
     return section
   })
 })
