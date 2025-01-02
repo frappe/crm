@@ -79,7 +79,7 @@
                         <div
                           v-if="
                             field.read_only &&
-                            !['checkbox', 'dropdown'].includes(field.type)
+                            !['Check', 'Dropdown'].includes(field.type)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
                         >
@@ -87,7 +87,7 @@
                             <div>{{ data[field.name] }}</div>
                           </Tooltip>
                         </div>
-                        <div v-else-if="field.type === 'dropdown'">
+                        <div v-else-if="field.type === 'Dropdown'">
                           <NestedPopover>
                             <template #target="{ open }">
                               <Button
@@ -149,9 +149,9 @@
                           </NestedPopover>
                         </div>
                         <FormControl
-                          v-else-if="field.type == 'checkbox'"
+                          v-else-if="field.type == 'Check'"
                           class="form-control"
-                          :type="field.type"
+                          type="checkbox"
                           v-model="data[field.name]"
                           @change.stop="
                             emit('update', field.name, $event.target.checked)
@@ -161,14 +161,14 @@
                         <FormControl
                           v-else-if="
                             [
-                              'email',
-                              'number',
-                              'password',
-                              'textarea',
+                              'Small Text',
+                              'Text',
+                              'Long Text',
+                              'Code',
                             ].includes(field.type)
                           "
                           class="form-control"
-                          :type="field.type"
+                          type="textarea"
                           :value="data[field.name]"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -177,7 +177,7 @@
                           "
                         />
                         <FormControl
-                          v-else-if="field.type === 'select'"
+                          v-else-if="field.type === 'Select'"
                           class="form-control cursor-pointer [&_select]:cursor-pointer truncate"
                           type="select"
                           v-model="data[field.name]"
@@ -188,9 +188,7 @@
                           "
                         />
                         <Link
-                          v-else-if="
-                            ['lead_owner', 'deal_owner'].includes(field.name)
-                          "
+                          v-else-if="field.type === 'User'"
                           class="form-control"
                           :value="
                             data[field.name] &&
@@ -225,17 +223,17 @@
                           </template>
                         </Link>
                         <Link
-                          v-else-if="field.type === 'link'"
+                          v-else-if="field.type === 'Link'"
                           class="form-control select-text"
                           :value="data[field.name]"
-                          :doctype="field.doctype"
+                          :doctype="field.options"
                           :filters="field.filters"
                           :placeholder="field.placeholder"
                           @change="(data) => emit('update', field.name, data)"
                           :onCreate="field.create"
                         />
                         <div
-                          v-else-if="field.type === 'datetime'"
+                          v-else-if="field.type === 'Datetime'"
                           class="form-control"
                         >
                           <DateTimePicker
@@ -250,7 +248,7 @@
                           />
                         </div>
                         <div
-                          v-else-if="field.type === 'date'"
+                          v-else-if="field.type === 'Date'"
                           class="form-control"
                         >
                           <DatePicker
@@ -263,7 +261,7 @@
                           />
                         </div>
                         <FormControl
-                          v-else-if="field.type === 'percent'"
+                          v-else-if="field.type === 'Percent'"
                           class="form-control"
                           type="text"
                           :value="getFormattedPercent(field.name, data)"
@@ -274,7 +272,18 @@
                           "
                         />
                         <FormControl
-                          v-else-if="field.type === 'float'"
+                          v-else-if="field.type === 'Int'"
+                          class="form-control"
+                          type="number"
+                          v-model="data[field.name]"
+                          :placeholder="field.placeholder"
+                          :debounce="500"
+                          @change.stop="
+                            emit('update', field.name, $event.target.value)
+                          "
+                        />
+                        <FormControl
+                          v-else-if="field.type === 'Float'"
                           class="form-control"
                           type="text"
                           :value="getFormattedFloat(field.name, data)"
@@ -285,7 +294,7 @@
                           "
                         />
                         <FormControl
-                          v-else-if="field.type === 'currency'"
+                          v-else-if="field.type === 'Currency'"
                           class="form-control"
                           type="text"
                           :value="getFormattedCurrency(field.name, data)"
@@ -310,7 +319,7 @@
                       <div class="ml-1">
                         <ArrowUpRightIcon
                           v-if="
-                            field.type === 'link' &&
+                            field.type === 'Link' &&
                             field.link &&
                             data[field.name]
                           "
@@ -319,7 +328,7 @@
                         />
                         <EditIcon
                           v-if="
-                            field.type === 'link' &&
+                            field.type === 'Link' &&
                             field.edit &&
                             data[field.name]
                           "
@@ -394,6 +403,10 @@ const _sections = computed(() => {
     if (section.columns?.length) {
       section.columns[0].fields = section.columns[0].fields.map((field) => {
         let df = field?.all_properties || {}
+        if (field.type === 'Link' && df.options === 'User') {
+          field.options = df.options
+          field.type = 'User'
+        }
         let _field = {
           ...field,
           depends_on: df.depends_on,

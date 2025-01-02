@@ -616,11 +616,12 @@ def get_sidebar_fields(doctype, name):
 def get_field_obj(field):
 	obj = {
 		"label": field.label,
-		"type": get_type(field),
+		"type": field.fieldtype,
 		"name": field.fieldname,
 		"hidden": field.hidden,
 		"reqd": field.reqd,
 		"read_only": field.read_only,
+		"options": field.options,
 		"all_properties": field,
 	}
 
@@ -628,7 +629,6 @@ def get_field_obj(field):
 
 	if field.fieldtype == "Link":
 		obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
-		obj["doctype"] = field.options
 	elif field.fieldtype == "Select" and field.options:
 		obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
 		obj["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]
@@ -637,22 +637,6 @@ def get_field_obj(field):
 		obj["tooltip"] = "This field is read only and cannot be edited."
 
 	return obj
-
-
-def get_type(field):
-	if field.fieldtype == "Data" and field.options == "Phone":
-		return "phone"
-	elif field.fieldtype == "Data" and field.options == "Email":
-		return "email"
-	elif field.fieldtype == "Check":
-		return "checkbox"
-	elif field.fieldtype == "Int":
-		return "number"
-	elif field.fieldtype in ["Small Text", "Text", "Long Text"]:
-		return "textarea"
-	elif field.read_only:
-		return "read_only"
-	return field.fieldtype.lower()
 
 
 def get_assigned_users(doctype, name, default_assigned_to=None):

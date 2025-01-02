@@ -351,7 +351,7 @@ function getParsedSections(_sections) {
           return {
             ...field,
             read_only: false,
-            type: 'dropdown',
+            type: 'Dropdown',
             options:
               contact.data?.email_ids?.map((email) => {
                 return {
@@ -408,7 +408,7 @@ function getParsedSections(_sections) {
           return {
             ...field,
             read_only: false,
-            type: 'dropdown',
+            type: 'Dropdown',
             options:
               contact.data?.phone_nos?.map((phone) => {
                 return {
