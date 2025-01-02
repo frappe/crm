@@ -170,6 +170,7 @@
                 :index="index"
                 :data="row"
                 :doctype="doctype"
+                :parentDoctype="parentDoctype"
               />
             </div>
           </template>
@@ -198,6 +199,7 @@
       v-if="showGridRowFieldsModal"
       v-model="showGridRowFieldsModal"
       :doctype="doctype"
+      :parentDoctype="parentDoctype"
     />
     <GridFieldsEditorModal
       v-if="showGridFieldsEditorModal"

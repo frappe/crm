@@ -36,7 +36,13 @@
             :tabs="tabs.data"
             :doctype="_doctype"
           />
-          <FieldLayout v-else :tabs="tabs.data" :data="{}" :modal="true" :preview="true"/>
+          <FieldLayout
+            v-else
+            :tabs="tabs.data"
+            :data="{}"
+            :modal="true"
+            :preview="true"
+          />
         </div>
       </div>
     </template>
@@ -55,6 +61,10 @@ const props = defineProps({
     type: String,
     default: 'CRM Lead',
   },
+  parentDoctype: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['reload'])
@@ -66,12 +76,16 @@ const dirty = ref(false)
 const preview = ref(false)
 
 function getParams() {
-  return { doctype: _doctype.value, type: 'Grid Row' }
+  return {
+    doctype: _doctype.value,
+    type: 'Grid Row',
+    parent_doctype: props.parentDoctype,
+  }
 }
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['GridRowFieldsModal', _doctype.value],
+  cache: ['GridRowFieldsModal', _doctype.value, props.parentDoctype],
   params: getParams(),
   onSuccess(data) {
     tabs.originalData = JSON.parse(JSON.stringify(data))

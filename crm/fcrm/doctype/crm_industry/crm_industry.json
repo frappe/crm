@@ -21,7 +21,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:57:02.025918",
+ "modified": "2025-01-02 22:14:28.686821",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Industry",
@@ -51,6 +51,15 @@
    "role": "Sales Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1
   }
  ],
  "quick_entry": 1,

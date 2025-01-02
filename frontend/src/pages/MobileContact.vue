@@ -348,9 +348,9 @@ const rows = computed(() => {
 })
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.contactId],
-  params: { doctype: 'Contact', name: props.contactId },
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
+  cache: ['sidePanelSections', 'Contact'],
+  params: { doctype: 'Contact' },
   auto: true,
   transform: (data) => getParsedFields(data),
 })

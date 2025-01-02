@@ -530,9 +530,9 @@ const tabs = computed(() => {
 const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
 
 const sections = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['sidePanelSections', props.dealId],
-  params: { doctype: 'CRM Deal', name: props.dealId },
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
+  cache: ['sidePanelSections', 'CRM Deal'],
+  params: { doctype: 'CRM Deal' },
   auto: true,
   transform: (data) => getParsedSections(data),
 })
