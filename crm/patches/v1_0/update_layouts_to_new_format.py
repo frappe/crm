@@ -95,7 +95,7 @@ def get_new_layout(old_layout, type):
 	if already_converted:
 		new_layout = old_layout
 
-	if type == "Side Panel" and "sections" in old_layout[0]:
+	if type == "Side Panel" and "sections" in new_layout[0]:
 		new_layout = new_layout[0].get("sections")
 
 	return json.dumps(new_layout)
