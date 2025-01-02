@@ -70,13 +70,13 @@
           <div class="flex flex-col overflow-y-auto">
             <div
               v-for="(section, i) in fieldsLayout.data"
-              :key="section.label"
+              :key="section.name"
               class="flex flex-col px-2 py-3 sm:p-3"
               :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
             >
               <Section :label="section.label" :opened="section.opened">
                 <SidePanelLayout
-                  :fields="section.fields"
+                  :fields="section.columns[0].fields"
                   :isLastSection="i == fieldsLayout.data.length - 1"
                   v-model="lead.data"
                   @update="updateField"
@@ -421,9 +421,9 @@ watch(tabs, (value) => {
 })
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.leadId],
-  params: { doctype: 'CRM Lead', name: props.leadId },
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
+  cache: ['sidePanelSections', 'CRM Lead'],
+  params: { doctype: 'CRM Lead' },
   auto: true,
 })
 

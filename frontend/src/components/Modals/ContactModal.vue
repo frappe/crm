@@ -22,13 +22,12 @@
             </Button>
           </div>
         </div>
-        <div v-if="filteredSections.length">
-          <FieldLayout
-            :tabs="filteredSections"
-            :data="_contact"
-            doctype="Contact"
-          />
-        </div>
+        <FieldLayout
+          v-if="tabs.data?.length"
+          :tabs="tabs.data"
+          :data="_contact"
+          doctype="Contact"
+        />
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
@@ -43,17 +42,15 @@
       </div>
     </template>
   </Dialog>
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
 import FieldLayout from '@/components/FieldLayout.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
-import { ref, nextTick, watch, computed } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -70,6 +67,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['openAddressModal'])
+
 const { isManager } = usersStore()
 
 const router = useRouter()
@@ -78,9 +77,6 @@ const show = defineModel()
 const loading = ref(false)
 
 let _contact = ref({})
-let _address = ref({})
-
-const showAddressModal = ref(false)
 
 async function createContact() {
   if (_contact.value.email_id) {
@@ -125,41 +121,31 @@ const tabs = createResource({
   transform: (_tabs) => {
     return _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          if (field.type === 'Table') {
-            _contact.value[field.name] = []
-          }
+        section.columns.forEach((column) => {
+          column.fields.forEach((field) => {
+            if (field.fieldname == 'email_id') {
+              field.read_only = false
+            } else if (field.fieldname == 'mobile_no') {
+              field.read_only = false
+            } else if (field.fieldname == 'address') {
+              field.create = (value, close) => {
+                _contact.value.address = value
+                emit('openAddressModal')
+                show.value = false
+                close()
+              }
+              field.edit = (address) => {
+                emit('openAddressModal', address)
+                show.value = false
+              }
+            } else if (field.fieldtype === 'Table') {
+              _contact.value[field.fieldname] = []
+            }
+          })
         })
       })
     })
   },
-})
-
-const filteredSections = computed(() => {
-  let allSections = tabs.data?.[0]?.sections || []
-  if (!allSections.length) return []
-
-  allSections.forEach((s) => {
-    s.fields.forEach((field) => {
-      if (field.name == 'address') {
-        field.create = (value, close) => {
-          _contact.value.address = value
-          _address.value = {}
-          showAddressModal.value = true
-          close()
-        }
-        field.edit = async (addr) => {
-          _address.value = await call('frappe.client.get', {
-            doctype: 'Address',
-            name: addr,
-          })
-          showAddressModal.value = true
-        }
-      }
-    })
-  })
-
-  return [{ no_tabs: true, sections: allSections }]
 })
 
 watch(

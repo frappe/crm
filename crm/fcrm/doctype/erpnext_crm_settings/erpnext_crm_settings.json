@@ -6,13 +6,13 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
-  "is_erpnext_in_different_site",
-  "column_break_vfru",
   "erpnext_company",
-  "section_break_oubd",
+  "column_break_vfru",
+  "is_erpnext_in_different_site",
   "erpnext_site_url",
-  "column_break_fllx",
+  "section_break_oubd",
   "api_key",
+  "column_break_fllx",
   "api_secret",
   "section_break_jnbn",
   "create_customer_on_status_change",
@@ -37,7 +37,8 @@
   {
    "depends_on": "enabled",
    "fieldname": "section_break_oubd",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "ERPNext Site API's"
   },
   {
    "fieldname": "column_break_fllx",
@@ -101,7 +102,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-30 19:22:07.929304",
+ "modified": "2024-12-31 23:24:29.636820",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "ERPNext CRM Settings",

@@ -41,6 +41,7 @@ const props = defineProps({
   index: Number,
   data: Object,
   doctype: String,
+  parentDoctype: String,
 })
 
 const { isManager } = usersStore()
@@ -50,8 +51,12 @@ const showGridRowFieldsModal = defineModel('showGridRowFieldsModal')
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['Grid Row', props.doctype],
-  params: { doctype: props.doctype, type: 'Grid Row' },
+  cache: ['Grid Row', props.doctype, props.parentDoctype],
+  params: {
+    doctype: props.doctype,
+    type: 'Grid Row',
+    parent_doctype: props.parentDoctype,
+  },
   auto: true,
 })
 

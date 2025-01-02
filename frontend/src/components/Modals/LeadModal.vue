@@ -71,18 +71,18 @@ const tabs = createResource({
   transform: (_tabs) => {
     return _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          if (field.name == 'status') {
-            field.type = 'Select'
-            field.options = leadStatuses.value
-            field.prefix = getLeadStatus(lead.status).iconColorClass
-          } else if (field.name == 'lead_owner') {
-            field.type = 'User'
-          }
+        section.columns.forEach((column) => {
+          column.fields.forEach((field) => {
+            if (field.fieldname == 'status') {
+              field.fieldtype = 'Select'
+              field.options = leadStatuses.value
+              field.prefix = getLeadStatus(lead.status).iconColorClass
+            }
 
-          if (field.type === 'Table') {
-            lead[field.name] = []
-          }
+            if (field.fieldtype === 'Table') {
+              lead[field.fieldname] = []
+            }
+          })
         })
       })
     })

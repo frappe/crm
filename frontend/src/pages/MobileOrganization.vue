@@ -119,14 +119,15 @@
             <div class="flex flex-col overflow-y-auto">
               <div
                 v-for="(section, i) in fieldsLayout.data"
-                :key="section.label"
+                :key="section.name"
                 class="flex flex-col px-2 py-3 sm:p-3"
                 :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
               >
                 <Section :label="section.label" :opened="section.opened">
                   <SidePanelLayout
+                    v-if="section.columns?.[0].fields"
                     v-model="organization.doc"
-                    :fields="section.fields"
+                    :fields="section.columns[0].fields"
                     :isLastSection="i == fieldsLayout.data.length - 1"
                     doctype="CRM Organization"
                     @update="updateField"
@@ -326,42 +327,41 @@ const _organization = ref({})
 const _address = ref({})
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.organizationId],
-  params: { doctype: 'CRM Organization', name: props.organizationId },
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
+  cache: ['sidePanelSections', 'CRM Organization'],
+  params: { doctype: 'CRM Organization' },
   auto: true,
   transform: (data) => getParsedFields(data),
 })
 
 function getParsedFields(data) {
   return data.map((section) => {
-    return {
-      ...section,
-      fields: computed(() =>
-        section.fields.map((field) => {
-          if (field.name === 'address') {
-            return {
-              ...field,
-              create: (value, close) => {
-                _organization.value.address = value
-                _address.value = {}
-                showAddressModal.value = true
-                close()
-              },
-              edit: async (addr) => {
-                _address.value = await call('frappe.client.get', {
-                  doctype: 'Address',
-                  name: addr,
-                })
-                showAddressModal.value = true
-              },
-            }
-          } else {
-            return field
+    section.columns = section.columns.map((column) => {
+      column.fields = column.fields.map((field) => {
+        if (field.name === 'address') {
+          return {
+            ...field,
+            create: (value, close) => {
+              _organization.value.address = value
+              _address.value = {}
+              showAddressModal.value = true
+              close()
+            },
+            edit: async (addr) => {
+              _address.value = await call('frappe.client.get', {
+                doctype: 'Address',
+                name: addr,
+              })
+              showAddressModal.value = true
+            },
           }
-        }),
-      ),
-    }
+        } else {
+          return field
+        }
+      })
+      return column
+    })
+    return section
   })
 }
 

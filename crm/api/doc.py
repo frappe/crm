@@ -565,95 +565,6 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 	return fields_meta
 
 
-@frappe.whitelist()
-def get_sidebar_fields(doctype, name):
-	if not frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": "Side Panel"}):
-		return []
-	layout = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": "Side Panel"}).layout
-
-	if not layout:
-		return []
-
-	layout = json.loads(layout)
-
-	not_allowed_fieldtypes = [
-		"Tab Break",
-		"Section Break",
-		"Column Break",
-	]
-
-	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
-
-	doc = frappe.get_cached_doc(doctype, name)
-	has_high_permlevel_fields = any(df.permlevel > 0 for df in fields)
-	if has_high_permlevel_fields:
-		has_read_access_to_permlevels = doc.get_permlevel_access("read")
-		has_write_access_to_permlevels = doc.get_permlevel_access("write")
-
-	for section in layout:
-		section["name"] = section.get("name") or section.get("label")
-		for field in section.get("fields") if section.get("fields") else []:
-			field_obj = next((f for f in fields if f.fieldname == field), None)
-			if field_obj:
-				if field_obj.permlevel > 0:
-					field_has_write_access = field_obj.permlevel in has_write_access_to_permlevels
-					field_has_read_access = field_obj.permlevel in has_read_access_to_permlevels
-					if not field_has_write_access and field_has_read_access:
-						field_obj.read_only = 1
-					if not field_has_read_access and not field_has_write_access:
-						field_obj.hidden = 1
-				section["fields"][section.get("fields").index(field)] = get_field_obj(field_obj)
-
-	fields_meta = {}
-	for field in fields:
-		fields_meta[field.fieldname] = field
-
-	return layout
-
-
-def get_field_obj(field):
-	obj = {
-		"label": field.label,
-		"type": get_type(field),
-		"name": field.fieldname,
-		"hidden": field.hidden,
-		"reqd": field.reqd,
-		"read_only": field.read_only,
-		"all_properties": field,
-	}
-
-	obj["placeholder"] = field.get("placeholder") or "Add " + field.label + "..."
-
-	if field.fieldtype == "Link":
-		obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
-		obj["doctype"] = field.options
-	elif field.fieldtype == "Select" and field.options:
-		obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
-		obj["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]
-
-	if field.read_only:
-		obj["tooltip"] = "This field is read only and cannot be edited."
-
-	return obj
-
-
-def get_type(field):
-	if field.fieldtype == "Data" and field.options == "Phone":
-		return "phone"
-	elif field.fieldtype == "Data" and field.options == "Email":
-		return "email"
-	elif field.fieldtype == "Check":
-		return "checkbox"
-	elif field.fieldtype == "Int":
-		return "number"
-	elif field.fieldtype in ["Small Text", "Text", "Long Text"]:
-		return "textarea"
-	elif field.read_only:
-		return "read_only"
-	return field.fieldtype.lower()
-
-
 def get_assigned_users(doctype, name, default_assigned_to=None):
 	assigned_users = frappe.get_all(
 		"ToDo",
@@ -685,22 +596,7 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 
 	for field in fields:
 		if field.fieldtype not in not_allowed_fieldtypes and field.fieldname:
-			_fields.append(
-				{
-					"label": field.label,
-					"type": field.fieldtype,
-					"value": field.fieldname,
-					"options": field.options,
-					"mandatory": field.reqd,
-					"read_only": field.read_only,
-					"hidden": field.hidden,
-					"depends_on": field.depends_on,
-					"mandatory_depends_on": field.mandatory_depends_on,
-					"read_only_depends_on": field.read_only_depends_on,
-					"link_filters": field.get("link_filters"),
-					"placeholder": field.get("placeholder"),
-				}
-			)
+			_fields.append(field)
 
 	return _fields
 

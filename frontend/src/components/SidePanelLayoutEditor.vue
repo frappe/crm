@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Draggable :list="sections" item-key="label" class="flex flex-col gap-5.5">
+    <Draggable :list="sections" item-key="name" class="flex flex-col gap-5.5">
       <template #item="{ element: section }">
         <div class="flex flex-col gap-3">
           <div
@@ -54,9 +54,9 @@
           </div>
           <div v-show="section.opened">
             <Draggable
-              :list="section.fields"
+              :list="section.columns?.[0].fields || []"
               group="fields"
-              item-key="label"
+              item-key="fieldname"
               class="flex flex-col gap-1.5"
               handle=".cursor-grab"
             >
@@ -73,7 +73,10 @@
                     icon="x"
                     class="!size-4 rounded-sm"
                     @click="
-                      section.fields.splice(section.fields.indexOf(field), 1)
+                      section.columns[0].fields.splice(
+                        section.columns[0].fields.indexOf(field),
+                        1,
+                      )
                     "
                   />
                 </div>
@@ -124,7 +127,12 @@
         variant="subtle"
         :label="__('Add Section')"
         @click="
-          sections.push({ label: __('New Section'), opened: true, fields: [] })
+          sections.push({
+            label: __('New Section'),
+            opened: true,
+            name: 'section_' + getRandom(),
+            columns: [{ name: 'column_' + getRandom(), fields: [] }],
+          })
         "
       >
         <template #prefix>
@@ -138,6 +146,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
+import { getRandom } from '@/utils'
 import Draggable from 'vuedraggable'
 import { Input, createResource } from 'frappe-ui'
 import { computed, watch } from 'vue'
@@ -173,7 +182,7 @@ const fields = createResource({
 
 function addField(section, field) {
   if (!field) return
-  section.fields.push(field)
+  section.columns[0].fields.push(field)
 }
 
 watch(

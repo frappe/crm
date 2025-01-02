@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
+  <Dialog v-model="show" :options="{ size: '4xl' }">
     <template #body-title>
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
@@ -36,7 +36,7 @@
             :tabs="tabs.data"
             :doctype="_doctype"
           />
-          <FieldLayout v-else :tabs="tabs.data" :data="{}" />
+          <FieldLayout v-else :tabs="tabs.data" :data="{}" :preview="true" />
         </div>
       </div>
     </template>
@@ -99,10 +99,10 @@ function saveChanges() {
   _tabs.forEach((tab) => {
     if (!tab.sections) return
     tab.sections.forEach((section) => {
-      if (!section.fields) return
-      section.fields = section.fields.map(
-        (field) => field.fieldname || field.name,
-      )
+      section.columns.forEach((column) => {
+        if (!column.fields) return
+        column.fields = column.fields.map((field) => field.fieldname)
+      })
     })
   })
   loading.value = true
