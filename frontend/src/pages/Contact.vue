@@ -117,42 +117,15 @@
         </FileUploader>
       </div>
       <div
-        v-if="fieldsLayout.data"
+        v-if="sections.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
-          <div
-            v-for="(section, i) in fieldsLayout.data"
-            :key="section.name"
-            class="flex flex-col p-3"
-            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-          >
-            <Section
-              labelClass="px-2 font-semibold"
-              :label="section.label"
-              :opened="section.opened"
-            >
-              <template #actions>
-                <Button
-                  v-if="i == 0 && isManager()"
-                  variant="ghost"
-                  class="w-7"
-                  @click="showSidePanelModal = true"
-                >
-                  <EditIcon class="h-4 w-4" />
-                </Button>
-              </template>
-              <SidePanelLayout
-                v-if="section.columns?.[0].fields"
-                :fields="section.columns[0].fields"
-                :isLastSection="i == fieldsLayout.data.length - 1"
-                doctype="Contact"
-                v-model="contact.data"
-                @update="updateField"
-              />
-            </Section>
-          </div>
-        </div>
+        <SidePanelLayout
+          v-model="contact.data"
+          :sections="sections"
+          doctype="Contact"
+          @update="updateField"
+        />
       </div>
     </Resizer>
     <Tabs class="!h-full" v-model="tabIndex" :tabs="tabs">
@@ -194,27 +167,18 @@
       </template>
     </Tabs>
   </div>
-  <SidePanelModal
-    v-if="showSidePanelModal"
-    v-model="showSidePanelModal"
-    doctype="Contact"
-    @reload="() => fieldsLayout.reload()"
-  />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
 import Resizer from '@/components/Resizer.vue'
 import Icon from '@/components/Icon.vue'
-import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import { formatDate, timeAgo, createToast } from '@/utils'
 import { getView } from '@/utils/view'
@@ -241,7 +205,7 @@ import { useRoute, useRouter } from 'vue-router'
 const { brand } = getSettings()
 const { $dialog, makeCall } = globalStore()
 
-const { getUser, isManager } = usersStore()
+const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
 
@@ -256,7 +220,6 @@ const route = useRoute()
 const router = useRouter()
 
 const showAddressModal = ref(false)
-const showSidePanelModal = ref(false)
 const _contact = ref({})
 const _address = ref({})
 
@@ -371,16 +334,16 @@ const rows = computed(() => {
   return deals.data.map((row) => getDealRowObject(row))
 })
 
-const fieldsLayout = createResource({
+const sections = createResource({
   url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.contactId],
+  cache: ['sidePanelSections', props.contactId],
   params: { doctype: 'Contact', name: props.contactId },
   auto: true,
-  transform: (data) => getParsedFields(data),
+  transform: (data) => getParsedSections(data),
 })
 
-function getParsedFields(data) {
-  return data.map((section) => {
+function getParsedSections(_sections) {
+  return _sections.map((section) => {
     section.columns = section.columns.map((column) => {
       column.fields = column.fields.map((field) => {
         if (field.name === 'email_id') {

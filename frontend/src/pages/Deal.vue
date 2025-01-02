@@ -114,169 +114,109 @@
         @updateField="updateField"
       />
       <div
-        v-if="fieldsLayout.data"
+        v-if="sections.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
-          <div
-            v-for="(section, i) in fieldsLayout.data"
-            :key="section.name"
-            class="section flex flex-col p-3"
-            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-          >
-            <Section
-              labelClass="px-2 font-semibold"
-              :label="section.label"
-              :opened="section.opened"
+        <SidePanelLayout
+          v-model="deal.data"
+          :sections="sections"
+          doctype="CRM Deal"
+          @update="updateField"
+          v-slot="{ section }"
+        >
+          <div v-if="section.name == 'contacts_section'" class="contacts-area">
+            <div
+              v-if="dealContacts?.loading && dealContacts?.data?.length == 0"
+              class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-ink-gray-4"
             >
-              <template #actions>
-                <div v-if="section.contacts" class="pr-2">
-                  <Link
-                    value=""
-                    doctype="Contact"
-                    @change="(e) => addContact(e)"
-                    :onCreate="
-                      (value, close) => {
-                        _contact = {
-                          first_name: value,
-                          company_name: deal.data.organization,
-                        }
-                        showContactModal = true
-                        close()
-                      }
-                    "
-                  >
-                    <template #target="{ togglePopover }">
-                      <Button
-                        class="h-7 px-3"
-                        variant="ghost"
-                        icon="plus"
-                        @click="togglePopover()"
-                      />
-                    </template>
-                  </Link>
-                </div>
-                <Button
-                  v-else-if="
-                    ((!section.contacts && i == 1) || i == 0) && isManager()
-                  "
-                  variant="ghost"
-                  class="w-7 mr-2"
-                  @click="showSidePanelModal = true"
-                >
-                  <EditIcon class="h-4 w-4" />
-                </Button>
-              </template>
-              <SidePanelLayout
-                v-if="section.columns?.[0].fields"
-                :fields="section.columns[0].fields"
-                :isLastSection="i == fieldsLayout.data.length - 1"
-                doctype="CRM Deal"
-                v-model="deal.data"
-                @update="updateField"
-              />
-              <div v-else>
-                <div
-                  v-if="
-                    dealContacts?.loading && dealContacts?.data?.length == 0
-                  "
-                  class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-ink-gray-4"
-                >
-                  <LoadingIndicator class="h-4 w-4" />
-                  <span>{{ __('Loading...') }}</span>
-                </div>
-                <div
-                  v-else-if="dealContacts?.data?.length"
-                  v-for="(contact, i) in dealContacts.data"
-                  :key="contact.name"
-                >
-                  <div
-                    class="px-2 pb-2.5"
-                    :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
-                  >
-                    <Section :opened="contact.opened">
-                      <template #header="{ opened, toggle }">
-                        <div
-                          class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
-                        >
-                          <div
-                            class="flex h-7 items-center gap-2 truncate"
-                            @click="toggle()"
-                          >
-                            <Avatar
-                              :label="contact.full_name"
-                              :image="contact.image"
-                              size="md"
-                            />
-                            <div class="truncate">
-                              {{ contact.full_name }}
-                            </div>
-                            <Badge
-                              v-if="contact.is_primary"
-                              class="ml-2"
-                              variant="outline"
-                              :label="__('Primary')"
-                              theme="green"
-                            />
-                          </div>
-                          <div class="flex items-center">
-                            <Dropdown :options="contactOptions(contact)">
-                              <Button
-                                icon="more-horizontal"
-                                class="text-ink-gray-5"
-                                variant="ghost"
-                              />
-                            </Dropdown>
-                            <Button
-                              variant="ghost"
-                              @click="
-                                router.push({
-                                  name: 'Contact',
-                                  params: { contactId: contact.name },
-                                })
-                              "
-                            >
-                              <ArrowUpRightIcon class="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" @click="toggle()">
-                              <FeatherIcon
-                                name="chevron-right"
-                                class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
-                                :class="{ 'rotate-90': opened }"
-                              />
-                            </Button>
-                          </div>
-                        </div>
-                      </template>
+              <LoadingIndicator class="h-4 w-4" />
+              <span>{{ __('Loading...') }}</span>
+            </div>
+            <div
+              v-else-if="dealContacts?.data?.length"
+              v-for="(contact, i) in dealContacts.data"
+              :key="contact.name"
+            >
+              <div class="px-2 pb-2.5" :class="[i == 0 ? 'pt-5' : 'pt-2.5']">
+                <Section :opened="contact.opened">
+                  <template #header="{ opened, toggle }">
+                    <div
+                      class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
+                    >
                       <div
-                        class="flex flex-col gap-1.5 text-base text-ink-gray-8"
+                        class="flex h-7 items-center gap-2 truncate"
+                        @click="toggle()"
                       >
-                        <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
-                          <Email2Icon class="h-4 w-4" />
-                          {{ contact.email }}
+                        <Avatar
+                          :label="contact.full_name"
+                          :image="contact.image"
+                          size="md"
+                        />
+                        <div class="truncate">
+                          {{ contact.full_name }}
                         </div>
-                        <div class="flex items-center gap-3 p-1 py-1.5">
-                          <PhoneIcon class="h-4 w-4" />
-                          {{ contact.mobile_no }}
-                        </div>
+                        <Badge
+                          v-if="contact.is_primary"
+                          class="ml-2"
+                          variant="outline"
+                          :label="__('Primary')"
+                          theme="green"
+                        />
                       </div>
-                    </Section>
+                      <div class="flex items-center">
+                        <Dropdown :options="contactOptions(contact)">
+                          <Button
+                            icon="more-horizontal"
+                            class="text-ink-gray-5"
+                            variant="ghost"
+                          />
+                        </Dropdown>
+                        <Button
+                          variant="ghost"
+                          @click="
+                            router.push({
+                              name: 'Contact',
+                              params: { contactId: contact.name },
+                            })
+                          "
+                        >
+                          <ArrowUpRightIcon class="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" @click="toggle()">
+                          <FeatherIcon
+                            name="chevron-right"
+                            class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+                            :class="{ 'rotate-90': opened }"
+                          />
+                        </Button>
+                      </div>
+                    </div>
+                  </template>
+                  <div class="flex flex-col gap-1.5 text-base text-ink-gray-8">
+                    <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
+                      <Email2Icon class="h-4 w-4" />
+                      {{ contact.email }}
+                    </div>
+                    <div class="flex items-center gap-3 p-1 py-1.5">
+                      <PhoneIcon class="h-4 w-4" />
+                      {{ contact.mobile_no }}
+                    </div>
                   </div>
-                  <div
-                    v-if="i != dealContacts.data.length - 1"
-                    class="mx-2 h-px border-t border-outline-gray-modals"
-                  />
-                </div>
-                <div
-                  v-else
-                  class="flex h-20 items-center justify-center text-base text-ink-gray-5"
-                >
-                  {{ __('No contacts added') }}
-                </div>
+                </Section>
               </div>
-            </Section>
+              <div
+                v-if="i != dealContacts.data.length - 1"
+                class="mx-2 h-px border-t border-outline-gray-modals"
+              />
+            </div>
+            <div
+              v-else
+              class="flex h-20 items-center justify-center text-base text-ink-gray-5"
+            >
+              {{ __('No contacts added') }}
+            </div>
           </div>
-        </div>
+        </SidePanelLayout>
       </div>
     </Resizer>
   </div>
@@ -303,12 +243,6 @@
     :doc="deal.data"
     doctype="CRM Deal"
   />
-  <SidePanelModal
-    v-if="showSidePanelModal"
-    v-model="showSidePanelModal"
-    doctype="CRM Deal"
-    @reload="() => fieldsLayout.reload()"
-  />
   <FilesUploader
     v-if="deal.data?.name"
     v-model="showFilesUploader"
@@ -326,7 +260,6 @@
 import Icon from '@/components/Icon.vue'
 import Resizer from '@/components/Resizer.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -348,8 +281,6 @@ import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
-import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
@@ -366,7 +297,6 @@ import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
-import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   createResource,
@@ -385,7 +315,6 @@ import { useActiveTabManager } from '@/composables/useActiveTabManager'
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
-const { isManager } = usersStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -422,7 +351,7 @@ const deal = createResource({
       resource: {
         deal,
         dealContacts,
-        fieldsLayout,
+        sections,
       },
       call,
     }
@@ -461,7 +390,6 @@ onBeforeUnmount(() => {
 const reload = ref(false)
 const showOrganizationModal = ref(false)
 const showAssignmentModal = ref(false)
-const showSidePanelModal = ref(false)
 const showFilesUploader = ref(false)
 const _organization = ref({})
 
@@ -600,16 +528,16 @@ const tabs = computed(() => {
 })
 const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
 
-const fieldsLayout = createResource({
+const sections = createResource({
   url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.dealId],
+  cache: ['sidePanelSections', props.dealId],
   params: { doctype: 'CRM Deal', name: props.dealId },
   auto: true,
-  transform: (data) => getParsedFields(data),
+  transform: (data) => getParsedSections(data),
 })
 
-function getParsedFields(sections) {
-  sections.forEach((section) => {
+function getParsedSections(_sections) {
+  _sections.forEach((section) => {
     if (section.name == 'contacts_section') return
     section.columns[0].fields.forEach((field) => {
       if (field.name == 'organization') {
@@ -626,7 +554,7 @@ function getParsedFields(sections) {
       }
     })
   })
-  return sections
+  return _sections
 }
 
 const showContactModal = ref(false)
@@ -748,12 +676,3 @@ function openEmailBox() {
   activities.value.emailBox.show = true
 }
 </script>
-
-<style scoped>
-:deep(.section:has(.section-field.hidden)) {
-  display: none;
-}
-:deep(.section:has(.section-field:not(.hidden))) {
-  display: flex;
-}
-</style>

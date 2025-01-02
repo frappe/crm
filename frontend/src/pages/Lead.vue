@@ -167,39 +167,15 @@
         @updateField="updateField"
       />
       <div
-        v-if="fieldsLayout.data"
+        v-if="sections.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
-          <div
-            v-for="(section, i) in fieldsLayout.data"
-            :key="section.name"
-            class="flex flex-col p-3"
-            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-          >
-            <Section
-              labelClass="px-2 font-semibold"
-              :label="section.label"
-              :opened="section.opened"
-            >
-              <SidePanelLayout
-                :fields="section.columns[0].fields"
-                :isLastSection="i == fieldsLayout.data.length - 1"
-                v-model="lead.data"
-                @update="updateField"
-              />
-              <template v-if="i == 0 && isManager()" #actions>
-                <Button
-                  variant="ghost"
-                  class="w-7 mr-2"
-                  @click="showSidePanelModal = true"
-                >
-                  <EditIcon class="h-4 w-4" />
-                </Button>
-              </template>
-            </Section>
-          </div>
-        </div>
+        <SidePanelLayout
+          v-model="lead.data"
+          :sections="sections"
+          doctype="CRM Lead"
+          @update="updateField"
+        />
       </div>
     </Resizer>
   </div>
@@ -276,11 +252,6 @@
       </div>
     </template>
   </Dialog>
-  <SidePanelModal
-    v-if="showSidePanelModal"
-    v-model="showSidePanelModal"
-    @reload="() => fieldsLayout.reload()"
-  />
   <FilesUploader
     v-if="lead.data?.name"
     v-model="showFilesUploader"
@@ -297,7 +268,6 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
 import Resizer from '@/components/Resizer.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -317,10 +287,8 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
-import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
@@ -337,7 +305,6 @@ import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
-import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import { capture } from '@/telemetry'
 import {
@@ -360,7 +327,6 @@ const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
-const { isManager } = usersStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -389,7 +355,7 @@ const lead = createResource({
       deleteDoc: deleteLead,
       resource: {
         lead,
-        fieldsLayout,
+        sections,
       },
       call,
     }
@@ -407,7 +373,6 @@ onMounted(() => {
 
 const reload = ref(false)
 const showAssignmentModal = ref(false)
-const showSidePanelModal = ref(false)
 const showFilesUploader = ref(false)
 
 function updateLead(fieldname, value, callback) {
@@ -564,9 +529,9 @@ function validateFile(file) {
   }
 }
 
-const fieldsLayout = createResource({
+const sections = createResource({
   url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.leadId],
+  cache: ['sidePanelSections', props.leadId],
   params: { doctype: 'CRM Lead', name: props.leadId },
   auto: true,
 })
