@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
+  <Dialog v-model="show" :options="{ size: '4xl' }">
     <template #body-title>
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
@@ -36,7 +36,13 @@
             :tabs="tabs.data"
             :doctype="_doctype"
           />
-          <FieldLayout v-else :tabs="tabs.data" :data="{}" :modal="true" />
+          <FieldLayout
+            v-else
+            :tabs="tabs.data"
+            :data="{}"
+            :modal="true"
+            :preview="true"
+          />
         </div>
       </div>
     </template>
@@ -55,6 +61,10 @@ const props = defineProps({
     type: String,
     default: 'CRM Lead',
   },
+  parentDoctype: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['reload'])
@@ -66,12 +76,16 @@ const dirty = ref(false)
 const preview = ref(false)
 
 function getParams() {
-  return { doctype: _doctype.value, type: 'Grid Row' }
+  return {
+    doctype: _doctype.value,
+    type: 'Grid Row',
+    parent_doctype: props.parentDoctype,
+  }
 }
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['GridRowFieldsModal', _doctype.value],
+  cache: ['GridRowFieldsModal', _doctype.value, props.parentDoctype],
   params: getParams(),
   onSuccess(data) {
     tabs.originalData = JSON.parse(JSON.stringify(data))
@@ -101,10 +115,10 @@ function saveChanges() {
   _tabs.forEach((tab) => {
     if (!tab.sections) return
     tab.sections.forEach((section) => {
-      if (!section.fields) return
-      section.fields = section.fields.map(
-        (field) => field.fieldname || field.name,
-      )
+      section.columns.forEach((column) => {
+        if (!column.fields) return
+        column.fields = column.fields.map((field) => field.fieldname)
+      })
     })
   })
   loading.value = true

@@ -388,11 +388,10 @@ def convert_to_deal(lead, doc=None):
 
 	lead = frappe.get_cached_doc("CRM Lead", lead)
 	if frappe.db.exists("CRM Lead Status", "Qualified"):
-		lead.status = "Qualified"
-	lead.converted = 1
+		lead.db_set("status", "Qualified")
+	lead.db_set("converted", 1)
 	if lead.sla and frappe.db.exists("CRM Communication Status", "Replied"):
-		lead.communication_status = "Replied"
-	lead.save(ignore_permissions=True)
+		lead.db_set("communication_status", "Replied")
 	contact = lead.create_contact(False)
 	organization = lead.create_organization()
 	deal = lead.create_deal(contact, organization)

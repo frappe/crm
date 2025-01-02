@@ -33,7 +33,7 @@
           <div
             v-for="field in fields"
             class="border-r border-outline-gray-2 p-2 truncate"
-            :key="field.name"
+            :key="field.fieldname"
             :title="field.label"
           >
             {{ __(field.label) }}
@@ -84,36 +84,71 @@
                 <div
                   class="border-r border-outline-gray-modals h-full"
                   v-for="field in fields"
-                  :key="field.name"
+                  :key="field.fieldname"
                 >
+                  <FormControl
+                    v-if="field.read_only && field.fieldtype !== 'Check'"
+                    type="text"
+                    :placeholder="field.placeholder"
+                    v-model="row[field.fieldname]"
+                    :disabled="true"
+                  />
                   <Link
-                    v-if="field.type === 'Link'"
+                    v-else-if="field.fieldtype === 'Link'"
                     class="text-sm text-ink-gray-8"
-                    v-model="row[field.name]"
+                    v-model="row[field.fieldname]"
                     :doctype="field.options"
                     :filters="field.filters"
                   />
+                  <Link
+                    v-else-if="field.fieldtype === 'User'"
+                    class="form-control"
+                    :value="getUser(row[field.fieldname]).full_name"
+                    :doctype="field.options"
+                    :filters="field.filters"
+                    @change="(v) => (row[field.fieldname] = v)"
+                    :placeholder="field.placeholder"
+                    :hideMe="true"
+                  >
+                    <template #prefix>
+                      <UserAvatar
+                        class="mr-2"
+                        :user="row[field.fieldname]"
+                        size="sm"
+                      />
+                    </template>
+                    <template #item-prefix="{ option }">
+                      <UserAvatar class="mr-2" :user="option.value" size="sm" />
+                    </template>
+                    <template #item-label="{ option }">
+                      <Tooltip :text="option.value">
+                        <div class="cursor-pointer">
+                          {{ getUser(option.value).full_name }}
+                        </div>
+                      </Tooltip>
+                    </template>
+                  </Link>
                   <div
-                    v-else-if="field.type === 'Check'"
+                    v-else-if="field.fieldtype === 'Check'"
                     class="flex h-full bg-surface-white justify-center items-center"
                   >
                     <Checkbox
                       class="cursor-pointer duration-300"
-                      v-model="row[field.name]"
+                      v-model="row[field.fieldname]"
                       :disabled="!gridSettings.editable_grid"
                     />
                   </div>
                   <DatePicker
-                    v-else-if="field.type === 'Date'"
-                    v-model="row[field.name]"
+                    v-else-if="field.fieldtype === 'Date'"
+                    v-model="row[field.fieldname]"
                     icon-left=""
                     variant="outline"
                     :formatter="(date) => getFormat(date, '', true)"
                     input-class="border-none text-sm text-ink-gray-8"
                   />
                   <DateTimePicker
-                    v-else-if="field.type === 'Datetime'"
-                    v-model="row[field.name]"
+                    v-else-if="field.fieldtype === 'Datetime'"
+                    v-model="row[field.fieldname]"
                     icon-left=""
                     variant="outline"
                     :formatter="(date) => getFormat(date, '', true, true)"
@@ -122,26 +157,26 @@
                   <FormControl
                     v-else-if="
                       ['Small Text', 'Text', 'Long Text', 'Code'].includes(
-                        field.type,
+                        field.fieldtype,
                       )
                     "
                     rows="1"
                     type="textarea"
                     variant="outline"
-                    v-model="row[field.name]"
+                    v-model="row[field.fieldname]"
                   />
                   <FormControl
-                    v-else-if="['Int'].includes(field.type)"
+                    v-else-if="['Int'].includes(field.fieldtype)"
                     type="number"
                     variant="outline"
-                    v-model="row[field.name]"
+                    v-model="row[field.fieldname]"
                   />
                   <FormControl
-                    v-else-if="field.type === 'Select'"
+                    v-else-if="field.fieldtype === 'Select'"
                     class="text-sm text-ink-gray-8"
                     type="select"
                     variant="outline"
-                    v-model="row[field.name]"
+                    v-model="row[field.fieldname]"
                     :options="field.options"
                   />
                   <FormControl
@@ -149,7 +184,7 @@
                     class="text-sm text-ink-gray-8"
                     type="text"
                     variant="outline"
-                    v-model="row[field.name]"
+                    v-model="row[field.fieldname]"
                     :options="field.options"
                   />
                 </div>
@@ -170,6 +205,7 @@
                 :index="index"
                 :data="row"
                 :doctype="doctype"
+                :parentDoctype="parentDoctype"
               />
             </div>
           </template>
@@ -198,6 +234,7 @@
       v-if="showGridRowFieldsModal"
       v-model="showGridRowFieldsModal"
       :doctype="doctype"
+      :parentDoctype="parentDoctype"
     />
     <GridFieldsEditorModal
       v-if="showGridFieldsEditorModal"
@@ -214,7 +251,9 @@ import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
 import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import { getRandom, getFormat } from '@/utils'
+import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import {
   FeatherIcon,
@@ -222,6 +261,7 @@ import {
   Checkbox,
   DateTimePicker,
   DatePicker,
+  Tooltip,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed } from 'vue'
@@ -245,6 +285,7 @@ const { getGridViewSettings, getFields, getGridSettings } = getMeta(
   props.doctype,
 )
 getMeta(props.parentDoctype)
+const { getUser } = usersStore()
 
 const rows = defineModel()
 const showRowList = ref(new Array(rows.value?.length || []).fill(false))
@@ -271,11 +312,9 @@ const fields = computed(() => {
 
 function getFieldObj(field) {
   return {
-    label: field.label,
-    name: field.fieldname,
-    type: field.fieldtype,
-    options: field.options,
-    in_list_view: field.in_list_view,
+    ...field,
+    filters: field.link_filters && JSON.parse(field.link_filters),
+    placeholder: field.placeholder || field.label,
   }
 }
 
@@ -317,8 +356,8 @@ const toggleSelectRow = (row) => {
 const addRow = () => {
   const newRow = {}
   fields.value?.forEach((field) => {
-    if (field.type === 'Check') newRow[field.name] = false
-    else newRow[field.name] = ''
+    if (field.fieldtype === 'Check') newRow[field.fieldname] = false
+    else newRow[field.fieldname] = ''
   })
   newRow.name = getRandom(10)
   showRowList.value.push(false)

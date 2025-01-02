@@ -65,7 +65,7 @@
           <div class="flex flex-col overflow-y-auto">
             <div
               v-for="(section, i) in fieldsLayout.data"
-              :key="section.label"
+              :key="section.name"
               class="flex flex-col px-2 py-3 sm:p-3"
               :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
             >
@@ -99,8 +99,8 @@
                   </div>
                 </template>
                 <SidePanelLayout
-                  v-if="section.fields"
-                  :fields="section.fields"
+                  v-if="section.columns?.[0].fields"
+                  :fields="section.columns[0].fields"
                   :isLastSection="i == fieldsLayout.data.length - 1"
                   doctype="CRM Deal"
                   v-model="deal.data"
@@ -289,7 +289,7 @@ import {
   Tabs,
   Breadcrumbs,
   call,
-  usePageMeta
+  usePageMeta,
 } from 'frappe-ui'
 import { ref, computed, h, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -501,9 +501,9 @@ const tabs = computed(() => {
 const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.dealId],
-  params: { doctype: 'CRM Deal', name: props.dealId },
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
+  cache: ['sidePanelSections', 'CRM Deal'],
+  params: { doctype: 'CRM Deal' },
   auto: true,
   transform: (data) => getParsedFields(data),
 })
@@ -511,7 +511,7 @@ const fieldsLayout = createResource({
 function getParsedFields(sections) {
   sections.forEach((section) => {
     if (section.name == 'contacts_section') return
-    section.fields.forEach((field) => {
+    section.columns[0].fields.forEach((field) => {
       if (field.name == 'organization') {
         field.create = (value, close) => {
           _organization.value.organization_name = value

@@ -1,10 +1,10 @@
 <template>
   <div>
     <slot name="header" v-bind="{ opened, hide, open, close, toggle }">
-      <div v-if="!hide" class="flex items-center justify-between">
+      <div v-if="!hide" class="column-header flex items-center justify-between">
         <div
           class="flex text-ink-gray-9 max-w-fit cursor-pointer items-center gap-2 text-base"
-          v-bind="$attrs"
+          :class="labelClass"
           @click="collapsible && toggle()"
         >
           <FeatherIcon
@@ -34,7 +34,7 @@
       enter-from-class="max-h-0 overflow-hidden"
       leave-to-class="max-h-0 overflow-hidden"
     >
-      <div v-show="opened">
+      <div class="columns" v-bind="$attrs" v-show="opened">
         <slot v-bind="{ opened, open, close, toggle }" />
       </div>
     </transition>
@@ -63,6 +63,10 @@ const props = defineProps({
   collapseIconPosition: {
     type: String,
     default: 'left',
+  },
+  labelClass: {
+    type: [String, Object, Array],
+    default: '',
   },
 })
 

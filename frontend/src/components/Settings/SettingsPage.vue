@@ -42,7 +42,7 @@ import {
   Badge,
   ErrorMessage,
 } from 'frappe-ui'
-import { evaluateDependsOnValue, createToast } from '@/utils'
+import { createToast, getRandom } from '@/utils'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -107,53 +107,42 @@ const tabs = computed(() => {
     let _sections = []
     if (fieldsData[0].type != 'Section Break') {
       _sections.push({
-        hideLabel: true,
-        columns: 1,
-        fields: [],
+        name: 'first_section',
+        columns: [{ name: 'first_column', fields: [] }],
       })
     }
-    _tabs.push({
-      no_tabs: true,
-      sections: _sections,
-    })
+    _tabs.push({ name: 'first_tab', sections: _sections })
   }
 
   fieldsData.forEach((field) => {
-    let _sections = _tabs.length ? _tabs[_tabs.length - 1].sections : []
-    if (field.type === 'Tab Break') {
+    let last_tab = _tabs[_tabs.length - 1]
+    let _sections = _tabs.length ? last_tab.sections : []
+    if (field.fieldtype === 'Tab Break') {
       _tabs.push({
         label: field.label,
+        name: field.fieldname,
         sections: [
           {
-            hideLabel: true,
-            columns: 1,
-            fields: [],
+            name: 'section_' + getRandom(),
+            columns: [{ name: 'column_' + getRandom(), fields: [] }],
           },
         ],
       })
-    } else if (field.type === 'Section Break') {
+    } else if (field.fieldtype === 'Section Break') {
       _sections.push({
-        label: field.value,
-        hideLabel: true,
-        columns: 1,
+        label: field.label,
+        name: field.fieldname,
+        columns: [{ name: 'column_' + getRandom(), fields: [] }],
+      })
+    } else if (field.fieldtype === 'Column Break') {
+      _sections[_sections.length - 1].columns.push({
+        name: field.fieldname,
         fields: [],
       })
-    } else if (field.type === 'Column Break') {
-      _sections[_sections.length - 1].columns += 1
     } else {
-      _sections[_sections.length - 1].fields.push({
-        ...field,
-        filters: field.link_filters && JSON.parse(field.link_filters),
-        display_via_depends_on: evaluateDependsOnValue(
-          field.depends_on,
-          data.doc,
-        ),
-        mandatory_via_depends_on: evaluateDependsOnValue(
-          field.mandatory_depends_on,
-          data.doc,
-        ),
-        name: field.value,
-      })
+      let last_section = _sections[_sections.length - 1]
+      let last_column = last_section.columns[last_section.columns.length - 1]
+      last_column.fields.push(field)
     }
   })
 
@@ -169,14 +158,16 @@ function update() {
 function validateMandatoryFields() {
   if (!tabs.value) return false
   for (let section of tabs.value[0].sections) {
-    for (let field of section.fields) {
-      if (
-        (field.mandatory ||
-          (field.mandatory_depends_on && field.mandatory_via_depends_on)) &&
-        !data.doc[field.name]
-      ) {
-        error.value = __('{0} is mandatory', [__(field.label)])
-        return true
+    for (let column of section.columns) {
+      for (let field of column.fields) {
+        if (
+          (field.mandatory ||
+            (field.mandatory_depends_on && field.mandatory_via_depends_on)) &&
+          !data.doc[field.name]
+        ) {
+          error.value = __('{0} is mandatory', [__(field.label)])
+          return true
+        }
       }
     }
   }

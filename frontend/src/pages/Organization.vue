@@ -102,38 +102,16 @@
         </FileUploader>
       </div>
       <div
-        v-if="fieldsLayout.data"
+        v-if="sections.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
-        <div class="flex flex-col overflow-y-auto">
-          <div
-            v-for="(section, i) in fieldsLayout.data"
-            :key="section.label"
-            class="flex flex-col p-3"
-            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-          >
-            <Section :label="section.label" :opened="section.opened">
-              <template #actions>
-                <Button
-                  v-if="i == 0 && isManager()"
-                  variant="ghost"
-                  class="w-7"
-                  @click="showSidePanelModal = true"
-                >
-                  <EditIcon class="h-4 w-4" />
-                </Button>
-              </template>
-              <SidePanelLayout
-                v-if="section.fields"
-                v-model="organization.doc"
-                :fields="section.fields"
-                :isLastSection="i == fieldsLayout.data.length - 1"
-                doctype="CRM Organization"
-                @update="updateField"
-              />
-            </Section>
-          </div>
-        </div>
+        <SidePanelLayout
+          v-model="organization.doc"
+          :sections="sections.data"
+          doctype="CRM Organization"
+          @update="updateField"
+          @reload="sections.reload"
+        />
       </div>
     </Resizer>
     <Tabs class="!h-full" v-model="tabIndex" :tabs="tabs">
@@ -182,12 +160,6 @@
       </template>
     </Tabs>
   </div>
-  <SidePanelModal
-    v-if="showSidePanelModal"
-    v-model="showSidePanelModal"
-    doctype="CRM Organization"
-    @reload="() => fieldsLayout.reload()"
-  />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
@@ -198,9 +170,7 @@
 
 <script setup>
 import Resizer from '@/components/Resizer.vue'
-import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
-import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
@@ -208,7 +178,6 @@ import AddressModal from '@/components/Modals/AddressModal.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
@@ -243,10 +212,9 @@ const props = defineProps({
 })
 
 const { brand } = getSettings()
-const { getUser, isManager } = usersStore()
+const { getUser } = usersStore()
 const { $dialog } = globalStore()
 const { getDealStatus } = statusesStore()
-const showSidePanelModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const route = useRoute()
@@ -367,43 +335,42 @@ const showAddressModal = ref(false)
 const _organization = ref({})
 const _address = ref({})
 
-const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.organizationId],
-  params: { doctype: 'CRM Organization', name: props.organizationId },
+const sections = createResource({
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
+  cache: ['sidePanelSections', 'CRM Organization'],
+  params: { doctype: 'CRM Organization' },
   auto: true,
-  transform: (data) => getParsedFields(data),
+  transform: (data) => getParsedSections(data),
 })
 
-function getParsedFields(data) {
-  return data.map((section) => {
-    return {
-      ...section,
-      fields: computed(() =>
-        section.fields.map((field) => {
-          if (field.name === 'address') {
-            return {
-              ...field,
-              create: (value, close) => {
-                _organization.value.address = value
-                _address.value = {}
-                showAddressModal.value = true
-                close()
-              },
-              edit: async (addr) => {
-                _address.value = await call('frappe.client.get', {
-                  doctype: 'Address',
-                  name: addr,
-                })
-                showAddressModal.value = true
-              },
-            }
-          } else {
-            return field
+function getParsedSections(_sections) {
+  return _sections.map((section) => {
+    section.columns = section.columns.map((column) => {
+      column.fields = column.fields.map((field) => {
+        if (field.fieldname === 'address') {
+          return {
+            ...field,
+            create: (value, close) => {
+              _organization.value.address = value
+              _address.value = {}
+              showAddressModal.value = true
+              close()
+            },
+            edit: async (addr) => {
+              _address.value = await call('frappe.client.get', {
+                doctype: 'Address',
+                name: addr,
+              })
+              showAddressModal.value = true
+            },
           }
-        }),
-      ),
-    }
+        } else {
+          return field
+        }
+      })
+      return column
+    })
+    return section
   })
 }
 

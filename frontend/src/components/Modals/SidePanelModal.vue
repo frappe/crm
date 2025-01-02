@@ -37,26 +37,20 @@
             :doctype="_doctype"
           />
           <div v-if="preview" class="flex flex-1 flex-col border rounded">
-            <div
-              v-for="(section, i) in tabs.data[0].sections"
-              :key="section.label"
-              class="flex flex-col py-1.5 px-1"
-              :class="{
-                'border-b': i !== tabs.data[0].sections?.length - 1,
-              }"
+            <SidePanelLayout
+              v-model="data"
+              :sections="tabs.data[0].sections"
+              :doctype="_doctype"
+              :preview="true"
+              v-slot="{ section }"
             >
-              <Section
-                class="p-2"
-                :label="section.label"
-                :opened="section.opened"
+              <div
+                v-if="section.name == 'contacts_section'"
+                class="flex h-16 items-center justify-center text-base text-ink-gray-5"
               >
-                <SidePanelLayout
-                  :fields="section.fields"
-                  :isLastSection="i == section.data?.length - 1"
-                  v-model="data"
-                />
-              </Section>
-            </div>
+                {{ __('No contacts added') }}
+              </div>
+            </SidePanelLayout>
           </div>
           <div
             v-else
@@ -70,7 +64,6 @@
   </Dialog>
 </template>
 <script setup>
-import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SidePanelLayoutEditor from '@/components/SidePanelLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
@@ -129,10 +122,13 @@ function saveChanges() {
   let _tabs = JSON.parse(JSON.stringify(tabs.data))
   _tabs.forEach((tab) => {
     tab.sections.forEach((section) => {
-      if (!section.fields) return
-      section.fields = section.fields
-        .map((field) => field.fieldname || field.name)
-        .filter(Boolean)
+      if (!section.columns) return
+      section.columns.forEach((column) => {
+        if (!column.fields) return
+        column.fields = column.fields
+          .map((field) => field.fieldname)
+          .filter(Boolean)
+      })
     })
   })
   loading.value = true

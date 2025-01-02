@@ -4,9 +4,9 @@
       class="flex items-center gap-2 text-base bg-surface-gray-2 rounded py-2 px-2.5"
     >
       <Draggable
-        v-if="tabs.length && !tabs[tabIndex].no_tabs"
+        v-if="tabs.length && tabs[tabIndex].label"
         :list="tabs"
-        item-key="label"
+        item-key="name"
         class="flex items-center gap-2"
         @end="(e) => (tabIndex = e.newIndex)"
       >
@@ -41,7 +41,7 @@
               </div>
             </div>
             <Dropdown
-              v-if="!tab.no_tabs && tabIndex == i"
+              v-if="tab.label && tabIndex == i"
               :options="getTabOptions(tab)"
               class="!h-4"
               @click.stop
@@ -66,14 +66,16 @@
         </template>
       </Button>
     </div>
-    <div v-show="tabIndex == i" v-for="(tab, i) in tabs" :key="tab.label">
+    <div v-show="tabIndex == i" v-for="(tab, i) in tabs" :key="tab.name">
       <Draggable
         :list="tab.sections"
-        item-key="label"
+        item-key="name"
         class="flex flex-col gap-5.5"
       >
-        <template #item="{ element: section }">
-          <div class="flex flex-col gap-1.5 p-2.5 bg-surface-gray-2 rounded">
+        <template #item="{ element: section, index: i }">
+          <div
+            class="section flex flex-col gap-1.5 p-2.5 bg-surface-gray-2 rounded cursor-grab"
+          >
             <div class="flex items-center justify-between">
               <div
                 class="flex h-7 max-w-fit cursor-pointer items-center gap-2 text-base font-medium leading-4 text-ink-gray-9"
@@ -82,9 +84,12 @@
                 <div
                   v-if="!section.editingLabel"
                   class="flex items-center gap-2"
-                  :class="{ 'text-ink-gray-3': section.hideLabel }"
+                  :class="{
+                    'text-ink-gray-3': section.hideLabel || !section.label,
+                    italic: !section.label,
+                  }"
                 >
-                  {{ __(section.label) || __('Untitled') }}
+                  {{ __(section.label) || __('No label') }}
                   <FeatherIcon
                     v-if="section.collapsible"
                     name="chevron-down"
@@ -106,7 +111,7 @@
                   />
                 </div>
               </div>
-              <Dropdown :options="getSectionOptions(section)">
+              <Dropdown :options="getSectionOptions(i, section, tab)">
                 <template #default>
                   <Button variant="ghost">
                     <FeatherIcon name="more-horizontal" class="h-4" />
@@ -115,61 +120,76 @@
               </Dropdown>
             </div>
             <Draggable
-              :list="section.fields"
-              group="fields"
-              item-key="label"
-              class="grid gap-1.5"
-              :class="gridClass(section.columns)"
-              handle=".cursor-grab"
+              class="flex gap-2"
+              :list="section.columns"
+              group="columns"
+              item-key="name"
             >
-              <template #item="{ element: field }">
+              <template #item="{ element: column }">
                 <div
-                  class="px-2.5 py-2 border border-outline-gray-2 rounded text-base bg-surface-modal text-ink-gray-8 flex items-center leading-4 justify-between gap-2"
+                  class="flex flex-col gap-1.5 flex-1 p-2 border border-dashed border-outline-gray-2 rounded bg-surface-modal cursor-grab"
                 >
-                  <div class="flex items-center gap-2 truncate">
-                    <DragVerticalIcon class="h-3.5 cursor-grab" />
-                    <div class="truncate">{{ field.label }}</div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    class="!size-4 rounded-sm"
-                    icon="x"
-                    @click="
-                      section.fields.splice(section.fields.indexOf(field), 1)
-                    "
-                  />
+                  <Draggable
+                    :list="column.fields"
+                    group="fields"
+                    item-key="fieldname"
+                    class="flex flex-col gap-1.5"
+                    handle=".cursor-grab"
+                  >
+                    <template #item="{ element: field }">
+                      <div
+                        class="field px-2.5 py-2 border border-outline-gray-2 rounded text-base bg-surface-modal text-ink-gray-8 flex items-center leading-4 justify-between gap-2"
+                      >
+                        <div class="flex items-center gap-2 truncate">
+                          <DragVerticalIcon class="h-3.5 cursor-grab" />
+                          <div class="truncate">{{ field.label }}</div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          class="!size-4 rounded-sm"
+                          icon="x"
+                          @click="
+                            column.fields.splice(
+                              column.fields.indexOf(field),
+                              1,
+                            )
+                          "
+                        />
+                      </div>
+                    </template>
+                  </Draggable>
+                  <Autocomplete
+                    v-if="fields.data"
+                    value=""
+                    :options="fields.data"
+                    @change="(e) => addField(column, e)"
+                  >
+                    <template #target="{ togglePopover }">
+                      <div class="gap-2 w-full">
+                        <Button
+                          class="w-full !h-8 !bg-surface-modal"
+                          variant="outline"
+                          @click="togglePopover()"
+                          :label="__('Add Field')"
+                        >
+                          <template #prefix>
+                            <FeatherIcon name="plus" class="h-4" />
+                          </template>
+                        </Button>
+                      </div>
+                    </template>
+                    <template #item-label="{ option }">
+                      <div class="flex flex-col gap-1 text-ink-gray-9">
+                        <div>{{ option.label }}</div>
+                        <div class="text-ink-gray-4 text-sm">
+                          {{ `${option.fieldname} - ${option.fieldtype}` }}
+                        </div>
+                      </div>
+                    </template>
+                  </Autocomplete>
                 </div>
               </template>
             </Draggable>
-            <Autocomplete
-              v-if="fields.data"
-              value=""
-              :options="fields.data"
-              @change="(e) => addField(section, e)"
-            >
-              <template #target="{ togglePopover }">
-                <div class="gap-2 w-full">
-                  <Button
-                    class="w-full !h-8 !bg-surface-modal"
-                    variant="outline"
-                    @click="togglePopover()"
-                    :label="__('Add Field')"
-                  >
-                    <template #prefix>
-                      <FeatherIcon name="plus" class="h-4" />
-                    </template>
-                  </Button>
-                </div>
-              </template>
-              <template #item-label="{ option }">
-                <div class="flex flex-col gap-1 text-ink-gray-9">
-                  <div>{{ option.label }}</div>
-                  <div class="text-ink-gray-4 text-sm">
-                    {{ `${option.fieldname} - ${option.fieldtype}` }}
-                  </div>
-                </div>
-              </template>
-            </Autocomplete>
           </div>
         </template>
       </Draggable>
@@ -181,8 +201,9 @@
           @click="
             tabs[tabIndex].sections.push({
               label: __('New Section'),
+              name: 'section_' + getRandom(),
               opened: true,
-              fields: [],
+              columns: [{ name: 'column_' + getRandom(), fields: [] }],
             })
           "
         >
@@ -198,6 +219,7 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'
+import { getRandom } from '@/utils'
 import { Dropdown, createResource } from 'frappe-ui'
 import { ref, computed, watch } from 'vue'
 
@@ -208,7 +230,7 @@ const props = defineProps({
 
 const tabIndex = ref(0)
 const slotName = computed(() => {
-  if (props.tabs.length == 1 && props.tabs[0].no_tabs) {
+  if (props.tabs.length == 1 && !props.tabs[0].label) {
     return 'prefix'
   }
   return 'default'
@@ -252,13 +274,15 @@ const fields = createResource({
 
     for (let tab of props.tabs) {
       for (let section of tab.sections) {
-        existingFields = existingFields.concat(section.fields)
+        for (let column of section.columns) {
+          existingFields = existingFields.concat(column.fields)
+        }
       }
     }
 
     return data.filter((field) => {
       return (
-        !existingFields.find((f) => f.name === field.fieldname) &&
+        !existingFields.find((f) => f.fieldname === field.fieldname) &&
         !restrictedFields.includes(field.fieldname)
       )
     })
@@ -266,37 +290,37 @@ const fields = createResource({
 })
 
 function addTab() {
-  if (props.tabs.length == 1 && props.tabs[0].no_tabs) {
-    delete props.tabs[0].no_tabs
+  if (props.tabs.length == 1 && !props.tabs[0].label) {
+    props.tabs[0].label = __('New Tab')
     return
   }
-  props.tabs.push({ label: __('New Tab'), sections: [] })
+
+  props.tabs.push({
+    label: __('New Tab'),
+    name: 'tab_' + getRandom(),
+    sections: [],
+  })
   tabIndex.value = props.tabs.length ? props.tabs.length - 1 : 0
 }
 
-function addField(section, field) {
+function addField(column, field) {
   if (!field) return
-  let newFieldObj = {
-    ...field,
-    name: field.fieldname,
-    type: field.fieldtype,
-  }
-  section.fields.push(newFieldObj)
+  column.fields.push(field)
 }
 
 function getTabOptions(tab) {
   return [
     {
-      label: 'Edit',
+      label: __('Edit'),
       icon: 'edit',
       onClick: () => (tab.editingLabel = true),
     },
     {
-      label: 'Remove tab',
+      label: __('Remove tab'),
       icon: 'trash-2',
       onClick: () => {
         if (props.tabs.length == 1) {
-          props.tabs[0].no_tabs = true
+          props.tabs[0].label = ''
           return
         }
         props.tabs.splice(tabIndex.value, 1)
@@ -306,94 +330,144 @@ function getTabOptions(tab) {
   ]
 }
 
-function getSectionOptions(section) {
+function getSectionOptions(i, section, tab) {
+  let column = section.columns[section.columns.length - 1]
   return [
     {
-      label: 'Edit',
-      icon: 'edit',
-      onClick: () => (section.editingLabel = true),
-      condition: () => section.editable !== false,
+      group: __('Section'),
+      items: [
+        {
+          label: __('Edit'),
+          icon: 'edit',
+          onClick: () => (section.editingLabel = true),
+        },
+        {
+          label: section.collapsible ? __('Uncollapsible') : __('Collapsible'),
+          icon: section.collapsible ? 'chevron-up' : 'chevron-down',
+          onClick: () => (section.collapsible = !section.collapsible),
+        },
+        {
+          label: section.hideLabel ? __('Show label') : __('Hide label'),
+          icon: section.hideLabel ? 'eye' : 'eye-off',
+          onClick: () => (section.hideLabel = !section.hideLabel),
+        },
+        {
+          label: section.hideBorder ? __('Show border') : __('Hide border'),
+          icon: 'minus',
+          onClick: () => (section.hideBorder = !section.hideBorder),
+        },
+        {
+          label: __('Remove section'),
+          icon: 'trash-2',
+          onClick: () => {
+            tab.sections.splice(tab.sections.indexOf(section), 1)
+          },
+          condition: () => section.editable !== false,
+        },
+        {
+          label: __('Remove and move columns to {0} section', [
+            i == 0 ? __('next') : __('previous'),
+          ]),
+          icon: 'trash-2',
+          onClick: () => {
+            let targetSection = tab.sections[i == 0 ? i + 1 : i - 1]
+            if (i == 0) {
+              targetSection.columns = section.columns.concat(
+                targetSection.columns,
+              )
+            } else {
+              targetSection.columns = targetSection.columns.concat(
+                section.columns,
+              )
+            }
+            tab.sections.splice(tab.sections.indexOf(section), 1)
+          },
+          condition: () => section.editable !== false && section.columns.length,
+        },
+        {
+          label: __('Move to previous tab'),
+          icon: 'corner-up-left',
+          onClick: () => {
+            let previousTab = props.tabs[tabIndex.value - 1]
+            previousTab.sections.push(section)
+            props.tabs[tabIndex.value].sections.splice(
+              props.tabs[tabIndex.value].sections.indexOf(section),
+              1,
+            )
+            tabIndex.value -= 1
+          },
+          condition: () => props.tabs[tabIndex.value - 1],
+        },
+        {
+          label: __('Move to next tab'),
+          icon: 'corner-up-right',
+          onClick: () => {
+            let nextTab = props.tabs[tabIndex.value + 1]
+            nextTab.sections.push(section)
+            props.tabs[tabIndex.value].sections.splice(
+              props.tabs[tabIndex.value].sections.indexOf(section),
+              1,
+            )
+            tabIndex.value += 1
+          },
+          condition: () => props.tabs[tabIndex.value + 1],
+        },
+      ],
     },
     {
-      label: section.collapsible ? 'Uncollapsible' : 'Collapsible',
-      icon: section.collapsible ? 'chevron-up' : 'chevron-down',
-      onClick: () => (section.collapsible = !section.collapsible),
-    },
-    {
-      label: section.hideLabel ? 'Show label' : 'Hide label',
-      icon: section.hideLabel ? 'eye' : 'eye-off',
-      onClick: () => (section.hideLabel = !section.hideLabel),
-    },
-    {
-      label: section.hideBorder ? 'Show border' : 'Hide border',
-      icon: 'minus',
-      onClick: () => (section.hideBorder = !section.hideBorder),
-    },
-    {
-      label: 'Add column',
-      icon: 'columns',
-      onClick: () =>
-        (section.columns = section.columns ? section.columns + 1 : 4),
-      condition: () => !section.columns || section.columns < 4,
-    },
-    {
-      label: 'Remove column',
-      icon: 'columns',
-      onClick: () =>
-        (section.columns = section.columns ? section.columns - 1 : 2),
-      condition: () => !section.columns || section.columns > 1,
-    },
-    {
-      label: 'Remove section',
-      icon: 'trash-2',
-      onClick: () => {
-        let currentTab = props.tabs[tabIndex.value]
-        currentTab.sections.splice(currentTab.sections.indexOf(section), 1)
-      },
-      condition: () => section.editable !== false,
-    },
-    {
-      label: 'Move to previous tab',
-      icon: 'trash-2',
-      onClick: () => {
-        let previousTab = props.tabs[tabIndex.value - 1]
-        previousTab.sections.push(section)
-        props.tabs[tabIndex.value].sections.splice(
-          props.tabs[tabIndex.value].sections.indexOf(section),
-          1,
-        )
-        tabIndex.value -= 1
-      },
-      condition: () =>
-        section.editable !== false && props.tabs[tabIndex.value - 1],
-    },
-    {
-      label: 'Move to next tab',
-      icon: 'trash-2',
-      onClick: () => {
-        let nextTab = props.tabs[tabIndex.value + 1]
-        nextTab.sections.push(section)
-        props.tabs[tabIndex.value].sections.splice(
-          props.tabs[tabIndex.value].sections.indexOf(section),
-          1,
-        )
-        tabIndex.value += 1
-      },
-      condition: () =>
-        section.editable !== false && props.tabs[tabIndex.value + 1],
+      group: __('Column'),
+      items: [
+        {
+          label: __('Add column'),
+          icon: 'columns',
+          onClick: () => {
+            section.columns.push({
+              label: '',
+              name: 'column_' + getRandom(),
+              fields: [],
+            })
+          },
+          condition: () => section.columns.length < 4,
+        },
+        {
+          label: __('Remove column'),
+          icon: 'trash-2',
+          onClick: () => section.columns.pop(),
+          condition: () => section.columns.length > 1,
+        },
+        {
+          label: __('Remove and move fields to previous column'),
+          icon: 'trash-2',
+          onClick: () => {
+            let previousColumn = section.columns[section.columns.length - 2]
+            previousColumn.fields = previousColumn.fields.concat(column.fields)
+            section.columns.pop()
+          },
+          condition: () => section.columns.length > 1 && column.fields.length,
+        },
+        {
+          label: __('Move to next section'),
+          icon: 'corner-up-right',
+          onClick: () => {
+            let nextSection = tab.sections[i + 1]
+            nextSection.columns.push(column)
+            section.columns.pop()
+          },
+          condition: () => tab.sections[i + 1],
+        },
+        {
+          label: __('Move to previous section'),
+          icon: 'corner-up-left',
+          onClick: () => {
+            let previousSection = tab.sections[i - 1]
+            previousSection.columns.push(column)
+            section.columns.pop()
+          },
+          condition: () => tab.sections[i - 1],
+        },
+      ],
     },
   ]
-}
-
-function gridClass(columns) {
-  columns = columns || 3
-  let griColsMap = {
-    1: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1',
-    2: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2',
-    3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-  }
-  return griColsMap[columns]
 }
 
 watch(

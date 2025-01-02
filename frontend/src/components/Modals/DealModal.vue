@@ -23,20 +23,33 @@
           </div>
         </div>
         <div>
-          <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div class="flex items-center gap-3 text-sm text-ink-gray-5">
+          <div
+            v-if="hasOrganizationSections || hasContactSections"
+            class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3"
+          >
+            <div
+              v-if="hasOrganizationSections"
+              class="flex items-center gap-3 text-sm text-ink-gray-5"
+            >
               <div>{{ __('Choose Existing Organization') }}</div>
               <Switch v-model="chooseExistingOrganization" />
             </div>
-            <div class="flex items-center gap-3 text-sm text-ink-gray-5">
+            <div
+              v-if="hasContactSections"
+              class="flex items-center gap-3 text-sm text-ink-gray-5"
+            >
               <div>{{ __('Choose Existing Contact') }}</div>
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
-          <div class="h-px w-full border-t my-5" />
+          <div
+            v-if="hasOrganizationSections || hasContactSections"
+            class="h-px w-full border-t my-5"
+          />
           <FieldLayout
-            v-if="filteredSections.length"
-            :tabs="filteredSections"
+            ref="fieldLayoutRef"
+            v-if="tabs.data?.length"
+            :tabs="tabs.data"
             :data="deal"
             doctype="CRM Deal"
           />
@@ -64,7 +77,7 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
 import { Switch, createResource } from 'frappe-ui'
-import { computed, ref, reactive, onMounted, nextTick } from 'vue'
+import { computed, ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -97,9 +110,32 @@ const deal = reactive({
   deal_owner: '',
 })
 
+const hasOrganizationSections = ref(false)
+const hasContactSections = ref(false)
+
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
+const fieldLayoutRef = ref(null)
+
+watch(
+  [chooseExistingOrganization, chooseExistingContact],
+  ([organization, contact]) => {
+    tabs.data.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        if (section.name === 'organization_section') {
+          section.hidden = !organization
+        } else if (section.name === 'organization_details_section') {
+          section.hidden = organization
+        } else if (section.name === 'contact_section') {
+          section.hidden = !contact
+        } else if (section.name === 'contact_details_section') {
+          section.hidden = contact
+        }
+      })
+    })
+  },
+)
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -109,64 +145,35 @@ const tabs = createResource({
   transform: (_tabs) => {
     return _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          if (field.name == 'status') {
-            field.type = 'Select'
-            field.options = dealStatuses.value
-            field.prefix = getDealStatus(deal.status).iconColorClass
-          } else if (field.name == 'deal_owner') {
-            field.type = 'User'
+        section.columns.forEach((column) => {
+          if (
+            ['organization_section', 'organization_details_section'].includes(
+              section.name,
+            )
+          ) {
+            hasOrganizationSections.value = true
+          } else if (
+            ['contact_section', 'contact_details_section'].includes(
+              section.name,
+            )
+          ) {
+            hasContactSections.value = true
           }
+          column.fields.forEach((field) => {
+            if (field.fieldname == 'status') {
+              field.fieldtype = 'Select'
+              field.options = dealStatuses.value
+              field.prefix = getDealStatus(deal.status).iconColorClass
+            }
 
-          if (field.type === 'Table') {
-            deal[field.name] = []
-          }
+            if (field.fieldtype === 'Table') {
+              deal[field.fieldname] = []
+            }
+          })
         })
       })
     })
   },
-})
-
-const filteredSections = computed(() => {
-  let allSections = tabs.data?.[0]?.sections || []
-  if (!allSections.length) return []
-
-  let _filteredSections = []
-
-  if (chooseExistingOrganization.value) {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Organization'),
-    )
-  } else {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Organization Details'),
-    )
-  }
-
-  if (chooseExistingContact.value) {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Select Contact'),
-    )
-  } else {
-    _filteredSections.push(
-      allSections.find((s) => s.label === 'Contact Details'),
-    )
-  }
-
-  allSections.forEach((s) => {
-    if (
-      ![
-        'Select Organization',
-        'Organization Details',
-        'Select Contact',
-        'Contact Details',
-      ].includes(s.label)
-    ) {
-      _filteredSections.push(s)
-    }
-  })
-
-  return [{ no_tabs: true, sections: _filteredSections }]
 })
 
 const dealStatuses = computed(() => {

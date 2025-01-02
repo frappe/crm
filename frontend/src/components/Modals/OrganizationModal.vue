@@ -22,13 +22,12 @@
             </Button>
           </div>
         </div>
-        <div v-if="filteredSections.length">
-          <FieldLayout
-            :tabs="filteredSections"
-            :data="_organization"
-            doctype="CRM Organization"
-          />
-        </div>
+        <FieldLayout
+          v-if="tabs.data?.length"
+          :tabs="tabs.data"
+          :data="_organization"
+          doctype="CRM Organization"
+        />
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
@@ -43,17 +42,15 @@
       </div>
     </template>
   </Dialog>
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
 import FieldLayout from '@/components/FieldLayout.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
 import { call, FeatherIcon, createResource } from 'frappe-ui'
-import { ref, nextTick, watch, computed } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -66,6 +63,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['openAddressModal'])
+
 const { isManager } = usersStore()
 
 const router = useRouter()
@@ -75,8 +74,6 @@ const organization = defineModel('organization')
 const loading = ref(false)
 const title = ref(null)
 
-let _address = ref({})
-
 let _organization = ref({
   organization_name: '',
   website: '',
@@ -84,8 +81,6 @@ let _organization = ref({
   no_of_employees: '1-10',
   industry: '',
 })
-
-const showAddressModal = ref(false)
 
 let doc = ref({})
 
@@ -124,41 +119,27 @@ const tabs = createResource({
   transform: (_tabs) => {
     return _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          if (field.type === 'Table') {
-            _organization.value[field.name] = []
-          }
+        section.columns.forEach((column) => {
+          column.fields.forEach((field) => {
+            if (field.fieldname == 'address') {
+              field.create = (value, close) => {
+                _organization.value.address = value
+                emit('openAddressModal')
+                show.value = false
+                close()
+              }
+              field.edit = (address) => {
+                emit('openAddressModal', address)
+                show.value = false
+              }
+            } else if (field.fieldtype === 'Table') {
+              _organization.value[field.fieldname] = []
+            }
+          })
         })
       })
     })
   },
-})
-
-const filteredSections = computed(() => {
-  let allSections = tabs.data?.[0]?.sections || []
-  if (!allSections.length) return []
-
-  allSections.forEach((s) => {
-    s.fields.forEach((field) => {
-      if (field.name == 'address') {
-        field.create = (value, close) => {
-          _organization.value.address = value
-          _address.value = {}
-          showAddressModal.value = true
-          close()
-        }
-        field.edit = async (addr) => {
-          _address.value = await call('frappe.client.get', {
-            doctype: 'Address',
-            name: addr,
-          })
-          showAddressModal.value = true
-        }
-      }
-    })
-  })
-
-  return [{ no_tabs: true, sections: allSections }]
 })
 
 watch(

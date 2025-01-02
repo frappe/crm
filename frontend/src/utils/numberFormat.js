@@ -169,18 +169,18 @@ export function formatCurrency(value, format, currency = 'USD', precision = 2) {
   }
 
   // If you change anything below, it's going to hurt a company in UAE, a bit.
-  if (precision > 2) {
-    let parts = cstr(value).split('.') // should be minimum 2, comes from the DB
-    let decimals = parts.length > 1 ? parts[1] : '' // parts.length == 2 ???
+  // if (precision > 2) {
+  //   let parts = cstr(value).split('.') // should be minimum 2, comes from the DB
+  //   let decimals = parts.length > 1 ? parts[1] : '' // parts.length == 2 ???
 
-    if (decimals.length < 3 || decimals.length < precision) {
-      const fraction = 100
+  //   if (decimals.length < 3 || decimals.length < precision) {
+  //     const fraction = 100
 
-      if (decimals.length < cstr(fraction).length) {
-        precision = cstr(fraction).length - 1
-      }
-    }
-  }
+  //     if (decimals.length < cstr(fraction).length) {
+  //       precision = cstr(fraction).length - 1
+  //     }
+  //   }
+  // }
 
   format = getNumberFormat(format)
   let symbol = getCurrencySymbol(currency)
