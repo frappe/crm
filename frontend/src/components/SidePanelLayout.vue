@@ -10,6 +10,7 @@
           <Section
             labelClass="px-2 font-semibold"
             :label="section.label"
+            :hideLabel="!section.label"
             :opened="section.opened"
           >
             <template v-if="!preview" #actions>
