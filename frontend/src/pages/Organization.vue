@@ -107,9 +107,10 @@
       >
         <SidePanelLayout
           v-model="organization.doc"
-          :sections="sections"
+          :sections="sections.data"
           doctype="CRM Organization"
           @update="updateField"
+          @reload="sections.reload"
         />
       </div>
     </Resizer>

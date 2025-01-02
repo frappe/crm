@@ -119,10 +119,11 @@
       >
         <SidePanelLayout
           v-model="deal.data"
-          :sections="sections"
+          :sections="sections.data"
           doctype="CRM Deal"
-          @update="updateField"
           v-slot="{ section }"
+          @update="updateField"
+          @reload="sections.reload"
         >
           <div v-if="section.name == 'contacts_section'" class="contacts-area">
             <div

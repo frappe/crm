@@ -172,9 +172,10 @@
       >
         <SidePanelLayout
           v-model="lead.data"
-          :sections="sections"
+          :sections="sections.data"
           doctype="CRM Lead"
           @update="updateField"
+          @reload="sections.reload"
         />
       </div>
     </Resizer>

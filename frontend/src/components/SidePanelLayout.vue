@@ -342,7 +342,7 @@
     v-if="showSidePanelModal"
     v-model="showSidePanelModal"
     :doctype="doctype"
-    @reload="() => sections.reload()"
+    @reload="() => emit('reload')"
   />
 </template>
 
@@ -381,14 +381,14 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(props.doctype)
 const { isManager, getUser } = usersStore()
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'reload'])
 
 const data = defineModel()
 const showSidePanelModal = ref(false)
 
 const _sections = computed(() => {
-  if (!props.sections?.data?.length) return []
-  return props.sections.data.map((section) => {
+  if (!props.sections?.length) return []
+  return props.sections.map((section) => {
     if (section.columns?.length) {
       section.columns[0].fields = section.columns[0].fields.map((field) => {
         let df = field?.all_properties || {}

@@ -122,9 +122,10 @@
       >
         <SidePanelLayout
           v-model="contact.data"
-          :sections="sections"
+          :sections="sections.data"
           doctype="Contact"
           @update="updateField"
+          @reload="sections.reload"
         />
       </div>
     </Resizer>

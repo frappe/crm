@@ -38,9 +38,9 @@
           />
           <div v-if="preview" class="flex flex-1 flex-col border rounded">
             <SidePanelLayout
-              :sections="{ data: tabs.data[0].sections }"
-              :doctype="_doctype"
               v-model="data"
+              :sections="tabs.data[0].sections"
+              :doctype="_doctype"
               :preview="true"
               v-slot="{ section }"
             >
