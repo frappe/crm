@@ -121,7 +121,7 @@ const tabs = createResource({
       tab.sections.forEach((section) => {
         section.columns.forEach((column) => {
           column.fields.forEach((field) => {
-            if (field.name == 'address') {
+            if (field.fieldname == 'address') {
               field.create = (value, close) => {
                 _organization.value.address = value
                 emit('openAddressModal')
@@ -132,8 +132,8 @@ const tabs = createResource({
                 emit('openAddressModal', address)
                 show.value = false
               }
-            } else if (field.type === 'Table') {
-              _organization.value[field.name] = []
+            } else if (field.fieldtype === 'Table') {
+              _organization.value[field.fieldname] = []
             }
           })
         })

@@ -160,16 +160,14 @@ const tabs = createResource({
             hasContactSections.value = true
           }
           column.fields.forEach((field) => {
-            if (field.name == 'status') {
-              field.type = 'Select'
+            if (field.fieldname == 'status') {
+              field.fieldtype = 'Select'
               field.options = dealStatuses.value
               field.prefix = getDealStatus(deal.status).iconColorClass
-            } else if (field.name == 'deal_owner') {
-              field.type = 'User'
             }
 
-            if (field.type === 'Table') {
-              deal[field.name] = []
+            if (field.fieldtype === 'Table') {
+              deal[field.fieldname] = []
             }
           })
         })

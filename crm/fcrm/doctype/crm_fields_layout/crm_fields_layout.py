@@ -14,7 +14,7 @@ class CRMFieldsLayout(Document):
 
 
 @frappe.whitelist()
-def get_fields_layout(doctype: str, type: str, no_reactivity=False):
+def get_fields_layout(doctype: str, type: str):
 	tabs = []
 	layout = None
 
@@ -51,22 +51,8 @@ def get_fields_layout(doctype: str, type: str, no_reactivity=False):
 				for field in column.get("fields") if column.get("fields") else []:
 					field = next((f for f in fields if f.fieldname == field), None)
 					if field:
-						field = {
-							"label": _(field.label),
-							"name": field.fieldname,
-							"type": field.fieldtype,
-							"options": getOptions(field),
-							"mandatory": field.reqd,
-							"read_only": field.read_only,
-							"placeholder": field.get("placeholder"),
-							"filters": field.get("link_filters"),
-							"hidden": field.get("hidden"),
-							"depends_on": "" if no_reactivity else field.get("depends_on"),
-							"mandatory_depends_on": ""
-							if no_reactivity
-							else field.get("mandatory_depends_on"),
-						}
-						column["fields"][column.get("fields").index(field["name"])] = field
+						field = field.as_dict()
+						column["fields"][column.get("fields").index(field["fieldname"])] = field
 
 	return tabs or []
 
@@ -134,11 +120,3 @@ def get_default_layout(doctype: str):
 			tabs[-1]["sections"][-1]["columns"][-1]["fields"].append(field.fieldname)
 
 	return tabs
-
-
-def getOptions(field):
-	if field.fieldtype == "Select" and field.options:
-		field.options = field.options.split("\n")
-		field.options = [{"label": _(option), "value": option} for option in field.options]
-		field.options.insert(0, {"label": "", "value": ""})
-	return field.options

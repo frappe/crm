@@ -123,11 +123,11 @@ const tabs = createResource({
       tab.sections.forEach((section) => {
         section.columns.forEach((column) => {
           column.fields.forEach((field) => {
-            if (field.name == 'email_id') {
+            if (field.fieldname == 'email_id') {
               field.read_only = false
-            } else if (field.name == 'mobile_no') {
+            } else if (field.fieldname == 'mobile_no') {
               field.read_only = false
-            } else if (field.name == 'address') {
+            } else if (field.fieldname == 'address') {
               field.create = (value, close) => {
                 _contact.value.address = value
                 emit('openAddressModal')
@@ -138,8 +138,8 @@ const tabs = createResource({
                 emit('openAddressModal', address)
                 show.value = false
               }
-            } else if (field.type === 'Table') {
-              _contact.value[field.name] = []
+            } else if (field.fieldtype === 'Table') {
+              _contact.value[field.fieldname] = []
             }
           })
         })

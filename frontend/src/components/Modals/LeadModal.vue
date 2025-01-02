@@ -73,16 +73,14 @@ const tabs = createResource({
       tab.sections.forEach((section) => {
         section.columns.forEach((column) => {
           column.fields.forEach((field) => {
-            if (field.name == 'status') {
-              field.type = 'Select'
+            if (field.fieldname == 'status') {
+              field.fieldtype = 'Select'
               field.options = leadStatuses.value
               field.prefix = getLeadStatus(lead.status).iconColorClass
-            } else if (field.name == 'lead_owner') {
-              field.type = 'User'
             }
 
-            if (field.type === 'Table') {
-              lead[field.name] = []
+            if (field.fieldtype === 'Table') {
+              lead[field.fieldname] = []
             }
           })
         })

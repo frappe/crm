@@ -132,7 +132,7 @@
                   <Draggable
                     :list="column.fields"
                     group="fields"
-                    item-key="name"
+                    item-key="fieldname"
                     class="flex flex-col gap-1.5"
                     handle=".cursor-grab"
                   >
@@ -282,7 +282,7 @@ const fields = createResource({
 
     return data.filter((field) => {
       return (
-        !existingFields.find((f) => f.name === field.fieldname) &&
+        !existingFields.find((f) => f.fieldname === field.fieldname) &&
         !restrictedFields.includes(field.fieldname)
       )
     })
@@ -305,23 +305,7 @@ function addTab() {
 
 function addField(column, field) {
   if (!field) return
-  if (field.fieldtype === 'Select') {
-    field.options = field.options.split('\n')
-    field.options = field.options.map((option) => {
-      return { label: option, value: option }
-    })
-    if (field.options[0].value !== '') {
-      field.options.unshift({ label: '', value: '' })
-    }
-  }
-  let newFieldObj = {
-    ...field,
-    name: field.fieldname,
-    type: field.fieldtype,
-    depends_on: '',
-    mandatory_depends_on: '',
-  }
-  column.fields.push(newFieldObj)
+  column.fields.push(field)
 }
 
 function getTabOptions(tab) {

@@ -36,7 +36,13 @@
             :tabs="tabs.data"
             :doctype="_doctype"
           />
-          <FieldLayout v-else :tabs="tabs.data" :data="{}" :modal="true" />
+          <FieldLayout
+            v-else
+            :tabs="tabs.data"
+            :data="{}"
+            :modal="true"
+            :preview="true"
+          />
         </div>
       </div>
     </template>
@@ -66,7 +72,7 @@ const dirty = ref(false)
 const preview = ref(false)
 
 function getParams() {
-  return { doctype: _doctype.value, type: 'Data Fields', no_reactivity: 1 }
+  return { doctype: _doctype.value, type: 'Data Fields' }
 }
 
 const tabs = createResource({

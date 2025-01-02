@@ -36,7 +36,7 @@
             :tabs="tabs.data"
             :doctype="_doctype"
           />
-          <FieldLayout v-else :tabs="tabs.data" :data="{}" :modal="true" />
+          <FieldLayout v-else :tabs="tabs.data" :data="{}" :modal="true" :preview="true"/>
         </div>
       </div>
     </template>
@@ -103,9 +103,7 @@ function saveChanges() {
     tab.sections.forEach((section) => {
       section.columns.forEach((column) => {
         if (!column.fields) return
-        column.fields = column.fields.map(
-          (field) => field.fieldname || field.name,
-        )
+        column.fields = column.fields.map((field) => field.fieldname)
       })
     })
   })
