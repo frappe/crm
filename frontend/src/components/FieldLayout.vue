@@ -27,7 +27,7 @@
               :class="[section.hideBorder ? 'mt-4' : 'h-px border-t my-5']"
             />
             <Section
-              class="flex gap-4 text-lg font-medium"
+              class="flex sm:flex-row flex-col gap-4 text-lg font-medium"
               :class="{
                 'px-3 sm:px-5': hasTabs,
                 'mt-6': section.label && !section.hideLabel,
