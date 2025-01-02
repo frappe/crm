@@ -12,7 +12,7 @@
             :label="section.label"
             :opened="section.opened"
           >
-            <template #actions>
+            <template v-if="!preview" #actions>
               <div v-if="section.contacts" class="pr-2">
                 <Link
                   value=""
@@ -371,6 +371,10 @@ const props = defineProps({
     type: String,
     default: 'CRM Lead',
   },
+  preview: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
@@ -408,8 +412,8 @@ const _sections = computed(() => {
       })
     }
     section.visible =
-      section.isContactsSection ||
-      section.columns[0].fields.filter((f) => f.visible).length
+      section.name == 'contacts_section' ||
+      section.columns?.[0].fields.filter((f) => f.visible).length
     return section
   })
 })
