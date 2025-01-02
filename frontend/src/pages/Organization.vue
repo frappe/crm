@@ -112,7 +112,11 @@
             class="flex flex-col p-3"
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
-            <Section :label="section.label" :opened="section.opened">
+            <Section
+              labelClass="px-2 font-semibold"
+              :label="section.label"
+              :opened="section.opened"
+            >
               <template #actions>
                 <Button
                   v-if="i == 0 && isManager()"

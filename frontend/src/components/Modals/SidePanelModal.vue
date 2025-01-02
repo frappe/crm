@@ -46,7 +46,7 @@
               }"
             >
               <Section
-                class="p-2"
+                labelClass="p-2"
                 :label="section.label"
                 :opened="section.opened"
               >

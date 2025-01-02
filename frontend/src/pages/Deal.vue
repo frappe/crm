@@ -125,7 +125,7 @@
             :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
             <Section
-              class="px-2 font-semibold"
+              labelClass="px-2 font-semibold"
               :label="section.label"
               :opened="section.opened"
             >
