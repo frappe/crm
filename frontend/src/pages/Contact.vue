@@ -347,11 +347,11 @@ function getParsedSections(_sections) {
   return _sections.map((section) => {
     section.columns = section.columns.map((column) => {
       column.fields = column.fields.map((field) => {
-        if (field.name === 'email_id') {
+        if (field.fieldname === 'email_id') {
           return {
             ...field,
             read_only: false,
-            type: 'Dropdown',
+            fieldtype: 'Dropdown',
             options:
               contact.data?.email_ids?.map((email) => {
                 return {
@@ -404,11 +404,11 @@ function getParsedSections(_sections) {
               })
             },
           }
-        } else if (field.name === 'mobile_no') {
+        } else if (field.fieldname === 'mobile_no') {
           return {
             ...field,
             read_only: false,
-            type: 'Dropdown',
+            fieldtype: 'Dropdown',
             options:
               contact.data?.phone_nos?.map((phone) => {
                 return {
@@ -462,7 +462,7 @@ function getParsedSections(_sections) {
               })
             },
           }
-        } else if (field.name === 'address') {
+        } else if (field.fieldname === 'address') {
           return {
             ...field,
             create: (value, close) => {

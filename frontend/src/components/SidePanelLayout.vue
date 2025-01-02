@@ -56,7 +56,7 @@
               >
                 <template
                   v-for="field in section.columns[0].fields || []"
-                  :key="field.name"
+                  :key="field.fieldname"
                 >
                   <div
                     v-if="field.visible"
@@ -79,15 +79,15 @@
                         <div
                           v-if="
                             field.read_only &&
-                            !['Check', 'Dropdown'].includes(field.type)
+                            !['Check', 'Dropdown'].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
                         >
                           <Tooltip :text="__(field.tooltip)">
-                            <div>{{ data[field.name] }}</div>
+                            <div>{{ data[field.fieldname] }}</div>
                           </Tooltip>
                         </div>
-                        <div v-else-if="field.type === 'Dropdown'">
+                        <div v-else-if="field.fieldtype === 'Dropdown'">
                           <NestedPopover>
                             <template #target="{ open }">
                               <Button
@@ -149,12 +149,16 @@
                           </NestedPopover>
                         </div>
                         <FormControl
-                          v-else-if="field.type == 'Check'"
+                          v-else-if="field.fieldtype == 'Check'"
                           class="form-control"
                           type="checkbox"
-                          v-model="data[field.name]"
+                          v-model="data[field.fieldname]"
                           @change.stop="
-                            emit('update', field.name, $event.target.checked)
+                            emit(
+                              'update',
+                              field.fieldname,
+                              $event.target.checked,
+                            )
                           "
                           :disabled="Boolean(field.read_only)"
                         />
@@ -165,45 +169,47 @@
                               'Text',
                               'Long Text',
                               'Code',
-                            ].includes(field.type)
+                            ].includes(field.fieldtype)
                           "
                           class="form-control"
                           type="textarea"
-                          :value="data[field.name]"
+                          :value="data[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit('update', field.name, $event.target.value)
+                            emit('update', field.fieldname, $event.target.value)
                           "
                         />
                         <FormControl
-                          v-else-if="field.type === 'Select'"
+                          v-else-if="field.fieldtype === 'Select'"
                           class="form-control cursor-pointer [&_select]:cursor-pointer truncate"
                           type="select"
-                          v-model="data[field.name]"
+                          v-model="data[field.fieldname]"
                           :options="field.options"
                           :placeholder="field.placeholder"
                           @change.stop="
-                            emit('update', field.name, $event.target.value)
+                            emit('update', field.fieldname, $event.target.value)
                           "
                         />
                         <Link
-                          v-else-if="field.type === 'User'"
+                          v-else-if="field.fieldtype === 'User'"
                           class="form-control"
                           :value="
-                            data[field.name] &&
-                            getUser(data[field.name]).full_name
+                            data[field.fieldname] &&
+                            getUser(data[field.fieldname]).full_name
                           "
                           doctype="User"
                           :filters="field.filters"
-                          @change="(data) => emit('update', field.name, data)"
+                          @change="
+                            (data) => emit('update', field.fieldname, data)
+                          "
                           :placeholder="'Select' + ' ' + field.label + '...'"
                           :hideMe="true"
                         >
-                          <template v-if="data[field.name]" #prefix>
+                          <template v-if="data[field.fieldname]" #prefix>
                             <UserAvatar
                               class="mr-1.5"
-                              :user="data[field.name]"
+                              :user="data[field.fieldname]"
                               size="sm"
                             />
                           </template>
@@ -223,117 +229,135 @@
                           </template>
                         </Link>
                         <Link
-                          v-else-if="field.type === 'Link'"
+                          v-else-if="field.fieldtype === 'Link'"
                           class="form-control select-text"
-                          :value="data[field.name]"
+                          :value="data[field.fieldname]"
                           :doctype="field.options"
                           :filters="field.filters"
                           :placeholder="field.placeholder"
-                          @change="(data) => emit('update', field.name, data)"
+                          @change="
+                            (data) => emit('update', field.fieldname, data)
+                          "
                           :onCreate="field.create"
                         />
                         <div
-                          v-else-if="field.type === 'Datetime'"
+                          v-else-if="field.fieldtype === 'Datetime'"
                           class="form-control"
                         >
                           <DateTimePicker
                             icon-left=""
-                            :value="data[field.name]"
+                            :value="data[field.fieldname]"
                             :formatter="
                               (date) => getFormat(date, '', true, true)
                             "
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            @change="(data) => emit('update', field.name, data)"
+                            @change="
+                              (data) => emit('update', field.fieldname, data)
+                            "
                           />
                         </div>
                         <div
-                          v-else-if="field.type === 'Date'"
+                          v-else-if="field.fieldtype === 'Date'"
                           class="form-control"
                         >
                           <DatePicker
                             icon-left=""
-                            :value="data[field.name]"
+                            :value="data[field.fieldname]"
                             :formatter="(date) => getFormat(date, '', true)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            @change="(data) => emit('update', field.name, data)"
+                            @change="
+                              (data) => emit('update', field.fieldname, data)
+                            "
                           />
                         </div>
                         <FormControl
-                          v-else-if="field.type === 'Percent'"
+                          v-else-if="field.fieldtype === 'Percent'"
                           class="form-control"
                           type="text"
-                          :value="getFormattedPercent(field.name, data)"
+                          :value="getFormattedPercent(field.fieldname, data)"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit('update', field.name, flt($event.target.value))
+                            emit(
+                              'update',
+                              field.fieldname,
+                              flt($event.target.value),
+                            )
                           "
                         />
                         <FormControl
-                          v-else-if="field.type === 'Int'"
+                          v-else-if="field.fieldtype === 'Int'"
                           class="form-control"
                           type="number"
-                          v-model="data[field.name]"
+                          v-model="data[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit('update', field.name, $event.target.value)
+                            emit('update', field.fieldname, $event.target.value)
                           "
                         />
                         <FormControl
-                          v-else-if="field.type === 'Float'"
+                          v-else-if="field.fieldtype === 'Float'"
                           class="form-control"
                           type="text"
-                          :value="getFormattedFloat(field.name, data)"
+                          :value="getFormattedFloat(field.fieldname, data)"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit('update', field.name, flt($event.target.value))
+                            emit(
+                              'update',
+                              field.fieldname,
+                              flt($event.target.value),
+                            )
                           "
                         />
                         <FormControl
-                          v-else-if="field.type === 'Currency'"
+                          v-else-if="field.fieldtype === 'Currency'"
                           class="form-control"
                           type="text"
-                          :value="getFormattedCurrency(field.name, data)"
+                          :value="getFormattedCurrency(field.fieldname, data)"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit('update', field.name, flt($event.target.value))
+                            emit(
+                              'update',
+                              field.fieldname,
+                              flt($event.target.value),
+                            )
                           "
                         />
                         <FormControl
                           v-else
                           class="form-control"
                           type="text"
-                          :value="data[field.name]"
+                          :value="data[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit('update', field.name, $event.target.value)
+                            emit('update', field.fieldname, $event.target.value)
                           "
                         />
                       </div>
                       <div class="ml-1">
                         <ArrowUpRightIcon
                           v-if="
-                            field.type === 'Link' &&
+                            field.fieldtype === 'Link' &&
                             field.link &&
-                            data[field.name]
+                            data[field.fieldname]
                           "
                           class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                          @click.stop="field.link(data[field.name])"
+                          @click.stop="field.link(data[field.fieldname])"
                         />
                         <EditIcon
                           v-if="
-                            field.type === 'Link' &&
+                            field.fieldtype === 'Link' &&
                             field.edit &&
-                            data[field.name]
+                            data[field.fieldname]
                           "
                           class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                          @click.stop="field.edit(data[field.name])"
+                          @click.stop="field.edit(data[field.fieldname])"
                         />
                       </div>
                     </div>
@@ -398,56 +422,73 @@ const _sections = computed(() => {
   if (!props.sections?.length) return []
   let editButtonAdded = false
   return props.sections.map((section) => {
-    let isContactSection = section.name == 'contacts_section'
-
     if (section.columns?.length) {
       section.columns[0].fields = section.columns[0].fields.map((field) => {
-        let df = field?.all_properties || {}
-        if (field.type === 'Link' && df.options === 'User') {
-          field.options = df.options
-          field.type = 'User'
-        }
-        let _field = {
-          ...field,
-          depends_on: df.depends_on,
-          mandatory_depends_on: df.mandatory_depends_on,
-          display_via_depends_on: evaluateDependsOnValue(
-            df.depends_on,
-            data.value,
-          ),
-          mandatory_via_depends_on: evaluateDependsOnValue(
-            df.mandatory_depends_on,
-            data.value,
-          ),
-          filters: df.link_filters && JSON.parse(df.link_filters),
-          placeholder: field.placeholder || field.label,
-        }
-        _field.visible = isFieldVisible(_field)
-        return _field
+        return parsedField(field)
       })
     }
-
-    section.showEditButton = !(
-      !isManager() ||
-      isContactSection ||
-      editButtonAdded
-    )
-    if (section.showEditButton) {
+    let _section = parsedSection(section, editButtonAdded)
+    if (_section.showEditButton) {
       editButtonAdded = true
     }
-
-    section.visible =
-      isContactSection ||
-      section.columns?.[0].fields.filter((f) => f.visible).length
-
-    return section
+    return _section
   })
 })
 
+function parsedField(field) {
+  if (field.fieldtype == 'Select' && typeof field.options === 'string') {
+    field.options = field.options.split('\n').map((option) => {
+      return { label: option, value: option }
+    })
+
+    if (field.options[0].value !== '') {
+      field.options.unshift({ label: '', value: '' })
+    }
+  }
+
+  if (field.fieldtype === 'Link' && field.options === 'User') {
+    field.options = field.options
+    field.fieldtype = 'User'
+  }
+
+  let _field = {
+    ...field,
+    filters: field.link_filters && JSON.parse(field.link_filters),
+    placeholder: field.placeholder || field.label,
+    display_via_depends_on: evaluateDependsOnValue(
+      field.depends_on,
+      data.value,
+    ),
+    mandatory_via_depends_on: evaluateDependsOnValue(
+      field.mandatory_depends_on,
+      data.value,
+    ),
+  }
+
+  _field.visible = isFieldVisible(_field)
+  return _field
+}
+
+function parsedSection(section, editButtonAdded) {
+  let isContactSection = section.name == 'contacts_section'
+  section.showEditButton = !(
+    !isManager() ||
+    isContactSection ||
+    editButtonAdded
+  )
+
+  section.visible =
+    isContactSection ||
+    section.columns?.[0].fields.filter((f) => f.visible).length
+
+  return section
+}
+
 function isFieldVisible(field) {
+  if (props.preview) return true
   return (
-    (field.type == 'Check' ||
-      (field.read_only && data.value[field.name]) ||
+    (field.fieldtype == 'Check' ||
+      (field.read_only && data.value[field.fieldname]) ||
       !field.read_only) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden

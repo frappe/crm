@@ -56,7 +56,7 @@
             <Draggable
               :list="section.columns?.[0].fields || []"
               group="fields"
-              item-key="name"
+              item-key="fieldname"
               class="flex flex-col gap-1.5"
               handle=".cursor-grab"
             >

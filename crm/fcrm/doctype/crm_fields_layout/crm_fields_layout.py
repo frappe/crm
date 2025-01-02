@@ -60,6 +60,7 @@ def get_fields_layout(doctype: str, type: str, no_reactivity=False):
 							"read_only": field.read_only,
 							"placeholder": field.get("placeholder"),
 							"filters": field.get("link_filters"),
+							"hidden": field.get("hidden"),
 							"depends_on": "" if no_reactivity else field.get("depends_on"),
 							"mandatory_depends_on": ""
 							if no_reactivity

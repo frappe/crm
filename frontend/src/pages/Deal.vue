@@ -541,7 +541,7 @@ function getParsedSections(_sections) {
   _sections.forEach((section) => {
     if (section.name == 'contacts_section') return
     section.columns[0].fields.forEach((field) => {
-      if (field.name == 'organization') {
+      if (field.fieldname == 'organization') {
         field.create = (value, close) => {
           _organization.value.organization_name = value
           showOrganizationModal.value = true

@@ -347,7 +347,7 @@ function getParsedSections(_sections) {
   return _sections.map((section) => {
     section.columns = section.columns.map((column) => {
       column.fields = column.fields.map((field) => {
-        if (field.name === 'address') {
+        if (field.fieldname === 'address') {
           return {
             ...field,
             create: (value, close) => {
