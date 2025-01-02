@@ -42,7 +42,7 @@ import {
   Badge,
   ErrorMessage,
 } from 'frappe-ui'
-import { evaluateDependsOnValue, createToast, getRandom } from '@/utils'
+import { createToast, getRandom } from '@/utils'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -117,10 +117,10 @@ const tabs = computed(() => {
   fieldsData.forEach((field) => {
     let last_tab = _tabs[_tabs.length - 1]
     let _sections = _tabs.length ? last_tab.sections : []
-    if (field.type === 'Tab Break') {
+    if (field.fieldtype === 'Tab Break') {
       _tabs.push({
         label: field.label,
-        name: field.value,
+        name: field.fieldname,
         sections: [
           {
             name: 'section_' + getRandom(),
@@ -128,33 +128,21 @@ const tabs = computed(() => {
           },
         ],
       })
-    } else if (field.type === 'Section Break') {
+    } else if (field.fieldtype === 'Section Break') {
       _sections.push({
         label: field.label,
-        name: field.value,
+        name: field.fieldname,
         columns: [{ name: 'column_' + getRandom(), fields: [] }],
       })
-    } else if (field.type === 'Column Break') {
+    } else if (field.fieldtype === 'Column Break') {
       _sections[_sections.length - 1].columns.push({
-        name: field.value,
+        name: field.fieldname,
         fields: [],
       })
     } else {
       let last_section = _sections[_sections.length - 1]
       let last_column = last_section.columns[last_section.columns.length - 1]
-      last_column.fields.push({
-        ...field,
-        filters: field.link_filters && JSON.parse(field.link_filters),
-        display_via_depends_on: evaluateDependsOnValue(
-          field.depends_on,
-          data.doc,
-        ),
-        mandatory_via_depends_on: evaluateDependsOnValue(
-          field.mandatory_depends_on,
-          data.doc,
-        ),
-        name: field.value,
-      })
+      last_column.fields.push(field)
     }
   })
 

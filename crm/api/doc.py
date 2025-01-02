@@ -660,22 +660,7 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 
 	for field in fields:
 		if field.fieldtype not in not_allowed_fieldtypes and field.fieldname:
-			_fields.append(
-				{
-					"label": field.label,
-					"type": field.fieldtype,
-					"value": field.fieldname,
-					"options": field.options,
-					"mandatory": field.reqd,
-					"read_only": field.read_only,
-					"hidden": field.hidden,
-					"depends_on": field.depends_on,
-					"mandatory_depends_on": field.mandatory_depends_on,
-					"read_only_depends_on": field.read_only_depends_on,
-					"link_filters": field.get("link_filters"),
-					"placeholder": field.get("placeholder"),
-				}
-			)
+			_fields.append(field)
 
 	return _fields
 
