@@ -19,9 +19,10 @@
         class="sections overflow-hidden"
         :class="{ 'my-4 sm:my-6': hasTabs }"
       >
-        <template v-for="section in tab.sections" :key="section.name">
-          <div v-if="!section.hidden" class="section" :data-name="section.name">
+        <template v-for="(section, i) in tab.sections" :key="section.name">
+          <div v-if="section.visible" class="section" :data-name="section.name">
             <div
+              v-if="i !== firstVisibleIndex(tab.sections)"
               class="w-full section-border"
               :class="[section.hideBorder ? 'mt-4' : 'h-px border-t my-5']"
             />
@@ -31,10 +32,7 @@
                 'px-3 sm:px-5': hasTabs,
                 'mt-6': section.label && !section.hideLabel,
               }"
-              :labelClass="[
-                'text-lg font-medium',
-                { 'px-3 sm:px-5': hasTabs },
-              ]"
+              :labelClass="['text-lg font-medium', { 'px-3 sm:px-5': hasTabs }]"
               :label="section.label"
               :hideLabel="section.hideLabel || !section.label"
               :opened="section.opened"
@@ -54,16 +52,7 @@
                   {{ column.label }}
                 </div>
                 <template v-for="field in column.fields" :key="field.name">
-                  <div
-                    v-if="
-                      (field.type == 'Check' ||
-                        (field.read_only && data[field.name]) ||
-                        !field.read_only) &&
-                      (!field.depends_on || field.display_via_depends_on) &&
-                      !field.hidden
-                    "
-                    class="field"
-                  >
+                  <div v-if="field.visible" class="field">
                     <div
                       v-if="field.type != 'Check'"
                       class="mb-2 text-sm text-ink-gray-5"
@@ -305,7 +294,7 @@ const _tabs = computed(() => {
           if (field.type == 'Link' && field.options == 'User') {
             field.type = 'User'
           }
-          return {
+          let _field = {
             ...field,
             display_via_depends_on: evaluateDependsOnValue(
               field.depends_on,
@@ -316,14 +305,38 @@ const _tabs = computed(() => {
               props.data,
             ),
           }
+          _field.visible = isFieldVisible(_field)
+          return _field
         })
         return column
       })
+      section.visible = section.columns.some((column) =>
+        column.fields.some((field) => field.visible),
+      )
+
+      // to handle special case
+      if (section.hidden) {
+        section.visible = false
+      }
       return section
     })
     return tab
   })
 })
+
+function isFieldVisible(field) {
+  return (
+    (field.type == 'Check' ||
+      (field.read_only && props.data[field.name]) ||
+      !field.read_only) &&
+    (!field.depends_on || field.display_via_depends_on) &&
+    !field.hidden
+  )
+}
+
+function firstVisibleIndex(sections) {
+  return sections.findIndex((section) => section.visible)
+}
 
 const tabIndex = ref(0)
 
@@ -342,17 +355,5 @@ const getPlaceholder = (field) => {
 <style scoped>
 :deep(.form-control.prefix select) {
   padding-left: 2rem;
-}
-
-.section {
-  display: none;
-}
-
-.section:has(.field) {
-  display: block;
-}
-
-.sections .section:first-of-type .section-border {
-  display: none;
 }
 </style>
