@@ -40,10 +40,12 @@ def get_new_layout(old_layout, type):
 
 			if section.get("label") == "Select Organization":
 				section["name"] = "organization_section"
+				section["hidden"] = 1
 			elif section.get("label") == "Organization Details":
 				section["name"] = "organization_details_section"
 			elif section.get("label") == "Select Contact":
 				section["name"] = "contact_section"
+				section["hidden"] = 1
 			elif section.get("label") == "Contact Details":
 				section["name"] = "contact_details_section"
 
