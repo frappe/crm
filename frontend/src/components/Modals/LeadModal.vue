@@ -76,7 +76,7 @@ const tabs = createResource({
             if (field.fieldname == 'status') {
               field.fieldtype = 'Select'
               field.options = leadStatuses.value
-              field.prefix = getLeadStatus(lead.status).iconColorClass
+              field.prefix = getLeadStatus(lead.status).color
             }
 
             if (field.fieldtype === 'Table') {
