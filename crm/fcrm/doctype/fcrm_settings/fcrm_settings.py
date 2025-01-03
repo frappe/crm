@@ -26,7 +26,7 @@ def sync_table(key, hook):
 	count = 0  # maintain count because list may come from seperate apps
 	for item in frappe.get_hooks(hook):
 		if item.get("name1") not in existing_items:
-			crm_settings.append(key, item)
+			crm_settings.append(key, item, count)
 		new_standard_items[item.get("name1")] = True
 		count += 1
 
