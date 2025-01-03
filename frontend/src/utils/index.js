@@ -234,6 +234,33 @@ export function copyToClipboard(text) {
   }
 }
 
+export const colors = [
+  'gray',
+  'blue',
+  'green',
+  'red',
+  'pink',
+  'orange',
+  'amber',
+  'yellow',
+  'cyan',
+  'teal',
+  'violet',
+  'purple',
+  'black',
+]
+
+export function parseColor(color) {
+  let textColor = `!text-${color}-600`
+  if (color == 'black') {
+    textColor = '!text-ink-gray-9'
+  } else if (['gray', 'green'].includes(color)) {
+    textColor = `!text-${color}-700`
+  }
+
+  return textColor
+}
+
 export function isEmoji(str) {
   const emojiList = gemoji.map((emoji) => emoji.emoji)
   return emojiList.includes(str)
@@ -306,7 +333,7 @@ export function isImage(extention) {
   )
 }
 
-export function getRandom(len=4) {
+export function getRandom(len = 4) {
   let text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 

@@ -382,7 +382,7 @@ function getGroupedByRows(listRows, groupByField, columns) {
     if (groupByField.name == 'status') {
       groupDetail.icon = () =>
         h(IndicatorIcon, {
-          class: getLeadStatus(option)?.iconColorClass,
+          class: getLeadStatus(option)?.color,
         })
     }
     groupedRows.push(groupDetail)
@@ -444,7 +444,7 @@ function parseRows(rows, columns = []) {
       } else if (row == 'status') {
         _rows[row] = {
           label: lead.status,
-          color: getLeadStatus(lead.status)?.iconColorClass,
+          color: getLeadStatus(lead.status)?.color,
         }
       } else if (row == 'sla_status') {
         let value = lead.sla_status

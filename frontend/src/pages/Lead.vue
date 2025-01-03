@@ -21,12 +21,11 @@
         :options="statusOptions('lead', updateField, lead.data._customStatuses)"
       >
         <template #default="{ open }">
-          <Button
-            :label="lead.data.status"
-            :class="getLeadStatus(lead.data.status).colorClass"
-          >
+          <Button :label="lead.data.status">
             <template #prefix>
-              <IndicatorIcon />
+              <IndicatorIcon
+                :class="getLeadStatus(lead.data.status).color"
+              />
             </template>
             <template #suffix>
               <FeatherIcon

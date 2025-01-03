@@ -22,9 +22,7 @@
                     size="sm"
                     class="hover:!bg-surface-gray-2"
                   >
-                    <IndicatorIcon
-                      :class="colorClasses(column.column.color, true)"
-                    />
+                    <IndicatorIcon :class="parseColor(column.column.color)" />
                   </Button>
                 </template>
                 <template #body="{ close }">
@@ -33,13 +31,12 @@
                   >
                     <div class="flex gap-1">
                       <Button
-                        :class="colorClasses(color)"
                         variant="ghost"
                         v-for="color in colors"
                         :key="color"
                         @click="() => (column.column.color = color)"
                       >
-                        <IndicatorIcon />
+                        <IndicatorIcon :class="parseColor(color)" />
                       </Button>
                     </div>
                     <div class="flex flex-row-reverse">
@@ -172,7 +169,7 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import { isTouchScreenDevice } from '@/utils'
+import { isTouchScreenDevice, colors, parseColor } from '@/utils'
 import Draggable from 'vuedraggable'
 import { Dropdown } from 'frappe-ui'
 import { computed } from 'vue'
@@ -265,33 +262,4 @@ function updateColumn(d) {
 
   emit('update', data)
 }
-
-function colorClasses(color, onlyIcon = false) {
-  let textColor = `!text-${color}-600`
-  if (color == 'black') {
-    textColor = '!text-ink-gray-9'
-  } else if (['gray', 'green'].includes(color)) {
-    textColor = `!text-${color}-700`
-  }
-
-  let bgColor = `!bg-${color}-100 hover:!bg-${color}-200 active:!bg-${color}-300`
-
-  return [textColor, onlyIcon ? '' : bgColor]
-}
-
-const colors = [
-  'gray',
-  'blue',
-  'green',
-  'red',
-  'pink',
-  'orange',
-  'amber',
-  'yellow',
-  'cyan',
-  'teal',
-  'violet',
-  'purple',
-  'black',
-]
 </script>

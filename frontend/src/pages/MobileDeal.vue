@@ -15,12 +15,9 @@
           "
         >
           <template #default="{ open }">
-            <Button
-              :label="deal.data.status"
-              :class="getDealStatus(deal.data.status).colorClass"
-            >
+            <Button :label="deal.data.status">
               <template #prefix>
-                <IndicatorIcon />
+                <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
               </template>
               <template #suffix>
                 <FeatherIcon
