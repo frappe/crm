@@ -9,12 +9,11 @@
     </template>
     <template #right-header>
       <CustomActions v-if="customActions" :actions="customActions" />
-      <component :is="deal.data._assignedTo?.length == 1 ? 'Button' : 'div'">
-        <MultipleAvatar
-          :avatars="deal.data._assignedTo"
-          @click="showAssignmentModal = true"
-        />
-      </component>
+      <AssignTo
+        v-model="deal.data._assignedTo"
+        :data="deal.data"
+        doctype="CRM Deal"
+      />
       <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
@@ -237,13 +236,6 @@
       afterInsert: (doc) => addContact(doc.name),
     }"
   />
-  <AssignmentModal
-    v-if="showAssignmentModal"
-    v-model="showAssignmentModal"
-    v-model:assignees="deal.data._assignedTo"
-    :doc="deal.data"
-    doctype="CRM Deal"
-  />
   <FilesUploader
     v-if="deal.data?.name"
     v-model="showFilesUploader"
@@ -278,9 +270,8 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
-import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
@@ -390,7 +381,6 @@ onBeforeUnmount(() => {
 
 const reload = ref(false)
 const showOrganizationModal = ref(false)
-const showAssignmentModal = ref(false)
 const showFilesUploader = ref(false)
 const _organization = ref({})
 

@@ -34,12 +34,11 @@
     v-if="lead.data"
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
-    <component :is="lead.data._assignedTo?.length == 1 ? 'Button' : 'div'">
-      <MultipleAvatar
-        :avatars="lead.data._assignedTo"
-        @click="showAssignmentModal = true"
-      />
-    </component>
+    <AssignTo
+      v-model="lead.data._assignedTo"
+      :data="lead.data"
+      doctype="CRM Lead"
+    />
     <div class="flex items-center gap-2">
       <CustomActions v-if="customActions" :actions="customActions" />
       <Button
@@ -96,13 +95,6 @@
       />
     </Tabs>
   </div>
-  <AssignmentModal
-    v-if="showAssignmentModal"
-    v-model="showAssignmentModal"
-    v-model:assignees="lead.data._assignedTo"
-    :doc="lead.data"
-    doctype="CRM Lead"
-  />
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
@@ -186,8 +178,7 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
-import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
-import MultipleAvatar from '@/components/MultipleAvatar.vue'
+import AssignTo from '@/components/AssignTo.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
@@ -266,7 +257,6 @@ onMounted(() => {
 })
 
 const reload = ref(false)
-const showAssignmentModal = ref(false)
 
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value

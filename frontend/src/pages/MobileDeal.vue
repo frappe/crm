@@ -34,12 +34,11 @@
     v-if="deal.data"
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
-    <component :is="deal.data._assignedTo?.length == 1 ? 'Button' : 'div'">
-      <MultipleAvatar
-        :avatars="deal.data._assignedTo"
-        @click="showAssignmentModal = true"
-      />
-    </component>
+    <AssignTo
+      v-model="deal.data._assignedTo"
+      :data="deal.data"
+      doctype="CRM Deal"
+    />
     <div class="flex items-center gap-2">
       <CustomActions v-if="customActions" :actions="customActions" />
     </div>
@@ -236,13 +235,6 @@
       afterInsert: (doc) => addContact(doc.name),
     }"
   />
-  <AssignmentModal
-    v-if="showAssignmentModal"
-    v-model="showAssignmentModal"
-    v-model:assignees="deal.data._assignedTo"
-    :doc="deal.data"
-    doctype="CRM Deal"
-  />
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -263,8 +255,7 @@ import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
-import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
-import MultipleAvatar from '@/components/MultipleAvatar.vue'
+import AssignTo from '@/components/AssignTo.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
@@ -356,7 +347,6 @@ onMounted(() => {
 
 const reload = ref(false)
 const showOrganizationModal = ref(false)
-const showAssignmentModal = ref(false)
 const _organization = ref({})
 
 function updateDeal(fieldname, value, callback) {
