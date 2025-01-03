@@ -106,28 +106,32 @@
       </div>
     </div>
 
-    <div class="flex flex-row-reverse">
+    <div class="flex justify-between flex-row-reverse">
       <Button
         variant="solid"
         :label="__('Update')"
         :disabled="!settings.isDirty"
         @click="updateSettings"
       />
+      <ErrorMessage :message="settings.save.error" />
     </div>
   </div>
 </template>
 <script setup>
 import ImageUploader from '@/components/Controls/ImageUploader.vue'
 import Grid from '@/components/Controls/Grid.vue'
-import { FormControl, Badge } from 'frappe-ui'
+import { FormControl, Badge, ErrorMessage } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
 
 const { _settings: settings, setupBrand } = getSettings()
 
 function updateSettings() {
-  settings.save.submit()
-  showSettings.value = false
-  setupBrand()
+  settings.save.submit(null, {
+    onSuccess: () => {
+      showSettings.value = false
+      setupBrand()
+    },
+  })
 }
 </script>
