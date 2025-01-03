@@ -63,26 +63,16 @@
           @updateField="updateField"
         />
         <div
-          v-if="fieldsLayout.data"
+          v-if="sections.data"
           class="flex flex-1 flex-col justify-between overflow-hidden"
         >
-          <div class="flex flex-col overflow-y-auto">
-            <div
-              v-for="(section, i) in fieldsLayout.data"
-              :key="section.name"
-              class="flex flex-col px-2 py-3 sm:p-3"
-              :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-            >
-              <Section :label="section.label" :opened="section.opened">
-                <SidePanelLayout
-                  :fields="section.columns[0].fields"
-                  :isLastSection="i == fieldsLayout.data.length - 1"
-                  v-model="lead.data"
-                  @update="updateField"
-                />
-              </Section>
-            </div>
-          </div>
+          <SidePanelLayout
+            v-model="lead.data"
+            :sections="sections.data"
+            doctype="CRM Lead"
+            @update="updateField"
+            @reload="sections.reload"
+          />
         </div>
       </div>
       <Activities
@@ -180,7 +170,6 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import Link from '@/components/Controls/Link.vue'
-import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
@@ -240,7 +229,7 @@ const lead = createResource({
       deleteDoc: deleteLead,
       resource: {
         lead,
-        fieldsLayout,
+        sections,
       },
       call,
     }
@@ -410,7 +399,7 @@ watch(tabs, (value) => {
   }
 })
 
-const fieldsLayout = createResource({
+const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   cache: ['sidePanelSections', 'CRM Lead'],
   params: { doctype: 'CRM Lead' },
