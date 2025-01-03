@@ -74,7 +74,7 @@
                               field.mandatory_via_depends_on)
                           "
                           class="text-ink-red-3"
-                          >*</span
+                          > *</span
                         >
                       </div>
                     </Tooltip>
