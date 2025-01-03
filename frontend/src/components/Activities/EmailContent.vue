@@ -111,6 +111,14 @@ const htmlContent = `
 <head>
   <style>
     ${css}
+    :root {
+      --bg-surface-gray-3: #ededed;
+      --bg-surface-gray-4: #e2e2e2;
+    }
+    [data-theme='dark'] {
+      --bg-surface-gray-3: #343434;
+      --bg-surface-gray-4: #424242;
+    }
 
     .replied-content .collapse {
       margin: 10px 0 10px 0;
@@ -121,14 +129,14 @@ const htmlContent = `
       font-weight: 700;
       height: 12px;
       line-height: 0.1;
-      background: #e8eaed;
+      background: var(--bg-surface-gray-3);
       width: 23px;
       justify-content: center;
       border-radius: 5px;
     }
 
     .replied-content .collapse:hover {
-      background: #dadce0;
+      background: var(--bg-surface-gray-4);
     }
 
     .replied-content .collapse + input {
