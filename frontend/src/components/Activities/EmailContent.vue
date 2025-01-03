@@ -228,6 +228,9 @@ watch(iframeRef, (iframe) => {
         iframe.contentWindow.document.querySelector('.email-content')
       let parent = emailContent.closest('html')
 
+      let theme = document.documentElement.getAttribute('data-theme')
+      parent.setAttribute('data-theme', theme)
+
       iframe.style.height = parent.offsetHeight + 1 + 'px'
 
       let replyCollapsers = emailContent.querySelectorAll('.replyCollapser')

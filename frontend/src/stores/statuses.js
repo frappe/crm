@@ -1,5 +1,6 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { capture } from '@/telemetry'
+import { parseColor } from '@/utils'
 import { defineStore } from 'pinia'
 import { createListResource } from 'frappe-ui'
 import { reactive, h } from 'vue'
@@ -18,8 +19,7 @@ export const statusesStore = defineStore('crm-statuses', () => {
     auto: true,
     transform(statuses) {
       for (let status of statuses) {
-        status.colorClass = colorClasses(status.color)
-        status.iconColorClass = colorClasses(status.color, true)
+        status.color = parseColor(status.color)
         leadStatusesByName[status.name] = status
       }
       return statuses
@@ -35,8 +35,7 @@ export const statusesStore = defineStore('crm-statuses', () => {
     auto: true,
     transform(statuses) {
       for (let status of statuses) {
-        status.colorClass = colorClasses(status.color)
-        status.iconColorClass = colorClasses(status.color, true)
+        status.color = parseColor(status.color)
         dealStatusesByName[status.name] = status
       }
       return statuses
@@ -56,19 +55,6 @@ export const statusesStore = defineStore('crm-statuses', () => {
       return statuses
     },
   })
-
-  function colorClasses(color, onlyIcon = false) {
-    let textColor = `!text-${color}-600`
-    if (color == 'black') {
-      textColor = '!text-ink-gray-9'
-    } else if (['gray', 'green'].includes(color)) {
-      textColor = `!text-${color}-700`
-    }
-
-    let bgColor = `!bg-${color}-100 hover:!bg-${color}-200 active:!bg-${color}-300`
-
-    return [textColor, onlyIcon ? '' : bgColor]
-  }
 
   function getLeadStatus(name) {
     if (!name) {
@@ -107,10 +93,7 @@ export const statusesStore = defineStore('crm-statuses', () => {
       options.push({
         label: statusesByName[status]?.name,
         value: statusesByName[status]?.name,
-        icon: () =>
-          h(IndicatorIcon, {
-            class: statusesByName[status]?.iconColorClass,
-          }),
+        icon: () => h(IndicatorIcon, { class: statusesByName[status]?.color }),
         onClick: () => {
           capture('status_changed', { doctype, status })
           action && action('status', statusesByName[status]?.name)

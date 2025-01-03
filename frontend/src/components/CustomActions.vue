@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { computed, h } from 'vue'
+import { computed } from 'vue'
 import { Dropdown } from 'frappe-ui'
 import { isMobileView } from '@/composables/settings'
 

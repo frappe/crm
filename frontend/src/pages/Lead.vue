@@ -8,20 +8,24 @@
       </Breadcrumbs>
     </template>
     <template #right-header>
-      <CustomActions v-if="customActions" :actions="customActions" />
+      <CustomActions
+        v-if="lead.data._customActions?.length"
+        :actions="lead.data._customActions"
+      />
       <AssignTo
         v-model="lead.data._assignedTo"
         :data="lead.data"
         doctype="CRM Lead"
       />
-      <Dropdown :options="statusOptions('lead', updateField, customStatuses)">
+      <Dropdown
+        :options="statusOptions('lead', updateField, lead.data._customStatuses)"
+      >
         <template #default="{ open }">
-          <Button
-            :label="lead.data.status"
-            :class="getLeadStatus(lead.data.status).colorClass"
-          >
+          <Button :label="lead.data.status">
             <template #prefix>
-              <IndicatorIcon />
+              <IndicatorIcon
+                :class="getLeadStatus(lead.data.status).color"
+              />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -329,15 +333,13 @@ const props = defineProps({
   },
 })
 
-const customActions = ref([])
-const customStatuses = ref([])
-
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
-  onSuccess: async (data) => {
-    let obj = {
+  onSuccess: (data) => {
+    setupAssignees(lead)
+    setupCustomizations(lead, {
       doc: data,
       $dialog,
       $socket,
@@ -345,16 +347,9 @@ const lead = createResource({
       updateField,
       createToast,
       deleteDoc: deleteLead,
-      resource: {
-        lead,
-        sections,
-      },
+      resource: { lead, sections },
       call,
-    }
-    setupAssignees(data)
-    let customization = await setupCustomizations(data, obj)
-    customActions.value = customization.actions || []
-    customStatuses.value = customization.statuses || []
+    })
   },
 })
 

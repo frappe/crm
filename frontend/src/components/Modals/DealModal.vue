@@ -163,7 +163,7 @@ const tabs = createResource({
             if (field.fieldname == 'status') {
               field.fieldtype = 'Select'
               field.options = dealStatuses.value
-              field.prefix = getDealStatus(deal.status).iconColorClass
+              field.prefix = getDealStatus(deal.status).color
             }
 
             if (field.fieldtype === 'Table') {

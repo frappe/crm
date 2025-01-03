@@ -582,7 +582,7 @@ function getDealRowObject(deal) {
     annual_revenue: getFormattedCurrency('annual_revenue', deal),
     status: {
       label: deal.status,
-      color: getDealStatus(deal.status)?.iconColorClass,
+      color: getDealStatus(deal.status)?.color,
     },
     email: deal.email,
     mobile_no: deal.mobile_no,

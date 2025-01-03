@@ -8,20 +8,22 @@
       </Breadcrumbs>
     </template>
     <template #right-header>
-      <CustomActions v-if="customActions" :actions="customActions" />
+      <CustomActions
+        v-if="deal.data._customActions?.length"
+        :actions="deal.data._customActions"
+      />
       <AssignTo
         v-model="deal.data._assignedTo"
         :data="deal.data"
         doctype="CRM Deal"
       />
-      <Dropdown :options="statusOptions('deal', updateField, customStatuses)">
+      <Dropdown
+        :options="statusOptions('deal', updateField, deal.data._customStatuses)"
+      >
         <template #default="{ open }">
-          <Button
-            :label="deal.data.status"
-            :class="getDealStatus(deal.data.status).colorClass"
-          >
+          <Button :label="deal.data.status">
             <template #prefix>
-              <IndicatorIcon />
+              <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -317,14 +319,11 @@ const props = defineProps({
   },
 })
 
-const customActions = ref([])
-const customStatuses = ref([])
-
 const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
-  onSuccess: async (data) => {
+  onSuccess: (data) => {
     if (data.organization) {
       organization.update({
         params: { doctype: 'CRM Organization', name: data.organization },
@@ -332,7 +331,8 @@ const deal = createResource({
       organization.fetch()
     }
 
-    let obj = {
+    setupAssignees(deal)
+    setupCustomizations(deal, {
       doc: data,
       $dialog,
       $socket,
@@ -346,11 +346,7 @@ const deal = createResource({
         sections,
       },
       call,
-    }
-    setupAssignees(data)
-    let customization = await setupCustomizations(data, obj)
-    customActions.value = customization.actions || []
-    customStatuses.value = customization.statuses || []
+    })
   },
 })
 
