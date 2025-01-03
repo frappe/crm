@@ -133,10 +133,6 @@ const addValue = (value) => {
 }
 
 function updateAssignees() {
-  if (assignees.value.length === 0) {
-    error.value = 'Please select at least one assignee'
-    return
-  }
   const removedAssignees = oldAssignees.value
     .filter(
       (assignee) => !assignees.value.find((a) => a.name === assignee.name),

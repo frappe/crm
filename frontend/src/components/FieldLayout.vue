@@ -151,7 +151,10 @@
                     <Link
                       v-else-if="field.fieldtype === 'User'"
                       class="form-control"
-                      :value="getUser(data[field.fieldname]).full_name"
+                      :value="
+                        data[field.fieldname] &&
+                        getUser(data[field.fieldname]).full_name
+                      "
                       :doctype="field.options"
                       :filters="field.filters"
                       @change="(v) => (data[field.fieldname] = v)"
@@ -160,6 +163,7 @@
                     >
                       <template #prefix>
                         <UserAvatar
+                          v-if="data[field.fieldname]"
                           class="mr-2"
                           :user="data[field.fieldname]"
                           size="sm"
