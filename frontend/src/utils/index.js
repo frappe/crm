@@ -58,7 +58,7 @@ export function getFormat(
       .replace('yyyy', 'YYYY')
       .replace('dd', 'DD') || 'YYYY-MM-DD'
   let timeFormat = window.sysdefaults.time_format || 'HH:mm:ss'
-  format = format || 'ddd, MMM d, YYYY h:mm a'
+  format = format || 'ddd, MMM D, YYYY h:mm a'
 
   if (onlyDate) format = dateFormat
   if (onlyTime) format = timeFormat
