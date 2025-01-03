@@ -9,7 +9,11 @@
         </template>
       </Breadcrumbs>
       <div class="absolute right-0">
-        <Dropdown :options="statusOptions('lead', updateField, customStatuses)">
+        <Dropdown
+          :options="
+            statusOptions('lead', updateField, lead.data._customStatuses)
+          "
+        >
           <template #default="{ open }">
             <Button
               :label="lead.data.status"
@@ -40,7 +44,10 @@
       doctype="CRM Lead"
     />
     <div class="flex items-center gap-2">
-      <CustomActions v-if="customActions" :actions="customActions" />
+      <CustomActions
+        v-if="lead.data._customActions?.length"
+        :actions="lead.data._customActions"
+      />
       <Button
         :label="__('Convert')"
         variant="solid"
@@ -211,15 +218,13 @@ const props = defineProps({
   },
 })
 
-const customActions = ref([])
-const customStatuses = ref([])
-
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
-  onSuccess: async (data) => {
-    let obj = {
+  onSuccess: (data) => {
+    setupAssignees(lead)
+    setupCustomizations(lead, {
       doc: data,
       $dialog,
       $socket,
@@ -232,11 +237,7 @@ const lead = createResource({
         sections,
       },
       call,
-    }
-    setupAssignees(data)
-    let customization = await setupCustomizations(data, obj)
-    customActions.value = customization.actions || []
-    customStatuses.value = customization.statuses || []
+    })
   },
 })
 
