@@ -56,8 +56,8 @@ import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
-import { useStorage } from '@vueuse/core'
-import { computed, h, markRaw, onMounted } from 'vue'
+import { theme, toggleTheme } from '@/stores/theme'
+import { computed, h, markRaw } from 'vue'
 
 const props = defineProps({
   isCollapsed: {
@@ -71,8 +71,6 @@ const { logout } = sessionStore()
 const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
-
-const theme = useStorage('theme', 'light')
 
 const dropdownItems = computed(() => {
   if (!settings.value?.dropdown_items) return []
@@ -165,16 +163,4 @@ function getStandardItem(item) {
       }
   }
 }
-
-function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme')
-  theme.value = currentTheme === 'dark' ? 'light' : 'dark'
-  document.documentElement.setAttribute('data-theme', theme.value)
-}
-
-onMounted(() => {
-  if (['light', 'dark'].includes(theme.value)) {
-    document.documentElement.setAttribute('data-theme', theme.value)
-  }
-})
 </script>

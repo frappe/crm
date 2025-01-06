@@ -121,6 +121,7 @@
         <SidePanelLayout
           v-model="deal.data"
           :sections="sections.data"
+          :addContact="addContact"
           doctype="CRM Deal"
           v-slot="{ section }"
           @update="updateField"

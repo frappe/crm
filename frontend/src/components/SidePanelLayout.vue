@@ -74,8 +74,7 @@
                               field.mandatory_via_depends_on)
                           "
                           class="text-ink-red-3"
-                          > *</span
-                        >
+                        > *</span>
                       </div>
                     </Tooltip>
                     <div class="flex items-center justify-between w-[65%]">
@@ -412,6 +411,9 @@ const props = defineProps({
   preview: {
     type: Boolean,
     default: false,
+  },
+  addContact: {
+    type: Function,
   },
 })
 
