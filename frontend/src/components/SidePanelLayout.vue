@@ -66,7 +66,7 @@
                       <div
                         class="w-[35%] min-w-20 shrink-0 truncate text-sm text-ink-gray-5"
                       >
-                        <span>{{ __(field.label) }}</span>
+                        {{ __(field.label) }}
                         <span
                           v-if="
                             field.reqd ||
@@ -74,7 +74,8 @@
                               field.mandatory_via_depends_on)
                           "
                           class="text-ink-red-3"
-                        > *</span>
+                          >*</span
+                        >
                       </div>
                     </Tooltip>
                     <div class="flex items-center justify-between w-[65%]">

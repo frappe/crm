@@ -18,17 +18,19 @@
         :data="data.doc"
         :doctype="doctype"
       />
-      <ErrorMessage class="mt-2" :message="error" />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
       <Spinner class="size-8" />
     </div>
-    <div class="flex flex-row-reverse">
+    <div class="flex justify-between gap-2">
+      <div>
+        <ErrorMessage class="mt-2" :message="data.save.error" />
+      </div>
       <Button
         :loading="data.save.loading"
         :label="__('Update')"
         variant="solid"
-        @click="update"
+        @click="data.save.submit()"
       />
     </div>
   </div>
@@ -43,7 +45,7 @@ import {
   ErrorMessage,
 } from 'frappe-ui'
 import { createToast, getRandom } from '@/utils'
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -69,8 +71,6 @@ const fields = createResource({
   },
   auto: true,
 })
-
-const error = ref(null)
 
 const data = createDocumentResource({
   doctype: props.doctype,
@@ -148,29 +148,4 @@ const tabs = computed(() => {
 
   return _tabs
 })
-
-function update() {
-  error.value = null
-  if (validateMandatoryFields()) return
-  data.save.submit()
-}
-
-function validateMandatoryFields() {
-  if (!tabs.value) return false
-  for (let section of tabs.value[0].sections) {
-    for (let column of section.columns) {
-      for (let field of column.fields) {
-        if (
-          (field.mandatory ||
-            (field.mandatory_depends_on && field.mandatory_via_depends_on)) &&
-          !data.doc[field.name]
-        ) {
-          error.value = __('{0} is mandatory', [__(field.label)])
-          return true
-        }
-      }
-    }
-  }
-  return false
-}
 </script>
