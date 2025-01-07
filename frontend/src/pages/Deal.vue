@@ -37,15 +37,17 @@
     </template>
   </LayoutHeader>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
-    <Tabs v-model="tabIndex" :tabs="tabs" class="!h-full">
-      <Activities
-        ref="activities"
-        doctype="CRM Deal"
-        :tabs="tabs"
-        v-model:reload="reload"
-        v-model:tabIndex="tabIndex"
-        v-model="deal"
-      />
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+      <template #tab-panel>
+        <Activities
+          ref="activities"
+          doctype="CRM Deal"
+          :tabs="tabs"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
+          v-model="deal"
+        />
+      </template>
     </Tabs>
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div

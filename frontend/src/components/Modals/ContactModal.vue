@@ -10,7 +10,7 @@
           </div>
           <div class="flex items-center gap-1">
             <Button
-              v-if="isManager()"
+              v-if="isManager() && !isMobileView"
               variant="ghost"
               class="w-7"
               @click="openQuickEntryModal"
@@ -48,6 +48,7 @@
 import FieldLayout from '@/components/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
+import { isMobileView } from '@/composables/settings'
 import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
 import { ref, nextTick, watch } from 'vue'

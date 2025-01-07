@@ -6,7 +6,7 @@
           v-if="i !== firstVisibleIndex()"
           class="w-full section-border h-px border-t"
         />
-        <div class="p-3">
+        <div class="p-1 sm:p-3">
           <Section
             labelClass="px-2 font-semibold"
             :label="section.label"
@@ -396,6 +396,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
+import { isMobileView } from '@/composables/settings'
 import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
@@ -481,6 +482,7 @@ function parsedField(field) {
 function parsedSection(section, editButtonAdded) {
   let isContactSection = section.name == 'contacts_section'
   section.showEditButton = !(
+    isMobileView.value ||
     !isManager() ||
     isContactSection ||
     editButtonAdded

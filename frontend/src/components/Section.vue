@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot name="header" v-bind="{ opened, hide, open, close, toggle }">
-      <div v-if="!hide" class="column-header flex items-center justify-between">
+      <div v-if="!hide" class="column-header h-8 flex items-center justify-between">
         <div
           class="flex text-ink-gray-9 max-w-fit cursor-pointer items-center gap-2 text-base"
           :class="labelClass"

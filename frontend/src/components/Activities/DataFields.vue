@@ -12,7 +12,10 @@
       />
     </div>
     <div class="flex gap-1">
-      <Button v-if="isManager()" @click="showDataFieldsModal = true">
+      <Button
+        v-if="isManager() && !isMobileView"
+        @click="showDataFieldsModal = true"
+      >
         <EditIcon class="h-4 w-4" />
       </Button>
       <Button
@@ -60,6 +63,7 @@ import { Badge, createResource, createDocumentResource } from 'frappe-ui'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { createToast } from '@/utils'
 import { usersStore } from '@/stores/users'
+import { isMobileView } from '@/composables/settings'
 import { ref } from 'vue'
 
 const props = defineProps({

@@ -23,9 +23,7 @@
         <template #default="{ open }">
           <Button :label="lead.data.status">
             <template #prefix>
-              <IndicatorIcon
-                :class="getLeadStatus(lead.data.status).color"
-              />
+              <IndicatorIcon :class="getLeadStatus(lead.data.status).color" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -44,15 +42,17 @@
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
-    <Tabs v-model="tabIndex" class="!h-full" :tabs="tabs">
-      <Activities
-        ref="activities"
-        doctype="CRM Lead"
-        :tabs="tabs"
-        v-model:reload="reload"
-        v-model:tabIndex="tabIndex"
-        v-model="lead"
-      />
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+      <template #tab-panel>
+        <Activities
+          ref="activities"
+          doctype="CRM Lead"
+          :tabs="tabs"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
+          v-model="lead"
+        />
+      </template>
     </Tabs>
     <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
