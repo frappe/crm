@@ -53,40 +53,37 @@
     </div>
   </div>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
-    <Tabs
-      v-model="tabIndex"
-      v-slot="{ tab }"
-      :tabs="tabs"
-      tablistClass="!px-3"
-      class="overflow-auto"
-    >
-      <div v-if="tab.name == 'Details'">
-        <SLASection
-          v-if="lead.data.sla_status"
-          v-model="lead.data"
-          @updateField="updateField"
-        />
-        <div
-          v-if="sections.data"
-          class="flex flex-1 flex-col justify-between overflow-hidden"
-        >
-          <SidePanelLayout
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
+      <TabList class="!px-3" />
+      <TabPanel v-slot="{ tab }">
+        <div v-if="tab.name == 'Details'">
+          <SLASection
+            v-if="lead.data.sla_status"
             v-model="lead.data"
-            :sections="sections.data"
-            doctype="CRM Lead"
-            @update="updateField"
-            @reload="sections.reload"
+            @updateField="updateField"
           />
+          <div
+            v-if="sections.data"
+            class="flex flex-1 flex-col justify-between overflow-hidden"
+          >
+            <SidePanelLayout
+              v-model="lead.data"
+              :sections="sections.data"
+              doctype="CRM Lead"
+              @update="updateField"
+              @reload="sections.reload"
+            />
+          </div>
         </div>
-      </div>
-      <Activities
-        v-else
-        doctype="CRM Lead"
-        :tabs="tabs"
-        v-model:reload="reload"
-        v-model:tabIndex="tabIndex"
-        v-model="lead"
-      />
+        <Activities
+          v-else
+          doctype="CRM Lead"
+          :tabs="tabs"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
+          v-model="lead"
+        />
+      </TabPanel>
     </Tabs>
   </div>
   <Dialog
@@ -193,6 +190,8 @@ import {
   createResource,
   Dropdown,
   Tabs,
+  TabList,
+  TabPanel,
   Switch,
   Breadcrumbs,
   call,

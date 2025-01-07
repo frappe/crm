@@ -103,13 +103,8 @@
         </div>
       </template>
     </FileUploader>
-    <Tabs
-      v-model="tabIndex"
-      :tabs="tabs"
-      tablistClass="!px-4"
-      class="overflow-auto"
-    >
-      <template #tab="{ tab, selected }">
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
+      <TabList class="!px-4" v-slot="{ tab, selected }">
         <button
           v-if="tab.name == 'Deals'"
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-outline-gray-3 hover:text-ink-gray-9"
@@ -127,31 +122,20 @@
             {{ tab.count }}
           </Badge>
         </button>
-      </template>
-      <template #default="{ tab }">
+      </TabList>
+      <TabPanel v-slot="{ tab }">
         <div v-if="tab.name == 'Details'">
           <div
-            v-if="fieldsLayout.data"
+            v-if="sections.data"
             class="flex flex-1 flex-col justify-between overflow-hidden"
           >
-            <div class="flex flex-col overflow-y-auto">
-              <div
-                v-for="(section, i) in fieldsLayout.data"
-                :key="section.name"
-                class="flex flex-col px-2 py-3 sm:p-3"
-                :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-              >
-                <Section :label="section.label" :opened="section.opened">
-                  <SidePanelLayout
-                    :fields="section.columns[0].fields"
-                    :isLastSection="i == fieldsLayout.data.length - 1"
-                    doctype="Contact"
-                    v-model="contact.data"
-                    @update="updateField"
-                  />
-                </Section>
-              </div>
-            </div>
+            <SidePanelLayout
+              v-model="contact.data"
+              :sections="sections.data"
+              doctype="Contact"
+              @update="updateField"
+              @reload="sections.reload"
+            />
           </div>
         </div>
         <DealsListView
@@ -170,7 +154,7 @@
             <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
           </div>
         </div>
-      </template>
+      </TabPanel>
     </Tabs>
   </div>
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
@@ -178,7 +162,6 @@
 
 <script setup>
 import Icon from '@/components/Icon.vue'
-import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
@@ -201,6 +184,8 @@ import {
   Avatar,
   FileUploader,
   Tabs,
+  TabList,
+  TabPanel,
   call,
   createResource,
   usePageMeta,
@@ -347,19 +332,19 @@ const rows = computed(() => {
   return deals.data.map((row) => getDealRowObject(row))
 })
 
-const fieldsLayout = createResource({
+const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   cache: ['sidePanelSections', 'Contact'],
   params: { doctype: 'Contact' },
   auto: true,
-  transform: (data) => getParsedFields(data),
+  transform: (data) => getParsedSections(data),
 })
 
-function getParsedFields(data) {
-  return data.map((section) => {
+function getParsedSections(_sections) {
+  return _sections.map((section) => {
     section.columns = section.columns.map((column) => {
       column.fields = column.fields.map((field) => {
-        if (field.name === 'email_id') {
+        if (field.fieldname === 'email_id') {
           return {
             ...field,
             type: 'dropdown',
@@ -418,7 +403,8 @@ function getParsedFields(data) {
         } else if (field.name === 'mobile_no') {
           return {
             ...field,
-            type: 'dropdown',
+            read_only: false,
+            fieldtype: 'dropdown',
             options:
               contact.data?.phone_nos?.map((phone) => {
                 return {

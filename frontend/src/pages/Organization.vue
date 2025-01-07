@@ -114,8 +114,8 @@
         />
       </div>
     </Resizer>
-    <Tabs class="!h-full" v-model="tabIndex" :tabs="tabs">
-      <template #tab="{ tab, selected }">
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+      <template #tab-item="{ tab, selected }">
         <button
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-outline-gray-3 hover:text-ink-gray-9"
           :class="{ 'text-ink-gray-9': selected }"
@@ -133,7 +133,7 @@
           </Badge>
         </button>
       </template>
-      <template #default="{ tab }">
+      <template #tab-panel="{ tab }">
         <DealsListView
           class="mt-4"
           v-if="tab.label === 'Deals' && rows.length"
