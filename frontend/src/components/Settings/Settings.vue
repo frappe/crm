@@ -57,6 +57,7 @@ import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
+import ExotelSettings from '@/components/Settings/ExotelSettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { usersStore } from '@/stores/users'
 import {
@@ -108,6 +109,11 @@ const tabs = computed(() => {
           label: __('Twilio'),
           icon: PhoneIcon,
           component: markRaw(TwilioSettings),
+        },
+        {
+          label: __('Exotel'),
+          icon: PhoneIcon,
+          component: markRaw(ExotelSettings),
         },
         {
           label: __('WhatsApp'),
