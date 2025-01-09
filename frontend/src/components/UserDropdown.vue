@@ -54,7 +54,7 @@ import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
-import { showSettings } from '@/composables/settings'
+import { showSettings, isMobileView } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
 import { theme, toggleTheme } from '@/stores/theme'
 import { computed, h, markRaw } from 'vue'
@@ -154,6 +154,7 @@ function getStandardItem(item) {
         icon: item.icon,
         label: __(item.label),
         onClick: () => (showSettings.value = true),
+        condition: () => !isMobileView.value,
       }
     case 'logout':
       return {

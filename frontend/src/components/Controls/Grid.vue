@@ -51,7 +51,13 @@
       </div>
       <!-- Rows -->
       <template v-if="rows?.length">
-        <Draggable class="w-full" v-model="rows" group="rows" item-key="name">
+        <Draggable
+          class="w-full"
+          v-model="rows"
+          :delay="isTouchScreenDevice() ? 200 : 0"
+          group="rows"
+          item-key="name"
+        >
           <template #item="{ element: row, index }">
             <div
               class="grid-row flex cursor-pointer items-center border-b border-outline-gray-modals bg-surface-modals last:rounded-b last:border-b-0"
@@ -252,7 +258,7 @@ import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { getRandom, getFormat } from '@/utils'
+import { getRandom, getFormat, isTouchScreenDevice } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import {
