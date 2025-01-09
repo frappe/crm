@@ -32,7 +32,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import FieldLayout from '@/components/FieldLayout.vue'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { createResource } from 'frappe-ui'
 import { nextTick } from 'vue'

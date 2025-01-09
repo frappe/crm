@@ -50,7 +50,7 @@
 
 <script setup>
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
-import FieldLayout from '@/components/FieldLayout.vue'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
