@@ -189,7 +189,7 @@ class CRMLead(Document):
 
 		return False
 
-	def create_deal(self, contact, organization,partner_leads=None,contacts=None):
+	def create_deal(self, contact, organization,partner_leads=None):
 		deal = frappe.new_doc("CRM Deal")
 
 		lead_deal_map = {
@@ -237,9 +237,9 @@ class CRMLead(Document):
 			for lead in partner_leads:
 				deal.append("partner_leads",{'lead':lead})
     
-		if contacts:
-			for contact in contacts:
-				deal.append("contacts", {'contact':contact})
+		# if contacts:
+		# 	for contact in contacts:
+		# 		deal.append("contacts", {'contact':contact})
 
 		deal.insert(ignore_permissions=True)
 		return deal.name
@@ -370,7 +370,7 @@ def convert_to_deal(lead, doc=None):
 	if (organization) and (convert_all_leads == 1):
 		partner_leads = update_organization_leads_status(organization,convert_all_leads)
 
-	deal = lead.create_deal(contact, organization,partner_leads['updated_leads'],partner_leads['contacts'])
+	deal = lead.create_deal(contact, organization,partner_leads['updated_leads'])
 
 
 	return deal
