@@ -40,7 +40,6 @@
             v-else
             :tabs="tabs.data"
             :data="{}"
-            :modal="true"
             :preview="true"
           />
         </div>
@@ -49,7 +48,7 @@
   </Dialog>
 </template>
 <script setup>
-import FieldLayout from '@/components/FieldLayout.vue'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { capture } from '@/telemetry'

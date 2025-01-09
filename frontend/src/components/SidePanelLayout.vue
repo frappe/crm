@@ -9,6 +9,7 @@
         <div class="p-1 sm:p-3">
           <Section
             labelClass="px-2 font-semibold"
+            headerClass="h-8"
             :label="section.label"
             :hideLabel="!section.label"
             :opened="section.opened"
