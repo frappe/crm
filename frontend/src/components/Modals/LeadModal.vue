@@ -43,7 +43,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import FieldLayout from '@/components/FieldLayout.vue'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'

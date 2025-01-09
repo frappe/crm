@@ -72,7 +72,7 @@
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import FieldLayout from '@/components/FieldLayout.vue'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
@@ -111,8 +111,8 @@ const deal = reactive({
   deal_owner: '',
 })
 
-const hasOrganizationSections = ref(false)
-const hasContactSections = ref(false)
+const hasOrganizationSections = ref(true)
+const hasContactSections = ref(true)
 
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
@@ -144,6 +144,7 @@ const tabs = createResource({
   params: { doctype: 'CRM Deal', type: 'Quick Entry' },
   auto: true,
   transform: (_tabs) => {
+    hasOrganizationSections.value = false
     return _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
         section.columns.forEach((column) => {
