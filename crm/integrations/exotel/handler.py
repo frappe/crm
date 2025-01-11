@@ -158,7 +158,18 @@ def get_call_log(call_payload):
 		return frappe.get_doc("CRM Call Log", call_log_id)
 
 
-def get_call_log_status(call_payload):
+def get_call_log_status(call_payload, direction):
+	if direction == "outbound-api" or direction == "outbound-dial":
+		status = call_payload.get("Status")
+		if status == "completed":
+			return "Completed"
+		elif status == "busy":
+			return "Ringing"
+		elif status == "no-answer":
+			return "No Answer"
+		elif status == "failed":
+			return "Failed"
+
 	status = call_payload.get("DialCallStatus")
 	call_type = call_payload.get("CallType")
 	dial_call_status = call_payload.get("DialCallStatus")
@@ -178,13 +189,14 @@ def get_call_log_status(call_payload):
 
 
 def update_call_log(call_payload, status="Ringing", call_log=None):
+	direction = call_payload.get("Direction")
 	call_log = call_log or get_call_log(call_payload)
-	status = get_call_log_status(call_payload)
+	status = get_call_log_status(call_payload, direction)
 	try:
 		if call_log:
 			call_log.status = status
 			# resetting this because call might be redirected to other number
-			call_log.to = call_payload.get("DialWhomNumber")
+			call_log.to = call_payload.get("DialWhomNumber") or call_payload.get("To")
 			call_log.duration = (
 				call_payload.get("DialCallDuration") or call_payload.get("ConversationDuration") or 0
 			)
