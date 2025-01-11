@@ -79,6 +79,7 @@ def make_a_call(from_number, to_number, caller_id=None, link_to_document=None):
 				"Record": "true" if record_call else "false",
 				"StatusCallback": get_status_updater_url(),
 				"StatusCallbackEvents[0]": "terminal",
+				"StatusCallbackEvents[1]": "answered"
 			},
 		)
 		response.raise_for_status()
@@ -163,6 +164,8 @@ def get_call_log_status(call_payload, direction):
 		status = call_payload.get("Status")
 		if status == "completed":
 			return "Completed"
+		elif status == "in-progress":
+			return "In Progress"
 		elif status == "busy":
 			return "Ringing"
 		elif status == "no-answer":
