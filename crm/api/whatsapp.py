@@ -108,7 +108,7 @@ def is_whatsapp_installed():
 def get_whatsapp_messages(reference_doctype, reference_name):
 	# twilio integration app is not compatible with crm app
 	# crm has its own twilio integration in built
-	if "twilio-integration" in frappe.get_installed_apps():
+	if "twilio_integration" in frappe.get_installed_apps():
 		return []
 	if not frappe.db.exists("DocType", "WhatsApp Message"):
 		return []
