@@ -20,6 +20,7 @@ def handle_request(**kwargs):
 		request_headers=frappe.request.headers,
 		is_remote_request=1,
 	)
+
 	try:
 		request_log.status = "Completed"
 		exotel_settings = get_exotel_settings()
@@ -27,6 +28,7 @@ def handle_request(**kwargs):
 			return
 
 		call_payload = kwargs
+		frappe.publish_realtime("exotel_call", call_payload)
 		status = call_payload.get("Status")
 		if status == "free":
 			return
@@ -79,7 +81,7 @@ def make_a_call(from_number, to_number, caller_id=None, link_to_document=None):
 				"Record": "true" if record_call else "false",
 				"StatusCallback": get_status_updater_url(),
 				"StatusCallbackEvents[0]": "terminal",
-				"StatusCallbackEvents[1]": "answered"
+				"StatusCallbackEvents[1]": "answered",
 			},
 		)
 		response.raise_for_status()
@@ -159,7 +161,7 @@ def get_call_log(call_payload):
 		return frappe.get_doc("CRM Call Log", call_log_id)
 
 
-def get_call_log_status(call_payload, direction):
+def get_call_log_status(call_payload, direction="inbound"):
 	if direction == "outbound-api" or direction == "outbound-dial":
 		status = call_payload.get("Status")
 		if status == "completed":
