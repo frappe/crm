@@ -28,6 +28,7 @@ def handle_request(**kwargs):
 			return
 
 		call_payload = kwargs
+
 		frappe.publish_realtime("exotel_call", call_payload)
 		status = call_payload.get("Status")
 		if status == "free":
@@ -56,11 +57,12 @@ def handle_request(**kwargs):
 
 # Outgoing Call
 @frappe.whitelist()
-def make_a_call(from_number, to_number, caller_id=None, link_to_document=None):
+def make_a_call(to_number, from_number=None, caller_id=None, link_to_document=None):
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup Exotel intergration"), title=_("Integration Not Enabled"))
 
 	endpoint = get_exotel_endpoint("Calls/connect.json?details=true")
+
 	if not from_number:
 		from_number = frappe.get_value("CRM Exotel Agent", {"user": frappe.session.user}, "mobile_no")
 
@@ -91,8 +93,10 @@ def make_a_call(from_number, to_number, caller_id=None, link_to_document=None):
 	else:
 		res = response.json()
 		call_payload = res.get("Call", {})
+
 		if link_to_document:
 			link_to_document = json.loads(link_to_document)
+
 		create_call_log(
 			call_id=call_payload.get("Sid"),
 			from_number=call_payload.get("From"),
@@ -105,7 +109,7 @@ def make_a_call(from_number, to_number, caller_id=None, link_to_document=None):
 	return response.json()
 
 
-def get_exotel_endpoint(action):
+def get_exotel_endpoint(action=None):
 	settings = get_exotel_settings()
 	return "https://{api_key}:{api_token}@api.exotel.com/v1/Accounts/{sid}/{action}".format(
 		api_key=settings.api_key,
