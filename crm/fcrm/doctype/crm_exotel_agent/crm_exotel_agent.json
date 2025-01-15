@@ -46,12 +46,14 @@
   {
    "fieldname": "exotel_number",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Exotel Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-15 16:19:21.965415",
+ "modified": "2025-01-15 20:03:31.162162",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Exotel Agent",
