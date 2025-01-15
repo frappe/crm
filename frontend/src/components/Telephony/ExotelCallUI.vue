@@ -25,7 +25,7 @@
           "
           class="font-normal text-ink-gray-4 mr-1"
         >
-          {{ callStatus }}
+          {{ __(callStatus) }}
         </span>
         <span>{{ phoneNumber }}</span>
         <span
@@ -43,35 +43,11 @@
           }"
         >
           <span class="text-ink-gray-4"> · </span>
-          <span>{{ callStatus }}</span>
+          <span>{{ __(callStatus) }}</span>
           <span v-if="callStatus == 'Call Ended'"> <span> · </span>00:38 </span>
         </span>
       </div>
     </div>
-    <Dialog
-      v-model="showCallModal"
-      :options="{
-        title: 'Make a call',
-        actions: [
-          {
-            label: 'Make a Call',
-            variant: 'solid',
-            onClick: makeCall,
-          },
-        ],
-      }"
-    >
-      <template #body-content>
-        <div>
-          <FormControl
-            v-model="phoneNumber"
-            label="Phone Number"
-            placeholder="+917666980887"
-          />
-        </div>
-      </template>
-    </Dialog>
-
     <div
       v-show="showCallPopup"
       ref="callPopup"
@@ -163,14 +139,14 @@ import AvatarIcon from '@/components/Icons/AvatarIcon.vue'
 import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import { Button, Dialog, FormControl, call, Avatar } from 'frappe-ui'
+import { Avatar, Button, call } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { ref, computed, onBeforeUnmount, onMounted } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 
 const { getContact, getLeadContact } = contactsStore()
-const { $socket, setMakeCall } = globalStore()
+const { $socket } = globalStore()
 
 const callPopup = ref(null)
 const showCallPopup = ref(false)
@@ -192,7 +168,6 @@ let { style } = useDraggable(callPopup, {
   preventDefault: true,
 })
 
-const showCallModal = ref(false)
 const callStatus = ref('')
 const phoneNumber = ref('')
 const callData = ref(null)
@@ -211,9 +186,7 @@ const contact = computed(() => {
   return _contact
 })
 
-const note = ref(
-  'This is a note for the call. This is a note for the call. This is a note for the call. This is a note for the call.',
-)
+const note = ref('')
 
 const showNote = ref(false)
 
@@ -227,7 +200,7 @@ function showNoteWindow() {
   }
 }
 
-const task = ref('This is a task for the call. This is a task for the call.')
+const task = ref('')
 
 const showTask = ref(false)
 
@@ -254,26 +227,18 @@ function updateWindowHeight(condition) {
   callPopup.value.style.top = updatedTop + 'px'
 }
 
-function showMakeCallModal(number) {
-  showCallModal.value = true
+function makeOutgoingCall(number) {
   phoneNumber.value = number
-}
-
-function makeCall() {
-  showCallModal.value = false
   callStatus.value = 'Calling...'
   showCallPopup.value = true
+  showSmallCallPopup.value = false
 
   call('crm.integrations.exotel.handler.make_a_call', {
     to_number: phoneNumber.value,
   })
 }
 
-onBeforeUnmount(() => {
-  $socket.off('exotel_call')
-})
-
-onMounted(() => {
+function setup() {
   $socket.on('exotel_call', (data) => {
     callData.value = data
     console.log(data)
@@ -284,8 +249,10 @@ onMounted(() => {
       showCallPopup.value = true
     }
   })
+}
 
-  setMakeCall(showMakeCallModal)
+onBeforeUnmount(() => {
+  $socket.off('exotel_call')
 })
 
 function closeCallPopup() {
@@ -318,6 +285,12 @@ function updateStatus(data) {
     (data.Status == 'completed' || data.Status == 'no-answer')
   ) {
     return data.Status == 'no-answer' ? 'No Answer' : 'Call Ended'
+  } else if (
+    data.EventType == 'terminal' &&
+    data.Direction == 'outbound-api' &&
+    data.Status == 'busy'
+  ) {
+    return 'No Answer'
   }
 
   // incoming call
@@ -335,4 +308,6 @@ function updateStatus(data) {
     return 'Call Ended'
   }
 }
+
+defineExpose({ makeOutgoingCall, setup })
 </script>
