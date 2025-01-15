@@ -83,7 +83,8 @@
   },
   {
    "fieldname": "section_break_malx",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hide_border": 1
   },
   {
    "default": "0",
@@ -93,7 +94,8 @@
   },
   {
    "fieldname": "section_break_eklq",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hide_border": 1
   },
   {
    "fieldname": "column_break_yqvr",
@@ -103,7 +105,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-15 19:15:14.687909",
+ "modified": "2025-01-15 19:35:13.406254",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Twilio Settings",

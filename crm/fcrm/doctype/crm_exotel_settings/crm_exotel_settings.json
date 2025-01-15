@@ -24,7 +24,8 @@
   },
   {
    "fieldname": "section_break_kfez",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hide_border": 1
   },
   {
    "depends_on": "enabled",
@@ -36,7 +37,8 @@
   {
    "depends_on": "enabled",
    "fieldname": "section_break_iuct",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hide_border": 1
   },
   {
    "fieldname": "column_break_hyen",
@@ -73,7 +75,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-15 19:14:25.568485",
+ "modified": "2025-01-15 19:31:00.310049",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Exotel Settings",
