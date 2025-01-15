@@ -131,6 +131,7 @@ const tabs = computed(() => {
       _sections.push({
         label: field.label,
         name: field.fieldname,
+        hideBorder: field.hide_border,
         columns: [{ name: 'column_' + getRandom(), fields: [] }],
       })
     } else if (field.fieldtype === 'Column Break') {

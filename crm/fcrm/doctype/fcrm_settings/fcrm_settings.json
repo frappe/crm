@@ -12,7 +12,9 @@
   "brand_logo",
   "favicon",
   "dropdown_items_tab",
-  "dropdown_items"
+  "dropdown_items",
+  "calling_tab",
+  "default_calling_medium"
  ],
  "fields": [
   {
@@ -56,12 +58,23 @@
    "fieldname": "favicon",
    "fieldtype": "Attach",
    "label": "Favicon"
+  },
+  {
+   "fieldname": "calling_tab",
+   "fieldtype": "Tab Break",
+   "label": "Calling"
+  },
+  {
+   "fieldname": "default_calling_medium",
+   "fieldtype": "Select",
+   "label": "Default calling medium",
+   "options": "\nTwilio\nExotel"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-30 19:21:30.847343",
+ "modified": "2025-01-15 17:40:32.784762",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

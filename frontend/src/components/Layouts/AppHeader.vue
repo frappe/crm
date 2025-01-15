@@ -8,5 +8,5 @@
 </template>
 
 <script setup>
-import CallUI from '@/components/CallUI.vue'
+import CallUI from '@/components/Telephony/CallUI.vue'
 </script>

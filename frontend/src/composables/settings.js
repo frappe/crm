@@ -21,12 +21,18 @@ createResource({
 })
 
 export const callEnabled = ref(false)
+export const twilioEnabled = ref(false)
+export const exotelEnabled = ref(false)
+export const defaultCallingMedium = ref('')
 createResource({
-  url: 'crm.integrations.twilio.api.is_enabled',
-  cache: 'Is Twilio Enabled',
+  url: 'crm.integrations.api.is_call_integration_enabled',
+  cache: 'Is Call Integration Enabled',
   auto: true,
   onSuccess: (data) => {
-    callEnabled.value = Boolean(data)
+    twilioEnabled.value = Boolean(data.twilio_enabled)
+    exotelEnabled.value = Boolean(data.exotel_enabled)
+    defaultCallingMedium.value = data.default_calling_medium
+    callEnabled.value = twilioEnabled.value || exotelEnabled.value
   },
 })
 

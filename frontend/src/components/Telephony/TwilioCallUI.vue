@@ -34,10 +34,10 @@
             callStatus == 'initiating'
               ? __('Initiating call...')
               : callStatus == 'ringing'
-              ? __('Ringing...')
-              : calling
-              ? __('Calling...')
-              : __('Incoming call...')
+                ? __('Ringing...')
+                : calling
+                  ? __('Calling...')
+                  : __('Incoming call...')
           }}
         </div>
         <div v-if="onCall" class="flex gap-2">
@@ -195,14 +195,12 @@ import CountUpTimer from '@/components/CountUpTimer.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { capture } from '@/telemetry'
 import { Avatar, call } from 'frappe-ui'
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const { getContact, getLeadContact } = contactsStore()
-const { setMakeCall, setTwilioEnabled } = globalStore()
 
 let device = ''
 let log = ref('Connecting...')
@@ -242,10 +240,6 @@ let { style } = useDraggable(callPopup, {
   initialValue: { x: width.value - 280, y: height.value - 310 },
   preventDefault: true,
 })
-
-async function is_twilio_enabled() {
-  return await call('crm.integrations.twilio.api.is_enabled')
-}
 
 async function startupClient() {
   log.value = 'Requesting Access Token...'
@@ -491,21 +485,15 @@ function toggleCallWindow() {
   }
 }
 
-onMounted(async () => {
-  let enabled = await is_twilio_enabled()
-  setTwilioEnabled(enabled)
-  enabled && startupClient()
-
-  setMakeCall(makeOutgoingCall)
-})
-
 watch(
   () => log.value,
   (value) => {
     console.log(value)
   },
-  { immediate: true }
+  { immediate: true },
 )
+
+defineExpose({ makeOutgoingCall, setup: startupClient })
 </script>
 
 <style scoped>

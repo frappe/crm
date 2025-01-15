@@ -16,6 +16,6 @@
 
 <script setup>
 import MenuIcon from '@/components/Icons/MenuIcon.vue'
-import CallUI from '@/components/CallUI.vue'
+import CallUI from '@/components/Telephony/CallUI.vue'
 import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
 </script>
