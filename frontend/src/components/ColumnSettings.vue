@@ -71,6 +71,16 @@
               </template>
             </Autocomplete>
             <Button
+              class="w-full !justify-start !text-gray-600"
+              variant="ghost"
+              @click="addAllColumns(close)"
+              :label="__('Add All Columns')"
+            >
+              <template #prefix>
+                <FeatherIcon name="plus" class="h-4" />
+              </template>
+            </Button>
+            <Button
               v-if="columnsUpdated"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
@@ -215,7 +225,7 @@ const fields = computed(() => {
 })
 
 function addColumn(c) {
-  let align = ['Float', 'Int', 'Percent', 'Currency'].includes(c.type) ? 'right' : 'left'
+  let align = ['Float', 'Int', 'Percent', 'Currency'].includes(c.type) ? 'right': 'left'
   let _column = {
     label: c.label,
     type: c.type,
@@ -226,6 +236,21 @@ function addColumn(c) {
   columns.value.push(_column)
   rows.value.push(c.value)
   apply(true)
+}
+
+function addAllColumns(close) {
+  for (const c of fields.value) {
+      const _column = {
+        label: c.label,
+        type: c.type,
+        key: c.value,
+        width: '10rem',
+      };
+      columns.value.push(_column)
+      rows.value.push(c.value)
+  }
+  apply(true)
+  close()
 }
 
 function removeColumn(c) {
