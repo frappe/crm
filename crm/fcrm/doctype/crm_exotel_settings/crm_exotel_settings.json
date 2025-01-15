@@ -23,11 +23,11 @@
    "label": "Enabled"
   },
   {
-   "depends_on": "enabled",
    "fieldname": "section_break_kfez",
    "fieldtype": "Section Break"
   },
   {
+   "depends_on": "enabled",
    "fieldname": "account_sid",
    "fieldtype": "Data",
    "label": "Account SID",
@@ -43,6 +43,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "enabled",
    "fieldname": "api_key",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -54,6 +55,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "enabled",
    "fieldname": "api_token",
    "fieldtype": "Password",
    "in_list_view": 1,
@@ -71,7 +73,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-11 16:08:48.251477",
+ "modified": "2025-01-15 19:14:25.568485",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Exotel Settings",
