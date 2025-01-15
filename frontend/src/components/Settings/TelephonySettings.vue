@@ -5,7 +5,7 @@
     >
       <div>{{ __('Telephony Settings') }}</div>
       <Badge
-        v-if="twilio.isDirty || exotel.isDirty"
+        v-if="twilio.isDirty || exotel.isDirty || mediumChanged"
         :label="__('Not Saved')"
         variant="subtle"
         theme="orange"
@@ -59,8 +59,10 @@
     </div>
     <div class="flex justify-between gap-2">
       <div>
-        <ErrorMessage class="mt-2" :message="twilio.save.error" />
-        <ErrorMessage class="mt-2" :message="exotel.save.error" />
+        <ErrorMessage
+          class="mt-2"
+          :message="twilio.save.error || exotel.save.error || error"
+        />
       </div>
       <Button
         :loading="twilio.save.loading || exotel.save.loading"
@@ -84,7 +86,7 @@ import {
 } from 'frappe-ui'
 import { defaultCallingMedium } from '@/composables/settings'
 import { createToast, getRandom } from '@/utils'
-import { computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const twilioFields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -260,15 +262,50 @@ const exotelTabs = computed(() => {
   return _tabs
 })
 
-async function update() {
-  call('crm.integrations.api.set_default_calling_medium', {
-    medium: defaultCallingMedium.value,
-  })
+const mediumChanged = ref(false)
+
+watch(defaultCallingMedium, () => {
+  mediumChanged.value = true
+})
+
+function update() {
+  if (!validateIfDefaultMediumIsEnabled()) return
+  if (mediumChanged.value) {
+    updateMedium()
+  }
   if (twilio.isDirty) {
     twilio.save.submit()
   }
   if (exotel.isDirty) {
     exotel.save.submit()
   }
+}
+
+async function updateMedium() {
+  await call('crm.integrations.api.set_default_calling_medium', {
+    medium: defaultCallingMedium.value,
+  })
+  mediumChanged.value = false
+  error.value = ''
+  createToast({
+    title: __('Success'),
+    text: __('Default calling medium updated successfully'),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
+}
+
+const error = ref('')
+
+function validateIfDefaultMediumIsEnabled() {
+  if (defaultCallingMedium.value === 'Twilio' && !twilio.doc.enabled) {
+    error.value = __('Twilio is not enabled')
+    return false
+  }
+  if (defaultCallingMedium.value === 'Exotel' && !exotel.doc.enabled) {
+    error.value = __('Exotel is not enabled')
+    return false
+  }
+  return true
 }
 </script>
