@@ -66,6 +66,12 @@ def make_a_call(to_number, from_number=None, caller_id=None, link_to_document=No
 	if not from_number:
 		from_number = frappe.get_value("CRM Exotel Agent", {"user": frappe.session.user}, "mobile_no")
 
+	if not caller_id:
+		caller_id = frappe.get_value("CRM Exotel Agent", {"user": frappe.session.user}, "exotel_number")
+
+	if caller_id and caller_id not in get_all_exophones():
+		frappe.throw(_("Exotel Number {0} is not valid").format(caller_id), title=_("Invalid Exotel Number"))
+
 	if not from_number:
 		frappe.throw(
 			_("You do not have mobile number set in your Exotel Agent"), title=_("Mobile Number Missing")
@@ -117,6 +123,15 @@ def get_exotel_endpoint(action=None):
 		sid=settings.account_sid,
 		action=action,
 	)
+
+
+def get_all_exophones():
+	endpoint = get_exotel_endpoint("IncomingPhoneNumbers.json")
+	response = requests.get(endpoint)
+	return [
+		phone.get("IncomingPhoneNumber", {}).get("PhoneNumber")
+		for phone in response.json().get("IncomingPhoneNumbers", [])
+	]
 
 
 def get_status_updater_url():
