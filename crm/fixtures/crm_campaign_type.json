@@ -1,0 +1,16 @@
+[
+ {
+  "campaign_type": "Marketing",
+  "docstatus": 0,
+  "doctype": "CRM Campaign Type",
+  "modified": "2025-01-08 03:24:10.730048",
+  "name": "Marketing"
+ },
+ {
+  "campaign_type": "Email",
+  "docstatus": 0,
+  "doctype": "CRM Campaign Type",
+  "modified": "2025-01-08 03:24:01.439611",
+  "name": "Email"
+ }
+]

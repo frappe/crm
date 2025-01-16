@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-17 02:06:20.920666",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "full_name",
+  "organization",
+  "email",
+  "participant_source",
+  "reference_docname"
+ ],
+ "fields": [
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name"
+  },
+  {
+   "fieldname": "organization",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Organization"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email"
+  },
+  {
+   "default": "CRM Lead",
+   "fieldname": "participant_source",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Participant Source",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_docname",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Docname",
+   "options": "participant_source"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-08 06:10:47.314041",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Campaign Participants",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

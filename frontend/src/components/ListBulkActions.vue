@@ -6,6 +6,13 @@
     :selectedValues="selectedValues"
     @reload="reload"
   />
+  <AddToCampaignModal
+    v-if="showCampaignModal"
+    v-model="showCampaignModal"
+    :doctype="doctype"
+    :selectedValues="selectedValues"
+    @reload="reload"
+  />
   <AssignmentModal
     v-if="showAssignmentModal"
     v-model="showAssignmentModal"
@@ -25,6 +32,8 @@ import { capture } from '@/telemetry'
 import { call } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import CampaignModal from './Modals/CampaignModal.vue'
+import AddToCampaignModal from './Modals/AddToCampaignModal.vue'
 
 const props = defineProps({
   doctype: {
@@ -49,11 +58,18 @@ const { $dialog, $socket } = globalStore()
 
 const showEditModal = ref(false)
 const selectedValues = ref([])
+const showCampaignModal = ref(false)
 const unselectAllAction = ref(() => {})
 
 function editValues(selections, unselectAll) {
   selectedValues.value = selections
   showEditModal.value = true
+  unselectAllAction.value = unselectAll
+}
+
+function addToCampaign(selections, unselectAll) {
+  selectedValues.value = selections
+  showCampaignModal.value = true
   unselectAllAction.value = unselectAll
 }
 
@@ -203,6 +219,12 @@ function bulkActions(selections, unselectAll) {
     actions.push({
       label: __('Convert to Deal'),
       onClick: () => convertToDeal(selections, unselectAll),
+    })
+  }
+  if (props.doctype === 'CRM Lead' || props.doctype === 'Contact') {
+    actions.push({
+      label: __('Add to Campaign'),
+      onClick: () => addToCampaign(selections, unselectAll),
     })
   }
 

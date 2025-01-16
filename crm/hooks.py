@@ -181,7 +181,11 @@ scheduler_events = {
     "cron": {
         "*/1 * * * *": [
             "crm.api.crm_task.schedule_task_notifications"
+        ],
+        "0 */1 * * *": [
+            "crm.fcrm.doctype.crm_campaign.crm_campaign.send_email_for_campaign"
         ]
+
     }
 #	"all": [
 #		"crm.tasks.all"
@@ -311,6 +315,10 @@ fixtures = [
     },
     {
         "dt": "CRM Fields Layout",
-        "filters": [["name", "in", ["CRM Organization-Quick Entry"]]]
+        "filters": [["name", "in", ["CRM Organization-Quick Entry", "CRM Campaign-Quick Entry"]]]
+    },
+    {
+        "dt": "CRM Campaign Type",
+        "filters": [["name", "in", ["Marketing", "Email"]]]
     }
 ]

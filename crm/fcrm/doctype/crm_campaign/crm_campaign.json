@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:campaign_name",
+ "creation": "2024-12-17 00:21:13.656375",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "campaign_name",
+  "campaign_type",
+  "column_break_ptmg",
+  "status",
+  "scheduled_send_time",
+  "email_template",
+  "section_break_kruu",
+  "campaign_participants"
+ ],
+ "fields": [
+  {
+   "fieldname": "campaign_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Campaign Name",
+   "unique": 1
+  },
+  {
+   "fieldname": "campaign_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Campaign Type",
+   "options": "CRM Campaign Type"
+  },
+  {
+   "depends_on": "eval:doc.campaign_type == \"Email\"",
+   "fieldname": "scheduled_send_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Scheduled Send Time"
+  },
+  {
+   "depends_on": "eval:doc.campaign_type == \"Email\"",
+   "fieldname": "email_template",
+   "fieldtype": "Link",
+   "label": "Email Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "\nIn Progress\nOn Hold\nClosed"
+  },
+  {
+   "fieldname": "column_break_ptmg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_kruu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "campaign_participants",
+   "fieldtype": "Table",
+   "label": "Campaign Participants",
+   "options": "CRM Campaign Participants"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-17 02:35:32.171517",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Campaign",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

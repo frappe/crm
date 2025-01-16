@@ -7,5 +7,14 @@
   "modified": "2024-11-18 05:33:13.272423",
   "name": "CRM Organization-Quick Entry",
   "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Campaign",
+  "layout": "[{\n    \"label\": \"Create Campaign\",\n    \"fields\": [\"campaign_name\", \"campaign_type\",\"status\", \"scheduled_send_time\" , \"email_template\"],\n    \"hideLabel\":true,\n    \"editable\":true\n}]",
+  "modified": "2025-01-08 03:22:54.041927",
+  "name": "CRM Campaign-Quick Entry",
+  "type": "Quick Entry"
  }
 ]
