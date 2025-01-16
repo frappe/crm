@@ -32,7 +32,8 @@
           v-if="callStatus == 'In Progress'"
           class="font-normal text-ink-gray-4"
         >
-          <span> · </span>00:38
+          <span> · </span>
+          <span>{{ counterUp?.updatedTime }}</span>
         </span>
         <span
           v-else-if="callStatus == 'Call Ended' || callStatus == 'No Answer'"
@@ -44,7 +45,10 @@
         >
           <span class="text-ink-gray-4"> · </span>
           <span>{{ __(callStatus) }}</span>
-          <span v-if="callStatus == 'Call Ended'"> <span> · </span>00:38 </span>
+          <span v-if="callStatus == 'Call Ended'">
+            <span> · </span>
+            <span>{{ counterUp?.updatedTime }}</span>
+          </span>
         </span>
       </div>
     </div>
@@ -55,7 +59,9 @@
       :style="style"
     >
       <div class="header flex items-center justify-between gap-2 text-base">
-        <div v-if="callStatus == 'In Progress'">00:38</div>
+        <div v-if="callStatus == 'In Progress'">
+          {{ counterUp?.updatedTime }}
+        </div>
         <div
           v-else-if="callStatus == 'Call Ended' || callStatus == 'No Answer'"
           :class="{
@@ -64,7 +70,10 @@
           }"
         >
           <span>{{ __(callStatus) }}</span>
-          <span v-if="callStatus == 'Call Ended'"><span> · </span>00:38</span>
+          <span v-if="callStatus == 'Call Ended'">
+            <span> · </span>
+            <span>{{ counterUp?.updatedTime }}</span>
+          </span>
         </div>
         <div v-else>{{ __(callStatus) }}</div>
         <div class="flex">
@@ -132,6 +141,7 @@
         </div>
       </div>
     </div>
+    <CountUpTimer ref="counterUp" />
   </div>
 </template>
 <script setup>
@@ -139,6 +149,7 @@ import AvatarIcon from '@/components/Icons/AvatarIcon.vue'
 import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import CountUpTimer from '@/components/CountUpTimer.vue'
 import { Avatar, Button, call } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
@@ -171,6 +182,7 @@ let { style } = useDraggable(callPopup, {
 const callStatus = ref('')
 const phoneNumber = ref('')
 const callData = ref(null)
+const counterUp = ref(null)
 
 const contact = computed(() => {
   if (!phoneNumber.value) {
@@ -278,19 +290,23 @@ function updateStatus(data) {
     data.Status == 'in-progress' &&
     data['Legs[1][Status]'] == 'in-progress'
   ) {
+    counterUp.value.start()
     return 'In Progress'
   } else if (
     data.EventType == 'terminal' &&
     data.Direction == 'outbound-api' &&
-    (data.Status == 'completed' || data.Status == 'no-answer')
+    data.Status == 'no-answer' &&
+    data['Legs[1][Status]'] == 'no-answer'
   ) {
-    return data.Status == 'no-answer' ? 'No Answer' : 'Call Ended'
+    counterUp.value.stop()
+    return 'No Answer'
   } else if (
     data.EventType == 'terminal' &&
     data.Direction == 'outbound-api' &&
-    data.Status == 'busy'
+    data.Status == 'completed'
   ) {
-    return 'No Answer'
+    counterUp.value.stop()
+    return 'Call Ended'
   }
 
   // incoming call
