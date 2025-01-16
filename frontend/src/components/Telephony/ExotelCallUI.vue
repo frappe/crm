@@ -37,7 +37,7 @@
         </span>
         <span
           v-else-if="callStatus == 'Call Ended' || callStatus == 'No Answer'"
-          class="font-normal text-ink-gray-4"
+          class="font-normal text-ink-gray-4 blink"
           :class="{
             'text-red-700':
               callStatus == 'Call Ended' || callStatus == 'No Answer',
@@ -64,6 +64,7 @@
         </div>
         <div
           v-else-if="callStatus == 'Call Ended' || callStatus == 'No Answer'"
+          class="blink"
           :class="{
             'text-red-700':
               callStatus == 'Call Ended' || callStatus == 'No Answer',
@@ -327,3 +328,20 @@ function updateStatus(data) {
 
 defineExpose({ makeOutgoingCall, setup })
 </script>
+<style scoped>
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blink {
+  animation: blink 1s ease-in-out 6;
+}
+</style>
