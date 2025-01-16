@@ -82,17 +82,20 @@ def update_call_log(call_sid, status=None):
 	if not (twilio and frappe.db.exists("CRM Call Log", call_sid)): return
 
 	call_details = twilio.get_call_info(call_sid)
-	call_log = frappe.get_doc("CRM Call Log", call_sid)
-	call_log.status = TwilioCallDetails.get_call_status(status or call_details.status)
-	call_log.duration = call_details.duration
-	call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
-	call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
-	if call_log.note and call_log.reference_docname:
-		frappe.db.set_value("FCRM Note", call_log.note, "reference_doctype", call_log.reference_doctype)
-		frappe.db.set_value("FCRM Note", call_log.note, "reference_docname", call_log.reference_docname)
-	call_log.flags.ignore_permissions = True
-	call_log.save()
-	frappe.db.commit()
+	try:
+		call_log = frappe.get_doc("CRM Call Log", call_sid)
+		call_log.status = TwilioCallDetails.get_call_status(status or call_details.status)
+		call_log.duration = call_details.duration
+		call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
+		call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
+		if call_log.note and call_log.reference_docname:
+			frappe.db.set_value("FCRM Note", call_log.note, "reference_doctype", call_log.reference_doctype)
+			frappe.db.set_value("FCRM Note", call_log.note, "reference_docname", call_log.reference_docname)
+		call_log.flags.ignore_permissions = True
+		call_log.save()
+		frappe.db.commit()
+	except:
+		return
 
 @frappe.whitelist(allow_guest=True)
 def update_recording_info(**kwargs):
@@ -112,19 +115,20 @@ def update_call_status_info(**kwargs):
 		parent_call_sid = args.ParentCallSid
 		update_call_log(parent_call_sid, status=args.CallStatus)
 
-		call_info = {
-			'ParentCallSid': args.ParentCallSid,
-			'CallSid': args.CallSid,
-			'CallStatus': args.CallStatus,
-			'CallDuration': args.CallDuration,
-			'From': args.From,
-			'To': args.To,
-		}
+		if args.CallStatus not in ['canceled', 'completed', 'failed', 'busy', 'no-answer']:
+			call_info = {
+				'ParentCallSid': args.ParentCallSid,
+				'CallSid': args.CallSid,
+				'CallStatus': args.CallStatus,
+				'CallDuration': args.CallDuration,
+				'From': args.From,
+				'To': args.To,
+			}
 
-		client = Twilio.get_twilio_client()
-		client.calls(args.ParentCallSid).user_defined_messages.create(
-			content=json.dumps(call_info)
-		)
+			client = Twilio.get_twilio_client()
+			client.calls(args.ParentCallSid).user_defined_messages.create(
+				content=json.dumps(call_info)
+			)
 	except:
 		frappe.log_error(title=_("Failed to update Twilio call status"))
 
