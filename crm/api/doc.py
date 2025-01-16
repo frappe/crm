@@ -167,7 +167,7 @@ def get_doctype_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fi
 			DocField.options,
 		)
 		.where(DocField[parent] == doctype)
-		.where(DocField.hidden == False)
+		.where(DocField.hidden == False)  # noqa: E712
 		.where(Criterion.any([DocField.fieldtype == i for i in allowed_fieldtypes]))
 		.where(Criterion.all([DocField.fieldname != i for i in restricted_fields]))
 		.run(as_dict=True)
@@ -181,16 +181,17 @@ def get_quick_filters(doctype: str):
 	quick_filters = []
 
 	for field in fields:
-		if field.fieldtype == "Select":
-			field.options = field.options.split("\n")
-			field.options = [{"label": option, "value": option} for option in field.options]
-			field.options.insert(0, {"label": "", "value": ""})
+		options = field.options
+		if field.fieldtype == "Select" and options and isinstance(options, str):
+			options = options.split("\n")
+			options = [{"label": option, "value": option} for option in options]
+			options.insert(0, {"label": "", "value": ""})
 		quick_filters.append(
 			{
 				"label": _(field.label),
 				"name": field.fieldname,
 				"type": field.fieldtype,
-				"options": field.options,
+				"options": options,
 			}
 		)
 
@@ -278,7 +279,7 @@ def get_data(
 			columns = frappe.parse_json(list_view_settings.columns)
 			rows = frappe.parse_json(list_view_settings.rows)
 			is_default = False
-		elif not custom_view or is_default and hasattr(_list, "default_list_data"):
+		elif not custom_view or (is_default and hasattr(_list, "default_list_data")):
 			rows = default_rows
 			columns = _list.default_list_data().get("columns")
 
@@ -341,7 +342,7 @@ def get_data(
 		for kc in kanban_columns:
 			column_filters = {column_field: kc.get("name")}
 			order = kc.get("order")
-			if column_field in filters and filters.get(column_field) != kc.name or kc.get("delete"):
+			if (column_field in filters and filters.get(column_field) != kc.name) or kc.get("delete"):
 				column_data = []
 			else:
 				column_filters.update(filters.copy())
