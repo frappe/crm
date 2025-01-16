@@ -2,55 +2,40 @@
   <div>
     <div
       v-show="showSmallCallPopup"
-      class="ml-2 flex cursor-pointer select-none items-center justify-between gap-2 rounded-full bg-surface-gray-7 px-2 py-[7px] text-base text-ink-gray-2"
+      class="ml-2 flex cursor-pointer select-none items-center justify-between gap-1 rounded-full bg-surface-gray-7 px-2 py-[7px] text-base text-ink-gray-2"
       @click="toggleCallPopup"
     >
       <div
-        class="flex justify-center items-center size-5 rounded-full bg-surface-gray-6"
+        class="flex justify-center items-center size-5 rounded-full bg-surface-gray-6 shrink-0 mr-1"
       >
         <Avatar
           v-if="contact?.image"
           :image="contact.image"
           :label="contact.full_name"
-          class="size-3"
+          class="!size-5"
         />
         <AvatarIcon v-else class="size-3" />
       </div>
-      <div class="text-base font-medium">
-        <span
-          v-if="
-            callStatus == 'Calling...' ||
-            callStatus == 'Ringing...' ||
-            callStatus == 'Incoming Call'
-          "
-          class="font-normal text-ink-gray-4 mr-1"
-        >
-          {{ __(callStatus) }}
-        </span>
-        <span>{{ phoneNumber }}</span>
-        <span
-          v-if="callStatus == 'In Progress'"
-          class="font-normal text-ink-gray-4"
-        >
+      <span>{{ contact?.full_name ?? phoneNumber }}</span>
+      <span>·</span>
+      <div v-if="callStatus == 'In progress'">
+        {{ counterUp?.updatedTime }}
+      </div>
+      <div
+        v-else-if="callStatus == 'Call ended' || callStatus == 'No answer'"
+        class="blink"
+        :class="{
+          'text-red-700':
+            callStatus == 'Call ended' || callStatus == 'No answer',
+        }"
+      >
+        <span>{{ __(callStatus) }}</span>
+        <span v-if="callStatus == 'Call ended'">
           <span> · </span>
           <span>{{ counterUp?.updatedTime }}</span>
         </span>
-        <span
-          v-else-if="callStatus == 'Call Ended' || callStatus == 'No Answer'"
-          class="font-normal text-ink-gray-4 blink"
-          :class="{
-            'text-red-700':
-              callStatus == 'Call Ended' || callStatus == 'No Answer',
-          }"
-        >
-          <span class="text-ink-gray-4"> · </span>
-          <span>{{ __(callStatus) }}</span>
-          <span v-if="callStatus == 'Call Ended'">
-            <span> · </span>
-            <span>{{ counterUp?.updatedTime }}</span>
-          </span>
-        </span>
       </div>
+      <div v-else>{{ __(callStatus) }}</div>
     </div>
     <div
       v-show="showCallPopup"
@@ -58,43 +43,84 @@
       class="fixed z-20 w-[280px] min-h-44 flex gap-2 cursor-move select-none flex-col rounded-lg bg-surface-gray-7 p-4 pt-2.5 text-ink-gray-2 shadow-2xl"
       :style="style"
     >
-      <div class="header flex items-center justify-between gap-2 text-base">
-        <div v-if="callStatus == 'In Progress'">
-          {{ counterUp?.updatedTime }}
+      <div class="header flex items-center justify-between gap-1 text-base">
+        <div class="flex gap-2 items-center truncate">
+          <div v-if="showNote || showTask" class="flex items-center gap-3">
+            <Avatar
+              v-if="contact?.image"
+              :image="contact.image"
+              :label="contact.full_name"
+              class="!size-7"
+            />
+            <div
+              v-else
+              class="flex justify-center items-center size-7 rounded-full bg-surface-gray-6"
+            >
+              <AvatarIcon class="size-3" />
+            </div>
+            <div class="flex flex-col gap-1 text-base leading-4">
+              <div class="font-medium">
+                {{ contact.full_name ?? phoneNumber }}
+              </div>
+              <div class="text-ink-gray-6">
+                <div v-if="callStatus == 'In progress'">
+                  <span>{{ phoneNumber }}</span>
+                  <span> · </span>
+                  <span>{{ counterUp?.updatedTime }}</span>
+                </div>
+                <div
+                  v-else-if="
+                    callStatus == 'Call ended' || callStatus == 'No answer'
+                  "
+                  class="blink"
+                  :class="{
+                    'text-red-700':
+                      callStatus == 'Call ended' || callStatus == 'No answer',
+                  }"
+                >
+                  <span>{{ __(callStatus) }}</span>
+                  <span v-if="callStatus == 'Call ended'">
+                    <span> · </span>
+                    <span>{{ counterUp?.updatedTime }}</span>
+                  </span>
+                </div>
+                <div v-else>{{ __(callStatus) }}</div>
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <div v-if="callStatus == 'In progress'">
+              {{ counterUp?.updatedTime }}
+            </div>
+            <div
+              v-else-if="
+                callStatus == 'Call ended' || callStatus == 'No answer'
+              "
+              class="blink"
+              :class="{
+                'text-red-700':
+                  callStatus == 'Call ended' || callStatus == 'No answer',
+              }"
+            >
+              <span>{{ __(callStatus) }}</span>
+              <span v-if="callStatus == 'Call ended'">
+                <span> · </span>
+                <span>{{ counterUp?.updatedTime }}</span>
+              </span>
+            </div>
+            <div v-else>{{ __(callStatus) }}</div>
+          </div>
         </div>
-        <div
-          v-else-if="callStatus == 'Call Ended' || callStatus == 'No Answer'"
-          class="blink"
-          :class="{
-            'text-red-700':
-              callStatus == 'Call Ended' || callStatus == 'No Answer',
-          }"
+
+        <Button
+          @click="toggleCallPopup"
+          class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0"
+          size="md"
         >
-          <span>{{ __(callStatus) }}</span>
-          <span v-if="callStatus == 'Call Ended'">
-            <span> · </span>
-            <span>{{ counterUp?.updatedTime }}</span>
-          </span>
-        </div>
-        <div v-else>{{ __(callStatus) }}</div>
-        <div class="flex">
-          <Button
-            @click="toggleCallPopup"
-            class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6"
-            size="md"
-          >
-            <template #icon>
-              <MinimizeIcon class="h-4 w-4 cursor-pointer" />
-            </template>
-          </Button>
-          <Button
-            v-if="callStatus == 'Call Ended' || callStatus == 'No Answer'"
-            @click="closeCallPopup"
-            class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6"
-            icon="x"
-            size="md"
-          />
-        </div>
+          <template #icon>
+            <MinimizeIcon class="h-4 w-4 cursor-pointer" />
+          </template>
+        </Button>
       </div>
       <div class="body flex-1">
         <div v-if="showNote" class="h-[294px] text-base">{{ note }}</div>
@@ -112,11 +138,11 @@
           >
             <AvatarIcon class="size-4" />
           </div>
-          <div v-if="contact?.full_name" class="flex flex-col gap-1.5">
-            <div class="text-lg font-medium">{{ contact.full_name }}</div>
-            <div class="text-base text-ink-gray-6">{{ phoneNumber }}</div>
+          <div v-if="contact?.full_name" class="flex flex-col gap-1">
+            <div class="text-lg font-medium leading-5">{{ contact.full_name }}</div>
+            <div class="text-base text-ink-gray-6 leading-4">{{ phoneNumber }}</div>
           </div>
-          <div v-else class="text-lg font-medium">{{ phoneNumber }}</div>
+          <div v-else class="text-lg font-medium leading-5">{{ phoneNumber }}</div>
         </div>
       </div>
       <div class="footer flex justify-between gap-2">
@@ -140,6 +166,12 @@
             </template>
           </Button>
         </div>
+        <Button
+          @click="closeCallPopup"
+          class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+          :label="__('Close')"
+          size="md"
+        />
       </div>
     </div>
     <CountUpTimer ref="counterUp" />
@@ -292,7 +324,7 @@ function updateStatus(data) {
     data['Legs[1][Status]'] == 'in-progress'
   ) {
     counterUp.value.start()
-    return 'In Progress'
+    return 'In progress'
   } else if (
     data.EventType == 'terminal' &&
     data.Direction == 'outbound-api' &&
@@ -300,14 +332,14 @@ function updateStatus(data) {
     data['Legs[1][Status]'] == 'no-answer'
   ) {
     counterUp.value.stop()
-    return 'No Answer'
+    return 'No answer'
   } else if (
     data.EventType == 'terminal' &&
     data.Direction == 'outbound-api' &&
     data.Status == 'completed'
   ) {
     counterUp.value.stop()
-    return 'Call Ended'
+    return 'Call ended'
   }
 
   // incoming call
@@ -316,13 +348,13 @@ function updateStatus(data) {
     data.Direction == 'incoming' &&
     data.Status == 'busy'
   ) {
-    return 'Incoming Call'
+    return 'Incoming call'
   } else if (
     data.EventType == 'Terminal' &&
     data.Direction == 'incoming' &&
     data.Status == 'free'
   ) {
-    return 'Call Ended'
+    return 'Call ended'
   }
 }
 
