@@ -198,6 +198,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
+  'showCallLog',
   'loadMore',
   'updatePageCount',
   'columnWidthUpdated',

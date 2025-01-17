@@ -48,21 +48,26 @@
         class="header flex items-center justify-between gap-1 text-base cursor-move select-none"
       >
         <div class="flex gap-2 items-center truncate">
-          <div v-if="showNote || showTask" class="flex items-center gap-3">
+          <div
+            v-if="showNote || showTask"
+            class="flex items-center gap-3 truncate"
+          >
             <Avatar
               v-if="contact?.image"
               :image="contact.image"
               :label="contact.full_name"
-              class="!size-7"
+              class="!size-7 shrink-0"
             />
             <div
               v-else
-              class="flex justify-center items-center size-7 rounded-full bg-surface-gray-6"
+              class="flex justify-center items-center size-7 rounded-full bg-surface-gray-6 shrink-0"
             >
               <AvatarIcon class="size-3" />
             </div>
-            <div class="flex flex-col gap-1 text-base leading-4">
-              <div class="font-medium">
+            <div
+              class="flex flex-col gap-1 text-base leading-4 overflow-hidden"
+            >
+              <div class="font-medium truncate">
                 {{ contact?.full_name ?? phoneNumber }}
               </div>
               <div class="text-ink-gray-6">
@@ -115,15 +120,24 @@
           </div>
         </div>
 
-        <Button
-          @click="toggleCallPopup"
-          class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0"
-          size="md"
-        >
-          <template #icon>
-            <MinimizeIcon class="h-4 w-4 cursor-pointer" />
-          </template>
-        </Button>
+        <div class="flex">
+          <Button
+            @click="toggleCallPopup"
+            class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0"
+            size="md"
+          >
+            <template #icon>
+              <MinimizeIcon class="h-4 w-4 cursor-pointer" />
+            </template>
+          </Button>
+          <Button
+            v-if="callStatus == 'Call ended' || callStatus == 'No answer'"
+            @click="closeCallPopup"
+            class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0"
+            icon="x"
+            size="md"
+          />
+        </div>
       </div>
       <div class="body flex-1">
         <div v-if="showNote">
@@ -184,43 +198,45 @@
               <TaskIcon class="w-4 h-4" />
             </template>
           </Button>
-        </div>
-        <div class="flex gap-2">
           <Button
-            v-if="callStatus == 'Call ended' || callStatus == 'No answer'"
-            @click="closeCallPopup"
+            v-if="contact.deal || contact.lead"
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
-            :label="__('Close')"
             size="md"
-          />
-          <Button
-            v-if="(note && note != '<p></p>') || task.title"
-            @click="save"
-            class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
-            variant="solid"
-            :label="__('Save')"
-            size="md"
-          />
+            :label="contact.deal ? __('Deal') : __('Lead')"
+            @click="openDealOrLead"
+          >
+            <template #suffix>
+              <ArrowUpRightIcon class="w-4 h-4" />
+            </template>
+          </Button>
         </div>
+        <Button
+          v-if="(note && note != '<p></p>') || task.title"
+          @click="save"
+          class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
+          variant="solid"
+          :label="__('Save')"
+          size="md"
+        />
       </div>
     </div>
     <CountUpTimer ref="counterUp" />
   </div>
 </template>
 <script setup>
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import AvatarIcon from '@/components/Icons/AvatarIcon.vue'
 import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import TaskPanel from './TaskPanel.vue'
+import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
-import { TextEditor, Avatar, Button, call } from 'frappe-ui'
+import { TextEditor, Avatar, Button, call, createResource } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
-import { contactsStore } from '@/stores/contacts'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { ref, computed, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-const { getContact, getLeadContact } = contactsStore()
 const { $socket } = globalStore()
 
 const callPopupHeader = ref(null)
@@ -248,18 +264,28 @@ const phoneNumber = ref('')
 const callData = ref(null)
 const counterUp = ref(null)
 
-const contact = computed(() => {
-  if (!phoneNumber.value) {
+const contact = ref({
+  full_name: '',
+  image: '',
+  mobile_no: '',
+})
+
+watch(phoneNumber, (value) => {
+  if (!value) return
+  getContact.fetch()
+})
+
+const getContact = createResource({
+  url: 'crm.integrations.api.get_contact_by_phone_number',
+  makeParams() {
     return {
-      full_name: '',
-      image: '',
+      phone_number: phoneNumber.value,
     }
-  }
-  let _contact = getContact(phoneNumber.value)
-  if (!_contact) {
-    _contact = getLeadContact(phoneNumber.value)
-  }
-  return _contact
+  },
+  cache: ['contact', phoneNumber.value],
+  onSuccess(data) {
+    contact.value = data
+  },
 })
 
 const note = ref('')
@@ -362,6 +388,22 @@ onBeforeUnmount(() => {
   $socket.off('exotel_call')
 })
 
+const router = useRouter()
+
+function openDealOrLead() {
+  if (contact.value.deal) {
+    router.push({
+      name: 'Deal',
+      params: { dealId: contact.value.deal },
+    })
+  } else if (contact.value.lead) {
+    router.push({
+      name: 'Lead',
+      params: { leadId: contact.value.lead },
+    })
+  }
+}
+
 function closeCallPopup() {
   showCallPopup.value = false
   showSmallCallPopup.value = false
@@ -416,7 +458,8 @@ function updateStatus(data) {
   ) {
     counterUp.value.stop()
     callDuration.value = getTime(
-      data['Legs[0][OnCallDuration]'] || data.DialCallDuration,
+      parseInt(data['Legs[0][OnCallDuration]']) ||
+        parseInt(data.DialCallDuration),
     )
     return 'Call ended'
   }
@@ -431,11 +474,12 @@ function updateStatus(data) {
     return 'Incoming call'
   } else if (
     data.Direction == 'incoming' &&
-    (data.EventType == 'Terminal' || data.CallType == 'completed') &&
-    (data.Status == 'free' || data.DialCallStatus == 'completed')
+    (data.CallType == 'completed' || data.CallType == 'client-hangup') &&
+    (data.DialCallStatus == 'completed' || data.DialCallStatus == 'canceled')
   ) {
     callDuration.value = counterUp.value.getTime(
-      data['Legs[0][OnCallDuration]'] || data.DialCallDuration,
+      parseInt(data['Legs[0][OnCallDuration]']) ||
+        parseInt(data.DialCallDuration),
     )
     return 'Call ended'
   }
