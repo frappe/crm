@@ -17,20 +17,20 @@ export function getCallLogDetail(row, log, columns = []) {
         ? getContact(log.from)?.full_name ||
           getLeadContact(log.from)?.full_name ||
           'Unknown'
-        : getUser(log.caller).full_name,
+        : log.caller && getUser(log.caller).full_name,
       image: incoming
         ? getContact(log.from)?.image || getLeadContact(log.from)?.image
-        : getUser(log.caller).user_image,
+        : log.caller && getUser(log.caller).user_image,
     }
   } else if (row === 'receiver') {
     return {
       label: incoming
-        ? getUser(log.receiver).full_name
+        ? log.receiver && getUser(log.receiver).full_name
         : getContact(log.to)?.full_name ||
           getLeadContact(log.to)?.full_name ||
           'Unknown',
       image: incoming
-        ? getUser(log.receiver).user_image
+        ? log.receiver && getUser(log.receiver).user_image
         : getContact(log.to)?.image || getLeadContact(log.to)?.image,
     }
   } else if (row === 'duration') {
@@ -82,7 +82,7 @@ export const statusLabelMap = {
   Busy: 'Declined',
   Failed: 'Failed',
   Queued: 'Queued',
-  Cancelled: 'Cancelled',
+  Canceled: 'Canceled',
   Ringing: 'Ringing',
   'No Answer': 'Missed Call',
   'In Progress': 'In Progress',
@@ -94,7 +94,7 @@ export const statusColorMap = {
   Failed: 'red',
   Initiated: 'gray',
   Queued: 'gray',
-  Cancelled: 'gray',
+  Canceled: 'gray',
   Ringing: 'gray',
   'No Answer': 'red',
   'In Progress': 'blue',
