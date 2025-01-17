@@ -53,7 +53,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { createToast } from '@/utils'
 import { FormControl, call } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 
 const { setMakeCall } = globalStore()
 
@@ -116,20 +116,25 @@ async function setDefaultCallingMedium() {
   })
 }
 
-watch([twilioEnabled, exotelEnabled], ([twilioValue, exotelValue]) => {
-  if (twilioValue) {
-    twilio.value.setup()
-    callMedium.value = 'Twilio'
-  }
+watch(
+  [twilioEnabled, exotelEnabled],
+  ([twilioValue, exotelValue]) =>
+    nextTick(() => {
+      if (twilioValue) {
+        twilio.value.setup()
+        callMedium.value = 'Twilio'
+      }
 
-  if (exotelValue) {
-    exotel.value.setup()
-    callMedium.value = 'Exotel'
-  }
+      if (exotelValue) {
+        exotel.value.setup()
+        callMedium.value = 'Exotel'
+      }
 
-  if (twilioValue || exotelValue) {
-    callMedium.value = 'Twilio'
-    setMakeCall(makeCall)
-  }
-})
+      if (twilioValue || exotelValue) {
+        callMedium.value = 'Twilio'
+        setMakeCall(makeCall)
+      }
+    }),
+  { immediate: true },
+)
 </script>

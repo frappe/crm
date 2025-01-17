@@ -48,7 +48,7 @@ def handle_request(**kwargs):
 		request_log.status = "Failed"
 		request_log.error = frappe.get_traceback()
 		frappe.db.rollback()
-		frappe.log_error(title="Error while creating call record")
+		frappe.log_error(title="Error while creating/updating call record")
 		frappe.db.commit()
 	finally:
 		request_log.save(ignore_permissions=True)

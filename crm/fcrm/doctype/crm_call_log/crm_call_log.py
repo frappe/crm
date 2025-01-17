@@ -6,76 +6,89 @@ from frappe.model.document import Document
 
 
 class CRMCallLog(Document):
-		@staticmethod
-		def default_list_data():
-			columns = [
-				{
-					'label': 'From',
-					'type': 'Link',
-					'key': 'caller',
-					'options': 'User',
-					'width': '9rem',
-				},
-				{
-					'label': 'To',
-					'type': 'Link',
-					'key': 'receiver',
-					'options': 'User',
-					'width': '9rem',
-				},
-				{
-					'label': 'Type',
-					'type': 'Select',
-					'key': 'type',
-					'width': '9rem',
-				},
-				{
-					'label': 'Status',
-					'type': 'Select',
-					'key': 'status',
-					'width': '9rem',
-				},
-				{
-					'label': 'Duration',
-					'type': 'Duration',
-					'key': 'duration',
-					'width': '6rem',
-				},
-				{
-					'label': 'From (number)',
-					'type': 'Data',
-					'key': 'from',
-					'width': '9rem',
-				},
-				{
-					'label': 'To (number)',
-					'type': 'Data',
-					'key': 'to',
-					'width': '9rem',
-				},
-				{
-					'label': 'Created On',
-					'type': 'Datetime',
-					'key': 'creation',
-					'width': '8rem',
-				},
-				]
-			rows = [
-				"name",
-				"caller",
-				"receiver",
-				"type",
-				"status",
-				"duration",
-				"from",
-				"to",
-				"note",
-				"recording_url",
-				"reference_doctype",
-				"reference_docname",
-				"creation",
-			]
-			return {'columns': columns, 'rows': rows}
+	@staticmethod
+	def default_list_data():
+		columns = [
+			{
+				"label": "From",
+				"type": "Link",
+				"key": "caller",
+				"options": "User",
+				"width": "9rem",
+			},
+			{
+				"label": "To",
+				"type": "Link",
+				"key": "receiver",
+				"options": "User",
+				"width": "9rem",
+			},
+			{
+				"label": "Type",
+				"type": "Select",
+				"key": "type",
+				"width": "9rem",
+			},
+			{
+				"label": "Status",
+				"type": "Select",
+				"key": "status",
+				"width": "9rem",
+			},
+			{
+				"label": "Duration",
+				"type": "Duration",
+				"key": "duration",
+				"width": "6rem",
+			},
+			{
+				"label": "From (number)",
+				"type": "Data",
+				"key": "from",
+				"width": "9rem",
+			},
+			{
+				"label": "To (number)",
+				"type": "Data",
+				"key": "to",
+				"width": "9rem",
+			},
+			{
+				"label": "Created On",
+				"type": "Datetime",
+				"key": "creation",
+				"width": "8rem",
+			},
+		]
+		rows = [
+			"name",
+			"caller",
+			"receiver",
+			"type",
+			"status",
+			"duration",
+			"from",
+			"to",
+			"note",
+			"recording_url",
+			"reference_doctype",
+			"reference_docname",
+			"creation",
+		]
+		return {"columns": columns, "rows": rows}
+
+	def has_link(self, doctype, name):
+		for link in self.links:
+			if link.link_doctype == doctype and link.link_name == name:
+				return True
+
+	def link_with_reference_doc(self, reference_doctype, reference_name):
+		if self.has_link(reference_doctype, reference_name):
+			return
+
+		self.append("links", {"link_doctype": reference_doctype, "link_name": reference_name})
+		self.save(ignore_permissions=True)
+
 
 @frappe.whitelist()
 def create_lead_from_call_log(call_log):
@@ -85,15 +98,17 @@ def create_lead_from_call_log(call_log):
 	lead.lead_owner = frappe.session.user
 	lead.save(ignore_permissions=True)
 
-	frappe.db.set_value("CRM Call Log", call_log.get("name"), {
-		"reference_doctype": "CRM Lead",
-		"reference_docname": lead.name
-	})
+	frappe.db.set_value(
+		"CRM Call Log",
+		call_log.get("name"),
+		{"reference_doctype": "CRM Lead", "reference_docname": lead.name},
+	)
 
 	if call_log.get("note"):
-		frappe.db.set_value("FCRM Note", call_log.get("note"), {
-			"reference_doctype": "CRM Lead",
-			"reference_docname": lead.name
-		})
+		frappe.db.set_value(
+			"FCRM Note",
+			call_log.get("note"),
+			{"reference_doctype": "CRM Lead", "reference_docname": lead.name},
+		)
 
 	return lead.name
