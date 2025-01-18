@@ -474,6 +474,12 @@ function updateStatus(data) {
     return 'Incoming call'
   } else if (
     data.Direction == 'incoming' &&
+    data.CallType == 'incomplete' &&
+    data.DialCallStatus == 'no-answer'
+  ) {
+    return 'No answer'
+  } else if (
+    data.Direction == 'incoming' &&
     (data.CallType == 'completed' || data.CallType == 'client-hangup') &&
     (data.DialCallStatus == 'completed' || data.DialCallStatus == 'canceled')
   ) {

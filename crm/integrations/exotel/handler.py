@@ -6,6 +6,8 @@ import requests
 from frappe import _
 from frappe.integrations.utils import create_request_log
 
+from crm.integrations.api import get_contact_by_phone_number
+
 
 # Incoming Call
 @frappe.whitelist(allow_guest=True)
@@ -43,6 +45,7 @@ def handle_request(**kwargs):
 				to_number=call_payload.get("DialWhomNumber"),
 				medium=call_payload.get("To"),
 				status=get_call_log_status(call_payload),
+				agent=call_payload.get("AgentEmail"),
 			)
 	except Exception:
 		request_log.status = "Failed"
@@ -57,7 +60,7 @@ def handle_request(**kwargs):
 
 # Outgoing Call
 @frappe.whitelist()
-def make_a_call(to_number, from_number=None, caller_id=None, link_to_document=None):
+def make_a_call(to_number, from_number=None, caller_id=None):
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup Exotel intergration"), title=_("Integration Not Enabled"))
 
@@ -100,16 +103,12 @@ def make_a_call(to_number, from_number=None, caller_id=None, link_to_document=No
 		res = response.json()
 		call_payload = res.get("Call", {})
 
-		if link_to_document:
-			link_to_document = json.loads(link_to_document)
-
 		create_call_log(
 			call_id=call_payload.get("Sid"),
 			from_number=call_payload.get("From"),
 			to_number=call_payload.get("To"),
 			medium=call_payload.get("PhoneNumberSid"),
 			call_type="Outgoing",
-			link_to_document=link_to_document,
 		)
 
 	return response.json()
@@ -155,9 +154,9 @@ def create_call_log(
 	from_number,
 	to_number,
 	medium,
+	agent=frappe.session.user,
 	status="Ringing",
 	call_type="Incoming",
-	link_to_document=None,
 ):
 	call_log = frappe.new_doc("CRM Call Log")
 	call_log.id = call_id
@@ -167,11 +166,33 @@ def create_call_log(
 	call_log.status = status
 	call_log.telephony_medium = "Exotel"
 	setattr(call_log, "from", from_number)
-	if link_to_document:
-		call_log.append("links", link_to_document)
+
+	if call_type == "Incoming":
+		call_log.receiver = agent
+	else:
+		call_log.caller = agent
+
+	# link call log with lead/deal
+	contact_number = from_number if call_type == "Incoming" else to_number
+	link(contact_number, call_log)
+
 	call_log.save(ignore_permissions=True)
 	frappe.db.commit()
 	return call_log
+
+
+def link(contact_number, call_log):
+	contact = get_contact_by_phone_number(contact_number)
+	if contact.get("name"):
+		doctype = "Contact"
+		docname = contact.get("name")
+		if contact.get("lead"):
+			doctype = "CRM Lead"
+			docname = contact.get("lead")
+		elif contact.get("deal"):
+			doctype = "CRM Deal"
+			docname = contact.get("deal")
+		call_log.link_with_reference_doc(doctype, docname)
 
 
 def get_call_log(call_payload):

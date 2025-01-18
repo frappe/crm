@@ -35,6 +35,7 @@ def create_and_add_note_to_call_log(call_sid, content):
 
 	call_log = frappe.get_doc("CRM Call Log", call_sid)
 	call_log.link_with_reference_doc("FCRM Note", note.name)
+	call_log.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
@@ -50,6 +51,7 @@ def create_and_add_task_to_call_log(call_sid, task):
 
 	call_log = frappe.get_doc("CRM Call Log", call_sid)
 	call_log.link_with_reference_doc("CRM Task", _task.name)
+	call_log.save(ignore_permissions=True)
 
 
 @frappe.whitelist()

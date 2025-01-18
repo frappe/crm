@@ -87,7 +87,6 @@ class CRMCallLog(Document):
 			return
 
 		self.append("links", {"link_doctype": reference_doctype, "link_name": reference_name})
-		self.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
