@@ -662,13 +662,13 @@ const activities = computed(() => {
     return sortByCreation(all_activities.data.calls)
   } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
-    return sortByCreation(all_activities.data.tasks)
+    return sortByModified(all_activities.data.tasks)
   } else if (title.value == 'Notes') {
     if (!all_activities.data?.notes) return []
-    return sortByCreation(all_activities.data.notes)
+    return sortByModified(all_activities.data.notes)
   } else if (title.value == 'Attachments') {
     if (!all_activities.data?.attachments) return []
-    return sortByCreation(all_activities.data.attachments)
+    return sortByModified(all_activities.data.attachments)
   }
 
   _activities.forEach((activity) => {
@@ -695,6 +695,9 @@ const activities = computed(() => {
 
 function sortByCreation(list) {
   return list.sort((a, b) => new Date(a.creation) - new Date(b.creation))
+}
+function sortByModified(list) {
+  return list.sort((b, a) => new Date(a.modified) - new Date(b.modified))
 }
 
 function update_activities_details(activity) {
