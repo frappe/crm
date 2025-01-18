@@ -4,6 +4,9 @@
 import frappe
 from frappe.model.document import Document
 
+from crm.integrations.api import get_contact_by_phone_number
+from crm.utils import seconds_to_duration
+
 
 class CRMCallLog(Document):
 	@staticmethod
@@ -77,6 +80,9 @@ class CRMCallLog(Document):
 		]
 		return {"columns": columns, "rows": rows}
 
+	def parse_list_data(calls):
+		return [parse_call_log(call) for call in calls] if calls else []
+
 	def has_link(self, doctype, name):
 		for link in self.links:
 			if link.link_doctype == doctype and link.link_name == name:
@@ -87,6 +93,69 @@ class CRMCallLog(Document):
 			return
 
 		self.append("links", {"link_doctype": reference_doctype, "link_name": reference_name})
+
+
+def parse_call_log(call):
+	call["show_recording"] = False
+	call["duration"] = seconds_to_duration(call.get("duration"))
+	if call.get("type") == "Incoming":
+		call["activity_type"] = "incoming_call"
+		contact = get_contact_by_phone_number(call.get("from"))
+		receiver = (
+			frappe.db.get_values("User", call.get("receiver"), ["full_name", "user_image"])[0]
+			if call.get("receiver")
+			else [None, None]
+		)
+		call["caller"] = {
+			"label": contact.get("full_name", "Unknown"),
+			"image": contact.get("image"),
+		}
+		call["receiver"] = {
+			"label": receiver[0],
+			"image": receiver[1],
+		}
+	elif call.get("type") == "Outgoing":
+		call["activity_type"] = "outgoing_call"
+		contact = get_contact_by_phone_number(call.get("to"))
+		caller = (
+			frappe.db.get_values("User", call.get("caller"), ["full_name", "user_image"])[0]
+			if call.get("caller")
+			else [None, None]
+		)
+		call["caller"] = {
+			"label": caller[0],
+			"image": caller[1],
+		}
+		call["receiver"] = {
+			"label": contact.get("full_name", "Unknown"),
+			"image": contact.get("image"),
+		}
+
+	return call
+
+
+@frappe.whitelist()
+def get_call_log(name):
+	call = frappe.get_cached_doc(
+		"CRM Call Log",
+		name,
+		fields=[
+			"name",
+			"caller",
+			"receiver",
+			"duration",
+			"type",
+			"status",
+			"from",
+			"to",
+			"note",
+			"recording_url",
+			"reference_doctype",
+			"reference_docname",
+			"creation",
+		],
+	).as_dict()
+	return parse_call_log(call)
 
 
 @frappe.whitelist()

@@ -6,6 +6,8 @@ from frappe import _
 from frappe.desk.form.load import get_docinfo
 from frappe.query_builder import JoinType
 
+from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
+
 
 @frappe.whitelist()
 def get_activities(name):
@@ -438,6 +440,8 @@ def get_linked_calls(name):
 				"modified",
 			],
 		)
+
+	calls = [parse_call_log(call) for call in calls] if calls else []
 
 	return {"calls": calls, "notes": notes, "tasks": tasks}
 
