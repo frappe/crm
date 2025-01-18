@@ -83,13 +83,7 @@
         </div>
       </div>
     </template>
-    <template
-      v-if="
-        callLog.data?.type.label == 'Incoming' &&
-        !callLog.data?.reference_docname
-      "
-      #actions
-    >
+    <template v-if="!callLog.data?._lead && !callLog.data?._deal" #actions>
       <Button
         class="w-full"
         variant="solid"
@@ -98,7 +92,7 @@
       />
     </template>
   </Dialog>
-  <NoteModal v-model="showNoteModal" :note="callNoteDoc?.doc" />
+  <NoteModal v-model="showNoteModal" :note="callNoteDoc" />
 </template>
 
 <script setup>
@@ -112,14 +106,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
-import {
-  FeatherIcon,
-  Avatar,
-  Tooltip,
-  createDocumentResource,
-  call,
-  createResource,
-} from 'frappe-ui'
+import { FeatherIcon, Avatar, Tooltip, call, createResource } from 'frappe-ui'
 import { getCallLogDetail } from '@/utils/callLog'
 import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -157,27 +144,23 @@ const detailFields = computed(() => {
       },
     },
     {
-      icon:
-        callLog.value.data.reference_doctype == 'CRM Lead'
-          ? LeadsIcon
-          : Dealsicon,
-      name: 'reference_doctype',
-      value:
-        callLog.value.data.reference_doctype == 'CRM Lead' ? 'Lead' : 'Deal',
+      icon: callLog.value.data._lead ? LeadsIcon : Dealsicon,
+      name: 'reference_doc',
+      value: callLog.value.data._lead == 'CRM Lead' ? 'Lead' : 'Deal',
       link: () => {
-        if (callLog.value.data.reference_doctype == 'CRM Lead') {
+        if (callLog.value.data._lead) {
           router.push({
             name: 'Lead',
-            params: { leadId: callLog.value.data.reference_docname },
+            params: { leadId: callLog.value.data._lead },
           })
         } else {
           router.push({
             name: 'Deal',
-            params: { dealId: callLog.value.data.reference_docname },
+            params: { dealId: callLog.value.data._deal },
           })
         }
       },
-      condition: () => callLog.value.data.reference_docname,
+      condition: () => callLog.value.data._lead || callLog.value.data._deal,
     },
     {
       icon: CalendarIcon,
@@ -207,7 +190,7 @@ const detailFields = computed(() => {
     {
       icon: NoteIcon,
       name: 'note',
-      value: callNoteDoc.value?.doc,
+      value: callNoteDoc.value,
     },
   ]
 
@@ -240,17 +223,7 @@ watch(show, (val) => {
         return doc
       },
       onSuccess: (doc) => {
-        if (!doc.note) {
-          callNoteDoc.value = null
-          return
-        }
-        callNoteDoc.value = createDocumentResource({
-          doctype: 'FCRM Note',
-          name: doc.note,
-          fields: ['title', 'content'],
-          cache: ['note', doc.note],
-          auto: true,
-        })
+        callNoteDoc.value = doc._notes?.[0] ?? null
       },
     })
   }

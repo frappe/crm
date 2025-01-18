@@ -155,7 +155,38 @@ def get_call_log(name):
 			"creation",
 		],
 	).as_dict()
-	return parse_call_log(call)
+
+	call = parse_call_log(call)
+
+	notes = []
+	tasks = []
+
+	if call.get("note"):
+		note = frappe.get_cached_doc("FCRM Note", call.get("note")).as_dict()
+		notes.append(note)
+
+	if call.get("reference_doctype") and call.get("reference_docname"):
+		if call.get("reference_doctype") == "CRM Lead":
+			call["_lead"] = call.get("reference_docname")
+		elif call.get("reference_doctype") == "CRM Deal":
+			call["_deal"] = call.get("reference_docname")
+
+	if call.get("links"):
+		for link in call.get("links"):
+			if link.get("link_doctype") == "CRM Task":
+				task = frappe.get_cached_doc("CRM Task", link.get("link_name")).as_dict()
+				tasks.append(task)
+			elif link.get("link_doctype") == "FCRM Note":
+				note = frappe.get_cached_doc("FCRM Note", link.get("link_name")).as_dict()
+				notes.append(note)
+			elif link.get("link_doctype") == "CRM Lead":
+				call["_lead"] = link.get("link_name")
+			elif link.get("link_doctype") == "CRM Deal":
+				call["_deal"] = link.get("link_name")
+
+	call["_tasks"] = tasks
+	call["_notes"] = notes
+	return call
 
 
 @frappe.whitelist()
