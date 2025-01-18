@@ -24,34 +24,51 @@ def set_default_calling_medium(medium):
 
 
 @frappe.whitelist()
-def create_and_add_note_to_call_log(call_sid, content):
-	"""Add note to call log based on call sid."""
-	note = frappe.get_doc(
-		{
-			"doctype": "FCRM Note",
-			"content": content,
-		}
-	).insert(ignore_permissions=True)
+def add_note_to_call_log(call_sid, note):
+	"""Add/Update note to call log based on call sid."""
+	_note = None
+	if not note.get("name"):
+		_note = frappe.get_doc(
+			{
+				"doctype": "FCRM Note",
+				"content": note.get("content"),
+			}
+		).insert(ignore_permissions=True)
+		call_log = frappe.get_cached_doc("CRM Call Log", call_sid)
+		call_log.link_with_reference_doc("FCRM Note", _note.name)
+		call_log.save(ignore_permissions=True)
+	else:
+		_note = frappe.set_value("FCRM Note", note.get("name"), "content", note.get("content"))
 
-	call_log = frappe.get_doc("CRM Call Log", call_sid)
-	call_log.link_with_reference_doc("FCRM Note", note.name)
-	call_log.save(ignore_permissions=True)
+	return _note
 
 
 @frappe.whitelist()
-def create_and_add_task_to_call_log(call_sid, task):
-	"""Add task to call log based on call sid."""
-	_task = frappe.get_doc(
-		{
-			"doctype": "CRM Task",
-			"title": task.get("title"),
-			"description": task.get("description"),
-		}
-	).insert(ignore_permissions=True)
+def add_task_to_call_log(call_sid, task):
+	"""Add/Update task to call log based on call sid."""
+	_task = None
+	if not task.get("name"):
+		_task = frappe.get_doc(
+			{
+				"doctype": "CRM Task",
+				"title": task.get("title"),
+				"description": task.get("description"),
+			}
+		).insert(ignore_permissions=True)
+		call_log = frappe.get_doc("CRM Call Log", call_sid)
+		call_log.link_with_reference_doc("CRM Task", _task.name)
+		call_log.save(ignore_permissions=True)
+	else:
+		_task = frappe.get_doc("CRM Task", task.get("name"))
+		_task.update(
+			{
+				"title": task.get("title"),
+				"description": task.get("description"),
+			}
+		)
+		_task.save(ignore_permissions=True)
 
-	call_log = frappe.get_doc("CRM Call Log", call_sid)
-	call_log.link_with_reference_doc("CRM Task", _task.name)
-	call_log.save(ignore_permissions=True)
+	return _task
 
 
 @frappe.whitelist()

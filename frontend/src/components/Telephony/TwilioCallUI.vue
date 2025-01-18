@@ -13,6 +13,7 @@
       </div>
       <div class="flex flex-col items-center justify-center gap-3">
         <Avatar
+          v-if="contact?.image"
           :image="contact.image"
           :label="contact.full_name"
           class="relative flex !h-24 !w-24 items-center justify-center [&>div]:text-[30px]"
@@ -20,9 +21,9 @@
         />
         <div class="flex flex-col items-center justify-center gap-1">
           <div class="text-xl font-medium">
-            {{ contact.full_name }}
+            {{ contact?.full_name ?? __('Unknown') }}
           </div>
-          <div class="text-sm text-ink-gray-5">{{ contact.mobile_no }}</div>
+          <div class="text-sm text-ink-gray-5">{{ contact?.mobile_no }}</div>
         </div>
         <CountUpTimer ref="counterUp">
           <div v-if="onCall" class="my-1 text-base">
@@ -120,12 +121,13 @@
   >
     <div class="flex items-center gap-2">
       <Avatar
+        v-if="contact?.image"
         :image="contact.image"
         :label="contact.full_name"
         class="relative flex !h-5 !w-5 items-center justify-center"
       />
       <div class="max-w-[120px] truncate">
-        {{ contact.full_name }}
+        {{ contact?.full_name ?? __('Unknown') }}
       </div>
     </div>
     <div v-if="onCall" class="flex items-center gap-2">
@@ -195,20 +197,13 @@ import CountUpTimer from '@/components/CountUpTimer.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { contactsStore } from '@/stores/contacts'
 import { capture } from '@/telemetry'
-import { Avatar, call } from 'frappe-ui'
+import { Avatar, call, createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
-
-const { getContact, getLeadContact } = contactsStore()
 
 let device = ''
 let log = ref('Connecting...')
 let _call = null
-const contact = ref({
-  full_name: '',
-  mobile_no: '',
-})
 
 let showCallPopup = ref(false)
 let showSmallCallWindow = ref(false)
@@ -218,8 +213,36 @@ let muted = ref(false)
 let callPopup = ref(null)
 let counterUp = ref(null)
 let callStatus = ref('')
+
+const phoneNumber = ref('')
+
+const contact = ref({
+  full_name: '',
+  image: '',
+  mobile_no: '',
+})
+
+watch(phoneNumber, (value) => {
+  if (!value) return
+  getContact.fetch()
+})
+
+const getContact = createResource({
+  url: 'crm.integrations.api.get_contact_by_phone_number',
+  makeParams() {
+    return {
+      phone_number: phoneNumber.value,
+    }
+  },
+  cache: ['contact', phoneNumber.value],
+  onSuccess(data) {
+    contact.value = data
+  },
+})
+
 const showNoteModal = ref(false)
 const note = ref({
+  name: '',
   title: '',
   content: '',
 })
@@ -227,9 +250,9 @@ const note = ref({
 async function updateNote(_note, insert_mode = false) {
   note.value = _note
   if (insert_mode && _note.name) {
-    await call('crm.integrations.twilio.api.add_note_to_call_log', {
+    await call('crm.integrations.api.add_note_to_call_log', {
       call_sid: _call.parameters.CallSid,
-      note: _note.name,
+      note: _note,
     })
   }
 }
@@ -298,19 +321,7 @@ function toggleMute() {
 
 function handleIncomingCall(call) {
   log.value = `Incoming call from ${call.parameters.From}`
-
-  // get name of the caller from the phone number
-  contact.value = getContact(call.parameters.From)
-  if (!contact.value) {
-    contact.value = getLeadContact(call.parameters.From)
-  }
-
-  if (!contact.value) {
-    contact.value = {
-      full_name: __('Unknown'),
-      mobile_no: call.parameters.From,
-    }
-  }
+  phoneNumber.value = call.parameters.From
 
   showCallPopup.value = true
   _call = call
@@ -352,6 +363,7 @@ function hangUpCall() {
   callStatus.value = ''
   muted.value = false
   note.value = {
+    name: '',
     title: '',
     content: '',
   }
@@ -373,19 +385,7 @@ function handleDisconnectedIncomingCall() {
 }
 
 async function makeOutgoingCall(number) {
-  // check if number has a country code
-  // if (number?.replace(/[^0-9+]/g, '').length == 10) {
-  //   $dialog({
-  //     title: 'Invalid Mobile Number',
-  //     message: `${number} is not a valid mobile number. Either add a country code or check the number again.`,
-  //   })
-  //   return
-  // }
-
-  contact.value = getContact(number)
-  if (!contact.value) {
-    contact.value = getLeadContact(number)
-  }
+  phoneNumber.value = number
 
   if (device) {
     log.value = `Attempting to call ${number} ...`
@@ -431,6 +431,7 @@ async function makeOutgoingCall(number) {
         muted.value = false
         counterUp.value.stop()
         note.value = {
+          name: '',
           title: '',
           content: '',
         }
@@ -445,6 +446,7 @@ async function makeOutgoingCall(number) {
         callStatus.value = ''
         muted.value = false
         note.value = {
+          name: '',
           title: '',
           content: '',
         }
@@ -471,6 +473,7 @@ function cancelCall() {
   callStatus.value = ''
   muted.value = false
   note.value = {
+    name: '',
     title: '',
     content: '',
   }

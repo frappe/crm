@@ -146,8 +146,8 @@
             ref="content"
             editor-class="prose-sm h-[290px] text-ink-white overflow-auto mt-1"
             :bubbleMenu="true"
-            :content="note"
-            @change="(val) => (note = val)"
+            :content="note.content"
+            @change="(val) => (note.content = val)"
             :placeholder="__('Take a note...')"
           />
         </div>
@@ -210,8 +210,21 @@
             </template>
           </Button>
         </div>
+
         <Button
-          v-if="(note && note != '<p></p>') || task.title"
+          v-if="(note.name || task.name) && dirty"
+          @click="update"
+          class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
+          variant="solid"
+          :label="__('Update')"
+          size="md"
+        />
+        <Button
+          v-else-if="
+            ((note?.content && note.content != '<p></p>') || task.title) &&
+            !note.name &&
+            !task.name
+          "
           @click="save"
           class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
           variant="solid"
@@ -234,8 +247,8 @@ import CountUpTimer from '@/components/CountUpTimer.vue'
 import { createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { TextEditor, Avatar, Button, call, createResource } from 'frappe-ui'
-import { ref, onBeforeUnmount, watch } from 'vue'
+import { TextEditor, Avatar, Button, createResource } from 'frappe-ui'
+import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { $socket } = globalStore()
@@ -289,7 +302,12 @@ const getContact = createResource({
   },
 })
 
-const note = ref('')
+const dirty = ref(false)
+
+const note = ref({
+  name: '',
+  content: '',
+})
 
 const showNote = ref(false)
 
@@ -303,15 +321,25 @@ function showNoteWindow() {
   }
 }
 
-function createNote() {
-  call('crm.integrations.api.create_and_add_note_to_call_log', {
-    call_sid: callData.value.CallSid,
-    content: note.value,
+function createUpdateNote() {
+  createResource({
+    url: 'crm.integrations.api.add_note_to_call_log',
+    params: {
+      call_sid: callData.value.CallSid,
+      note: note.value,
+    },
+    auto: true,
+    onSuccess(_note) {
+      note.value['name'] = _note.name
+      nextTick(() => {
+        dirty.value = false
+      })
+    },
   })
-  note.value = ''
 }
 
 const task = ref({
+  name: '',
   title: '',
   description: '',
   assigned_to: '',
@@ -332,20 +360,24 @@ function showTaskWindow() {
   }
 }
 
-function createTask() {
-  call('crm.integrations.api.create_and_add_task_to_call_log', {
-    call_sid: callData.value.CallSid,
-    task: task.value,
+function createUpdateTask() {
+  createResource({
+    url: 'crm.integrations.api.add_task_to_call_log',
+    params: {
+      call_sid: callData.value.CallSid,
+      task: task.value,
+    },
+    auto: true,
+    onSuccess(_task) {
+      task.value['name'] = _task.name
+      nextTick(() => {
+        dirty.value = false
+      })
+    },
   })
-  task.value = {
-    title: '',
-    description: '',
-    assigned_to: '',
-    due_date: '',
-    status: 'Backlog',
-    priority: 'Low',
-  }
 }
+
+watch([note, task], () => (dirty.value = true), { deep: true })
 
 function updateWindowHeight(condition) {
   let callPopup = callPopupHeader.value.parentElement
@@ -420,8 +452,12 @@ function openDealOrLead() {
 function closeCallPopup() {
   showCallPopup.value = false
   showSmallCallPopup.value = false
-  note.value = ''
+  note.value = {
+    name: '',
+    content: '',
+  }
   task.value = {
+    name: '',
     title: '',
     description: '',
     assigned_to: '',
@@ -432,8 +468,13 @@ function closeCallPopup() {
 }
 
 function save() {
-  if (note.value) createNote()
-  if (task.value.title) createTask()
+  if (note.value.content) createUpdateNote()
+  if (task.value.title) createUpdateTask()
+}
+
+function update() {
+  if (note.value.content) createUpdateNote()
+  if (task.value.title) createUpdateTask()
 }
 
 const callDuration = ref('00:00')

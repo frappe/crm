@@ -4,8 +4,9 @@ import frappe
 from frappe import _
 from werkzeug.wrappers import Response
 
+from crm.integrations.api import get_contact_by_phone_number
+
 from .twilio_handler import IncomingCall, Twilio, TwilioCallDetails
-from .utils import parse_mobile_no
 
 
 @frappe.whitelist()
@@ -69,13 +70,31 @@ def twilio_incoming_call_handler(**kwargs):
 
 
 def create_call_log(call_details: TwilioCallDetails):
-	call_log = frappe.get_doc(
-		{**call_details.to_dict(), "doctype": "CRM Call Log", "telephony_medium": "Twilio"}
-	)
-	call_log.reference_docname, call_log.reference_doctype = get_lead_or_deal_from_number(call_log)
-	call_log.flags.ignore_permissions = True
-	call_log.save()
+	details = call_details.to_dict()
+
+	call_log = frappe.get_doc({**details, "doctype": "CRM Call Log", "telephony_medium": "Twilio"})
+
+	# link call log with lead/deal
+	contact_number = details.get("from") if details.get("type") == "Incoming" else details.get("to")
+	link(contact_number, call_log)
+
+	call_log.save(ignore_permissions=True)
 	frappe.db.commit()
+	return call_log
+
+
+def link(contact_number, call_log):
+	contact = get_contact_by_phone_number(contact_number)
+	if contact.get("name"):
+		doctype = "Contact"
+		docname = contact.get("name")
+		if contact.get("lead"):
+			doctype = "CRM Lead"
+			docname = contact.get("lead")
+		elif contact.get("deal"):
+			doctype = "CRM Deal"
+			docname = contact.get("deal")
+		call_log.link_with_reference_doc(doctype, docname)
 
 
 def update_call_log(call_sid, status=None):
@@ -84,18 +103,19 @@ def update_call_log(call_sid, status=None):
 	if not (twilio and frappe.db.exists("CRM Call Log", call_sid)):
 		return
 
-	call_details = twilio.get_call_info(call_sid)
-	call_log = frappe.get_doc("CRM Call Log", call_sid)
-	call_log.status = TwilioCallDetails.get_call_status(status or call_details.status)
-	call_log.duration = call_details.duration
-	call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
-	call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
-	if call_log.note and call_log.reference_docname:
-		frappe.db.set_value("FCRM Note", call_log.note, "reference_doctype", call_log.reference_doctype)
-		frappe.db.set_value("FCRM Note", call_log.note, "reference_docname", call_log.reference_docname)
-	call_log.flags.ignore_permissions = True
-	call_log.save()
-	frappe.db.commit()
+	try:
+		call_details = twilio.get_call_info(call_sid)
+		call_log = frappe.get_doc("CRM Call Log", call_sid)
+		call_log.status = TwilioCallDetails.get_call_status(status or call_details.status)
+		call_log.duration = call_details.duration
+		call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
+		call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
+		call_log.save(ignore_permissions=True)
+		frappe.db.commit()
+		return call_log
+	except Exception:
+		frappe.log_error(title="Error while updating call record")
+		frappe.db.commit()
 
 
 @frappe.whitelist(allow_guest=True)
@@ -106,7 +126,7 @@ def update_recording_info(**kwargs):
 		call_sid = args.CallSid
 		update_call_log(call_sid)
 		frappe.db.set_value("CRM Call Log", call_sid, "recording_url", recording_url)
-	except:
+	except Exception:
 		frappe.log_error(title=_("Failed to capture Twilio recording"))
 
 
@@ -128,7 +148,7 @@ def update_call_status_info(**kwargs):
 
 		client = Twilio.get_twilio_client()
 		client.calls(args.ParentCallSid).user_defined_messages.create(content=json.dumps(call_info))
-	except:
+	except Exception:
 		frappe.log_error(title=_("Failed to update Twilio call status"))
 
 
@@ -144,45 +164,3 @@ def get_datetime_from_timestamp(timestamp):
 	system_timezone = frappe.utils.get_system_timezone()
 	converted_datetime = datetime_utc_tz.astimezone(ZoneInfo(system_timezone))
 	return frappe.utils.format_datetime(converted_datetime, "yyyy-MM-dd HH:mm:ss")
-
-
-@frappe.whitelist()
-def add_note_to_call_log(call_sid, note):
-	"""Add note to call log. based on child call sid."""
-	twilio = Twilio.connect()
-	if not twilio:
-		return
-
-	call_details = twilio.get_call_info(call_sid)
-	sid = call_sid if call_details.direction == "inbound" else call_details.parent_call_sid
-
-	frappe.db.set_value("CRM Call Log", sid, "note", note)
-	frappe.db.commit()
-
-
-def get_lead_or_deal_from_number(call):
-	"""Get lead/deal from the given number."""
-
-	def find_record(doctype, mobile_no, where=""):
-		mobile_no = parse_mobile_no(mobile_no)
-
-		query = f"""
-			SELECT name, mobile_no
-			FROM `tab{doctype}`
-			WHERE CONCAT('+', REGEXP_REPLACE(mobile_no, '[^0-9]', '')) = {mobile_no}
-		"""
-
-		data = frappe.db.sql(query + where, as_dict=True)
-		return data[0].name if data else None
-
-	doctype = "CRM Deal"
-	number = call.get("to") if call.type == "Outgoing" else call.get("from")
-
-	doc = find_record(doctype, number) or None
-	if not doc:
-		doctype = "CRM Lead"
-		doc = find_record(doctype, number, "AND converted is not True")
-		if not doc:
-			doc = find_record(doctype, number)
-
-	return doc, doctype
