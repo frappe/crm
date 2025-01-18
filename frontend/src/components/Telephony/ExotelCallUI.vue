@@ -514,7 +514,7 @@ function updateStatus(data) {
     data.Status == 'completed'
   ) {
     counterUp.value.stop()
-    callDuration.value = getTime(
+    callDuration.value = counterUp.value.getTime(
       parseInt(data['Legs[0][OnCallDuration]']) ||
         parseInt(data.DialCallDuration),
     )
