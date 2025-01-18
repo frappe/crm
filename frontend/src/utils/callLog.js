@@ -1,41 +1,15 @@
-import { secondsToDuration, formatDate, timeAgo } from '@/utils'
+import { formatDate, timeAgo } from '@/utils'
 import { getMeta } from '@/stores/meta'
-import { usersStore } from '@/stores/users'
-import { contactsStore } from '@/stores/contacts'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Call Log')
-const { getUser } = usersStore()
-const { getContact, getLeadContact } = contactsStore()
 
 export function getCallLogDetail(row, log, columns = []) {
   let incoming = log.type === 'Incoming'
 
-  if (row === 'caller') {
+  if (row === 'duration') {
     return {
-      label: incoming
-        ? getContact(log.from)?.full_name ||
-          getLeadContact(log.from)?.full_name ||
-          'Unknown'
-        : getUser(log.caller).full_name,
-      image: incoming
-        ? getContact(log.from)?.image || getLeadContact(log.from)?.image
-        : getUser(log.caller).user_image,
-    }
-  } else if (row === 'receiver') {
-    return {
-      label: incoming
-        ? getUser(log.receiver).full_name
-        : getContact(log.to)?.full_name ||
-          getLeadContact(log.to)?.full_name ||
-          'Unknown',
-      image: incoming
-        ? getUser(log.receiver).user_image
-        : getContact(log.to)?.image || getLeadContact(log.to)?.image,
-    }
-  } else if (row === 'duration') {
-    return {
-      label: secondsToDuration(log.duration),
+      label: log.duration,
       icon: 'clock',
     }
   } else if (row === 'type') {
@@ -82,7 +56,7 @@ export const statusLabelMap = {
   Busy: 'Declined',
   Failed: 'Failed',
   Queued: 'Queued',
-  Cancelled: 'Cancelled',
+  Canceled: 'Canceled',
   Ringing: 'Ringing',
   'No Answer': 'Missed Call',
   'In Progress': 'In Progress',
@@ -94,7 +68,7 @@ export const statusColorMap = {
   Failed: 'red',
   Initiated: 'gray',
   Queued: 'gray',
-  Cancelled: 'gray',
+  Canceled: 'gray',
   Ringing: 'gray',
   'No Answer': 'red',
   'In Progress': 'blue',
