@@ -146,7 +146,7 @@ const detailFields = computed(() => {
     {
       icon: callLog.value.data._lead ? LeadsIcon : Dealsicon,
       name: 'reference_doc',
-      value: callLog.value.data._lead == 'CRM Lead' ? 'Lead' : 'Deal',
+      value: callLog.value.data._lead ? 'Lead' : 'Deal',
       link: () => {
         if (callLog.value.data._lead) {
           router.push({

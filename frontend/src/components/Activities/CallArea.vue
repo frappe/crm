@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @click="showCallLogModal = true" class="cursor-pointer">
     <div class="mb-1 flex items-center justify-stretch gap-2 py-1 text-base">
       <div class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5">
         <Avatar
@@ -70,7 +70,7 @@
           v-if="activity.recording_url"
           :label="activity.show_recording ? __('Hide Recording') : __('Listen')"
           class="cursor-pointer"
-          @click="activity.show_recording = !activity.show_recording"
+          @click.stop="activity.show_recording = !activity.show_recording"
         >
           <template #prefix>
             <PlayIcon class="size-3" />
@@ -84,10 +84,12 @@
       <div
         v-if="activity.show_recording && activity.recording_url"
         class="flex flex-col items-center justify-between"
+        @click.stop
       >
         <AudioPlayer :src="activity.recording_url" />
       </div>
     </div>
+    <CallLogModal v-model="showCallLogModal" :name="callLogName" />
   </div>
 </template>
 <script setup>
@@ -96,11 +98,16 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
+import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { statusLabelMap, statusColorMap } from '@/utils/callLog.js'
 import { formatDate, timeAgo } from '@/utils'
 import { Avatar, Badge, Tooltip } from 'frappe-ui'
+import { ref } from 'vue'
 
 const props = defineProps({
   activity: Object,
 })
+
+const callLogName = ref(props.activity.name)
+const showCallLogModal = ref(false)
 </script>
