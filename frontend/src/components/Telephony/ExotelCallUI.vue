@@ -231,9 +231,10 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
-import { TextEditor, Avatar, Button, call, createResource } from 'frappe-ui'
+import { createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { useDraggable, useWindowSize } from '@vueuse/core'
+import { TextEditor, Avatar, Button, call, createResource } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -362,12 +363,24 @@ function updateWindowHeight(condition) {
 
 function makeOutgoingCall(number) {
   phoneNumber.value = number
-  callStatus.value = 'Calling...'
-  showCallPopup.value = true
-  showSmallCallPopup.value = false
 
-  call('crm.integrations.exotel.handler.make_a_call', {
-    to_number: phoneNumber.value,
+  createResource({
+    url: 'crm.integrations.exotel.handler.make_a_call',
+    params: { to_number: phoneNumber.value },
+    auto: true,
+    onSuccess() {
+      callStatus.value = 'Calling...'
+      showCallPopup.value = true
+      showSmallCallPopup.value = false
+    },
+    onError(err) {
+      createToast({
+        title: 'Error',
+        text: err.messages[0],
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
+    },
   })
 }
 
@@ -446,8 +459,11 @@ function updateStatus(data) {
   } else if (
     data.EventType == 'terminal' &&
     data.Direction == 'outbound-api' &&
-    data.Status == 'no-answer' &&
-    data['Legs[1][Status]'] == 'no-answer'
+    (data.Status == 'no-answer' || data.Status == 'busy') &&
+    (data['Legs[1][Status]'] == 'no-answer' ||
+      data['Legs[0][Status]'] == 'no-answer' ||
+      data['Legs[1][Status]'] == 'busy' ||
+      data['Legs[0][Status]'] == 'busy')
   ) {
     counterUp.value.stop()
     return 'No answer'

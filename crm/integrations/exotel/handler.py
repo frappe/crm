@@ -109,6 +109,7 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 			to_number=call_payload.get("To"),
 			medium=call_payload.get("PhoneNumberSid"),
 			call_type="Outgoing",
+			agent=frappe.session.user,
 		)
 
 	return response.json()
@@ -154,7 +155,7 @@ def create_call_log(
 	from_number,
 	to_number,
 	medium,
-	agent=frappe.session.user,
+	agent,
 	status="Ringing",
 	call_type="Incoming",
 ):
