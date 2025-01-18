@@ -189,8 +189,8 @@ def get_quick_filters(doctype: str):
 		quick_filters.append(
 			{
 				"label": _(field.label),
-				"name": field.fieldname,
-				"type": field.fieldtype,
+				"fieldname": field.fieldname,
+				"fieldtype": field.fieldtype,
 				"options": options,
 			}
 		)

@@ -65,7 +65,7 @@
     >
       <div
         v-for="filter in quickFilterList"
-        :key="filter.name"
+        :key="filter.fieldname"
         class="m-1 min-w-36"
       >
         <QuickFilterField
@@ -595,13 +595,13 @@ const quickFilterList = computed(() => {
   }
 
   filters.forEach((filter) => {
-    filter['value'] = filter.type == 'Check' ? false : ''
-    if (list.value.params?.filters[filter.name]) {
-      let value = list.value.params.filters[filter.name]
+    filter['value'] = filter.fieldtype == 'Check' ? false : ''
+    if (list.value.params?.filters[filter.fieldname]) {
+      let value = list.value.params.filters[filter.fieldname]
       if (Array.isArray(value)) {
         if (
           (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.type,
+            filter.fieldtype,
           ) &&
             value[0]?.toLowerCase() == 'like') ||
           value[0]?.toLowerCase() != 'like'
@@ -626,9 +626,11 @@ const quickFilters = createResource({
 
 function applyQuickFilter(filter, value) {
   let filters = { ...list.value.params.filters }
-  let field = filter.name
+  let field = filter.fieldname
   if (value) {
-    if (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.type)) {
+    if (
+      ['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.fieldtype)
+    ) {
       filters[field] = value
     } else {
       filters[field] = ['LIKE', `%${value}%`]
