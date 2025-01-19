@@ -9,18 +9,40 @@ from crm.utils import are_same_phone_number, parse_phone_number
 def is_call_integration_enabled():
 	twilio_enabled = frappe.db.get_single_value("Twilio Settings", "enabled")
 	exotel_enabled = frappe.db.get_single_value("CRM Exotel Settings", "enabled")
-	default_calling_medium = frappe.db.get_single_value("FCRM Settings", "default_calling_medium")
 
 	return {
 		"twilio_enabled": twilio_enabled,
 		"exotel_enabled": exotel_enabled,
-		"default_calling_medium": default_calling_medium,
+		"default_calling_medium": get_user_default_calling_medium(),
 	}
+
+
+def get_user_default_calling_medium():
+	if not frappe.db.exists("CRM Telephony Agent", frappe.session.user):
+		return None
+
+	default_medium = frappe.db.get_value("CRM Telephony Agent", frappe.session.user, "default_medium")
+
+	if not default_medium:
+		return None
+
+	return default_medium
 
 
 @frappe.whitelist()
 def set_default_calling_medium(medium):
-	return frappe.db.set_value("FCRM Settings", "FCRM Settings", "default_calling_medium", medium)
+	if not frappe.db.exists("CRM Telephony Agent", frappe.session.user):
+		frappe.get_doc(
+			{
+				"doctype": "CRM Telephony Agent",
+				"agent": frappe.session.user,
+				"default_medium": medium,
+			}
+		).insert(ignore_permissions=True)
+	else:
+		frappe.db.set_value("CRM Telephony Agent", frappe.session.user, "default_medium", medium)
+
+	return get_user_default_calling_medium()
 
 
 @frappe.whitelist()
