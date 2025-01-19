@@ -3,7 +3,7 @@ from frappe.model.rename_doc import rename_doc
 
 
 def execute():
-	if frappe.db.table_exists("Twilio Settings"):
+	if frappe.db.exists("DocType", "Twilio Settings"):
 		frappe.flags.ignore_route_conflict_validation = True
 		rename_doc("DocType", "Twilio Settings", "CRM Twilio Settings")
 		frappe.flags.ignore_route_conflict_validation = False
