@@ -125,7 +125,9 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 			agent=frappe.session.user,
 		)
 
-	return response.json()
+	call_details = response.json().get("Call", {})
+	call_details["CallSid"] = call_details.get("Sid", "")
+	return call_details
 
 
 def get_exotel_endpoint(action=None):
@@ -161,7 +163,7 @@ def validate_request():
 	# workaround security since exotel does not support request signature
 	# /api/method/<exotel-integration-method>?key=<exotel-webhook=verify-token>
 	webhook_verify_token = frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token")
-	key = frappe.request.args.get('key')
+	key = frappe.request.args.get("key")
 	is_valid = key and key == webhook_verify_token
 
 	if not is_valid:

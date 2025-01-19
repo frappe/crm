@@ -399,7 +399,10 @@ function makeOutgoingCall(number) {
     url: 'crm.integrations.exotel.handler.make_a_call',
     params: { to_number: phoneNumber.value },
     auto: true,
-    onSuccess() {
+    onSuccess(callDetails) {
+      callData.value = callDetails
+      console.log(callDetails)
+
       callStatus.value = 'Calling...'
       showCallPopup.value = true
       showSmallCallPopup.value = false
