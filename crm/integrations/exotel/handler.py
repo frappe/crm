@@ -1,5 +1,3 @@
-import json
-
 import bleach
 import frappe
 import requests
@@ -8,10 +6,20 @@ from frappe.integrations.utils import create_request_log
 
 from crm.integrations.api import get_contact_by_phone_number
 
+# Endpoints for webhook
+
+# Incoming Call:
+# <site>/api/method/crm.integrations.exotel.handler.handle_request?key=<exotel-webhook-verify-token>
+
+# Exotel Reference:
+# https://developer.exotel.com/api/
+# https://support.exotel.com/support/solutions/articles/48283-working-with-passthru-applet
+
 
 # Incoming Call
 @frappe.whitelist(allow_guest=True)
 def handle_request(**kwargs):
+	validate_request()
 	if not is_integration_enabled():
 		return
 
@@ -147,6 +155,17 @@ def get_status_updater_url():
 
 def get_exotel_settings():
 	return frappe.get_single("CRM Exotel Settings")
+
+
+def validate_request():
+	# workaround security since exotel does not support request signature
+	# /api/method/<exotel-integration-method>?key=<exotel-webhook=verify-token>
+	webhook_verify_token = frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token")
+	key = frappe.request.args.get('key')
+	is_valid = key and key == webhook_verify_token
+
+	if not is_valid:
+		frappe.throw(_("Unauthorized request"), exc=frappe.PermissionError)
 
 
 @frappe.whitelist()

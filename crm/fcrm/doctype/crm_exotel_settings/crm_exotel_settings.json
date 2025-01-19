@@ -10,6 +10,8 @@
   "record_call",
   "section_break_kfez",
   "account_sid",
+  "column_break_qwfn",
+  "webhook_verify_token",
   "section_break_iuct",
   "api_key",
   "column_break_hyen",
@@ -70,12 +72,23 @@
    "fieldname": "record_call",
    "fieldtype": "Check",
    "label": "Record Call"
+  },
+  {
+   "fieldname": "column_break_qwfn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "webhook_verify_token",
+   "fieldtype": "Data",
+   "label": "Webhook Verify Token",
+   "mandatory_depends_on": "enabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-15 19:31:00.310049",
+ "modified": "2025-01-19 22:19:20.713970",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Exotel Settings",
