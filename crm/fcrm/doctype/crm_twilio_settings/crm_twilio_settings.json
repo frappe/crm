@@ -108,7 +108,7 @@
  "modified": "2025-01-15 19:35:13.406254",
  "modified_by": "Administrator",
  "module": "FCRM",
- "name": "Twilio Settings",
+ "name": "CRM Twilio Settings",
  "owner": "Administrator",
  "permissions": [
   {

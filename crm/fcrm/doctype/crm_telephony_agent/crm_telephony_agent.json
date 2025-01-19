@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:mobile_no",
+ "autoname": "field:user",
  "creation": "2025-01-11 16:12:46.602782",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -10,7 +10,15 @@
   "user_name",
   "column_break_hdec",
   "mobile_no",
-  "exotel_number"
+  "default_medium",
+  "section_break_ozjn",
+  "twilio",
+  "twilio_number",
+  "column_break_aydj",
+  "exotel",
+  "exotel_number",
+  "section_break_phlq",
+  "phone_nos"
  ],
  "fields": [
   {
@@ -20,7 +28,8 @@
    "in_standard_filter": 1,
    "label": "User",
    "options": "User",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "column_break_hdec",
@@ -32,8 +41,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Mobile No.",
-   "reqd": 1,
-   "unique": 1
+   "read_only": 1
   },
   {
    "fetch_from": "user.full_name",
@@ -44,19 +52,62 @@
    "label": "User Name"
   },
   {
+   "depends_on": "exotel",
    "fieldname": "exotel_number",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Exotel Number"
+   "label": "Exotel Number",
+   "mandatory_depends_on": "exotel"
+  },
+  {
+   "fieldname": "section_break_phlq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_ozjn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_aydj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "twilio",
+   "fieldname": "twilio_number",
+   "fieldtype": "Data",
+   "label": "Twilio Number",
+   "mandatory_depends_on": "twilio"
+  },
+  {
+   "fieldname": "phone_nos",
+   "fieldtype": "Table",
+   "label": "Phone Numbers",
+   "options": "CRM Telephony Phone"
+  },
+  {
+   "default": "0",
+   "fieldname": "twilio",
+   "fieldtype": "Check",
+   "label": "Twilio"
+  },
+  {
+   "default": "0",
+   "fieldname": "exotel",
+   "fieldtype": "Check",
+   "label": "Exotel"
+  },
+  {
+   "fieldname": "default_medium",
+   "fieldtype": "Select",
+   "label": "Default Medium",
+   "options": "\nTwilio\nExotel"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-15 20:03:31.162162",
+ "modified": "2025-01-19 14:17:12.880185",
  "modified_by": "Administrator",
  "module": "FCRM",
- "name": "CRM Exotel Agent",
+ "name": "CRM Telephony Agent",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

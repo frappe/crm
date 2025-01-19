@@ -14,7 +14,7 @@ class Twilio:
 
 	def __init__(self, settings):
 		"""
-		:param settings: `Twilio Settings` doctype
+		:param settings: `CRM Twilio Settings` doctype
 		"""
 		self.settings = settings
 		self.account_sid = settings.account_sid
@@ -26,7 +26,7 @@ class Twilio:
 	@classmethod
 	def connect(self):
 		"""Make a twilio connection."""
-		settings = frappe.get_doc("Twilio Settings")
+		settings = frappe.get_doc("CRM Twilio Settings")
 		if not (settings and settings.enabled):
 			return
 		return Twilio(settings=settings)
@@ -114,11 +114,11 @@ class Twilio:
 
 	@classmethod
 	def get_twilio_client(self):
-		twilio_settings = frappe.get_doc("Twilio Settings")
+		twilio_settings = frappe.get_doc("CRM Twilio Settings")
 		if not twilio_settings.enabled:
 			frappe.throw(_("Please enable twilio settings before making a call."))
 
-		auth_token = get_decrypted_password("Twilio Settings", "Twilio Settings", "auth_token")
+		auth_token = get_decrypted_password("CRM Twilio Settings", "CRM Twilio Settings", "auth_token")
 		client = TwilioClient(twilio_settings.account_sid, auth_token)
 
 		return client

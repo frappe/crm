@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class CRMExotelAgent(Document):
+class CRMTelephonyPhone(Document):
 	pass

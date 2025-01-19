@@ -11,7 +11,7 @@ from .twilio_handler import IncomingCall, Twilio, TwilioCallDetails
 
 @frappe.whitelist()
 def is_enabled():
-	return frappe.db.get_single_value("Twilio Settings", "enabled")
+	return frappe.db.get_single_value("CRM Twilio Settings", "enabled")
 
 
 @frappe.whitelist()
