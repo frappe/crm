@@ -7,7 +7,7 @@ from crm.utils import are_same_phone_number, parse_phone_number
 
 @frappe.whitelist()
 def is_call_integration_enabled():
-	twilio_enabled = frappe.db.get_single_value("Twilio Settings", "enabled")
+	twilio_enabled = frappe.db.get_single_value("CRM Twilio Settings", "enabled")
 	exotel_enabled = frappe.db.get_single_value("CRM Exotel Settings", "enabled")
 
 	return {

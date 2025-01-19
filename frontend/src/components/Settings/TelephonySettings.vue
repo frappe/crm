@@ -38,7 +38,7 @@
           v-if="twilio?.doc && twilioTabs"
           :tabs="twilioTabs"
           :data="twilio.doc"
-          doctype="Twilio Settings"
+          doctype="CRM Twilio Settings"
         />
       </div>
 
@@ -94,9 +94,9 @@ const { isManager, isAgent } = usersStore()
 
 const twilioFields = createResource({
   url: 'crm.api.doc.get_fields',
-  cache: ['fields', 'Twilio Settings'],
+  cache: ['fields', 'CRM Twilio Settings'],
   params: {
-    doctype: 'Twilio Settings',
+    doctype: 'CRM Twilio Settings',
     allow_all_fieldtypes: true,
   },
   auto: true,
@@ -113,8 +113,8 @@ const exotelFields = createResource({
 })
 
 const twilio = createDocumentResource({
-  doctype: 'Twilio Settings',
-  name: 'Twilio Settings',
+  doctype: 'CRM Twilio Settings',
+  name: 'CRM Twilio Settings',
   fields: ['*'],
   auto: true,
   setValue: {
