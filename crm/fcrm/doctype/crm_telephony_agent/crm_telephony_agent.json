@@ -10,6 +10,7 @@
   "user_name",
   "column_break_hdec",
   "mobile_no",
+  "default_medium",
   "section_break_ozjn",
   "twilio",
   "twilio_number",
@@ -93,11 +94,17 @@
    "fieldname": "exotel",
    "fieldtype": "Check",
    "label": "Exotel"
+  },
+  {
+   "fieldname": "default_medium",
+   "fieldtype": "Select",
+   "label": "Default Medium",
+   "options": "\nTwilio\nExotel"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-19 14:12:51.596987",
+ "modified": "2025-01-19 14:17:12.880185",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Telephony Agent",
