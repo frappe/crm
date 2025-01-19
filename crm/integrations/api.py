@@ -161,6 +161,7 @@ def get_contact(phone_number, exact_match=False):
 		for lead in leads:
 			if are_same_phone_number(lead.mobile_no, phone_number, validate=not exact_match):
 				lead["lead"] = lead.name
+				lead["full_name"] = lead.lead_name
 				return lead
 
 	return {"mobile_no": phone_number}
