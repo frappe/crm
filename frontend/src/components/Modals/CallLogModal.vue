@@ -92,7 +92,7 @@
       />
     </template>
   </Dialog>
-  <NoteModal v-model="showNoteModal" :note="callNoteDoc" />
+  <NoteModal v-model="showNoteModal" :note="callLog.value?.data?._notes?.[0]" />
 </template>
 
 <script setup>
@@ -121,7 +121,6 @@ const props = defineProps({
 const show = defineModel()
 const showNoteModal = ref(false)
 const router = useRouter()
-const callNoteDoc = ref(null)
 const callLog = ref({})
 
 const detailFields = computed(() => {
@@ -190,7 +189,7 @@ const detailFields = computed(() => {
     {
       icon: NoteIcon,
       name: 'note',
-      value: callNoteDoc.value,
+      value: callLog.value.data._notes?.[0] ?? null,
     },
   ]
 
@@ -221,9 +220,6 @@ watch(show, (val) => {
           doc[key] = getCallLogDetail(key, doc)
         }
         return doc
-      },
-      onSuccess: (doc) => {
-        callNoteDoc.value = doc._notes?.[0] ?? null
       },
     })
   }
