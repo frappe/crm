@@ -67,17 +67,22 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 	endpoint = get_exotel_endpoint("Calls/connect.json?details=true")
 
 	if not from_number:
-		from_number = frappe.get_value("CRM Exotel Agent", {"user": frappe.session.user}, "mobile_no")
+		from_number = frappe.get_value("CRM Telephony Agent", {"user": frappe.session.user}, "mobile_no")
 
 	if not caller_id:
-		caller_id = frappe.get_value("CRM Exotel Agent", {"user": frappe.session.user}, "exotel_number")
+		caller_id = frappe.get_value("CRM Telephony Agent", {"user": frappe.session.user}, "exotel_number")
+
+	if not caller_id:
+		frappe.throw(
+			_("You do not have Exotel Number set in your Telephony Agent"), title=_("Exotel Number Missing")
+		)
 
 	if caller_id and caller_id not in get_all_exophones():
 		frappe.throw(_("Exotel Number {0} is not valid").format(caller_id), title=_("Invalid Exotel Number"))
 
 	if not from_number:
 		frappe.throw(
-			_("You do not have mobile number set in your Exotel Agent"), title=_("Mobile Number Missing")
+			_("You do not have mobile number set in your Telephony Agent"), title=_("Mobile Number Missing")
 		)
 
 	record_call = frappe.db.get_single_value("CRM Exotel Settings", "record_call")
