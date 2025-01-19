@@ -197,17 +197,9 @@ def create_lead_from_call_log(call_log):
 	lead.lead_owner = frappe.session.user
 	lead.save(ignore_permissions=True)
 
-	frappe.db.set_value(
-		"CRM Call Log",
-		call_log.get("name"),
-		{"reference_doctype": "CRM Lead", "reference_docname": lead.name},
-	)
-
-	if call_log.get("note"):
-		frappe.db.set_value(
-			"FCRM Note",
-			call_log.get("note"),
-			{"reference_doctype": "CRM Lead", "reference_docname": lead.name},
-		)
+	# link call log with lead
+	call_log = frappe.get_doc("CRM Call Log", call_log.get("name"))
+	call_log.link_with_reference_doc("CRM Lead", lead.name)
+	call_log.save(ignore_permissions=True)
 
 	return lead.name
