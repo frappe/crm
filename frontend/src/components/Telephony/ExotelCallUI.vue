@@ -16,7 +16,7 @@
         />
         <AvatarIcon v-else class="size-3" />
       </div>
-      <span>{{ contact?.full_name ?? phoneNumber }}</span>
+      <span>{{ contact?.full_name ?? contact?.mobile_no }}</span>
       <span>·</span>
       <div v-if="callStatus == 'In progress'">
         {{ counterUp?.updatedTime }}
@@ -68,11 +68,11 @@
               class="flex flex-col gap-1 text-base leading-4 overflow-hidden"
             >
               <div class="font-medium truncate">
-                {{ contact?.full_name ?? phoneNumber }}
+                {{ contact?.full_name ?? contact?.mobile_no }}
               </div>
               <div class="text-ink-gray-6">
                 <div v-if="callStatus == 'In progress'">
-                  <span>{{ phoneNumber }}</span>
+                  <span>{{ contact?.mobile_no }}</span>
                   <span> · </span>
                   <span>{{ counterUp?.updatedTime }}</span>
                 </div>
@@ -170,11 +170,11 @@
               {{ contact.full_name }}
             </div>
             <div class="text-base text-ink-gray-6 leading-4">
-              {{ phoneNumber }}
+              {{ contact.mobile_no }}
             </div>
           </div>
           <div v-else class="text-lg font-medium leading-5">
-            {{ phoneNumber }}
+            {{ contact.mobile_no }}
           </div>
         </div>
       </div>
@@ -296,7 +296,6 @@ const getContact = createResource({
       phone_number: phoneNumber.value,
     }
   },
-  cache: ['contact', phoneNumber.value],
   onSuccess(data) {
     contact.value = data
   },
