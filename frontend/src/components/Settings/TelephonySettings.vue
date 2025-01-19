@@ -19,17 +19,18 @@
       <FormControl
         type="select"
         v-model="defaultCallingMedium"
-        :label="__('Default calling medium')"
+        :label="__('Default medium')"
         :options="[
           { label: __(''), value: '' },
           { label: __('Twilio'), value: 'Twilio' },
           { label: __('Exotel'), value: 'Exotel' },
         ]"
         class="w-1/2"
+        :description="__('Default calling medium for logged in user')"
       />
 
       <!-- Twilio -->
-      <div class="flex flex-col justify-between gap-4">
+      <div v-if="isManager()" class="flex flex-col justify-between gap-4">
         <span class="text-base font-semibold text-ink-gray-9">
           {{ __('Twilio') }}
         </span>
@@ -42,7 +43,7 @@
       </div>
 
       <!-- Exotel -->
-      <div class="flex flex-col justify-between gap-4">
+      <div v-if="isManager()" class="flex flex-col justify-between gap-4">
         <span class="text-base font-semibold text-ink-gray-9">
           {{ __('Exotel') }}
         </span>
@@ -85,8 +86,11 @@ import {
   call,
 } from 'frappe-ui'
 import { defaultCallingMedium } from '@/composables/settings'
+import { usersStore } from '@/stores/users'
 import { createToast, getRandom } from '@/utils'
 import { ref, computed, watch } from 'vue'
+
+const { isManager, isAgent } = usersStore()
 
 const twilioFields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -273,6 +277,9 @@ function update() {
   if (mediumChanged.value) {
     updateMedium()
   }
+
+  if (!isManager()) return
+
   if (twilio.isDirty) {
     twilio.save.submit()
   }
@@ -298,6 +305,8 @@ async function updateMedium() {
 const error = ref('')
 
 function validateIfDefaultMediumIsEnabled() {
+  if (isAgent() && !isManager()) return true
+
   if (defaultCallingMedium.value === 'Twilio' && !twilio.doc.enabled) {
     error.value = __('Twilio is not enabled')
     return false
