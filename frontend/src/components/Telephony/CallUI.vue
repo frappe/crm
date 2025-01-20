@@ -24,18 +24,18 @@
         <FormControl
           type="select"
           v-model="callMedium"
-          :label="__('Call Medium')"
+          :label="__('Calling Medium')"
           :options="['Twilio', 'Exotel']"
         />
         <div class="flex flex-col gap-1">
           <FormControl
             type="checkbox"
             v-model="isDefaultMedium"
-            :label="__('Make {0} as default call medium', [callMedium])"
+            :label="__('Make {0} as default calling medium', [callMedium])"
           />
 
           <div v-if="isDefaultMedium" class="text-sm text-ink-gray-4">
-            {{ __('You can change the default call medium from the settings') }}
+            {{ __('You can change the default calling medium from the settings') }}
           </div>
         </div>
       </div>
