@@ -14,7 +14,9 @@ class CRMExotelSettings(Document):
 	def verify_credentials(self):
 		if self.enabled:
 			response = requests.get(
-				"https://api.exotel.com/v1/Accounts/{sid}".format(sid=self.account_sid),
+				"https://{subdomain}/v1/Accounts/{sid}".format(
+					subdomain=self.subdomain, sid=self.account_sid
+				),
 				auth=(self.api_key, self.get_password("api_token")),
 			)
 			if response.status_code != 200:

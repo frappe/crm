@@ -10,6 +10,7 @@
   "record_call",
   "section_break_kfez",
   "account_sid",
+  "subdomain",
   "column_break_qwfn",
   "webhook_verify_token",
   "section_break_iuct",
@@ -83,12 +84,19 @@
    "fieldtype": "Data",
    "label": "Webhook Verify Token",
    "mandatory_depends_on": "enabled"
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "subdomain",
+   "fieldtype": "Data",
+   "label": "Subdomain",
+   "mandatory_depends_on": "enabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-19 22:19:20.713970",
+ "modified": "2025-01-20 15:00:51.096985",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Exotel Settings",

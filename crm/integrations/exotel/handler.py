@@ -132,9 +132,10 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 
 def get_exotel_endpoint(action=None):
 	settings = get_exotel_settings()
-	return "https://{api_key}:{api_token}@api.exotel.com/v1/Accounts/{sid}/{action}".format(
+	return "https://{api_key}:{api_token}@{subdomain}/v1/Accounts/{sid}/{action}".format(
 		api_key=settings.api_key,
 		api_token=settings.get_password("api_token"),
+		subdomain=settings.subdomain,
 		sid=settings.account_sid,
 		action=action,
 	)
