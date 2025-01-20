@@ -153,7 +153,8 @@ def get_all_exophones():
 def get_status_updater_url():
 	from frappe.utils.data import get_url
 
-	return get_url("api/method/crm.integrations.exotel.handler.handle_request")
+	webhook_verify_token = frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token")
+	return get_url(f"api/method/crm.integrations.exotel.handler.handle_request?key={webhook_verify_token}")
 
 
 def get_exotel_settings():
