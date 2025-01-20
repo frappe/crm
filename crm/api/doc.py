@@ -185,12 +185,13 @@ def get_quick_filters(doctype: str):
 		if field.fieldtype == "Select" and options and isinstance(options, str):
 			options = options.split("\n")
 			options = [{"label": option, "value": option} for option in options]
-			options.insert(0, {"label": "", "value": ""})
+			if not any([not option.get("value") for option in options]):
+				options.insert(0, {"label": "", "value": ""})
 		quick_filters.append(
 			{
 				"label": _(field.label),
-				"name": field.fieldname,
-				"type": field.fieldtype,
+				"fieldname": field.fieldname,
+				"fieldtype": field.fieldtype,
 				"options": options,
 			}
 		)
@@ -306,6 +307,7 @@ def get_data(
 			)
 			or []
 		)
+		data = parse_list_data(data, doctype)
 
 	if view_type == "kanban":
 		if not rows:
@@ -477,6 +479,13 @@ def get_data(
 		"list_script": get_form_script(doctype, "List"),
 		"view_type": view_type,
 	}
+
+
+def parse_list_data(data, doctype):
+	_list = get_controller(doctype)
+	if hasattr(_list, "parse_list_data"):
+		data = _list.parse_list_data(data)
+	return data
 
 
 def convert_filter_to_tuple(doctype, filters):

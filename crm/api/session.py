@@ -5,7 +5,16 @@ import frappe
 def get_users():
 	users = frappe.qb.get_query(
 		"User",
-		fields=["name", "email", "enabled", "user_image", "first_name", "last_name", "full_name", "user_type"],
+		fields=[
+			"name",
+			"email",
+			"enabled",
+			"user_image",
+			"first_name",
+			"last_name",
+			"full_name",
+			"user_type",
+		],
 		order_by="full_name asc",
 		distinct=True,
 	).run(as_dict=1)
@@ -14,10 +23,12 @@ def get_users():
 		if frappe.session.user == user.name:
 			user.session_user = True
 
-		user.is_manager = (
-			"Sales Manager" in frappe.get_roles(user.name) or user.name == "Administrator"
-		)
+		user.is_manager = "Sales Manager" in frappe.get_roles(user.name) or user.name == "Administrator"
+
+		user.is_agent = frappe.db.exists("CRM Telephony Agent", {"user": user.name})
+
 	return users
+
 
 @frappe.whitelist()
 def get_contacts():
@@ -37,7 +48,7 @@ def get_contacts():
 			"mobile_no",
 			"phone",
 			"company_name",
-			"modified"
+			"modified",
 		],
 		order_by="first_name asc",
 		distinct=True,
@@ -58,18 +69,12 @@ def get_contacts():
 
 	return contacts
 
+
 @frappe.whitelist()
 def get_lead_contacts():
 	lead_contacts = frappe.get_all(
 		"CRM Lead",
-		fields=[
-			"name",
-			"lead_name",
-			"mobile_no",
-			"phone",
-			"image",
-			"modified"
-		],
+		fields=["name", "lead_name", "mobile_no", "phone", "image", "modified"],
 		filters={"converted": 0},
 		order_by="lead_name asc",
 		distinct=True,
@@ -77,11 +82,12 @@ def get_lead_contacts():
 
 	return lead_contacts
 
+
 @frappe.whitelist()
 def get_organizations():
 	organizations = frappe.qb.get_query(
 		"CRM Organization",
-		fields=['*'],
+		fields=["*"],
 		order_by="name asc",
 		distinct=True,
 	).run(as_dict=1)

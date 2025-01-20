@@ -23,6 +23,7 @@
  ],
  "fields": [
   {
+   "depends_on": "enabled",
    "fieldname": "account_sid",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -30,6 +31,7 @@
    "mandatory_depends_on": "eval: doc.enabled"
   },
   {
+   "depends_on": "enabled",
    "fieldname": "api_key",
    "fieldtype": "Data",
    "label": "API Key",
@@ -37,6 +39,7 @@
    "read_only": 1
   },
   {
+   "depends_on": "enabled",
    "fieldname": "api_secret",
    "fieldtype": "Password",
    "label": "API Secret",
@@ -48,6 +51,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "enabled",
    "fieldname": "auth_token",
    "fieldtype": "Password",
    "in_list_view": 1,
@@ -55,6 +59,7 @@
    "mandatory_depends_on": "eval: doc.enabled"
   },
   {
+   "depends_on": "enabled",
    "fieldname": "twiml_sid",
    "fieldtype": "Data",
    "label": "TwiML SID",
@@ -67,6 +72,7 @@
   },
   {
    "default": "0",
+   "depends_on": "enabled",
    "fieldname": "record_calls",
    "fieldtype": "Check",
    "label": "Record Calls"
@@ -77,7 +83,8 @@
   },
   {
    "fieldname": "section_break_malx",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hide_border": 1
   },
   {
    "default": "0",
@@ -87,7 +94,8 @@
   },
   {
    "fieldname": "section_break_eklq",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hide_border": 1
   },
   {
    "fieldname": "column_break_yqvr",
@@ -97,10 +105,10 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-30 19:23:04.401439",
+ "modified": "2025-01-15 19:35:13.406254",
  "modified_by": "Administrator",
  "module": "FCRM",
- "name": "Twilio Settings",
+ "name": "CRM Twilio Settings",
  "owner": "Administrator",
  "permissions": [
   {

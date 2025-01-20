@@ -56,7 +56,7 @@ import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
-import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
+import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { usersStore } from '@/stores/users'
 import {
@@ -67,7 +67,7 @@ import {
 import { Dialog, Button, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 
-const { isManager, getUser } = usersStore()
+const { isManager, isAgent, getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
@@ -105,23 +105,25 @@ const tabs = computed(() => {
       label: __('Integrations'),
       items: [
         {
-          label: __('Twilio'),
+          label: __('Telephony'),
           icon: PhoneIcon,
-          component: markRaw(TwilioSettings),
+          component: markRaw(TelephonySettings),
+          condition: () => isManager() || isAgent(),
         },
         {
           label: __('WhatsApp'),
           icon: WhatsAppIcon,
           component: markRaw(WhatsAppSettings),
-          condition: () => isWhatsappInstalled.value,
+          condition: () => isWhatsappInstalled.value && isManager(),
         },
         {
           label: __('ERPNext'),
           icon: ERPNextIcon,
           component: markRaw(ERPNextSettings),
+          condition: () => isManager(),
         },
       ],
-      condition: () => isManager(),
+      condition: () => isManager() || isAgent(),
     },
   ]
 

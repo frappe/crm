@@ -484,7 +484,7 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import { timeAgo, formatDate, secondsToDuration, startCase } from '@/utils'
+import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
@@ -544,40 +544,6 @@ const all_activities = createResource({
   cache: ['activity', doc.value.data.name],
   auto: true,
   transform: ([versions, calls, notes, tasks, attachments]) => {
-    if (calls?.length) {
-      calls.forEach((doc) => {
-        doc.show_recording = false
-        doc.activity_type =
-          doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
-        doc.duration = secondsToDuration(doc.duration)
-        if (doc.type === 'Incoming') {
-          doc.caller = {
-            label:
-              getContact(doc.from)?.full_name ||
-              getLeadContact(doc.from)?.full_name ||
-              'Unknown',
-            image:
-              getContact(doc.from)?.image || getLeadContact(doc.from)?.image,
-          }
-          doc.receiver = {
-            label: getUser(doc.receiver).full_name,
-            image: getUser(doc.receiver).user_image,
-          }
-        } else {
-          doc.caller = {
-            label: getUser(doc.caller).full_name,
-            image: getUser(doc.caller).user_image,
-          }
-          doc.receiver = {
-            label:
-              getContact(doc.to)?.full_name ||
-              getLeadContact(doc.to)?.full_name ||
-              'Unknown',
-            image: getContact(doc.to)?.image || getLeadContact(doc.to)?.image,
-          }
-        }
-      })
-    }
     return { versions, calls, notes, tasks, attachments }
   },
 })
@@ -662,13 +628,13 @@ const activities = computed(() => {
     return sortByCreation(all_activities.data.calls)
   } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
-    return sortByCreation(all_activities.data.tasks)
+    return sortByModified(all_activities.data.tasks)
   } else if (title.value == 'Notes') {
     if (!all_activities.data?.notes) return []
-    return sortByCreation(all_activities.data.notes)
+    return sortByModified(all_activities.data.notes)
   } else if (title.value == 'Attachments') {
     if (!all_activities.data?.attachments) return []
-    return sortByCreation(all_activities.data.attachments)
+    return sortByModified(all_activities.data.attachments)
   }
 
   _activities.forEach((activity) => {
@@ -695,6 +661,9 @@ const activities = computed(() => {
 
 function sortByCreation(list) {
   return list.sort((a, b) => new Date(a.creation) - new Date(b.creation))
+}
+function sortByModified(list) {
+  return list.sort((b, a) => new Date(a.modified) - new Date(b.modified))
 }
 
 function update_activities_details(activity) {

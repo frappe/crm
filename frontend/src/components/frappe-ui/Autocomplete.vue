@@ -14,22 +14,28 @@
         >
           <div class="w-full">
             <button
-              class="flex h-7 w-full items-center justify-between gap-2 rounded bg-surface-gray-2 px-2 py-1 transition-colors hover:bg-surface-gray-3 border border-transparent focus:border-outline-gray-4 focus:outline-none focus:ring-2 focus:ring-outline-gray-3"
+              class="relative flex h-7 w-full items-center justify-between gap-2 rounded bg-surface-gray-2 px-2 py-1 transition-colors hover:bg-surface-gray-3 border border-transparent focus:border-outline-gray-4 focus:outline-none focus:ring-2 focus:ring-outline-gray-3"
               :class="inputClasses"
               @click="() => togglePopover()"
             >
-              <div class="flex text-base leading-5 items-center truncate">
+              <div
+                v-if="selectedValue"
+                class="flex text-base leading-5 items-center truncate"
+              >
                 <slot name="prefix" />
-                <span v-if="selectedValue" class="truncate">
+                <span class="truncate">
                   {{ displayValue(selectedValue) }}
                 </span>
-                <span v-else class="text-ink-gray-4 truncate">
-                  {{ placeholder || '' }}
-                </span>
+              </div>
+              <div
+                v-else
+                class="absolute text-ink-gray-4 text-left truncate w-full pr-7"
+              >
+                {{ placeholder || '' }}
               </div>
               <FeatherIcon
                 name="chevron-down"
-                class="h-4 w-4 text-ink-gray-5"
+                class="absolute h-4 w-4 text-ink-gray-5 right-2"
                 aria-hidden="true"
               />
             </button>

@@ -5,5 +5,5 @@
 from frappe.tests import UnitTestCase
 
 
-class TestTwilioSettings(UnitTestCase):
+class TestCRMTwilioSettings(UnitTestCase):
 	pass
