@@ -246,12 +246,14 @@ import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
 import { createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
+import { sessionStore } from '@/stores/session'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { TextEditor, Avatar, Button, createResource } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { $socket } = globalStore()
+const { user } = sessionStore()
 
 const callPopupHeader = ref(null)
 const showCallPopup = ref(false)
@@ -425,7 +427,11 @@ function setup() {
 
     callStatus.value = updateStatus(data)
 
-    if (!showCallPopup.value && !showSmallCallPopup.value) {
+    if (
+      !showCallPopup.value &&
+      !showSmallCallPopup.value &&
+      data.AgentEmail == user.value
+    ) {
       showCallPopup.value = true
     }
   })
