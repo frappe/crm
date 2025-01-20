@@ -286,11 +286,6 @@ const contact = ref({
   mobile_no: '',
 })
 
-watch(phoneNumber, (value) => {
-  if (!value) return
-  getContact.fetch()
-})
-
 const getContact = createResource({
   url: 'crm.integrations.api.get_contact_by_phone_number',
   makeParams() {
@@ -302,6 +297,12 @@ const getContact = createResource({
     contact.value = data
   },
 })
+
+watch(phoneNumber, (value) => {
+  if (!value) return
+  getContact.fetch()
+}, { immediate: true })
+
 
 const dirty = ref(false)
 
