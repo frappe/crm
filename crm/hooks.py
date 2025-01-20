@@ -290,7 +290,7 @@ fixtures = [
     {
         "dt": "Custom Field",
         "filters": [
-            ["name", "in", ["Contact-custom_business_unit", "Contact-custom_buying_role"]],
+            ["name", "in", ["Contact-custom_business_unit", "Contact-custom_buying_role", "Contact-custom_is_personal"]],
         ]
     },
 	{
@@ -315,7 +315,7 @@ fixtures = [
     },
     {
         "dt": "CRM Fields Layout",
-        "filters": [["name", "in", ["CRM Organization-Quick Entry", "CRM Campaign-Quick Entry"]]]
+        "filters": [["name", "in", ["CRM Organization-Quick Entry", "CRM Campaign-Quick Entry", "Contact-Quick Entry"]]]
     },
     {
         "dt": "CRM Campaign Type",

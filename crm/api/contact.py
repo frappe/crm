@@ -1,5 +1,7 @@
 import frappe
 from frappe import _
+from crm.api.assign_to import add as assign, remove as unassign
+
 
 
 def validate(doc, method):
@@ -8,7 +10,19 @@ def validate(doc, method):
 	doc.set_primary_email()
 	doc.set_primary("mobile_no")
 	update_deals_email_mobile_no(doc)
+	if doc.name and frappe.db.exists("Contact",doc.name ):
+		update_is_personal_contact(doc)
 
+def update_is_personal_contact(doc):
+	if doc.custom_is_personal:
+		assign({
+			"assign_to": [frappe.session.user],
+			"doctype": 'Contact',
+			"name": doc.name,
+			"description": doc.name,
+		}, ignore_permissions=True)
+	else:
+		unassign('Contact', doc.name, frappe.session.user)
 
 def set_primary_email(doc):
 	if not doc.email_ids:

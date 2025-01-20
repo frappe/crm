@@ -162,6 +162,7 @@ async function callInsertDoc() {
     _contact.value.phone_nos = [{ phone: _contact.value.actual_mobile_no }]
     delete _contact.value.actual_mobile_no
   }
+  
 
   const doc = await call('frappe.client.insert', {
     doc: {
@@ -228,6 +229,12 @@ const detailFields = computed(() => {
       value: _contact.value.email_id,
     },
     {
+      icon: h(FeatherIcon, { name: 'user', class: 'h-4 w-4' }), 
+      name: 'custom_is_personal',
+      label: 'Personal Contact', 
+      value: _contact.value.custom_is_personal ? 'Yes' : 'No', 
+    },
+    {
       icon: PhoneIcon,
       name: 'mobile_no',
       label: 'Mobile No',
@@ -281,6 +288,9 @@ const filteredSections = computed(() => {
 
   allSections.forEach((s) => {
     s.fields.forEach((field) => {
+      if (field.name === 'custom_is_personal') {
+        field.label = 'Personal Contact'; 
+      }
       if (field.name == 'email_id') {
         field.type = props.contact?.data?.name ? 'Dropdown' : 'Data'
         field.options =

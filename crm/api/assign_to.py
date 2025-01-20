@@ -51,16 +51,15 @@ def add(args=None, *, ignore_permissions=False):
 	}
 
 	"""
+
 	if not args:
 		args = frappe.local.form_dict
-
 	users_with_duplicate_todo = []
 	shared_with_users = []
 
 	description = escape_html(
 		args.get("description", _("Assignment for {0} {1}").format(args["doctype"], args["name"]))
 	)
-
 	for assign_to in frappe.parse_json(args.get("assign_to")):
 		filters = {
 			"reference_type": args["doctype"],
@@ -264,10 +263,10 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 		return
 
 	assigned_user = frappe.db.get_value("User", allocated_to, ["language", "enabled"], as_dict=True)
-
 	# return if self assigned or user disabled
-	if assigned_by == allocated_to or not assigned_user.enabled:
+	if doc_type != 'Contact' and assigned_by == allocated_to or not assigned_user.enabled:
 		return
+
 
 	# Search for email address in description -- i.e. assignee
 	user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
@@ -294,8 +293,13 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 		title = get_title_html(title)
 		
 		#doctype name added on subject of mail 
-		subject = _("{0} assigned a new task {1} {2}({3}) to you", lang=assigned_user.language).format(
-		user_name, document_type, title, doc_name)
+		if doc_type == "CRM Task":
+			subject = _("{0} assigned a new task {1} {2}({3}) to you", lang=assigned_user.language).format(
+			user_name, document_type, title, doc_name)
+		else:
+			subject = _("{0} assigned a {1} {2}({3}) to you", lang=assigned_user.language).format(
+			user_name, document_type, title, doc_name)
+
 
 	notification_doc = {
 		"type": "Assignment",
@@ -305,7 +309,6 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 		"from_user": frappe.session.user,
 		"email_content": description_html,
 	}
-	
 	enqueue_create_notification(allocated_to, notification_doc)
 
 
