@@ -430,8 +430,10 @@ function setup() {
     if (
       !showCallPopup.value &&
       !showSmallCallPopup.value &&
+      data.AgentEmail &&
       data.AgentEmail == user.value
     ) {
+      phoneNumber.value = data.CallTo || data.To
       showCallPopup.value = true
     }
   })
