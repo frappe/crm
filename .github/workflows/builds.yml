@@ -46,6 +46,7 @@ jobs:
       - name: Set Image Tag
         run: |
           echo "IMAGE_TAG=${{ github.ref_name == 'develop' && 'latest' || 'v15' }}" >> $GITHUB_ENV
+          echo "STABLE_TAG=${{ github.ref_name == 'develop' && 'nightly' || 'stable' }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         with:
@@ -60,7 +61,9 @@ jobs:
           file: builds/images/layered/Containerfile
           tags: >
             ghcr.io/${{ github.repository }}:${{ github.ref_name }},
-            ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
+            ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }},
+            ghcr.io/${{ github.repository }}:${{ env.STABLE_TAG }}
+            
           build-args: |
             "FRAPPE_BRANCH=${{ env.FRAPPE_BRANCH }}"
             "APPS_JSON_BASE64=${{ env.APPS_JSON_BASE64 }}"
