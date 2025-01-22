@@ -253,7 +253,6 @@ import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { $socket } = globalStore()
-const { user } = sessionStore()
 
 const callPopupHeader = ref(null)
 const showCallPopup = ref(false)
@@ -298,11 +297,14 @@ const getContact = createResource({
   },
 })
 
-watch(phoneNumber, (value) => {
-  if (!value) return
-  getContact.fetch()
-}, { immediate: true })
-
+watch(
+  phoneNumber,
+  (value) => {
+    if (!value) return
+    getContact.fetch()
+  },
+  { immediate: true },
+)
 
 const dirty = ref(false)
 
@@ -427,12 +429,13 @@ function setup() {
     console.log(data)
 
     callStatus.value = updateStatus(data)
+    const { user } = sessionStore()
 
     if (
       !showCallPopup.value &&
       !showSmallCallPopup.value &&
       data.AgentEmail &&
-      data.AgentEmail == user.value
+      data.AgentEmail == (user || user.value)
     ) {
       phoneNumber.value = data.CallTo || data.To
       showCallPopup.value = true
