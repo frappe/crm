@@ -68,6 +68,6 @@ async function deleteNote(name) {
     doctype: 'FCRM Note',
     name,
   })
-  notes.reload()
+  notes.value?.reload()
 }
 </script>
