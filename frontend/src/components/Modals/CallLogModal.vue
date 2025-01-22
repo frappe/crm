@@ -1,245 +1,209 @@
 <template>
-  <Dialog v-model="show">
-    <template #body-title>
-      <div class="flex items-center gap-3">
-        <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-          {{ __('Call Details') }}
-        </h3>
+  <Dialog v-model="show" :options="dialogOptions">
+    <template #body>
+      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+        <div class="mb-5 flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+              {{ __(dialogOptions.title) || __('Untitled') }}
+            </h3>
+          </div>
+          <div class="flex items-center gap-1">
+            <Button
+              v-if="isManager() && !isMobileView"
+              variant="ghost"
+              class="w-7"
+              @click="openQuickEntryModal"
+            >
+              <EditIcon class="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" class="w-7" @click="show = false">
+              <FeatherIcon name="x" class="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        <div v-if="tabs.data">
+          <FieldLayout
+            :tabs="tabs.data"
+            :data="_callLog"
+            doctype="CRM Call Log"
+          />
+          <ErrorMessage class="mt-2" :message="error" />
+        </div>
       </div>
-    </template>
-    <template #body-content>
-      <div class="flex flex-col gap-3.5">
-        <div
-          v-for="field in detailFields"
-          :key="field.name"
-          class="flex gap-2 text-base text-ink-gray-8"
-        >
-          <div class="grid size-7 place-content-center">
-            <component :is="field.icon" />
-          </div>
-          <div class="flex min-h-7 w-full items-center gap-2">
-            <div
-              v-if="field.name == 'receiver'"
-              class="flex items-center gap-1"
-            >
-              <Avatar
-                :image="field.value.caller.image"
-                :label="field.value.caller.label"
-                size="sm"
-              />
-              <div class="ml-1 flex flex-col gap-1">
-                {{ field.value.caller.label }}
-              </div>
-              <FeatherIcon
-                name="arrow-right"
-                class="mx-1 h-4 w-4 text-ink-gray-5"
-              />
-              <Avatar
-                :image="field.value.receiver.image"
-                :label="field.value.receiver.label"
-                size="sm"
-              />
-              <div class="ml-1 flex flex-col gap-1">
-                {{ field.value.receiver.label }}
-              </div>
-            </div>
-            <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
-              {{ field.value }}
-            </Tooltip>
-            <div class="w-full" v-else-if="field.name == 'recording_url'">
-              <audio
-                class="audio-control w-full"
-                controls
-                :src="field.value"
-              ></audio>
-            </div>
-            <div
-              class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
-              v-else-if="field.name == 'note'"
-              @click="() => (showNoteModal = true)"
-            >
-              <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
-                <div
-                  v-if="field.value?.title"
-                  :class="[field.value?.content ? 'mb-1 font-bold' : '']"
-                  v-html="field.value?.title"
-                />
-                <div
-                  v-if="field.value?.content"
-                  v-html="field.value?.content"
-                />
-              </FadedScrollableDiv>
-            </div>
-            <div v-else :class="field.color ? `text-${field.color}-600` : ''">
-              {{ field.value }}
-            </div>
-            <div v-if="field.link">
-              <ArrowUpRightIcon
-                class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                @click="() => field.link()"
-              />
-            </div>
-          </div>
+      <div class="px-4 pb-7 pt-4 sm:px-6">
+        <div class="space-y-2">
+          <Button
+            class="w-full"
+            v-for="action in dialogOptions.actions"
+            :key="action.label"
+            v-bind="action"
+            :label="__(action.label)"
+            :loading="loading"
+          />
         </div>
       </div>
     </template>
-    <template v-if="!callLog.data?._lead && !callLog.data?._deal" #actions>
-      <Button
-        class="w-full"
-        variant="solid"
-        :label="__('Create lead')"
-        @click="createLead"
-      />
-    </template>
   </Dialog>
-  <NoteModal v-model="showNoteModal" :note="callLog.value?.data?._notes?.[0]" />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="CRM Call Log"
+  />
 </template>
 
 <script setup>
-import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
-import DurationIcon from '@/components/Icons/DurationIcon.vue'
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
-import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import Dealsicon from '@/components/Icons/DealsIcon.vue'
-import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
-import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
-import { FeatherIcon, Avatar, Tooltip, call, createResource } from 'frappe-ui'
-import { getCallLogDetail } from '@/utils/callLog'
-import { ref, computed, h, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import { usersStore } from '@/stores/users'
+import { isMobileView } from '@/composables/settings'
+import { capture } from '@/telemetry'
+import { FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
+import { ref, nextTick, watch, computed } from 'vue'
 
 const props = defineProps({
-  name: {
-    type: String,
-    default: {},
+  options: {
+    type: Object,
+    default: {
+      afterInsert: () => {},
+    },
   },
 })
 
-const show = defineModel()
-const showNoteModal = ref(false)
-const router = useRouter()
-const callLog = ref({})
+const { isManager } = usersStore()
 
-const detailFields = computed(() => {
-  if (!callLog.value.data) return []
-  let details = [
+const show = defineModel()
+const callLog = defineModel('callLog')
+
+const loading = ref(false)
+const error = ref(null)
+const title = ref(null)
+const editMode = ref(false)
+
+let _callLog = ref({
+  name: '',
+  type: '',
+  from: '',
+  to: '',
+  medium: '',
+  duration: '',
+  caller: '',
+  receiver: '',
+  status: '',
+  recording_url: '',
+  telephony_medium: '',
+})
+
+const dialogOptions = computed(() => {
+  let title = !editMode.value ? __('New Call Log') : __('Edit Call Log')
+  let size = 'xl'
+  let actions = [
     {
-      icon: h(FeatherIcon, {
-        name: callLog.value.data.type.icon,
-        class: 'h-3.5 w-3.5',
-      }),
-      name: 'type',
-      value: callLog.value.data.type.label + ' Call',
-    },
-    {
-      icon: ContactsIcon,
-      name: 'receiver',
-      value: {
-        receiver: callLog.value.data.receiver,
-        caller: callLog.value.data.caller,
-      },
-    },
-    {
-      icon: callLog.value.data._lead ? LeadsIcon : Dealsicon,
-      name: 'reference_doc',
-      value: callLog.value.data._lead ? 'Lead' : 'Deal',
-      link: () => {
-        if (callLog.value.data._lead) {
-          router.push({
-            name: 'Lead',
-            params: { leadId: callLog.value.data._lead },
-          })
-        } else {
-          router.push({
-            name: 'Deal',
-            params: { dealId: callLog.value.data._deal },
-          })
-        }
-      },
-      condition: () => callLog.value.data._lead || callLog.value.data._deal,
-    },
-    {
-      icon: CalendarIcon,
-      name: 'creation',
-      value: callLog.value.data.creation.label,
-      tooltip: callLog.value.data.creation.label,
-    },
-    {
-      icon: DurationIcon,
-      name: 'duration',
-      value: callLog.value.data.duration.label,
-    },
-    {
-      icon: CheckCircleIcon,
-      name: 'status',
-      value: callLog.value.data.status.label,
-      color: callLog.value.data.status.color,
-    },
-    {
-      icon: h(FeatherIcon, {
-        name: 'play-circle',
-        class: 'h-4 w-4 mt-2',
-      }),
-      name: 'recording_url',
-      value: callLog.value.data.recording_url,
-    },
-    {
-      icon: NoteIcon,
-      name: 'note',
-      value: callLog.value.data._notes?.[0] ?? null,
+      label: editMode.value ? __('Save') : __('Create'),
+      variant: 'solid',
+      onClick: () =>
+        editMode.value ? updateCallLog() : createCallLog.submit(),
     },
   ]
 
-  return details
-    .filter((detail) => detail.value)
-    .filter((detail) => (detail.condition ? detail.condition() : true))
+  return { title, size, actions }
 })
 
-function createLead() {
-  call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
-    call_log: callLog.value.data,
-  }).then((d) => {
-    if (d) {
-      router.push({ name: 'Lead', params: { leadId: d } })
-    }
+const tabs = createResource({
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  cache: ['QuickEntry', 'CRM Call Log'],
+  params: { doctype: 'CRM Call Log', type: 'Quick Entry' },
+  auto: true,
+})
+
+let doc = ref({})
+
+function updateCallLog() {
+  error.value = null
+  const old = { ...doc.value }
+  const newCallLog = { ..._callLog.value }
+
+  const dirty = JSON.stringify(old) !== JSON.stringify(newCallLog)
+
+  if (!dirty) {
+    show.value = false
+    return
+  }
+
+  loading.value = true
+  updateCallLogValues.submit({
+    doctype: 'CRM Call Log',
+    name: _callLog.value.name,
+    fieldname: newCallLog,
   })
 }
 
-watch(show, (val) => {
-  if (val) {
-    callLog.value = createResource({
-      url: 'crm.fcrm.doctype.crm_call_log.crm_call_log.get_call_log',
-      params: { name: props.name },
-      cache: ['call_log', props.name],
-      auto: true,
-      transform: (doc) => {
-        for (const key in doc) {
-          doc[key] = getCallLogDetail(key, doc)
-        }
-        return doc
-      },
-    })
-  }
+const updateCallLogValues = createResource({
+  url: 'frappe.client.set_value',
+  onSuccess(doc) {
+    loading.value = false
+    if (doc.name) {
+      handleCallLogUpdate(doc)
+    }
+  },
+  onError(err) {
+    loading.value = false
+    error.value = err
+  },
 })
+
+const createCallLog = createResource({
+  url: 'frappe.client.insert',
+  makeParams() {
+    return {
+      doc: {
+        doctype: 'CRM Call Log',
+        ..._callLog.value,
+      },
+    }
+  },
+  onSuccess(doc) {
+    loading.value = false
+    if (doc.name) {
+      capture('call_log_created')
+      handleCallLogUpdate(doc)
+    }
+  },
+  onError(err) {
+    loading.value = false
+    error.value = err
+  },
+})
+
+function handleCallLogUpdate(doc) {
+  show.value = false
+  props.options.afterInsert && props.options.afterInsert(doc)
+}
+
+watch(
+  () => show.value,
+  (value) => {
+    if (!value) return
+    editMode.value = false
+    nextTick(() => {
+      // TODO: Issue with FormControl
+      // title.value.el.focus()
+      doc.value = callLog.value?.data || {}
+      _callLog.value = { ...doc.value }
+      if (_callLog.value.name) {
+        editMode.value = true
+      }
+    })
+  },
+)
+
+const showQuickEntryModal = ref(false)
+
+function openQuickEntryModal() {
+  showQuickEntryModal.value = true
+  nextTick(() => {
+    show.value = false
+  })
+}
 </script>
-
-<style scoped>
-.audio-control {
-  height: 36px;
-  outline: none;
-  border-radius: 10px;
-  cursor: pointer;
-  background-color: rgb(237, 237, 237);
-}
-
-audio::-webkit-media-controls-panel {
-  background-color: rgb(237, 237, 237) !important;
-}
-
-.audio-control::-webkit-media-controls-panel {
-  background-color: white;
-}
-</style>

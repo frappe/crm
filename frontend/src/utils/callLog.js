@@ -14,13 +14,13 @@ export function getCallLogDetail(row, log, columns = []) {
     }
   } else if (row === 'caller') {
     return {
-      label: log._caller.label,
-      image: log._caller.image,
+      label: log._caller?.label,
+      image: log._caller?.image,
     }
   } else if (row === 'receiver') {
     return {
-      label: log._receiver.label,
-      image: log._receiver.image,
+      label: log._receiver?.label,
+      image: log._receiver?.image,
     }
   } else if (row === 'type') {
     return {
