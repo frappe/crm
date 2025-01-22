@@ -138,6 +138,10 @@ def add_default_fields_layout(force=False):
 			"doctype": "Address",
 			"layout": '[{"name": "details_section", "columns": [{"name": "column_uSSG", "fields": ["address_title", "address_type", "address_line1", "address_line2", "city", "state", "country", "pincode"]}]}]',
 		},
+		"CRM Call Log-Quick Entry": {
+			"doctype": "CRM Call Log",
+			"layout": '[{"name":"details_section","columns":[{"name":"column_uMSG","fields":["type","from","duration"]},{"name":"column_wiZT","fields":["to","status","caller","receiver"]}]}]',
+		},
 	}
 
 	sidebar_fields_layouts = {
