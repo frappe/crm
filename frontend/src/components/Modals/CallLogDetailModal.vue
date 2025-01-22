@@ -9,6 +9,30 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
+            <Dropdown
+              :options="[
+                {
+                  group: __('Options'),
+                  hideLabel: true,
+                  items: [
+                    {
+                      label: note?.name ? __('Edit note') : __('Add note'),
+                      icon: NoteIcon,
+                      onClick: addEditNote,
+                    },
+                    {
+                      label: task?.name ? __('Edit task') : __('Add task'),
+                      icon: TaskIcon,
+                      onClick: addEditTask,
+                    },
+                  ],
+                },
+              ]"
+            >
+              <template #default>
+                <Button variant="ghost" icon="more-horizontal" />
+              </template>
+            </Dropdown>
             <Button
               v-if="isManager() && !isMobileView"
               variant="ghost"
@@ -84,6 +108,23 @@
                   />
                 </FadedScrollableDiv>
               </div>
+              <div
+                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
+                v-else-if="field.name == 'task'"
+                @click="() => (showTaskModal = true)"
+              >
+                <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
+                  <div
+                    v-if="field.value?.title"
+                    :class="[field.value?.description ? 'mb-1 font-bold' : '']"
+                    v-html="field.value?.title"
+                  />
+                  <div
+                    v-if="field.value?.description"
+                    v-html="field.value?.description"
+                  />
+                </FadedScrollableDiv>
+              </div>
               <div v-else :class="field.color ? `text-${field.color}-600` : ''">
                 {{ field.value }}
               </div>
@@ -110,7 +151,8 @@
       </div>
     </template>
   </Dialog>
-  <NoteModal v-model="showNoteModal" :note="callLog?.data?._notes?.[0]" />
+  <NoteModal v-model="showNoteModal" :note="note" @after="addNoteToCallLog" />
+  <TaskModal v-model="showTaskModal" :task="task" @after="addTaskToCallLog" />
 </template>
 
 <script setup>
@@ -122,13 +164,15 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import Dealsicon from '@/components/Icons/DealsIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
+import TaskModal from '@/components/Modals/TaskModal.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import { FeatherIcon, Avatar, Tooltip, call } from 'frappe-ui'
+import { FeatherIcon, Dropdown, Avatar, Tooltip, call } from 'frappe-ui'
 import { ref, computed, h, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -137,8 +181,23 @@ const router = useRouter()
 
 const show = defineModel()
 const showNoteModal = ref(false)
+const showTaskModal = ref(false)
 
 const callLog = defineModel('callLog')
+
+const note = ref({
+  title: '',
+  content: '',
+})
+
+const task = ref({
+  title: '',
+  description: '',
+  assigned_to: '',
+  due_date: '',
+  status: 'Backlog',
+  priority: 'Low',
+})
 
 const detailFields = computed(() => {
   if (!callLog.value?.data) return []
@@ -148,6 +207,9 @@ const detailFields = computed(() => {
   for (const key in data) {
     data[key] = getCallLogDetail(key, data)
   }
+
+  note.value = data._notes?.[0] ?? null
+  task.value = data._tasks?.[0] ?? null
 
   let details = [
     {
@@ -215,6 +277,11 @@ const detailFields = computed(() => {
       name: 'note',
       value: data._notes?.[0] ?? null,
     },
+    {
+      icon: TaskIcon,
+      name: 'task',
+      value: data._tasks?.[0] ?? null,
+    },
   ]
 
   return details
@@ -239,6 +306,50 @@ function openCallLogModal() {
   nextTick(() => {
     show.value = false
   })
+}
+
+function addEditNote() {
+  if (!note.value?.name) {
+    note.value = {
+      title: '',
+      content: '',
+    }
+  }
+  showNoteModal.value = true
+}
+
+function addEditTask() {
+  if (!task.value?.name) {
+    task.value = {
+      title: '',
+      description: '',
+      assigned_to: '',
+      due_date: '',
+      status: 'Backlog',
+      priority: 'Low',
+    }
+  }
+  showTaskModal.value = true
+}
+
+async function addNoteToCallLog(_note, insert_mode = false) {
+  note.value = _note
+  if (insert_mode && _note.name) {
+    await call('crm.integrations.api.add_note_to_call_log', {
+      call_sid: callLog.value?.data?.id,
+      note: _note,
+    })
+  }
+}
+
+async function addTaskToCallLog(_task, insert_mode = false) {
+  task.value = _task
+  if (insert_mode && _task.name) {
+    await call('crm.integrations.api.add_task_to_call_log', {
+      call_sid: callLog.value?.data?.id,
+      task: _task,
+    })
+  }
 }
 </script>
 

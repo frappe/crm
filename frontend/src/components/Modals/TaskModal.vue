@@ -187,7 +187,8 @@ async function updateTask() {
       fieldname: _task.value,
     })
     if (d.name) {
-      tasks.value.reload()
+      tasks.value?.reload()
+      emit('after', d)
     }
   } else {
     let d = await call('frappe.client.insert', {
@@ -200,8 +201,8 @@ async function updateTask() {
     })
     if (d.name) {
       capture('task_created')
-      tasks.value.reload()
-      emit('after')
+      tasks.value?.reload()
+      emit('after', d, true)
     }
   }
   show.value = false
