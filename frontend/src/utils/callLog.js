@@ -9,8 +9,18 @@ export function getCallLogDetail(row, log, columns = []) {
 
   if (row === 'duration') {
     return {
-      label: log.duration,
+      label: log._duration,
       icon: 'clock',
+    }
+  } else if (row === 'caller') {
+    return {
+      label: log._caller.label,
+      image: log._caller.image,
+    }
+  } else if (row === 'receiver') {
+    return {
+      label: log._receiver.label,
+      image: log._receiver.image,
     }
   } else if (row === 'type') {
     return {
