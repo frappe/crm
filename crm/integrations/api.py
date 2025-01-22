@@ -53,14 +53,16 @@ def add_note_to_call_log(call_sid, note):
 		_note = frappe.get_doc(
 			{
 				"doctype": "FCRM Note",
+				"title": note.get("title", "Call Note"),
 				"content": note.get("content"),
 			}
 		).insert(ignore_permissions=True)
-		call_log = frappe.get_cached_doc("CRM Call Log", call_sid)
-		call_log.link_with_reference_doc("FCRM Note", _note.name)
-		call_log.save(ignore_permissions=True)
 	else:
 		_note = frappe.set_value("FCRM Note", note.get("name"), "content", note.get("content"))
+
+	call_log = frappe.get_cached_doc("CRM Call Log", call_sid)
+	call_log.link_with_reference_doc("FCRM Note", _note.name)
+	call_log.save(ignore_permissions=True)
 
 	return _note
 
@@ -75,20 +77,29 @@ def add_task_to_call_log(call_sid, task):
 				"doctype": "CRM Task",
 				"title": task.get("title"),
 				"description": task.get("description"),
+				"assigned_to": task.get("assigned_to"),
+				"due_date": task.get("due_date"),
+				"status": task.get("status"),
+				"priority": task.get("priority"),
 			}
 		).insert(ignore_permissions=True)
-		call_log = frappe.get_doc("CRM Call Log", call_sid)
-		call_log.link_with_reference_doc("CRM Task", _task.name)
-		call_log.save(ignore_permissions=True)
 	else:
 		_task = frappe.get_doc("CRM Task", task.get("name"))
 		_task.update(
 			{
 				"title": task.get("title"),
 				"description": task.get("description"),
+				"assigned_to": task.get("assigned_to"),
+				"due_date": task.get("due_date"),
+				"status": task.get("status"),
+				"priority": task.get("priority"),
 			}
 		)
 		_task.save(ignore_permissions=True)
+
+	call_log = frappe.get_doc("CRM Call Log", call_sid)
+	call_log.link_with_reference_doc("CRM Task", _task.name)
+	call_log.save(ignore_permissions=True)
 
 	return _task
 

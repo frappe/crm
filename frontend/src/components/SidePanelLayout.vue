@@ -101,7 +101,10 @@
                                 :label="data[field.fieldname]"
                                 class="dropdown-button flex w-full items-center justify-between rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3"
                               >
-                                <div v-if="data[field.fieldname]" class="truncate">
+                                <div
+                                  v-if="data[field.fieldname]"
+                                  class="truncate"
+                                >
                                   {{ data[field.fieldname] }}
                                 </div>
                                 <div

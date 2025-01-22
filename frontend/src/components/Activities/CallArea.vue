@@ -1,14 +1,14 @@
 <template>
-  <div @click="showCallLogModal = true" class="cursor-pointer">
+  <div @click="showCallLogDetailModal = true" class="cursor-pointer">
     <div class="mb-1 flex items-center justify-stretch gap-2 py-1 text-base">
       <div class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5">
         <Avatar
-          :image="activity.caller.image"
-          :label="activity.caller.label"
+          :image="activity._caller.image"
+          :label="activity._caller.label"
           size="md"
         />
         <span class="font-medium text-ink-gray-8 ml-1">
-          {{ activity.caller.label }}
+          {{ activity._caller.label }}
         </span>
         <span>{{
           activity.type == 'Incoming'
@@ -41,14 +41,14 @@
           <MultipleAvatar
             :avatars="[
               {
-                image: activity.caller.image,
-                label: activity.caller.label,
-                name: activity.caller.label,
+                image: activity._caller.image,
+                label: activity._caller.label,
+                name: activity._caller.label,
               },
               {
-                image: activity.receiver.image,
-                label: activity.receiver.label,
-                name: activity.receiver.label,
+                image: activity._receiver.image,
+                label: activity._receiver.label,
+                name: activity._receiver.label,
               },
             ]"
             size="sm"
@@ -61,7 +61,10 @@
             <CalendarIcon class="size-3" />
           </template>
         </Badge>
-        <Badge v-if="activity.status == 'Completed'" :label="activity.duration">
+        <Badge
+          v-if="activity.status == 'Completed'"
+          :label="activity._duration"
+        >
           <template #prefix>
             <DurationIcon class="size-3" />
           </template>
@@ -89,7 +92,12 @@
         <AudioPlayer :src="activity.recording_url" />
       </div>
     </div>
-    <CallLogModal v-model="showCallLogModal" :name="callLogName" />
+    <CallLogDetailModal
+      v-model="showCallLogDetailModal"
+      v-model:callLogModal="showCallLogModal"
+      v-model:callLog="callLog"
+    />
+    <CallLogModal v-model="showCallLogModal" v-model:callLog="callLog" />
   </div>
 </template>
 <script setup>
@@ -98,16 +106,23 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
+import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { statusLabelMap, statusColorMap } from '@/utils/callLog.js'
 import { formatDate, timeAgo } from '@/utils'
-import { Avatar, Badge, Tooltip } from 'frappe-ui'
+import { Avatar, Badge, Tooltip, createResource } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
   activity: Object,
 })
 
-const callLogName = ref(props.activity.name)
+const callLog = createResource({
+  url: 'crm.fcrm.doctype.crm_call_log.crm_call_log.get_call_log',
+  params: { name: props.activity.name },
+  cache: ['call_log', props.activity.name],
+  auto: true,
+})
+const showCallLogDetailModal = ref(false)
 const showCallLogModal = ref(false)
 </script>

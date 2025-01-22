@@ -97,7 +97,7 @@ class CRMCallLog(Document):
 
 def parse_call_log(call):
 	call["show_recording"] = False
-	call["duration"] = seconds_to_duration(call.get("duration"))
+	call["_duration"] = seconds_to_duration(call.get("duration"))
 	if call.get("type") == "Incoming":
 		call["activity_type"] = "incoming_call"
 		contact = get_contact_by_phone_number(call.get("from"))
@@ -106,11 +106,11 @@ def parse_call_log(call):
 			if call.get("receiver")
 			else [None, None]
 		)
-		call["caller"] = {
+		call["_caller"] = {
 			"label": contact.get("full_name", "Unknown"),
 			"image": contact.get("image"),
 		}
-		call["receiver"] = {
+		call["_receiver"] = {
 			"label": receiver[0],
 			"image": receiver[1],
 		}
@@ -122,11 +122,11 @@ def parse_call_log(call):
 			if call.get("caller")
 			else [None, None]
 		)
-		call["caller"] = {
+		call["_caller"] = {
 			"label": caller[0],
 			"image": caller[1],
 		}
-		call["receiver"] = {
+		call["_receiver"] = {
 			"label": contact.get("full_name", "Unknown"),
 			"image": contact.get("image"),
 		}
