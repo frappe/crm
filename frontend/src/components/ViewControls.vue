@@ -608,8 +608,10 @@ const quickFilterList = computed(() => {
         )
           return
         filter['value'] = value[1]?.replace(/%/g, '')
+      } else if (typeof value == 'boolean') {
+        filter['value'] = value
       } else {
-        filter['value'] = value.replace(/%/g, '')
+        filter['value'] = value?.replace(/%/g, '')
       }
     }
   })
