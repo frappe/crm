@@ -320,9 +320,7 @@ const tabs = [
 const deals = createResource({
   url: 'crm.api.contact.get_linked_deals',
   cache: ['deals', props.contactId],
-  params: {
-    contact: props.contactId,
-  },
+  params: { contact: props.contactId },
   auto: true,
 })
 
@@ -337,7 +335,7 @@ const sections = createResource({
   cache: ['sidePanelSections', 'Contact'],
   params: { doctype: 'Contact' },
   auto: true,
-  transform: (data) => getParsedSections(data),
+  transform: (data) => computed(() => getParsedSections(data)),
 })
 
 function getParsedSections(_sections) {

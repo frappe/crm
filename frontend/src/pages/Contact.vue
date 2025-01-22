@@ -227,9 +227,7 @@ const _address = ref({})
 const contact = createResource({
   url: 'crm.api.contact.get_contact',
   cache: ['contact', props.contactId],
-  params: {
-    name: props.contactId,
-  },
+  params: { name: props.contactId },
   auto: true,
   transform: (data) => {
     return {
@@ -340,7 +338,7 @@ const sections = createResource({
   cache: ['sidePanelSections', 'Contact'],
   params: { doctype: 'Contact' },
   auto: true,
-  transform: (data) => getParsedSections(data),
+  transform: (data) => computed(() => getParsedSections(data)),
 })
 
 function getParsedSections(_sections) {
