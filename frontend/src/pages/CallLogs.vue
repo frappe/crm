@@ -8,6 +8,9 @@
         v-if="callLogsListView?.customListActions"
         :actions="callLogsListView.customListActions"
       />
+      <Button variant="solid" :label="__('Create')" @click="createCallLog">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
     </template>
   </LayoutHeader>
   <ViewControls
@@ -55,7 +58,11 @@
     v-model:callLogModal="showCallLogModal"
     v-model:callLog="callLog"
   />
-  <CallLogModal v-model="showCallLogModal" v-model:callLog="callLog" />
+  <CallLogModal
+    v-model="showCallLogModal"
+    v-model:callLog="callLog"
+    :options="{ afterInsert: () => callLogs.reload() }"
+  />
 </template>
 
 <script setup>
@@ -97,11 +104,9 @@ const rows = computed(() => {
 })
 
 const showCallLogDetailModal = ref(false)
-const selectedCallLog = ref(null)
 const callLog = ref({})
 
 function showCallLog(name) {
-  selectedCallLog.value = name
   showCallLogDetailModal.value = true
   callLog.value = createResource({
     url: 'crm.fcrm.doctype.crm_call_log.crm_call_log.get_call_log',
@@ -109,5 +114,10 @@ function showCallLog(name) {
     cache: ['call_log', name],
     auto: true,
   })
+}
+
+function createCallLog() {
+  callLog.value = {}
+  showCallLogModal.value = true
 }
 </script>

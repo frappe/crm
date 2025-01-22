@@ -58,6 +58,7 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { getRandom } from '@/utils'
 import { capture } from '@/telemetry'
 import { FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
@@ -92,7 +93,7 @@ let _callLog = ref({
   receiver: '',
   status: '',
   recording_url: '',
-  telephony_medium: '',
+  telephony_medium: 'Manual',
 })
 
 const dialogOptions = computed(() => {
@@ -159,6 +160,8 @@ const createCallLog = createResource({
     return {
       doc: {
         doctype: 'CRM Call Log',
+        id: getRandom(6),
+        telephony_medium: 'Manual',
         ..._callLog.value,
       },
     }
