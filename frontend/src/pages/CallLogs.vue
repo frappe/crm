@@ -8,6 +8,9 @@
         v-if="callLogsListView?.customListActions"
         :actions="callLogsListView.customListActions"
       />
+      <Button variant="solid" :label="__('Create')" @click="createCallLog">
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
     </template>
   </LayoutHeader>
   <ViewControls
@@ -50,7 +53,16 @@
       <span>{{ __('No {0} Found', [__('Logs')]) }}</span>
     </div>
   </div>
-  <CallLogModal v-model="showCallLogModal" :name="selectedCallLog" />
+  <CallLogDetailModal
+    v-model="showCallLogDetailModal"
+    v-model:callLogModal="showCallLogModal"
+    v-model:callLog="callLog"
+  />
+  <CallLogModal
+    v-model="showCallLogModal"
+    v-model:callLog="callLog"
+    :options="{ afterInsert: () => callLogs.reload() }"
+  />
 </template>
 
 <script setup>
@@ -60,11 +72,14 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import CallLogsListView from '@/components/ListViews/CallLogsListView.vue'
+import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { getCallLogDetail } from '@/utils/callLog'
+import { createResource } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const callLogsListView = ref(null)
+const showCallLogModal = ref(false)
 
 // callLogs data is loaded in the ViewControls component
 const callLogs = ref({})
@@ -88,11 +103,21 @@ const rows = computed(() => {
   })
 })
 
-const showCallLogModal = ref(false)
-const selectedCallLog = ref(null)
+const showCallLogDetailModal = ref(false)
+const callLog = ref({})
 
 function showCallLog(name) {
-  selectedCallLog.value = name
+  showCallLogDetailModal.value = true
+  callLog.value = createResource({
+    url: 'crm.fcrm.doctype.crm_call_log.crm_call_log.get_call_log',
+    params: { name },
+    cache: ['call_log', name],
+    auto: true,
+  })
+}
+
+function createCallLog() {
+  callLog.value = {}
   showCallLogModal.value = true
 }
 </script>
