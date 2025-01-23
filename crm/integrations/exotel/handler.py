@@ -145,7 +145,7 @@ def get_exotel_endpoint(action=None, version="v1"):
 def get_all_exophones():
 	endpoint = get_exotel_endpoint("IncomingPhoneNumbers", "v2_beta")
 	response = requests.get(endpoint)
-	return [phone.get("sid") for phone in response.json().get("incoming_phone_numbers", [])]
+	return [phone.get("friendly_name") for phone in response.json().get("incoming_phone_numbers", [])]
 
 
 def get_status_updater_url():
