@@ -348,7 +348,7 @@ function getRow(name, field) {
 const rows = computed(() => {
   if (!leads.value?.data?.data) return []
   if (leads.value.data.view_type === 'group_by') {
-    if (!leads.value?.data.group_by_field?.name) return []
+    if (!leads.value?.data.group_by_field?.fieldname) return []
     return getGroupedByRows(
       leads.value?.data.data,
       leads.value?.data.group_by_field,
@@ -368,9 +368,9 @@ function getGroupedByRows(listRows, groupByField, columns) {
     let filteredRows = []
 
     if (!option) {
-      filteredRows = listRows.filter((row) => !row[groupByField.name])
+      filteredRows = listRows.filter((row) => !row[groupByField.fieldname])
     } else {
-      filteredRows = listRows.filter((row) => row[groupByField.name] == option)
+      filteredRows = listRows.filter((row) => row[groupByField.fieldname] == option)
     }
 
     let groupDetail = {
@@ -379,7 +379,7 @@ function getGroupedByRows(listRows, groupByField, columns) {
       collapsed: false,
       rows: parseRows(filteredRows, columns),
     }
-    if (groupByField.name == 'status') {
+    if (groupByField.fieldname == 'status') {
       groupDetail.icon = () =>
         h(IndicatorIcon, {
           class: getLeadStatus(option)?.color,

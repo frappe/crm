@@ -19,21 +19,23 @@ def sort_options(doctype: str):
 		{
 			"label": _(field.label),
 			"value": field.fieldname,
+			"fieldname": field.fieldname,
 		}
 		for field in fields
 		if field.label and field.fieldname
 	]
 
 	standard_fields = [
-		{"label": "Name", "value": "name"},
-		{"label": "Created On", "value": "creation"},
-		{"label": "Last Modified", "value": "modified"},
-		{"label": "Modified By", "value": "modified_by"},
-		{"label": "Owner", "value": "owner"},
+		{"label": "Name", "fieldname": "name"},
+		{"label": "Created On", "fieldname": "creation"},
+		{"label": "Last Modified", "fieldname": "modified"},
+		{"label": "Modified By", "fieldname": "modified_by"},
+		{"label": "Owner", "fieldname": "owner"},
 	]
 
 	for field in standard_fields:
 		field["label"] = _(field["label"])
+		field["value"] = field["fieldname"]
 		fields.append(field)
 
 	return fields
@@ -100,6 +102,7 @@ def get_filterable_fields(doctype: str):
 
 	for field in res:
 		field["label"] = _(field.get("label"))
+		field["value"] = field.get("fieldname")
 
 	return res
 
@@ -129,23 +132,23 @@ def get_group_by_fields(doctype: str):
 	fields = [
 		{
 			"label": _(field.label),
-			"value": field.fieldname,
+			"fieldname": field.fieldname,
 		}
 		for field in fields
 		if field.label and field.fieldname
 	]
 
 	standard_fields = [
-		{"label": "Name", "value": "name"},
-		{"label": "Created On", "value": "creation"},
-		{"label": "Last Modified", "value": "modified"},
-		{"label": "Modified By", "value": "modified_by"},
-		{"label": "Owner", "value": "owner"},
-		{"label": "Liked By", "value": "_liked_by"},
-		{"label": "Assigned To", "value": "_assign"},
-		{"label": "Comments", "value": "_comments"},
-		{"label": "Created On", "value": "creation"},
-		{"label": "Modified On", "value": "modified"},
+		{"label": "Name", "fieldname": "name"},
+		{"label": "Created On", "fieldname": "creation"},
+		{"label": "Last Modified", "fieldname": "modified"},
+		{"label": "Modified By", "fieldname": "modified_by"},
+		{"label": "Owner", "fieldname": "owner"},
+		{"label": "Liked By", "fieldname": "_liked_by"},
+		{"label": "Assigned To", "fieldname": "_assign"},
+		{"label": "Comments", "fieldname": "_comments"},
+		{"label": "Created On", "fieldname": "creation"},
+		{"label": "Modified On", "fieldname": "modified"},
 	]
 
 	for field in standard_fields:
@@ -197,7 +200,7 @@ def get_quick_filters(doctype: str):
 		)
 
 	if doctype == "CRM Lead":
-		quick_filters = [filter for filter in quick_filters if filter.get("name") != "converted"]
+		quick_filters = [filter for filter in quick_filters if filter.get("fieldname") != "converted"]
 
 	return quick_filters
 
@@ -344,7 +347,7 @@ def get_data(
 		for kc in kanban_columns:
 			column_filters = {column_field: kc.get("name")}
 			order = kc.get("order")
-			if (column_field in filters and filters.get(column_field) != kc.name) or kc.get("delete"):
+			if (column_field in filters and filters.get(column_field) != kc.get("name")) or kc.get("delete"):
 				column_data = []
 			else:
 				column_filters.update(filters.copy())
@@ -392,8 +395,8 @@ def get_data(
 	fields = [
 		{
 			"label": _(field.label),
-			"type": field.fieldtype,
-			"value": field.fieldname,
+			"fieldtype": field.fieldtype,
+			"fieldname": field.fieldname,
 			"options": field.options,
 		}
 		for field in fields
@@ -401,23 +404,23 @@ def get_data(
 	]
 
 	std_fields = [
-		{"label": "Name", "type": "Data", "value": "name"},
-		{"label": "Created On", "type": "Datetime", "value": "creation"},
-		{"label": "Last Modified", "type": "Datetime", "value": "modified"},
+		{"label": "Name", "fieldtype": "Data", "fieldname": "name"},
+		{"label": "Created On", "fieldtype": "Datetime", "fieldname": "creation"},
+		{"label": "Last Modified", "fieldtype": "Datetime", "fieldname": "modified"},
 		{
 			"label": "Modified By",
-			"type": "Link",
-			"value": "modified_by",
+			"fieldtype": "Link",
+			"fieldname": "modified_by",
 			"options": "User",
 		},
-		{"label": "Assigned To", "type": "Text", "value": "_assign"},
-		{"label": "Owner", "type": "Link", "value": "owner", "options": "User"},
-		{"label": "Like", "type": "Data", "value": "_liked_by"},
+		{"label": "Assigned To", "fieldtype": "Text", "fieldname": "_assign"},
+		{"label": "Owner", "fieldtype": "Link", "fieldname": "owner", "options": "User"},
+		{"label": "Like", "fieldtype": "Data", "fieldname": "_liked_by"},
 	]
 
 	for field in std_fields:
-		if field.get("value") not in rows:
-			rows.append(field.get("value"))
+		if field.get("fieldname") not in rows:
+			rows.append(field.get("fieldname"))
 		if field not in fields:
 			field["label"] = _(field["label"])
 			fields.append(field)
@@ -451,12 +454,12 @@ def get_data(
 				return options
 
 		for field in fields:
-			if field.get("value") == group_by_field:
+			if field.get("fieldname") == group_by_field:
 				group_by_field = {
 					"label": field.get("label"),
-					"name": field.get("value"),
-					"type": field.get("type"),
-					"options": get_options(field.get("type"), field.get("options")),
+					"fieldname": field.get("fieldname"),
+					"fieldtype": field.get("fieldtype"),
+					"options": get_options(field.get("fieldtype"), field.get("options")),
 				}
 
 	return {
