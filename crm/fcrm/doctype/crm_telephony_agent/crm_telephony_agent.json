@@ -14,6 +14,7 @@
   "section_break_ozjn",
   "twilio",
   "twilio_number",
+  "call_receiving_device",
   "column_break_aydj",
   "exotel",
   "exotel_number",
@@ -100,11 +101,19 @@
    "fieldtype": "Select",
    "label": "Default Medium",
    "options": "\nTwilio\nExotel"
+  },
+  {
+   "default": "Computer",
+   "depends_on": "twilio",
+   "fieldname": "call_receiving_device",
+   "fieldtype": "Select",
+   "label": "Device",
+   "options": "Computer\nPhone"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-19 14:17:12.880185",
+ "modified": "2025-01-23 22:24:53.448716",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Telephony Agent",

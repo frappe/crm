@@ -162,7 +162,9 @@ def get_twilio_number_owners(phone_number):
 	# keep + sign in the number at start of the number
 	phone_number = "".join([c for c in phone_number if c.isdigit() or c == "+"])
 	user_voice_settings = frappe.get_all(
-		"Twilio Agents", filters={"twilio_number": phone_number}, fields=["name", "call_receiving_device"]
+		"CRM Telephony Agent",
+		filters={"twilio_number": phone_number},
+		fields=["name", "call_receiving_device"],
 	)
 	user_wise_voice_settings = {user["name"]: user for user in user_voice_settings}
 
