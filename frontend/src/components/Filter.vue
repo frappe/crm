@@ -197,19 +197,7 @@ const list = defineModel()
 const filterableFields = createResource({
   url: 'crm.api.doc.get_filterable_fields',
   cache: ['filterableFields', props.doctype],
-  params: {
-    doctype: props.doctype,
-  },
-  transform(fields) {
-    fields = fields.map((field) => {
-      return {
-        label: field.label,
-        value: field.fieldname,
-        ...field,
-      }
-    })
-    return fields
-  },
+  params: { doctype: props.doctype },
 })
 
 onMounted(() => {
@@ -447,11 +435,11 @@ function setfilter(data) {
   filters.value.add({
     field: {
       label: data.label,
-      fieldname: data.value,
+      fieldname: data.fieldname,
       fieldtype: data.fieldtype,
       options: data.options,
     },
-    fieldname: data.value,
+    fieldname: data.fieldname,
     operator: getDefaultOperator(data.fieldtype),
     value: getDefaultValue(data),
   })
@@ -459,14 +447,16 @@ function setfilter(data) {
 }
 
 function updateFilter(data, index) {
+  if (!data.fieldname) return
+
   filters.value.delete(Array.from(filters.value)[index])
   filters.value.add({
-    fieldname: data.value,
+    fieldname: data.fieldname,
     operator: getDefaultOperator(data.fieldtype),
     value: getDefaultValue(data),
     field: {
       label: data.label,
-      fieldname: data.value,
+      fieldname: data.fieldname,
       fieldtype: data.fieldtype,
       options: data.options,
     },

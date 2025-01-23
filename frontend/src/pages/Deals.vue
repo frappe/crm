@@ -328,7 +328,7 @@ function getRow(name, field) {
 const rows = computed(() => {
   if (!deals.value?.data?.data) return []
   if (deals.value.data.view_type === 'group_by') {
-    if (!deals.value?.data.group_by_field?.name) return []
+    if (!deals.value?.data.group_by_field?.fieldname) return []
     return getGroupedByRows(
       deals.value?.data.data,
       deals.value?.data.group_by_field,
@@ -348,9 +348,9 @@ function getGroupedByRows(listRows, groupByField, columns) {
     let filteredRows = []
 
     if (!option) {
-      filteredRows = listRows.filter((row) => !row[groupByField.name])
+      filteredRows = listRows.filter((row) => !row[groupByField.fieldname])
     } else {
-      filteredRows = listRows.filter((row) => row[groupByField.name] == option)
+      filteredRows = listRows.filter((row) => row[groupByField.fieldname] == option)
     }
 
     let groupDetail = {
@@ -359,7 +359,7 @@ function getGroupedByRows(listRows, groupByField, columns) {
       collapsed: false,
       rows: parseRows(filteredRows, columns),
     }
-    if (groupByField.name == 'status') {
+    if (groupByField.fieldname == 'status') {
       groupDetail.icon = () =>
         h(IndicatorIcon, {
           class: getDealStatus(option)?.color,

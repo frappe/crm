@@ -589,7 +589,7 @@ const viewsDropdownOptions = computed(() => {
 })
 
 const quickFilterList = computed(() => {
-  let filters = [{ name: 'name', label: __('ID') }]
+  let filters = [{ fieldname: 'name', fieldtype: 'Data', label: __('ID') }]
   if (quickFilters.data) {
     filters.push(...quickFilters.data)
   }
