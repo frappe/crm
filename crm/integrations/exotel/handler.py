@@ -276,7 +276,7 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 			call_log.start_time = call_payload.get("StartTime")
 			call_log.end_time = call_payload.get("EndTime")
 
-			if direction == "incoming":
+			if direction == "incoming" and call_payload.get("AgentEmail"):
 				call_log.receiver = call_payload.get("AgentEmail")
 			else:
 				call_log.caller = frappe.session.user
