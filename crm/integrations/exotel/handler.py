@@ -277,6 +277,12 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 			call_log.recording_url = call_payload.get("RecordingUrl")
 			call_log.start_time = call_payload.get("StartTime")
 			call_log.end_time = call_payload.get("EndTime")
+
+			if direction == "incoming":
+				call_log.receiver = call_payload.get("AgentEmail")
+			else:
+				call_log.caller = frappe.session.user
+
 			call_log.save(ignore_permissions=True)
 			frappe.db.commit()
 			return call_log
