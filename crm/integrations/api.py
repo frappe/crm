@@ -116,6 +116,9 @@ def get_contact_by_phone_number(phone_number):
 
 
 def get_contact(phone_number, exact_match=False):
+	if not phone_number:
+		return {"mobile_no": phone_number}
+
 	cleaned_number = (
 		phone_number.strip()
 		.replace(" ", "")

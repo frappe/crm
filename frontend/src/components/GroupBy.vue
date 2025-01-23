@@ -45,15 +45,13 @@ const list = defineModel()
 
 const groupByValue = ref({
   label: '',
-  value: '',
+  fieldname: '',
 })
 
 const groupByOptions = createResource({
   url: 'crm.api.doc.get_group_by_fields',
   cache: ['groupByOptions', props.doctype],
-  params: {
-    doctype: props.doctype,
-  },
+  params: { doctype: props.doctype },
 })
 
 onMounted(() => {
@@ -62,8 +60,9 @@ onMounted(() => {
 })
 
 function setGroupBy(data) {
+  if (!data?.fieldname) return
   groupByValue.value = data
-  nextTick(() => emit('update', data.value))
+  nextTick(() => emit('update', data.fieldname))
 }
 
 const options = computed(() => {
@@ -71,7 +70,7 @@ const options = computed(() => {
   if (!list.value?.data?.group_by_field) return groupByOptions.data
   groupByValue.value = list.value.data.group_by_field
   return groupByOptions.data.filter(
-    (option) => option !== groupByValue.value.value
+    (option) => option.fieldname !== groupByValue.value.fieldname,
   )
 })
 </script>

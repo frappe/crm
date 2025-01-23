@@ -72,7 +72,7 @@
    "depends_on": "enabled",
    "fieldname": "record_call",
    "fieldtype": "Check",
-   "label": "Record Call"
+   "label": "Record Outgoing Calls"
   },
   {
    "fieldname": "column_break_qwfn",
@@ -96,7 +96,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-20 15:00:51.096985",
+ "modified": "2025-01-22 19:54:20.074393",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Exotel Settings",

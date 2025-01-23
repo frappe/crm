@@ -195,9 +195,7 @@ const list = defineModel()
 const sortOptions = createResource({
   url: 'crm.api.doc.sort_options',
   cache: ['sortOptions', props.doctype],
-  params: {
-    doctype: props.doctype,
-  },
+  params: { doctype: props.doctype },
 })
 
 onMounted(() => {
@@ -228,7 +226,7 @@ const options = computed(() => {
   const selectedOptions = [...sortValues.value].map((sort) => sort.fieldname)
   restartSort()
   return sortOptions.data.filter((option) => {
-    return !selectedOptions.includes(option.value)
+    return !selectedOptions.includes(option.fieldname)
   })
 })
 
@@ -242,13 +240,13 @@ function getSortLabel() {
   if (!sortValues.value.size) return __('Sort')
   let values = Array.from(sortValues.value)
   let label = sortOptions.data?.find(
-    (option) => option.value === values[0].fieldname,
+    (option) => option.fieldname === values[0].fieldname,
   )?.label
   return label || values[0].fieldname
 }
 
 function setSort(data) {
-  sortValues.value.add({ fieldname: data.value, direction: 'asc' })
+  sortValues.value.add({ fieldname: data.fieldname, direction: 'asc' })
   restartSort()
   apply()
 }
@@ -257,7 +255,7 @@ function updateSort(data, index) {
   let oldSort = Array.from(sortValues.value)[index]
   sortValues.value.delete(oldSort)
   sortValues.value.add({
-    fieldname: data.value,
+    fieldname: data.fieldname,
     direction: oldSort.direction,
   })
   apply()
