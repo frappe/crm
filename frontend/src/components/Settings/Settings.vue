@@ -38,6 +38,7 @@
         >
           <Button
             class="absolute right-5 top-5"
+            variant="ghost"
             icon="x"
             @click="showSettings = false"
           />

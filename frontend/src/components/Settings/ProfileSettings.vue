@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-12 text-ink-gray-9">
+  <div class="flex h-full flex-col gap-8 p-8 text-ink-gray-9">
     <div class="flex-1 flex flex-col gap-8 mt-2 overflow-y-auto">
       <div v-if="profile" class="flex w-full items-center justify-between">
         <div class="flex items-center gap-4">
