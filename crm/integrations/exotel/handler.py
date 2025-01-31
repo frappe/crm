@@ -278,8 +278,6 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 
 			if direction == "incoming" and call_payload.get("AgentEmail"):
 				call_log.receiver = call_payload.get("AgentEmail")
-			else:
-				call_log.caller = frappe.session.user
 
 			call_log.save(ignore_permissions=True)
 			frappe.db.commit()

@@ -28,7 +28,7 @@
       v-if="note.content"
       :content="note.content"
       :editable="false"
-      editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
+      editor-class="prose-sm text-p-sm max-w-none text-ink-gray-5 focus:outline-none"
       class="flex-1 overflow-hidden"
     />
     <div class="mt-1 flex items-center justify-between gap-2">
