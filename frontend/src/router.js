@@ -92,6 +92,30 @@ const routes = [
     props: true,
   },
   {
+    alias: '/customers',
+    path: '/customers/view/:viewType?',
+    name: 'Customers',
+    component: () => import('@/pages/Customers.vue'),
+  },
+  {
+    path: '/customers/:customerId',
+    name: 'Customer',
+    component: () => import(`@/pages/${handleMobileView('Customer')}.vue`),
+    props: true,
+  },
+  {
+    alias: '/suppliers',
+    path: '/suppliers/view/:viewType?',
+    name: 'Suppliers',
+    component: () => import('@/pages/Suppliers.vue'),
+  },
+  {
+    path: '/suppliers/:supplierId',
+    name: 'Supplier',
+    component: () => import(`@/pages/${handleMobileView('Supplier')}.vue`),
+    props: true,
+  },
+  {
     path: '/:invalidpath',
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),

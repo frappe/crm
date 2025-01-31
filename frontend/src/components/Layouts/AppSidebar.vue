@@ -117,55 +117,85 @@ import {
 } from '@/stores/notifications'
 import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
-import { computed, h } from 'vue'
+import { computed, h, ref, onMounted } from 'vue'
+import CustomerIcon from '@/components/Icons/CustomerIcon.vue'
+import SupplierIcon from '@/components/Icons/SupplierIcon.vue'
+import { checkERPNextEnabled } from '@/utils/erpnext'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
-const links = [
-  {
-    label: 'Leads',
-    icon: LeadsIcon,
-    to: 'Leads',
-  },
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
-  },
-  {
-    label: 'Email Templates',
-    icon: Email2Icon,
-    to: 'Email Templates',
-  },
-]
+const isERPNextEnabled = ref(false)
+
+onMounted(async () => {
+  isERPNextEnabled.value = await checkERPNextEnabled()
+})
+
+const links = computed(() => {
+  let baseLinks = [
+    {
+      label: 'Leads',
+      icon: LeadsIcon,
+      to: 'Leads',
+    },
+    {
+      label: 'Deals',
+      icon: DealsIcon,
+      to: 'Deals',
+    },
+    {
+      label: 'Contacts',
+      icon: ContactsIcon,
+      to: 'Contacts',
+    },
+    {
+      label: 'Organizations',
+      icon: OrganizationsIcon,
+      to: 'Organizations',
+    }
+  ]
+
+  if (isERPNextEnabled.value) {
+    baseLinks.push(
+      {
+        label: 'Customers',
+        icon: CustomerIcon,
+        to: 'Customers',
+      },
+      {
+        label: 'Suppliers',
+        icon: SupplierIcon,
+        to: 'Suppliers',
+      }
+    )
+  }
+
+  return [
+    ...baseLinks,
+    {
+      label: 'Notes',
+      icon: NoteIcon,
+      to: 'Notes',
+    },
+    {
+      label: 'Tasks',
+      icon: TaskIcon,
+      to: 'Tasks',
+    },
+    {
+      label: 'Call Logs',
+      icon: PhoneIcon,
+      to: 'Call Logs',
+    },
+    {
+      label: 'Email Templates',
+      icon: Email2Icon,
+      to: 'Email Templates',
+    },
+  ]
+})
 
 const allViews = computed(() => {
   let _views = [
@@ -173,7 +203,7 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links,
+      views: links.value,
     },
   ]
   if (getPublicViews().length) {
@@ -220,6 +250,10 @@ function getIcon(routeName, icon) {
       return ContactsIcon
     case 'Organizations':
       return OrganizationsIcon
+    case 'Customers':
+      return CustomerIcon
+    case 'Suppliers':
+      return SupplierIcon
     case 'Notes':
       return NoteIcon
     case 'Call Logs':

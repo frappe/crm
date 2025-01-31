@@ -1,11 +1,16 @@
 import json
+import email
+from email import policy
+from email.parser import BytesParser
 
 import frappe
 from frappe import _
 from frappe.model import no_value_fields
 from frappe.model.document import get_controller
 from frappe.utils import make_filter_tuple
+from frappe.utils.file_manager import save_file
 from pypika import Criterion
+import email.utils
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
@@ -205,6 +210,74 @@ def get_quick_filters(doctype: str):
 	return quick_filters
 
 
+def is_erpnext_doctype(doctype):
+	return doctype in ['Customer', 'Supplier']
+
+
+def get_erpnext_enabled():
+	try:
+		return frappe.db.get_single_value('ERPNext CRM Settings', 'enabled')
+	except:
+		return False
+
+
+def format_erpnext_data(data, doctype):
+	formatted_data = []
+	for d in data:
+		if doctype == 'Customer':
+			formatted_doc = {
+				'name': d.get('name'),
+				'customer_name': {
+					'name': d.get('name'),
+					'label': d.get('customer_name') or d.get('name'),
+					'logo': d.get('image')
+				},
+				'customer_group': {
+					'name': d.get('customer_group'),
+					'label': d.get('customer_group')
+				},
+				'territory': {
+					'name': d.get('territory'),
+					'label': d.get('territory')
+				},
+				'customer_type': {
+					'name': d.get('customer_type'),
+					'label': d.get('customer_type')
+				},
+				'modified': {
+					'label': str(d.get('modified')),
+					'timeAgo': str(d.get('modified'))
+				}
+			}
+		elif doctype == 'Supplier':
+			formatted_doc = {
+				'name': d.get('name'),
+				'supplier_name': {
+					'name': d.get('name'),
+					'label': d.get('supplier_name') or d.get('name'),
+					'logo': d.get('image')
+				},
+				'supplier_group': {
+					'name': d.get('supplier_group'),
+					'label': d.get('supplier_group')
+				},
+				'supplier_type': {
+					'name': d.get('supplier_type'),
+					'label': d.get('supplier_type')
+				},
+				'country': {
+					'name': d.get('country'),
+					'label': d.get('country')
+				},
+				'modified': {
+					'label': str(d.get('modified')),
+					'timeAgo': str(d.get('modified'))
+				}
+			}
+		formatted_data.append(formatted_doc)
+	return formatted_data
+
+
 @frappe.whitelist()
 def get_data(
 	doctype: str,
@@ -220,7 +293,45 @@ def get_data(
 	kanban_fields=[],
 	view=None,
 	default_filters=None,
-):
+):	
+	if is_erpnext_doctype(doctype) and get_erpnext_enabled():
+		# Get default data first to know what fields to fetch
+		default_data = get_erpnext_default_list_data(doctype)
+		fields_to_fetch = default_data.get("rows", [])
+		fields_to_fetch.extend(["image", "name"])  # Always fetch image and name
+		
+		# Get data from ERPNext with all needed fields
+		data = frappe.get_list(
+			doctype,
+			fields=fields_to_fetch,
+			filters=filters,
+			order_by=order_by or "modified desc",
+			page_length=page_length,
+			as_list=False
+		)
+		
+		# Format data
+		formatted_data = format_erpnext_data(data, doctype)
+		
+		# Get columns definition
+		column_list = default_data.get("columns", [])
+		row_list = default_data.get("rows", [])
+		return {
+			"data": formatted_data,
+			"columns": column_list,
+			"rows": row_list,
+			"fields": get_fields_meta(doctype, as_array=True),
+			"total_count": len(frappe.get_all(doctype, filters=filters)),
+			"row_count": len(data),
+			"views": [],
+			"form_script": None,
+			"list_script": None,
+			"view_type": "list",
+			"page_length": page_length,
+			"page_length_count": page_length_count
+		}
+
+	# Original implementation for non-ERPNext doctypes
 	custom_view = False
 	filters = frappe._dict(filters)
 	rows = frappe.parse_json(rows or "[]")
@@ -285,7 +396,12 @@ def get_data(
 			is_default = False
 		elif not custom_view or (is_default and hasattr(_list, "default_list_data")):
 			rows = default_rows
-			columns = _list.default_list_data().get("columns")
+			if doctype in ["Customer", "Supplier"]:
+				default_data = get_erpnext_default_list_data(doctype)
+				if default_data:
+					columns = default_data.get("columns")
+			else:
+				columns = _list.default_list_data().get("columns")
 
 		# check if rows has all keys from columns if not add them
 		for column in columns:
@@ -645,3 +761,226 @@ def getCounts(d, doctype):
 		"FCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")}
 	)
 	return d
+
+
+def _get_default_column(label, fieldtype, key, width):
+	return {
+		"label": label,
+		"type": fieldtype,
+		"key": key,
+		"width": width
+	}
+
+def get_erpnext_default_list_data(doctype):
+	"""Get default list data configuration for ERPNext doctypes"""
+	if doctype == 'Customer':
+		return {
+			'columns': [
+				_get_default_column('Customer', 'Data', 'customer_name', '16rem'),
+				_get_default_column('Customer Group', 'Link', 'customer_group', '14rem'),
+				_get_default_column('Territory', 'Link', 'territory', '14rem'),
+				_get_default_column('Customer Type', 'Data', 'customer_type', '14rem'),
+				_get_default_column('Last Modified', 'Datetime', 'modified', '8rem')
+			],
+			'rows': [
+				'name', 'customer_name', 'customer_group', 
+				'territory', 'customer_type', 'modified'
+			]
+		}
+	elif doctype == 'Supplier':
+		return {
+			'columns': [
+				_get_default_column('Supplier', 'Data', 'supplier_name', '16rem'),
+				_get_default_column('Supplier Group', 'Link', 'supplier_group', '14rem'),
+				_get_default_column('Supplier Type', 'Data', 'supplier_type', '14rem'),
+				_get_default_column('Country', 'Link', 'country', '14rem'),
+				_get_default_column('Last Modified', 'Datetime', 'modified', '8rem')
+			],
+			'rows': [
+				'name', 'supplier_name', 'supplier_group',
+				'supplier_type', 'country', 'modified'
+			]
+		}
+	return None
+
+@frappe.whitelist()
+def get_timeline(doctype: str, name: str, for_contact: bool = False) -> list:
+    """Get timeline entries for a doctype"""
+    contacts = [frappe.get_doc("Contact", name)] if for_contact else get_contacts(doctype, name)
+    return _get_timeline(doctype, name, for_contact, contacts)
+
+@frappe.whitelist()
+def get_contacts_count(doctype: str, name: str) -> int:
+    """Get count of contacts linked to a doctype"""
+    return frappe.db.count("Contact", filters=[
+        ["Dynamic Link", "link_doctype", "=", doctype],
+        ["Dynamic Link", "link_name", "=", name]
+    ])
+
+@frappe.whitelist()
+def get_contacts(reference_doctype: str, reference_name: str) -> list:
+    """Get list of contacts linked to a reference doctype"""
+    return frappe.get_list(
+        "Contact",
+        filters=[
+            ["Dynamic Link", "link_doctype", "=", reference_doctype],
+            ["Dynamic Link", "link_name", "=", reference_name]
+        ],
+        fields=["name", "email_id", "phone", "modified"]
+    )
+
+@frappe.whitelist()
+def create_communication_from_eml(file_url: str, contact_name: str) -> dict:
+    """Create a Communication from an uploaded .eml file."""
+    try:
+        file = frappe.get_doc("File", {"file_url": file_url})
+        file_path = frappe.get_site_path("public", file.file_url.lstrip("/"))
+
+        with open(file_path, "rb") as f:
+            msg = BytesParser(policy=policy.default).parse(f)
+
+        # Create Communication
+        comm = frappe.new_doc("Communication")
+        comm.update({
+            "subject": msg["subject"],
+            "communication_medium": "Email",
+            "content": msg.get_body(preferencelist=("plain", "html")).get_content(),
+            "sender": msg["from"],
+            "recipients": msg["to"],
+            "communication_date": email.utils.parsedate_to_datetime(msg["date"]).replace(tzinfo=None),
+            "reference_doctype": "Contact",
+            "reference_name": contact_name,
+            "timeline_links": [{
+                "link_doctype": "Contact",
+                "link_name": contact_name
+            }]
+        })
+        comm.insert(ignore_permissions=True)
+
+        # Handle attachments
+        for part in msg.iter_attachments():
+            if file_name := part.get_filename():
+                save_file(
+                    file_name,
+                    part.get_payload(decode=True),
+                    "Communication",
+                    comm.name,
+                    "Home/Attachments"
+                )
+
+        return {"success": True, "communication": comm.name}
+    except Exception as e:
+        frappe.log_error(f"Failed to create communication from EML: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+def _get_timeline(reference_doctype, reference_name, for_contact, contacts = None):
+    """Base timeline function that can be reused across doctypes"""
+    timeline = []
+    if contacts:
+        _add_contact_entries(timeline, contacts)
+
+    if not for_contact:
+        _add_reference_entries(timeline, reference_doctype, reference_name)
+    
+    timeline.sort(key=lambda x: x["timestamp"], reverse=True)
+    return timeline
+
+def _get_comments(reference_doctype, reference_name):
+    return frappe.get_list(
+        'Comment',
+        filters={
+            'reference_doctype': reference_doctype,
+            'reference_name': reference_name,
+            'comment_type': 'Comment'
+        },
+        fields=['name', 'content', 'comment_by', 'creation', 'owner'],
+        order_by='creation desc'
+    )
+
+def _get_emails(reference_doctype, reference_name):
+    return frappe.get_list(
+        "Communication",
+        filters={
+            'reference_doctype': reference_doctype,
+            'reference_name': reference_name
+        },
+        fields=[
+            "name", "subject", "content", "communication_type",
+            "communication_medium", "creation", "owner", "sender",
+            "sender_full_name", "recipients", "delivery_status", "communication_date"
+        ],
+        order_by="creation desc"
+    )
+
+def _get_notes(reference_doctype, reference_name):
+    return frappe.get_list(
+        "FCRM Note",
+        fields=["name", "title", "content", "owner", "modified"],
+        filters={
+            "reference_doctype": reference_doctype,
+            "reference_docname": reference_name
+        },
+        order_by="modified desc"
+    )
+
+def _add_reference_entries(timeline, reference_doctype, reference_name):
+    _add_comments(timeline, reference_doctype, reference_name)
+    _add_emails(timeline, reference_doctype, reference_name)
+    _add_notes(timeline, reference_doctype, reference_name)
+
+def _add_contact_entries(timeline, contacts):
+    for contact in contacts:
+        _add_reference_entries(timeline, "Contact", contact.name)
+
+def _add_comments(timeline, reference_doctype, reference_name):
+	for comment in _get_comments(reference_doctype, reference_name):
+		if reference_doctype == "Contact":
+			title = "Comment"
+		else:
+			title = "Comment regarding " + reference_name
+
+		timeline.append({
+			"type": "comment",
+			"title": title,
+			"description": comment.content,
+			"timestamp": comment.creation,
+			"owner": comment.owner,
+			"reference": {
+				"type": "Comment",
+				"name": comment.name
+			}
+		})
+
+def _add_emails(timeline, reference_doctype, reference_name):
+    for email in _get_emails(reference_doctype, reference_name):
+        timeline.append({
+            "type": "email",
+            "title": email.subject,
+            "description": email.content,
+            "reference": {
+                "type": "Communication",
+                "name": email.name
+            },
+            "owner": email.sender,
+            "timestamp": email.communication_date,
+            "details": {
+                "sender": email.sender,
+                "sender_name": email.sender_full_name,
+                "recipients": email.recipients,
+                "contact": reference_name
+            }
+        })
+
+def _add_notes(timeline, reference_doctype, reference_name):
+    for note in _get_notes(reference_doctype, reference_name):
+        timeline.append({
+            "type": "note",
+            "title": note.title,
+            "description": note.content,
+            "reference": {
+                "type": "Note",
+                "name": note.name
+            },
+            "owner": note.owner,
+            "timestamp": note.modified
+        })
