@@ -216,7 +216,7 @@ async function startCamera() {
 }
 
 function stopStream() {
-  stream.value.getTracks().forEach((track) => track.stop())
+  stream.value?.getTracks()?.forEach((track) => track.stop())
   showCamera.value = false
   cameraImage.value = null
 }
