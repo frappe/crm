@@ -100,15 +100,16 @@ const rows = computed(() => {
   if (
     !suppliers.value?.data?.data ||
     !['list', 'group_by'].includes(suppliers.value.data.view_type)
-  )
-    return []
+  ) {
+    return [];
+  }
   return suppliers.value?.data.data.map((supplier) => {
     let _rows = {}
     suppliers.value?.data.rows.forEach((row) => {
       _rows[row] = supplier[row]
 
       let fieldType = suppliers.value?.data.columns?.find(
-        (col) => (col.key || col.value) == row,
+        (col) => (col.key || col.value) === row,
       )?.type
 
       if (
@@ -120,20 +121,24 @@ const rows = computed(() => {
           supplier[row],
           '',
           true,
-          fieldType == 'Datetime',
+          fieldType === 'Datetime',
         )
       }
 
-      if (fieldType && fieldType == 'Currency') {
-        _rows[row] = getFormattedCurrency(row, supplier)
-      }
-
-      if (fieldType && fieldType == 'Float') {
-        _rows[row] = getFormattedFloat(row, supplier)
-      }
-
-      if (fieldType && fieldType == 'Percent') {
-        _rows[row] = getFormattedPercent(row, supplier)
+      if (fieldType) {
+        switch (fieldType) {
+          case 'Currency':
+            _rows[row] = getFormattedCurrency(row, supplier);
+            break;
+          case 'Float':
+            _rows[row] = getFormattedFloat(row, supplier);
+            break;
+          case 'Percent':
+            _rows[row] = getFormattedPercent(row, supplier);
+            break;
+          default:
+            break;
+        }
       }
 
       if (row === 'supplier_name') {
