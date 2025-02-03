@@ -255,6 +255,8 @@ def get_data(
 	if hasattr(_list, "default_list_data"):
 		default_rows = _list.default_list_data().get("rows")
 
+	meta = frappe.get_meta(doctype)
+
 	if view_type != "kanban":
 		if columns or rows:
 			custom_view = True
@@ -295,6 +297,11 @@ def get_data(
 
 			if column.get("key") == "_liked_by" and column.get("width") == "10rem":
 				column["width"] = "50px"
+
+			# remove column if column.hidden is True
+			column_meta = meta.get_field(column.get("key"))
+			if column_meta and column_meta.get("hidden"):
+				columns.remove(column)
 
 		# check if rows has group_by_field if not add it
 		if group_by_field and group_by_field not in rows:
