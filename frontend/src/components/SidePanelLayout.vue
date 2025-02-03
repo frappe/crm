@@ -339,6 +339,14 @@
                           "
                         />
                         <FormControl
+                          v-else-if="field.fieldtype === 'Table MultiSelect'"
+                          class="form-control"
+                          type="text"
+                          :value="data[field.fieldname].map(item => item.name).join(', ')"
+                          :placeholder="field.placeholder"
+                          :disabled="Boolean(field.read_only)"
+                        />
+                        <FormControl
                           v-else
                           class="form-control"
                           type="text"
