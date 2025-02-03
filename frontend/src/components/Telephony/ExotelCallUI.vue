@@ -431,12 +431,15 @@ function setup() {
     callStatus.value = updateStatus(data)
     const { user } = sessionStore()
 
-    if (
-      !showCallPopup.value &&
-      !showSmallCallPopup.value &&
-      (!data.AgentEmail || data.AgentEmail == (user || user.value))
-    ) {
-      phoneNumber.value = data.DialWhomNumber || data.To
+    if (!showCallPopup.value && !showSmallCallPopup.value) {
+      if (data.AgentEmail && data.AgentEmail == (user || user.value)) {
+        // Incoming call
+        phoneNumber.value = data.CallFrom || data.From
+      } else {
+        // Outgoing call
+        phoneNumber.value = data.To
+      }
+
       showCallPopup.value = true
     }
   })
