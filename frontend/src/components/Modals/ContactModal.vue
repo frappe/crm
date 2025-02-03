@@ -85,9 +85,9 @@ async function createContact() {
     delete _contact.value.email_id
   }
 
-  if (_contact.value.actual_mobile_no) {
-    _contact.value.phone_nos = [{ phone: _contact.value.actual_mobile_no }]
-    delete _contact.value.actual_mobile_no
+  if (_contact.value.mobile_no) {
+    _contact.value.phone_nos = [{ phone: _contact.value.mobile_no }]
+    delete _contact.value.mobile_no
   }
 
   const doc = await call('frappe.client.insert', {

@@ -140,8 +140,9 @@ function createNewLead() {
         return error.value
       }
       if (lead.annual_revenue) {
-        lead.annual_revenue = lead.annual_revenue.replace(/,/g, '')
-        if (isNaN(lead.annual_revenue)) {
+        if (typeof lead.annual_revenue === 'string') {
+          lead.annual_revenue = lead.annual_revenue.replace(/,/g, '')
+        } else if (isNaN(lead.annual_revenue)) {
           error.value = __('Annual Revenue should be a number')
           return error.value
         }

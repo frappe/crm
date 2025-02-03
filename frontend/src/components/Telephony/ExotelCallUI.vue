@@ -434,10 +434,9 @@ function setup() {
     if (
       !showCallPopup.value &&
       !showSmallCallPopup.value &&
-      data.AgentEmail &&
-      data.AgentEmail == (user || user.value)
+      (!data.AgentEmail || data.AgentEmail == (user || user.value))
     ) {
-      phoneNumber.value = data.CallTo || data.To
+      phoneNumber.value = data.DialWhomNumber || data.To
       showCallPopup.value = true
     }
   })
