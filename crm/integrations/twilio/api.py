@@ -21,7 +21,7 @@ def generate_access_token():
 	if not twilio:
 		return {}
 
-	from_number = frappe.db.get_value("Twilio Agents", frappe.session.user, "twilio_number")
+	from_number = frappe.db.get_value("CRM Telephony Agent", frappe.session.user, "twilio_number")
 	if not from_number:
 		return {
 			"ok": False,
@@ -40,7 +40,7 @@ def voice(**kwargs):
 	def _get_caller_number(caller):
 		identity = caller.replace("client:", "").strip()
 		user = Twilio.emailid_from_identity(identity)
-		return frappe.db.get_value("Twilio Agents", user, "twilio_number")
+		return frappe.db.get_value("CRM Telephony Agent", user, "twilio_number")
 
 	args = frappe._dict(kwargs)
 	twilio = Twilio.connect()

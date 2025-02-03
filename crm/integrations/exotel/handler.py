@@ -130,24 +130,22 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 	return call_details
 
 
-def get_exotel_endpoint(action=None):
+def get_exotel_endpoint(action=None, version="v1"):
 	settings = get_exotel_settings()
-	return "https://{api_key}:{api_token}@{subdomain}/v1/Accounts/{sid}/{action}".format(
+	return "https://{api_key}:{api_token}@{subdomain}/{version}/Accounts/{sid}/{action}".format(
 		api_key=settings.api_key,
 		api_token=settings.get_password("api_token"),
 		subdomain=settings.subdomain,
+		version=version,
 		sid=settings.account_sid,
 		action=action,
 	)
 
 
 def get_all_exophones():
-	endpoint = get_exotel_endpoint("IncomingPhoneNumbers.json")
+	endpoint = get_exotel_endpoint("IncomingPhoneNumbers", "v2_beta")
 	response = requests.get(endpoint)
-	return [
-		phone.get("IncomingPhoneNumber", {}).get("PhoneNumber")
-		for phone in response.json().get("IncomingPhoneNumbers", [])
-	]
+	return [phone.get("friendly_name") for phone in response.json().get("incoming_phone_numbers", [])]
 
 
 def get_status_updater_url():
@@ -274,9 +272,13 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 			call_log.duration = (
 				call_payload.get("DialCallDuration") or call_payload.get("ConversationDuration") or 0
 			)
-			call_log.recording_url = call_payload.get("RecordingUrl")
+			call_log.recording_url = call_payload.get("RecordingUrl") if call_payload.get("RecordingUrl") else ""
 			call_log.start_time = call_payload.get("StartTime")
 			call_log.end_time = call_payload.get("EndTime")
+
+			if direction == "incoming" and call_payload.get("AgentEmail"):
+				call_log.receiver = call_payload.get("AgentEmail")
+
 			call_log.save(ignore_permissions=True)
 			frappe.db.commit()
 			return call_log
