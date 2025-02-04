@@ -1,19 +1,8 @@
 from bs4 import BeautifulSoup
 import frappe
-from frappe.translate import get_all_translations
 from frappe.utils import validate_email_address, split_emails, cstr
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
 from frappe.core.api.file import get_max_file_size
-
-
-@frappe.whitelist(allow_guest=True)
-def get_translations():
-	if frappe.session.user != "Guest":
-		language = frappe.db.get_value("User", frappe.session.user, "language")
-	else:
-		language = frappe.db.get_single_value("System Settings", "language")
-
-	return get_all_translations(language)
 
 
 @frappe.whitelist()
