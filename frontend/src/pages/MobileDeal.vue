@@ -534,6 +534,15 @@ function contactOptions(contact) {
 }
 
 async function addContact(contact) {
+  if (dealContacts.data?.find((c) => c.name === contact)) {
+    createToast({
+      title: __('Contact already added'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-3',
+    })
+    return
+  }
+
   let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.add_contact', {
     deal: props.dealId,
     contact,
