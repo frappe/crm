@@ -45,11 +45,6 @@
         v-if="lead.data._customActions?.length"
         :actions="lead.data._customActions"
       />
-      <Button
-        :label="__('Convert')"
-        variant="solid"
-        @click="showConvertToDealModal = true"
-      />
     </div>
   </div>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">

@@ -14,6 +14,7 @@ def parse_phone_number(phone_number, default_country="IN"):
 			"is_valid": phonenumbers.is_valid_number(number),
 			"country_code": number.country_code,
 			"national_number": str(number.national_number),
+			"e164_number": phonenumbers.format_number(number, PNF.E164),
 			"formats": {
 				"international": phonenumbers.format_number(number, PNF.INTERNATIONAL),
 				"national": phonenumbers.format_number(number, PNF.NATIONAL),

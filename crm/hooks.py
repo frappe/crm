@@ -162,6 +162,9 @@ doc_events = {
 	"User": {
 		"before_validate": ["crm.api.demo.validate_user"],
 	},
+	"Communication": {
+		"before_insert": "crm.api.communication.before_insert"
+	}
 }
 
 # Scheduled Tasks

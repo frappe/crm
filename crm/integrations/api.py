@@ -110,7 +110,7 @@ def get_contact_by_phone_number(phone_number):
 	number = parse_phone_number(phone_number)
 
 	if number.get("is_valid"):
-		return get_contact(number.get("national_number"))
+		return get_contact(number.get("e164_number"))
 	else:
 		return get_contact(phone_number, exact_match=True)
 
