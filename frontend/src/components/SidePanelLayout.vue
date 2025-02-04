@@ -15,40 +15,16 @@
             :opened="section.opened"
           >
             <template v-if="!preview" #actions>
-              <div v-if="section.name == 'contacts_section'" class="pr-2">
-                <Link
-                  value=""
-                  doctype="Contact"
-                  @change="(e) => addContact(e)"
-                  :onCreate="
-                    (value, close) => {
-                      _contact = {
-                        first_name: value,
-                        company_name: deal.data.organization,
-                      }
-                      showContactModal = true
-                      close()
-                    }
-                  "
+              <slot name="actions" v-bind="{ section }">
+                <Button
+                  v-if="section.showEditButton"
+                  variant="ghost"
+                  class="w-7 mr-2"
+                  @click="showSidePanelModal = true"
                 >
-                  <template #target="{ togglePopover }">
-                    <Button
-                      class="h-7 px-3"
-                      variant="ghost"
-                      icon="plus"
-                      @click="togglePopover()"
-                    />
-                  </template>
-                </Link>
-              </div>
-              <Button
-                v-else-if="section.showEditButton"
-                variant="ghost"
-                class="w-7 mr-2"
-                @click="showSidePanelModal = true"
-              >
-                <EditIcon class="h-4 w-4" />
-              </Button>
+                  <EditIcon class="h-4 w-4" />
+                </Button>
+              </slot>
             </template>
             <slot v-bind="{ section }">
               <FadedScrollableDiv
