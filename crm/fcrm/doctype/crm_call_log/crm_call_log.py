@@ -13,14 +13,14 @@ class CRMCallLog(Document):
 	def default_list_data():
 		columns = [
 			{
-				"label": "From",
+				"label": "Caller",
 				"type": "Link",
 				"key": "caller",
 				"options": "User",
 				"width": "9rem",
 			},
 			{
-				"label": "To",
+				"label": "Receiver",
 				"type": "Link",
 				"key": "receiver",
 				"options": "User",

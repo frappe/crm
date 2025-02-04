@@ -461,7 +461,12 @@ const export_all = ref(false)
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
-  let filters = JSON.stringify(list.value.params.filters)
+
+  let filters = JSON.stringify({
+    ...props.filters,
+    ...list.value.params.filters,
+  })
+
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
   if (export_all.value) {

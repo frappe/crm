@@ -197,8 +197,9 @@ function createDeal() {
     validate() {
       error.value = null
       if (deal.annual_revenue) {
-        deal.annual_revenue = deal.annual_revenue.replace(/,/g, '')
-        if (isNaN(deal.annual_revenue)) {
+        if (typeof deal.annual_revenue === 'string') {
+          deal.annual_revenue = deal.annual_revenue.replace(/,/g, '')
+        } else if (isNaN(deal.annual_revenue)) {
           error.value = __('Annual Revenue should be a number')
           return error.value
         }
