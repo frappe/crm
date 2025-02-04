@@ -5,6 +5,7 @@ import { gemoji } from 'gemoji'
 import { useTimeAgo } from '@vueuse/core'
 import { toast, dayjsLocal, dayjs } from 'frappe-ui'
 import { h } from 'vue'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 
 export function createToast(options) {
   toast({
@@ -71,7 +72,11 @@ export function getFormat(
 }
 
 export function timeAgo(date) {
-  return useTimeAgo(date).value
+  const systemDate = new Date(date)
+  const utcDate = fromZonedTime(systemDate, window.timezone?.system)
+  const userDate = toZonedTime(utcDate, window.timezone?.user)
+
+  return useTimeAgo(userDate).value
 }
 
 export function taskStatusOptions(action, data) {
