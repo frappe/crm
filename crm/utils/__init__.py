@@ -4,7 +4,25 @@ from phonenumbers import NumberParseException
 from phonenumbers import PhoneNumberFormat as PNF
 
 
-def parse_phone_number(phone_number, default_country="IN"):
+def parse_phone_number(phone_number, default_country="RU"):
+	"""Parse phone number using phonenumbers library
+	Args:
+		phone_number (str): Phone number to parse
+		default_country (str): Default country code (default: "RU" for Russia)
+	"""
+	if not phone_number:
+		return {"success": False, "error": "No phone number provided"}
+
+	# Basic cleanup - remove all except digits and plus
+	phone_number = "".join([c for c in phone_number if c.isdigit() or c == "+"])
+	
+	# Handle Russian numbers starting with 8
+	if phone_number.startswith('8'):
+		phone_number = '+7' + phone_number[1:]
+	# Handle numbers starting with 7 without plus
+	elif phone_number.startswith('7') and not phone_number.startswith('+'):
+		phone_number = '+' + phone_number
+
 	try:
 		# Parse the number
 		number = phonenumbers.parse(phone_number, default_country)
@@ -30,17 +48,16 @@ def parse_phone_number(phone_number, default_country="IN"):
 		return {"success": False, "error": str(e)}
 
 
-def are_same_phone_number(number1, number2, default_region="IN", validate=True):
+def are_same_phone_number(number1, number2, default_region="RU", validate=True):
 	"""
 	Check if two phone numbers are the same, regardless of their format.
-
 	Args:
-	    number1 (str): First phone number
-	    number2 (str): Second phone number
-	    default_region (str): Default region code for parsing ambiguous numbers
-
+		number1 (str): First phone number
+		number2 (str): Second phone number
+		default_region (str): Default region code for parsing ambiguous numbers (default: "RU")
+		validate (bool): Whether to validate numbers before comparing
 	Returns:
-	    bool: True if numbers are same, False otherwise
+		bool: True if numbers are same, False otherwise
 	"""
 	try:
 		# Parse both numbers

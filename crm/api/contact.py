@@ -1,10 +1,12 @@
 import frappe
 from frappe import _
+from crm.utils import parse_phone_number
 
 
 def validate(doc, method):
 	set_primary_email(doc)
 	set_primary_mobile_no(doc)
+	normalize_phone_numbers(doc)
 	doc.set_primary_email()
 	doc.set_primary("mobile_no")
 	update_deals_email_mobile_no(doc)
@@ -24,6 +26,20 @@ def set_primary_mobile_no(doc):
 
 	if len(doc.phone_nos) == 1:
 		doc.phone_nos[0].is_primary_mobile_no = 1
+
+
+def normalize_phone_numbers(doc):
+	"""Normalize all phone numbers in the document"""
+	if doc.phone_nos:
+		for phone in doc.phone_nos:
+			if phone.phone:
+				# Use the phonenumbers library for proper validation and formatting
+				parsed = parse_phone_number(phone.phone)
+				if parsed.get("success"):
+					phone.phone = parsed.get("formats", {}).get("E164", phone.phone)
+				else:
+					# Fallback to basic normalization if parsing fails
+					phone.phone = "".join([c for c in phone.phone if c.isdigit() or c == "+"])
 
 
 def update_deals_email_mobile_no(doc):

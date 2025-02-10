@@ -22,12 +22,12 @@
     :placeholder="filter.label"
     @change="(data) => updateFilter(filter, data)"
   />
-  <component
+  <input
     v-else-if="['Date', 'Datetime'].includes(filter.fieldtype)"
     class="border-none"
-    :is="filter.fieldtype === 'Date' ? DatePicker : DateTimePicker"
+    :type="filter.fieldtype === 'Date' ? 'date' : 'datetime-local'"
     :value="filter.value"
-    @change="(v) => updateFilter(filter, v)"
+    @change="(e) => updateFilter(filter, e.target.value)"
     :placeholder="filter.label"
   />
   <FormControl
@@ -40,7 +40,7 @@
 </template>
 <script setup>
 import Link from '@/components/Controls/Link.vue'
-import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
+import { FormControl } from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
 
 const props = defineProps({

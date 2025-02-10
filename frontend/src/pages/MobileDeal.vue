@@ -15,7 +15,7 @@
           "
         >
           <template #default="{ open }">
-            <Button :label="deal.data.status">
+            <Button :label="translateDealStatus(deal.data.status)">
               <template #prefix>
                 <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
               </template>
@@ -213,7 +213,59 @@
         />
       </TabPanel>
     </Tabs>
-  </div>
+    <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white dark:bg-gray-900 dark:border-gray-700 p-3">
+            <Button
+              v-if="primaryContactMobileNo && callEnabled"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="triggerCall"
+            >
+              <template #prefix>
+                <PhoneIcon class="h-4 w-4" />
+              </template>
+              {{ __('Make Call') }}
+            </Button>
+
+            <Button
+              v-if="primaryContactMobileNo && !callEnabled"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="trackPhoneActivities('phone')"
+            >
+              <template #prefix>
+                <PhoneIcon class="h-4 w-4" />
+              </template>
+              {{ __('Make Call') }}
+            </Button>
+            
+            <Button
+              v-if="primaryContactMobileNo"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="trackPhoneActivities('whatsapp')"
+            >
+              <template #prefix>
+                <WhatsAppIcon class="h-4 w-4" />
+              </template>
+              {{ __('Chat') }}
+            </Button>
+
+            <Button
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="
+                deal.data.website
+                  ? openWebsite(deal.data.website)
+                  : errorMessage(__('No website set'))
+              "
+            >
+              <template #prefix>
+                <LinkIcon class="h-4 w-4" />
+              </template>
+              {{ __('Website') }}
+            </Button>    
+    </div>
+  </div>  
   <OrganizationModal
     v-model="showOrganizationModal"
     v-model:organization="_organization"
@@ -281,6 +333,8 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { trackCommunication } from '@/utils/communicationUtils'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
@@ -389,6 +443,23 @@ function validateRequired(fieldname, value) {
   return false
 }
 
+const displayName = computed(() => {
+  if (!deal.data) return __('Loading...')
+  
+  if (organization.data?.name) {
+    return organization.data.name
+  }
+  
+  if (dealContacts.data) {
+    const primaryContact = dealContacts.data.find(c => c.is_primary)
+    if (primaryContact?.full_name) {
+      return primaryContact.full_name
+    }
+  }
+  
+  return __('Untitled')
+})
+
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
 
@@ -408,7 +479,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.data?.name || __('Untitled'),
+    label: displayName.value,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -416,7 +487,7 @@ const breadcrumbs = computed(() => {
 
 usePageMeta(() => {
   return {
-    title: organization.data?.name || deal.data?.name,
+    title: displayName.value,
     icon: brand.favicon,
   }
 })
@@ -624,5 +695,38 @@ async function deleteDeal(name) {
     name,
   })
   router.push({ name: 'Deals' })
+}
+
+function trackPhoneActivities(type) {
+  const primaryContact = dealContacts.data?.find(c => c.is_primary)
+  if (!primaryContact?.mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  trackCommunication({
+    type,
+    doctype: 'CRM Deal',
+    docname: deal.data.name,
+    phoneNumber: primaryContact.mobile_no,
+    activities: activities.value,
+    contactName: primaryContact.name
+  })
+}
+
+function triggerCall() {
+  const primaryContact = dealContacts.data?.find((c) => c.is_primary)
+  const mobile_no = primaryContact?.mobile_no || null
+
+  if (!primaryContact) {
+    errorMessage(__('No primary contact set'))
+    return
+  }
+
+  if (!mobile_no) {
+    errorMessage(__('No mobile number set'))
+    return
+  }
+
+  makeCall(mobile_no)
 }
 </script>

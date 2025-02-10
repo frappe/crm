@@ -65,28 +65,55 @@
                 <span>{{ contact.data.full_name }}</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <Button
-                  v-if="contact.data.actual_mobile_no"
-                  :label="__('Make Call')"
-                  size="sm"
-                  @click="
-                    callEnabled && makeCall(contact.data.actual_mobile_no)
-                  "
-                >
-                  <template #prefix>
-                    <PhoneIcon class="h-4 w-4" />
-                  </template>
-                </Button>
+                <div class="flex gap-1.5">
+                  <Button
+                    v-if="contact.data.actual_mobile_no && callEnabled"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="makeCall(contact.data.actual_mobile_no)"
+                  >
+                    <template #prefix>
+                      <PhoneIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Make Call') }}
+                  </Button>
+
+                  <Button
+                    v-if="contact.data.actual_mobile_no && !callEnabled"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="trackPhoneActivities('phone')"
+                  >
+                    <template #prefix>
+                      <PhoneIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Make Call') }}
+                  </Button>
+
+                  <Button
+                    v-if="contact.data.actual_mobile_no"
+                    size="sm"
+                    class="dark:text-white dark:hover:bg-gray-700"
+                    @click="trackPhoneActivities('whatsapp')"
+                  >
+                    <template #prefix>
+                      <WhatsAppIcon class="h-4 w-4" />
+                    </template>
+                    {{ __('Chat') }}
+                  </Button>
+                </div>
+
                 <Button
                   :label="__('Delete')"
+                  variant="ghost"
                   theme="red"
                   size="sm"
+                  class="dark:text-red-400 dark:hover:bg-gray-700"
                   @click="deleteContact"
                 >
-                  <template #prefix>
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
-                  </template>
                 </Button>
+
                 <Avatar
                   v-if="contact.data.company_name"
                   size="md"
@@ -492,7 +519,7 @@ async function setAsPrimary(field, value) {
   if (d) {
     contact.reload()
     createToast({
-      title: 'Contact updated',
+      title: __('Contact Updated'),
       icon: 'check',
       iconClasses: 'text-ink-green-3',
     })
@@ -509,7 +536,7 @@ async function createNew(field, value) {
   if (d) {
     contact.reload()
     createToast({
-      title: 'Contact updated',
+      title: __('Contact updated'),
       icon: 'check',
       iconClasses: 'text-ink-green-3',
     })
@@ -540,7 +567,7 @@ async function deleteOption(doctype, name) {
   })
   await contact.reload()
   createToast({
-    title: 'Contact updated',
+    title: __('Contact Updated'),
     icon: 'check',
     iconClasses: 'text-ink-green-3',
   })
@@ -554,7 +581,7 @@ async function updateField(fieldname, value) {
     value,
   })
   createToast({
-    title: 'Contact updated',
+    title: __('Contact updated'),
     icon: 'check',
     iconClasses: 'text-ink-green-3',
   })

@@ -1,0 +1,11 @@
+/* Form inputs theme */
+input[type="datetime-local"],
+input[type="date"] {
+  @apply rounded border-none bg-surface-gray-2 py-1.5 px-2 text-sm text-ink-gray-8 placeholder:text-ink-gray-4 hover:bg-surface-gray-3;
+  color-scheme: dark;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+} 

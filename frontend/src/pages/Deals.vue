@@ -4,19 +4,36 @@
       <ViewBreadcrumbs v-model="viewControls" routeName="Deals" />
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="dealsListView?.customListActions"
-        :actions="dealsListView.customListActions"
-      />
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        @click="showDealModal = true"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <div class="flex items-center gap-4">
+        <SmartFilterField
+          v-if="!isMobileView"
+          ref="desktopSmartFilter"
+          doctype="CRM Deal"
+          @update:filters="handleSmartFilter"
+          class="w-80"
+        />
+        <CustomActions
+          v-if="dealsListView?.customListActions"
+          :actions="dealsListView.customListActions"
+        />
+        <Button
+          variant="solid"
+          :label="__('Create')"
+          @click="showDealModal = true"
+        >
+          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+        </Button>
+      </div>
     </template>
   </LayoutHeader>
+  <div v-if="isMobileView" class="px-3 py-2 border-b">
+    <SmartFilterField
+      ref="mobileSmartFilter"
+      doctype="CRM Deal"
+      @update:filters="handleSmartFilter"
+      class="w-full"
+    />
+  </div>
   <ViewControls
     ref="viewControls"
     v-model="deals"
@@ -229,7 +246,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <DealsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Deals')]) }}</span>
+      <span>{{ __('No Deals Found') }}</span>
       <Button :label="__('Create')" @click="showDealModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -286,11 +303,13 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { callEnabled } from '@/composables/settings'
+import { callEnabled, isMobileView } from '@/composables/settings'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, watch } from 'vue'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
+import SmartFilterField from '@/components/SmartFilterField.vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Deal')
@@ -313,6 +332,24 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+const desktopSmartFilter = ref(null)
+const mobileSmartFilter = ref(null)
+const isResettingFilters = ref(false)
+
+// Watch for filter changes in the list
+watch(() => deals.value?.params?.filters, (newFilters) => {
+  // Skip if we're already resetting filters
+  if (isResettingFilters.value) return;
+  
+  // If filters are empty, clear the smart filter fields
+  if (!newFilters || Object.keys(newFilters).length === 0) {
+    isResettingFilters.value = true;
+    desktopSmartFilter.value?.clearSearch();
+    mobileSmartFilter.value?.clearSearch();
+    isResettingFilters.value = false;
+  }
+}, { deep: true })
 
 function getRow(name, field) {
   function getValue(value) {
@@ -420,7 +457,8 @@ function parseRows(rows, columns = []) {
         _rows[row] = website(deal.website)
       } else if (row == 'status') {
         _rows[row] = {
-          label: deal.status,
+          label: translateDealStatus(deal.status),
+          value: deal.status,
           color: getDealStatus(deal.status)?.color,
         }
       } else if (row == 'sla_status') {
@@ -548,5 +586,25 @@ const task = ref({
 function showTask(name) {
   docname.value = name
   showTaskModal.value = true
+}
+function handleSmartFilter(filters) {
+  if (!viewControls.value || !filters) return;
+  if (isResettingFilters.value) return;
+  if (!deals.value || !deals.value.params) return;
+
+  const currentFilters = deals.value.params.filters || {};
+  const standardFilters = {};
+  Object.entries(currentFilters).forEach(([key, value]) => {
+    if (!['mobile_no', 'email', 'organization'].includes(key)) {
+      standardFilters[key] = value;
+    }
+  });
+
+  deals.value.params.filters = {
+    ...standardFilters,
+    ...filters
+  };
+  
+  deals.value.reload();
 }
 </script>

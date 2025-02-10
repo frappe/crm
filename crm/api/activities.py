@@ -1,9 +1,9 @@
 import json
-
-import frappe
 from bs4 import BeautifulSoup
+import frappe
 from frappe import _
 from frappe.desk.form.load import get_docinfo
+from crm.utils.communications import prepare_communication_activity
 from frappe.query_builder import JoinType
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
@@ -43,21 +43,19 @@ def get_deal_activities(name):
 	notes = []
 	tasks = []
 	attachments = []
-	creation_text = "created this deal"
+	creation_text = _("created this deal")
 
 	if lead:
 		activities, calls, notes, tasks, attachments = get_lead_activities(lead)
-		creation_text = "converted the lead to this deal"
+		creation_text = _("converted the lead to this deal")
 
-	activities.append(
-		{
-			"activity_type": "creation",
-			"creation": doc[0],
-			"owner": doc[1],
-			"data": creation_text,
-			"is_lead": False,
-		}
-	)
+	activities.append({
+		"activity_type": "creation",
+		"creation": doc[0],
+		"owner": doc[1],
+		"data": creation_text,
+		"is_lead": False,
+	})
 
 	docinfo.versions.reverse()
 
@@ -121,33 +119,16 @@ def get_deal_activities(name):
 		activities.append(activity)
 
 	for communication in docinfo.communications + docinfo.automated_messages:
-		activity = {
-			"activity_type": "communication",
-			"communication_type": communication.communication_type,
-			"creation": communication.creation,
-			"data": {
-				"subject": communication.subject,
-				"content": communication.content,
-				"sender_full_name": communication.sender_full_name,
-				"sender": communication.sender,
-				"recipients": communication.recipients,
-				"cc": communication.cc,
-				"bcc": communication.bcc,
-				"attachments": get_attachments("Communication", communication.name),
-				"read_by_recipient": communication.read_by_recipient,
-				"delivery_status": communication.delivery_status,
-			},
-			"is_lead": False,
-		}
+		activity = prepare_communication_activity(communication, is_lead=False)
 		activities.append(activity)
 
 	for attachment_log in docinfo.attachment_logs:
 		activity = {
-			"name": attachment_log.name,
+			"name": attachment_log.get("name"),
 			"activity_type": "attachment_log",
-			"creation": attachment_log.creation,
-			"owner": attachment_log.owner,
-			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"creation": attachment_log.get("creation"),
+			"owner": attachment_log.get("owner"),
+			"data": parse_attachment_log(attachment_log.get("content"), attachment_log.get("comment_type")),
 			"is_lead": False,
 		}
 		activities.append(activity)
@@ -182,11 +163,11 @@ def get_lead_activities(name):
 	doc = frappe.db.get_values("CRM Lead", name, ["creation", "owner"])[0]
 	activities = [
 		{
-			"activity_type": "creation",
-			"creation": doc[0],
-			"owner": doc[1],
-			"data": "created this lead",
-			"is_lead": True,
+		"activity_type": "creation",
+		"creation": doc[0],
+		"owner": doc[1],
+		"data": _("created this lead"),
+		"is_lead": True,
 		}
 	]
 
@@ -252,33 +233,16 @@ def get_lead_activities(name):
 		activities.append(activity)
 
 	for communication in docinfo.communications + docinfo.automated_messages:
-		activity = {
-			"activity_type": "communication",
-			"communication_type": communication.communication_type,
-			"creation": communication.creation,
-			"data": {
-				"subject": communication.subject,
-				"content": communication.content,
-				"sender_full_name": communication.sender_full_name,
-				"sender": communication.sender,
-				"recipients": communication.recipients,
-				"cc": communication.cc,
-				"bcc": communication.bcc,
-				"attachments": get_attachments("Communication", communication.name),
-				"read_by_recipient": communication.read_by_recipient,
-				"delivery_status": communication.delivery_status,
-			},
-			"is_lead": True,
-		}
+		activity = prepare_communication_activity(communication, is_lead=True)
 		activities.append(activity)
 
 	for attachment_log in docinfo.attachment_logs:
 		activity = {
-			"name": attachment_log.name,
+			"name": attachment_log.get("name"),
 			"activity_type": "attachment_log",
-			"creation": attachment_log.creation,
-			"owner": attachment_log.owner,
-			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"creation": attachment_log.get("creation"),
+			"owner": attachment_log.get("owner"),
+			"data": parse_attachment_log(attachment_log.get("content"), attachment_log.get("comment_type")),
 			"is_lead": True,
 		}
 		activities.append(activity)
@@ -342,7 +306,6 @@ def handle_multiple_versions(versions):
 
 	return activities
 
-
 def parse_grouped_versions(versions):
 	version = versions[0]
 	if len(versions) == 1:
@@ -350,7 +313,6 @@ def parse_grouped_versions(versions):
 	other_versions = versions[1:]
 	version["other_versions"] = other_versions
 	return version
-
 
 def get_linked_calls(name):
 	calls = frappe.db.get_all(
@@ -471,7 +433,6 @@ def get_linked_tasks(name):
 		],
 	)
 	return tasks or []
-
 
 def parse_attachment_log(html, type):
 	soup = BeautifulSoup(html, "html.parser")

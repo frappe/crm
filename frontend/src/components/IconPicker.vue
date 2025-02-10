@@ -31,7 +31,7 @@
         class="my-3 max-w-max transform bg-surface-white px-4 sm:px-0"
       >
         <div
-          class="relative max-h-96 pb-3 overflow-y-auto min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="relative max-h-96 pb-3 overflow-y-auto dark-scrollbar min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <div class="flex gap-2 px-3 pb-1 pt-3">
             <div class="flex-1">

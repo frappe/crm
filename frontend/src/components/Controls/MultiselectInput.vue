@@ -45,7 +45,7 @@
                   class="mt-1 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
                   <ComboboxOptions
-                    class="p-1.5 max-h-[12rem] overflow-y-auto"
+                    class="p-1.5 max-h-[12rem] overflow-y-auto dark-scrollbar"
                     static
                   >
                     <ComboboxOption

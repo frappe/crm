@@ -15,7 +15,7 @@
           "
         >
           <template #default="{ open }">
-            <Button :label="lead.data.status">
+            <Button :label="translateLeadStatus(lead.data.status)">
               <template #prefix>
                 <IndicatorIcon :class="getLeadStatus(lead.data.status).color" />
               </template>
@@ -85,6 +85,62 @@
         />
       </TabPanel>
     </Tabs>
+    <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white dark:bg-gray-900 dark:border-gray-700 p-3">
+            <Button
+              v-if="lead.data.mobile_no && callEnabled"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="
+                lead.data.mobile_no
+                  ? makeCall(lead.data.mobile_no)
+                  : errorMessage(__('No phone number set'))
+              "
+            >
+              <template #prefix>
+                <PhoneIcon class="h-4 w-4" />
+              </template>
+              {{ __('Make Call') }}
+            </Button>
+
+            <Button
+              v-if="lead.data.mobile_no && !callEnabled"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="trackPhoneActivities('phone')"
+            >
+              <template #prefix>
+                <PhoneIcon class="h-4 w-4" />
+              </template>
+              {{ __('Make Call') }}
+            </Button>
+            
+            <Button
+              v-if="lead.data.mobile_no"
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700" 
+              @click="trackPhoneActivities('whatsapp')"
+            >
+              <template #prefix>
+                <WhatsAppIcon class="h-4 w-4" />
+              </template>
+              {{ __('Chat') }}
+            </Button>
+
+            <Button
+              size="sm"
+              class="dark:text-white dark:hover:bg-gray-700"
+              @click="
+                lead.data.website
+                  ? openWebsite(lead.data.website)
+                  : errorMessage(__('No website set'))
+              "
+            >
+            <template #prefix>
+                <LinkIcon class="h-4 w-4" />
+              </template>
+              {{ __('Website') }}
+            </Button>
+          </div>
   </div>
   <Dialog
     v-model="showConvertToDealModal"
@@ -164,6 +220,7 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import AvitoIcon from '@/components/Icons/AvitoIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
@@ -185,6 +242,7 @@ import {
   callEnabled,
   isMobileView,
 } from '@/composables/settings'
+import { avitoEnabled } from '@/composables/avito'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   createResource,
@@ -199,6 +257,8 @@ import {
 } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { trackCommunication } from '@/utils/communicationUtils'
+import { translateLeadStatus } from '@/utils/leadStatusTranslations'
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
@@ -380,6 +440,12 @@ const tabs = computed(() => {
       icon: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
+    {
+      name: 'Avito',
+      label: __('Avito'),
+      icon: AvitoIcon,
+      condition: () => avitoEnabled.value,
+    },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
@@ -493,5 +559,16 @@ async function convertToDeal(updated) {
       router.push({ name: 'Deal', params: { dealId: deal } })
     }
   }
+}
+
+function trackPhoneActivities(type = 'phone') {
+  trackCommunication({
+    type,
+    doctype: 'CRM Lead',
+    docname: lead.data.name,
+    phoneNumber: lead.data.mobile_no,
+    activities: activities.value,
+    contactName: lead.data.lead_name,
+  })
 }
 </script>

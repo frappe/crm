@@ -17,7 +17,7 @@
       <span>{{ __('New Email') }}</span>
     </Button>
     <Button
-      v-else-if="title == 'Comments'"
+      v-else-if="title == __('Comments')"
       variant="solid"
       @click="emailBox.showComment = true"
     >
@@ -37,8 +37,9 @@
       <span>{{ __('Make a Call') }}</span>
     </Button>
     <Button
-      v-else-if="title == 'Notes'"
+      v-else-if="title == __('Notes')"
       variant="solid"
+      class="shrink-0"
       @click="modalRef.showNote()"
     >
       <template #prefix>
@@ -47,8 +48,9 @@
       <span>{{ __('New Note') }}</span>
     </Button>
     <Button
-      v-else-if="title == 'Tasks'"
+      v-else-if="title == __('Tasks')"
       variant="solid"
+      class="shrink-0"
       @click="modalRef.showTask()"
     >
       <template #prefix>
@@ -57,8 +59,9 @@
       <span>{{ __('New Task') }}</span>
     </Button>
     <Button
-      v-else-if="title == 'Attachments'"
+      v-else-if="title == __('Attachments')"
       variant="solid"
+      class="shrink-0"
       @click="showFilesUploader = true"
     >
       <template #prefix>
@@ -66,7 +69,7 @@
       </template>
       <span>{{ __('Upload Attachment') }}</span>
     </Button>
-    <div class="flex gap-2 shrink-0" v-else-if="title == 'WhatsApp'">
+    <div class="flex gap-2 shrink-0" v-else-if="title == __('WhatsApp')">
       <Button
         :label="__('Send Template')"
         @click="showWhatsappTemplates = true"
@@ -104,10 +107,12 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import AvitoIcon from '@/components/Icons/AvitoIcon.vue'
 import { globalStore } from '@/stores/global'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
 import { computed, h } from 'vue'
+import { avitoEnabled } from '@/composables/avito'
 
 const props = defineProps({
   tabs: Array,
@@ -162,6 +167,12 @@ const defaultActions = computed(() => {
       label: __('New WhatsApp Message'),
       onClick: () => (tabIndex.value = getTabIndex('WhatsApp')),
       condition: () => whatsappEnabled.value,
+    },
+    {
+      icon: h(AvitoIcon, { class: 'h-4 w-4' }),
+      label: __('New Avito Message'),
+      onClick: () => (tabIndex.value = getTabIndex('Avito')),
+      condition: () => avitoEnabled.value,
     },
   ]
   return actions.filter((action) =>

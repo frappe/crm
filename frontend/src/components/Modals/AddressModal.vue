@@ -80,20 +80,69 @@ const editMode = ref(false)
 let _address = ref({
   name: '',
   address_title: '',
-  address_type: 'Billing',
+  address_type: 'Office',
   address_line1: '',
   address_line2: '',
   city: '',
   county: '',
   state: '',
   country: '',
+  countryLabel: '',
   pincode: '',
+  links: []
+})
+
+const countryCodeMap = {
+  'RU': 'Russian Federation',
+  'US': 'United States',
+  'GB': 'United Kingdom',
+  // Add more as needed
+}
+
+const defaultCountry = createResource({
+  url: 'frappe.client.get_value',
+  params: {
+    doctype: 'System Settings',
+    fieldname: 'country'
+  },
+  transform(data) {
+    const systemCountry = data?.message?.country
+    if (systemCountry) return systemCountry
+
+    try {
+      const locale = new Intl.Locale(navigator.language)
+      const region = locale.maximize().region
+      return region || ''
+    } catch (e) {
+      return ''
+    }
+  },
+  auto: true
+})
+
+const countryMap = createResource({
+  url: 'frappe.desk.search.search_link',
+  method: 'POST',
+  params: {
+    doctype: 'Country',
+    txt: '',
+    filters: null
+  },
+  transform(data) {
+    // Create a map where key is translated name and value is original name
+    const translationMap = {}
+    data.forEach(country => {
+      translationMap[__(country.value)] = country.value
+    })
+    return translationMap
+  },
+  auto: true
 })
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
     ? __('New Address')
-    : __(_address.value.address_title)
+    : _address.value.address_title
   let size = 'xl'
   let actions = [
     {
@@ -112,6 +161,44 @@ const tabs = createResource({
   cache: ['QuickEntry', 'Address'],
   params: { doctype: 'Address', type: 'Quick Entry' },
   auto: true,
+  transform(data) {
+    return data.map(tab => {
+      if (tab.sections) {
+        tab.sections = tab.sections.map(section => {
+          if (section.fields) {
+            section.fields = section.fields.map(field => {
+              // Get translated field label
+              const translatedLabel = __(field.label || field.name.split('_').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)).join(' '))
+
+              // Determine placeholder verb based on field type
+              const getPlaceholderVerb = (fieldtype) => {
+                switch(fieldtype?.toLowerCase()) {
+                  case 'select':
+                  case 'link':
+                    return __('Select')
+                  case 'date':
+                  case 'datetime':
+                    return __('Set')
+                  default:
+                    return __('Enter')
+                }
+              }
+
+              const verb = getPlaceholderVerb(field.fieldtype)
+              return {
+                ...field,
+                placeholder: `${verb} ${translatedLabel}`,
+                mandatory: field.name === 'address_type' ? false : field.mandatory
+              }
+            })
+          }
+          return section
+        })
+      }
+      return tab
+    })
+  }
 })
 
 let doc = ref({})
@@ -154,10 +241,25 @@ const updateAddressValues = createResource({
 const createAddress = createResource({
   url: 'frappe.client.insert',
   makeParams() {
+    if (!_address.value.address_line1) {
+      error.value = __('Address Line 1 is mandatory')
+      return
+    }
+
+    // Get original country name from translation map
+    const originalCountry = countryMap.data?.[_address.value.country] || _address.value.country
+
+    // Create default address title from city and address line 1
+    const defaultTitle = _address.value.city ? 
+      `${_address.value.city}, ${_address.value.address_line1}` : 
+      _address.value.address_line1
+
     return {
       doc: {
         doctype: 'Address',
         ..._address.value,
+        country: originalCountry,
+        address_title: _address.value.address_title || defaultTitle,
       },
     }
   },
@@ -168,9 +270,13 @@ const createAddress = createResource({
       handleAddressUpdate(doc)
     }
   },
-  onError(err) {
-    loading.value = false
-    error.value = err
+  async onError(err) {
+    // Try to handle duplicate entry error
+    const handled = await handleDuplicateEntry(err, 'Address', () => createAddress.submit())
+    if (!handled) {
+      loading.value = false
+      error.value = err
+    }
   },
 })
 
@@ -181,14 +287,38 @@ function handleAddressUpdate(doc) {
 
 watch(
   () => show.value,
-  (value) => {
+  async (value) => {
     if (!value) return
     editMode.value = false
+    
+    // Wait for both resources to load if needed
+    if (!defaultCountry.data) {
+      await defaultCountry.reload()
+    }
+    if (!countryMap.data) {
+      await countryMap.reload()
+    }
+    
     nextTick(() => {
-      // TODO: Issue with FormControl
-      // title.value.el.focus()
       doc.value = address.value?.doc || address.value || {}
-      _address.value = { ...doc.value }
+      const isNewAddress = !doc.value.name
+      let countryValue = doc.value.country
+      
+      // For new address, convert country code to full name and translate
+      if (isNewAddress && defaultCountry.data) {
+        const originalValue = countryMap.data?.[defaultCountry.data] || 
+                            countryCodeMap[defaultCountry.data] || 
+                            'Russian Federation'
+        countryValue = __(originalValue)
+      } else if (doc.value.country) {
+        // For existing address, translate the stored value
+        countryValue = __(doc.value.country)
+      }
+      
+      _address.value = { 
+        ...doc.value,
+        country: countryValue || ''
+      }
       if (_address.value.name) {
         editMode.value = true
       }

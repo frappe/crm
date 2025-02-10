@@ -127,9 +127,9 @@
             />
           </div>
           <div class="-mb-1 flex shrink-0 items-end gap-1 text-ink-gray-5">
-            <Tooltip :text="formatDate(whatsapp.creation, 'ddd, MMM D, YYYY')">
-              <div class="text-2xs">
-                {{ formatDate(whatsapp.creation, 'hh:mm a') }}
+            <Tooltip :text="formatWhatsAppDate(whatsapp.creation, 'ddd, MMM D, YYYY')">
+              <div class="text-ink-gray-6">
+                {{ formatWhatsAppDate(whatsapp.creation, 'hh:mm a') }}
               </div>
             </Tooltip>
             <div v-if="whatsapp.type == 'Outgoing'">
@@ -177,6 +177,9 @@ import { formatDate } from '@/utils'
 import { capture } from '@/telemetry'
 import { Tooltip, Dropdown, createResource } from 'frappe-ui'
 import { ref } from 'vue'
+import dayjs from '@/utils/dayjs'
+import { usersStore } from '@/stores/users'
+import { globalStore } from '@/stores/global'
 
 const props = defineProps({
   messages: Array,
@@ -264,5 +267,10 @@ function scrollToMessage(name) {
   setTimeout(() => {
     element.classList.remove('bg-yellow-100')
   }, 1000)
+}
+
+function formatWhatsAppDate(date, format) {
+  if (!date) return ''
+  return dayjs(date).format(format)
 }
 </script>

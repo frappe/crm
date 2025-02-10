@@ -11,11 +11,13 @@ from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
+from crm.utils import parse_phone_number
 
 
 class CRMLead(Document):
 	def before_validate(self):
 		self.set_sla()
+		self.normalize_phone_numbers()
 
 	def validate(self):
 		self.set_full_name()
@@ -59,7 +61,7 @@ class CRMLead(Document):
 			elif self.email:
 				self.lead_name = self.email.split("@")[0]
 			else:
-				self.lead_name = "Unnamed Lead"
+				self.lead_name = _("Unnamed Lead")
 
 	def set_title(self):
 		self.title = self.organization or self.lead_name
@@ -377,6 +379,22 @@ class CRMLead(Document):
 			"title_field": "lead_name",
 			"kanban_fields": '["organization", "email", "mobile_no", "_assign", "modified"]',
 		}
+
+	def normalize_phone_numbers(self):
+		"""Normalize phone and mobile numbers"""
+		if self.phone:
+			parsed = parse_phone_number(self.phone)
+			if parsed.get("success"):
+				self.phone = parsed.get("formats", {}).get("E164", self.phone)
+			else:
+				self.phone = "".join([c for c in self.phone if c.isdigit() or c == "+"])
+				
+		if self.mobile_no:
+			parsed = parse_phone_number(self.mobile_no)
+			if parsed.get("success"):
+				self.mobile_no = parsed.get("formats", {}).get("E164", self.mobile_no)
+			else:
+				self.mobile_no = "".join([c for c in self.mobile_no if c.isdigit() or c == "+"])
 
 
 @frappe.whitelist()

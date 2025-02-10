@@ -19,11 +19,11 @@
             </div>
             <div v-if="task.due_date">
               <Tooltip
-                :text="formatDate(task.due_date, 'ddd, MMM D, YYYY | hh:mm a')"
+                :text="formatTaskDate(task.due_date, 'ddd, MMM D, YYYY | hh:mm a')"
               >
                 <div class="flex gap-2">
                   <CalendarIcon />
-                  <div>{{ formatDate(task.due_date, 'D MMM, hh:mm a') }}</div>
+                  <div>{{ formatTaskDate(task.due_date, 'D MMM, hh:mm a') }}</div>
                 </div>
               </Tooltip>
             </div>
@@ -32,7 +32,7 @@
             </div>
             <div class="flex gap-2">
               <TaskPriorityIcon class="!h-2 !w-2" :priority="task.priority" />
-              {{ task.priority }}
+              {{ translateTaskPriority(task.priority) }}
             </div>
           </div>
         </div>
@@ -95,9 +95,11 @@ import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { formatDate, taskStatusOptions } from '@/utils'
+import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { Tooltip, Dropdown } from 'frappe-ui'
+import dayjs from '@/utils/dayjs'
 
 const props = defineProps({
   tasks: Array,
@@ -106,4 +108,9 @@ const props = defineProps({
 
 const { getUser } = usersStore()
 const { $dialog } = globalStore()
+
+function formatTaskDate(date, format) {
+  if (!date) return ''
+  return dayjs(date).format(format)
+}
 </script>

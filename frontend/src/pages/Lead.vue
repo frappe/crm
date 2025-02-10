@@ -21,7 +21,7 @@
         :options="statusOptions('lead', updateField, lead.data._customStatuses)"
       >
         <template #default="{ open }">
-          <Button :label="lead.data.status">
+          <Button :label="translateLeadStatus(lead.data.status)">
             <template #prefix>
               <IndicatorIcon :class="getLeadStatus(lead.data.status).color" />
             </template>
@@ -127,6 +127,24 @@
                     "
                   >
                     <PhoneIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Tooltip :text="__('Call via phone app')">
+                  <Button
+                    v-if="lead.data.mobile_no && !callEnabled"
+                    size="sm"
+                    @click.once="trackPhoneActivities('phone')"
+                  >
+                    <PhoneIcon class="h-4 w-4" />
+                  </Button>
+                </Tooltip>
+                <Tooltip :text="__('Open WhatsApp')">
+                  <Button
+                    v-if="lead.data.mobile_no"
+                    size="sm"
+                    @click.once="trackPhoneActivities('whatsapp')"
+                  >
+                    <WhatsAppIcon class="h-4 w-4" />
                   </Button>
                 </Tooltip>
                 <Tooltip :text="__('Send an email')">
@@ -274,6 +292,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import AvitoIcon from '@/components/Icons/AvitoIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
@@ -302,6 +321,7 @@ import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { avitoEnabled } from '@/composables/avito'
 import { capture } from '@/telemetry'
 import {
   createResource,
@@ -318,6 +338,8 @@ import {
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { trackCommunication } from '@/utils/communicationUtils'
+import { translateLeadStatus } from '@/utils/leadStatusTranslations'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -491,6 +513,12 @@ const tabs = computed(() => {
       icon: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
+    {
+      name: 'Avito',
+      label: __('Avito'),
+      icon: AvitoIcon,
+      condition: () => avitoEnabled.value,
+    },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
@@ -619,5 +647,16 @@ const activities = ref(null)
 
 function openEmailBox() {
   activities.value.emailBox.show = true
+}
+
+function trackPhoneActivities(type = 'phone') {
+  trackCommunication({
+    type,
+    doctype: 'CRM Lead',
+    docname: lead.data.name,
+    phoneNumber: lead.data.mobile_no,
+    activities: activities.value,
+    contactName: lead.data.lead_name,
+  })
 }
 </script>

@@ -10,11 +10,13 @@ from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
+from crm.utils import parse_phone_number
 
 
 class CRMDeal(Document):
 	def before_validate(self):
 		self.set_sla()
+		self.normalize_phone_numbers()
 
 	def validate(self):
 		self.set_primary_contact()
@@ -133,6 +135,15 @@ class CRMDeal(Document):
 		if sla:
 			sla.apply(self)
 
+	def normalize_phone_numbers(self):
+		"""Normalize mobile number"""
+		if self.mobile_no:
+			parsed = parse_phone_number(self.mobile_no)
+			if parsed.get("success"):
+				self.mobile_no = parsed.get("formats", {}).get("E164", self.mobile_no)
+			else:
+				self.mobile_no = "".join([c for c in self.mobile_no if c.isdigit() or c == "+"])
+
 	@staticmethod
 	def default_list_data():
 		columns = [
@@ -218,7 +229,6 @@ def add_contact(deal, contact):
 	deal.save()
 	return True
 
-
 @frappe.whitelist()
 def remove_contact(deal, contact):
 	if not frappe.has_permission("CRM Deal", "write", deal):
@@ -229,7 +239,6 @@ def remove_contact(deal, contact):
 	deal.save()
 	return True
 
-
 @frappe.whitelist()
 def set_primary_contact(deal, contact):
 	if not frappe.has_permission("CRM Deal", "write", deal):
@@ -239,7 +248,6 @@ def set_primary_contact(deal, contact):
 	deal.set_primary_contact(contact)
 	deal.save()
 	return True
-
 
 def create_organization(doc):
 	if not doc.get("organization_name"):
@@ -264,7 +272,6 @@ def create_organization(doc):
 	organization.insert(ignore_permissions=True)
 	return organization.name
 
-
 def contact_exists(doc):
 	email_exist = frappe.db.exists("Contact Email", {"email_id": doc.get("email")})
 	mobile_exist = frappe.db.exists("Contact Phone", {"phone": doc.get("mobile_no")})
@@ -276,7 +283,6 @@ def contact_exists(doc):
 		return frappe.db.get_value(doctype, name, "parent")
 
 	return False
-
 
 def create_contact(doc):
 	existing_contact = contact_exists(doc)
@@ -303,7 +309,6 @@ def create_contact(doc):
 	contact.reload()  # load changes by hooks on contact
 
 	return contact.name
-
 
 @frappe.whitelist()
 def create_deal(args):

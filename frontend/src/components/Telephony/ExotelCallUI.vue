@@ -256,7 +256,7 @@ const { $socket } = globalStore()
 
 const callPopupHeader = ref(null)
 const showCallPopup = ref(false)
-let showSmallCallPopup = ref(false)
+const showSmallCallPopup = ref(false)
 
 function toggleCallPopup() {
   showCallPopup.value = !showCallPopup.value

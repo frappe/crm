@@ -50,12 +50,14 @@
 </template>
 <script setup>
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import AvitoIcon from '@/components/Icons/AvitoIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
+import AvitoSettings from '@/components/Settings/AvitoSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
@@ -65,6 +67,7 @@ import {
   showSettings,
   activeSettingsPage,
 } from '@/composables/settings'
+import { isAvitoInstalled } from '@/composables/avito'
 import { Dialog, Button, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 
@@ -116,6 +119,12 @@ const tabs = computed(() => {
           icon: WhatsAppIcon,
           component: markRaw(WhatsAppSettings),
           condition: () => isWhatsappInstalled.value && isManager(),
+        },
+        {
+          label: __('Avito'),
+          icon: AvitoIcon,
+          component: markRaw(AvitoSettings),
+          condition: () => isAvitoInstalled.value && isManager(),
         },
         {
           label: __('ERPNext'),

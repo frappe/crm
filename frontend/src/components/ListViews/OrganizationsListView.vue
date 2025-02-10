@@ -143,20 +143,20 @@
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import ListSelectBanner from '@/components/custom-ui/ListSelectBanner.vue'
 import {
   Avatar,
   ListView,
   ListHeader,
   ListHeaderItem,
-  ListSelectBanner,
   ListRowItem,
-  ListFooter,
   Tooltip,
   Dropdown,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import ListFooter from '@/components/custom-ui/ListFooter.vue'
 
 const props = defineProps({
   rows: {

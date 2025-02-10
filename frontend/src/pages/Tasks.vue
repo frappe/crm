@@ -37,10 +37,10 @@
     <template #title="{ titleField, itemName }">
       <div class="flex items-center gap-2">
         <div v-if="titleField === 'status'">
-          <TaskStatusIcon :status="getRow(itemName, titleField).label" />
+          <TaskStatusIcon :status="getRow(itemName, titleField).value" />
         </div>
         <div v-else-if="titleField === 'priority'">
-          <TaskPriorityIcon :priority="getRow(itemName, titleField).label" />
+          <TaskPriorityIcon :priority="getRow(itemName, titleField).value" />
         </div>
         <div v-else-if="titleField === 'assigned_to'">
           <Avatar
@@ -76,11 +76,11 @@
         <div v-if="fieldName === 'status'">
           <TaskStatusIcon
             class="size-3"
-            :status="getRow(itemName, fieldName).label"
+            :status="getRow(itemName, fieldName).value"
           />
         </div>
         <div v-else-if="fieldName === 'priority'">
-          <TaskPriorityIcon :priority="getRow(itemName, fieldName).label" />
+          <TaskPriorityIcon :priority="getRow(itemName, fieldName).value" />
         </div>
         <div v-else-if="fieldName === 'assigned_to'">
           <Avatar
@@ -178,7 +178,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <Email2Icon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Tasks')]) }}</span>
+      <span>{{ __('No Tasks Found') }}</span>
       <Button :label="__('Create')" @click="showTaskModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -210,6 +210,8 @@ import { formatDate, timeAgo } from '@/utils'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { translateTaskStatus } from '@/utils/taskStatusTranslations'
+import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Task')
@@ -295,6 +297,17 @@ function parseRows(rows, columns = []) {
         _rows[row] = {
           label: task.assigned_to && getUser(task.assigned_to).full_name,
           ...(task.assigned_to && getUser(task.assigned_to)),
+        }
+
+      } else if (row === 'status') {
+        _rows[row] = {
+          label: translateTaskStatus(task[row]),
+          value: task[row]
+        }
+      } else if (row === 'priority') {
+        _rows[row] = {
+          label: translateTaskPriority(task[row]),
+          value: task[row]
         }
       }
     })

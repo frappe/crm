@@ -61,12 +61,11 @@
           </Tooltip>
         </template>
       </Link>
-      <DateTimePicker
-        class="datepicker w-36"
+      <input
+        type="datetime-local"
+        class="datepicker w-36 bg-surface-gray-6 text-ink-white"
         v-model="task.due_date"
         :placeholder="__('01/04/2024 11:30 PM')"
-        :formatter="(date) => getFormat(date, '', true, true)"
-        input-class="border-none"
       />
     </div>
   </div>
@@ -78,7 +77,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
-import { TextEditor, Dropdown, Tooltip, DateTimePicker } from 'frappe-ui'
+import { TextEditor, Dropdown, Tooltip } from 'frappe-ui'
 
 const props = defineProps({
   task: {

@@ -38,22 +38,22 @@
       doctype="CRM Task"
     >
       <div v-if="column.key === 'due_date'">
-        <Tooltip :text="item && formatDate(item, 'ddd, MMM D, YYYY | hh:mm a')">
-          <div class="flex items-center gap-2 truncate text-base">
-            <div><CalendarIcon /></div>
-            <div v-if="item" class="truncate">
-              {{ formatDate(item, 'D MMM, hh:mm a') }}
+        <div v-if="item" class="flex items-center gap-2">
+          <CalendarIcon />
+          <Tooltip :text="item && formatTaskDate(item, 'ddd, MMM D, YYYY | hh:mm a')">
+            <div>
+              {{ formatTaskDate(item, 'D/MM, hh:mm') }}
             </div>
-          </div>
-        </Tooltip>
+          </Tooltip>
+        </div>
       </div>
       <ListRowItem v-else :item="item" :align="column.align">
         <template #prefix>
           <div v-if="column.key === 'status'">
-            <TaskStatusIcon :status="item" />
+            <TaskStatusIcon :status="item.value" />
           </div>
           <div v-else-if="column.key === 'priority'">
-            <TaskPriorityIcon :priority="item" />
+            <TaskPriorityIcon :priority="item.value" />
           </div>
           <div v-else-if="column.key === 'assigned_to'">
             <Avatar
@@ -169,14 +169,20 @@ import {
   ListView,
   ListHeader,
   ListHeaderItem,
-  ListSelectBanner,
   ListRowItem,
-  ListFooter,
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { usersStore } from '@/stores/users'
+import { translateTaskStatus } from '@/utils/taskStatusTranslations'
+import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
+import UserAvatar from '@/components/UserAvatar.vue'
+import dayjs from '@/utils/dayjs'
+import ListSelectBanner from '@/components/custom-ui/ListSelectBanner.vue'
+import ListFooter from '@/components/custom-ui/ListFooter.vue'
 
 const props = defineProps({
   rows: {
@@ -237,4 +243,9 @@ defineExpose({
     () => listBulkActionsRef.value?.customListActions,
   ),
 })
+
+function formatTaskDate(date, format) {
+  if (!date || !format) return ''
+  return dayjs(date).format(format)
+}
 </script>

@@ -69,7 +69,6 @@ def get_contacts():
 
 	return contacts
 
-
 @frappe.whitelist()
 def get_lead_contacts():
 	lead_contacts = frappe.get_all(
@@ -81,7 +80,6 @@ def get_lead_contacts():
 	)
 
 	return lead_contacts
-
 
 @frappe.whitelist()
 def get_organizations():

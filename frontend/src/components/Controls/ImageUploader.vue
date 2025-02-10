@@ -15,11 +15,13 @@
             uploading
               ? `Uploading ${progress}%`
               : image_url
-                ? 'Change'
-                : 'Upload'
+                ? __('Change', 'change image')
+                : __('Upload', 'upload image')
           }}
         </Button>
-        <Button v-if="image_url" @click="$emit('remove')">Remove</Button>
+        <Button v-if="image_url" @click="$emit('remove')">
+          {{ __('Remove', 'remove image') }}
+        </Button>
       </div>
     </template>
   </FileUploader>

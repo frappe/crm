@@ -1,0 +1,131 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-08-17 18:38:02.655918",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_ssqj",
+  "enabled",
+  "column_break_avmt",
+  "record_calls",
+  "section_break_eklq",
+  "account_sid",
+  "column_break_yqvr",
+  "auth_token",
+  "section_break_malx",
+  "api_key",
+  "twiml_sid",
+  "column_break_idds",
+  "api_secret"
+ ],
+ "fields": [
+  {
+   "fieldname": "account_sid",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account SID",
+   "mandatory_depends_on": "eval: doc.enabled"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "API Key",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Password",
+   "label": "API Secret",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_idds",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "auth_token",
+   "fieldtype": "Password",
+   "in_list_view": 1,
+   "label": "Auth Token",
+   "mandatory_depends_on": "eval: doc.enabled"
+  },
+  {
+   "fieldname": "twiml_sid",
+   "fieldtype": "Data",
+   "label": "TwiML SID",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ssqj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "record_calls",
+   "fieldtype": "Check",
+   "label": "Record Calls"
+  },
+  {
+   "fieldname": "column_break_avmt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_malx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "section_break_eklq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_yqvr",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-07-01 17:55:25.003703",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "Twilio Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

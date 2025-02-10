@@ -37,7 +37,7 @@
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { capture } from '@/telemetry'
-import { FormControl, call, createResource, TextEditor, DatePicker } from 'frappe-ui'
+import { FormControl, call, createResource, TextEditor } from 'frappe-ui'
 import { ref, computed, onMounted, h } from 'vue'
 
 const typeCheck = ['Check']
@@ -156,7 +156,12 @@ function getValueComponent(f) {
   } else if (typeNumber.includes(type)) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(type)) {
-    return h(DatePicker)
+    return h('input', {
+      type: type === 'Date' ? 'date' : 'datetime-local',
+      value: newValue.value,
+      class: 'w-full rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3',
+      onInput: (e) => updateValue(e.target.value)
+    })
   } else if (typeEditor.includes(type)) {
     return h(TextEditor, {
       variant: 'outline',

@@ -59,16 +59,16 @@
             "
           />
         </div>
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-nowrap items-center gap-2">
           <Dropdown :options="taskStatusOptions(updateTaskStatus)">
-            <Button :label="_task.status" class="w-full justify-between">
+            <Button :label="extractLabel(_task.status, translateTaskStatus)" class="w-full justify-between whitespace-nowrap">
               <template #prefix>
-                <TaskStatusIcon :status="_task.status" />
+                <TaskStatusIcon :status="extractValue(_task.status)" />
               </template>
             </Button>
           </Dropdown>
           <Link
-            class="form-control"
+            class="form-control flex-1"
             :value="getUser(_task.assigned_to).full_name"
             doctype="User"
             @change="(option) => (_task.assigned_to = option)"
@@ -89,17 +89,16 @@
               </Tooltip>
             </template>
           </Link>
-          <DateTimePicker
-            class="datepicker w-36"
+          <input
+            type="datetime-local"
             v-model="_task.due_date"
-            :placeholder="__('01/04/2024 11:30 PM')"
-            :formatter="(date) => getFormat(date, '', true, true)"
-            input-class="border-none"
+            class="flex-1"
+            @click.stop
           />
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
-            <Button :label="_task.priority" class="w-full justify-between">
+            <Button :label="extractLabel(_task.priority, translateTaskPriority)" class="w-full justify-between">
               <template #prefix>
-                <TaskPriorityIcon :priority="_task.priority" />
+                <TaskPriorityIcon :priority="extractValue(_task.priority)" />
               </template>
             </Button>
           </Dropdown>
@@ -115,12 +114,14 @@ import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
-import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
+import { taskStatusOptions, taskPriorityOptions, extractValue, extractLabel } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
+import { TextEditor, Dropdown, Tooltip, call } from 'frappe-ui'
 import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { translateTaskStatus } from '@/utils/taskStatusTranslations'
+import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
 
 const props = defineProps({
   task: {
@@ -159,11 +160,11 @@ const _task = ref({
 })
 
 function updateTaskStatus(status) {
-  _task.value.status = status
+  _task.value.status = extractValue(status)
 }
 
 function updateTaskPriority(priority) {
-  _task.value.priority = priority
+  _task.value.priority = extractValue(priority)
 }
 
 function redirect() {
@@ -226,10 +227,3 @@ watch(show, (value) => {
   render()
 })
 </script>
-
-<style scoped>
-:deep(.datepicker svg) {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-</style>

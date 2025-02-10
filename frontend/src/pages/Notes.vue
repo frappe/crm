@@ -20,7 +20,7 @@
       defaultViewName: __('Notes View'),
     }"
   />
-  <div class="flex-1 overflow-y-auto">
+  <div class="flex-1 overflow-y-auto dark-scrollbar">
     <div
       v-if="notes.data?.data?.length"
       class="grid grid-cols-1 gap-2 px-3 pb-2 sm:grid-cols-4 sm:gap-4 sm:px-5 sm:pb-3"
@@ -89,7 +89,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <NoteIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Notes')]) }}</span>
+      <span>{{ __('No Notes Found') }}</span>
       <Button :label="__('Create')" @click="createNote">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -111,7 +111,8 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate } from '@/utils'
-import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
+import { TextEditor, call, Dropdown, Tooltip } from 'frappe-ui'
+import ListFooter from '@/components/custom-ui/ListFooter.vue'
 import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()

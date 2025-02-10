@@ -74,7 +74,6 @@ const organization = defineModel('organization')
 
 const loading = ref(false)
 const title = ref(null)
-
 let _organization = ref({
   organization_name: '',
   website: '',

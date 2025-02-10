@@ -144,21 +144,17 @@
                       :disabled="!gridSettings.editable_grid"
                     />
                   </div>
-                  <DatePicker
+                  <input
                     v-else-if="field.fieldtype === 'Date'"
+                    type="date"
                     v-model="row[field.fieldname]"
-                    icon-left=""
-                    variant="outline"
-                    :formatter="(date) => getFormat(date, '', true)"
-                    input-class="border-none text-sm text-ink-gray-8"
+                    class="w-full border-none text-sm text-ink-gray-8 bg-surface-white px-2 py-1.5"
                   />
-                  <DateTimePicker
+                  <input
                     v-else-if="field.fieldtype === 'Datetime'"
+                    type="datetime-local"
                     v-model="row[field.fieldname]"
-                    icon-left=""
-                    variant="outline"
-                    :formatter="(date) => getFormat(date, '', true, true)"
-                    input-class="border-none text-sm text-ink-gray-8"
+                    class="w-full border-none text-sm text-ink-gray-8 bg-surface-white px-2 py-1.5"
                   />
                   <FormControl
                     v-else-if="

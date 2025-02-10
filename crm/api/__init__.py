@@ -8,12 +8,16 @@ from frappe.core.api.file import get_max_file_size
 
 @frappe.whitelist(allow_guest=True)
 def get_translations():
-	if frappe.session.user != "Guest":
-		language = frappe.db.get_value("User", frappe.session.user, "language")
-	else:
-		language = frappe.db.get_single_value("System Settings", "language")
+	try:
+		if frappe.session.user != "Guest":
+			language = frappe.db.get_value("User", frappe.session.user, "language")
+		else:
+			language = frappe.db.get_single_value("System Settings", "language")
 
-	return get_all_translations(language)
+		return get_all_translations(language)
+	except Exception as e:
+		frappe.log_error("Translation Error", str(e))
+		return {}
 
 
 @frappe.whitelist()

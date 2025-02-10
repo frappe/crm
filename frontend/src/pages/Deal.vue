@@ -21,7 +21,7 @@
         :options="statusOptions('deal', updateField, deal.data._customStatuses)"
       >
         <template #default="{ open }">
-          <Button :label="deal.data.status">
+          <Button :label="translateDealStatus(deal.data.status)">
             <template #prefix>
               <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
             </template>
@@ -62,21 +62,40 @@
             <Avatar
               size="3xl"
               class="size-12"
-              :label="organization.data?.name || __('Untitled')"
+              :label="displayName"
               :image="organization.data?.organization_logo"
             />
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate text-ink-gray-9">
-          <Tooltip :text="organization.data?.name || __('Set an organization')">
+          <Tooltip :text="displayName">
             <div class="truncate text-2xl font-medium">
-              {{ organization.data?.name || __('Untitled') }}
+              {{ displayName }}
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
             <Tooltip v-if="callEnabled" :text="__('Make a call')">
               <Button class="h-7 w-7" @click="triggerCall">
                 <PhoneIcon class="h-4 w-4" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip :text="__('Call via phone app')">
+              <Button
+                v-if="primaryContactMobileNo && !callEnabled"
+                size="sm"
+                @click="trackPhoneActivities('phone')"
+              >
+                <PhoneIcon class="h-4 w-4" />
+              </Button>
+            </Tooltip>
+            <Tooltip :text="__('Open WhatsApp')">
+              <Button
+                v-if="primaryContactMobileNo"
+                size="sm"
+                @click="trackPhoneActivities('whatsapp')"
+              >
+                <WhatsAppIcon class="h-4 w-4" />
               </Button>
             </Tooltip>
             <Tooltip :text="__('Send an email')">
@@ -343,6 +362,8 @@ import {
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { trackCommunication } from '@/utils/communicationUtils'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -467,6 +488,23 @@ function validateRequired(fieldname, value) {
   return false
 }
 
+const displayName = computed(() => {
+  if (!deal.data) return __('Loading...')
+  
+  if (organization.data?.name) {
+    return organization.data.name
+  }
+  
+  if (dealContacts.data) {
+    const primaryContact = dealContacts.data.find(c => c.is_primary)
+    if (primaryContact?.full_name) {
+      return primaryContact.full_name
+    }
+  }
+  
+  return __('Untitled')
+})
+
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
 
@@ -486,7 +524,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.data?.name || __('Untitled'),
+    label: displayName.value,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
@@ -494,7 +532,7 @@ const breadcrumbs = computed(() => {
 
 usePageMeta(() => {
   return {
-    title: organization.data?.name || deal.data?.name,
+    title: displayName.value,
     icon: brand.favicon,
   }
 })
@@ -659,6 +697,21 @@ async function setPrimaryContact(contact) {
   }
 }
 
+function trackPhoneActivities(type = 'phone') {
+  const primaryContact = dealContacts.data?.find(c => c.is_primary)
+  if (!primaryContact?.mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  trackCommunication({
+    type,
+    doctype: 'CRM Deal',
+    docname: deal.data.name,
+    phoneNumber: primaryContact.mobile_no,
+    activities: activities.value,
+    contactName: primaryContact.name
+  })
+}
 const dealContacts = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
   params: { name: props.dealId },
@@ -709,4 +762,8 @@ const activities = ref(null)
 function openEmailBox() {
   activities.value.emailBox.show = true
 }
+
+const primaryContactMobileNo = computed(() => {
+  return dealContacts.data?.find(c => c.is_primary)?.mobile_no
+})
 </script>

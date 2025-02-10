@@ -4,19 +4,34 @@
       <ViewBreadcrumbs v-model="viewControls" routeName="Contacts" />
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="contactsListView?.customListActions"
-        :actions="contactsListView.customListActions"
-      />
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        @click="showContactModal = true"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <div class="flex items-center gap-4">
+        <SmartFilterField
+          v-if="!isMobileView"
+          ref="desktopSmartFilter"
+          doctype="Contact"
+          @update:filters="handleSmartFilter"
+        />
+        <CustomActions
+          v-if="contactsListView?.customListActions"
+          :actions="contactsListView.customListActions"
+        />
+        <Button
+          variant="solid"
+          :label="__('Create')"
+          @click="showContactModal = true"
+        >
+          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+        </Button>
+      </div>
     </template>
   </LayoutHeader>
+  <div v-if="isMobileView" class="px-3 py-2 border-b">
+    <SmartFilterField
+      ref="mobileSmartFilter"
+      doctype="Contact"
+      @update:filters="handleSmartFilter"
+    />
+  </div>
   <ViewControls
     ref="viewControls"
     v-model="contacts"
@@ -53,7 +68,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <ContactsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Contacts')]) }}</span>
+      <span>{{ __('No Contacts Found') }}</span>
       <Button :label="__('Create')" @click="showContactModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
@@ -87,7 +102,9 @@ import { getMeta } from '@/stores/meta'
 import { organizationsStore } from '@/stores/organizations.js'
 import { formatDate, timeAgo } from '@/utils'
 import { call } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { callEnabled, isMobileView } from '@/composables/settings'
+import SmartFilterField from '@/components/SmartFilterField.vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('Contact')
@@ -163,6 +180,47 @@ const rows = computed(() => {
     return _rows
   })
 })
+
+const desktopSmartFilter = ref(null)
+const mobileSmartFilter = ref(null)
+const isResettingFilters = ref(false)
+
+watch(() => contacts.value?.params?.filters, (newFilters) => {
+  if (isResettingFilters.value) return;
+  
+  if (!newFilters || Object.keys(newFilters).length === 0) {
+    isResettingFilters.value = true;
+    desktopSmartFilter.value?.clearSearch();
+    mobileSmartFilter.value?.clearSearch();
+    isResettingFilters.value = false;
+  }
+}, { deep: true })
+
+function handleSmartFilter(filters) {
+  if (!viewControls.value || !filters) return;
+  if (isResettingFilters.value) return;
+  if (!contacts.value || !contacts.value.params) return;
+
+  // Get current filters
+  const currentFilters = contacts.value.params.filters || {};
+  
+  // Preserve standard filters (name, id) but replace smart filter fields
+  const standardFilters = {};
+  Object.entries(currentFilters).forEach(([key, value]) => {
+    // Keep filters that aren't handled by smart filter
+    if (!['mobile_no', 'email_id', 'company_name'].includes(key)) {
+      standardFilters[key] = value;
+    }
+  });
+
+  // Merge standard filters with new smart filters
+  contacts.value.params.filters = {
+    ...standardFilters,
+    ...filters
+  };
+  
+  contacts.value.reload();
+}
 
 async function openAddressModal(_address) {
   if (_address) {

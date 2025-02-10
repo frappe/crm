@@ -208,11 +208,11 @@ import {
   ListHeader,
   ListHeaderItem,
   ListRowItem,
-  ListSelectBanner,
-  ListFooter,
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
+import ListSelectBanner from '@/components/custom-ui/ListSelectBanner.vue'
+import ListFooter from '@/components/custom-ui/ListFooter.vue'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'

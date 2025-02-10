@@ -22,7 +22,7 @@
           v-slot="{ idx, column, item }"
           :row="row"
         >
-          <slot v-bind="{ idx, column, item, row }" />
+          <slot v-bind="{ idx, column, item: translateItem(item, column), row }" />
         </ListRow>
       </ListGroupRows>
     </div>
@@ -30,7 +30,7 @@
   <ListRows
     v-else
     ref="scrollContainer"
-    class="mx-3 sm:mx-5"
+    class="mx-3 dark-scrollbar sm:mx-5"
     @scroll="handleScroll"
   >
     <ListRow
@@ -39,7 +39,7 @@
       v-slot="{ idx, column, item }"
       :row="row"
     >
-      <slot v-bind="{ idx, column, item, row }" />
+      <slot v-bind="{ idx, column, item: translateItem(item, column), row }" />
     </ListRow>
   </ListRows>
 </template>
@@ -61,6 +61,17 @@ const props = defineProps({
 })
 
 const reactivieRows = ref(props.rows)
+
+function translateItem(item, column) {
+  if (!column) return item
+  if (column.key === 'status' && item?.label) {
+    return {
+      ...item,
+      label: __(item.label)
+    }
+  }
+  return item
+}
 
 watch(
   () => props.rows,

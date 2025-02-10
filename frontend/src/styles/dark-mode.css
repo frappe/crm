@@ -1,0 +1,15 @@
+/* Select Dark Mode */
+select {
+  @apply dark:bg-gray-800 dark:text-gray-100;
+}
+
+select option {
+  @apply dark:bg-gray-800 dark:text-gray-100;
+}
+
+/* General dark mode text color */
+[data-theme="dark"] {
+  @apply text-gray-100;
+}
+
+

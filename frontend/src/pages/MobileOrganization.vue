@@ -65,13 +65,22 @@
                 {{ organization.doc.name }}
               </div>
               <div class="flex items-center gap-1.5">
-                <Button @click="openWebsite">
-                  <FeatherIcon name="link" class="h-4 w-4" />
+                <Button
+                  size="sm"
+                  class="dark:text-white dark:hover:bg-gray-700"
+                  @click="openWebsite"
+                >
+                  <template #prefix>
+                    <FeatherIcon name="link" class="h-4 w-4" />
+                  </template>
+                  {{ __('Open website') }}
                 </Button>
                 <Button
                   :label="__('Delete')"
+                  variant="ghost"
                   theme="red"
                   size="sm"
+                  class="dark:text-red-400 dark:hover:bg-gray-700"
                   @click="deleteOrganization"
                 >
                   <template #prefix>

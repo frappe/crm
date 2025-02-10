@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:user",
+ "creation": "2023-08-17 19:59:56.239729",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "user_name",
+  "call_receiving_device",
+  "column_break_ljne",
+  "twilio_number"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_ljne",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "twilio_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Twilio Number",
+   "options": "Phone"
+  },
+  {
+   "fetch_from": "user.full_name",
+   "fieldname": "user_name",
+   "fieldtype": "Data",
+   "label": "User Name",
+   "read_only": 1
+  },
+  {
+   "default": "Computer",
+   "fieldname": "call_receiving_device",
+   "fieldtype": "Select",
+   "label": "Device",
+   "options": "Computer\nPhone"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-19 21:57:18.626669",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "Twilio Agents",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

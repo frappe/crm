@@ -8,11 +8,12 @@
     :doc="doc"
     :emailBox="emailBox"
     :whatsappBox="whatsappBox"
+    :avitoBox="avitoBox"
     :modalRef="modalRef"
   />
   <FadedScrollableDiv
     :maskHeight="30"
-    class="flex flex-col flex-1 overflow-y-auto"
+    class="flex flex-col flex-1 overflow-y-auto dark-scrollbar"
   >
     <div
       v-if="all_activities?.loading"
@@ -24,7 +25,8 @@
     <div
       v-else-if="
         activities?.length ||
-        (whatsappMessages.data?.length && title == 'WhatsApp')
+        (whatsappMessages.data?.length && title == 'WhatsApp') ||
+        (avitoMessages.data?.length && title == 'Avito')
       "
       class="activities"
     >
@@ -34,6 +36,14 @@
           v-model="whatsappMessages"
           v-model:reply="replyMessage"
           :messages="whatsappMessages.data"
+        />
+      </div>
+      <div v-else-if="title == 'Avito' && avitoMessages.data?.length">
+        <AvitoArea
+          class="px-3 sm:px-10"
+          v-model="avitoMessages"
+          v-model:reply="replyMessage"
+          :messages="avitoMessages.data"
         />
       </div>
       <div
@@ -204,9 +214,9 @@
               />
             </div>
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="formatDate(activity.creation)">
+              <Tooltip :text="formatActivityDate(activity.creation, 'MMM D, YYYY h:mm A')">
                 <div class="text-sm text-ink-gray-5">
-                  {{ __(timeAgo(activity.creation)) }}
+                  {{ timeAgo(activity.creation) }}
                 </div>
               </Tooltip>
             </div>
@@ -248,14 +258,14 @@
               <span class="font-medium text-ink-gray-8">
                 {{ activity.owner_name }}
               </span>
-              <span v-if="activity.type">{{ __(activity.type) }}</span>
+              <span v-if="activity.type">{{ activity.type }}</span>
               <span
                 v-if="activity.data.field_label"
                 class="max-w-xs truncate font-medium text-ink-gray-8"
               >
                 {{ __(activity.data.field_label) }}
               </span>
-              <span v-if="activity.value">{{ __(activity.value) }}</span>
+              <span v-if="activity.value">{{ activity.value }}</span>
               <span
                 v-if="activity.data.old_value"
                 class="max-w-xs font-medium text-ink-gray-8"
@@ -290,9 +300,9 @@
             </div>
 
             <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="formatDate(activity.creation)">
+              <Tooltip :text="formatActivityDate(activity.creation, 'MMM D, YYYY h:mm A')">
                 <div class="text-sm text-ink-gray-5">
-                  {{ __(timeAgo(activity.creation)) }}
+                  {{ timeAgo(activity.creation) }}
                 </div>
               </Tooltip>
             </div>
@@ -334,7 +344,7 @@
                     {{ activity.data.old_value }}
                   </div>
                 </span>
-                <span v-if="activity.to">{{ __('to') }}</span>
+                <span v-if="activity.to">{{ __('to', 'change activityto') }}</span>
                 <span
                   v-if="activity.data.value"
                   class="max-w-xs font-medium text-ink-gray-8"
@@ -353,9 +363,9 @@
               </div>
 
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip :text="formatDate(activity.creation)">
+                <Tooltip :text="formatActivityDate(activity.creation, 'MMM D, YYYY h:mm A')">
                   <div class="text-sm text-ink-gray-5">
-                    {{ __(timeAgo(activity.creation)) }}
+                    {{ timeAgo(activity.creation) }}
                   </div>
                 </Tooltip>
               </div>
@@ -375,6 +385,8 @@
       <span>{{ __(emptyText) }}</span>
       <Button
         v-if="title == 'Calls'"
+        size="sm"
+        class="min-w-[90px] whitespace-nowrap"
         :label="__('Make a Call')"
         @click="makeCall(doc.data.mobile_no)"
       />
@@ -420,6 +432,15 @@
       v-model="doc"
       v-model:reply="replyMessage"
       v-model:whatsapp="whatsappMessages"
+      :doctype="doctype"
+      @scroll="scroll"
+    />
+    <AvitoBox
+      ref="avitoBox"
+      v-if="title == 'Avito'"
+      v-model="doc"
+      v-model:reply="replyMessage"
+      v-model:avito="avitoMessages"
       :doctype="doctype"
       @scroll="scroll"
     />
@@ -469,6 +490,9 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
+import AvitoIcon from '@/components/Icons/AvitoIcon.vue'
+import AvitoArea from '@/components/Activities/AvitoArea.vue'
+import AvitoBox from '@/components/Activities/AvitoBox.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -484,11 +508,12 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import { timeAgo, formatDate, startCase } from '@/utils'
+import { timeAgo, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { whatsappEnabled } from '@/composables/settings'
+import { avitoEnabled } from '@/composables/avito'
 import { capture } from '@/telemetry'
 import { Button, Tooltip, createResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
@@ -503,6 +528,10 @@ import {
   onBeforeUnmount,
 } from 'vue'
 import { useRoute } from 'vue-router'
+import { filterEmailActivities } from '@/utils/activity_filters'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
+import { translateLeadStatus } from '@/utils/leadStatusTranslations'
+import dayjs from '@/utils/dayjs'
 
 const { makeCall, $socket } = globalStore()
 const { getUser } = usersStore()
@@ -562,8 +591,22 @@ const whatsappMessages = createResource({
   onSuccess: () => nextTick(() => scroll()),
 })
 
+const avitoMessages = createResource({
+  url: 'crm.api.avito.get_avito_messages',
+  cache: ['avito_messages', doc.value.data.name],
+  params: {
+    reference_doctype: props.doctype,
+    reference_name: doc.value.data.name,
+  },
+  auto: true,
+  transform: (data) => sortByCreation(data),
+  onSuccess: () => nextTick(() => scroll()),
+})
+
+
 onBeforeUnmount(() => {
   $socket.off('whatsapp_message')
+  $socket.off('avito_message')
 })
 
 onMounted(() => {
@@ -574,7 +617,20 @@ onMounted(() => {
     ) {
       whatsappMessages.reload()
     }
-  })
+  });
+
+  $socket.onAny((event, ...args) => {
+    console.log(`Received event: ${event}`, args);
+  });
+
+  $socket.on('avito_message', (data) => {
+    if (
+      data.reference_doctype === props.doctype &&
+      data.reference_name === doc.value.data.name
+    ) {
+      avitoMessages.reload()
+    }
+  });
 
   nextTick(() => {
     const hash = route.hash.slice(1) || null
@@ -616,7 +672,9 @@ const activities = computed(() => {
   } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
     _activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'communication',
+      (activity) => activity.activity_type === 'communication' && 
+         activity.communication_medium !== 'Phone' && 
+         activity.communication_medium !== 'Chat',
     )
   } else if (title.value == 'Comments') {
     if (!all_activities.data?.versions) return []
@@ -675,36 +733,52 @@ function update_activities_details(activity) {
   if (activity.activity_type == 'creation') {
     activity.type = activity.data
   } else if (activity.activity_type == 'added') {
-    activity.type = 'added'
-    activity.value = 'as'
+    activity.type = __('added', 'activity type')
+    activity.value = __('as', 'activity value')
   } else if (activity.activity_type == 'removed') {
-    activity.type = 'removed'
-    activity.value = 'value'
+    activity.type = __('removed', 'activity type')
+    activity.value = __('value', 'activity value' )
   } else if (activity.activity_type == 'changed') {
-    activity.type = 'changed'
-    activity.value = 'from'
-    activity.to = 'to'
+    activity.type = __('changed', 'activity type')
+    activity.value = __('from', 'activity value')
+    activity.to = __('to', 'activity value')
+
+    // Translate status values if the field is 'status'
+    if (activity.data.field_label === 'Status') {
+      if (activity.data.old_value) {
+        activity.data.old_value = props.doctype === 'CRM Lead' 
+          ? translateLeadStatus(activity.data.old_value)
+          : translateDealStatus(activity.data.old_value)
+      }
+      if (activity.data.value) {
+        activity.data.value = props.doctype === 'CRM Lead'
+          ? translateLeadStatus(activity.data.value)
+          : translateDealStatus(activity.data.value)
+      }
+    }
   }
 }
 
 const emptyText = computed(() => {
-  let text = 'No Activities'
+  let text = __('No Activities')
   if (title.value == 'Emails') {
-    text = 'No Email Communications'
+    text = __('No Email Communications')
   } else if (title.value == 'Comments') {
-    text = 'No Comments'
+    text = __('No Comments')
   } else if (title.value == 'Data') {
-    text = 'No Data'
+    text = __('No Data')
   } else if (title.value == 'Calls') {
-    text = 'No Call Logs'
+    text = __('No Call Logs')
   } else if (title.value == 'Notes') {
-    text = 'No Notes'
+    text = __('No Notes')
   } else if (title.value == 'Tasks') {
-    text = 'No Tasks'
+    text = __('No Tasks')
   } else if (title.value == 'Attachments') {
-    text = 'No Attachments'
+    text = __('No Attachments')
   } else if (title.value == 'WhatsApp') {
-    text = 'No WhatsApp Messages'
+    text = __('No WhatsApp Messages')
+  } else if (title.value == 'Avito') {
+    text = __('No Avito Messages')
   }
   return text
 })
@@ -727,6 +801,8 @@ const emptyTextIcon = computed(() => {
     icon = AttachmentIcon
   } else if (title.value == 'WhatsApp') {
     icon = WhatsAppIcon
+  } else if (title.value == 'Avito') {
+    icon = AvitoIcon
   }
   return h(icon, { class: 'text-ink-gray-4' })
 })
@@ -761,6 +837,8 @@ function timelineIcon(activity_type, is_lead) {
 
 const emailBox = ref(null)
 const whatsappBox = ref(null)
+const avitoBox = ref(null)
+
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
@@ -785,6 +863,11 @@ function scroll(hash) {
       el.focus()
     }
   }, 500)
+}
+
+function formatActivityDate(date, format) {
+  if (!date) return ''
+  return dayjs(date).format(format)
 }
 
 defineExpose({ emailBox, all_activities })

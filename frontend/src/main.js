@@ -1,6 +1,12 @@
 import './index.css'
+// Import custom scrollbar styles for dark theme
+import './styles/scrollbar.css'
+// Import dark mode styles
+import './styles/dark-mode.css'
+import './styles/forms.css'
+import './utils/dayjs'
 
-import { createApp } from 'vue'
+import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
 import { createDialog } from './utils/dialogs'
 import { initSocket } from './socket'
@@ -8,6 +14,8 @@ import router from './router'
 import translationPlugin from './translation'
 import { posthogPlugin } from './telemetry'
 import App from './App.vue'
+import { setLocale } from './utils/localeUtils'
+
 
 import {
   FrappeUI,

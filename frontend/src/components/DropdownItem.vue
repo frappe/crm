@@ -23,7 +23,7 @@
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
           @click="saveOption"
         />
-        <Tooltip text="Set As Primary" v-if="!isNew && !option.selected">
+        <Tooltip :text="__('Set As Primary')" v-if="!isNew && !option.selected">
           <div>
             <Button
               variant="ghost"
@@ -35,7 +35,7 @@
             </Button>
           </div>
         </Tooltip>
-        <Tooltip v-if="!editMode" text="Edit">
+        <Tooltip v-if="!editMode" :text="__('Edit')">
           <div>
             <Button
               variant="ghost"
@@ -47,7 +47,7 @@
             </Button>
           </div>
         </Tooltip>
-        <Tooltip text="Delete">
+        <Tooltip :text="__('Delete')">
           <div>
             <Button
               variant="ghost"

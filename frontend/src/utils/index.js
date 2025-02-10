@@ -2,9 +2,11 @@ import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { usersStore } from '@/stores/users'
 import { gemoji } from 'gemoji'
-import { useTimeAgo } from '@vueuse/core'
-import { toast, dayjsLocal, dayjs } from 'frappe-ui'
+import { toast } from 'frappe-ui'
 import { h } from 'vue'
+import { translateTaskStatus } from '@/utils/taskStatusTranslations'
+import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
+import dayjs from './dayjs'
 
 export function createToast(options) {
   toast({
@@ -41,7 +43,7 @@ export function formatTime(seconds) {
 export function formatDate(date, format, onlyDate = false, onlyTime = false) {
   if (!date) return ''
   format = getFormat(date, format, onlyDate, onlyTime, false)
-  return dayjsLocal(date).format(format)
+  return dayjs(date).format(format)
 }
 
 export function getFormat(
@@ -71,16 +73,30 @@ export function getFormat(
 }
 
 export function timeAgo(date) {
-  return useTimeAgo(date).value
+  if (!date) return ''
+  return dayjs(date).fromNow()
+}
+
+export function extractValue(field) {
+  if (!field) return ''
+  return typeof field === 'object' ? field.value : field
+}
+
+export function extractLabel(field, translator) {
+  if (!field) return ''
+  if (typeof field === 'object') return field.label
+  return translator ? translator(field) : field
 }
 
 export function taskStatusOptions(action, data) {
   return ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled'].map(
     (status) => {
+      const translatedLabel = translateTaskStatus(status)
       return {
         icon: () => h(TaskStatusIcon, { status }),
-        label: status,
-        onClick: () => action && action(status, data),
+        label: translatedLabel,
+        value: status,
+        onClick: () => action && action(extractValue(status), data),
       }
     },
   )
@@ -88,10 +104,12 @@ export function taskStatusOptions(action, data) {
 
 export function taskPriorityOptions(action, data) {
   return ['Low', 'Medium', 'High'].map((priority) => {
+    const translatedLabel = translateTaskPriority(priority)
     return {
-      label: priority,
+      label: translatedLabel,
+      value: priority,
       icon: () => h(TaskPriorityIcon, { priority }),
-      onClick: () => action && action(priority, data),
+      onClick: () => action && action(extractValue(priority), data),
     }
   })
 }

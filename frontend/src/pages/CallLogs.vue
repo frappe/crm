@@ -50,7 +50,7 @@
       class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <PhoneIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Logs')]) }}</span>
+      <span>{{ __('No Logs Found') }}</span>
     </div>
   </div>
   <CallLogDetailModal

@@ -110,21 +110,19 @@
         </Tooltip>
       </template>
     </Link>
-    <DateTimePicker
+    <input
       v-else-if="field.fieldtype === 'Datetime'"
+      type="datetime-local"
       v-model="data[field.fieldname]"
-      icon-left=""
-      :formatter="(date) => getFormat(date, '', true, true)"
       :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      class="w-full rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3"
     />
-    <DatePicker
+    <input
       v-else-if="field.fieldtype === 'Date'"
-      icon-left=""
+      type="date"
       v-model="data[field.fieldname]"
-      :formatter="(date) => getFormat(date, '', true)"
       :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      class="w-full rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3"
     />
     <FormControl
       v-else-if="
@@ -183,7 +181,7 @@ import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
+import { Tooltip } from 'frappe-ui'
 import { computed, inject } from 'vue'
 
 const props = defineProps({

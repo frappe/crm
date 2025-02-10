@@ -266,8 +266,8 @@ def get_data(
 
 		if not columns:
 			columns = [
-				{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
-				{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
+				{"label": _("Name"), "type": "Data", "key": "name", "width": "16rem"},
+				{"label": _("Last Modified"), "type": "Datetime", "key": "modified", "width": "8rem"},
 			]
 
 		if not rows:
