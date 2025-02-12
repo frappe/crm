@@ -58,7 +58,7 @@ const props = defineProps({
   },
   successMessage: {
     type: String,
-    default: 'Updated Successfully',
+    default: __('Updated Successfully'),
   },
 })
 

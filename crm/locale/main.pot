@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-02-10 07:05+0000\n"
-"PO-Revision-Date: 2025-02-10 07:05+0000\n"
+"POT-Creation-Date: 2025-02-12 15:36+0000\n"
+"PO-Revision-Date: 2025-02-12 15:36+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -327,6 +327,14 @@ msgstr ""
 msgid "Apps"
 msgstr ""
 
+#: frontend/src/components/ListBulkActions.vue:136
+msgid "Are you sure you want to clear assignment for {0} item(s)?"
+msgstr ""
+
+#: frontend/src/components/ListBulkActions.vue:63
+msgid "Are you sure you want to convert {0} Lead(s) to Deal(s)?"
+msgstr ""
+
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
 msgstr ""
@@ -344,11 +352,15 @@ msgstr ""
 msgid "Are you sure you want to delete this task?"
 msgstr ""
 
+#: frontend/src/components/ListBulkActions.vue:95
+msgid "Are you sure you want to delete {0} item(s)?"
+msgstr ""
+
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
 msgstr ""
 
-#: frontend/src/components/ListBulkActions.vue:193
+#: frontend/src/components/ListBulkActions.vue:187
 #: frontend/src/components/Modals/AssignmentModal.vue:5
 msgid "Assign To"
 msgstr ""
@@ -372,7 +384,7 @@ msgstr ""
 msgid "Assignment Rule"
 msgstr ""
 
-#: frontend/src/components/ListBulkActions.vue:158
+#: frontend/src/components/ListBulkActions.vue:152
 msgid "Assignment cleared successfully"
 msgstr ""
 
@@ -734,9 +746,9 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: frontend/src/components/ListBulkActions.vue:139
-#: frontend/src/components/ListBulkActions.vue:147
-#: frontend/src/components/ListBulkActions.vue:197
+#: frontend/src/components/ListBulkActions.vue:135
+#: frontend/src/components/ListBulkActions.vue:141
+#: frontend/src/components/ListBulkActions.vue:191
 msgid "Clear Assignment"
 msgstr ""
 
@@ -913,14 +925,14 @@ msgstr ""
 msgid "Content Type"
 msgstr ""
 
-#: frontend/src/components/ListBulkActions.vue:70
+#: frontend/src/components/ListBulkActions.vue:68
 #: frontend/src/pages/Lead.vue:211 frontend/src/pages/MobileLead.vue:49
 #: frontend/src/pages/MobileLead.vue:152
 msgid "Convert"
 msgstr ""
 
 #: frontend/src/components/ListBulkActions.vue:62
-#: frontend/src/components/ListBulkActions.vue:204
+#: frontend/src/components/ListBulkActions.vue:198
 #: frontend/src/pages/Lead.vue:38 frontend/src/pages/Lead.vue:207
 #: frontend/src/pages/MobileLead.vue:148
 msgid "Convert to Deal"
@@ -931,7 +943,7 @@ msgstr ""
 msgid "Converted"
 msgstr ""
 
-#: frontend/src/components/ListBulkActions.vue:79
+#: frontend/src/components/ListBulkActions.vue:77
 msgid "Converted successfully"
 msgstr ""
 
@@ -1128,9 +1140,9 @@ msgstr ""
 #: frontend/src/components/Controls/Grid.vue:228
 #: frontend/src/components/DropdownItem.vue:50
 #: frontend/src/components/Kanban/KanbanView.vue:225
-#: frontend/src/components/ListBulkActions.vue:96
-#: frontend/src/components/ListBulkActions.vue:104
-#: frontend/src/components/ListBulkActions.vue:186
+#: frontend/src/components/ListBulkActions.vue:94
+#: frontend/src/components/ListBulkActions.vue:100
+#: frontend/src/components/ListBulkActions.vue:180
 #: frontend/src/components/ViewControls.vue:939
 #: frontend/src/components/ViewControls.vue:950
 #: frontend/src/pages/Contact.vue:131 frontend/src/pages/Contact.vue:141
@@ -1175,7 +1187,7 @@ msgstr ""
 msgid "Delete organization"
 msgstr ""
 
-#: frontend/src/components/ListBulkActions.vue:114
+#: frontend/src/components/ListBulkActions.vue:110
 msgid "Deleted successfully"
 msgstr ""
 
@@ -1334,7 +1346,7 @@ msgstr ""
 #: frontend/src/components/FieldLayout/Field.vue:75
 #: frontend/src/components/FieldLayoutEditor.vue:314
 #: frontend/src/components/FieldLayoutEditor.vue:340
-#: frontend/src/components/ListBulkActions.vue:179
+#: frontend/src/components/ListBulkActions.vue:173
 #: frontend/src/components/ViewControls.vue:909
 msgid "Edit"
 msgstr ""
@@ -3823,6 +3835,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: frontend/src/utils/taskStatusTranslations.js:8
 msgid "Todo"
+msgstr ""
+
+#: frontend/src/components/ListViews/ContactsListView.vue:105
+msgid "Toggle Like"
+msgstr ""
+
+#: frontend/src/components/ListViews/ContactsListView.vue:34
+msgid "Toggle Like Filter"
 msgstr ""
 
 #: frontend/src/components/Modals/SidePanelModal.vue:59

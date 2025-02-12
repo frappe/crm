@@ -41,25 +41,25 @@
         <div class="flex justify-between gap-4">
           <FormControl
             class="w-full"
-            label="First name"
+            :label="__('First name')"
             v-model="profile.first_name"
           />
           <FormControl
             class="w-full"
-            label="Last name"
+            :label="__('Last name')"
             v-model="profile.last_name"
           />
         </div>
         <div class="flex justify-between gap-4">
           <FormControl
             class="w-full"
-            label="Email"
+            :label="__('Email')"
             v-model="profile.email"
             :disabled="true"
           />
           <FormControl
             class="w-full"
-            label="Set new password"
+            :label="__('Set new password')"
             v-model="profile.new_password"
           />
         </div>

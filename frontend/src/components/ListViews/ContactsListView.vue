@@ -31,6 +31,7 @@
           class="!h-4"
           :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
           @click="() => emit('applyLikeFilter')"
+          :aria-label="__('Toggle Like Filter')"
         >
           <HeartIcon class="h-4 w-4" />
         </Button>
@@ -81,7 +82,7 @@
                 })
             "
           >
-            <Tooltip :text="item.label">
+            <Tooltip :text="__(item.label)">
               <div>{{ item.timeAgo }}</div>
             </Tooltip>
           </div>
@@ -101,6 +102,7 @@
               @click.stop.prevent="
                 () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
               "
+              :aria-label="__('Toggle Like')"
             >
               <HeartIcon class="h-4 w-4" />
             </Button>

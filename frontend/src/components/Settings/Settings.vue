@@ -34,7 +34,7 @@
           </div>
         </div>
         <div
-          class="flex relative flex-1 flex-col overflow-y-auto bg-surface-modal"
+          class="flex relative flex-1 flex-col overflow-y-auto bg-surface-modal dark-scrollbar"
         >
           <Button
             class="absolute right-5 top-5"
