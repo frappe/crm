@@ -160,10 +160,10 @@ class Opportunity(Opportunity):
     def default_list_data():
         columns = [
             {
-                "label": "Customer",
-                "type": "Link",
-                "key": "customer",
-                "options": "Customer",
+                "label": "Opportunity From",
+                "type": "Dynamic Link",
+                "key": "party_name",
+                "options": "opportunity_from",
                 "width": "11rem",
             },
             {
