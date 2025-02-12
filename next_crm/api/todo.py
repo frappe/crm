@@ -88,21 +88,21 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 
         if is_cancelled:
             return f"""
-				<div class="mb-2 leading-5 text-gray-600">
+				<div class="mb-2 leading-5 text-ink-gray-5">
 					<span>{ _('Your assignment on {0} {1} has been removed by {2}').format(
 						doctype,
-						f'<span class="font-medium text-gray-900">{ name }</span>',
-						f'<span class="font-medium text-gray-900">{ owner }</span>'
+						f'<span class="font-medium text-ink-gray-9">{ name }</span>',
+						f'<span class="font-medium text-ink-gray-9">{ owner }</span>'
 					) }</span>
 				</div>
 			"""
 
         return f"""
-			<div class="mb-2 leading-5 text-gray-600">
-				<span class="font-medium text-gray-900">{ owner }</span>
+			<div class="mb-2 leading-5 text-ink-gray-5">
+				<span class="font-medium text-ink-gray-9">{ owner }</span>
 				<span>{ _('assigned a {0} {1} to you').format(
 					doctype,
-					f'<span class="font-medium text-gray-900">{ name }</span>'
+					f'<span class="font-medium text-ink-gray-9">{ name }</span>'
 				) }</span>
 			</div>
 		"""
@@ -110,18 +110,18 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
     if doctype == "ToDo":
         if is_cancelled:
             return f"""
-				<div class="mb-2 leading-5 text-gray-600">
+				<div class="mb-2 leading-5 text-ink-gray-5">
 					<span>{ _('Your assignment on ToDo {0} has been removed by {1}').format(
-						f'<span class="font-medium text-gray-900">{ reference_doc.title }</span>',
-						f'<span class="font-medium text-gray-900">{ owner }</span>'
+						f'<span class="font-medium text-ink-gray-9">{ reference_doc.title }</span>',
+						f'<span class="font-medium text-ink-gray-9">{ owner }</span>'
 					) }</span>
 				</div>
 			"""
         return f"""
-			<div class="mb-2 leading-5 text-gray-600">
-				<span class="font-medium text-gray-900">{ owner }</span>
+			<div class="mb-2 leading-5 text-ink-gray-5">
+				<span class="font-medium text-ink-gray-9">{ owner }</span>
 				<span>{ _('assigned a new ToDo {0} to you').format(
-					f'<span class="font-medium text-gray-900">{ reference_doc.title }</span>'
+					f'<span class="font-medium text-ink-gray-9">{ reference_doc.title }</span>'
 				) }</span>
 			</div>
 		"""

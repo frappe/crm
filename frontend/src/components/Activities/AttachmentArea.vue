@@ -7,7 +7,7 @@
       >
         <div class="flex gap-2 truncate">
           <div
-            class="size-11 bg-white rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
+            class="size-11 bg-surface-white rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
             :class="{ border: !isImage(attachment.file_type) }"
           >
             <img
@@ -18,22 +18,22 @@
             />
             <component
               v-else
-              class="size-4"
+              class="size-4 text-ink-gray-7"
               :is="fileIcon(attachment.file_type)"
             />
           </div>
           <div class="flex flex-col justify-center gap-1 truncate">
-            <div class="text-base text-gray-800 truncate">
+            <div class="text-base text-ink-gray-8 truncate">
               {{ attachment.file_name }}
             </div>
-            <div class="mb-1 text-sm text-gray-600">
+            <div class="mb-1 text-sm text-ink-gray-5">
               {{ convertSize(attachment.file_size) }}
             </div>
           </div>
         </div>
         <div class="flex flex-col items-end gap-2 flex-shrink-0">
           <Tooltip :text="dateFormat(attachment.creation, dateTooltipFormat)">
-            <div class="text-sm text-gray-600">
+            <div class="text-sm text-ink-gray-5">
               {{ __(timeAgo(attachment.creation)) }}
             </div>
           </Tooltip>
@@ -51,7 +51,7 @@
               >
                 <FeatherIcon
                   :name="attachment.is_private ? 'lock' : 'unlock'"
-                  class="size-3 text-gray-700"
+                  class="size-3 text-ink-gray-7"
                 />
               </Button>
             </Tooltip>
@@ -60,7 +60,7 @@
                 class="!size-5"
                 @click.stop="() => deleteAttachment(attachment.name)"
               >
-                <FeatherIcon name="trash-2" class="size-3 text-gray-700" />
+                <FeatherIcon name="trash-2" class="size-3 text-ink-gray-7" />
               </Button>
             </Tooltip>
           </div>

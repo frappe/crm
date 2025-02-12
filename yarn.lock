@@ -2388,10 +2388,10 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-ui@^0.1.71:
-  version "0.1.95"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.95.tgz#8ba3f0415d5ecfea2385d0beec786ac17f3790c0"
-  integrity sha512-FcyWV92Q3+b4u40akc0P/EqP5aoDtr57ohVszREi+KY+HRzjn/+CGSv8UA5zDiMMnAuerLw3znfnzXMrn4wf9Q==
+frappe-ui@^0.1.94:
+  version "0.1.109"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.109.tgz#4de34c6927c9f870240e5b8eaef9239cb33e9bb2"
+  integrity sha512-jrB3wX2fUvWlVCzFWzP6PDmn43xEHu4hiDhNSgfn0zJe8wD78XH3GFEoWwNbEsykw9QIZvNlpDV0oYGtfS+yvQ==
   dependencies:
     "@headlessui/vue" "^1.7.14"
     "@popperjs/core" "^2.11.2"
@@ -3938,6 +3938,7 @@ sourcemap-codec@^1.4.8:
   integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
 "string-width-cjs@npm:string-width@^4.2.0":
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -4031,6 +4032,7 @@ stringify-object@^3.3.0:
     is-regexp "^1.0.0"
 
 "strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  name strip-ansi-cjs
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==

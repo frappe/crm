@@ -36,19 +36,21 @@
     </template>
   </LayoutHeader>
   <div v-if="opportunity.data" class="flex h-full overflow-hidden">
-    <Tabs v-model="tabIndex" :tabs="tabs">
-      <Activities
-        ref="activities"
-        doctype="Opportunity"
-        :tabs="tabs"
-        v-model:reload="reload"
-        v-model:tabIndex="tabIndex"
-        v-model="opportunity"
-      />
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+      <template #tab-panel>
+        <Activities
+          ref="activities"
+          doctype="Opportunity"
+          :tabs="tabs"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
+          v-model="opportunity"
+        />
+      </template>
     </Tabs>
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
-        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
+        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
         @click="copyToClipboard(opportunity.data.name)"
       >
         {{ __(opportunity.data.name) }}
@@ -64,7 +66,7 @@
             />
           </div>
         </Tooltip>
-        <div class="flex flex-col gap-2.5 truncate">
+        <div class="flex flex-col gap-2.5 truncat text-ink-gray-9">
           <Tooltip :text="customer.data?.name || __('Set an customer')">
             <div class="truncate text-2xl font-medium">
               {{ customer.data?.name || __('Untitled') }}
@@ -175,7 +177,7 @@
                   v-if="
                     opportunityContacts?.loading && opportunityContacts?.data?.length == 0
                   "
-                  class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-gray-500"
+                  class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-ink-gray-4"
                 >
                   <LoadingIndicator class="h-4 w-4" />
                   <span>{{ __('Loading...') }}</span>
@@ -192,7 +194,7 @@
                     <Section :is-opened="contact.opened">
                       <template #header="{ opened, toggle }">
                         <div
-                          class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-gray-700"
+                          class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
                         >
                           <div
                             class="flex h-7 items-center gap-2 truncate"
@@ -218,7 +220,7 @@
                             <Dropdown :options="contactOptions(contact)">
                               <Button
                                 icon="more-horizontal"
-                                class="text-gray-600"
+                                class="text-ink-gray-5"
                                 variant="ghost"
                               />
                             </Dropdown>
@@ -236,7 +238,7 @@
                             <Button variant="ghost" @click="toggle()">
                               <FeatherIcon
                                 name="chevron-right"
-                                class="h-4 w-4 text-gray-900 transition-all duration-300 ease-in-out"
+                                class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                                 :class="{ 'rotate-90': opened }"
                               />
                             </Button>
@@ -244,7 +246,7 @@
                         </div>
                       </template>
                       <div
-                        class="flex flex-col gap-1.5 text-base text-gray-800"
+                        class="flex flex-col gap-1.5 text-base text-ink-gray-8"
                       >
                         <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
                           <Email2Icon class="h-4 w-4" />
@@ -264,7 +266,7 @@
                 </div>
                 <div
                   v-else
-                  class="flex h-20 items-center justify-center text-base text-gray-600"
+                  class="flex h-20 items-center justify-center text-base text-ink-gray-5"
                 >
                   {{ __('No contacts added') }}
                 </div>
@@ -435,7 +437,7 @@ onMounted(() => {
     createToast({
       title: __('Customer created successfully'),
       icon: 'check',
-      iconClasses: 'text-green-600',
+      iconClasses: 'text-ink-green-3',
     })
   })
 
@@ -477,7 +479,7 @@ function updateOpportunity(fieldname, value, callback) {
       createToast({
         title: __('Opportunity updated'),
         icon: 'check',
-        iconClasses: 'text-green-600',
+        iconClasses: 'text-ink-green-3',
       })
       callback?.()
     },
@@ -486,7 +488,7 @@ function updateOpportunity(fieldname, value, callback) {
         title: __('Error updating opportunity'),
         text: __(err.messages?.[0]),
         icon: 'x',
-        iconClasses: 'text-red-600',
+        iconClasses: 'text-ink-red-4',
       })
     },
   })
@@ -499,7 +501,7 @@ function validateRequired(fieldname, value) {
       title: __('Error Updating Opportunity'),
       text: __('{0} is a required field', [meta[fieldname].label]),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
     return true
   }
@@ -648,7 +650,7 @@ async function addContact(contact) {
     createToast({
       title: __('Contact added'),
       icon: 'check',
-      iconClasses: 'text-green-600',
+      iconClasses: 'text-ink-green-3',
     })
   }
 }
@@ -663,7 +665,7 @@ async function removeContact(contact) {
     createToast({
       title: __('Contact removed'),
       icon: 'check',
-      iconClasses: 'text-green-600',
+      iconClasses: 'text-ink-green-3',
     })
   }
 }
@@ -678,7 +680,7 @@ async function setPrimaryContact(contact) {
     createToast({
       title: __('Primary contact set'),
       icon: 'check',
-      iconClasses: 'text-green-600',
+      iconClasses: 'text-ink-green-3',
     })
   }
 }

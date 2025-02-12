@@ -32,10 +32,10 @@ def notify_agent(doc):
         if doctype.startswith("CRM "):
             doctype = doctype[4:].lower()
         notification_text = f"""
-            <div class="mb-2 leading-5 text-gray-600">
-                <span class="font-medium text-gray-900">{ _('You') }</span>
+            <div class="mb-2 leading-5 text-ink-gray-5">
+                <span class="font-medium text-ink-gray-9">{ _('You') }</span>
                 <span>{ _('received a whatsapp message in {0}').format(doctype) }</span>
-                <span class="font-medium text-gray-900">{ doc.reference_name }</span>
+                <span class="font-medium text-ink-gray-9">{ doc.reference_name }</span>
             </div>
         """
         assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)

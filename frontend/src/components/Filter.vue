@@ -9,7 +9,7 @@
           <template #prefix><FilterIcon class="h-4" /></template>
           <template v-if="filters?.size" #suffix>
             <div
-              class="flex h-5 w-5 items-center justify-center rounded bg-gray-900 pt-[1px] text-2xs font-medium text-white"
+              class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
             >
               {{ filters.size }}
             </div>
@@ -27,7 +27,9 @@
       </div>
     </template>
     <template #body="{ close }">
-      <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
+      <div
+        class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+      >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
           <div
             v-if="filters?.size"
@@ -38,7 +40,7 @@
           >
             <div v-if="isMobileView" class="flex flex-col gap-2">
               <div class="-mb-2 flex w-full items-center justify-between">
-                <div class="text-base text-gray-600">
+                <div class="text-base text-ink-gray-5">
                   {{ i == 0 ? __('Where') : __('And') }}
                 </div>
                 <Button
@@ -76,7 +78,7 @@
             </div>
             <div v-else class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-2">
-                <div class="w-13 pl-2 text-end text-base text-gray-600">
+                <div class="w-13 pl-2 text-end text-base text-ink-gray-5">
                   {{ i == 0 ? __('Where') : __('And') }}
                 </div>
                 <div id="fieldname" class="!min-w-[140px]">
@@ -117,7 +119,7 @@
           </div>
           <div
             v-else
-            class="mb-3 flex h-7 items-center px-3 text-sm text-gray-600"
+            class="mb-3 flex h-7 items-center px-3 text-sm text-ink-gray-5"
           >
             {{ __('Empty - Choose a field to filter by') }}
           </div>
@@ -130,7 +132,7 @@
             >
               <template #target="{ togglePopover }">
                 <Button
-                  class="!text-gray-600"
+                  class="!text-ink-gray-5"
                   variant="ghost"
                   @click="togglePopover()"
                   :label="__('Add Filter')"
@@ -143,7 +145,7 @@
             </Autocomplete>
             <Button
               v-if="filters?.size"
-              class="!text-gray-600"
+              class="!text-ink-gray-5"
               variant="ghost"
               :label="__('Clear all Filter')"
               @click="clearfilter(close)"

@@ -9,7 +9,7 @@
           <div v-for="tab in tabs">
             <div
               v-if="!tab.hideLabel"
-              class="mb-2 mt-3 flex cursor-pointer gap-1.5 px-1 text-base font-medium text-gray-600 transition-all duration-300 ease-in-out"
+              class="mb-2 mt-3 flex cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out"
             >
               <span>{{ __(tab.label) }}</span>
             </div>
@@ -21,8 +21,8 @@
                 class="w-full"
                 :class="
                   activeTab?.label == i.label
-                    ? 'bg-white shadow-sm'
-                    : 'hover:bg-gray-100'
+                    ? 'bg-surface-white shadow-sm'
+                    : 'hover:bg-surface-gray-2'
                 "
                 @click="activeTab = i"
               />

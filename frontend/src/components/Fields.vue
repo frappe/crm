@@ -3,7 +3,7 @@
     <div
       v-for="section in sections"
       :key="section.label"
-      class="section first:border-t-0 first:pt-0"
+      class="section first:border-t-0 border-outline-gray-modals first:pt-0"
       :class="section.hideBorder ? '' : 'border-t pt-4'"
     >
       <div
@@ -33,7 +33,7 @@
           >
             <div
               v-if="field.type != 'Check'"
-              class="mb-2 text-sm text-gray-600"
+              class="mb-2 text-sm text-ink-gray-5"
             >
               {{ __(field.label) }}
               <span
@@ -77,7 +77,7 @@
                 :disabled="Boolean(field.read_only)"
               />
               <label
-                class="text-sm text-gray-600"
+                class="text-sm text-ink-gray-5"
                 @click="data[field.name] = !data[field.name]"
               >
                 {{ __(field.label) }}

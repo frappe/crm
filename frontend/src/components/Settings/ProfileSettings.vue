@@ -3,8 +3,8 @@
     <div class="flex items-center gap-4">
       <Avatar class="!size-16" :image="profile.user_image" :label="profile.full_name" />
       <div class="flex flex-col gap-1">
-        <span class="text-2xl font-semibold">{{ profile.full_name }}</span>
-        <span class="text-base text-gray-700">{{ profile.email }}</span>
+        <span class="text-2xl font-semibold text-ink-gray-9">{{ profile.full_name }}</span>
+        <span class="text-base text-ink-gray-7">{{ profile.email }}</span>
       </div>
     </div>
     <Button :label="__('Edit profile')" @click="showProfileModal = true" />

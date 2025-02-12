@@ -2,14 +2,14 @@
   <div>
     <Draggable :list="sections" item-key="label" class="flex flex-col gap-5.5">
       <template #item="{ element: section }">
-        <div class="flex flex-col gap-1.5 p-2.5 bg-gray-50 rounded">
+        <div class="flex flex-col gap-1.5 p-2.5 bg-surface-gray-2 rounded">
           <div class="flex items-center justify-between">
             <div
-              class="flex h-7 max-w-fit cursor-pointer items-center gap-2 text-base font-medium leading-4"
+              class="flex h-7 max-w-fit cursor-pointer items-center gap-2 text-base font-medium leading-4 text-ink-gray-9"
             >
               <div
                 v-if="!section.editingLabel"
-                :class="section.hideLabel ? 'text-gray-400' : ''"
+                :class="{ 'text-ink-gray-3': section.hideLabel }"
               >
                 {{ __(section.label) || __('Untitled') }}
               </div>
@@ -48,7 +48,7 @@
           >
             <template #item="{ element: field }">
               <div
-                class="px-2.5 py-2 border rounded text-base bg-white text-gray-800 flex items-center leading-4 justify-between gap-2"
+                class="px-2.5 py-2 border border-outline-gray-2 rounded text-base bg-surface-modal text-ink-gray-8 flex items-center leading-4 justify-between gap-2"
               >
                 <div class="flex items-center gap-2">
                   <DragVerticalIcon class="h-3.5 cursor-grab" />
@@ -74,7 +74,7 @@
             <template #target="{ togglePopover }">
               <div class="gap-2 w-full">
                 <Button
-                  class="w-full !h-8 !border-gray-200 hover:!border-gray-300"
+                  class="w-full !h-8 !bg-surface-modal"
                   variant="outline"
                   @click="togglePopover()"
                   :label="__('Add Field')"
@@ -86,9 +86,9 @@
               </div>
             </template>
             <template #item-label="{ option }">
-              <div class="flex flex-col gap-1">
+              <div class="flex flex-col gap-1 text-ink-gray-9">
                 <div>{{ option.label }}</div>
-                <div class="text-gray-500 text-sm">
+                <div class="text-ink-gray-4 text-sm">
                   {{ `${option.fieldname} - ${option.fieldtype}` }}
                 </div>
               </div>
