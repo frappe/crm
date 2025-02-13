@@ -9,7 +9,8 @@ def delete_lead_and_links(name):
 		'CRM Call Log': 'reference_docname',
 		'CRM Task': 'reference_docname',
 		'FCRM Note': 'reference_docname',
-		'File': 'attached_to_name'
+		'File': 'attached_to_name',
+		'Dynamic Link': 'link_name',
 	}
 	for doctype, fieldname in linked_doctypes.items():
 		linked_docs = frappe.get_all(doctype, filters={fieldname: name})
