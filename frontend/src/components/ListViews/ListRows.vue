@@ -2,11 +2,11 @@
   <div class="mx-3 mt-2 h-full overflow-y-auto sm:mx-5" v-if="showGroupedRows">
     <div v-for="group in reactivieRows" :key="group.group">
       <ListGroupHeader :group="group">
-        <div class="my-2 flex items-center gap-2 text-base font-medium text-gray-800">
+        <div class="my-2 flex items-center gap-2 text-base font-medium text-ink-gray-8">
           <div>{{ __(group.label) }} -</div>
           <div class="flex items-center gap-1">
             <component v-if="group.icon" :is="group.icon" />
-            <div v-if="group.group == ' '" class="text-gray-500">
+            <div v-if="group.group == ' '" class="text-ink-gray-4">
               {{ __('Empty') }}
             </div>
             <div v-else>{{ group.group }}</div>

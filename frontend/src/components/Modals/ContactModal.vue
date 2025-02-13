@@ -1,10 +1,10 @@
 <template>
   <Dialog v-model="show" :options="dialogOptions">
     <template #body>
-      <div class="bg-white px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
               {{ __(dialogOptions.title) || __('Untitled') }}
             </h3>
           </div>
@@ -27,7 +27,7 @@
             <div
               v-for="field in detailFields"
               :key="field.name"
-              class="flex h-7 items-center gap-2 text-base text-gray-800"
+              class="flex h-7 items-center gap-2 text-base text-ink-gray-8"
             >
               <div class="grid w-7 place-content-center">
                 <component :is="field.icon" />
@@ -41,13 +41,13 @@
                     <Button
                       variant="ghost"
                       :label="contact.data[field.name]"
-                      class="dropdown-button w-full justify-between truncate hover:bg-white"
+                      class="dropdown-button w-full justify-between truncate hover:bg-surface-white"
                     >
                       <div class="truncate">{{ contact.data[field.name] }}</div>
                       <template #suffix>
                         <FeatherIcon
                           :name="open ? 'chevron-up' : 'chevron-down'"
-                          class="h-4 text-gray-600"
+                          class="h-4 text-ink-gray-5"
                         />
                       </template>
                     </Button>

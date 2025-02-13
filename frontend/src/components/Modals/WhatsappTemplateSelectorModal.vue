@@ -11,7 +11,7 @@
         :placeholder="__('Welcome Message')"
       >
         <template #prefix>
-          <FeatherIcon name="search" class="h-4 w-4 text-gray-500" />
+          <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
         </template>
       </TextInput>
       <div
@@ -21,7 +21,7 @@
         <div
           v-for="template in filteredTemplates"
           :key="template.name"
-          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-gray-100"
+          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
           @click="emit('send', template.name)"
         >
           <div class="border-b pb-2 text-base font-semibold">
@@ -31,14 +31,14 @@
             v-if="template.template"
             :content="template.template"
             :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-gray-600 focus:outline-none"
+            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
             class="flex-1 overflow-hidden"
           />
         </div>
       </div>
       <div v-else class="mt-2">
         <div class="flex h-56 flex-col items-center justify-center">
-          <div class="text-lg text-gray-500">
+          <div class="text-lg text-ink-gray-4">
             {{ __('No templates found') }}
           </div>
           <Button

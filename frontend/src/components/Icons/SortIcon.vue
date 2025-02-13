@@ -1,45 +1,16 @@
 <template>
   <svg
     width="16"
-    height="17"
-    viewBox="0 0 16 17"
+    height="16"
+    viewBox="0 0 16 16"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M1.75 3.75H10.75"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M1.75 7.75H7.75"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M1.75 11.75H5.75"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M14.25 8.25L12.25 6.25L10.25 8.25"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M12.25 12.25L12.25 6.25"
-      stroke="currentColor"
-      stroke-miterlimit="10"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M5.5 3.5C5.5 3.22386 5.27614 3 5 3C4.72386 3 4.5 3.22386 4.5 3.5V11.2931L2.87846 9.67159C2.68319 9.47633 2.36661 9.47633 2.17135 9.67159C1.97609 9.86686 1.97609 10.1834 2.17135 10.3787L4.64622 12.8536C4.75097 12.9583 4.89063 13.0069 5.02774 12.9992C5.15903 12.9921 5.27684 12.9342 5.36195 12.845L7.8282 10.3787C8.02347 10.1834 8.02347 9.86686 7.8282 9.67159C7.63294 9.47633 7.31636 9.47633 7.1211 9.67159L5.5 11.2927V3.5ZM11.3698 3.16295C11.2784 3.06282 11.1468 3 11.0005 3C10.9947 3 10.989 3.0001 10.9832 3.00029C10.8608 3.00432 10.7396 3.05304 10.6462 3.14647L8.17135 5.62134C7.97609 5.8166 7.97609 6.13319 8.17135 6.32845C8.36661 6.52371 8.68319 6.52371 8.87846 6.32845L10.5005 4.70641V12.5C10.5005 12.7761 10.7243 13 11.0005 13C11.2766 13 11.5005 12.7761 11.5005 12.5V4.70784L13.1211 6.32845C13.3164 6.52371 13.6329 6.52371 13.8282 6.32845C14.0235 6.13319 14.0235 5.8166 13.8282 5.62134L11.3698 3.16295Z"
+      fill="currentColor"
     />
   </svg>
 </template>

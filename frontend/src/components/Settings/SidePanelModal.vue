@@ -2,7 +2,7 @@
   <Dialog v-model="show" :options="{ size: '3xl' }">
     <template #body-title>
       <h3
-        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-gray-900"
+        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
         <div>{{ __('Edit Field Layout') }}</div>
         <Badge
@@ -53,7 +53,7 @@
           </div>
           <div
             v-else
-            class="flex flex-1 justify-center items-center text-gray-600 bg-gray-50 rounded border border-gray-50"
+            class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded"
           >
             {{ __('Toggle on for preview') }}
           </div>

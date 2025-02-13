@@ -6,7 +6,7 @@
         ({
           'bg-red-500': priority === 'High',
           'bg-yellow-500': priority === 'Medium',
-          'bg-gray-300': priority === 'Low',
+          'bg-surface-gray-4': priority === 'Low',
         },
         $attrs.class)
       "

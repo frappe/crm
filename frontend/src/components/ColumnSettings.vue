@@ -11,7 +11,7 @@
       </Button>
     </template>
     <template #body="{ close }">
-      <div class="my-2 rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl">
+      <div class="my-2 p-1.5 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
         <div v-if="!edit">
           <Draggable
             :list="columns"
@@ -22,7 +22,7 @@
           >
             <template #item="{ element }">
               <div
-                class="flex cursor-grab items-center justify-between gap-6 rounded px-2 py-1.5 text-base text-gray-800 hover:bg-gray-100"
+                class="flex cursor-grab items-center justify-between gap-6 rounded px-2 py-1.5 text-base text-ink-gray-8 hover:bg-surface-gray-2"
               >
                 <div class="flex items-center gap-2">
                   <DragIcon class="h-3.5" />
@@ -39,11 +39,11 @@
               </div>
             </template>
           </Draggable>
-          <div class="mt-1.5 flex flex-col gap-1 border-t pt-1.5">
+          <div class="mt-1.5 flex flex-col gap-1 border-t border-outline-gray-modals pt-1.5">
             <Autocomplete value="" :options="fields" @change="(e) => addColumn(e)">
               <template #target="{ togglePopover }">
                 <Button
-                  class="w-full !justify-start !text-gray-600"
+                  class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
                   @click="togglePopover()"
                   :label="__('Add Column')"
@@ -56,7 +56,7 @@
             </Autocomplete>
             <Button
               v-if="columnsUpdated"
-              class="w-full !justify-start !text-gray-600"
+              class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
               @click="reset(close)"
               :label="__('Reset Changes')"
@@ -67,7 +67,7 @@
             </Button>
             <Button
               v-if="!is_default"
-              class="w-full !justify-start !text-gray-600"
+              class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
               @click="resetToDefault(close)"
               :label="__('Reset to Default')"
@@ -79,7 +79,7 @@
           </div>
         </div>
         <div v-else>
-          <div class="flex flex-col items-center justify-between gap-2 rounded px-2 py-1.5 text-base text-gray-800">
+          <div class="flex flex-col items-center justify-between gap-2 rounded px-2 py-1.5 text-base text-ink-gray-8">
             <div class="flex flex-col items-center gap-3">
               <FormControl
                 type="text"
@@ -178,15 +178,15 @@ const fields = computed(() => {
   if (!allFields) return []
 
   return allFields.filter((field) => {
-    return !columns.value.find((column) => column.key === field.value)
+    return !columns.value.find((column) => column.key === field.fieldname)
   })
 })
 
 function addColumn(c) {
   let _column = {
     label: c.label,
-    type: c.type,
-    key: c.value,
+    type: c.feildtype,
+    key: c.fieldname,
     width: '10rem',
   }
   columns.value.push(_column)

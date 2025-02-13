@@ -7,7 +7,7 @@
       class="section-field flex items-center gap-2 px-3 leading-5 first:mt-3"
     >
       <Tooltip :text="__(field.label)" :hoverDelay="1">
-        <div class="w-[35%] min-w-20 shrink-0 truncate text-sm text-gray-600">
+        <div class="w-[35%] min-w-20 shrink-0 truncate text-sm text-ink-gray-5">
           <span>{{ __(field.label) }}</span>
           <span class="text-red-500">{{ field.reqd ? ' *' : '' }}</span>
         </div>
@@ -16,7 +16,7 @@
         <div class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base">
           <div
             v-if="field.read_only && !['checkbox', 'dropdown'].includes(field.type)"
-            class="flex h-7 cursor-pointer items-center px-2 py-1 text-gray-600"
+            class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
           >
             <Tooltip :text="__(field.tooltip)">
               <div>{{ data[field.name] }}</div>
@@ -27,21 +27,21 @@
               <template #target="{ open }">
                 <Button
                   :label="data[field.name]"
-                  class="dropdown-button flex w-full items-center justify-between rounded border border-gray-100 bg-gray-100 px-2 py-1.5 text-base text-gray-800 placeholder-gray-500 transition-colors hover:border-gray-200 hover:bg-gray-200 focus:border-gray-500 focus:bg-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400"
+                  class="dropdown-button flex w-full items-center justify-between rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-gray-500 transition-colors hover:border-gray-200 hover:bg-surface-gray-3 focus:border-gray-500 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-gray-400"
                 >
                   <div v-if="data[field.name]" class="truncate">
                     {{ data[field.name] }}
                   </div>
-                  <div v-else class="text-base leading-5 text-gray-500 truncate">
+                  <div v-else class="text-base leading-5 text-ink-gray-4 truncate">
                     {{ field.placeholder }}
                   </div>
                   <template #suffix>
-                    <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4 text-gray-600" />
+                    <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4 text-ink-gray-5" />
                   </template>
                 </Button>
               </template>
               <template #body>
-                <div class="my-2 space-y-1.5 divide-y rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl">
+                <div class="my-2 p-1.5 min-w-40 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div>
                     <DropdownItem
                       v-if="field.options?.length"
@@ -50,7 +50,7 @@
                       :option="option"
                     />
                     <div v-else>
-                      <div class="p-1.5 px-7 text-base text-gray-500">
+                      <div class="p-1.5 px-7 text-base text-ink-gray-4">
                         {{ __('No {0} Available', [field.label]) }}
                       </div>
                     </div>
@@ -83,7 +83,7 @@
             v-else-if="['email', 'number', 'date', 'password', 'textarea'].includes(field.type)"
             class="form-control"
             :class="{
-              '[&_input]:text-gray-500': field.type === 'date' && !data[field.name],
+              '[&_input]:text-ink-gray-4': field.type === 'date' && !data[field.name],
             }"
             :type="field.type"
             :value="data[field.name]"
@@ -144,16 +144,18 @@
             @change.stop="emit('update', field.name, $event.target.value)"
           />
         </div>
-        <ArrowUpRightIcon
-          v-if="field.type === 'link' && field.link && data[field.name]"
-          class="h-4 w-4 shrink-0 cursor-pointer text-gray-600 hover:text-gray-800"
-          @click="field.link(data[field.name])"
-        />
-        <EditIcon
-          v-if="field.type === 'link' && field.edit && data[field.name]"
-          class="size-3.5 shrink-0 cursor-pointer text-gray-600 hover:text-gray-800"
-          @click="field.edit(data[field.name])"
-        />
+        <div class="ml-1">
+          <ArrowUpRightIcon
+            v-if="field.type === 'link' && field.link && data[field.name]"
+            class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+            @click.stop="field.link(data[field.name])"
+          />
+          <EditIcon
+            v-if="field.type === 'link' && field.edit && data[field.name]"
+            class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+            @click.stop="field.edit(data[field.name])"
+          />
+        </div>
       </div>
     </div>
   </FadedScrollableDiv>
@@ -240,7 +242,7 @@ function evaluate(code, context = {}) {
 :deep(.form-control button),
 .dropdown-button {
   border-color: transparent;
-  background: white;
+  background: transparent;
 }
 
 :deep(.form-control button) {

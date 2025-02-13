@@ -19,7 +19,7 @@
     <template #top>
       <div class="flex flex-col gap-3">
         <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
-          <span class="text-xs text-gray-500">{{ __('TO') }}:</span>
+          <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
           <MultiselectInput
             class="flex-1"
             v-model="toEmails"
@@ -34,7 +34,9 @@
               variant="ghost"
               @click="toggleCC()"
               :class="[
-                cc ? '!bg-gray-300 hover:bg-gray-200' : '!text-gray-500',
+                cc
+                  ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
+                  : '!text-ink-gray-4',
               ]"
             />
             <Button
@@ -42,13 +44,15 @@
               variant="ghost"
               @click="toggleBCC()"
               :class="[
-                bcc ? '!bg-gray-300 hover:bg-gray-200' : '!text-gray-500',
+                bcc
+                  ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
+                  : '!text-ink-gray-4',
               ]"
             />
           </div>
         </div>
         <div v-if="cc" class="sm:mx-10 mx-4 flex items-center gap-2">
-          <span class="text-xs text-gray-500">{{ __('CC') }}:</span>
+          <span class="text-xs text-ink-gray-4">{{ __('CC') }}:</span>
           <MultiselectInput
             ref="ccInput"
             class="flex-1"
@@ -60,7 +64,7 @@
           />
         </div>
         <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2">
-          <span class="text-xs text-gray-500">{{ __('BCC') }}:</span>
+          <span class="text-xs text-ink-gray-4">{{ __('BCC') }}:</span>
           <MultiselectInput
             ref="bccInput"
             class="flex-1"
@@ -72,9 +76,9 @@
           />
         </div>
         <div class="sm:mx-10 mx-4 flex items-center gap-2 pb-2.5">
-          <span class="text-xs text-gray-500">{{ __('SUBJECT') }}:</span>
-          <TextInput
-            class="flex-1 border-none bg-white hover:bg-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
+          <span class="text-xs text-ink-gray-4">{{ __('SUBJECT') }}:</span>
+          <input
+            class="flex-1 border-none text-ink-gray-9 text-base bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
             v-model="subject"
           />
         </div>

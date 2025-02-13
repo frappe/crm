@@ -2,14 +2,14 @@
   <Dialog v-model="show">
     <template #body-title>
       <div class="flex items-center gap-3">
-        <h3 class="text-2xl font-semibold leading-6 text-gray-900">
+        <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
           {{ __('Call Details') }}
         </h3>
       </div>
     </template>
     <template #body-content>
       <div class="flex flex-col gap-3.5">
-        <div v-for="field in detailFields" :key="field.name" class="flex gap-2 text-base text-gray-800">
+        <div v-for="field in detailFields" :key="field.name" class="flex gap-2 text-base text-ink-gray-8">
           <div class="grid size-7 place-content-center">
             <component :is="field.icon" />
           </div>
@@ -19,7 +19,7 @@
               <div class="ml-1 flex flex-col gap-1">
                 {{ field.value.caller.label }}
               </div>
-              <FeatherIcon name="arrow-right" class="mx-1 h-4 w-4 text-gray-600" />
+              <FeatherIcon name="arrow-right" class="mx-1 h-4 w-4 text-ink-gray-5" />
               <Avatar :image="field.value.receiver.image" :label="field.value.receiver.label" size="sm" />
               <div class="ml-1 flex flex-col gap-1">
                 {{ field.value.receiver.label }}
@@ -32,7 +32,7 @@
               <audio class="audio-control w-full" controls :src="field.value"></audio>
             </div>
             <div
-              class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-gray-700"
+              class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
               v-else-if="field.name == 'note'"
               @click="() => (showNoteModal = true)"
             >
@@ -50,7 +50,7 @@
             </div>
             <div v-if="field.link">
               <ArrowUpRightIcon
-                class="h-4 w-4 shrink-0 cursor-pointer text-gray-600 hover:text-gray-800"
+                class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
                 @click="() => field.link()"
               />
             </div>

@@ -60,7 +60,7 @@
               </Tooltip>
             </div>
             <div v-else-if="column.type === 'Check'">
-              <FormControl type="checkbox" :modelValue="item" :disabled="true" class="text-gray-900" />
+              <FormControl type="checkbox" :modelValue="item" :disabled="true" class="text-ink-gray-9" />
             </div>
             <div v-else-if="column.key === '_liked_by'">
               <Button

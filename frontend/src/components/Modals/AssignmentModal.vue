@@ -40,7 +40,7 @@
         </template>
         <template #item-label="{ option }">
           <Tooltip :text="option.value">
-            <div class="cursor-pointer">
+            <div class="cursor-pointer text-ink-gray-9">
               {{ getUser(option.value).full_name }}
             </div>
           </Tooltip>
@@ -55,7 +55,6 @@
           <Button
             :label="getUser(assignee.name).full_name"
             theme="gray"
-            variant="outline"
           >
             <template #prefix>
               <UserAvatar :user="assignee.name" size="sm" />

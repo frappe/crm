@@ -159,7 +159,7 @@
               type="checkbox"
               :modelValue="item"
               :disabled="true"
-              class="text-gray-900"
+              class="text-ink-gray-9"
             />
           </div>
           <div

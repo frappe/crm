@@ -169,7 +169,7 @@ function uploadViaWebLink() {
       title: __('Error'),
       title: __('Please enter a valid URL'),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
     return
   }

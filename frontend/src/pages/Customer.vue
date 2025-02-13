@@ -70,7 +70,7 @@
                   </div>
                   <div
                     v-if="customer.doc.website"
-                    class="flex items-center gap-1.5 text-base text-gray-800"
+                    class="flex items-center gap-1.5 text-base text-ink-gray-8"
                   >
                     <WebsiteIcon class="size-4" />
                     <span>{{ website(customer.doc.website) }}</span>
@@ -135,11 +135,11 @@
         </div>
       </div>
     </Resizer>
-    <Tabs class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
-      <template #tab="{ tab, selected }">
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+      <template #tab-item="{ tab, selected }">
         <button
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
-          :class="{ 'text-gray-900': selected }"
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-gray-400 hover:text-ink-gray-9"
+          :class="{ 'text-ink-gray-9': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
           {{ __(tab.label) }}
@@ -154,7 +154,7 @@
           </Badge>
         </button>
       </template>
-      <template #default="{ tab }">
+      <template #tab-panel="{ tab }">
         <OpportunitiesListView
           class="mt-4"
           v-if="tab.label === 'Opportunities' && rows.length"
@@ -171,7 +171,7 @@
         />
         <div
           v-if="!rows.length"
-          class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
+          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
@@ -269,7 +269,7 @@ async function updateField(fieldname, value) {
   createToast({
     title: __('Customer updated'),
     icon: 'check',
-    iconClasses: 'text-green-600',
+    iconClasses: 'text-ink-green-3',
   })
 }
 
@@ -354,7 +354,7 @@ async function deleteCustomer() {
               title: __('Error'),
               text: errorMessage,
               icon: 'x',
-              iconClasses: 'text-red-600',
+              iconClasses: 'text-ink-red-4',
             });
           }
         },
@@ -372,7 +372,7 @@ function openWebsite() {
     createToast({
       title: __('Website not found'),
       icon: 'x',
-      iconClasses: 'text-red-600',
+      iconClasses: 'text-ink-red-4',
     })
   else window.open(customer.doc.website, '_blank')
 }
