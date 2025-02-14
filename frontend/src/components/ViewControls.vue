@@ -278,7 +278,7 @@ const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
 function getViewType() {
-  let viewType = route.params.viewType || 'list'
+  let viewType = route.params.viewType || 'kanban'
   let types = {
     list: {
       name: 'list',
@@ -297,8 +297,8 @@ function getViewType() {
     },
   }
 
-  // If viewType is not valid, fallback to list
-  return types[viewType] || types['list']
+  // If viewType is not valid, fallback to kanban
+  return types[viewType] || types['kanban']
 }
 
 const currentView = computed(() => {
@@ -489,7 +489,7 @@ if (allowedViews.includes('list')) {
     icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name })
+      router.push({ name: route.name, params: { viewType: 'list' } })
     },
   })
 }
