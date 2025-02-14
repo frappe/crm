@@ -15,12 +15,13 @@
    "in_list_view": 1,
    "label": "Status",
    "reqd": 1,
+   "translatable": 1,
    "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:55:17.952032",
+ "modified": "2025-02-14 19:36:06.936328",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Communication Status",

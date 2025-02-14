@@ -594,19 +594,19 @@ const viewsDropdownOptions = computed(() => {
 })
 
 const quickFilterList = computed(() => {
-  let filters = [{ name: 'name', label: __('ID') }]
+  let filters = [{ fieldname: 'name', label: __('ID'), fieldtype: 'Data' }]
   if (quickFilters.data) {
     filters.push(...quickFilters.data)
   }
 
   filters.forEach((filter) => {
-    filter['value'] = filter.type == 'Check' ? false : ''
-    if (list.value.params?.filters[filter.name]) {
-      let value = list.value.params.filters[filter.name]
+    filter['value'] = filter.fieldtype == 'Check' ? false : ''
+    if (list.value.params?.filters[filter.fieldname]) {
+      let value = list.value.params.filters[filter.fieldname]
       if (Array.isArray(value)) {
         if (
           (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.type,
+            filter.fieldtype,
           ) &&
             value[0]?.toLowerCase() == 'like') ||
           value[0]?.toLowerCase() != 'like'
@@ -614,7 +614,7 @@ const quickFilterList = computed(() => {
           return
         filter['value'] = value[1]?.replace(/%/g, '')
       } else {
-        filter['value'] = value.replace(/%/g, '')
+        filter['value'] = value
       }
     }
   })
@@ -631,9 +631,9 @@ const quickFilters = createResource({
 
 function applyQuickFilter(filter, value) {
   let filters = { ...list.value.params.filters }
-  let field = filter.name
+  let field = filter.fieldname
   if (value) {
-    if (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.type)) {
+    if (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.fieldtype)) {
       filters[field] = value
     } else {
       filters[field] = ['LIKE', `%${value}%`]
@@ -641,7 +641,7 @@ function applyQuickFilter(filter, value) {
     filter['value'] = value
   } else {
     delete filters[field]
-    filter['value'] = ''
+    filter['value'] = filter.fieldtype === 'Check' ? false : ''
   }
   updateFilter(filters)
 }

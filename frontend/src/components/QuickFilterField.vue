@@ -14,7 +14,11 @@
     :options="filter.options"
     :placeholder="filter.label"
     @change.stop="updateFilter(filter, $event.target.value)"
-  />
+  >
+    <template #item-label="{ option }">
+      {{ option.label || option.value }}
+    </template>
+  </FormControl>
   <Link
     v-else-if="filter.fieldtype === 'Link'"
     :value="filter.value"

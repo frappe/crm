@@ -187,7 +187,7 @@ def get_quick_filters(doctype: str):
 		options = field.options
 		if field.fieldtype == "Select" and options and isinstance(options, str):
 			options = options.split("\n")
-			options = [{"label": option, "value": option} for option in options]
+			options = [{"label": _(option), "value": option} for option in options]
 			if not any([not option.get("value") for option in options]):
 				options.insert(0, {"label": "", "value": ""})
 		quick_filters.append(

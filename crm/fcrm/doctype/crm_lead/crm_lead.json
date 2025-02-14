@@ -149,12 +149,14 @@
   {
    "fieldname": "source",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Source",
    "options": "CRM Lead Source"
   },
   {
    "fieldname": "industry",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Industry",
    "options": "CRM Industry"
   },
@@ -230,6 +232,7 @@
   {
    "fieldname": "sla_status",
    "fieldtype": "Select",
+   "in_standard_filter": 1,
    "label": "SLA Status",
    "options": "\nFirst Response Due\nFailed\nFulfilled",
    "read_only": 1
@@ -271,6 +274,7 @@
   {
    "fieldname": "territory",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Territory",
    "options": "CRM Territory"
   },
@@ -290,7 +294,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-02 22:14:01.991054",
+ "modified": "2025-02-14 19:37:42.133057",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

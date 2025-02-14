@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-02-12 15:36+0000\n"
-"PO-Revision-Date: 2025-02-12 18:36+0300\n"
+"PO-Revision-Date: 2025-02-14 19:41+0300\n"
 "Last-Translator: AlexKuzin <dev@olimpicfresh.ru>\n"
 "Language-Team: shariq@frappe.io\n"
 "Language: ru\n"
@@ -2067,7 +2067,7 @@ msgstr "Поля Канбан"
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 #: frontend/src/components/Kanban/KanbanSettings.vue:11
 msgid "Kanban Settings"
-msgstr "Настройки Kanban"
+msgstr "Настройки"
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
