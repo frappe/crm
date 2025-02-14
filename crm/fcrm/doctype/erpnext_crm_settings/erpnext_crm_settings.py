@@ -160,9 +160,9 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 				"industry": doc.industry,
 				"website": doc.website,
 				"annual_revenue": doc.annual_revenue,
-				"contacts": json.dumps(contacts),
+				"contacts": json.dumps(contacts) if contacts else None,
 				"erpnext_company": erpnext_crm_settings.erpnext_company,
-				"address": address,
+				"address": json.dumps(address) if address else None,
 			},
 		)
 	except Exception:
