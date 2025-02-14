@@ -39,6 +39,10 @@ import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { capture } from '@/telemetry'
 import { FormControl, call, createResource, TextEditor } from 'frappe-ui'
 import { ref, computed, onMounted, h } from 'vue'
+import { translateLeadStatus } from '@/utils/leadStatusTranslations'
+import { translateDealStatus } from '@/utils/dealStatusTranslations'
+import { translateTaskStatus } from '@/utils/taskStatusTranslations'
+import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -69,7 +73,12 @@ const fields = createResource({
     doctype: props.doctype,
   },
   transform: (data) => {
-    return data.filter((f) => f.hidden == 0 && f.read_only == 0)
+    return data
+      .filter((f) => f.hidden == 0 && f.read_only == 0)
+      .map(f => ({
+        ...f,
+        label: __(f.label)
+      }))
   }
 })
 
@@ -93,7 +102,7 @@ const loading = ref(false)
 function updateValues() {
   let fieldVal = newValue.value
   if (field.value.type == 'Check') {
-    fieldVal = fieldVal == 'Yes' ? 1 : 0
+    fieldVal = fieldVal == __('Yes') ? 1 : 0
   }
   loading.value = true
   call(
@@ -124,7 +133,13 @@ function updateValues() {
 function changeField(f) {
   newValue.value = ''
   if (!f) return
-  field.value = f
+  
+  field.value = {
+    label: f.label,
+    type: f.fieldtype,
+    value: f.fieldname,
+    options: f.options || '',
+  }
 }
 
 function updateValue(v) {
@@ -133,34 +148,85 @@ function updateValue(v) {
 }
 
 function getSelectOptions(options) {
+  if (!options) return []
   return options.split('\n')
 }
 
 function getValueComponent(f) {
-  const { type, options } = f
+  const { type, options, value: fieldname } = f
+  
+  // Special handling for status and priority fields
+  const isStatus = fieldname === 'status'
+  const isPriority = fieldname === 'priority'
+
+  if ((isStatus || isPriority) && (type === 'Link' || type === 'Select')) {
+    let _options = []
+    let translateFn = null
+
+    if (props.doctype === 'CRM Deal') {
+      _options = ['Proposal/Quotation', 'Ready to Close', 'Demo/Making', 'Qualification', 'Negotiation', 'Won', 'Lost']
+      translateFn = translateDealStatus
+    } else if (props.doctype === 'CRM Lead') {
+      _options = ['New', 'Working', 'Replied', 'Open', 'Opportunity', 'Interested', 'Quotation', 'Lost', 'Converted', 'Do Not Contact Again']
+      translateFn = translateLeadStatus
+    } else if (props.doctype === 'CRM Task') {
+      if (isStatus) {
+        _options = ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled']
+        translateFn = translateTaskStatus
+      } else if (isPriority) {
+        _options = ['Low', 'Medium', 'High']
+        translateFn = translateTaskPriority
+      }
+    }
+
+    if (_options.length && translateFn) {
+      const translatedOptions = _options.map((o) => ({
+        label: translateFn(o),
+        value: o,
+      }))
+
+      return h(FormControl, {
+        type: 'select',
+        options: translatedOptions,
+        value: newValue.value,
+        onChange: (e) => updateValue(e)
+      })
+    }
+  }
+
   if (typeSelect.includes(type) || typeCheck.includes(type)) {
     const _options = type == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
     return h(FormControl, {
       type: 'select',
       options: _options.map((o) => ({
-        label: o,
+        label: __(o),
         value: o,
       })),
-      modelValue: newValue.value,
+      value: newValue.value,
+      onChange: (e) => updateValue(e)
     })
   } else if (typeLink.includes(type)) {
     if (type == 'Dynamic Link') {
       return h(FormControl, { type: 'text' })
     }
-    return h(Link, { class: 'form-control', doctype: options })
+    return h(Link, { 
+      class: 'form-control', 
+      doctype: options,
+      value: newValue.value,
+      onChange: (v) => updateValue(v)
+    })
   } else if (typeNumber.includes(type)) {
-    return h(FormControl, { type: 'number' })
+    return h(FormControl, { 
+      type: 'number',
+      value: newValue.value,
+      onChange: (e) => updateValue(e)
+    })
   } else if (typeDate.includes(type)) {
     return h('input', {
       type: type === 'Date' ? 'date' : 'datetime-local',
       value: newValue.value,
       class: 'w-full rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3',
-      onInput: (e) => updateValue(e.target.value)
+      onInput: (e) => updateValue(e)
     })
   } else if (typeEditor.includes(type)) {
     return h(TextEditor, {
@@ -169,9 +235,14 @@ function getValueComponent(f) {
         '!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors',
       bubbleMenu: true,
       content: newValue.value,
+      onInput: (v) => updateValue(v)
     })
   } else {
-    return h(FormControl, { type: 'text' })
+    return h(FormControl, { 
+      type: 'text',
+      value: newValue.value,
+      onChange: (e) => updateValue(e)
+    })
   }
 }
 </script>
