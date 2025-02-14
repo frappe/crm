@@ -60,12 +60,12 @@
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
     <FadedScrollableDiv
-      class="flex flex-1 items-center overflow-x-auto -ml-1"
+      class="flex flex-1 items-center overflow-hidden -ml-1"
       orientation="horizontal"
     >
       <div
         v-for="filter in quickFilterList"
-        :key="filter.fieldname"
+        :key="filter.name"
         class="m-1 min-w-36"
       >
         <QuickFilterField
@@ -224,7 +224,6 @@ import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
-import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
@@ -236,7 +235,7 @@ import {
   FeatherIcon,
   usePageMeta,
 } from 'frappe-ui'
-import { computed, ref, onMounted, watch, h, markRaw, nextTick } from 'vue'
+import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
@@ -261,7 +260,6 @@ const props = defineProps({
   },
 })
 
-const { brand } = getSettings()
 const { $dialog } = globalStore()
 const { reload: reloadView, getView } = viewsStore()
 const { isManager } = usersStore()
@@ -322,7 +320,6 @@ usePageMeta(() => {
   return {
     title: label,
     emoji: isEmoji(currentView.value.icon) ? currentView.value.icon : '',
-    icon: brand.favicon,
   }
 })
 
@@ -375,6 +372,13 @@ function getParams() {
   const title_field = _view?.title_field || ''
   const kanban_columns = _view?.kanban_columns || ''
   const kanban_fields = _view?.kanban_fields || ''
+
+  // Clean up filters to prevent undefined keys
+  Object.keys(filters).forEach(key => {
+    if (key === 'undefined' || key === undefined || filters[key] === undefined) {
+      delete filters[key]
+    }
+  })
 
   view.value = {
     name: view_name,
@@ -451,7 +455,6 @@ onMounted(() => useDebounceFn(reload, 100)())
 const isLoading = computed(() => list.value?.loading)
 
 function reload() {
-  if (!list.value?.reload) return
   list.value.params = getParams()
   list.value.reload()
 }
@@ -462,12 +465,7 @@ const export_all = ref(false)
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
-
-  let filters = JSON.stringify({
-    ...props.filters,
-    ...list.value.params.filters,
-  })
-
+  let filters = JSON.stringify(list.value.params.filters)
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
   if (export_all.value) {
@@ -490,11 +488,7 @@ if (allowedViews.includes('list')) {
     icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ 
-        name: route.name, 
-        params: { viewType: 'list' },
-        query: {} 
-      })
+      router.push({ name: route.name })
     },
   })
 }
@@ -505,11 +499,7 @@ if (allowedViews.includes('kanban')) {
     icon: markRaw(KanbanIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ 
-        name: route.name, 
-        params: { viewType: 'kanban' },
-        query: {} 
-      })
+      router.push({ name: route.name, params: { viewType: 'kanban' } })
     },
   })
 }
@@ -520,11 +510,7 @@ if (allowedViews.includes('group_by')) {
     icon: markRaw(GroupByIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ 
-        name: route.name, 
-        params: { viewType: 'group_by' },
-        query: {} 
-      })
+      router.push({ name: route.name, params: { viewType: 'group_by' } })
     },
   })
 }
@@ -607,29 +593,27 @@ const viewsDropdownOptions = computed(() => {
 })
 
 const quickFilterList = computed(() => {
-  let filters = [{ fieldname: 'name', fieldtype: 'Data', label: __('ID') }]
+  let filters = [{ name: 'name', label: __('ID') }]
   if (quickFilters.data) {
     filters.push(...quickFilters.data)
   }
 
   filters.forEach((filter) => {
-    filter['value'] = filter.fieldtype == 'Check' ? false : ''
-    if (list.value.params?.filters[filter.fieldname]) {
-      let value = list.value.params.filters[filter.fieldname]
+    filter['value'] = filter.type == 'Check' ? false : ''
+    if (list.value.params?.filters[filter.name]) {
+      let value = list.value.params.filters[filter.name]
       if (Array.isArray(value)) {
         if (
           (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.fieldtype,
+            filter.type,
           ) &&
             value[0]?.toLowerCase() == 'like') ||
           value[0]?.toLowerCase() != 'like'
         )
           return
         filter['value'] = value[1]?.replace(/%/g, '')
-      } else if (typeof value == 'boolean') {
-        filter['value'] = value
       } else {
-        filter['value'] = value?.replace(/%/g, '')
+        filter['value'] = value.replace(/%/g, '')
       }
     }
   })
@@ -646,11 +630,9 @@ const quickFilters = createResource({
 
 function applyQuickFilter(filter, value) {
   let filters = { ...list.value.params.filters }
-  let field = filter.fieldname
+  let field = filter.name
   if (value) {
-    if (
-      ['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.fieldtype)
-    ) {
+    if (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.type)) {
       filters[field] = value
     } else {
       filters[field] = ['LIKE', `%${value}%`]
@@ -664,13 +646,22 @@ function applyQuickFilter(filter, value) {
 }
 
 function updateFilter(filters) {
+  // Clean up filters to prevent undefined keys
+  if (filters) {
+    Object.keys(filters).forEach(key => {
+      if (key === 'undefined' || key === undefined || filters[key] === undefined) {
+        delete filters[key]
+      }
+    })
+  }
+
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
   list.value.params = defaultParams.value
-  list.value.params.filters = filters
-  view.value.filters = filters
+  list.value.params.filters = filters || {}
+  view.value.filters = filters || {}
   list.value.reload()
 
   if (!route.query.view) {
@@ -714,6 +705,15 @@ function updateColumns(obj) {
       columns: list.value.data.columns,
       rows: list.value.data.rows,
       isDefault: false,
+    }
+  }
+
+  // Проверяем, есть ли реальные изменения
+  if (!obj.reset && !obj.isDefault) {
+    const currentColumns = JSON.stringify(defaultParams.value?.columns || '')
+    const newColumns = JSON.stringify(obj.columns)
+    if (currentColumns === newColumns) {
+      return // Нет изменений, выходим
     }
   }
 
@@ -1063,41 +1063,62 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
   let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type) || idx === 0) return
   if (idx === 1 && firstColumn.key == '_liked_by') return
+  if (!column?.key) return // Prevent undefined column keys
 
   event.stopPropagation()
   event.preventDefault()
 
-  let filters = { ...list.value.params.filters }
+  let filters = { ...list.value.params?.filters } || {}
+  let value = item?.name || item?.label || item?.value || item || ''
 
-  let value = item.name || item.label || item
-
-  if (value) {
-    filters[column.key] = value
+  // Handle special cases
+  if (column.key === '_assign') {
+    if (Array.isArray(item) && item.length > 1) {
+      let target = event.target.closest('.user-avatar')
+      if (target) {
+        let name = target.getAttribute('data-name')
+        if (name) {
+          filters['_assign'] = ['LIKE', `%${name}%`]
+        }
+      }
+    } else if (Array.isArray(item) && item.length === 1 && item[0]?.name) {
+      filters['_assign'] = ['LIKE', `%${item[0].name}%`]
+    }
+  } else if (value) {
+    if (column.type === 'Link' || column.type === 'Select') {
+      filters[column.key] = value
+    } else {
+      filters[column.key] = ['LIKE', `%${value}%`]
+    }
   } else {
     delete filters[column.key]
   }
 
-  if (column.key == '_assign') {
-    if (item.length > 1) {
-      let target = event.target.closest('.user-avatar')
-      if (target) {
-        let name = target.getAttribute('data-name')
-        filters['_assign'] = ['LIKE', `%${name}%`]
-      }
-    } else {
-      filters['_assign'] = ['LIKE', `%${item[0].name}%`]
+  // Clean up filters
+  Object.keys(filters).forEach(key => {
+    if (key === 'undefined' || key === undefined || filters[key] === undefined) {
+      delete filters[key]
     }
-  }
+  })
+
   updateFilter(filters)
 }
 
 function applyLikeFilter() {
-  let filters = { ...list.value.params.filters }
+  let filters = { ...list.value.params?.filters } || {}
   if (!filters._liked_by) {
     filters['_liked_by'] = ['LIKE', '%@me%']
   } else {
     delete filters['_liked_by']
   }
+
+  // Clean up filters
+  Object.keys(filters).forEach(key => {
+    if (key === 'undefined' || key === undefined || filters[key] === undefined) {
+      delete filters[key]
+    }
+  })
+
   updateFilter(filters)
 }
 
@@ -1121,85 +1142,18 @@ defineExpose({
   currentView,
 })
 
+// Watchers
 watch(
-  [
-    () => route.query.view,
-    () => route.params.viewType,
-    () => props.doctype
-  ],
-  async ([newView, newViewType, newDoctype], [prevView, prevViewType, prevDoctype]) => {
-    // Skip if nothing changed
-    if (newView === prevView && newViewType === prevViewType && newDoctype === prevDoctype) {
-      return
-    }
-
-    // Skip if list is not initialized yet
-    if (!list.value?.reload) {
-      return
-    }
-
-    // Reset view updated state
-    viewUpdated.value = false
-
-    // Get current view details
-    const currentView = getView(newView, newViewType, newDoctype)
-    
-    // Update view type first
-    if (newViewType !== view.value.type) {
-      view.value.type = newViewType || 'list'
-    }
-
-    // Initialize default parameters if needed
-    if (!defaultParams.value) {
-      defaultParams.value = getParams()
-    }
-
-    // Update view state
-    view.value = {
-      ...view.value,
-      name: currentView?.name || '',
-      label: currentView?.label || getViewType().label,
-      filters: currentView?.filters ? JSON.parse(currentView.filters) : {},
-      order_by: currentView?.order_by || 'modified desc',
-      group_by_field: currentView?.group_by_field || 'owner',
-      column_field: currentView?.column_field || 'status',
-      title_field: currentView?.title_field || '',
-      kanban_columns: currentView?.kanban_columns || '',
-      kanban_fields: currentView?.kanban_fields || '',
-      columns: currentView?.columns || '',
-      rows: currentView?.rows || '',
-      route_name: route.name,
-      load_default_columns: currentView?.load_default_columns ?? true
-    }
-
-    // Ensure params are updated
-    list.value.params = getParams()
-    
-    try {
-      // Reload data with updated state
-      await reload()
-
-      // Force a re-render if needed
-      nextTick(() => {
-        if (list.value?.data) {
-          list.value.data = { ...list.value.data }
-        }
-      })
-    } catch (error) {
-      console.error('Error reloading view:', error)
-    }
+  () => getView(route.query.view, route.params.viewType, props.doctype),
+  (value, old_value) => {
+    if (_.isEqual(value, old_value)) return
+    reload()
   },
-  { deep: true }
+  { deep: true },
 )
 
-// Add a separate watcher for initial setup
-watch(
-  () => list.value?.reload,
-  (hasReload) => {
-    if (hasReload) {
-      reload()
-    }
-  },
-  { immediate: true }
-)
+watch([() => route, () => route.params.viewType], (value, old_value) => {
+  if (value[0] === old_value[0] && value[1] === value[0]) return
+  reload()
+})
 </script>
