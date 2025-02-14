@@ -299,6 +299,7 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
+import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
@@ -458,6 +459,12 @@ const displayName = computed(() => {
   }
   
   return __('Untitled')
+})
+
+const primaryContactMobileNo = computed(() => {
+  if (!dealContacts.data) return null
+  const primaryContact = dealContacts.data.find(c => c.is_primary)
+  return primaryContact?.mobile_no || null
 })
 
 const breadcrumbs = computed(() => {

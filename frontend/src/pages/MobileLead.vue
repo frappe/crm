@@ -222,6 +222,7 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import AvitoIcon from '@/components/Icons/AvitoIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -570,5 +571,20 @@ function trackPhoneActivities(type = 'phone') {
     activities: activities.value,
     contactName: lead.data.lead_name,
   })
+}
+
+function errorMessage(message) {
+  createToast({
+    title: message,
+    icon: 'x',
+    iconClasses: 'text-ink-red-4',
+  })
+}
+
+function openWebsite(url) {
+  if (!url.startsWith('http')) {
+    url = 'https://' + url
+  }
+  window.open(url, '_blank')
 }
 </script>

@@ -1,46 +1,48 @@
 <template>
-  <TwilioCallUI ref="twilio" />
-  <ExotelCallUI ref="exotel" />
-  <Dialog
-    v-model="show"
-    :options="{
-      title: __('Make call'),
-      actions: [
-        {
-          label: __('Call using {0}', [callMedium]),
-          variant: 'solid',
-          onClick: makeCallUsing,
-        },
-      ],
-    }"
-  >
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <FormControl
-          type="text"
-          v-model="mobileNumber"
-          :label="__('Mobile Number')"
-        />
-        <FormControl
-          type="select"
-          v-model="callMedium"
-          :label="__('Calling Medium')"
-          :options="['Twilio', 'Exotel']"
-        />
-        <div class="flex flex-col gap-1">
+  <div :class="$attrs.class">
+    <TwilioCallUI ref="twilio" />
+    <ExotelCallUI ref="exotel" />
+    <Dialog
+      v-model="show"
+      :options="{
+        title: __('Make call'),
+        actions: [
+          {
+            label: __('Call using {0}', [callMedium]),
+            variant: 'solid',
+            onClick: makeCallUsing,
+          },
+        ],
+      }"
+    >
+      <template #body-content>
+        <div class="flex flex-col gap-4">
           <FormControl
-            type="checkbox"
-            v-model="isDefaultMedium"
-            :label="__('Make {0} as default calling medium', [callMedium])"
+            type="text"
+            v-model="mobileNumber"
+            :label="__('Mobile Number')"
           />
+          <FormControl
+            type="select"
+            v-model="callMedium"
+            :label="__('Calling Medium')"
+            :options="['Twilio', 'Exotel']"
+          />
+          <div class="flex flex-col gap-1">
+            <FormControl
+              type="checkbox"
+              v-model="isDefaultMedium"
+              :label="__('Make {0} as default calling medium', [callMedium])"
+            />
 
-          <div v-if="isDefaultMedium" class="text-sm text-ink-gray-4">
-            {{ __('You can change the default calling medium from the settings') }}
+            <div v-if="isDefaultMedium" class="text-sm text-ink-gray-4">
+              {{ __('You can change the default calling medium from the settings') }}
+            </div>
           </div>
         </div>
-      </div>
-    </template>
-  </Dialog>
+      </template>
+    </Dialog>
+  </div>
 </template>
 <script setup>
 import TwilioCallUI from '@/components/Telephony/TwilioCallUI.vue'
@@ -137,4 +139,8 @@ watch(
     }),
   { immediate: true },
 )
+
+defineOptions({
+  inheritAttrs: false
+})
 </script>
