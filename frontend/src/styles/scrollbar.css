@@ -41,8 +41,28 @@
 }
 
 /* Dark mode specific styles */
-[data-theme="dark"] .dark-scrollbar {
+[data-theme="dark"] .dark-scrollbar,
+[data-theme="dark"] iframe {
   scrollbar-color: rgba(64, 64, 77, 0.5) transparent;
+}
+
+/* Webkit scrollbar styling for iframes in dark mode */
+[data-theme="dark"] iframe::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="dark"] iframe::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-theme="dark"] iframe::-webkit-scrollbar-thumb {
+  background-color: rgba(64, 64, 77, 0.5);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] iframe::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(64, 64, 77, 0.7);
 }
 
 /* Only show scrollbars when content overflows in that direction */
