@@ -211,7 +211,10 @@ const fields = computed(() => {
 
   return allFields.filter((field) => {
     return !columns.value.find((column) => column.key === field.fieldname)
-  })
+  }).map(field => ({
+    ...field,
+    label: __(field.label)
+  }))
 })
 
 function addColumn(c) {

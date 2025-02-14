@@ -236,7 +236,7 @@ import {
   FeatherIcon,
   usePageMeta,
 } from 'frappe-ui'
-import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
+import { computed, ref, onMounted, watch, h, markRaw, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
@@ -451,6 +451,7 @@ onMounted(() => useDebounceFn(reload, 100)())
 const isLoading = computed(() => list.value?.loading)
 
 function reload() {
+  if (!list.value?.reload) return
   list.value.params = getParams()
   list.value.reload()
 }
@@ -489,7 +490,11 @@ if (allowedViews.includes('list')) {
     icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name })
+      router.push({ 
+        name: route.name, 
+        params: { viewType: 'list' },
+        query: {} 
+      })
     },
   })
 }
@@ -500,7 +505,11 @@ if (allowedViews.includes('kanban')) {
     icon: markRaw(KanbanIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name, params: { viewType: 'kanban' } })
+      router.push({ 
+        name: route.name, 
+        params: { viewType: 'kanban' },
+        query: {} 
+      })
     },
   })
 }
@@ -511,7 +520,11 @@ if (allowedViews.includes('group_by')) {
     icon: markRaw(GroupByIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name, params: { viewType: 'group_by' } })
+      router.push({ 
+        name: route.name, 
+        params: { viewType: 'group_by' },
+        query: {} 
+      })
     },
   })
 }
@@ -1108,18 +1121,85 @@ defineExpose({
   currentView,
 })
 
-// Watchers
 watch(
-  () => getView(route.query.view, route.params.viewType, props.doctype),
-  (value, old_value) => {
-    if (_.isEqual(value, old_value)) return
-    reload()
+  [
+    () => route.query.view,
+    () => route.params.viewType,
+    () => props.doctype
+  ],
+  async ([newView, newViewType, newDoctype], [prevView, prevViewType, prevDoctype]) => {
+    // Skip if nothing changed
+    if (newView === prevView && newViewType === prevViewType && newDoctype === prevDoctype) {
+      return
+    }
+
+    // Skip if list is not initialized yet
+    if (!list.value?.reload) {
+      return
+    }
+
+    // Reset view updated state
+    viewUpdated.value = false
+
+    // Get current view details
+    const currentView = getView(newView, newViewType, newDoctype)
+    
+    // Update view type first
+    if (newViewType !== view.value.type) {
+      view.value.type = newViewType || 'list'
+    }
+
+    // Initialize default parameters if needed
+    if (!defaultParams.value) {
+      defaultParams.value = getParams()
+    }
+
+    // Update view state
+    view.value = {
+      ...view.value,
+      name: currentView?.name || '',
+      label: currentView?.label || getViewType().label,
+      filters: currentView?.filters ? JSON.parse(currentView.filters) : {},
+      order_by: currentView?.order_by || 'modified desc',
+      group_by_field: currentView?.group_by_field || 'owner',
+      column_field: currentView?.column_field || 'status',
+      title_field: currentView?.title_field || '',
+      kanban_columns: currentView?.kanban_columns || '',
+      kanban_fields: currentView?.kanban_fields || '',
+      columns: currentView?.columns || '',
+      rows: currentView?.rows || '',
+      route_name: route.name,
+      load_default_columns: currentView?.load_default_columns ?? true
+    }
+
+    // Ensure params are updated
+    list.value.params = getParams()
+    
+    try {
+      // Reload data with updated state
+      await reload()
+
+      // Force a re-render if needed
+      nextTick(() => {
+        if (list.value?.data) {
+          list.value.data = { ...list.value.data }
+        }
+      })
+    } catch (error) {
+      console.error('Error reloading view:', error)
+    }
   },
-  { deep: true },
+  { deep: true }
 )
 
-watch([() => route, () => route.params.viewType], (value, old_value) => {
-  if (value[0] === old_value[0] && value[1] === value[0]) return
-  reload()
-})
+// Add a separate watcher for initial setup
+watch(
+  () => list.value?.reload,
+  (hasReload) => {
+    if (hasReload) {
+      reload()
+    }
+  },
+  { immediate: true }
+)
 </script>

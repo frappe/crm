@@ -142,7 +142,7 @@
                       >
                         <div class="flex items-center gap-2 truncate">
                           <DragVerticalIcon class="h-3.5 cursor-grab" />
-                          <div class="truncate">{{ field.label }}</div>
+                          <div class="truncate">{{ __(field.label) }}</div>
                         </div>
                         <Button
                           variant="ghost"
@@ -180,7 +180,7 @@
                     </template>
                     <template #item-label="{ option }">
                       <div class="flex flex-col gap-1 text-ink-gray-9">
-                        <div>{{ option.label }}</div>
+                        <div>{{ __(option.label) }}</div>
                         <div class="text-ink-gray-4 text-sm">
                           {{ `${option.fieldname} - ${option.fieldtype}` }}
                         </div>
@@ -280,12 +280,17 @@ const fields = createResource({
       }
     }
 
-    return data.filter((field) => {
-      return (
-        !existingFields.find((f) => f.fieldname === field.fieldname) &&
-        !restrictedFields.includes(field.fieldname)
-      )
-    })
+    return data
+      .filter((field) => {
+        return (
+          !existingFields.find((f) => f.fieldname === field.fieldname) &&
+          !restrictedFields.includes(field.fieldname)
+        )
+      })
+      .map(field => ({
+        ...field,
+        label: field.label
+      }))
   },
 })
 

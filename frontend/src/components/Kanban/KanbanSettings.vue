@@ -24,7 +24,7 @@
             <Button
               class="w-full !justify-start"
               @click="togglePopover()"
-              :label="columnField.label"
+              :label="__(columnField.label)"
             />
           </template>
         </Autocomplete>
@@ -41,7 +41,7 @@
             <Button
               class="w-full !justify-start"
               @click="togglePopover()"
-              :label="titleField.label"
+              :label="__(titleField.label)"
             />
           </template>
         </Autocomplete>
@@ -63,7 +63,7 @@
             >
               <div class="flex items-center gap-2">
                 <DragVerticalIcon class="h-3.5 cursor-grab" />
-                <div>{{ field.label }}</div>
+                <div>{{ __(field.label) }}</div>
               </div>
               <div>
                 <Button variant="ghost" icon="x" @click="removeField(field)" />
@@ -90,7 +90,7 @@
           </template>
           <template #item-label="{ option }">
             <div class="flex flex-col gap-1 text-ink-gray-9">
-              <div>{{ option.label }}</div>
+              <div>{{ __(option.label) }}</div>
               <div class="text-ink-gray-4 text-sm">
                 {{ `${option.fieldname} - ${option.fieldtype}` }}
               </div>

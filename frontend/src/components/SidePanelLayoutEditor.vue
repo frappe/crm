@@ -66,7 +66,7 @@
                 >
                   <div class="flex items-center gap-2">
                     <DragVerticalIcon class="h-3.5 cursor-grab" />
-                    <div>{{ field.label }}</div>
+                    <div>{{ __(field.label) }}</div>
                   </div>
                   <Button
                     variant="ghost"
@@ -102,7 +102,7 @@
               </template>
               <template #item-label="{ option }">
                 <div class="flex flex-col gap-1 text-ink-gray-9">
-                  <div>{{ option.label }}</div>
+                  <div>{{ __(option.label) }}</div>
                   <div class="text-ink-gray-4 text-sm">
                     {{ `${option.fieldname} - ${option.fieldtype}` }}
                   </div>
@@ -178,11 +178,31 @@ const fields = createResource({
   params: params.value,
   cache: ['fieldsMeta', props.doctype],
   auto: true,
+  transform: (data) => {
+    let existingFields = []
+    for (let section of props.sections) {
+      if (section.columns?.[0]?.fields) {
+        existingFields = existingFields.concat(section.columns[0].fields)
+      }
+    }
+
+    return data
+      .filter((field) => {
+        return !existingFields.find((f) => f.fieldname === field.fieldname)
+      })
+      .map(field => ({
+        ...field,
+        label: __(field.label)
+      }))
+  },
 })
 
 function addField(section, field) {
   if (!field) return
-  section.columns[0].fields.push(field)
+  section.columns[0].fields.push({
+    ...field,
+    label: __(field.label)
+  })
 }
 
 watch(
