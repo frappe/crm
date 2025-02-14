@@ -123,6 +123,16 @@ const links = [
     to: 'Deals',
   },
   {
+    label: 'Notes',
+    icon: NoteIcon,
+    to: 'Notes',
+  },
+  {
+    label: 'Tasks',
+    icon: TaskIcon,
+    to: 'Tasks',
+  },
+  {
     label: 'Contacts',
     icon: ContactsIcon,
     to: 'Contacts',
@@ -133,25 +143,15 @@ const links = [
     to: 'Organizations',
   },
   {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
+    label: 'Email Templates',
+    icon: Email2Icon,
+    to: 'Email Templates',
   },
   ...(callEnabled.value ? [{
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
   }] : []),
-  {
-    label: 'Email Templates',
-    icon: Email2Icon,
-    to: 'Email Templates',
-  },
 ]
 
 const allViews = computed(() => {
