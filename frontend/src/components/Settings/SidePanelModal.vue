@@ -1,16 +1,9 @@
 <template>
   <Dialog v-model="show" :options="{ size: '3xl' }">
     <template #body-title>
-      <h3
-        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
-      >
+      <h3 class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9">
         <div>{{ __('Edit Field Layout') }}</div>
-        <Badge
-          v-if="dirty"
-          :label="__('Not Saved')"
-          variant="subtle"
-          theme="orange"
-        />
+        <Badge v-if="dirty" :label="__('Not Saved')" variant="subtle" theme="orange" />
       </h3>
     </template>
     <template #body-content>
@@ -20,21 +13,13 @@
             type="select"
             class="w-1/4"
             v-model="_doctype"
-            :options="['Lead', 'Opportunity', 'Contact', 'Customer']"
+            :options="['Lead', 'Opportunity', 'Prospect', 'Contact', 'Customer']"
             @change="reload"
           />
-          <Switch
-            v-model="preview"
-            :label="preview ? __('Hide preview') : __('Show preview')"
-            size="sm"
-          />
+          <Switch v-model="preview" :label="preview ? __('Hide preview') : __('Show preview')" size="sm" />
         </div>
         <div v-if="sections.data" class="flex gap-4">
-          <SidePanelLayoutBuilder
-            class="flex flex-1 flex-col pr-2"
-            :sections="sections.data"
-            :doctype="_doctype"
-          />
+          <SidePanelLayoutBuilder class="flex flex-1 flex-col pr-2" :sections="sections.data" :doctype="_doctype" />
           <div v-if="preview" class="flex flex-1 flex-col border rounded">
             <div
               v-for="(section, i) in sections.data"
@@ -43,18 +28,11 @@
               :class="{ 'border-b': i !== sections.data?.length - 1 }"
             >
               <Section :is-opened="section.opened" :label="section.label">
-                <SectionFields
-                  :fields="section.fields"
-                  :isLastSection="i == section.data?.length - 1"
-                  v-model="data"
-                />
+                <SectionFields :fields="section.fields" :isLastSection="i == section.data?.length - 1" v-model="data" />
               </Section>
             </div>
           </div>
-          <div
-            v-else
-            class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded"
-          >
+          <div v-else class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded">
             {{ __('Toggle on for preview') }}
           </div>
         </div>
@@ -62,12 +40,7 @@
     </template>
     <template #actions>
       <div class="flex flex-row-reverse gap-2">
-        <Button
-          :loading="loading"
-          :label="__('Save')"
-          variant="solid"
-          @click="saveChanges"
-        />
+        <Button :loading="loading" :label="__('Save')" variant="solid" @click="saveChanges" />
         <Button :label="__('Reset')" @click="reload" />
       </div>
     </template>
@@ -114,8 +87,7 @@ const sections = createResource({
 watch(
   () => sections?.data,
   () => {
-    dirty.value =
-      JSON.stringify(sections?.data) !== JSON.stringify(sections?.originalData)
+    dirty.value = JSON.stringify(sections?.data) !== JSON.stringify(sections?.originalData)
   },
   { deep: true },
 )
@@ -133,19 +105,14 @@ function saveChanges() {
   let _sections = JSON.parse(JSON.stringify(sections.data))
   _sections.forEach((section) => {
     if (!section.fields) return
-    section.fields = section.fields
-      .map((field) => field.fieldname || field.name)
-      .filter(Boolean)
+    section.fields = section.fields.map((field) => field.fieldname || field.name).filter(Boolean)
   })
   loading.value = true
-  call(
-    'next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout',
-    {
-      doctype: _doctype.value,
-      type: 'Side Panel',
-      layout: JSON.stringify(_sections),
-    },
-  ).then(() => {
+  call('next_crm.ncrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout', {
+    doctype: _doctype.value,
+    type: 'Side Panel',
+    layout: JSON.stringify(_sections),
+  }).then(() => {
     loading.value = false
     show.value = false
     capture('side_panel_layout_builder', { doctype: _doctype.value })

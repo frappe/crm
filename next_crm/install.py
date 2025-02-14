@@ -137,6 +137,10 @@ def add_default_fields_layout(force=False):
             "doctype": "Opportunity",
             "layout": '[{"label": "Select Customer", "fields": ["customer"], "hideLabel": true, "editable": true}, {"label": "Customer Details", "fields": ["customer_name", "website", "no_of_employees", "territory", "opportunity_amount", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact_person"], "hideLabel": true, "editable": true}, {"label": "Contact Details", "fields": ["salutation", "first_name", "last_name", "contact_email", "contact_mobile", "gender"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 3, "fields": ["status", "opportunity_owner", "lead"], "hideLabel": true}]',
         },
+        "Prospect-Quick Entry": {
+            "doctype": "Prospect",
+            "layout": '[{"label":"Company Name & Territory","columns":2,"fields":["company_name", "territory"],"hideLabel":true},{"label":"No. of Employees and Annual Revenue","columns":2,"hideBorder":true,"fields":["no_of_employees", "annual_revenue"],"hideLabel":true},{"label":"Industry","columns":2,"hideBorder":true,"fields":["industry", "website"],"hideLabel":true}]',
+        },
         "Contact-Quick Entry": {
             "doctype": "Contact",
             "layout": '[{"label":"Salutation","columns":1,"fields":["salutation"],"hideLabel":true},{"label":"Full Name","columns":2,"hideBorder":true,"fields":["first_name","last_name"],"hideLabel":true},{"label":"Email","columns":1,"hideBorder":true,"fields":["email_id"],"hideLabel":true},{"label":"Mobile No. & Gender","columns":2,"hideBorder":true,"fields":["mobile_no","gender"],"hideLabel":true},{"label":"Customer","columns":1,"hideBorder":true,"fields":["company_name"],"hideLabel":true},{"label":"Designation","columns":1,"hideBorder":true,"fields":["designation"],"hideLabel":true},{"label":"Address","columns":1,"hideBorder":true,"fields":["address"],"hideLabel":true}]',
@@ -159,6 +163,10 @@ def add_default_fields_layout(force=False):
         "Opportunity-Side Panel": {
             "doctype": "Opportunity",
             "layout": '[{"label":"Contacts","name":"contacts_section","opened":true,"editable":false,"contacts":[]},{"label":"Customer Details","name":"customer_tab","opened":true,"fields":["customer","website","territory","opportunity_amount","transaction_date","probability","opportunity_owner"]}]',
+        },
+        "Prospect-Side Panel": {
+            "doctype": "Prospect",
+            "layout": '[{"label":"Details","name":"details","opened":true,"fields":["company_name","no_of_employees","company","annual_revenue","website","market_segment","industry","territory","fax"]}]',
         },
         "Contact-Side Panel": {
             "doctype": "Contact",

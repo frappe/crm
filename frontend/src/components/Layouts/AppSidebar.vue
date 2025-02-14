@@ -30,24 +30,13 @@
         </SidebarLink>
       </div>
       <div v-for="view in allViews" :key="view.label">
-        <div
-          v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length"
-          class="mx-2 my-2 h-1 border-b"
-        />
-        <Section
-          :label="view.name"
-          :hideLabel="view.hideLabel"
-          :isOpened="view.opened"
-        >
+        <div v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length" class="mx-2 my-2 h-1 border-b" />
+        <Section :label="view.name" :hideLabel="view.hideLabel" :isOpened="view.opened">
           <template #header="{ opened, hide, toggle }">
             <div
               v-if="!hide"
               class="flex cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out"
-              :class="
-                isSidebarCollapsed
-                  ? 'ml-0 h-0 overflow-hidden opacity-0'
-                  : 'ml-2 mt-4 h-7 w-auto opacity-100'
-              "
+              :class="isSidebarCollapsed ? 'ml-0 h-0 overflow-hidden opacity-0' : 'ml-2 mt-4 h-7 w-auto opacity-100'"
               @click="toggle()"
             >
               <FeatherIcon
@@ -104,15 +93,13 @@ import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import ProspectsIcon from '@/components/Icons/ProspectsIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import { viewsStore } from '@/stores/views'
-import {
-  unreadNotificationsCount,
-  notificationsStore,
-} from '@/stores/notifications'
+import { unreadNotificationsCount, notificationsStore } from '@/stores/notifications'
 import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
@@ -132,6 +119,11 @@ const links = [
     label: 'Opportunities',
     icon: OpportunitiesIcon,
     to: 'Opportunities',
+  },
+  {
+    label: 'Prospects',
+    icon: ProspectsIcon,
+    to: 'Prospects',
   },
   {
     label: 'Contacts',
