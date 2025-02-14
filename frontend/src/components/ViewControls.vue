@@ -278,7 +278,7 @@ const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
 function getViewType() {
-  let viewType = route.params.viewType || 'kanban'
+  let viewType = route.params.viewType || 'list'
   let types = {
     list: {
       name: 'list',
@@ -297,7 +297,8 @@ function getViewType() {
     },
   }
 
-  return types[viewType]
+  // If viewType is not valid, fallback to list
+  return types[viewType] || types['list']
 }
 
 const currentView = computed(() => {
