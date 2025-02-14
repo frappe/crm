@@ -39,7 +39,7 @@
           <FormControl
             ref="title"
             :label="__('Title')"
-            v-model="_task.title"
+            v-model="_todo.title"
             :placeholder="__('Call with John Doe')"
           />
         </div>
