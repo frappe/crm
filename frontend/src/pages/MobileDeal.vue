@@ -48,7 +48,7 @@
     </div>
   </div>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
-    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto pb-20">
       <TabList class="!px-3" />
       <TabPanel v-slot="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -213,59 +213,59 @@
         />
       </TabPanel>
     </Tabs>
-    <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white dark:bg-gray-900 dark:border-gray-700 p-3">
-            <Button
-              v-if="primaryContactMobileNo && callEnabled"
-              size="sm"
-              class="dark:text-white dark:hover:bg-gray-700"
-              @click="triggerCall"
-            >
-              <template #prefix>
-                <PhoneIcon class="h-4 w-4" />
-              </template>
-              {{ __('Make Call') }}
-            </Button>
+  </div>
+  <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white dark:bg-gray-900 dark:border-gray-700 p-3">
+    <Button
+      v-if="primaryContactMobileNo && callEnabled"
+      size="sm"
+      class="dark:text-white dark:hover:bg-gray-700"
+      @click="triggerCall"
+    >
+      <template #prefix>
+        <PhoneIcon class="h-4 w-4" />
+      </template>
+      {{ __('Make Call') }}
+    </Button>
 
-            <Button
-              v-if="primaryContactMobileNo && !callEnabled"
-              size="sm"
-              class="dark:text-white dark:hover:bg-gray-700"
-              @click="trackPhoneActivities('phone')"
-            >
-              <template #prefix>
-                <PhoneIcon class="h-4 w-4" />
-              </template>
-              {{ __('Make Call') }}
-            </Button>
-            
-            <Button
-              v-if="primaryContactMobileNo"
-              size="sm"
-              class="dark:text-white dark:hover:bg-gray-700"
-              @click="trackPhoneActivities('whatsapp')"
-            >
-              <template #prefix>
-                <WhatsAppIcon class="h-4 w-4" />
-              </template>
-              {{ __('Chat') }}
-            </Button>
+    <Button
+      v-if="primaryContactMobileNo && !callEnabled"
+      size="sm"
+      class="dark:text-white dark:hover:bg-gray-700"
+      @click="trackPhoneActivities('phone')"
+    >
+      <template #prefix>
+        <PhoneIcon class="h-4 w-4" />
+      </template>
+      {{ __('Make Call') }}
+    </Button>
+    
+    <Button
+      v-if="primaryContactMobileNo"
+      size="sm"
+      class="dark:text-white dark:hover:bg-gray-700"
+      @click="trackPhoneActivities('whatsapp')"
+    >
+      <template #prefix>
+        <WhatsAppIcon class="h-4 w-4" />
+      </template>
+      {{ __('Chat') }}
+    </Button>
 
-            <Button
-              size="sm"
-              class="dark:text-white dark:hover:bg-gray-700"
-              @click="
-                deal.data.website
-                  ? openWebsite(deal.data.website)
-                  : errorMessage(__('No website set'))
-              "
-            >
-              <template #prefix>
-                <LinkIcon class="h-4 w-4" />
-              </template>
-              {{ __('Website') }}
-            </Button>    
-    </div>
-  </div>  
+    <Button
+      size="sm"
+      class="dark:text-white dark:hover:bg-gray-700"
+      @click="
+        deal.data.website
+          ? openWebsite(deal.data.website)
+          : errorMessage(__('No website set'))
+      "
+    >
+      <template #prefix>
+        <LinkIcon class="h-4 w-4" />
+      </template>
+      {{ __('Website') }}
+    </Button>    
+  </div>
   <OrganizationModal
     v-model="showOrganizationModal"
     v-model:organization="_organization"

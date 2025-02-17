@@ -53,7 +53,7 @@
     </div>
   </div>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
-    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto pb-20">
       <TabList class="!px-3" />
       <TabPanel v-slot="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -85,62 +85,62 @@
         />
       </TabPanel>
     </Tabs>
-    <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white dark:bg-gray-900 dark:border-gray-700 p-3">
-            <Button
-              v-if="lead.data.mobile_no && callEnabled"
-              size="sm"
-              class="dark:text-white dark:hover:bg-gray-700"
-              @click="
-                lead.data.mobile_no
-                  ? makeCall(lead.data.mobile_no)
-                  : errorMessage(__('No phone number set'))
-              "
-            >
-              <template #prefix>
-                <PhoneIcon class="h-4 w-4" />
-              </template>
-              {{ __('Make Call') }}
-            </Button>
+  </div>
+  <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white dark:bg-gray-900 dark:border-gray-700 p-3">
+    <Button
+      v-if="lead.data.mobile_no && callEnabled"
+      size="sm"
+      class="dark:text-white dark:hover:bg-gray-700"
+      @click="
+        lead.data.mobile_no
+          ? makeCall(lead.data.mobile_no)
+          : errorMessage(__('No phone number set'))
+      "
+    >
+      <template #prefix>
+        <PhoneIcon class="h-4 w-4" />
+      </template>
+      {{ __('Make Call') }}
+    </Button>
 
-            <Button
-              v-if="lead.data.mobile_no && !callEnabled"
-              size="sm"
-              class="dark:text-white dark:hover:bg-gray-700"
-              @click="trackPhoneActivities('phone')"
-            >
-              <template #prefix>
-                <PhoneIcon class="h-4 w-4" />
-              </template>
-              {{ __('Make Call') }}
-            </Button>
-            
-            <Button
-              v-if="lead.data.mobile_no"
-              size="sm"
-              class="dark:text-white dark:hover:bg-gray-700" 
-              @click="trackPhoneActivities('whatsapp')"
-            >
-              <template #prefix>
-                <WhatsAppIcon class="h-4 w-4" />
-              </template>
-              {{ __('Chat') }}
-            </Button>
+    <Button
+      v-if="lead.data.mobile_no && !callEnabled"
+      size="sm"
+      class="dark:text-white dark:hover:bg-gray-700"
+      @click="trackPhoneActivities('phone')"
+    >
+      <template #prefix>
+        <PhoneIcon class="h-4 w-4" />
+      </template>
+      {{ __('Make Call') }}
+    </Button>
+    
+    <Button
+      v-if="lead.data.mobile_no"
+      size="sm"
+      class="dark:text-white dark:hover:bg-gray-700" 
+      @click="trackPhoneActivities('whatsapp')"
+    >
+      <template #prefix>
+        <WhatsAppIcon class="h-4 w-4" />
+      </template>
+      {{ __('Chat') }}
+    </Button>
 
-            <Button
-              size="sm"
-              class="dark:text-white dark:hover:bg-gray-700"
-              @click="
-                lead.data.website
-                  ? openWebsite(lead.data.website)
-                  : errorMessage(__('No website set'))
-              "
-            >
-            <template #prefix>
-                <LinkIcon class="h-4 w-4" />
-              </template>
-              {{ __('Website') }}
-            </Button>
-          </div>
+    <Button
+      size="sm"
+      class="dark:text-white dark:hover:bg-gray-700"
+      @click="
+        lead.data.website
+          ? openWebsite(lead.data.website)
+          : errorMessage(__('No website set'))
+      "
+    >
+      <template #prefix>
+        <LinkIcon class="h-4 w-4" />
+      </template>
+      {{ __('Website') }}
+    </Button>
   </div>
   <Dialog
     v-model="showConvertToDealModal"
