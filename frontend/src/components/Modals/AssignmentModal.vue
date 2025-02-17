@@ -47,15 +47,8 @@
         </template>
       </Link>
       <div class="mt-3 flex flex-wrap items-center gap-2">
-        <Tooltip
-          :text="assignee.name"
-          v-for="assignee in assignees"
-          :key="assignee.name"
-        >
-          <Button
-            :label="getUser(assignee.name).full_name"
-            theme="gray"
-          >
+        <Tooltip :text="assignee.name" v-for="assignee in assignees" :key="assignee.name">
+          <Button :label="getUser(assignee.name).full_name" theme="gray">
             <template #prefix>
               <UserAvatar :user="assignee.name" size="sm" />
             </template>
@@ -109,9 +102,7 @@ const error = ref('')
 const { getUser } = usersStore()
 
 const removeValue = (value) => {
-  assignees.value = assignees.value.filter(
-    (assignee) => assignee.name !== value,
-  )
+  assignees.value = assignees.value.filter((assignee) => assignee.name !== value)
 }
 
 const owner = computed(() => {
@@ -133,20 +124,12 @@ const addValue = (value) => {
 }
 
 function updateAssignees() {
-  if (assignees.value.length === 0) {
-    error.value = 'Please select at least one assignee'
-    return
-  }
   const removedAssignees = oldAssignees.value
-    .filter(
-      (assignee) => !assignees.value.find((a) => a.name === assignee.name),
-    )
+    .filter((assignee) => !assignees.value.find((a) => a.name === assignee.name))
     .map((assignee) => assignee.name)
 
   const addedAssignees = assignees.value
-    .filter(
-      (assignee) => !oldAssignees.value.find((a) => a.name === assignee.name),
-    )
+    .filter((assignee) => !oldAssignees.value.find((a) => a.name === assignee.name))
     .map((assignee) => assignee.name)
 
   if (removedAssignees.length) {

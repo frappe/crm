@@ -30,9 +30,7 @@ def get_opportunity(name):
     opportunity["doctype"] = "Opportunity"
     opportunity["fields_meta"] = get_fields_meta("Opportunity")
     opportunity["_form_script"] = get_form_script("Opportunity")
-    opportunity["_assign"] = get_assigned_users(
-        "Opportunity", opportunity.name, opportunity.owner
-    )
+    opportunity["_assign"] = get_assigned_users("Opportunity", opportunity.name)
     return opportunity
 
 

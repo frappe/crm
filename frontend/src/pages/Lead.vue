@@ -9,12 +9,11 @@
     </template>
     <template #right-header>
       <CustomActions v-if="customActions" :actions="customActions" />
-      <component :is="lead.data._assignedTo?.length == 1 ? 'Button' : 'div'">
-        <MultipleAvatar
-          :avatars="lead.data._assignedTo"
-          @click="showAssignmentModal = true"
-        />
-      </component>
+      <AssignTo
+        v-model="lead.data._assignedTo"
+        :data="lead.data"
+        doctype="Lead"
+      />
       <Dropdown :options="statusOptions('lead', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
@@ -312,10 +311,9 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
-import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
-import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
@@ -401,7 +399,6 @@ onMounted(() => {
 })
 
 const reload = ref(false)
-const showAssignmentModal = ref(false)
 const showSidePanelModal = ref(false)
 const showFilesUploader = ref(false)
 

@@ -9,12 +9,11 @@
     </template>
     <template #right-header>
       <CustomActions v-if="customActions" :actions="customActions" />
-      <component :is="opportunity.data._assignedTo?.length == 1 ? 'Button' : 'div'">
-        <MultipleAvatar
-          :avatars="opportunity.data._assignedTo"
-          @click="showAssignmentModal = true"
-        />
-      </component>
+      <AssignTo
+        v-model="opportunity.data._assignedTo"
+        :data="opportunity.data"
+        doctype="Opportunity"
+      />
       <Dropdown :options="statusOptions('opportunity', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
@@ -61,15 +60,15 @@
             <Avatar
               size="3xl"
               class="size-12"
-              :label="customer.data?.name || __('Untitled')"
+              :label="customer.data?.name || opportunity.data?.party_name || __('Untitled')"
               :image="customer.data?.image"
             />
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncat text-ink-gray-9">
-          <Tooltip :text="customer.data?.name || __('Set an customer')">
+          <Tooltip :text="customer.data?.name || opportunity.data?.party_name || __('Set an customer')">
             <div class="truncate text-2xl font-medium">
-              {{ customer.data?.name || __('Untitled') }}
+              {{ customer.data?.name || opportunity.data?.party_name || __('Untitled') }}
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
@@ -293,13 +292,6 @@
       afterInsert: (doc) => addContact(doc.name),
     }"
   />
-  <AssignmentModal
-    v-if="showAssignmentModal"
-    v-model="showAssignmentModal"
-    v-model:assignees="opportunity.data._assignedTo"
-    :doc="opportunity.data"
-    doctype="Opportunity"
-  />
   <SidePanelModal
     v-if="showSidePanelModal"
     v-model="showSidePanelModal"
@@ -340,9 +332,8 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import CustomerModal from '@/components/Modals/CustomerModal.vue'
-import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import Link from '@/components/Controls/Link.vue'
@@ -454,7 +445,6 @@ onBeforeUnmount(() => {
 
 const reload = ref(false)
 const showCustomerModal = ref(false)
-const showAssignmentModal = ref(false)
 const showSidePanelModal = ref(false)
 const showFilesUploader = ref(false)
 const _customer = ref({})
@@ -527,7 +517,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: customer.data?.name || __('Untitled'),
+    label: customer.data?.name || opportunity.data?.party_name || __('Untitled'),
     route: { name: 'Opportunity', params: { opportunityId: opportunity.data.name } },
   })
   return items
@@ -535,7 +525,7 @@ const breadcrumbs = computed(() => {
 
 usePageMeta(() => {
   return {
-    title: customer.data?.name || opportunity.data?.name,
+    title: customer.data?.name || opportunity.data?.party_name || opportunity.data?.name,
   }
 })
 
