@@ -435,12 +435,11 @@ function setup() {
       if (data.AgentEmail && data.AgentEmail == (user || user.value)) {
         // Incoming call
         phoneNumber.value = data.CallFrom || data.From
+        showCallPopup.value = true
       } else {
         // Outgoing call
         phoneNumber.value = data.To
       }
-
-      showCallPopup.value = true
     }
   })
 }
