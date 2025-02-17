@@ -19,10 +19,7 @@
     <template #top>
       <div class="flex flex-col gap-3">
         <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
-          <Tooltip :text="__('To')">
-            <span class="text-xs text-ink-gray-4 sm:block hidden">{{ __('TO') }}:</span>
-            <EmailIcon class="h-4 w-4 text-ink-gray-4 sm:hidden" />
-          </Tooltip>
+          <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
           <MultiselectInput
             class="flex-1"
             v-model="toEmails"
@@ -32,45 +29,42 @@
             "
           />
           <div class="flex gap-1.5">
-            <Tooltip :text="__('Copy')">
-              <Button
-                :label="isMobile ? '' : __('CC')"
-                variant="ghost"
-                @click="toggleCC()"
-                :class="[
-                  cc
-                    ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
-                    : '!text-ink-gray-4',
-                ]"
-              >
-                <template #icon>
-                  <DuplicateIcon v-if="isMobile" class="h-4 w-4" />
-                </template>
-              </Button>
-            </Tooltip>
-            <Tooltip :text="__('Hidden Copy')">
-              <Button
-                :label="isMobile ? '' : __('BCC')"
-                variant="ghost"
-                @click="toggleBCC()"
-                :class="[
-                  bcc
-                    ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
-                    : '!text-ink-gray-4',
-                ]"
-              >
-                <template #icon>
-                  <InboxIcon v-if="isMobile" class="h-4 w-4" />
-                </template>
-              </Button>
-            </Tooltip>
+            <Button
+              variant="ghost"
+              @click="toggleCC()"
+              :class="[
+                cc
+                  ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
+                  : '!text-ink-gray-4',
+              ]"
+            >
+              <template #icon>
+                <Email2Icon class="h-4" />
+              </template>
+              <template #default>
+                <span class="hidden sm:inline">{{ __('CC') }}</span>
+              </template>
+            </Button>
+            <Button
+              variant="ghost"
+              @click="toggleBCC()"
+              :class="[
+                bcc
+                  ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
+                  : '!text-ink-gray-4',
+              ]"
+            >
+              <template #icon>
+                <EmailIcon class="h-4" />
+              </template>
+              <template #default>
+                <span class="hidden sm:inline">{{ __('BCC') }}</span>
+              </template>
+            </Button>
           </div>
         </div>
         <div v-if="cc" class="sm:mx-10 mx-4 flex items-center gap-2">
-          <Tooltip :text="__('Copy')">
-            <span class="text-xs text-ink-gray-4 sm:block hidden">{{ __('CC') }}:</span>
-            <DuplicateIcon class="h-4 w-4 text-ink-gray-4 sm:hidden" />
-          </Tooltip>
+          <span class="text-xs text-ink-gray-4">{{ __('CC') }}:</span>
           <MultiselectInput
             ref="ccInput"
             class="flex-1"
@@ -82,10 +76,7 @@
           />
         </div>
         <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2">
-          <Tooltip :text="__('Hidden Copy')">
-            <span class="text-xs text-ink-gray-4 sm:block hidden">{{ __('BCC') }}:</span>
-            <InboxIcon class="h-4 w-4 text-ink-gray-4 sm:hidden" />
-          </Tooltip>
+          <span class="text-xs text-ink-gray-4">{{ __('BCC') }}:</span>
           <MultiselectInput
             ref="bccInput"
             class="flex-1"
@@ -97,14 +88,10 @@
           />
         </div>
         <div class="sm:mx-10 mx-4 flex items-center gap-2 pb-2.5">
-          <Tooltip :text="__('Subject')">
-            <span class="text-xs text-ink-gray-4 sm:block hidden">{{ __('SUBJECT') }}:</span>
-            <CommentIcon class="h-4 w-4 text-ink-gray-4 sm:hidden" />
-          </Tooltip>
+          <span class="text-xs text-ink-gray-4">{{ __('SUBJECT') }}:</span>
           <input
             class="flex-1 border-none text-ink-gray-9 text-base bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
             v-model="subject"
-            :placeholder="__('Subject')"
           />
         </div>
       </div>
@@ -199,21 +186,17 @@
 import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import MultiselectInput from '@/components/Controls/MultiselectInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
-import { TextEditorBubbleMenu, TextEditor, FileUploader, call, Tooltip } from 'frappe-ui'
+import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { capture } from '@/telemetry'
 import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, defineModel, nextTick } from 'vue'
-import { isMobileView } from '@/composables/settings'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
-import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
-import InboxIcon from '@/components/Icons/InboxIcon.vue'
-import CommentIcon from '@/components/Icons/CommentIcon.vue'
 
 const props = defineProps({
   placeholder: {
@@ -245,8 +228,6 @@ const props = defineProps({
     default: () => ({}),
   },
 })
-
-const isMobile = computed(() => isMobileView.value)
 
 const CustomParagraph = Paragraph.extend({
   addAttributes() {
