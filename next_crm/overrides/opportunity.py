@@ -26,13 +26,14 @@ class Opportunity(Opportunity):
     def validate(self):
         self.set_primary_contact()
         self.set_primary_email_mobile_no()
-        if (
-            not self.is_new()
-            and self.has_value_changed("opportunity_owner")
-            and self.opportunity_owner
-        ):
-            self.share_with_agent(self.opportunity_owner)
-            self.assign_agent(self.opportunity_owner)
+        if not self.is_new():
+            curr_owner = frappe.db.get_value(
+                self.doctype, self.name, "opportunity_owner"
+            )
+            if self.opportunity_owner and self.opportunity_owner != curr_owner:
+                self.share_with_agent(self.opportunity_owner)
+                self.assign_agent(self.opportunity_owner)
+
         if self.has_value_changed("status"):
             add_status_change_log(self)
         super().validate()
