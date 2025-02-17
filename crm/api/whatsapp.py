@@ -337,3 +337,19 @@ def get_from_name(message):
 	else:
 		from_name = doc.get("first_name") + " " + doc.get("last_name")
 	return from_name
+
+
+@frappe.whitelist()
+def get_whatsapp_templates(doctype=None):
+	"""Get WhatsApp templates for a specific doctype, ignoring permissions"""
+	filters = { "status": "APPROVED" }
+	if doctype:
+		filters["for_doctype"] = ["in", [doctype, ""]]
+	
+	return frappe.get_all(
+		"WhatsApp Templates",
+		filters=filters,
+		fields=["name", "template", "footer"],
+		order_by="modified desc",
+		ignore_permissions=True
+	)

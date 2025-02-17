@@ -133,13 +133,13 @@
     <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
       <TabList class="!px-4" v-slot="{ tab, selected }">
         <button
-          v-if="tab.name == 'Deals'"
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-outline-gray-3 hover:text-ink-gray-9"
           :class="{ 'text-ink-gray-9': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
+            v-if="tab.count"
             class="group-hover:bg-surface-gray-7"
             :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
             variant="solid"
@@ -151,7 +151,7 @@
         </button>
       </TabList>
       <TabPanel v-slot="{ tab }">
-        <div v-if="tab.name == 'Details'">
+        <div v-if="tab.name === 'Details'">
           <div
             v-if="sections.data"
             class="flex flex-1 flex-col justify-between overflow-hidden"
@@ -165,22 +165,24 @@
             />
           </div>
         </div>
-        <DealsListView
-          v-else-if="tab.label === 'Deals' && rows.length"
-          class="mt-4"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
-        />
-        <div
-          v-if="tab.label === 'Deals' && !rows.length"
-          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
-        >
-          <div class="flex flex-col items-center justify-center space-y-3">
-            <component :is="tab.icon" class="!h-10 !w-10" />
-            <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
+        <template v-else-if="tab.name === 'Deals'">
+          <DealsListView
+            v-if="rows.length"
+            class="mt-4"
+            :rows="rows"
+            :columns="columns"
+            :options="{ selectable: false, showTooltip: false }"
+          />
+          <div
+            v-else
+            class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
+          >
+            <div class="flex flex-col items-center justify-center space-y-3">
+              <component :is="tab.icon" class="!h-10 !w-10" />
+              <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
+            </div>
           </div>
-        </div>
+        </template>
       </TabPanel>
     </Tabs>
   </div>
@@ -193,6 +195,7 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
@@ -206,6 +209,7 @@ import { usersStore } from '@/stores/users.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
+import { trackCommunication } from '@/utils/communicationUtils'
 import {
   Breadcrumbs,
   Avatar,
@@ -425,17 +429,18 @@ function getParsedSections(_sections) {
               })
             },
           }
-        } else if (field.name === 'mobile_no') {
+        } else if (field.fieldname === 'mobile_no') {
           return {
             ...field,
             read_only: false,
-            fieldtype: 'dropdown',
+            fieldtype: 'Dropdown',
             options:
               contact.data?.phone_nos?.map((phone) => {
                 return {
                   name: phone.name,
                   value: phone.phone,
                   selected: phone.phone === contact.data.actual_mobile_no,
+                  placeholder: '+1234567890',
                   onClick: () => {
                     _contact.value.actual_mobile_no = phone.phone
                     _contact.value.mobile_no = phone.phone
@@ -656,4 +661,26 @@ const dealColumns = [
     width: '8rem',
   },
 ]
+
+const activities = ref([])
+
+function trackPhoneActivities(type = 'phone') {
+  if (!contact.data?.actual_mobile_no) {
+    createToast({
+      title: __('No phone number set'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
+    return
+  }
+  
+  trackCommunication({
+    type,
+    doctype: 'Contact',
+    docname: contact.data.name,
+    phoneNumber: contact.data.actual_mobile_no,
+    activities: activities.value,
+    contactName: contact.data.full_name,
+  })
+}
 </script>

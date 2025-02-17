@@ -88,11 +88,11 @@
   </div>
   <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t bg-white dark:bg-gray-900 dark:border-gray-700 p-3">
     <Button
-      v-if="lead.data.mobile_no && callEnabled"
+      v-if="lead.data?.mobile_no && callEnabled"
       size="sm"
       class="dark:text-white dark:hover:bg-gray-700"
       @click="
-        lead.data.mobile_no
+        lead.data?.mobile_no
           ? makeCall(lead.data.mobile_no)
           : errorMessage(__('No phone number set'))
       "
@@ -104,7 +104,7 @@
     </Button>
 
     <Button
-      v-if="lead.data.mobile_no && !callEnabled"
+      v-if="lead.data?.mobile_no && !callEnabled"
       size="sm"
       class="dark:text-white dark:hover:bg-gray-700"
       @click="trackPhoneActivities('phone')"
@@ -116,7 +116,7 @@
     </Button>
     
     <Button
-      v-if="lead.data.mobile_no"
+      v-if="lead.data?.mobile_no"
       size="sm"
       class="dark:text-white dark:hover:bg-gray-700" 
       @click="trackPhoneActivities('whatsapp')"
@@ -298,12 +298,13 @@ const lead = createResource({
   },
 })
 
+const reload = ref(false)
+const activities = ref([])
+
 onMounted(() => {
   if (lead.data) return
   lead.fetch()
 })
-
-const reload = ref(false)
 
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -563,6 +564,11 @@ async function convertToDeal(updated) {
 }
 
 function trackPhoneActivities(type = 'phone') {
+  if (!lead.data?.mobile_no) {
+    errorMessage(__('No phone number set'))
+    return
+  }
+  
   trackCommunication({
     type,
     doctype: 'CRM Lead',

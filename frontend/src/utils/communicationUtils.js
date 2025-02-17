@@ -52,7 +52,7 @@ function trackCommunicationImpl({ type, doctype, docname, phoneNumber, activitie
   }
 
   const logCommunication = createResource({
-    url: 'frappe.client.insert',
+    url: 'crm.api.communication.track_communication',
     params: params,
     onSuccess: () => {
       activities?.all_activities?.reload()
