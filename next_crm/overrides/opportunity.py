@@ -39,9 +39,6 @@ class Opportunity(Opportunity):
         super().validate()
 
     def after_insert(self):
-        if self.opportunity_owner:
-            self.assign_agent(self.opportunity_owner)
-
         if self.opportunity_from == "Lead":
             link_open_tasks(self.opportunity_from, self.party_name, self)
             link_open_events(self.opportunity_from, self.party_name, self)
