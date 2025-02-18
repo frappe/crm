@@ -94,9 +94,9 @@ def create_lead_from_call_log(call_log):
 
     if call_log.get("note"):
         frappe.db.set_value(
-            "NCRM Note",
+            "CRM Note",
             call_log.get("note"),
-            {"reference_doctype": "Lead", "reference_docname": lead.name},
+            {"parenttype": "Lead", "parent": lead.name},
         )
 
     return lead.name

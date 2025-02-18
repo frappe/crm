@@ -96,10 +96,10 @@ def update_call_log(call_sid, status=None):
     call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
     if call_log.note and call_log.reference_docname:
         frappe.db.set_value(
-            "NCRM Note", call_log.note, "reference_doctype", call_log.reference_doctype
+            "CRM Note", call_log.note, "parenttype", call_log.reference_doctype
         )
         frappe.db.set_value(
-            "NCRM Note", call_log.note, "reference_docname", call_log.reference_docname
+            "CRM Note", call_log.note, "parent", call_log.reference_docname
         )
     call_log.flags.ignore_permissions = True
     call_log.save()

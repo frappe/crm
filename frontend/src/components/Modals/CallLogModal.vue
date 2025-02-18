@@ -211,9 +211,9 @@ watch(show, (val) => {
           return
         }
         callNoteDoc.value = createDocumentResource({
-          doctype: 'NCRM Note',
+          doctype: 'CRM Note',
           name: doc.note,
-          fields: ['title', 'content'],
+          fields: ['custom_title', 'note'],
           cache: ['note', doc.note],
           auto: true,
         })

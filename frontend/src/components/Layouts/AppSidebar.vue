@@ -90,7 +90,6 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import ProspectsIcon from '@/components/Icons/ProspectsIcon.vue'
@@ -134,11 +133,6 @@ const links = [
     label: 'Customers',
     icon: CustomersIcon,
     to: 'Customers',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
   },
   {
     label: 'ToDos',

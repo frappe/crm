@@ -805,7 +805,7 @@ def getCounts(d, doctype):
         "ToDo", filters={"reference_type": doctype, "reference_name": d.get("name")}
     )
     d["_note_count"] = frappe.db.count(
-        "NCRM Note",
-        filters={"reference_doctype": doctype, "reference_docname": d.get("name")},
+        "CRM Note",
+        filters={"parrenttype": doctype, "parent": d.get("name")},
     )
     return d

@@ -24,20 +24,12 @@
                 class="relative mx-2 my-0.5"
               >
                 <template #right>
-                  <Badge
-                    v-if="unreadNotificationsCount"
-                    :label="unreadNotificationsCount"
-                    variant="subtle"
-                  />
+                  <Badge v-if="unreadNotificationsCount" :label="unreadNotificationsCount" variant="subtle" />
                 </template>
               </SidebarLink>
             </div>
             <div v-for="view in allViews" :key="view.label">
-              <Section
-                :label="view.name"
-                :hideLabel="view.hideLabel"
-                :isOpened="view.opened"
-              >
+              <Section :label="view.name" :hideLabel="view.hideLabel" :isOpened="view.opened">
                 <template #header="{ opened, hide, toggle }">
                   <div
                     v-if="!hide"
@@ -81,12 +73,7 @@
   </TransitionRoot>
 </template>
 <script setup>
-import {
-  TransitionRoot,
-  TransitionChild,
-  Dialog,
-  DialogOverlay,
-} from '@headlessui/vue'
+import { TransitionRoot, TransitionChild, Dialog, DialogOverlay } from '@headlessui/vue'
 import Section from '@/components/Section.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
@@ -95,7 +82,6 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
@@ -127,11 +113,6 @@ const links = [
     label: 'Customers',
     icon: CustomersIcon,
     to: 'Customers',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
   },
   {
     label: 'ToDos',
