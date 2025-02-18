@@ -72,6 +72,7 @@
       </div>
     </div>
     <div class="m-2 flex flex-col gap-1">
+      <SignupBanner :isSidebarCollapsed="isSidebarCollapsed" />
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
@@ -110,6 +111,7 @@ import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
+import SignupBanner from '@/components/SignupBanner.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
