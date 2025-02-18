@@ -12,11 +12,6 @@
         v-if="lead.data._customActions?.length"
         :actions="lead.data._customActions"
       />
-      <AssignTo
-        v-model="lead.data._assignedTo"
-        :data="lead.data"
-        doctype="CRM Lead"
-      />
       <Dropdown
         :options="statusOptions('lead', updateField, lead.data._customStatuses)"
       >

@@ -146,6 +146,9 @@ function getRoute(notification) {
       dealId: notification.reference_name,
     }
   }
+  if (notification.route_name === 'Call Logs') {
+    params = {}
+  }
 
   return {
     name: notification.route_name,

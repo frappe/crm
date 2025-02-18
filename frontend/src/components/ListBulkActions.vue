@@ -199,13 +199,6 @@ function bulkActions(selections, unselectAll) {
     })
   }
 
-  if (props.doctype === 'CRM Lead') {
-    actions.push({
-      label: __('Convert to Deal'),
-      onClick: () => convertToDeal(selections, unselectAll),
-    })
-  }
-
   customBulkActions.value.forEach((action) => {
     actions.push({
       label: __(action.label),
