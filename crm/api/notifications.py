@@ -27,6 +27,9 @@ def get_notifications():
         if notification.reference_doctype == "CRM Call Log":
             route_name = "Call Logs"
 
+        if route_name == "Lead" and notification.type == "Assignment" and not notification.reference_name:
+            route_name = "Call Logs"
+
         _notifications.append(
             {
                 "creation": notification.creation,

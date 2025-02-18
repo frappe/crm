@@ -1,6 +1,5 @@
 import frappe
 from frappe import _
-from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 def on_status_change(doc, status):
@@ -35,34 +34,33 @@ def on_status_change(doc, status):
 					owner = owner_doc.name
 			except Exception:
 				pass
+			frappe.set_user(owner)
 
 			if lead:
-				notify_user(
-					{
-						"owner": owner,
-						"assigned_to": assign_to,
-						"notification_type": "Task",
-						"message": "You have a missed call from {0} {1} {2}".format(lead.first_name, lead.last_name, doc.to),
-						"notification_text": "You have a missed call from {0} {1} {2}".format(lead.first_name, lead.last_name, doc.to),
-						"reference_doctype": "CRM Call Log",
-						"reference_docname": doc.name,
-						"redirect_to_doctype": "CRM Lead",
-						"redirect_to_docname": lead.name,
-					}
+				message = "You have a missed call from {0} {1} {2}".format(lead.first_name, lead.last_name, doc.to)
+				start_date = frappe.utils.now_datetime()
+				values = frappe._dict(
+					doctype="CRM Task",
+					assigned_to=assign_to,
+					title=message,
+					description=message,
+					priority="Medium",
+					start_date=start_date,
+					reference_doctype="CRM Lead",
+					reference_docname=lead.name
 				)
+				frappe.get_doc(values).insert(ignore_permissions=True)
 			else:
-				notify_user(
-					{
-						"owner": owner,
-						"assigned_to": assign_to,
-						"notification_type": "Task",
-						"message": "You have a missed call from {0}".format(doc.to),
-						"notification_text": "You have a missed call from {0}".format(doc.to),
-						"reference_doctype": "CRM Call Log",
-						"reference_docname": doc.name,
-						"redirect_to_doctype": "CRM Call Log",
-						"redirect_to_docname": doc.name,
-					}
+				message = "You have a missed call from {0}".format(doc.to)
+				start_date = frappe.utils.now_datetime()
+				values = frappe._dict(
+					doctype="CRM Task",
+					assigned_to=assign_to,
+					title=message,
+					description=message,
+					priority="Medium",
+					start_date=start_date
 				)
-	except Exception:
+				frappe.get_doc(values).insert(ignore_permissions=True)
+	except Exception as e:
 		pass

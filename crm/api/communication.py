@@ -1,6 +1,5 @@
 import frappe
 from frappe import _
-from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 def before_insert(doc, method):
@@ -45,19 +44,20 @@ def after_insert(doc, method):
 				owner = owner_doc.name
 		except Exception:
 			pass
+		frappe.set_user(owner)
 
-		notify_user(
-			{
-				"owner": owner,
-				"assigned_to": assign_to.name,
-				"notification_type": "Task",
-				"message": "You received an email from {0} {1} {2}".format(lead.first_name, lead.last_name, doc.sender),
-				"notification_text": "You received an email from {0} {1} {2}".format(lead.first_name, lead.last_name, doc.sender),
-				"reference_doctype": "Communication",
-				"reference_docname": doc.name,
-				"redirect_to_doctype": "CRM Lead",
-				"redirect_to_docname": doc.reference_name,
-			}
+		message = "You received an email from {0} {1} {2}".format(lead.first_name, lead.last_name, doc.sender)
+		start_date = frappe.utils.now_datetime()
+		values = frappe._dict(
+			doctype="CRM Task",
+			assigned_to=assign_to.name,
+			title=message,
+			description="Subject: {0}<br />Content:<br />{1}".format(doc.subject, doc.content),
+			priority="Medium",
+			start_date=start_date,
+			reference_doctype="CRM Lead",
+			reference_docname=doc.reference_name
 		)
-	except Exception:
+		frappe.get_doc(values).insert(ignore_permissions=True)
+	except Exception as e:
 		pass
