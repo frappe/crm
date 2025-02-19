@@ -605,15 +605,11 @@ const quickFilterList = computed(() => {
     if (list.value.params?.filters[filter.fieldname]) {
       let value = list.value.params.filters[filter.fieldname]
       if (Array.isArray(value)) {
-        if (
-          (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.fieldtype,
-          ) &&
-            value[0]?.toLowerCase() == 'like') ||
-          value[0]?.toLowerCase() != 'like'
-        )
-          return
-        filter['value'] = value[1]?.replace(/%/g, '')
+        if (['Date', 'Datetime'].includes(filter.fieldtype) && value[0] === 'timespan') {
+          filter['value'] = value[1]
+        } else if (value[0]?.toLowerCase() === 'like') {
+          filter['value'] = value[1]?.replace(/%/g, '')
+        }
       } else {
         filter['value'] = value
       }
@@ -634,8 +630,10 @@ function applyQuickFilter(filter, value) {
   let filters = { ...list.value.params.filters }
   let field = filter.fieldname
   if (value) {
-    if (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.fieldtype)) {
+    if (['Check', 'Select', 'Link'].includes(filter.fieldtype)) {
       filters[field] = value
+    } else if (['Date', 'Datetime'].includes(filter.fieldtype)) {
+      filters[field] = ['timespan', value]
     } else {
       filters[field] = ['LIKE', `%${value}%`]
     }

@@ -61,7 +61,8 @@
   {
    "fieldname": "due_date",
    "fieldtype": "Datetime",
-   "label": "Due Date"
+   "label": "Due Date",
+   "in_standard_filter": 1
   },
   {
    "fieldname": "section_break_bzhd",

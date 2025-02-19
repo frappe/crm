@@ -26,14 +26,19 @@
     :placeholder="filter.label"
     @change="(data) => updateFilter(filter, data)"
   />
-  <input
+  <FormControl
     v-else-if="['Date', 'Datetime'].includes(filter.fieldtype)"
-    class="border-none"
-    :type="filter.fieldtype === 'Date' ? 'date' : 'datetime-local'"
-    :value="filter.value"
-    @change="(e) => updateFilter(filter, e.target.value)"
+    class="form-control cursor-pointer [&_select]:cursor-pointer"
+    type="select"
+    v-model="filter.value"
+    :options="filter.options || timespanOptions"
     :placeholder="filter.label"
-  />
+    @change.stop="updateFilter(filter, $event.target.value)"
+  >
+    <template #item-label="{ option }">
+      {{ option.label || option.value }}
+    </template>
+  </FormControl>
   <FormControl
     v-else
     v-model="filter.value"
@@ -46,6 +51,8 @@
 import Link from '@/components/Controls/Link.vue'
 import { FormControl } from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
+import { timespanOptions } from '@/utils/timeOptions'
+import { computed } from 'vue'
 
 const props = defineProps({
   filter: {
@@ -56,11 +63,11 @@ const props = defineProps({
 
 const emit = defineEmits(['applyQuickFilter'])
 
-const debouncedFn = useDebounceFn((f, value) => {
-  emit('applyQuickFilter', f, value)
-}, 500)
-
 function updateFilter(f, value) {
   emit('applyQuickFilter', f, value)
 }
+
+const debouncedFn = useDebounceFn((f, value) => {
+  emit('applyQuickFilter', f, value)
+}, 500)
 </script>
