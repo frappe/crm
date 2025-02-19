@@ -328,7 +328,7 @@ usePageMeta(() => {
 const view = ref({
   name: '',
   label: '',
-  type: 'list',
+  type: 'kanban',
   icon: '',
   filters: {},
   order_by: 'modified desc',
@@ -364,7 +364,7 @@ watch(updatedPageCount, (value) => {
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
   const view_name = _view?.name || ''
-  const view_type = _view?.type || route.params.viewType || 'list'
+  const view_type = _view?.type || route.params.viewType || 'kanban'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const group_by_field = _view?.group_by_field || 'owner'
