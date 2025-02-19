@@ -6,7 +6,14 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
   let viewsByName = reactive({})
   let pinnedViews = ref([])
   let publicViews = ref([])
-  let defaultView = ref({})
+  let standardViews = ref({})
+
+  // Default view
+  const defaultView = createResource({
+    url: 'crm.api.views.get_default_view',
+    cache: 'crm-default-view',
+    auto: true,
+  })
 
   // Views
   const views = createResource({
@@ -28,17 +35,53 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
           publicViews.value?.push(view)
         }
         if (view.is_default && view.dt) {
-          defaultView.value[view.dt + ' ' + view.type] = view
+          standardViews.value[view.dt + ' ' + view.type] = view
         }
       }
       return views
     },
   })
 
+  function getDefaultView(routeName = false) {
+    let view = defaultView.data
+    if (!view) return null
+
+    if (typeof view === 'string' && !isNaN(view)) {
+      view = parseInt(view)
+    }
+
+    if (routeName) {
+      let viewObj = getView(view) || {
+        type: view.split('_')[0],
+        dt: view.split('_')[1],
+      }
+
+      let routeName = viewObj.dt
+
+      if (routeName.startsWith('CRM ')) {
+        routeName = routeName.slice(4)
+      }
+
+      if (!routeName.endsWith('s')) {
+        routeName += 's'
+      }
+
+      let viewName = viewObj.is_default ? null : viewObj.name
+
+      return {
+        name: routeName,
+        type: viewObj.type,
+        view: viewName,
+      }
+    }
+
+    return view
+  }
+
   function getView(view, type, doctype = null) {
     type = type || 'list'
     if (!view && doctype) {
-      return defaultView.value[doctype + ' ' + type] || null
+      return standardViews.value[doctype + ' ' + type] || null
     }
     return viewsByName[view]
   }
@@ -60,6 +103,8 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
   return {
     views,
     defaultView,
+    standardViews,
+    getDefaultView,
     getPinnedViews,
     getPublicViews,
     reload,

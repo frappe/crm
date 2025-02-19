@@ -215,6 +215,7 @@ import QuickFilterField from '@/components/QuickFilterField.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
+import CheckIcon from '@/components/Icons/CheckIcon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
@@ -263,7 +264,7 @@ const props = defineProps({
 
 const { brand } = getSettings()
 const { $dialog } = globalStore()
-const { reload: reloadView, getView } = viewsStore()
+const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager } = usersStore()
 
 const list = defineModel()
@@ -887,8 +888,19 @@ function updatePageLength(value, loadMore = false) {
 
 // View Actions
 const viewActions = (view) => {
-  let isDefault = typeof view.name === 'string'
+  let isStandard = typeof view.name === 'string'
   let _view = getView(view.name)
+
+  if (isStandard) {
+    _view = getView(null, view.name, props.doctype)
+  }
+
+  if (!_view) {
+    _view = {
+      type: view.name,
+      dt: props.doctype,
+    }
+  }
 
   let actions = [
     {
@@ -904,7 +916,15 @@ const viewActions = (view) => {
     },
   ]
 
-  if (!isDefault && (!_view.public || isManager())) {
+  if (!isStandardView(_view, isStandard)) {
+    actions[0].items.unshift({
+      label: __('Set as default'),
+      icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
+      onClick: () => setAsDefault(_view),
+    })
+  }
+
+  if (!isStandard && (!_view.public || isManager())) {
     actions[0].items.push({
       label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
@@ -961,6 +981,18 @@ const viewActions = (view) => {
   return actions
 }
 
+function isStandardView(v, isStandard) {
+  let defaultView = getDefaultView()
+
+  if (!defaultView) return false
+
+  if (isStandard && !v.name) {
+    return defaultView == v.type + '_' + v.dt
+  }
+
+  return defaultView == v.name
+}
+
 const viewModalObj = ref({})
 
 function createView() {
@@ -970,6 +1002,17 @@ function createView() {
   viewModalObj.value = view.value
   viewModalObj.value.mode = 'create'
   showViewModal.value = true
+}
+
+function setAsDefault(v) {
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.set_as_default', {
+    name: v.name,
+    type: v.type,
+    doctype: v.dt,
+  }).then(() => {
+    reloadView()
+    list.value.reload()
+  })
 }
 
 function duplicateView(v) {
