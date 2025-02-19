@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { userResource } from '@/stores/user'
 import { sessionStore } from '@/stores/session'
+import { viewsStore } from '@/stores/views'
 
 const routes = [
   {
     path: '/',
-    redirect: { name: 'Leads' },
     name: 'Home',
   },
   {
@@ -143,7 +143,17 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.name === 'Home' && isLoggedIn) {
-    next({ name: 'Leads' })
+    const { getDefaultView, defaultView } = viewsStore()
+    await defaultView.promise
+
+    let { name, type, view } = getDefaultView(true)
+    name = name || 'Leads'
+
+    if (view) {
+      next({ name, params: { viewType: type }, query: { view } })
+    } else {
+      next({ name, params: { viewType: type } })
+    }
   } else if (!isLoggedIn) {
     window.location.href = '/login?redirect-to=/crm'
   } else if (to.matched.length === 0) {
