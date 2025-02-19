@@ -104,7 +104,6 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
     views,
     defaultView,
     standardViews,
-    getDefaultView,
     getPinnedViews,
     getPublicViews,
     reload,
