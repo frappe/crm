@@ -146,6 +146,38 @@ def get_opportunity_activities(name):
         }
         activities.append(activity)
 
+    if "frappe_gmail_thread" in frappe.get_installed_apps():
+        from frappe_gmail_thread.api.activity import get_linked_gmail_threads
+
+        threads = get_linked_gmail_threads("Opportunity", name)
+
+        for thread in threads:
+            activity = {
+                "activity_type": "communication",
+                "communication_type": "Email",
+                "creation": thread["template_data"]["doc"]["creation"],
+                "data": {
+                    "subject": thread["template_data"]["doc"]["subject"],
+                    "content": thread["template_data"]["doc"]["content"],
+                    "sender_full_name": thread["template_data"]["doc"][
+                        "sender_full_name"
+                    ],
+                    "sender": thread["template_data"]["doc"]["sender"],
+                    "recipients": thread["template_data"]["doc"]["recipients"],
+                    "cc": thread["template_data"]["doc"]["cc"],
+                    "bcc": thread["template_data"]["doc"]["bcc"],
+                    "attachments": thread["template_data"]["doc"]["attachments"],
+                    "read_by_recipient": thread["template_data"]["doc"][
+                        "read_by_recipient"
+                    ],
+                    "delivery_status": thread["template_data"]["doc"][
+                        "delivery_status"
+                    ],
+                },
+                "is_lead": False,
+            }
+            activities.append(activity)
+
     for attachment_log in docinfo.attachment_logs:
         activity = {
             "name": attachment_log.name,
@@ -283,6 +315,38 @@ def get_lead_activities(name):
             "is_lead": True,
         }
         activities.append(activity)
+
+    if "frappe_gmail_thread" in frappe.get_installed_apps():
+        from frappe_gmail_thread.api.activity import get_linked_gmail_threads
+
+        threads = get_linked_gmail_threads("Lead", name)
+
+        for thread in threads:
+            activity = {
+                "activity_type": "communication",
+                "communication_type": "Email",
+                "creation": thread["template_data"]["doc"]["creation"],
+                "data": {
+                    "subject": thread["template_data"]["doc"]["subject"],
+                    "content": thread["template_data"]["doc"]["content"],
+                    "sender_full_name": thread["template_data"]["doc"][
+                        "sender_full_name"
+                    ],
+                    "sender": thread["template_data"]["doc"]["sender"],
+                    "recipients": thread["template_data"]["doc"]["recipients"],
+                    "cc": thread["template_data"]["doc"]["cc"],
+                    "bcc": thread["template_data"]["doc"]["bcc"],
+                    "attachments": thread["template_data"]["doc"]["attachments"],
+                    "read_by_recipient": thread["template_data"]["doc"][
+                        "read_by_recipient"
+                    ],
+                    "delivery_status": thread["template_data"]["doc"][
+                        "delivery_status"
+                    ],
+                },
+                "is_lead": True,
+            }
+            activities.append(activity)
 
     for attachment_log in docinfo.attachment_logs:
         activity = {
