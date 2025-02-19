@@ -36,6 +36,7 @@
     type="text"
     :placeholder="filter.label"
     @keyup.enter.stop="debouncedFn(filter, $event.target.value)"
+    @blur="debouncedFn(filter, $event.target.value)"
   />
 </template>
 <script setup>
