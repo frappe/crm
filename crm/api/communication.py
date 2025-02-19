@@ -1,83 +1,5 @@
 import frappe
 from frappe import _
-import re
-import email.header
-
-def clean_display_name(address):
-    """Extract and decode display name from MIME-encoded string"""
-    if not address:
-        return ""
-        
-    # If in format "Name <email@domain.com>", extract name part
-    name_match = re.match(r'([^<]*)<[^>]+>', address)
-    if name_match:
-        name = name_match.group(1).strip()
-        if name.startswith('=?'):
-            try:
-                decoded_parts = email.header.decode_header(name)
-                decoded_name = ""
-                for part, charset in decoded_parts:
-                    if isinstance(part, bytes):
-                        decoded_name += part.decode(charset or 'utf-8')
-                    else:
-                        decoded_name += part
-                return decoded_name.strip()
-            except:
-                return name
-        return name
-        
-    # If MIME-encoded without email
-    if address.startswith('=?'):
-        try:
-            decoded_parts = email.header.decode_header(address)
-            decoded_name = ""
-            for part, charset in decoded_parts:
-                if isinstance(part, bytes):
-                    decoded_name += part.decode(charset or 'utf-8')
-                else:
-                    decoded_name += part
-            return decoded_name.strip()
-        except:
-            return address
-            
-    return address
-
-def clean_email_address(address):
-    """Extract clean email address from MIME-encoded string"""
-    if not address:
-        return ""
-        
-    try:
-        # First try to decode if it's MIME encoded
-        if "=?" in address:
-            decoded_parts = email.header.decode_header(address)
-            decoded_text = ""
-            for part, charset in decoded_parts:
-                if isinstance(part, bytes):
-                    decoded_text += part.decode(charset or 'utf-8')
-                else:
-                    decoded_text += part
-            address = decoded_text
-            
-        # Extract email from "Name <email@domain.com>" format
-        email_match = re.search(r'<([^>]+)>', address)
-        if email_match:
-            return email_match.group(1).lower()
-            
-        # If no angle brackets, try to extract email directly
-        email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', address)
-        if email_match:
-            return email_match.group(0).lower()
-            
-        return ""
-        
-    except Exception as e:
-        frappe.logger().error(f"Error cleaning email address '{address}': {str(e)}")
-        # If decoding fails, try to extract email directly
-        email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', address)
-        if email_match:
-            return email_match.group(0).lower()
-        return ""
 
 def init_for_execute():
     """Initialize session for bench execute"""
@@ -167,98 +89,25 @@ def update_email_references():
                 "reference_doctype": ["in", ["", None]],
                 "reference_name": ["in", ["", None]]
             },
-            fields=["name", "sender", "recipients", "cc", "bcc", "sender_full_name"]
+            fields=["name", "sender", "recipients", "cc", "bcc"]
         )
 
         processed = 0
         linked = 0
         not_found = 0
-        cleaning_errors = 0
 
         for email in emails_without_refs:
             processed += 1
             # Collect all email addresses from the communication
             email_addresses = set()
-            updates = {}
-            
             if email.sender:
-                clean_sender = clean_email_address(email.sender)
-                if clean_sender:
-                    email_addresses.add(clean_sender)
-                    # Update sender name if it's MIME-encoded
-                    if "=?" in email.sender:
-                        display_name = clean_display_name(email.sender)
-                        if display_name:
-                            updates["sender_full_name"] = display_name
-                        updates["sender"] = clean_sender
-
+                email_addresses.add(email.sender.lower())
             if email.recipients:
-                clean_recipients = []
-                for recipient in email.recipients.split(","):
-                    recipient = recipient.strip()
-                    try:
-                        clean_recipient = clean_email_address(recipient)
-                        if clean_recipient:
-                            email_addresses.add(clean_recipient)
-                            if "=?" in recipient:
-                                display_name = clean_display_name(recipient)
-                                if display_name:
-                                    clean_recipients.append(f"{display_name} <{clean_recipient}>")
-                                else:
-                                    clean_recipients.append(clean_recipient)
-                            else:
-                                clean_recipients.append(recipient)
-                    except Exception as e:
-                        cleaning_errors += 1
-                        frappe.logger().error(f"Error cleaning recipient '{recipient}' in email {email.name}: {str(e)}")
-                        # Keep original if cleaning fails
-                        clean_recipients.append(recipient)
-                        
-                if clean_recipients:
-                    updates["recipients"] = ", ".join(clean_recipients)
-
+                email_addresses.update([e.strip().lower() for e in email.recipients.split(",")])
             if email.cc:
-                clean_ccs = []
-                for cc in email.cc.split(","):
-                    cc = cc.strip()
-                    clean_cc = clean_email_address(cc)
-                    if clean_cc:
-                        email_addresses.add(clean_cc)
-                        if "=?" in cc:
-                            display_name = clean_display_name(cc)
-                            if display_name:
-                                clean_ccs.append(f"{display_name} <{clean_cc}>")
-                            else:
-                                clean_ccs.append(clean_cc)
-                        else:
-                            clean_ccs.append(cc)
-                if clean_ccs:
-                    updates["cc"] = ", ".join(clean_ccs)
-
+                email_addresses.update([e.strip().lower() for e in email.cc.split(",")])
             if email.bcc:
-                clean_bccs = []
-                for bcc in email.bcc.split(","):
-                    bcc = bcc.strip()
-                    clean_bcc = clean_email_address(bcc)
-                    if clean_bcc:
-                        email_addresses.add(clean_bcc)
-                        if "=?" in bcc:
-                            display_name = clean_display_name(bcc)
-                            if display_name:
-                                clean_bccs.append(f"{display_name} <{clean_bcc}>")
-                            else:
-                                clean_bccs.append(clean_bcc)
-                        else:
-                            clean_bccs.append(bcc)
-                if clean_bccs:
-                    updates["bcc"] = ", ".join(clean_bccs)
-
-            if not email_addresses:
-                continue
-
-            # Update communication fields if needed
-            if updates:
-                frappe.db.set_value("Communication", email.name, updates, update_modified=False)
+                email_addresses.update([e.strip().lower() for e in email.bcc.split(",")])
 
             # Search for leads with matching emails
             leads = frappe.get_all(
@@ -302,13 +151,9 @@ def update_email_references():
             else:
                 not_found += 1
 
-        # Log summary with more details
+        # Log summary
         frappe.logger().info(
-            f"Email reference update completed:\n"
-            f"- Processed: {processed}\n"
-            f"- Linked: {linked}\n"
-            f"- Not found: {not_found}\n"
-            f"- Cleaning errors: {cleaning_errors}"
+            f"Email reference update completed: {processed} processed, {linked} linked, {not_found} not found"
         )
 
     except Exception as e:
