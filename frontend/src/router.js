@@ -146,7 +146,14 @@ router.beforeEach(async (to, from, next) => {
     const { getDefaultView, defaultView } = viewsStore()
     await defaultView.promise
 
-    let { name, type, view } = getDefaultView(true)
+    let _defaultView = getDefaultView(true)
+
+    if (!_defaultView) {
+      next({ name: 'Leads' })
+      return
+    }
+
+    let { name, type, view } = _defaultView
     name = name || 'Leads'
 
     if (view) {
