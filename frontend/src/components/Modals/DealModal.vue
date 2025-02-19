@@ -190,6 +190,24 @@ function createDeal() {
   if (deal.website && !deal.website.startsWith('http')) {
     deal.website = 'https://' + deal.website
   }
+  if (chooseExistingContact.value) {
+    const contactDetailsFields = new Set(
+      tabs.data.flatMap((tab) =>
+        tab.sections
+          .filter((section) => section.name === 'contact_details_section')
+          .flatMap((section) =>
+            section.columns.flatMap((column) =>
+              column.fields.map((field) => field.fieldname),
+            ),
+          ),
+      ),
+    )
+    
+    contactDetailsFields.forEach((field) => {
+      deal[field] = null
+    })
+  } else deal['contact'] = null
+
   createResource({
     url: 'crm.fcrm.doctype.crm_deal.crm_deal.create_deal',
     params: { args: deal },
