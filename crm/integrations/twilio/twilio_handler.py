@@ -211,6 +211,8 @@ def get_the_call_attender(owners, caller=None):
 		):
 			return details
 
+	return list(owners.values())[0]
+
 
 class TwilioCallDetails:
 	def __init__(self, call_info, call_from=None, call_to=None):

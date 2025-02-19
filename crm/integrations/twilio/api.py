@@ -1,6 +1,7 @@
 import json
 
 import frappe
+import time
 from frappe import _
 from werkzeug.wrappers import Response
 
@@ -98,24 +99,33 @@ def link(contact_number, call_log):
 
 
 def update_call_log(call_sid, status=None):
-	"""Update call log status."""
 	twilio = Twilio.connect()
 	if not (twilio and frappe.db.exists("CRM Call Log", call_sid)):
 		return
 
 	try:
+		if status == "initiated":
+			return frappe.get_doc("CRM Call Log", call_sid)
+
 		call_details = twilio.get_call_info(call_sid)
+		new_status = TwilioCallDetails.get_call_status(status or call_details.status)
+		fields = {
+			"status": new_status,
+			"duration": call_details.duration,
+			"start_time": get_datetime_from_timestamp(call_details.start_time),
+			"end_time": get_datetime_from_timestamp(call_details.end_time)
+		}
+		frappe.db.set_value("CRM Call Log", call_sid, fields)
+		frappe.db.commit()
+
 		call_log = frappe.get_doc("CRM Call Log", call_sid)
-		call_log.status = TwilioCallDetails.get_call_status(status or call_details.status)
-		call_log.duration = call_details.duration
-		call_log.start_time = get_datetime_from_timestamp(call_details.start_time)
-		call_log.end_time = get_datetime_from_timestamp(call_details.end_time)
-		call_log.save(ignore_permissions=True)
-		frappe.db.commit()
+
+		for handler in frappe.get_hooks("call_log_events"):
+			frappe.get_attr(handler)(call_log, new_status)
+
 		return call_log
-	except Exception:
-		frappe.log_error(title="Error while updating call record")
-		frappe.db.commit()
+	except Exception as e:
+		frappe.log_error(title="Failed to update Twilio call log status", exception=e)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -148,7 +158,7 @@ def update_call_status_info(**kwargs):
 
 		client = Twilio.get_twilio_client()
 		client.calls(args.ParentCallSid).user_defined_messages.create(content=json.dumps(call_info))
-	except Exception:
+	except Exception as e:
 		frappe.log_error(title=_("Failed to update Twilio call status"))
 
 

@@ -15,6 +15,21 @@ def get_notifications():
 
     _notifications = []
     for notification in notifications:
+        reference_doctype = "lead"
+        if notification.reference_doctype == "CRM Deal":
+            reference_doctype = "deal"
+        if notification.reference_doctype == "CRM Call Log":
+            reference_doctype = "call_log"
+
+        route_name = "Lead"
+        if notification.reference_doctype == "CRM Deal":
+            route_name = "Deal"
+        if notification.reference_doctype == "CRM Call Log":
+            route_name = "Call Logs"
+
+        if route_name == "Lead" and notification.type == "Assignment" and not notification.reference_name:
+            route_name = "Call Logs"
+
         _notifications.append(
             {
                 "creation": notification.creation,
@@ -31,13 +46,9 @@ def get_notifications():
                 "notification_text": notification.notification_text,
                 "notification_type_doctype": notification.notification_type_doctype,
                 "notification_type_doc": notification.notification_type_doc,
-                "reference_doctype": (
-                    "deal" if notification.reference_doctype == "CRM Deal" else "lead"
-                ),
+                "reference_doctype": reference_doctype,
                 "reference_name": notification.reference_name,
-                "route_name": (
-                    "Deal" if notification.reference_doctype == "CRM Deal" else "Lead"
-                ),
+                "route_name": route_name,
             }
         )
 

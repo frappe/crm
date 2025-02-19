@@ -163,9 +163,14 @@ doc_events = {
 		"before_validate": ["crm.api.demo.validate_user"],
 	},
 	"Communication": {
-		"before_insert": "crm.api.communication.before_insert"
+		"before_insert": "crm.api.communication.before_insert",
+		"after_insert": "crm.api.communication.after_insert",
 	}
 }
+
+call_log_events = [
+	"crm.api.call_log.on_status_change",
+]
 
 # Scheduled Tasks
 # ---------------
