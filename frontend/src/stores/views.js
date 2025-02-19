@@ -42,6 +42,42 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
     },
   })
 
+  function getDefaultView(routeName = false) {
+    let view = defaultView.data
+    if (!view) return null
+
+    if (typeof view === 'string' && !isNaN(view)) {
+      view = parseInt(view)
+    }
+
+    if (routeName) {
+      let viewObj = getView(view) || {
+        type: view.split('_')[0],
+        dt: view.split('_')[1],
+      }
+
+      let routeName = viewObj.dt
+
+      if (routeName.startsWith('CRM ')) {
+        routeName = routeName.slice(4)
+      }
+
+      if (!routeName.endsWith('s')) {
+        routeName += 's'
+      }
+
+      let viewName = viewObj.is_default ? null : viewObj.name
+
+      return {
+        name: routeName,
+        type: viewObj.type,
+        view: viewName,
+      }
+    }
+
+    return view
+  }
+
   function getView(view, type, doctype = null) {
     type = type || 'list'
     if (!view && doctype) {
@@ -68,6 +104,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
     views,
     defaultView,
     standardViews,
+    getDefaultView,
     getPinnedViews,
     getPublicViews,
     reload,
