@@ -35,9 +35,9 @@ def get_opportunity_activities(name):
     ]
 
     doc = frappe.db.get_values(
-        "Opportunity", name, ["creation", "owner", "party_name"]
+        "Opportunity", name, ["creation", "owner", "opportunity_from", "party_name"]
     )[0]
-    lead = doc[2]
+    opportunity_from = doc[2]
 
     activities = []
     calls = []
@@ -46,7 +46,8 @@ def get_opportunity_activities(name):
     attachments = []
     creation_text = "created this opportunity"
 
-    if lead:
+    if opportunity_from == "Lead":
+        lead = doc[3]
         activities, calls, notes, todos, attachments = get_lead_activities(lead)
         creation_text = "converted the lead to this opportunity"
 
