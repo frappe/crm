@@ -35,7 +35,7 @@
     v-model="filter.value"
     type="text"
     :placeholder="filter.label"
-    @input.stop="debouncedFn(filter, $event.target.value)"
+    @keyup.enter.stop="debouncedFn(filter, $event.target.value)"
   />
 </template>
 <script setup>
