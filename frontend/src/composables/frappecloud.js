@@ -2,7 +2,7 @@ import { globalStore } from '@/stores/global'
 import { createResource } from 'frappe-ui'
 import { ref } from 'vue'
 
-const frappeCloudBaseEndpoint = 'https://frappecloud.com'
+const baseEndpoint = ref('https://frappecloud.com')
 const isPaymentModeAdded = ref(false)
 
 export const currentSiteInfo = createResource({
@@ -10,6 +10,7 @@ export const currentSiteInfo = createResource({
   cache: 'currentSiteInfo',
   onSuccess: (data) => {
     isPaymentModeAdded.value = data.is_payment_method_added
+    baseEndpoint.value = data.base_url
   },
 })
 
@@ -45,5 +46,5 @@ const loginToFrappeCloud = () => {
     redirectRoute = '/dashboard/welcome'
   }
 
-  window.open(`${frappeCloudBaseEndpoint}${redirectRoute}`, '_blank')
+  window.open(`${baseEndpoint.value}${redirectRoute}`, '_blank')
 }
