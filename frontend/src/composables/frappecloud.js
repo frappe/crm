@@ -1,10 +1,23 @@
 import { globalStore } from '@/stores/global'
-import { call } from 'frappe-ui'
+import { createResource } from 'frappe-ui'
+import { ref } from 'vue'
 
 const frappeCloudBaseEndpoint = 'https://frappecloud.com'
+const isPaymentModeAdded = ref(false)
+
+export const currentSiteInfo = createResource({
+  url: 'frappe.integrations.frappe_providers.frappecloud_billing.current_site_info',
+  cache: 'currentSiteInfo',
+  onSuccess: (data) => {
+    isPaymentModeAdded.value = data.is_payment_method_added
+  },
+})
 
 export const confirmLoginToFrappeCloud = () => {
+  currentSiteInfo.fetch()
+
   const { $dialog } = globalStore()
+
   $dialog({
     title: __('Login to Frappe Cloud?'),
     message: __(
@@ -24,19 +37,13 @@ export const confirmLoginToFrappeCloud = () => {
 }
 
 const loginToFrappeCloud = () => {
-  call(
-    'frappe.integrations.frappe_providers.frappecloud_billing.current_site_info',
-  ).then((response) => {
-    if (!response) return
+  let redirectRoute = ''
 
-    let redirectRoute = ''
+  if (isPaymentModeAdded.value) {
+    redirectRoute = '/dashboard'
+  } else {
+    redirectRoute = '/dashboard/welcome'
+  }
 
-    if (response.is_payment_method_added) {
-      redirectRoute = '/dashboard'
-    } else {
-      redirectRoute = '/dashboard/welcome'
-    }
-
-    window.open(`${frappeCloudBaseEndpoint}${redirectRoute}`, '_blank')
-  })
+  window.open(`${frappeCloudBaseEndpoint}${redirectRoute}`, '_blank')
 }
