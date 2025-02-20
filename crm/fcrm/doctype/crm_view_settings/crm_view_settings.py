@@ -171,6 +171,7 @@ def create_or_update_standard_view(view):
 	rows = parse_json(view.rows or "[]")
 	kanban_columns = parse_json(view.kanban_columns or "[]")
 	kanban_fields = parse_json(view.kanban_fields or "[]")
+	view.column_field = view.column_field or "status"
 
 	default_rows = sync_default_rows(view.doctype, view.type)
 	rows = rows + default_rows if default_rows else rows
@@ -192,8 +193,8 @@ def create_or_update_standard_view(view):
 		doc.route_name = view.route_name or get_route_name(view.doctype)
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
-		doc.order_by = view.order_by
-		doc.group_by_field = view.group_by_field
+		doc.order_by = view.order_by or "modified desc"
+		doc.group_by_field = view.group_by_field or "owner"
 		doc.column_field = view.column_field
 		doc.title_field = view.title_field
 		doc.kanban_columns = json.dumps(kanban_columns)
@@ -219,8 +220,8 @@ def create_or_update_standard_view(view):
 		doc.route_name = view.route_name or get_route_name(view.doctype)
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
-		doc.order_by = view.order_by
-		doc.group_by_field = view.group_by_field
+		doc.order_by = view.order_by or "modified desc"
+		doc.group_by_field = view.group_by_field or "owner"
 		doc.column_field = view.column_field
 		doc.title_field = view.title_field
 		doc.kanban_columns = json.dumps(kanban_columns)
