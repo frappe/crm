@@ -18,9 +18,9 @@
           </div>
         </div>
         <div>
-          <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div class="flex items-center gap-3 text-sm text-ink-gray-5">
-              <div>{{ __('Choose Existing Customer') }}</div>
+              <div>{{ __('Choose Existing Customer, Lead or Prospect') }}</div>
               <Switch v-model="chooseExistingCustomer" />
             </div>
             <div class="flex items-center gap-3 text-sm text-ink-gray-5">

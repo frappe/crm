@@ -1,7 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
-
+import frappe
 from erpnext.crm.doctype.prospect.prospect import Prospect
+from frappe import _
 
 
 class Prospect(Prospect):
@@ -59,3 +60,25 @@ class Prospect(Prospect):
             "title_field": "company_name",
             "kanban_fields": '["annual_revenue", "_assign", "modified"]',
         }
+
+    def create_opportunity(self):
+        from erpnext.crm.doctype.prospect.prospect import make_opportunity
+
+        opportunity = make_opportunity(self.name)
+
+        opportunity.insert(ignore_permissions=True)
+        return opportunity.name
+
+
+@frappe.whitelist()
+def convert_to_opportunity(prospect, doc=None):
+    if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
+        "Prospect", "write", prospect
+    ):
+        frappe.throw(
+            _("Not allowed to convert Prospect to Opportunity"), frappe.PermissionError
+        )
+
+    prospect = frappe.get_cached_doc("Prospect", prospect)
+    opportunity = prospect.create_opportunity()
+    return opportunity

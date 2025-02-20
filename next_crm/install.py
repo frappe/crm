@@ -135,7 +135,7 @@ def add_default_fields_layout(force=False):
         },
         "Opportunity-Quick Entry": {
             "doctype": "Opportunity",
-            "layout": '[{"label": "Select Customer", "fields": ["customer"], "hideLabel": true, "editable": true}, {"label": "Customer Details", "fields": ["customer_name", "website", "no_of_employees", "territory", "opportunity_amount", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact_person"], "hideLabel": true, "editable": true}, {"label": "Contact Details", "fields": ["salutation", "first_name", "last_name", "contact_email", "contact_mobile", "gender"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 3, "fields": ["status", "opportunity_owner", "lead"], "hideLabel": true}]',
+            "layout": '[{"label": "Select Customer", "fields": ["customer", "lead", "custom_prospect"], "hideLabel": true, "editable": true}, {"label": "Customer Details", "fields": ["customer_name", "website", "no_of_employees", "territory", "opportunity_amount", "industry"], "hideLabel": true, "editable": true}, {"label": "Select Contact", "fields": ["contact_person"], "hideLabel": true, "editable": true}, {"label": "Contact Details", "fields": ["salutation", "first_name", "last_name", "contact_email", "contact_mobile", "gender"], "hideLabel": true, "editable": true}, {"label": "Other", "columns": 2, "fields": ["status", "opportunity_owner"], "hideLabel": true}]',
         },
         "Prospect-Quick Entry": {
             "doctype": "Prospect",
