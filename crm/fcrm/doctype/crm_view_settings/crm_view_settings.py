@@ -153,7 +153,7 @@ def set_as_default(name=None, type=None, doctype=None):
 
 
 @frappe.whitelist()
-def create_or_update_default_view(view):
+def create_or_update_standard_view(view):
 	view = frappe._dict(view)
 
 	filters = parse_json(view.filters) or {}
@@ -173,7 +173,7 @@ def create_or_update_default_view(view):
 
 	doc = frappe.db.exists(
 		"CRM View Settings",
-		{"dt": view.doctype, "type": view.type or "list", "is_default": True, "user": frappe.session.user},
+		{"dt": view.doctype, "type": view.type or "list", "is_standard": True, "user": frappe.session.user},
 	)
 	if doc:
 		doc = frappe.get_doc("CRM View Settings", doc)
@@ -210,5 +210,5 @@ def create_or_update_default_view(view):
 		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
-		doc.is_default = True
+		doc.is_standard = True
 		doc.insert()

@@ -8,7 +8,7 @@
   "label",
   "icon",
   "user",
-  "is_default",
+  "is_standard",
   "column_break_zacm",
   "type",
   "dt",
@@ -113,12 +113,6 @@
    "label": "Public"
   },
   {
-   "default": "0",
-   "fieldname": "is_default",
-   "fieldtype": "Check",
-   "label": "Is Default"
-  },
-  {
    "fieldname": "icon",
    "fieldtype": "Data",
    "label": "Icon"
@@ -178,11 +172,17 @@
    "fieldname": "title_field",
    "fieldtype": "Data",
    "label": "Title Field"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_standard",
+   "fieldtype": "Check",
+   "label": "Is Standard"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-25 19:40:12.067788",
+ "modified": "2025-02-20 12:41:51.574655",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

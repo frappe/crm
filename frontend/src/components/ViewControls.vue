@@ -310,13 +310,13 @@ const currentView = computed(() => {
     label:
       _view?.label || props.options?.defaultViewName || getViewType().label,
     icon: _view?.icon || getViewType().icon,
-    is_default: !_view || _view.is_default,
+    is_standard: !_view || _view.is_standard,
   }
 })
 
 usePageMeta(() => {
   let label = currentView.value.label
-  if (currentView.value.is_default) {
+  if (currentView.value.is_standard) {
     let routeName = route.name
     label = `${routeName} - ${label}`
   }
@@ -558,7 +558,7 @@ const viewsDropdownOptions = computed(() => {
     })
     let publicViews = list.value.data.views.filter((v) => v.public)
     let savedViews = list.value.data.views.filter(
-      (v) => !v.pinned && !v.public && !v.is_default,
+      (v) => !v.pinned && !v.public && !v.is_standard,
     )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
@@ -662,7 +662,7 @@ function updateFilter(filters) {
   list.value.reload()
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   }
 }
 
@@ -677,7 +677,7 @@ function updateSort(order_by) {
   list.value.reload()
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   }
 }
 
@@ -692,7 +692,7 @@ function updateGroupBy(group_by_field) {
   list.value.reload()
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   }
 }
 
@@ -726,7 +726,7 @@ function updateColumns(obj) {
   viewUpdated.value = true
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   }
 }
 
@@ -768,7 +768,7 @@ async function updateKanbanSettings(data) {
   list.value.reload()
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   } else if (!data.column_field) {
     if (isDirty) {
       $dialog({
@@ -780,14 +780,14 @@ async function updateKanbanSettings(data) {
             label: __('Update'),
             variant: 'solid',
             onClick: (close) => {
-              update_custom_view()
+              updateCustomView()
               close()
             },
           },
         ],
       })
     } else {
-      update_custom_view()
+      updateCustomView()
     }
   }
 }
@@ -811,11 +811,11 @@ function loadMoreKanban(columnName) {
   list.value.reload()
 }
 
-function create_or_update_default_view() {
+function createOrUpdateStandardView() {
   if (route.query.view) return
   view.value.doctype = props.doctype
   call(
-    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
     {
       view: view.value,
     },
@@ -842,7 +842,7 @@ function create_or_update_default_view() {
   })
 }
 
-function update_custom_view() {
+function updateCustomView() {
   viewUpdated.value = false
   view.value = {
     doctype: props.doctype,
