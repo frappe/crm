@@ -147,9 +147,19 @@ def sync_default_columns(view):
 
 @frappe.whitelist()
 def set_as_default(name=None, type=None, doctype=None):
-	if not name:
-		name = type + "_" + doctype
-	frappe.db.set_single_value("FCRM Settings", "default_view", name)
+	if name:
+		frappe.db.set_value("CRM View Settings", name, "is_default", 1)
+	else:
+		doc = create_or_update_standard_view({"type": type, "doctype": doctype, "is_default": 1})
+		name = doc.name
+
+	# remove default from other views of same user
+	frappe.db.set_value(
+		"CRM View Settings",
+		{"name": ("!=", name), "user": frappe.session.user, "is_default": 1},
+		"is_default",
+		0,
+	)
 
 
 @frappe.whitelist()
@@ -190,10 +200,17 @@ def create_or_update_standard_view(view):
 		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
+		doc.is_default = view.is_default or False
 		doc.save()
 	else:
 		doc = frappe.new_doc("CRM View Settings")
-		label = "Group By View" if view.type == "group_by" else "List View"
+
+		label = "List"
+		if view.type == "group_by":
+			label = "Group By"
+		elif view.type == "kanban":
+			label = "Kanban"
+
 		doc.name = view.label or label
 		doc.label = view.label or label
 		doc.type = view.type or "list"
@@ -211,4 +228,7 @@ def create_or_update_standard_view(view):
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
 		doc.is_standard = True
+		doc.is_default = view.is_default or False
 		doc.insert()
+
+	return doc

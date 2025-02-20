@@ -113,23 +113,22 @@ router.beforeEach(async (to, from, next) => {
   isLoggedIn && (await userResource.promise)
 
   if (to.name === 'Home' && isLoggedIn) {
-    const { getDefaultView, defaultView } = viewsStore()
-    await defaultView.promise
+    const { views, getDefaultView } = viewsStore()
+    await views.promise
 
-    let _defaultView = getDefaultView(true)
-
-    if (!_defaultView) {
+    let defaultView = getDefaultView()
+    if (!defaultView) {
       next({ name: 'Leads' })
       return
     }
 
-    let { name, type, view } = _defaultView
-    name = name || 'Leads'
+    let { route_name, type, name, is_standard } = defaultView
+    route_name = route_name || 'Leads'
 
-    if (view) {
-      next({ name, params: { viewType: type }, query: { view } })
+    if (name && !is_standard) {
+      next({ name: route_name, params: { viewType: type }, query: { name } })
     } else {
-      next({ name, params: { viewType: type } })
+      next({ name: route_name, params: { viewType: type } })
     }
   } else if (!isLoggedIn) {
     window.location.href = '/login?redirect-to=/crm'

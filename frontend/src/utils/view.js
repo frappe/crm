@@ -6,7 +6,7 @@ import { markRaw } from 'vue'
 
 const { getView: getViewDetails } = viewsStore()
 
-function defaultView(type) {
+function standardView(type) {
   let types = {
     list: {
       label: __('List'),
@@ -29,7 +29,7 @@ export function getView(view, type, doctype) {
   let viewType = type || 'list'
   let viewDetails = getViewDetails(view, viewType, doctype)
   if (viewDetails && !viewDetails.icon) {
-    viewDetails.icon = defaultView(viewType).icon
+    viewDetails.icon = standardView(viewType).icon
   }
-  return viewDetails || defaultView(viewType)
+  return viewDetails || standardView(viewType)
 }

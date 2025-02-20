@@ -897,6 +897,7 @@ const viewActions = (view) => {
 
   if (!_view) {
     _view = {
+      label: view.label,
       type: view.name,
       dt: props.doctype,
     }
@@ -984,13 +985,9 @@ const viewActions = (view) => {
 function isDefaultView(v, isStandard) {
   let defaultView = getDefaultView()
 
-  if (!defaultView) return false
+  if (!defaultView || (isStandard && !v.name)) return false
 
-  if (isStandard && !v.name) {
-    return defaultView == v.type + '_' + v.dt
-  }
-
-  return defaultView == v.name
+  return defaultView.name == v.name
 }
 
 const viewModalObj = ref({})
