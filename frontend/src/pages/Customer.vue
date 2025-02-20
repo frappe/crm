@@ -545,11 +545,6 @@ function getContactRowObject(contact) {
 
 const opportunityColumns = [
   {
-    label: __('Customer'),
-    key: 'customer',
-    width: '11rem',
-  },
-  {
     label: __('Amount'),
     key: 'opportunity_amount',
     width: '9rem',

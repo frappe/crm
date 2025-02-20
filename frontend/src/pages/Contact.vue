@@ -620,6 +620,7 @@ const columns = computed(() => opportunityColumns)
 function getOpportunityRowObject(opportunity) {
   return {
     name: opportunity.name,
+    party_name: opportunity.party_name,
     customer: {
       label: opportunity.customer,
       logo: getCustomer(opportunity.customer)?.image,
@@ -647,8 +648,8 @@ function getOpportunityRowObject(opportunity) {
 
 const opportunityColumns = [
   {
-    label: __('Customer'),
-    key: 'customer',
+    label: __('Opportunity From'),
+    key: 'party_name',
     width: '11rem',
   },
   {
