@@ -480,11 +480,11 @@ async function exportRows() {
   export_type.value = 'Excel'
 }
 
-let defaultViews = []
+let standardViews = []
 let allowedViews = props.options.allowedViews || ['list']
 
 if (allowedViews.includes('list')) {
-  defaultViews.push({
+  standardViews.push({
     name: 'list',
     label: __(props.options?.defaultViewName) || __('List'),
     icon: markRaw(ListIcon),
@@ -495,7 +495,7 @@ if (allowedViews.includes('list')) {
   })
 }
 if (allowedViews.includes('kanban')) {
-  defaultViews.push({
+  standardViews.push({
     name: 'kanban',
     label: __(props.options?.defaultViewName) || __('Kanban'),
     icon: markRaw(KanbanIcon),
@@ -506,7 +506,7 @@ if (allowedViews.includes('kanban')) {
   })
 }
 if (allowedViews.includes('group_by')) {
-  defaultViews.push({
+  standardViews.push({
     name: 'group_by',
     label: __(props.options?.defaultViewName) || __('Group By'),
     icon: markRaw(GroupByIcon),
@@ -531,9 +531,9 @@ function getIcon(icon, type) {
 const viewsDropdownOptions = computed(() => {
   let _views = [
     {
-      group: __('Default Views'),
+      group: __('Standard Views'),
       hideLabel: true,
-      items: defaultViews,
+      items: standardViews,
     },
   ]
 
@@ -904,7 +904,7 @@ const viewActions = (view) => {
 
   let actions = [
     {
-      group: __('Default Views'),
+      group: __('Actions'),
       hideLabel: true,
       items: [
         {
@@ -916,7 +916,7 @@ const viewActions = (view) => {
     },
   ]
 
-  if (!isStandardView(_view, isStandard)) {
+  if (!isDefaultView(_view, isStandard)) {
     actions[0].items.unshift({
       label: __('Set as default'),
       icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
@@ -981,7 +981,7 @@ const viewActions = (view) => {
   return actions
 }
 
-function isStandardView(v, isStandard) {
+function isDefaultView(v, isStandard) {
   let defaultView = getDefaultView()
 
   if (!defaultView) return false
