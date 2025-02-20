@@ -202,7 +202,7 @@
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
       </div>
-      <div class="ml-6">
+      <div class="ml-6 text-ink-gray-9">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
@@ -210,7 +210,6 @@
         <Link
           v-if="existingOrganizationChecked"
           class="form-control mt-2.5"
-          variant="outline"
           size="md"
           :value="existingOrganization"
           doctype="CRM Organization"
@@ -229,7 +228,7 @@
         <ContactsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Contact') }}</label>
       </div>
-      <div class="ml-6">
+      <div class="ml-6 text-ink-gray-9">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingContactChecked" />
@@ -237,7 +236,6 @@
         <Link
           v-if="existingContactChecked"
           class="form-control mt-2.5"
-          variant="outline"
           size="md"
           :value="existingContact"
           doctype="Contact"
