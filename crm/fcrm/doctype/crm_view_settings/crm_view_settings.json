@@ -8,6 +8,7 @@
   "label",
   "icon",
   "user",
+  "is_standard",
   "is_default",
   "column_break_zacm",
   "type",
@@ -113,12 +114,6 @@
    "label": "Public"
   },
   {
-   "default": "0",
-   "fieldname": "is_default",
-   "fieldtype": "Check",
-   "label": "Is Default"
-  },
-  {
    "fieldname": "icon",
    "fieldtype": "Data",
    "label": "Icon"
@@ -174,15 +169,26 @@
    "label": "Kanban Fields"
   },
   {
-   "default": "name",
    "fieldname": "title_field",
    "fieldtype": "Data",
    "label": "Title Field"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_standard",
+   "fieldtype": "Check",
+   "label": "Is Standard"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_default",
+   "fieldtype": "Check",
+   "label": "Is Default"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-25 19:40:12.067788",
+ "modified": "2025-02-20 15:36:55.059065",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

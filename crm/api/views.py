@@ -8,7 +8,7 @@ def get_views(doctype):
 	query = (
 		frappe.qb.from_(View)
 		.select("*")
-		.where(Criterion.any([View.user == '', View.user == frappe.session.user]))
+		.where(Criterion.any([View.user == "", View.user == frappe.session.user]))
 	)
 	if doctype:
 		query = query.where(View.dt == doctype)

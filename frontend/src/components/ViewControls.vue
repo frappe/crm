@@ -215,6 +215,7 @@ import QuickFilterField from '@/components/QuickFilterField.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
+import CheckIcon from '@/components/Icons/CheckIcon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
@@ -263,7 +264,7 @@ const props = defineProps({
 
 const { brand } = getSettings()
 const { $dialog } = globalStore()
-const { reload: reloadView, getView } = viewsStore()
+const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager } = usersStore()
 
 const list = defineModel()
@@ -309,13 +310,13 @@ const currentView = computed(() => {
     label:
       _view?.label || props.options?.defaultViewName || getViewType().label,
     icon: _view?.icon || getViewType().icon,
-    is_default: !_view || _view.is_default,
+    is_standard: !_view || _view.is_standard,
   }
 })
 
 usePageMeta(() => {
   let label = currentView.value.label
-  if (currentView.value.is_default) {
+  if (currentView.value.is_standard) {
     let routeName = route.name
     label = `${routeName} - ${label}`
   }
@@ -479,11 +480,11 @@ async function exportRows() {
   export_type.value = 'Excel'
 }
 
-let defaultViews = []
+let standardViews = []
 let allowedViews = props.options.allowedViews || ['list']
 
 if (allowedViews.includes('list')) {
-  defaultViews.push({
+  standardViews.push({
     name: 'list',
     label: __(props.options?.defaultViewName) || __('List'),
     icon: markRaw(ListIcon),
@@ -494,7 +495,7 @@ if (allowedViews.includes('list')) {
   })
 }
 if (allowedViews.includes('kanban')) {
-  defaultViews.push({
+  standardViews.push({
     name: 'kanban',
     label: __(props.options?.defaultViewName) || __('Kanban'),
     icon: markRaw(KanbanIcon),
@@ -505,7 +506,7 @@ if (allowedViews.includes('kanban')) {
   })
 }
 if (allowedViews.includes('group_by')) {
-  defaultViews.push({
+  standardViews.push({
     name: 'group_by',
     label: __(props.options?.defaultViewName) || __('Group By'),
     icon: markRaw(GroupByIcon),
@@ -530,9 +531,9 @@ function getIcon(icon, type) {
 const viewsDropdownOptions = computed(() => {
   let _views = [
     {
-      group: __('Default Views'),
+      group: __('Standard Views'),
       hideLabel: true,
-      items: defaultViews,
+      items: standardViews,
     },
   ]
 
@@ -557,7 +558,7 @@ const viewsDropdownOptions = computed(() => {
     })
     let publicViews = list.value.data.views.filter((v) => v.public)
     let savedViews = list.value.data.views.filter(
-      (v) => !v.pinned && !v.public && !v.is_default,
+      (v) => !v.pinned && !v.public && !v.is_standard,
     )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
@@ -661,7 +662,7 @@ function updateFilter(filters) {
   list.value.reload()
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   }
 }
 
@@ -676,7 +677,7 @@ function updateSort(order_by) {
   list.value.reload()
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   }
 }
 
@@ -691,7 +692,7 @@ function updateGroupBy(group_by_field) {
   list.value.reload()
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   }
 }
 
@@ -725,7 +726,7 @@ function updateColumns(obj) {
   viewUpdated.value = true
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   }
 }
 
@@ -767,7 +768,7 @@ async function updateKanbanSettings(data) {
   list.value.reload()
 
   if (!route.query.view) {
-    create_or_update_default_view()
+    createOrUpdateStandardView()
   } else if (!data.column_field) {
     if (isDirty) {
       $dialog({
@@ -779,14 +780,14 @@ async function updateKanbanSettings(data) {
             label: __('Update'),
             variant: 'solid',
             onClick: (close) => {
-              update_custom_view()
+              updateCustomView()
               close()
             },
           },
         ],
       })
     } else {
-      update_custom_view()
+      updateCustomView()
     }
   }
 }
@@ -810,11 +811,11 @@ function loadMoreKanban(columnName) {
   list.value.reload()
 }
 
-function create_or_update_default_view() {
+function createOrUpdateStandardView() {
   if (route.query.view) return
   view.value.doctype = props.doctype
   call(
-    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view',
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
     {
       view: view.value,
     },
@@ -841,7 +842,7 @@ function create_or_update_default_view() {
   })
 }
 
-function update_custom_view() {
+function updateCustomView() {
   viewUpdated.value = false
   view.value = {
     doctype: props.doctype,
@@ -887,12 +888,24 @@ function updatePageLength(value, loadMore = false) {
 
 // View Actions
 const viewActions = (view) => {
-  let isDefault = typeof view.name === 'string'
+  let isStandard = typeof view.name === 'string'
   let _view = getView(view.name)
+
+  if (isStandard) {
+    _view = getView(null, view.name, props.doctype)
+  }
+
+  if (!_view) {
+    _view = {
+      label: view.label,
+      type: view.name,
+      dt: props.doctype,
+    }
+  }
 
   let actions = [
     {
-      group: __('Default Views'),
+      group: __('Actions'),
       hideLabel: true,
       items: [
         {
@@ -904,7 +917,15 @@ const viewActions = (view) => {
     },
   ]
 
-  if (!isDefault && (!_view.public || isManager())) {
+  if (!isDefaultView(_view, isStandard)) {
+    actions[0].items.unshift({
+      label: __('Set as default'),
+      icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
+      onClick: () => setAsDefault(_view),
+    })
+  }
+
+  if (!isStandard && (!_view.public || isManager())) {
     actions[0].items.push({
       label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
@@ -961,6 +982,14 @@ const viewActions = (view) => {
   return actions
 }
 
+function isDefaultView(v, isStandard) {
+  let defaultView = getDefaultView()
+
+  if (!defaultView || (isStandard && !v.name)) return false
+
+  return defaultView.name == v.name
+}
+
 const viewModalObj = ref({})
 
 function createView() {
@@ -970,6 +999,17 @@ function createView() {
   viewModalObj.value = view.value
   viewModalObj.value.mode = 'create'
   showViewModal.value = true
+}
+
+function setAsDefault(v) {
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.set_as_default', {
+    name: v.name,
+    type: v.type,
+    doctype: v.dt,
+  }).then(() => {
+    reloadView()
+    list.value.reload()
+  })
 }
 
 function duplicateView(v) {
