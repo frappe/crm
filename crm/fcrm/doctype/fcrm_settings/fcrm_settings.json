@@ -6,8 +6,6 @@
  "engine": "InnoDB",
  "field_order": [
   "defaults_tab",
-  "default_view",
-  "column_break_jeeh",
   "restore_defaults",
   "branding_tab",
   "brand_name",
@@ -58,21 +56,12 @@
    "fieldname": "favicon",
    "fieldtype": "Attach",
    "label": "Favicon"
-  },
-  {
-   "fieldname": "default_view",
-   "fieldtype": "Data",
-   "label": "Default View"
-  },
-  {
-   "fieldname": "column_break_jeeh",
-   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-02-18 17:05:39.440396",
+ "modified": "2025-02-20 12:38:38.088477",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
