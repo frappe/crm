@@ -169,7 +169,6 @@
    "label": "Kanban Fields"
   },
   {
-   "default": "name",
    "fieldname": "title_field",
    "fieldtype": "Data",
    "label": "Title Field"
@@ -189,7 +188,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-20 12:52:27.522624",
+ "modified": "2025-02-20 15:36:55.059065",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
