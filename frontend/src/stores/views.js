@@ -7,13 +7,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
   let pinnedViews = ref([])
   let publicViews = ref([])
   let standardViews = ref({})
-
-  // Default view
-  const defaultView = createResource({
-    url: 'crm.api.views.get_default_view',
-    cache: 'crm-default-view',
-    auto: true,
-  })
+  const defaultView = ref(null)
 
   // Views
   const views = createResource({
@@ -34,48 +28,19 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
         if (view.public) {
           publicViews.value?.push(view)
         }
-        if (view.is_default && view.dt) {
+        if (view.is_standard && view.dt) {
           standardViews.value[view.dt + ' ' + view.type] = view
+        }
+        if (view.is_default) {
+          defaultView.value = view
         }
       }
       return views
     },
   })
 
-  function getDefaultView(routeName = false) {
-    let view = defaultView.data
-    if (!view) return null
-
-    if (typeof view === 'string' && !isNaN(view)) {
-      view = parseInt(view)
-    }
-
-    if (routeName) {
-      let viewObj = getView(view) || {
-        type: view.split('_')[0],
-        dt: view.split('_')[1],
-      }
-
-      let routeName = viewObj.dt
-
-      if (routeName.startsWith('CRM ')) {
-        routeName = routeName.slice(4)
-      }
-
-      if (!routeName.endsWith('s')) {
-        routeName += 's'
-      }
-
-      let viewName = viewObj.is_default ? null : viewObj.name
-
-      return {
-        name: routeName,
-        type: viewObj.type,
-        view: viewName,
-      }
-    }
-
-    return view
+  function getDefaultView() {
+    return defaultView.value
   }
 
   function getView(view, type, doctype = null) {
