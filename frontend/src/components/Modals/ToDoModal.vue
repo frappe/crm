@@ -20,11 +20,7 @@
         <Button
           v-if="todo?.reference_name"
           size="sm"
-          :label="
-            todo.reference_type == 'Opportunity'
-              ? __('Open Opportunity')
-              : __('Open Lead')
-          "
+          :label="todo.reference_type == 'Opportunity' ? __('Open Opportunity') : __('Open Lead')"
           @click="redirect()"
         >
           <template #suffix>
@@ -39,7 +35,7 @@
           <FormControl
             ref="title"
             :label="__('Title')"
-            v-model="_todo.title"
+            v-model="_todo.custom_title"
             :placeholder="__('Call with John Doe')"
           />
         </div>
@@ -54,9 +50,7 @@
             :bubbleMenu="true"
             :content="_todo.description"
             @change="(val) => (_todo.description = val)"
-            :placeholder="
-              __('Took a call with John Doe and discussed the new project.')
-            "
+            :placeholder="__('Took a call with John Doe and discussed the new project.')"
           />
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -211,7 +205,7 @@ function render() {
   nextTick(() => {
     title.value?.el?.focus?.()
     _todo.value = { ...props.todo }
-    if (_todo.value.custom_title) {
+    if (_todo.value.description) {
       editMode.value = true
     }
   })
