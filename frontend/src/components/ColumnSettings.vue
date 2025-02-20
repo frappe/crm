@@ -11,7 +11,9 @@
       </Button>
     </template>
     <template #body="{ close }">
-      <div class="my-2 p-1.5 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+      <div
+        class="my-2 p-1.5 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+      >
         <div v-if="!edit">
           <Draggable
             :list="columns"
@@ -176,9 +178,8 @@ const rows = computed({
 const fields = computed(() => {
   let allFields = list.value?.data?.fields
   if (!allFields) return []
-
   return allFields.filter((field) => {
-    return !columns.value.find((column) => column.key === field.fieldname)
+    return !columns.value.find((column) => column.key === field.value)
   })
 })
 
@@ -186,7 +187,7 @@ function addColumn(c) {
   let _column = {
     label: c.label,
     type: c.feildtype,
-    key: c.fieldname,
+    key: c.value,
     width: '10rem',
   }
   columns.value.push(_column)
