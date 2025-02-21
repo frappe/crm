@@ -191,21 +191,10 @@ function createDeal() {
     deal.website = 'https://' + deal.website
   }
   if (chooseExistingContact.value) {
-    const contactDetailsFields = new Set(
-      tabs.data.flatMap((tab) =>
-        tab.sections
-          .filter((section) => section.name === 'contact_details_section')
-          .flatMap((section) =>
-            section.columns.flatMap((column) =>
-              column.fields.map((field) => field.fieldname),
-            ),
-          ),
-      ),
-    )
-    
-    contactDetailsFields.forEach((field) => {
-      deal[field] = null
-    })
+    deal['first_name'] = null
+    deal['last_name'] = null
+    deal['email'] = null
+    deal['mobile_no'] = null
   } else deal['contact'] = null
 
   createResource({
