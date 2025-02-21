@@ -58,7 +58,7 @@
               </component>
             </div>
             <div class="flex flex-col gap-2 truncate">
-              <div class="truncate text-lg font-medium">
+              <div class="truncate text-lg font-medium text-ink-gray-9">
                 <span v-if="contact.data.salutation">
                   {{ contact.data.salutation + '. ' }}
                 </span>
@@ -103,16 +103,11 @@
         </div>
       </template>
     </FileUploader>
-    <Tabs
-      v-model="tabIndex"
-      :tabs="tabs"
-      tablistClass="!px-4"
-      class="overflow-auto"
-    >
-      <template #tab="{ tab, selected }">
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
+      <TabList class="!px-4" v-slot="{ tab, selected }">
         <button
           v-if="tab.name == 'Opportunities'"
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-gray-400 hover:text-ink-gray-9"
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-outline-gray-3 hover:text-ink-gray-9"
           :class="{ 'text-ink-gray-9': selected }"
         >
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
@@ -127,8 +122,8 @@
             {{ tab.count }}
           </Badge>
         </button>
-      </template>
-      <template #default="{ tab }">
+      </TabList>
+      <TabPanel v-slot="{ tab }">
         <div v-if="tab.name == 'Details'">
           <div
             v-if="fieldsLayout.data"
@@ -169,7 +164,7 @@
             <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
           </div>
         </div>
-      </template>
+      </TabPanel>
     </Tabs>
   </div>
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
@@ -204,6 +199,8 @@ import {
   Avatar,
   FileUploader,
   Tabs,
+  TabList,
+  TabPanel,
   call,
   createResource,
   usePageMeta,
