@@ -1,9 +1,5 @@
 <template>
-  <iframe
-    ref="iframeRef"
-    :srcdoc="htmlContent"
-    class="prose-f block h-10 max-h-[500px] w-full"
-  />
+  <iframe ref="iframeRef" :srcdoc="htmlContent" class="prose-f block h-10 max-h-[500px] w-full" />
 </template>
 
 <script setup>
@@ -84,9 +80,7 @@ function replaceReplyToContent(replyToContentElement, forGmail) {
 
     if (followingSiblings.length === 0) return
 
-    let clonedFollowingSiblings = followingSiblings.map((sibling) =>
-      sibling.cloneNode(true),
-    )
+    let clonedFollowingSiblings = followingSiblings.map((sibling) => sibling.cloneNode(true))
 
     const div = doc.createElement('div')
     div.append(...clonedFollowingSiblings)
@@ -99,10 +93,7 @@ function replaceReplyToContent(replyToContentElement, forGmail) {
     }
   }
 
-  replyToContentElement.parentElement.replaceChild(
-    wrapper,
-    replyToContentElement,
-  )
+  replyToContentElement.parentElement.replaceChild(wrapper, replyToContentElement)
 }
 
 const htmlContent = `
@@ -111,6 +102,14 @@ const htmlContent = `
 <head>
   <style>
     ${css}
+    :root {
+      --bg-surface-gray-3: #ededed;
+      --bg-surface-gray-4: #e2e2e2;
+    }
+    [data-theme='dark'] {
+      --bg-surface-gray-3: #343434;
+      --bg-surface-gray-4: #424242;
+    }
 
     .replied-content .collapse {
       margin: 10px 0 10px 0;
@@ -121,14 +120,14 @@ const htmlContent = `
       font-weight: 700;
       height: 12px;
       line-height: 0.1;
-      background: #e8eaed;
+      background: var(--bg-surface-gray-3);
       width: 23px;
       justify-content: center;
       border-radius: 5px;
     }
 
     .replied-content .collapse:hover {
-      background: #dadce0;
+      background: var(--bg-surface-gray-4);
     }
 
     .replied-content .collapse + input {
@@ -224,8 +223,7 @@ const htmlContent = `
 watch(iframeRef, (iframe) => {
   if (iframe) {
     iframe.onload = () => {
-      const emailContent =
-        iframe.contentWindow.document.querySelector('.email-content')
+      const emailContent = iframe.contentWindow.document.querySelector('.email-content')
       let parent = emailContent.closest('html')
 
       iframe.style.height = parent.offsetHeight + 1 + 'px'
