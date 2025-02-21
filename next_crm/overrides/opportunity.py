@@ -358,19 +358,21 @@ def create_opportunity(args):
         if args.get("customer") != ""
         else args.get("customer_name")
     )
+
+    prospect = args.get("custom_prospect") if args.get("custom_prospect") else None
     if customer != "":
-        if args.get("lead") != "" or args.get("custom_prospect") != "":
+        if args.get("lead") != "" or prospect:
             frappe.throw(_("Please enter only Customer, Lead or Prospect details"))
         opportunity_from = "customer"
         party_name = customer
     elif args.get("lead") != "":
-        if args.get("custom_prospect") != "":
+        if prospect:
             frappe.throw(_("Please enter only Customer, Lead or Prospect details"))
         opportunity_from = "lead"
         party_name = args.get("lead")
-    elif args.get("custom_prospect") != "":
+    elif prospect:
         opportunity_from = "prospect"
-        party_name = args.get("custom_prospect")
+        party_name = prospect
     else:
         frappe.throw(_("Please enter either Customer, Lead or Prospect details"))
 
