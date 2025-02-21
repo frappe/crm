@@ -186,7 +186,6 @@
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
-      title: __('Convert to Deal'),
       size: 'xl',
       actions: [
         {
@@ -197,6 +196,32 @@
       ],
     }"
   >
+    <template #body-header>
+      <div class="mb-6 flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{ __('Convert to Deal') }}
+          </h3>
+        </div>
+        <div class="flex items-center gap-1">
+          <Button
+            v-if="isManager() && !isMobileView"
+            variant="ghost"
+            class="w-7"
+            @click="openQuickEntryModal"
+          >
+            <EditIcon class="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            class="w-7"
+            @click="showConvertToDealModal = false"
+          >
+            <FeatherIcon name="x" class="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </template>
     <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
         <OrganizationsIcon class="h-4 w-4" />
@@ -256,6 +281,11 @@
       />
     </template>
   </Dialog>
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="CRM Deal"
+  />
   <FilesUploader
     v-if="lead.data?.name"
     v-model="showFilesUploader"
@@ -287,6 +317,7 @@ import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
@@ -294,6 +325,7 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
@@ -306,10 +338,15 @@ import {
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
+import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import {
+  whatsappEnabled,
+  callEnabled,
+  isMobileView,
+} from '@/composables/settings'
 import { capture } from '@/telemetry'
 import {
   createResource,
@@ -328,6 +365,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
 const { brand } = getSettings()
+const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
@@ -672,4 +710,11 @@ const dealTabs = createResource({
     return hasFields ? parsedTabs : []
   },
 })
+
+const showQuickEntryModal = ref(false)
+
+function openQuickEntryModal() {
+  showQuickEntryModal.value = true
+  showConvertToDealModal.value = false
+}
 </script>
