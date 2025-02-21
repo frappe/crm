@@ -285,6 +285,7 @@
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
     doctype="CRM Deal"
+    :onlyRequired="true"
   />
   <FilesUploader
     v-if="lead.data?.name"
