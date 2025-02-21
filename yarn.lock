@@ -1136,10 +1136,10 @@
   dependencies:
     mini-svg-data-uri "^1.2.3"
 
-"@tailwindcss/typography@^0.5.0":
-  version "0.5.15"
-  resolved "https://registry.yarnpkg.com/@tailwindcss/typography/-/typography-0.5.15.tgz#007ab9870c86082a1c76e5b3feda9392c7c8d648"
-  integrity sha512-AqhlCXl+8grUz8uqExv5OTtgpjuVIwFTSXTrh8y9/pw6q2ek7fJ+Y8ZEVw7EB2DCcuCOtEjf9w3+J3rzts01uA==
+"@tailwindcss/typography@^0.5.16":
+  version "0.5.16"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/typography/-/typography-0.5.16.tgz#a926c8f44d5c439b2915e231cad80058850047c6"
+  integrity sha512-0wDLwCVF5V3x3b1SGXPCDcdsbDHMBe+lkFzBRaHeLvNi+nrrnZ1lA18u+OTWO8iSWU2GxUOCvlXtDuqftc1oiA==
   dependencies:
     lodash.castarray "^4.4.0"
     lodash.isplainobject "^4.0.6"
@@ -2388,15 +2388,15 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-ui@^0.1.105:
-  version "0.1.105"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.105.tgz#3bdf3c458ba27f27ff2f2a28cf7eb6f9ed872367"
-  integrity sha512-9bZ/hj/HhQ9vp7DxE8aOKS8HqwETZrKT3IhSzjpYOk21efK8QwdbQ9sp0t4m3UII+HaUTSOTHnFzF7y9EhRZxg==
+frappe-ui@^0.1.110:
+  version "0.1.110"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.110.tgz#dbe02d294cb0aeb0a4c1b3000682093c309450ae"
+  integrity sha512-kFah6SoPauULXaeSbljNUq595/82VmY4k4+KA8zi4sXxpn4sXYi12qUl/1I8GOBhsCQQizmoh46DO7e/uU2M1A==
   dependencies:
     "@headlessui/vue" "^1.7.14"
     "@popperjs/core" "^2.11.2"
     "@tailwindcss/forms" "^0.5.3"
-    "@tailwindcss/typography" "^0.5.0"
+    "@tailwindcss/typography" "^0.5.16"
     "@tiptap/extension-color" "^2.0.3"
     "@tiptap/extension-highlight" "^2.0.3"
     "@tiptap/extension-image" "^2.0.3"
