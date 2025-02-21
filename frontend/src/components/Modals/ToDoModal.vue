@@ -144,6 +144,7 @@ const _todo = ref({
   title: '',
   description: '',
   allocated_to: '',
+  assigned_by: '',
   date: '',
   status: 'Backlog',
   priority: 'Low',
@@ -173,6 +174,7 @@ async function updateToDo() {
   if (!_todo.value.allocated_to) {
     _todo.value.allocated_to = getUser().name
   }
+  _todo.value.assigned_by = getUser().name
   if (_todo.value.name) {
     let d = await call('frappe.client.set_value', {
       doctype: 'ToDo',
