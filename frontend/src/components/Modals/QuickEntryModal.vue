@@ -35,6 +35,7 @@
             v-if="!preview"
             :tabs="tabs.data"
             :doctype="_doctype"
+            :onlyRequired="onlyRequired"
           />
           <FieldLayout v-else :tabs="tabs.data" :data="{}" :preview="true" />
         </div>
@@ -55,6 +56,10 @@ const props = defineProps({
     type: String,
     default: 'CRM Lead',
   },
+  onlyRequired: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const show = defineModel()
@@ -64,12 +69,13 @@ const dirty = ref(false)
 const preview = ref(false)
 
 function getParams() {
-  return { doctype: _doctype.value, type: 'Quick Entry' }
+  let type = props.onlyRequired ? 'Required Fields' : 'Quick Entry'
+  return { doctype: _doctype.value, type }
 }
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['QuickEntryModal', _doctype.value],
+  cache: ['QuickEntryModal', _doctype.value, props.onlyRequired],
   params: getParams(),
   onSuccess(data) {
     tabs.originalData = JSON.parse(JSON.stringify(data))
@@ -106,11 +112,12 @@ function saveChanges() {
     })
   })
   loading.value = true
+  let type = props.onlyRequired ? 'Required Fields' : 'Quick Entry'
   call(
     'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.save_fields_layout',
     {
       doctype: _doctype.value,
-      type: 'Quick Entry',
+      type: type,
       layout: JSON.stringify(_tabs),
     },
   ).then(() => {

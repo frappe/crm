@@ -197,8 +197,8 @@ class CRMLead(Document):
 
 		return False
 
-	def create_deal(self, contact, organization):
-		deal = frappe.new_doc("CRM Deal")
+	def create_deal(self, contact, organization, deal=None):
+		new_deal = frappe.new_doc("CRM Deal")
 
 		lead_deal_map = {
 			"lead_owner": "deal_owner",
@@ -245,13 +245,13 @@ class CRMLead(Document):
 			if field.fieldname in lead_deal_map:
 				fieldname = lead_deal_map[field.fieldname]
 
-			if hasattr(deal, fieldname):
+			if hasattr(new_deal, fieldname):
 				if fieldname == "organization":
-					deal.update({fieldname: organization})
+					new_deal.update({fieldname: organization})
 				else:
-					deal.update({fieldname: self.get(field.fieldname)})
+					new_deal.update({fieldname: self.get(field.fieldname)})
 
-		deal.update(
+		new_deal.update(
 			{
 				"lead": self.name,
 				"contacts": [{"contact": contact}],
@@ -259,7 +259,7 @@ class CRMLead(Document):
 		)
 
 		if self.first_responded_on:
-			deal.update(
+			new_deal.update(
 				{
 					"sla_creation": self.sla_creation,
 					"response_by": self.response_by,
@@ -270,8 +270,11 @@ class CRMLead(Document):
 				}
 			)
 
-		deal.insert(ignore_permissions=True)
-		return deal.name
+		if deal:
+			new_deal.update(deal)
+
+		new_deal.insert(ignore_permissions=True)
+		return new_deal.name
 
 	def set_sla(self):
 		"""
@@ -297,8 +300,8 @@ class CRMLead(Document):
 		if sla:
 			sla.apply(self)
 
-	def convert_to_deal(self):
-		return convert_to_deal(lead=self.name, doc=self)
+	def convert_to_deal(self, deal=None):
+		return convert_to_deal(lead=self.name, doc=self, deal=deal)
 
 	@staticmethod
 	def get_non_filterable_fields():
@@ -380,7 +383,7 @@ class CRMLead(Document):
 
 
 @frappe.whitelist()
-def convert_to_deal(lead, doc=None):
+def convert_to_deal(lead, doc=None, deal=None):
 	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
 		"CRM Lead", "write", lead
 	):
@@ -394,5 +397,5 @@ def convert_to_deal(lead, doc=None):
 		lead.db_set("communication_status", "Replied")
 	contact = lead.create_contact(False)
 	organization = lead.create_organization()
-	deal = lead.create_deal(contact, organization)
-	return deal
+	_deal = lead.create_deal(contact, organization, deal)
+	return _deal

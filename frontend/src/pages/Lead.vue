@@ -186,7 +186,6 @@
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
-      title: __('Convert to Deal'),
       size: 'xl',
       actions: [
         {
@@ -197,12 +196,38 @@
       ],
     }"
   >
+    <template #body-header>
+      <div class="mb-6 flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{ __('Convert to Deal') }}
+          </h3>
+        </div>
+        <div class="flex items-center gap-1">
+          <Button
+            v-if="isManager() && !isMobileView"
+            variant="ghost"
+            class="w-7"
+            @click="openQuickEntryModal"
+          >
+            <EditIcon class="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            class="w-7"
+            @click="showConvertToDealModal = false"
+          >
+            <FeatherIcon name="x" class="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </template>
     <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
       </div>
-      <div class="ml-6">
+      <div class="ml-6 text-ink-gray-9">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
@@ -210,7 +235,6 @@
         <Link
           v-if="existingOrganizationChecked"
           class="form-control mt-2.5"
-          variant="outline"
           size="md"
           :value="existingOrganization"
           doctype="CRM Organization"
@@ -229,7 +253,7 @@
         <ContactsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Contact') }}</label>
       </div>
-      <div class="ml-6">
+      <div class="ml-6 text-ink-gray-9">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingContactChecked" />
@@ -237,7 +261,6 @@
         <Link
           v-if="existingContactChecked"
           class="form-control mt-2.5"
-          variant="outline"
           size="md"
           :value="existingContact"
           doctype="Contact"
@@ -247,8 +270,23 @@
           {{ __("New contact will be created based on the person's details") }}
         </div>
       </div>
+
+      <div v-if="dealTabs.data?.length" class="h-px w-full border-t my-6" />
+
+      <FieldLayout
+        v-if="dealTabs.data?.length"
+        :tabs="dealTabs.data"
+        :data="deal"
+        doctype="CRM Deal"
+      />
     </template>
   </Dialog>
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="CRM Deal"
+    :onlyRequired="true"
+  />
   <FilesUploader
     v-if="lead.data?.name"
     v-model="showFilesUploader"
@@ -280,12 +318,15 @@ import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
@@ -298,10 +339,15 @@ import {
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
+import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import {
+  whatsappEnabled,
+  callEnabled,
+  isMobileView,
+} from '@/composables/settings'
 import { capture } from '@/telemetry'
 import {
   createResource,
@@ -315,14 +361,15 @@ import {
   call,
   usePageMeta,
 } from 'frappe-ui'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
 const { brand } = getSettings()
+const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
-const { statusOptions, getLeadStatus } = statusesStore()
+const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -599,18 +646,23 @@ async function convertToDeal(updated) {
     )
     showConvertToDealModal.value = false
   } else {
-    let deal = await call(
+    let _deal = await call(
       'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
-      {
-        lead: lead.data.name,
-      },
-    )
-    if (deal) {
+      { lead: lead.data.name, deal },
+    ).catch((err) => {
+      createToast({
+        title: __('Error converting to deal'),
+        text: __(err.messages?.[0]),
+        icon: 'x',
+        iconClasses: 'text-ink-red-4',
+      })
+    })
+    if (_deal) {
       capture('convert_lead_to_deal')
       if (updated) {
         await contacts.reload()
       }
-      router.push({ name: 'Deal', params: { dealId: deal } })
+      router.push({ name: 'Deal', params: { dealId: _deal } })
     }
   }
 }
@@ -619,5 +671,51 @@ const activities = ref(null)
 
 function openEmailBox() {
   activities.value.emailBox.show = true
+}
+
+const deal = reactive({})
+
+const dealStatuses = computed(() => {
+  let statuses = statusOptions('deal')
+  if (!deal.status) {
+    deal.status = statuses[0].value
+  }
+  return statuses
+})
+
+const dealTabs = createResource({
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  cache: ['RequiredFields', 'CRM Deal'],
+  params: { doctype: 'CRM Deal', type: 'Required Fields' },
+  auto: true,
+  transform: (_tabs) => {
+    let hasFields = false
+    let parsedTabs = _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.columns.forEach((column) => {
+          column.fields.forEach((field) => {
+            hasFields = true
+            if (field.fieldname == 'status') {
+              field.fieldtype = 'Select'
+              field.options = dealStatuses.value
+              field.prefix = getDealStatus(deal.status).color
+            }
+
+            if (field.fieldtype === 'Table') {
+              deal[field.fieldname] = []
+            }
+          })
+        })
+      })
+    })
+    return hasFields ? parsedTabs : []
+  },
+})
+
+const showQuickEntryModal = ref(false)
+
+function openQuickEntryModal() {
+  showQuickEntryModal.value = true
+  showConvertToDealModal.value = false
 }
 </script>
