@@ -245,6 +245,15 @@
           {{ __("New contact will be created based on the person's details") }}
         </div>
       </div>
+
+      <div v-if="dealTabs.data?.length" class="h-px w-full border-t my-6" />
+
+      <FieldLayout
+        v-if="dealTabs.data?.length"
+        :tabs="dealTabs.data"
+        :data="deal"
+        doctype="CRM Deal"
+      />
     </template>
   </Dialog>
   <FilesUploader
@@ -284,6 +293,7 @@ import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
@@ -313,14 +323,14 @@ import {
   call,
   usePageMeta,
 } from 'frappe-ui'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
-const { statusOptions, getLeadStatus } = statusesStore()
+const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -623,4 +633,43 @@ const activities = ref(null)
 function openEmailBox() {
   activities.value.emailBox.show = true
 }
+
+const deal = reactive({})
+
+const dealStatuses = computed(() => {
+  let statuses = statusOptions('deal')
+  if (!deal.status) {
+    deal.status = statuses[0].value
+  }
+  return statuses
+})
+
+const dealTabs = createResource({
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  cache: ['RequiredFields', 'CRM Deal'],
+  params: { doctype: 'CRM Deal', type: 'Required Fields' },
+  auto: true,
+  transform: (_tabs) => {
+    let hasFields = false
+    let parsedTabs = _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.columns.forEach((column) => {
+          column.fields.forEach((field) => {
+            hasFields = true
+            if (field.fieldname == 'status') {
+              field.fieldtype = 'Select'
+              field.options = dealStatuses.value
+              field.prefix = getDealStatus(deal.status).color
+            }
+
+            if (field.fieldtype === 'Table') {
+              deal[field.fieldname] = []
+            }
+          })
+        })
+      })
+    })
+    return hasFields ? parsedTabs : []
+  },
+})
 </script>
