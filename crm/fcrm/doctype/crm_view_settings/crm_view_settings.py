@@ -37,7 +37,7 @@ def create(view):
 	doc.icon = view.icon
 	doc.dt = view.doctype
 	doc.user = frappe.session.user
-	doc.route_name = view.route_name or ""
+	doc.route_name = view.route_name or get_route_name(view.doctype)
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(view.filters)
 	doc.order_by = view.order_by
@@ -70,7 +70,7 @@ def update(view):
 	doc.label = view.label
 	doc.type = view.type or "list"
 	doc.icon = view.icon
-	doc.route_name = view.route_name or ""
+	doc.route_name = view.route_name or get_route_name(view.doctype)
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by
@@ -147,13 +147,23 @@ def sync_default_columns(view):
 
 @frappe.whitelist()
 def set_as_default(name=None, type=None, doctype=None):
-	if not name:
-		name = type + "_" + doctype
-	frappe.db.set_single_value("FCRM Settings", "default_view", name)
+	if name:
+		frappe.db.set_value("CRM View Settings", name, "is_default", 1)
+	else:
+		doc = create_or_update_standard_view({"type": type, "doctype": doctype, "is_default": 1})
+		name = doc.name
+
+	# remove default from other views of same user
+	frappe.db.set_value(
+		"CRM View Settings",
+		{"name": ("!=", name), "user": frappe.session.user, "is_default": 1},
+		"is_default",
+		0,
+	)
 
 
 @frappe.whitelist()
-def create_or_update_default_view(view):
+def create_or_update_standard_view(view):
 	view = frappe._dict(view)
 
 	filters = parse_json(view.filters) or {}
@@ -161,6 +171,7 @@ def create_or_update_default_view(view):
 	rows = parse_json(view.rows or "[]")
 	kanban_columns = parse_json(view.kanban_columns or "[]")
 	kanban_fields = parse_json(view.kanban_fields or "[]")
+	view.column_field = view.column_field or "status"
 
 	default_rows = sync_default_rows(view.doctype, view.type)
 	rows = rows + default_rows if default_rows else rows
@@ -173,42 +184,63 @@ def create_or_update_default_view(view):
 
 	doc = frappe.db.exists(
 		"CRM View Settings",
-		{"dt": view.doctype, "type": view.type or "list", "is_default": True, "user": frappe.session.user},
+		{"dt": view.doctype, "type": view.type or "list", "is_standard": True, "user": frappe.session.user},
 	)
 	if doc:
 		doc = frappe.get_doc("CRM View Settings", doc)
 		doc.label = view.label
 		doc.type = view.type or "list"
-		doc.route_name = view.route_name or ""
+		doc.route_name = view.route_name or get_route_name(view.doctype)
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
-		doc.order_by = view.order_by
-		doc.group_by_field = view.group_by_field
+		doc.order_by = view.order_by or "modified desc"
+		doc.group_by_field = view.group_by_field or "owner"
 		doc.column_field = view.column_field
 		doc.title_field = view.title_field
 		doc.kanban_columns = json.dumps(kanban_columns)
 		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
+		doc.is_default = view.is_default or False
 		doc.save()
 	else:
 		doc = frappe.new_doc("CRM View Settings")
-		label = "Group By View" if view.type == "group_by" else "List View"
+
+		label = "List"
+		if view.type == "group_by":
+			label = "Group By"
+		elif view.type == "kanban":
+			label = "Kanban"
+
 		doc.name = view.label or label
 		doc.label = view.label or label
 		doc.type = view.type or "list"
 		doc.dt = view.doctype
 		doc.user = frappe.session.user
-		doc.route_name = view.route_name or ""
+		doc.route_name = view.route_name or get_route_name(view.doctype)
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
-		doc.order_by = view.order_by
-		doc.group_by_field = view.group_by_field
+		doc.order_by = view.order_by or "modified desc"
+		doc.group_by_field = view.group_by_field or "owner"
 		doc.column_field = view.column_field
 		doc.title_field = view.title_field
 		doc.kanban_columns = json.dumps(kanban_columns)
 		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
-		doc.is_default = True
+		doc.is_standard = True
+		doc.is_default = view.is_default or False
 		doc.insert()
+
+	return doc
+
+
+def get_route_name(doctype):
+	# Example: "CRM Lead" -> "Leads"
+	if doctype.startswith("CRM "):
+		doctype = doctype[4:]
+
+	if doctype[-1] != "s":
+		doctype += "s"
+
+	return doctype

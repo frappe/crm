@@ -190,6 +190,13 @@ function createDeal() {
   if (deal.website && !deal.website.startsWith('http')) {
     deal.website = 'https://' + deal.website
   }
+  if (chooseExistingContact.value) {
+    deal['first_name'] = null
+    deal['last_name'] = null
+    deal['email'] = null
+    deal['mobile_no'] = null
+  } else deal['contact'] = null
+
   createResource({
     url: 'crm.fcrm.doctype.crm_deal.crm_deal.create_deal',
     params: { args: deal },

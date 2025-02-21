@@ -21,6 +21,7 @@
 </template>
 <script setup>
 import LightningIcon from '@/components/Icons/LightningIcon.vue'
+import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
 import { ref } from 'vue'
 
@@ -34,6 +35,7 @@ const props = defineProps({
 const showBanner = ref(window.is_demo_site)
 
 function signupNow() {
+  capture('signup_from_demo_site')
   window.open('https://frappecloud.com/crm/signup', '_blank')
 }
 </script>

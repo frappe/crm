@@ -276,7 +276,7 @@ def get_data(
 		default_view_filters = {
 			"dt": doctype,
 			"type": view_type or "list",
-			"is_default": 1,
+			"is_standard": 1,
 			"user": frappe.session.user,
 		}
 
@@ -537,7 +537,7 @@ def get_records_based_on_order(doctype, rows, filters, page_length, order):
 
 
 @frappe.whitelist()
-def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
+def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False, only_required=False):
 	not_allowed_fieldtypes = [
 		"Tab Break",
 		"Section Break",
@@ -571,6 +571,9 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False):
 	for field in standard_fields:
 		if not restricted_fieldtypes or field.get("fieldtype") not in restricted_fieldtypes:
 			fields.append(field)
+
+	if only_required:
+		fields = [field for field in fields if field.get("reqd")]
 
 	if as_array:
 		return fields

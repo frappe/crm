@@ -27,7 +27,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Type",
-   "options": "Quick Entry\nSide Panel\nData Fields\nGrid Row"
+   "options": "Quick Entry\nSide Panel\nData Fields\nGrid Row\nRequired Fields"
   },
   {
    "fieldname": "section_break_ttpm",
@@ -46,7 +46,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-02 22:12:51.663011",
+ "modified": "2025-02-21 13:09:49.573515",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Fields Layout",
