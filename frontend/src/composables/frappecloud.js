@@ -3,14 +3,14 @@ import { createResource } from 'frappe-ui'
 import { ref } from 'vue'
 
 const baseEndpoint = ref('https://frappecloud.com')
-const isPaymentModeAdded = ref(false)
+const siteName = ref('')
 
 export const currentSiteInfo = createResource({
   url: 'frappe.integrations.frappe_providers.frappecloud_billing.current_site_info',
   cache: 'currentSiteInfo',
   onSuccess: (data) => {
-    isPaymentModeAdded.value = data.is_payment_method_added
     baseEndpoint.value = data.base_url
+    siteName.value = data.site_name
   },
 })
 
@@ -38,13 +38,8 @@ export const confirmLoginToFrappeCloud = () => {
 }
 
 const loginToFrappeCloud = () => {
-  let redirectRoute = ''
-
-  if (isPaymentModeAdded.value) {
-    redirectRoute = '/dashboard'
-  } else {
-    redirectRoute = '/dashboard/welcome'
-  }
-
-  window.open(`${baseEndpoint.value}${redirectRoute}`, '_blank')
+  window.open(
+    `${baseEndpoint.value}/dashboard/sites/${siteName.value}`,
+    '_blank',
+  )
 }
