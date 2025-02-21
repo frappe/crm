@@ -465,7 +465,7 @@
   // Convert to Opportunity
   const showConvertToOpportunityModal = ref(false)
 
-  async function convertToOpportunity(updated) {
+  async function convertToOpportunity() {
 
       let opportunity = await call(
         'next_crm.overrides.prospect.convert_to_opportunity',
@@ -475,9 +475,6 @@
       )
       if (opportunity) {
         capture('convert_prospect_to_opportunity')
-        if (updated) {
-          await contacts.reload()
-        }
         router.push({ name: 'Opportunity', params: { opportunityId: opportunity } })
       }
   }
