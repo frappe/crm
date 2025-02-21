@@ -49,50 +49,47 @@
     </div>
   </div>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
-    <Tabs
-      v-model="tabIndex"
-      v-slot="{ tab }"
-      :tabs="tabs"
-      tablistClass="!px-3"
-      class="overflow-auto"
-    >
-      <div v-if="tab.name == 'Details'">
-        <SLASection
-          v-if="lead.data.sla_status"
-          v-model="lead.data"
-          @updateField="updateField"
-        />
-        <div
-          v-if="fieldsLayout.data"
-          class="flex flex-1 flex-col justify-between overflow-hidden"
-        >
-          <div class="flex flex-col overflow-y-auto">
-            <div
-              v-for="(section, i) in fieldsLayout.data"
-              :key="section.label"
-              class="flex flex-col px-2 py-3 sm:p-3"
-              :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-            >
-              <Section :is-opened="section.opened" :label="section.label">
-                <SectionFields
-                  :fields="section.fields"
-                  :isLastSection="i == fieldsLayout.data.length - 1"
-                  v-model="lead.data"
-                  @update="updateField"
-                />
-              </Section>
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
+      <TabList class="!px-3" />
+      <TabPanel v-slot="{ tab }">
+        <div v-if="tab.name == 'Details'">
+          <SLASection
+            v-if="lead.data.sla_status"
+            v-model="lead.data"
+            @updateField="updateField"
+          />
+          <div
+            v-if="fieldsLayout.data"
+            class="flex flex-1 flex-col justify-between overflow-hidden"
+          >
+            <div class="flex flex-col overflow-y-auto">
+              <div
+                v-for="(section, i) in fieldsLayout.data"
+                :key="section.label"
+                class="flex flex-col px-2 py-3 sm:p-3"
+                :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
+              >
+                <Section :is-opened="section.opened" :label="section.label">
+                  <SectionFields
+                    :fields="section.fields"
+                    :isLastSection="i == fieldsLayout.data.length - 1"
+                    v-model="lead.data"
+                    @update="updateField"
+                  />
+                </Section>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <Activities
-        v-else
-        doctype="Lead"
-        :tabs="tabs"
-        v-model:reload="reload"
-        v-model:tabIndex="tabIndex"
-        v-model="lead"
-      />
+        <Activities
+          v-else
+          doctype="Lead"
+          :tabs="tabs"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
+          v-model="lead"
+        />
+      </TabPanel>
     </Tabs>
   </div>
   <Dialog
@@ -199,6 +196,8 @@ import {
   createResource,
   Dropdown,
   Tabs,
+  TabList,
+  TabPanel,
   Switch,
   Breadcrumbs,
   call,
