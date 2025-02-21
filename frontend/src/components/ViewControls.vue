@@ -394,6 +394,7 @@ function getParams() {
     load_default_columns: _view?.row || true,
     pinned: _view?.pinned || false,
     public: _view?.public || false,
+    custom_sql: _view?.custom_sql || '',
   }
 
   return {
@@ -443,6 +444,9 @@ list.value = createResource({
       page_length: params.page_length,
       page_length_count: params.page_length_count,
     }
+  },
+  onError(error) {
+    alert("Something went wrong with the query");
   },
 })
 
@@ -1040,6 +1044,7 @@ function saveView() {
     rows: defaultParams.value.rows,
     route_name: route.name,
     load_default_columns: view.value.load_default_columns,
+    custom_sql: view.value.custom_sql
   }
   viewModalObj.value = view.value
   viewModalObj.value.mode = 'edit'

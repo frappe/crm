@@ -307,6 +307,21 @@ def get_data(
 		if group_by_field and group_by_field not in rows:
 			rows.append(group_by_field)
 
+		if custom_view_name:
+			sql_query = frappe.db.get_value("CRM View Settings", custom_view_name, "custom_sql")
+			if sql_query:
+				result = frappe.db.sql(
+					sql_query,
+					as_dict=True
+				)
+				ids = ""
+				if result:
+					ids = result[0].get("ids")
+				if ids:
+					filters["name"] = ["in", ids]
+				else:
+					filters["name"] = ["in", "no-results"]
+
 		data = (
 			frappe.get_list(
 				doctype,

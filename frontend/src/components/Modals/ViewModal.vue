@@ -41,14 +41,30 @@
           v-model="view.label"
         />
       </div>
+      <div class="mt-5">
+        <div class="mb-1.5 text-xs text-ink-gray-5">{{ __('SQL') }}</div>
+        <Textarea
+          variant="outline"
+          ref="content"
+          editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
+          v-model="view.custom_sql"
+          :placeholder="
+            __('SQL for custom advanced views.')
+          "
+          :disabled="!isManager()"
+        />
+      </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
-import { call } from 'frappe-ui'
+import { Textarea, call } from 'frappe-ui'
 import { ref, watch, nextTick } from 'vue'
+import { usersStore } from '@/stores/users'
+
+const { isManager } = usersStore()
 
 const props = defineProps({
   doctype: {

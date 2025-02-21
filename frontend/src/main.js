@@ -57,7 +57,6 @@ app.config.globalProperties.$dialog = createDialog
 const originalCreateResource = frappeUI.createResource
 frappeUI.createResource = function patchedCreateResource(options) {
   options.cache = false
-  console.log(options);
   return originalCreateResource(options)
 }
 

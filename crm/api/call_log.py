@@ -4,23 +4,27 @@ from frappe import _
 
 def on_status_change(doc, status):
 	try:
+		lead = None
+		try:
+			dynamic_link = frappe.get_doc("Dynamic Link", {
+				"link_doctype": "CRM Lead",
+				"parent": doc.name,
+				"parenttype": "CRM Call Log"
+			})
+			if not dynamic_link:
+				return
+
+			lead = frappe.get_doc("CRM Lead", {
+				"name": dynamic_link.link_name
+			})
+		except Exception:
+			pass
+
+		if lead:
+			lead.custom_last_call_date = frappe.utils.now_datetime()
+			lead.save(ignore_permissions=True)
+
 		if status == "No Answer":
-			lead = None
-			try:
-				dynamic_link = frappe.get_doc("Dynamic Link", {
-					"link_doctype": "CRM Lead",
-					"parent": doc.name,
-					"parenttype": "CRM Call Log"
-				})
-				if not dynamic_link:
-					return
-
-				lead = frappe.get_doc("CRM Lead", {
-					"name": dynamic_link.link_name
-				})
-			except Exception:
-				pass
-
 			assign_to = doc.receiver
 			if not assign_to:
 				return
