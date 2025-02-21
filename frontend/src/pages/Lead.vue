@@ -646,9 +646,9 @@ async function convertToDeal(updated) {
     )
     showConvertToDealModal.value = false
   } else {
-    let deal = await call(
+    let _deal = await call(
       'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
-      { lead: lead.data.name },
+      { lead: lead.data.name, deal },
     ).catch((err) => {
       createToast({
         title: __('Error converting to deal'),
@@ -657,12 +657,12 @@ async function convertToDeal(updated) {
         iconClasses: 'text-ink-red-4',
       })
     })
-    if (deal) {
+    if (_deal) {
       capture('convert_lead_to_deal')
       if (updated) {
         await contacts.reload()
       }
-      router.push({ name: 'Deal', params: { dealId: deal } })
+      router.push({ name: 'Deal', params: { dealId: _deal } })
     }
   }
 }
