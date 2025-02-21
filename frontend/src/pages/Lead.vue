@@ -599,10 +599,15 @@ async function convertToDeal(updated) {
   } else {
     let deal = await call(
       'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
-      {
-        lead: lead.data.name,
-      },
-    )
+      { lead: lead.data.name },
+    ).catch((err) => {
+      createToast({
+        title: __('Error converting to deal'),
+        text: __(err.messages?.[0]),
+        icon: 'x',
+        iconClasses: 'text-ink-red-4',
+      })
+    })
     if (deal) {
       capture('convert_lead_to_deal')
       if (updated) {
