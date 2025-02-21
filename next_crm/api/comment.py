@@ -28,8 +28,8 @@ def notify_mentions(doc):
             doctype = doctype[4:].lower()
         name = (
             reference_doc.lead_name or None
-            if doctype == "lead"
-            else reference_doc.customer or reference_doc.lead_name or None
+            if doctype == "Lead"
+            else reference_doc.party_name or None
         )
         notification_text = f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
