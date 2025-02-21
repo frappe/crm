@@ -18,6 +18,7 @@ def create(view):
 	view.rows = parse_json(view.rows or '[]')
 	view.kanban_columns = parse_json(view.kanban_columns or '[]')
 	view.kanban_fields = parse_json(view.kanban_fields or '[]')
+	view.custom_sql = view.custom_sql or ""
 
 	default_rows = sync_default_rows(view.doctype)
 	view.rows = view.rows + default_rows if default_rows else view.rows
@@ -46,6 +47,7 @@ def create(view):
 	doc.kanban_fields = json.dumps(view.kanban_fields)
 	doc.columns = json.dumps(view.columns)
 	doc.rows = json.dumps(view.rows)
+	doc.custom_sql = view.custom_sql
 	doc.insert()
 	return doc
 
@@ -58,6 +60,7 @@ def update(view):
 	rows = parse_json(view.rows or [])
 	kanban_columns = parse_json(view.kanban_columns or [])
 	kanban_fields = parse_json(view.kanban_fields or [])
+	view.custom_sql = view.custom_sql or ""
 
 	default_rows = sync_default_rows(view.doctype)
 	rows = rows + default_rows if default_rows else rows
@@ -78,6 +81,7 @@ def update(view):
 	doc.kanban_fields = json.dumps(kanban_fields)
 	doc.columns = json.dumps(columns)
 	doc.rows = json.dumps(rows)
+	doc.custom_sql = view.custom_sql
 	doc.save()
 	return doc
 
