@@ -385,8 +385,6 @@
       <span>{{ __(emptyText) }}</span>
       <Button
         v-if="title == 'Calls'"
-        size="sm"
-        class="min-w-[90px] whitespace-nowrap"
         :label="__('Make a Call')"
         @click="makeCall(doc.data.mobile_no)"
       />
@@ -508,7 +506,7 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import { timeAgo, startCase } from '@/utils'
+import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'

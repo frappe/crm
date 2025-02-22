@@ -60,12 +60,12 @@
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
     <FadedScrollableDiv
-      class="flex flex-1 items-center overflow-hidden -ml-1"
+      class="flex flex-1 items-center overflow-x-auto -ml-1"
       orientation="horizontal"
     >
       <div
         v-for="filter in quickFilterList"
-        :key="filter.name"
+        :key="filter.fieldname"
         class="m-1 min-w-36"
       >
         <QuickFilterField
@@ -225,6 +225,7 @@ import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
+import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
@@ -256,11 +257,12 @@ const props = defineProps({
     default: {
       hideColumnsButton: false,
       defaultViewName: '',
-      allowedViews: ['list']
+      allowedViews: ['list'],
     },
   },
 })
 
+const { brand } = getSettings()
 const { $dialog } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager } = usersStore()
@@ -327,6 +329,7 @@ usePageMeta(() => {
   return {
     title: label,
     emoji: isEmoji(currentView.value.icon) ? currentView.value.icon : '',
+    icon: brand.favicon,
   }
 })
 
@@ -472,7 +475,12 @@ const export_all = ref(false)
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
-  let filters = JSON.stringify(list.value.params.filters)
+
+  let filters = JSON.stringify({
+    ...props.filters,
+    ...list.value.params.filters,
+  })
+
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
   if (export_all.value) {
@@ -495,7 +503,7 @@ if (allowedViews.includes('list')) {
     icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name, params: { viewType: 'list' } })
+      router.push({ name: route.name })
     },
   })
 }
@@ -600,7 +608,7 @@ const viewsDropdownOptions = computed(() => {
 })
 
 const quickFilterList = computed(() => {
-  let filters = [{ fieldname: 'name', label: __('ID'), fieldtype: 'Data' }]
+  let filters = [{ fieldname: 'name', fieldtype: 'Data', label: __('ID') }]
   if (quickFilters.data) {
     filters.push(...quickFilters.data)
   }
@@ -713,12 +721,12 @@ function updateColumns(obj) {
     }
   }
 
-  // Проверяем, есть ли реальные изменения
+  // Check if there are actual changes
   if (!obj.reset && !obj.isDefault) {
     const currentColumns = JSON.stringify(defaultParams.value?.columns || '')
     const newColumns = JSON.stringify(obj.columns)
     if (currentColumns === newColumns) {
-      return // Нет изменений, выходим
+      return // No changes, exit
     }
   }
 

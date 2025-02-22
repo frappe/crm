@@ -286,7 +286,14 @@ standard_dropdown_items = [
 		"label": "Settings",
 		"type": "Route",
 		"icon": "settings",
-  		"route": "#",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
+		"name1": "login_to_fc",
+		"label": "Login to Frappe Cloud",
+		"type": "Route",
+		"route": "#",
 		"is_standard": 1,
 	},
 	{
@@ -300,7 +307,7 @@ standard_dropdown_items = [
 		"label": "Log out",
 		"type": "Route",
 		"icon": "log-out",
-  		"route": "#",
+		"route": "#",
 		"is_standard": 1,
 	},
 ]

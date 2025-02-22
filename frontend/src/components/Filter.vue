@@ -592,4 +592,75 @@ const oppositeOperatorMap = {
   between: 'between',
   timespan: 'timespan',
 }
+
+const timespanOptions = [
+  {
+    label: __('Last Week'),
+    value: 'last week',
+  },
+  {
+    label: __('Last Month'),
+    value: 'last month',
+  },
+  {
+    label: __('Last Quarter'),
+    value: 'last quarter',
+  },
+  {
+    label: __('Last 6 Months'),
+    value: 'last 6 months',
+  },
+  {
+    label: __('Last Year'),
+    value: 'last year',
+  },
+  {
+    label: __('Yesterday'),
+    value: 'yesterday',
+  },
+  {
+    label: __('Today'),
+    value: 'today',
+  },
+  {
+    label: __('Tomorrow'),
+    value: 'tomorrow',
+  },
+  {
+    label: __('This Week'),
+    value: 'this week',
+  },
+  {
+    label: __('This Month'),
+    value: 'this month',
+  },
+  {
+    label: __('This Quarter'),
+    value: 'this quarter',
+  },
+  {
+    label: __('This Year'),
+    value: 'this year',
+  },
+  {
+    label: __('Next Week'),
+    value: 'next week',
+  },
+  {
+    label: __('Next Month'),
+    value: 'next month',
+  },
+  {
+    label: __('Next Quarter'),
+    value: 'next quarter',
+  },
+  {
+    label: __('Next 6 Months'),
+    value: 'next 6 months',
+  },
+  {
+    label: __('Next Year'),
+    value: 'next year',
+  },
+]
 </script>

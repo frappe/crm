@@ -30,6 +30,7 @@
           />
           <div class="flex gap-1.5">
             <Button
+              :label="__('CC')"
               variant="ghost"
               @click="toggleCC()"
               :class="[
@@ -37,15 +38,9 @@
                   ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
                   : '!text-ink-gray-4',
               ]"
-            >
-              <template #icon>
-                <Email2Icon class="h-4" />
-              </template>
-              <template #default>
-                <span class="hidden sm:inline">{{ __('CC') }}</span>
-              </template>
-            </Button>
+            />
             <Button
+              :label="__('BCC')"
               variant="ghost"
               @click="toggleBCC()"
               :class="[
@@ -53,14 +48,7 @@
                   ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
                   : '!text-ink-gray-4',
               ]"
-            >
-              <template #icon>
-                <EmailIcon class="h-4" />
-              </template>
-              <template #default>
-                <span class="hidden sm:inline">{{ __('BCC') }}</span>
-              </template>
-            </Button>
+            />
           </div>
         </div>
         <div v-if="cc" class="sm:mx-10 mx-4 flex items-center gap-2">

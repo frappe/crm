@@ -63,11 +63,11 @@ const props = defineProps({
 
 const emit = defineEmits(['applyQuickFilter'])
 
-function updateFilter(f, value) {
-  emit('applyQuickFilter', f, value)
-}
-
 const debouncedFn = useDebounceFn((f, value) => {
   emit('applyQuickFilter', f, value)
 }, 500)
+
+function updateFilter(f, value) {
+  emit('applyQuickFilter', f, value)
+}
 </script>

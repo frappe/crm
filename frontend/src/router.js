@@ -169,13 +169,6 @@ router.beforeEach(async (to, from, next) => {
     const activeTab = localStorage.getItem(storageKey) || 'activity'
     const hash = '#' + activeTab
     next({ ...to, hash })
-  } else if (['Leads', 'Deals', 'Tasks'].includes(to.name) && !to.params.viewType) {
-    // Set default view type to kanban for these routes when no viewType is specified
-    next({
-      ...to,
-      params: { ...to.params, viewType: 'kanban' },
-      replace: true
-    })
   } else {
     next()
   }

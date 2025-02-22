@@ -1136,16 +1136,6 @@
   dependencies:
     mini-svg-data-uri "^1.2.3"
 
-"@tailwindcss/typography@^0.5.0":
-  version "0.5.15"
-  resolved "https://registry.yarnpkg.com/@tailwindcss/typography/-/typography-0.5.15.tgz#007ab9870c86082a1c76e5b3feda9392c7c8d648"
-  integrity sha512-AqhlCXl+8grUz8uqExv5OTtgpjuVIwFTSXTrh8y9/pw6q2ek7fJ+Y8ZEVw7EB2DCcuCOtEjf9w3+J3rzts01uA==
-  dependencies:
-    lodash.castarray "^4.4.0"
-    lodash.isplainobject "^4.0.6"
-    lodash.merge "^4.6.2"
-    postcss-selector-parser "6.0.10"
-
 "@tailwindcss/typography@^0.5.16":
   version "0.5.16"
   resolved "https://registry.yarnpkg.com/@tailwindcss/typography/-/typography-0.5.16.tgz#a926c8f44d5c439b2915e231cad80058850047c6"
@@ -2398,45 +2388,7 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-ui@^0.1.105:
-  version "0.1.108"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.108.tgz#00e13fdc3483e3a835ad6d8809545f353de9b56c"
-  integrity sha512-YikaWJBB6ZcEyAaWMhH9DguRBlouE7p8yhI6VxrrPzb6xcR+tWPDIGM//EkugR8jH8/W42tOBYqEcaouY9VgCQ==
-  dependencies:
-    "@headlessui/vue" "^1.7.14"
-    "@popperjs/core" "^2.11.2"
-    "@tailwindcss/forms" "^0.5.3"
-    "@tailwindcss/typography" "^0.5.0"
-    "@tiptap/extension-color" "^2.0.3"
-    "@tiptap/extension-highlight" "^2.0.3"
-    "@tiptap/extension-image" "^2.0.3"
-    "@tiptap/extension-link" "^2.0.3"
-    "@tiptap/extension-mention" "^2.0.3"
-    "@tiptap/extension-placeholder" "^2.0.3"
-    "@tiptap/extension-table" "^2.0.3"
-    "@tiptap/extension-table-cell" "^2.0.3"
-    "@tiptap/extension-table-header" "^2.0.3"
-    "@tiptap/extension-table-row" "^2.0.3"
-    "@tiptap/extension-text-align" "^2.0.3"
-    "@tiptap/extension-text-style" "^2.0.3"
-    "@tiptap/extension-typography" "^2.0.3"
-    "@tiptap/pm" "^2.0.3"
-    "@tiptap/starter-kit" "^2.0.3"
-    "@tiptap/suggestion" "^2.0.3"
-    "@tiptap/vue-3" "^2.0.3"
-    "@vueuse/core" "^10.4.1"
-    dayjs "^1.11.13"
-    feather-icons "^4.28.0"
-    idb-keyval "^6.2.0"
-    ora "5.4.1"
-    prettier "^3.3.2"
-    radix-vue "^1.5.3"
-    showdown "^2.1.0"
-    socket.io-client "^4.5.1"
-    tippy.js "^6.3.7"
-    typescript "^5.0.2"
-
-frappe-ui@^0.1.108:
+frappe-ui@^0.1.111:
   version "0.1.111"
   resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.111.tgz#c7615aa8f02da9af0596074352150d813d0f4b3d"
   integrity sha512-JCh/SQwcbsQQxTZIFFzEULPgp2QAQZe+vwrM2jqekIx4dBgYW2H1KgXSlf+uO2ng2vqk4Q1MiStA3svHQEXsLQ==
@@ -3987,16 +3939,7 @@ sourcemap-codec@^1.4.8:
   resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz#ea804bd94857402e6992d05a38ef1ae35a9ab4c4"
   integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-string-width@^4.1.0:
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -4080,14 +4023,7 @@ stringify-object@^3.3.0:
     is-obj "^1.0.1"
     is-regexp "^1.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==

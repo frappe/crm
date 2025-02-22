@@ -226,6 +226,10 @@ import { ref, computed, watch } from 'vue'
 const props = defineProps({
   tabs: Object,
   doctype: String,
+  onlyRequired: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const tabIndex = ref(0)
@@ -249,6 +253,7 @@ const params = computed(() => {
     doctype: props.doctype,
     restricted_fieldtypes: restrictedFieldTypes,
     as_array: true,
+    only_required: props.onlyRequired,
   }
 })
 
