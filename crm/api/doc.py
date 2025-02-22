@@ -271,7 +271,7 @@ def get_data(
 			]
 
 		if not rows:
-			rows = ["name"]
+			rows = default_rows
 
 		default_view_filters = {
 			"dt": doctype,
@@ -325,14 +325,16 @@ def get_data(
 
 		if not kanban_columns and column_field:
 			field_meta = frappe.get_meta(doctype).get_field(column_field)
-			if field_meta.fieldtype == "Link":
+			if field_meta and field_meta.fieldtype == "Link":
 				kanban_columns = frappe.get_all(
 					field_meta.options,
 					fields=["name"],
 					order_by="modified asc",
 				)
-			elif field_meta.fieldtype == "Select":
+			elif field_meta and field_meta.fieldtype == "Select":
 				kanban_columns = [{"name": option} for option in field_meta.options.split("\n")]
+			else:
+				kanban_columns = []
 
 		if not title_field:
 			title_field = "name"
