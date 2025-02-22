@@ -58,24 +58,30 @@
       </div>
     </div>
   </div>
-  <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
+  <div v-else class="flex items-start justify-between gap-2 px-5 py-4">
     <FadedScrollableDiv
-      class="flex flex-1 items-center overflow-x-auto -ml-1"
+      class="flex flex-1 items-center overflow-x-auto -ml-1 -mt-1 scroll-smooth"
       orientation="horizontal"
+      @wheel.prevent="(e) => {
+        const container = e.currentTarget
+        container.scrollLeft += e.deltaY
+      }"
     >
-      <div
-        v-for="filter in quickFilterList"
-        :key="filter.fieldname"
-        class="m-1 min-w-36"
-      >
-        <QuickFilterField
-          :filter="filter"
-          @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
-        />
+      <div class="flex items-center gap-2">
+        <div
+          v-for="filter in quickFilterList"
+          :key="filter.fieldname"
+          class="m-1 min-w-36"
+        >
+          <QuickFilterField
+            :filter="filter"
+            @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
+          />
+        </div>
       </div>
     </FadedScrollableDiv>
     <div class="-ml-2 h-[70%] border-l" />
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 flex-shrink-0">
       <div
         v-if="viewUpdated && route.query.view && (!view.public || isManager())"
         class="flex items-center gap-2 border-r pr-2"
