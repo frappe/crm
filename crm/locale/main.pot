@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-02-22 22:55+0000\n"
-"PO-Revision-Date: 2025-02-22 22:55+0000\n"
+"POT-Creation-Date: 2025-02-22 23:53+0000\n"
+"PO-Revision-Date: 2025-02-22 23:53+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.13.1\n"
 
-#: frontend/src/components/ViewControls.vue:1022
+#: frontend/src/components/ViewControls.vue:1020
 msgid " (New)"
 msgstr ""
 
@@ -355,6 +355,10 @@ msgstr ""
 
 #: frontend/src/components/ListBulkActions.vue:95
 msgid "Are you sure you want to delete {0} item(s)?"
+msgstr ""
+
+#: frontend/src/components/ViewControls.vue:971
+msgid "Are you sure you want to delete {0} view?"
 msgstr ""
 
 #: frontend/src/composables/frappecloud.js:24
@@ -1157,7 +1161,7 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:100
 #: frontend/src/components/ListBulkActions.vue:180
 #: frontend/src/components/ViewControls.vue:966
-#: frontend/src/components/ViewControls.vue:977
+#: frontend/src/components/ViewControls.vue:975
 #: frontend/src/pages/Contact.vue:131 frontend/src/pages/Contact.vue:141
 #: frontend/src/pages/Contact.vue:328 frontend/src/pages/MobileContact.vue:107
 #: frontend/src/pages/MobileContact.vue:320

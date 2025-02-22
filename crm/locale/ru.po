@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-02-22 22:55+0000\n"
-"PO-Revision-Date: 2025-02-23 01:56+0300\n"
+"POT-Creation-Date: 2025-02-22 23:53+0000\n"
+"PO-Revision-Date: 2025-02-23 02:54+0300\n"
 "Last-Translator: AlexKuzin <dev@olimpicfresh.ru>\n"
 "Language-Team: shariq@frappe.io\n"
 "Language: ru\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.13.1\n"
 "X-Generator: Poedit 3.5\n"
 
-#: frontend/src/components/ViewControls.vue:1022
+#: frontend/src/components/ViewControls.vue:1020
 msgid " (New)"
 msgstr " (Новый)"
 
@@ -359,6 +359,10 @@ msgstr "Вы уверены, что хотите удалить эту зада�
 #: frontend/src/components/ListBulkActions.vue:95
 msgid "Are you sure you want to delete {0} item(s)?"
 msgstr "Вы уверены, что хотите удалить {0} элемент(ов)?"
+
+#: frontend/src/components/ViewControls.vue:971
+msgid "Are you sure you want to delete {0} view?"
+msgstr "Вы уверены, что хотите удалить вид {0}?"
 
 #: frontend/src/composables/frappecloud.js:24
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
@@ -1160,7 +1164,7 @@ msgstr "По умолчанию"
 #: frontend/src/components/ListBulkActions.vue:100
 #: frontend/src/components/ListBulkActions.vue:180
 #: frontend/src/components/ViewControls.vue:966
-#: frontend/src/components/ViewControls.vue:977
+#: frontend/src/components/ViewControls.vue:975
 #: frontend/src/pages/Contact.vue:131 frontend/src/pages/Contact.vue:141
 #: frontend/src/pages/Contact.vue:328 frontend/src/pages/MobileContact.vue:107
 #: frontend/src/pages/MobileContact.vue:320
