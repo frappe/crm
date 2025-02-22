@@ -1146,6 +1146,16 @@
     lodash.merge "^4.6.2"
     postcss-selector-parser "6.0.10"
 
+"@tailwindcss/typography@^0.5.16":
+  version "0.5.16"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/typography/-/typography-0.5.16.tgz#a926c8f44d5c439b2915e231cad80058850047c6"
+  integrity sha512-0wDLwCVF5V3x3b1SGXPCDcdsbDHMBe+lkFzBRaHeLvNi+nrrnZ1lA18u+OTWO8iSWU2GxUOCvlXtDuqftc1oiA==
+  dependencies:
+    lodash.castarray "^4.4.0"
+    lodash.isplainobject "^4.0.6"
+    lodash.merge "^4.6.2"
+    postcss-selector-parser "6.0.10"
+
 "@tanstack/virtual-core@3.11.2":
   version "3.11.2"
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.11.2.tgz#00409e743ac4eea9afe5b7708594d5fcebb00212"
@@ -2397,6 +2407,44 @@ frappe-ui@^0.1.105:
     "@popperjs/core" "^2.11.2"
     "@tailwindcss/forms" "^0.5.3"
     "@tailwindcss/typography" "^0.5.0"
+    "@tiptap/extension-color" "^2.0.3"
+    "@tiptap/extension-highlight" "^2.0.3"
+    "@tiptap/extension-image" "^2.0.3"
+    "@tiptap/extension-link" "^2.0.3"
+    "@tiptap/extension-mention" "^2.0.3"
+    "@tiptap/extension-placeholder" "^2.0.3"
+    "@tiptap/extension-table" "^2.0.3"
+    "@tiptap/extension-table-cell" "^2.0.3"
+    "@tiptap/extension-table-header" "^2.0.3"
+    "@tiptap/extension-table-row" "^2.0.3"
+    "@tiptap/extension-text-align" "^2.0.3"
+    "@tiptap/extension-text-style" "^2.0.3"
+    "@tiptap/extension-typography" "^2.0.3"
+    "@tiptap/pm" "^2.0.3"
+    "@tiptap/starter-kit" "^2.0.3"
+    "@tiptap/suggestion" "^2.0.3"
+    "@tiptap/vue-3" "^2.0.3"
+    "@vueuse/core" "^10.4.1"
+    dayjs "^1.11.13"
+    feather-icons "^4.28.0"
+    idb-keyval "^6.2.0"
+    ora "5.4.1"
+    prettier "^3.3.2"
+    radix-vue "^1.5.3"
+    showdown "^2.1.0"
+    socket.io-client "^4.5.1"
+    tippy.js "^6.3.7"
+    typescript "^5.0.2"
+
+frappe-ui@^0.1.108:
+  version "0.1.111"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.111.tgz#c7615aa8f02da9af0596074352150d813d0f4b3d"
+  integrity sha512-JCh/SQwcbsQQxTZIFFzEULPgp2QAQZe+vwrM2jqekIx4dBgYW2H1KgXSlf+uO2ng2vqk4Q1MiStA3svHQEXsLQ==
+  dependencies:
+    "@headlessui/vue" "^1.7.14"
+    "@popperjs/core" "^2.11.2"
+    "@tailwindcss/forms" "^0.5.3"
+    "@tailwindcss/typography" "^0.5.16"
     "@tiptap/extension-color" "^2.0.3"
     "@tiptap/extension-highlight" "^2.0.3"
     "@tiptap/extension-image" "^2.0.3"
