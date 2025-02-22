@@ -1,8 +1,8 @@
 <template>
   <Dialog
-    v-model="show"
+    v-model="dialogShow"
     :options="{
-      title: editMode ? __(emailTemplate.name) : __('Create Email Template'),
+      title: editMode ? __(_emailTemplate.name) : __('Create Email Template'),
       size: 'xl',
       actions: [
         {
@@ -23,6 +23,7 @@
               :placeholder="__('Payment Reminder')"
               :label="__('Name')"
               :required="true"
+              @update:modelValue="handleFieldChange"
             />
           </div>
           <div class="flex-1">
@@ -32,6 +33,7 @@
               :label="__('Doctype')"
               :options="['CRM Deal', 'CRM Lead']"
               :placeholder="__('CRM Deal')"
+              @update:modelValue="handleFieldChange"
             />
           </div>
         </div>
@@ -42,6 +44,7 @@
             :label="__('Subject')"
             :placeholder="__('Payment Reminder from Frappé - (#{{ name }})')"
             :required="true"
+            @update:modelValue="handleFieldChange"
           />
         </div>
         <div>
@@ -52,6 +55,7 @@
             default="Rich Text"
             :options="['Rich Text', 'HTML']"
             :placeholder="__('Rich Text')"
+            @update:modelValue="handleFieldChange"
           />
         </div>
         <div>
@@ -68,6 +72,7 @@
                 '<p>Dear {{ lead_name }},</p>\n\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\n\n<p>Thanks,</p>\n<p>Frappé</p>',
               )
             "
+            @update:modelValue="handleFieldChange"
           />
           <div v-else>
             <div class="mb-1.5 text-xs text-ink-gray-5">
@@ -79,7 +84,7 @@
               editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
               :bubbleMenu="true"
               :content="_emailTemplate.response"
-              @change="(val) => (_emailTemplate.response = val)"
+              @change="(val) => { _emailTemplate.response = val; handleFieldChange(); }"
               :placeholder="
                 __(
                   'Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé',
@@ -95,9 +100,15 @@
       </div>
     </template>
   </Dialog>
+  <ConfirmCloseDialog 
+    v-model="showConfirmClose"
+    @confirm="confirmClose"
+    @cancel="cancelClose"
+  />
 </template>
 
 <script setup>
+import ConfirmCloseDialog from '@/components/Modals/ConfirmCloseDialog.vue'
 import { capture } from '@/telemetry'
 import { Checkbox, TextEditor, call } from 'frappe-ui'
 import { ref, nextTick, watch } from 'vue'
@@ -110,17 +121,70 @@ const props = defineProps({
 })
 
 const show = defineModel()
+const dialogShow = ref(false)
+const showConfirmClose = ref(false)
 const emailTemplates = defineModel('reloadEmailTemplates')
 const errorMessage = ref('')
 
-const emit = defineEmits(['after'])
-
-const subjectRef = ref(null)
 const nameRef = ref(null)
+const subjectRef = ref(null)
 const editMode = ref(false)
+const isDirty = ref(false)
 let _emailTemplate = ref({
   content_type: 'Rich Text',
 })
+
+watch(
+  () => show.value,
+  (value) => {
+    if (value === dialogShow.value) return
+    if (value) {
+      _emailTemplate.value = { ...props.emailTemplate }
+      editMode.value = !!props.emailTemplate.name
+      isDirty.value = false
+      dialogShow.value = true
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => dialogShow.value,
+  (value) => {
+    if (value) return
+    if (isDirty.value) {
+      showConfirmClose.value = true
+      nextTick(() => {
+        dialogShow.value = true
+      })
+    } else {
+      show.value = false
+    }
+  }
+)
+
+function handleFieldChange() {
+  isDirty.value = true
+}
+
+function handleClose() {
+  if (isDirty.value) {
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    show.value = false
+  }
+}
+
+function confirmClose() {
+  isDirty.value = false
+  dialogShow.value = false
+  show.value = false
+}
+
+function cancelClose() {
+  showConfirmClose.value = false
+}
 
 async function updateEmailTemplate() {
   if (!validate()) return
@@ -136,7 +200,7 @@ async function updateEmailTemplate() {
   const values = newEmailTemplate
 
   if (!nameChanged && !otherFieldChanged) {
-    show.value = false
+    handleClose()
     return
   }
 
@@ -184,7 +248,7 @@ async function callInsertDoc() {
 
 function handleEmailTemplateUpdate(doc) {
   emailTemplates.value?.reload()
-  show.value = false
+  handleClose()
 }
 
 function validate() {
@@ -213,27 +277,4 @@ function validate() {
   }
   return true
 }
-
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    editMode.value = false
-    errorMessage.value = ''
-    nextTick(() => {
-      if (_emailTemplate.value.name) {
-        subjectRef.value?.el?.focus()
-      } else {
-        nameRef.value?.el?.focus()
-      }
-      _emailTemplate.value = { ...props.emailTemplate }
-      _emailTemplate.value.content_type = _emailTemplate.value.use_html
-        ? 'HTML'
-        : 'Rich Text'
-      if (_emailTemplate.value.name) {
-        editMode.value = true
-      }
-    })
-  },
-)
 </script>

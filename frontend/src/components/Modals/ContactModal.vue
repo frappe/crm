@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model="dialogShow" :options="{ size: 'xl' }">
     <template #body>
       <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
@@ -17,7 +17,7 @@
             >
               <EditIcon class="h-4 w-4" />
             </Button>
-            <Button variant="ghost" class="w-7" @click="show = false">
+            <Button variant="ghost" class="w-7" @click="handleClose">
               <FeatherIcon name="x" class="h-4 w-4" />
             </Button>
           </div>
@@ -27,6 +27,7 @@
           :tabs="tabs.data"
           :data="_contact"
           doctype="Contact"
+          @change="handleFieldChange"
         />
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
@@ -42,11 +43,17 @@
       </div>
     </template>
   </Dialog>
+  <ConfirmCloseDialog 
+    v-model="showConfirmClose"
+    @confirm="confirmClose"
+    @cancel="cancelClose"
+  />
 </template>
 
 <script setup>
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
+import ConfirmCloseDialog from '@/components/Modals/ConfirmCloseDialog.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { capture } from '@/telemetry'
@@ -74,10 +81,63 @@ const { isManager } = usersStore()
 
 const router = useRouter()
 const show = defineModel()
+const dialogShow = ref(false)
+const showConfirmClose = ref(false)
 
 const loading = ref(false)
+const isDirty = ref(false)
 
 let _contact = ref({})
+
+watch(
+  () => show.value,
+  (value) => {
+    if (!value) return
+    nextTick(() => {
+      _contact.value = { ...props.contact.data }
+      isDirty.value = false
+      dialogShow.value = true
+    })
+  },
+)
+
+watch(
+  () => dialogShow.value,
+  (value) => {
+    if (value) return
+    if (isDirty.value) {
+      showConfirmClose.value = true
+      nextTick(() => {
+        dialogShow.value = true
+      })
+    } else {
+      show.value = false
+    }
+  }
+)
+
+function handleFieldChange() {
+  isDirty.value = true
+}
+
+function handleClose() {
+  if (isDirty.value) {
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    show.value = false
+  }
+}
+
+function confirmClose() {
+  isDirty.value = false
+  dialogShow.value = false
+  show.value = false
+}
+
+function cancelClose() {
+  showConfirmClose.value = false
+}
 
 async function createContact() {
   if (_contact.value.email_id) {
@@ -148,16 +208,6 @@ const tabs = createResource({
     })
   },
 })
-
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    nextTick(() => {
-      _contact.value = { ...props.contact.data }
-    })
-  },
-)
 
 const showQuickEntryModal = defineModel('showQuickEntryModal')
 

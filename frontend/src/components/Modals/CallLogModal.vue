@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="dialogOptions">
+  <Dialog v-model="dialogShow" :options="dialogOptions">
     <template #body>
       <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
@@ -17,7 +17,7 @@
             >
               <EditIcon class="h-4 w-4" />
             </Button>
-            <Button variant="ghost" class="w-7" @click="show = false">
+            <Button variant="ghost" class="w-7" @click="handleClose">
               <FeatherIcon name="x" class="h-4 w-4" />
             </Button>
           </div>
@@ -27,6 +27,7 @@
             :tabs="tabs.data"
             :data="_callLog"
             doctype="CRM Call Log"
+            @change="handleFieldChange"
           />
           <ErrorMessage class="mt-2" :message="error" />
         </div>
@@ -50,12 +51,18 @@
     v-model="showQuickEntryModal"
     doctype="CRM Call Log"
   />
+  <ConfirmCloseDialog 
+    v-model="showConfirmClose"
+    @confirm="confirmClose"
+    @cancel="cancelClose"
+  />
 </template>
 
 <script setup>
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
+import ConfirmCloseDialog from '@/components/Modals/ConfirmCloseDialog.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { getRandom } from '@/utils'
@@ -64,6 +71,10 @@ import { FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 
 const props = defineProps({
+  callLog: {
+    type: Object,
+    default: {},
+  },
   options: {
     type: Object,
     default: {
@@ -75,11 +86,14 @@ const props = defineProps({
 const { isManager } = usersStore()
 
 const show = defineModel()
+const dialogShow = ref(false)
+const showConfirmClose = ref(false)
+const showQuickEntryModal = defineModel('showQuickEntryModal')
 const callLog = defineModel('callLog')
 
 const loading = ref(false)
 const error = ref(null)
-const title = ref(null)
+const isDirty = ref(false)
 const editMode = ref(false)
 
 let _callLog = ref({
@@ -103,8 +117,7 @@ const dialogOptions = computed(() => {
     {
       label: editMode.value ? __('Save') : __('Create'),
       variant: 'solid',
-      onClick: () =>
-        editMode.value ? updateCallLog() : createCallLog.submit(),
+      onClick: () => editMode.value ? updateCallLog() : createCallLog.submit(),
     },
   ]
 
@@ -120,6 +133,61 @@ const tabs = createResource({
 
 let doc = ref({})
 
+watch(
+  () => show.value,
+  (value) => {
+    if (!value) return
+    editMode.value = false
+    nextTick(() => {
+      doc.value = props.callLog?.data || {}
+      _callLog.value = { ...doc.value }
+      if (_callLog.value.name) {
+        editMode.value = true
+      }
+      isDirty.value = false
+      dialogShow.value = true
+    })
+  }
+)
+
+watch(
+  () => dialogShow.value,
+  (value) => {
+    if (value) return
+    if (isDirty.value) {
+      showConfirmClose.value = true
+      nextTick(() => {
+        dialogShow.value = true
+      })
+    } else {
+      show.value = false
+    }
+  }
+)
+
+function handleFieldChange() {
+  isDirty.value = true
+}
+
+function handleClose() {
+  if (isDirty.value) {
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    show.value = false
+  }
+}
+
+function confirmClose() {
+  isDirty.value = false
+  dialogShow.value = false
+  show.value = false
+}
+
+function cancelClose() {
+  showConfirmClose.value = false
+}
+
 function updateCallLog() {
   error.value = null
   const old = { ...doc.value }
@@ -128,7 +196,7 @@ function updateCallLog() {
   const dirty = JSON.stringify(old) !== JSON.stringify(newCallLog)
 
   if (!dirty) {
-    show.value = false
+    dialogShow.value = false
     return
   }
 
@@ -180,33 +248,14 @@ const createCallLog = createResource({
 })
 
 function handleCallLogUpdate(doc) {
-  show.value = false
+  dialogShow.value = false
   props.options.afterInsert && props.options.afterInsert(doc)
 }
-
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    editMode.value = false
-    nextTick(() => {
-      // TODO: Issue with FormControl
-      // title.value.el.focus()
-      doc.value = callLog.value?.data || {}
-      _callLog.value = { ...doc.value }
-      if (_callLog.value.name) {
-        editMode.value = true
-      }
-    })
-  },
-)
-
-const showQuickEntryModal = ref(false)
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
   nextTick(() => {
-    show.value = false
+    dialogShow.value = false
   })
 }
 </script>

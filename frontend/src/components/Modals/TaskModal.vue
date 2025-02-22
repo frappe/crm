@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model="show"
+    v-model="dialogShow"
     :options="{
       size: 'xl',
       actions: [
@@ -41,6 +41,7 @@
             :label="__('Title')"
             v-model="_task.title"
             :placeholder="__('Call with John Doe')"
+            @update:modelValue="handleFieldChange"
           />
         </div>
         <div>
@@ -53,7 +54,7 @@
             editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_task.description"
-            @change="(val) => (_task.description = val)"
+            @change="(val) => { _task.description = val; handleFieldChange(); }"
             :placeholder="
               __('Took a call with John Doe and discussed the new project.')
             "
@@ -94,6 +95,7 @@
             v-model="_task.due_date"
             class="flex-1"
             @click.stop
+            @update:modelValue="handleFieldChange"
           />
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
             <Button :label="extractLabel(_task.priority, translateTaskPriority)" class="w-full justify-between">
@@ -106,6 +108,11 @@
       </div>
     </template>
   </Dialog>
+  <ConfirmCloseDialog 
+    v-model="showConfirmClose"
+    @confirm="confirmClose"
+    @cancel="cancelClose"
+  />
 </template>
 
 <script setup>
@@ -122,6 +129,7 @@ import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { translateTaskStatus } from '@/utils/taskStatusTranslations'
 import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
+import ConfirmCloseDialog from '@/components/Modals/ConfirmCloseDialog.vue'
 
 const props = defineProps({
   task: {
@@ -139,6 +147,8 @@ const props = defineProps({
 })
 
 const show = defineModel()
+const dialogShow = ref(false)
+const showConfirmClose = ref(false)
 const tasks = defineModel('reloadTasks')
 
 const emit = defineEmits(['updateTask', 'after'])
@@ -148,6 +158,7 @@ const { getUser } = usersStore()
 
 const title = ref(null)
 const editMode = ref(false)
+const isDirty = ref(false)
 const _task = ref({
   title: '',
   description: '',
@@ -222,8 +233,54 @@ function render() {
 
 onMounted(() => show.value && render())
 
-watch(show, (value) => {
-  if (!value) return
-  render()
-})
+watch(
+  () => show.value,
+  (value) => {
+    if (value === dialogShow.value) return
+    if (value) {
+      render()
+      isDirty.value = false
+      dialogShow.value = true
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => dialogShow.value,
+  (value) => {
+    if (value) return
+    if (isDirty.value) {
+      showConfirmClose.value = true
+      nextTick(() => {
+        dialogShow.value = true
+      })
+    } else {
+      show.value = false
+    }
+  }
+)
+
+function handleFieldChange() {
+  isDirty.value = true
+}
+
+function handleClose() {
+  if (isDirty.value) {
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    show.value = false
+  }
+}
+
+function confirmClose() {
+  isDirty.value = false
+  dialogShow.value = false
+  show.value = false
+}
+
+function cancelClose() {
+  showConfirmClose.value = false
+}
 </script>
