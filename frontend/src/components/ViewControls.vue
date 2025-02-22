@@ -256,7 +256,7 @@ const props = defineProps({
     default: {
       hideColumnsButton: false,
       defaultViewName: '',
-      allowedViews: ['list'],
+      allowedViews: ['list']
     },
   },
 })
@@ -279,7 +279,7 @@ const viewUpdated = ref(false)
 const showViewModal = ref(false)
 
 function getViewType() {
-  let viewType = route.params.viewType || 'kanban'
+  let viewType = route.params.viewType || 'list'
   let types = {
     list: {
       name: 'list',
@@ -298,8 +298,13 @@ function getViewType() {
     },
   }
 
-  // If viewType is not valid, fallback to kanban
-  return types[viewType] || types['kanban']
+  // If allowedViews is set and requested type is not in the list,
+  // return list view
+  if (props.options.allowedViews && !props.options.allowedViews.includes(viewType)) {
+    return types['list']
+  }
+
+  return types[viewType] || types['list']
 }
 
 const currentView = computed(() => {
