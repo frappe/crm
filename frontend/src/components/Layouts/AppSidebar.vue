@@ -118,7 +118,6 @@ import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
-import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { callEnabled } from '@/composables/settings'
 import { FeatherIcon, TrialBanner } from 'frappe-ui'

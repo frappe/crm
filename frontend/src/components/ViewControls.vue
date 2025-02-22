@@ -300,13 +300,7 @@ function getViewType() {
     },
   }
 
-  // If allowedViews is set and requested type is not in the list,
-  // return list view
-  if (props.options.allowedViews && !props.options.allowedViews.includes(viewType)) {
-    return types['list']
-  }
-
-  return types[viewType] || types['list']
+  return types[viewType]
 }
 
 const currentView = computed(() => {
@@ -336,7 +330,7 @@ usePageMeta(() => {
 const view = ref({
   name: '',
   label: '',
-  type: 'kanban',
+  type: 'list',
   icon: '',
   filters: {},
   order_by: 'modified desc',
@@ -372,7 +366,7 @@ watch(updatedPageCount, (value) => {
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
   const view_name = _view?.name || ''
-  const view_type = _view?.type || route.params.viewType || 'kanban'
+  const view_type = _view?.type || route.params.viewType || 'list'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const group_by_field = _view?.group_by_field || 'owner'
@@ -382,13 +376,6 @@ function getParams() {
   const title_field = _view?.title_field || ''
   const kanban_columns = _view?.kanban_columns || ''
   const kanban_fields = _view?.kanban_fields || ''
-
-  // Clean up filters to prevent undefined keys
-  Object.keys(filters).forEach(key => {
-    if (key === 'undefined' || key === undefined || filters[key] === undefined) {
-      delete filters[key]
-    }
-  })
 
   view.value = {
     name: view_name,
@@ -503,7 +490,7 @@ if (allowedViews.includes('list')) {
     icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name })
+      router.push({ name: route.name, params: { viewType: 'list' }, replace: true })
     },
   })
 }
@@ -514,7 +501,7 @@ if (allowedViews.includes('kanban')) {
     icon: markRaw(KanbanIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name, params: { viewType: 'kanban' } })
+      router.push({ name: route.name, params: { viewType: 'kanban' }, replace: true })
     },
   })
 }
@@ -525,7 +512,7 @@ if (allowedViews.includes('group_by')) {
     icon: markRaw(GroupByIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name, params: { viewType: 'group_by' } })
+      router.push({ name: route.name, params: { viewType: 'group_by' }, replace: true })
     },
   })
 }
@@ -618,13 +605,19 @@ const quickFilterList = computed(() => {
     if (list.value.params?.filters[filter.fieldname]) {
       let value = list.value.params.filters[filter.fieldname]
       if (Array.isArray(value)) {
-        if (['Date', 'Datetime'].includes(filter.fieldtype) && value[0] === 'timespan') {
-          filter['value'] = value[1]
-        } else if (value[0]?.toLowerCase() === 'like') {
-          filter['value'] = value[1]?.replace(/%/g, '')
-        }
-      } else {
+        if (
+          (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
+            filter.fieldtype,
+          ) &&
+            value[0]?.toLowerCase() == 'like') ||
+          value[0]?.toLowerCase() != 'like'
+        )
+          return
+        filter['value'] = value[1]?.replace(/%/g, '')
+      } else if (typeof value == 'boolean') {
         filter['value'] = value
+      } else {
+        filter['value'] = value?.replace(/%/g, '')
       }
     }
   })
@@ -643,38 +636,29 @@ function applyQuickFilter(filter, value) {
   let filters = { ...list.value.params.filters }
   let field = filter.fieldname
   if (value) {
-    if (['Check', 'Select', 'Link'].includes(filter.fieldtype)) {
+    if (
+      ['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.fieldtype)
+    ) {
       filters[field] = value
-    } else if (['Date', 'Datetime'].includes(filter.fieldtype)) {
-      filters[field] = ['timespan', value]
     } else {
       filters[field] = ['LIKE', `%${value}%`]
     }
     filter['value'] = value
   } else {
     delete filters[field]
-    filter['value'] = filter.fieldtype === 'Check' ? false : ''
+    filter['value'] = ''
   }
   updateFilter(filters)
 }
 
 function updateFilter(filters) {
-  // Clean up filters to prevent undefined keys
-  if (filters) {
-    Object.keys(filters).forEach(key => {
-      if (key === 'undefined' || key === undefined || filters[key] === undefined) {
-        delete filters[key]
-      }
-    })
-  }
-
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
   list.value.params = defaultParams.value
-  list.value.params.filters = filters || {}
-  view.value.filters = filters || {}
+  list.value.params.filters = filters
+  view.value.filters = filters
   list.value.reload()
 
   if (!route.query.view) {
@@ -718,15 +702,6 @@ function updateColumns(obj) {
       columns: list.value.data.columns,
       rows: list.value.data.rows,
       isDefault: false,
-    }
-  }
-
-  // Check if there are actual changes
-  if (!obj.reset && !obj.isDefault) {
-    const currentColumns = JSON.stringify(defaultParams.value?.columns || '')
-    const newColumns = JSON.stringify(obj.columns)
-    if (currentColumns === newColumns) {
-      return // No changes, exit
     }
   }
 
@@ -1115,62 +1090,41 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
   let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type) || idx === 0) return
   if (idx === 1 && firstColumn.key == '_liked_by') return
-  if (!column?.key) return // Prevent undefined column keys
 
   event.stopPropagation()
   event.preventDefault()
 
-  let filters = { ...list.value.params?.filters } || {}
-  let value = item?.name || item?.label || item?.value || item || ''
+  let filters = { ...list.value.params.filters }
 
-  // Handle special cases
-  if (column.key === '_assign') {
-    if (Array.isArray(item) && item.length > 1) {
-      let target = event.target.closest('.user-avatar')
-      if (target) {
-        let name = target.getAttribute('data-name')
-        if (name) {
-          filters['_assign'] = ['LIKE', `%${name}%`]
-        }
-      }
-    } else if (Array.isArray(item) && item.length === 1 && item[0]?.name) {
-      filters['_assign'] = ['LIKE', `%${item[0].name}%`]
-    }
-  } else if (value) {
-    if (column.type === 'Link' || column.type === 'Select') {
-      filters[column.key] = value
-    } else {
-      filters[column.key] = ['LIKE', `%${value}%`]
-    }
+  let value = item.name || item.label || item
+
+  if (value) {
+    filters[column.key] = value
   } else {
     delete filters[column.key]
   }
 
-  // Clean up filters
-  Object.keys(filters).forEach(key => {
-    if (key === 'undefined' || key === undefined || filters[key] === undefined) {
-      delete filters[key]
+  if (column.key == '_assign') {
+    if (item.length > 1) {
+      let target = event.target.closest('.user-avatar')
+      if (target) {
+        let name = target.getAttribute('data-name')
+        filters['_assign'] = ['LIKE', `%${name}%`]
+      }
+    } else {
+      filters['_assign'] = ['LIKE', `%${item[0].name}%`]
     }
-  })
-
+  }
   updateFilter(filters)
 }
 
 function applyLikeFilter() {
-  let filters = { ...list.value.params?.filters } || {}
+  let filters = { ...list.value.params.filters }
   if (!filters._liked_by) {
     filters['_liked_by'] = ['LIKE', '%@me%']
   } else {
     delete filters['_liked_by']
   }
-
-  // Clean up filters
-  Object.keys(filters).forEach(key => {
-    if (key === 'undefined' || key === undefined || filters[key] === undefined) {
-      delete filters[key]
-    }
-  })
-
   updateFilter(filters)
 }
 

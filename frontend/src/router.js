@@ -3,6 +3,24 @@ import { userResource } from '@/stores/user'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
 
+// Define default view types for specific doctypes
+const defaultViewTypes = {
+  'CRM Lead': 'kanban',
+  'CRM Deal': 'kanban',
+  'CRM Task': 'kanban'
+}
+
+// Helper function to get default view type
+function getDefaultViewType(routeName) {
+  const doctypeMap = {
+    'Leads': 'CRM Lead',
+    'Deals': 'CRM Deal',
+    'Tasks': 'CRM Task'
+  }
+  const doctype = doctypeMap[routeName]
+  return defaultViewTypes[doctype] || 'list'
+}
+
 const routes = [
   {
     path: '/',
@@ -142,23 +160,45 @@ router.beforeEach(async (to, from, next) => {
     from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop
   }
 
+  // Helper function to check if we should apply default view type
+  const shouldApplyDefaultView = (to) => {
+    // Check if this is a route that should have default kanban
+    if (!['Leads', 'Deals', 'Tasks'].includes(to.name)) return false
+    
+    // Don't apply if there's an explicit view being loaded
+    if (to.query.view) return false
+
+    // Check if the URL ends with /view (empty viewType)
+    const isEmptyViewType = to.params.viewType === ''
+    
+    // Check if this is a direct navigation to the base route
+    const isBaseRoute = !to.params.viewType
+
+    // Apply default view type if:
+    // 1. URL ends with /view (empty viewType), or
+    // 2. No viewType in URL (base route)
+    return isEmptyViewType || isBaseRoute
+  }
+
   if (to.name === 'Home' && isLoggedIn) {
     const { views, getDefaultView } = viewsStore()
     await views.promise
 
     let defaultView = getDefaultView()
     if (!defaultView) {
-      next({ name: 'Leads' })
+      next({ name: 'Leads', params: { viewType: getDefaultViewType('Leads') } })
       return
     }
 
     let { route_name, type, name, is_standard } = defaultView
     route_name = route_name || 'Leads'
 
-    if (name && !is_standard) {
-      next({ name: route_name, params: { viewType: type }, query: { name } })
+    // If there's a saved view, respect its type
+    if (name) {
+      next({ name: route_name, params: { viewType: type || 'list' }, query: { view: name } })
     } else {
-      next({ name: route_name, params: { viewType: type } })
+      // For standard views without explicit type, use our default
+      next({ name: route_name, params: { viewType: type || getDefaultViewType(route_name) } })
     }
   } else if (!isLoggedIn) {
     window.location.href = '/login?redirect-to=/crm'
@@ -169,6 +209,16 @@ router.beforeEach(async (to, from, next) => {
     const activeTab = localStorage.getItem(storageKey) || 'activity'
     const hash = '#' + activeTab
     next({ ...to, hash })
+  } else if (shouldApplyDefaultView(to)) {
+    // Apply default view type
+    next({ 
+      ...to, 
+      params: { 
+        ...to.params, 
+        viewType: getDefaultViewType(to.name)
+      },
+      replace: true // Replace the current history entry instead of adding a new one
+    })
   } else {
     next()
   }
