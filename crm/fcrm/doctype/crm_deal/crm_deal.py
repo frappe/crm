@@ -290,6 +290,7 @@ def create_contact(doc):
 			"last_name": doc.get("last_name"),
 			"salutation": doc.get("salutation"),
 			"company_name": doc.get("organization") or doc.get("organization_name"),
+			"designation": doc.get("job_title"),
 		}
 	)
 
@@ -309,15 +310,21 @@ def create_contact(doc):
 def create_deal(args):
 	deal = frappe.new_doc("CRM Deal")
 
+	# Create organization first if needed
+	organization = args.get("organization") or create_organization(args)
+
+	# Then create contact if needed
 	contact = args.get("contact")
 	if not contact and (
 		args.get("first_name") or args.get("last_name") or args.get("email") or args.get("mobile_no")
 	):
+		# Pass organization to contact creation
+		args["organization"] = organization
 		contact = create_contact(args)
 
 	deal.update(
 		{
-			"organization": args.get("organization") or create_organization(args),
+			"organization": organization,
 			"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
 		}
 	)

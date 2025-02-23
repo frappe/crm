@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-02-23 00:24+0000\n"
-"PO-Revision-Date: 2025-02-23 03:30+0300\n"
+"PO-Revision-Date: 2025-02-23 04:52+0300\n"
 "Last-Translator: AlexKuzin <dev@olimpicfresh.ru>\n"
 "Language-Team: shariq@frappe.io\n"
 "Language: ru\n"
@@ -4272,7 +4272,9 @@ msgstr "У Вас нет номера мобильного телефона, у�
 
 #: frontend/src/components/Modals/ConfirmCloseDialog.vue:29
 msgid "You have unsaved changes. Are you sure you want to close this window?"
-msgstr "У вас есть несохраненные изменения. Вы уверены, что хотите закрыть это окно?"
+msgstr ""
+"У вас есть несохраненные изменения. \n"
+"Вы уверены, что хотите закрыть это окно?"
 
 #: frontend/src/components/ViewControls.vue:782
 msgid "You have unsaved changes. Do you want to save them?"

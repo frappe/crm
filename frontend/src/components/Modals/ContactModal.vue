@@ -94,7 +94,7 @@ watch(
   (value) => {
     if (!value) return
     nextTick(() => {
-      _contact.value = { ...props.contact.data }
+      _contact.value = props.contact.data ? { ...props.contact.data } : { ...props.contact }
       isDirty.value = false
       dialogShow.value = true
     })
@@ -156,6 +156,7 @@ async function createContact() {
       ..._contact.value,
     },
   })
+  
   if (doc.name) {
     capture('contact_created')
     handleContactUpdate(doc)
@@ -187,6 +188,8 @@ const tabs = createResource({
             if (field.fieldname == 'email_id') {
               field.read_only = false
             } else if (field.fieldname == 'mobile_no') {
+              field.read_only = false
+            } else if (field.fieldname == 'company_name') {
               field.read_only = false
             } else if (field.fieldname == 'address') {
               field.create = (value, close) => {
