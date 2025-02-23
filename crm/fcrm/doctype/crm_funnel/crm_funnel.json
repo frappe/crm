@@ -1,0 +1,48 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:sales_funnel",
+ "creation": "2025-02-23 02:58:30.860271",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sales_funnel"
+ ],
+ "fields": [
+  {
+   "fieldname": "sales_funnel",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Sales Funnel",
+   "reqd": 1,
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-02-23 03:04:23.770147",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Funnel",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

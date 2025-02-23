@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-02-22 23:53+0000\n"
-"PO-Revision-Date: 2025-02-22 23:53+0000\n"
+"POT-Creation-Date: 2025-02-23 00:24+0000\n"
+"PO-Revision-Date: 2025-02-23 00:24+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -522,6 +522,11 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "CRM Form Script"
+msgstr ""
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_funnel/crm_funnel.json
+msgid "CRM Funnel"
 msgstr ""
 
 #. Name of a DocType
@@ -2112,7 +2117,7 @@ msgstr ""
 msgid "Last 6 Months"
 msgstr ""
 
-#: crm/api/doc.py:279
+#: crm/api/doc.py:270
 msgid "Last Modified"
 msgstr ""
 
@@ -2453,7 +2458,7 @@ msgstr ""
 
 #. Label of the name1 (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the brand_name (Data) field in DocType 'FCRM Settings'
-#: crm/api/doc.py:278 crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
+#: crm/api/doc.py:269 crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Modals/EmailTemplateModal.vue:24
 #: frontend/src/pages/MobileOrganization.vue:530
@@ -3398,6 +3403,20 @@ msgstr ""
 msgid "SUBJECT"
 msgstr ""
 
+#. Label of the sales_funnel (Link) field in DocType 'CRM Deal'
+#. Label of the sales_funnel (Data) field in DocType 'CRM Funnel'
+#. Label of the sales_funnel (Link) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_funnel/crm_funnel.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Sales Funnel"
+msgstr ""
+
+#. Label of a shortcut in the Frappe CRM Workspace
+#: crm/fcrm/workspace/frappe_crm/frappe_crm.json
+msgid "Sales Funnels"
+msgstr ""
+
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3749,6 +3768,7 @@ msgstr ""
 #. Name of a role
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+#: crm/fcrm/doctype/crm_funnel/crm_funnel.json
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -4364,7 +4384,7 @@ msgstr ""
 msgid "kanban"
 msgstr ""
 
-#: crm/api/doc.py:37 crm/api/doc.py:155 crm/api/doc.py:453
+#: crm/api/doc.py:37 crm/api/doc.py:155 crm/api/doc.py:434
 msgid "label"
 msgstr ""
 

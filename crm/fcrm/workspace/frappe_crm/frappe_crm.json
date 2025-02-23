@@ -1,6 +1,7 @@
 {
+ "app": "crm",
  "charts": [],
- "content": "[{\"id\":\"1nr6UkvDiL\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h5\\\"><b>PORTAL</b></span>\",\"col\":12}},{\"id\":\"1hyi8SysUY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CRM Portal Page\",\"col\":3}},{\"id\":\"ktENiGaqXQ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"VgeWLYOuAS\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>SHORTCUTS</b>\",\"col\":12}},{\"id\":\"A66FpG-K3T\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"n9b6N5ebOj\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deals\",\"col\":3}},{\"id\":\"sGHTXrludH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Organizations\",\"col\":3}},{\"id\":\"uXZNCdqxy0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Contacts\",\"col\":3}},{\"id\":\"v1kkMwlntf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"SLA\",\"col\":3}},{\"id\":\"WRzt4SMh_b\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Assignment Rule\",\"col\":3}},{\"id\":\"TZ7cULX3Tk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"zpySv0nGVQ\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>META</b>\",\"col\":12}},{\"id\":\"fa-uKzobpp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead Statuses\",\"col\":3}},{\"id\":\"hxoZghUHP2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deal Statuses\",\"col\":3}},{\"id\":\"HbgghUpc8N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead Sources\",\"col\":3}},{\"id\":\"8cPs7Fohb4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Industries\",\"col\":3}},{\"id\":\"arT4xZ9HWR\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Territories\",\"col\":3}},{\"id\":\"ApHOcISpiJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Communication Statuses\",\"col\":3}}]",
+ "content": "[{\"id\":\"1nr6UkvDiL\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h5\\\"><b>PORTAL</b></span>\",\"col\":12}},{\"id\":\"1hyi8SysUY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CRM Portal Page\",\"col\":3}},{\"id\":\"ktENiGaqXQ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"VgeWLYOuAS\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>SHORTCUTS</b>\",\"col\":12}},{\"id\":\"A66FpG-K3T\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leads\",\"col\":3}},{\"id\":\"n9b6N5ebOj\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deals\",\"col\":3}},{\"id\":\"sGHTXrludH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Organizations\",\"col\":3}},{\"id\":\"uXZNCdqxy0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Contacts\",\"col\":3}},{\"id\":\"v1kkMwlntf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"SLA\",\"col\":3}},{\"id\":\"WRzt4SMh_b\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Assignment Rule\",\"col\":3}},{\"id\":\"TZ7cULX3Tk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"zpySv0nGVQ\",\"type\":\"paragraph\",\"data\":{\"text\":\"<b>META</b>\",\"col\":12}},{\"id\":\"fa-uKzobpp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead Statuses\",\"col\":3}},{\"id\":\"hxoZghUHP2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deal Statuses\",\"col\":3}},{\"id\":\"HbgghUpc8N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead Sources\",\"col\":3}},{\"id\":\"8cPs7Fohb4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Industries\",\"col\":3}},{\"id\":\"arT4xZ9HWR\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Territories\",\"col\":3}},{\"id\":\"ApHOcISpiJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Communication Statuses\",\"col\":3}},{\"id\":\"0CJJfQVyKW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Funnels\",\"col\":3}}]",
  "creation": "2023-11-27 13:55:17.090361",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +14,7 @@
  "is_hidden": 0,
  "label": "Frappe CRM",
  "links": [],
- "modified": "2024-01-04 19:08:27.799960",
+ "modified": "2025-02-23 03:11:11.433850",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "Frappe CRM",
@@ -25,6 +26,14 @@
  "roles": [],
  "sequence_id": 1.0,
  "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Sales Funnels",
+   "link_to": "CRM Funnel",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
   {
    "color": "Grey",
    "doc_view": "List",
@@ -129,5 +138,6 @@
    "type": "DocType"
   }
  ],
- "title": "Frappe CRM"
+ "title": "Frappe CRM",
+ "type": "Workspace"
 }

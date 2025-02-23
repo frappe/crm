@@ -15,13 +15,14 @@
   "website",
   "territory",
   "industry",
-  "job_title",
   "source",
+  "sales_funnel",
   "lead_owner",
   "person_tab",
   "salutation",
   "first_name",
   "last_name",
+  "job_title",
   "email",
   "mobile_no",
   "organization_tab",
@@ -232,7 +233,6 @@
   {
    "fieldname": "sla_status",
    "fieldtype": "Select",
-   "in_standard_filter": 1,
    "label": "SLA Status",
    "options": "\nFirst Response Due\nFailed\nFulfilled",
    "read_only": 1
@@ -289,12 +289,19 @@
    "fieldtype": "Table",
    "label": "Status Change Log",
    "options": "CRM Status Change Log"
+  },
+  {
+   "fieldname": "sales_funnel",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Sales Funnel",
+   "options": "CRM Funnel"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-02 22:14:01.991054",
+ "modified": "2025-02-23 03:34:15.466556",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
@@ -335,6 +342,7 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "sender_field": "email",
  "sender_name_field": "first_name",
  "show_title_field_in_link": 1,
