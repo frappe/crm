@@ -1,5 +1,6 @@
 import { formatDate, timeAgo } from '@/utils'
 import { getMeta } from '@/stores/meta'
+import dayjs, { formatDateInUserTimezone, formatDateInSystemTimezone } from '@/utils/dayjs'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Call Log')
@@ -33,16 +34,26 @@ export function getCallLogDetail(row, log, columns = []) {
       color: statusColorMap[log.status],
     }
   } else if (['modified', 'creation'].includes(row)) {
-    return {
-      label: formatDate(log[row]),
-      timeAgo: __(timeAgo(log[row])),
+    try {
+      return {
+        label: formatDate(log[row], undefined, false, false, true),
+        timeAgo: log[row] ? __(timeAgo(log[row])) : '',
+      }
+    } catch (e) {
+      console.warn('Error formatting system date:', e)
+      return { label: '', timeAgo: '' }
     }
   }
 
   let fieldType = columns?.find((col) => (col.key || col.value) == row)?.type
 
   if (fieldType && ['Date', 'Datetime'].includes(fieldType)) {
-    return formatDate(log[row], '', true, fieldType == 'Datetime')
+    try {
+      return formatDate(log[row], '', true, fieldType == 'Datetime', false)
+    } catch (e) {
+      console.warn('Error formatting field date:', e)
+      return ''
+    }
   }
 
   if (fieldType && fieldType == 'Currency') {

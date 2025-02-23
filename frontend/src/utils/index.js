@@ -6,7 +6,11 @@ import { toast } from 'frappe-ui'
 import { h } from 'vue'
 import { translateTaskStatus } from '@/utils/taskStatusTranslations'
 import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
-import dayjs from './dayjs'
+import dayjs, { 
+  formatDateInUserTimezone, 
+  formatDateInSystemTimezone,
+  toUserTimezone 
+} from './dayjs'
 
 export function createToast(options) {
   toast({
@@ -40,10 +44,22 @@ export function formatTime(seconds) {
   return formattedTime.trim()
 }
 
-export function formatDate(date, format, onlyDate = false, onlyTime = false) {
+export function formatDate(date, format, onlyDate = false, onlyTime = false, useSystemTimezone = false) {
   if (!date) return ''
-  format = getFormat(date, format, onlyDate, onlyTime, false)
-  return dayjs(date).format(format)
+  try {
+    format = getFormat(date, format, onlyDate, onlyTime, false)
+    
+    // Use system timezone when explicitly requested or for system-level operations
+    if (useSystemTimezone) {
+      return formatDateInSystemTimezone(date, format)
+    }
+    
+    // Default to user's timezone
+    return formatDateInUserTimezone(date, format)
+  } catch (e) {
+    console.warn('Error formatting date:', e)
+    return ''
+  }
 }
 
 export function getFormat(
@@ -53,28 +69,38 @@ export function getFormat(
   onlyTime = false,
   withDate = true,
 ) {
-  if (!date) return ''
-  let dateFormat =
-    window.sysdefaults.date_format
-      .replace('mm', 'MM')
-      .replace('yyyy', 'YYYY')
-      .replace('dd', 'DD') || 'YYYY-MM-DD'
-  let timeFormat = window.sysdefaults.time_format || 'HH:mm:ss'
-  format = format || 'ddd, MMM D, YYYY h:mm a'
+  try {
+    if (!date) return ''
+    let dateFormat =
+      window.sysdefaults?.date_format
+        ?.replace('mm', 'MM')
+        ?.replace('yyyy', 'YYYY')
+        ?.replace('dd', 'DD') || 'YYYY-MM-DD'
+    let timeFormat = window.sysdefaults?.time_format || 'HH:mm:ss'
+    format = format || 'ddd, MMM D, YYYY h:mm a'
 
-  if (onlyDate) format = dateFormat
-  if (onlyTime) format = timeFormat
-  if (onlyTime && onlyDate) format = `${dateFormat} ${timeFormat}`
+    if (onlyDate) format = dateFormat
+    if (onlyTime) format = timeFormat
+    if (onlyTime && onlyDate) format = `${dateFormat} ${timeFormat}`
 
-  if (withDate) {
-    return dayjs(date).format(format)
+    if (withDate) {
+      return formatDateInUserTimezone(date, format)
+    }
+    return format
+  } catch (e) {
+    console.warn('Error getting format:', e)
+    return 'YYYY-MM-DD HH:mm:ss'
   }
-  return format
 }
 
 export function timeAgo(date) {
   if (!date) return ''
-  return dayjs(date).fromNow()
+  try {
+    return toUserTimezone(date).fromNow()
+  } catch (e) {
+    console.warn('Error calculating time ago:', e)
+    return ''
+  }
 }
 
 export function extractValue(field) {

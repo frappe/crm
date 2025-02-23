@@ -99,7 +99,7 @@ import { translateTaskPriority } from '@/utils/taskPriorityTranslations'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { Tooltip, Dropdown } from 'frappe-ui'
-import dayjs from '@/utils/dayjs'
+import dayjs, { formatDateInUserTimezone } from '@/utils/dayjs'
 
 const props = defineProps({
   tasks: Array,
@@ -111,6 +111,11 @@ const { $dialog } = globalStore()
 
 function formatTaskDate(date, format) {
   if (!date) return ''
-  return dayjs(date).format(format)
+  try {
+    return formatDateInUserTimezone(date, format)
+  } catch (e) {
+    console.warn('Error formatting task date:', e)
+    return ''
+  }
 }
 </script>

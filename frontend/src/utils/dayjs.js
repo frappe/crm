@@ -59,4 +59,60 @@ export function timeAgo(date) {
 // Initialize with default locale
 setDayjsLocale()
 
+// Convert date to user's timezone
+export function toUserTimezone(date) {
+  if (!date) return dayjs()
+  const userTz = window.timezone?.user || dayjs.tz.guess()
+  return dayjs(date).tz(userTz)
+}
+
+// Convert date to system timezone
+export function toSystemTimezone(date) {
+  if (!date) return dayjs()
+  const systemTz = window.timezone?.system || 'UTC'
+  return dayjs(date).tz(systemTz)
+}
+
+// Format date in user's timezone
+export function formatDateInUserTimezone(date, format = 'L LTS') {
+  if (!date) return ''
+  try {
+    return toUserTimezone(date).format(format)
+  } catch (e) {
+    console.warn('Error formatting date in user timezone:', e)
+    return ''
+  }
+}
+
+// Format date in system timezone
+export function formatDateInSystemTimezone(date, format = 'L LTS') {
+  if (!date) return ''
+  try {
+    return toSystemTimezone(date).format(format)
+  } catch (e) {
+    console.warn('Error formatting date in system timezone:', e)
+    return ''
+  }
+}
+
+// Get current time in user's timezone
+export function getUserNow() {
+  try {
+    return toUserTimezone(dayjs())
+  } catch (e) {
+    console.warn('Error getting user now:', e)
+    return dayjs()
+  }
+}
+
+// Get current time in system timezone
+export function getSystemNow() {
+  try {
+    return toSystemTimezone(dayjs())
+  } catch (e) {
+    console.warn('Error getting system now:', e)
+    return dayjs()
+  }
+}
+
 export default dayjs 

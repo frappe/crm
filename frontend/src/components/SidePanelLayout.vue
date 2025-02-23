@@ -232,10 +232,23 @@
                         >
                           <input
                             type="datetime-local"
-                            :value="data[field.fieldname]"
+                            :value="data[field.fieldname] ? toUserTimezone(data[field.fieldname]).format('YYYY-MM-DDTHH:mm') : ''"
                             :placeholder="field.placeholder"
                             class="w-full rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3"
-                            @change="(e) => emit('update', field.fieldname, e.target.value)"
+                            @change="(e) => {
+                              try {
+                                if (!e.target.value) {
+                                  emit('update', field.fieldname, null);
+                                  return;
+                                }
+                                const localDate = dayjs(e.target.value);
+                                const systemDate = toSystemTimezone(localDate);
+                                emit('update', field.fieldname, systemDate.format());
+                              } catch (err) {
+                                console.warn('Error updating datetime:', err);
+                                emit('update', field.fieldname, null);
+                              }
+                            }"
                           />
                         </div>
                         <div
@@ -373,6 +386,7 @@ import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip } from 'frappe-ui'
 import { ref, computed } from 'vue'
+import dayjs, { toUserTimezone, toSystemTimezone } from '@/utils/dayjs'
 
 const props = defineProps({
   sections: {
