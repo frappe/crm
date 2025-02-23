@@ -47,11 +47,9 @@
             class="h-px w-full border-t my-5"
           />
           <FieldLayout
-            ref="fieldLayoutRef"
-            v-if="tabs.data?.length"
+            v-if="tabs.data"
             :tabs="tabs.data"
             :data="deal"
-            doctype="CRM Deal"
             @change="handleFieldChange"
           />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
@@ -103,51 +101,12 @@ const router = useRouter()
 const error = ref(null)
 const isDirty = ref(false)
 
-const deal = reactive({
-  organization: '',
-  organization_name: '',
-  website: '',
-  no_of_employees: '',
-  territory: '',
-  annual_revenue: '',
-  industry: '',
-  contact: '',
-  salutation: '',
-  first_name: '',
-  last_name: '',
-  email: '',
-  mobile_no: '',
-  gender: '',
-  status: '',
-  deal_owner: '',
-})
-
 const hasOrganizationSections = ref(true)
 const hasContactSections = ref(true)
 
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
-const fieldLayoutRef = ref(null)
-
-watch(
-  [chooseExistingOrganization, chooseExistingContact],
-  ([organization, contact]) => {
-    tabs.data.forEach((tab) => {
-      tab.sections.forEach((section) => {
-        if (section.name === 'organization_section') {
-          section.hidden = !organization
-        } else if (section.name === 'organization_details_section') {
-          section.hidden = organization
-        } else if (section.name === 'contact_section') {
-          section.hidden = !contact
-        } else if (section.name === 'contact_details_section') {
-          section.hidden = contact
-        }
-      })
-    })
-  },
-)
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -189,63 +148,24 @@ const tabs = createResource({
   },
 })
 
-const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
-  if (!deal.status) {
-    deal.status = statuses[0].value
-  }
-  return statuses
+const deal = reactive({
+  organization: '',
+  organization_name: '',
+  website: '',
+  no_of_employees: '',
+  territory: '',
+  annual_revenue: '',
+  industry: '',
+  contact: '',
+  salutation: '',
+  first_name: '',
+  last_name: '',
+  email: '',
+  mobile_no: '',
+  gender: '',
+  status: '',
+  deal_owner: '',
 })
-
-watch(
-  () => show.value,
-  (value) => {
-    if (value === dialogShow.value) return
-    if (value) {
-      isDirty.value = false
-      dialogShow.value = true
-    }
-  },
-  { immediate: true }
-)
-
-watch(
-  () => dialogShow.value,
-  (value) => {
-    if (value) return
-    if (isDirty.value) {
-      showConfirmClose.value = true
-      nextTick(() => {
-        dialogShow.value = true
-      })
-    } else {
-      show.value = false
-    }
-  }
-)
-
-function handleFieldChange() {
-  isDirty.value = true
-}
-
-function handleClose() {
-  if (isDirty.value) {
-    showConfirmClose.value = true
-  } else {
-    dialogShow.value = false
-    show.value = false
-  }
-}
-
-function confirmClose() {
-  isDirty.value = false
-  dialogShow.value = false
-  show.value = false
-}
-
-function cancelClose() {
-  showConfirmClose.value = false
-}
 
 function createDeal() {
   if (deal.website && !deal.website.startsWith('http')) {
@@ -303,14 +223,108 @@ function createDeal() {
   })
 }
 
+watch(
+  [chooseExistingOrganization, chooseExistingContact],
+  ([organization, contact]) => {
+    tabs.data.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        if (section.name === 'organization_section') {
+          section.hidden = !organization
+        } else if (section.name === 'organization_details_section') {
+          section.hidden = organization
+        } else if (section.name === 'contact_section') {
+          section.hidden = !contact
+        } else if (section.name === 'contact_details_section') {
+          section.hidden = contact
+        }
+      })
+    })
+  },
+)
+
+const dealStatuses = computed(() => {
+  let statuses = statusOptions('deal')
+  if (!deal.status) {
+    deal.status = statuses[0].value
+  }
+  return statuses
+})
+
 const showQuickEntryModal = defineModel('quickEntry')
+const shouldOpenLayoutSettings = ref(false)
 
 function openQuickEntryModal() {
-  showQuickEntryModal.value = true
-  nextTick(() => {
-    show.value = false
-  })
+  if (isDirty.value) {
+    shouldOpenLayoutSettings.value = true
+    showConfirmClose.value = true
+  } else {
+    showQuickEntryModal.value = true
+    nextTick(() => {
+      dialogShow.value = false
+      show.value = false
+    })
+  }
 }
+
+function handleFieldChange() {
+  isDirty.value = true
+}
+
+function handleClose() {
+  if (isDirty.value) {
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    show.value = false
+  }
+}
+
+function confirmClose() {
+  isDirty.value = false
+  dialogShow.value = false
+  show.value = false
+  
+  if (shouldOpenLayoutSettings.value) {
+    showQuickEntryModal.value = true
+    nextTick(() => {
+      shouldOpenLayoutSettings.value = false
+    })
+  }
+}
+
+function cancelClose() {
+  showConfirmClose.value = false
+  shouldOpenLayoutSettings.value = false
+}
+
+watch(
+  () => dialogShow.value,
+  (value) => {
+    if (value) return
+    if (isDirty.value) {
+      showConfirmClose.value = true
+      nextTick(() => {
+        dialogShow.value = true
+      })
+    } else {
+      show.value = false
+    }
+  }
+)
+
+watch(
+  () => show.value,
+  (value) => {
+    if (value === dialogShow.value) return
+    if (value) {
+      isDirty.value = false
+      dialogShow.value = true
+    } else {
+      dialogShow.value = true
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   Object.assign(deal, props.defaults)

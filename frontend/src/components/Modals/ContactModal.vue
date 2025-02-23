@@ -23,10 +23,9 @@
           </div>
         </div>
         <FieldLayout
-          v-if="tabs.data?.length"
+          v-if="tabs.data"
           :tabs="tabs.data"
           :data="_contact"
-          doctype="Contact"
           @change="handleFieldChange"
         />
       </div>
@@ -86,58 +85,9 @@ const showConfirmClose = ref(false)
 
 const loading = ref(false)
 const isDirty = ref(false)
+const tempFormData = ref(null)
 
 let _contact = ref({})
-
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    nextTick(() => {
-      _contact.value = props.contact.data ? { ...props.contact.data } : { ...props.contact }
-      isDirty.value = false
-      dialogShow.value = true
-    })
-  },
-)
-
-watch(
-  () => dialogShow.value,
-  (value) => {
-    if (value) return
-    if (isDirty.value) {
-      showConfirmClose.value = true
-      nextTick(() => {
-        dialogShow.value = true
-      })
-    } else {
-      show.value = false
-    }
-  }
-)
-
-function handleFieldChange() {
-  isDirty.value = true
-}
-
-function handleClose() {
-  if (isDirty.value) {
-    showConfirmClose.value = true
-  } else {
-    dialogShow.value = false
-    show.value = false
-  }
-}
-
-function confirmClose() {
-  isDirty.value = false
-  dialogShow.value = false
-  show.value = false
-}
-
-function cancelClose() {
-  showConfirmClose.value = false
-}
 
 async function createContact() {
   if (_contact.value.email_id) {
@@ -171,6 +121,7 @@ function handleContactUpdate(doc) {
       params: { contactId: doc.name },
     })
   }
+  dialogShow.value = false
   show.value = false
   props.options.afterInsert && props.options.afterInsert(doc)
 }
@@ -195,12 +146,12 @@ const tabs = createResource({
               field.create = (value, close) => {
                 _contact.value.address = value
                 emit('openAddressModal')
-                show.value = false
+                dialogShow.value = false
                 close()
               }
               field.edit = (address) => {
                 emit('openAddressModal', address)
-                show.value = false
+                dialogShow.value = false
               }
             } else if (field.fieldtype === 'Table') {
               _contact.value[field.fieldname] = []
@@ -213,11 +164,103 @@ const tabs = createResource({
 })
 
 const showQuickEntryModal = defineModel('showQuickEntryModal')
+const shouldOpenLayoutSettings = ref(false)
 
 function openQuickEntryModal() {
-  showQuickEntryModal.value = true
-  nextTick(() => (show.value = false))
+  if (isDirty.value) {
+    tempFormData.value = { ..._contact.value }
+    shouldOpenLayoutSettings.value = true
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    nextTick(() => {
+      showQuickEntryModal.value = true
+      show.value = false
+    })
+  }
 }
+
+function handleFieldChange() {
+  isDirty.value = true
+}
+
+function handleClose() {
+  if (isDirty.value) {
+    tempFormData.value = { ..._contact.value }
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    show.value = false
+  }
+}
+
+function confirmClose() {
+  isDirty.value = false
+  tempFormData.value = null
+  _contact.value = {}
+  dialogShow.value = false
+  show.value = false
+  
+  if (shouldOpenLayoutSettings.value) {
+    nextTick(() => {
+      showQuickEntryModal.value = true
+      shouldOpenLayoutSettings.value = false
+    })
+  }
+}
+
+function cancelClose() {
+  showConfirmClose.value = false
+  shouldOpenLayoutSettings.value = false
+  if (tempFormData.value) {
+    _contact.value = tempFormData.value
+    tempFormData.value = null
+  }
+}
+
+watch(
+  () => dialogShow.value,
+  (value) => {
+    if (value) return
+    if (isDirty.value) {
+      showConfirmClose.value = true
+      nextTick(() => {
+        if (tempFormData.value) {
+          _contact.value = tempFormData.value
+        }
+        dialogShow.value = true
+      })
+    } else {
+      _contact.value = {}
+      tempFormData.value = null
+      show.value = false
+    }
+  }
+)
+
+watch(
+  () => show.value,
+  (value) => {
+    if (value === dialogShow.value) return
+    if (value) {
+      isDirty.value = false
+      dialogShow.value = true
+    } else {
+      tempFormData.value = null
+      dialogShow.value = true
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => showQuickEntryModal.value,
+  (value) => {
+    if (!value) {
+      tabs.reload()
+    }
+  }
+)
 </script>
 
 <style scoped>

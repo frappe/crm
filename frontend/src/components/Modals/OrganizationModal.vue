@@ -83,6 +83,8 @@ const organization = defineModel('organization')
 
 const loading = ref(false)
 const isDirty = ref(false)
+const tempFormData = ref(null)
+
 let _organization = ref({
   organization_name: '',
   website: '',
@@ -151,6 +153,106 @@ const tabs = createResource({
   },
 })
 
+const showQuickEntryModal = defineModel('showQuickEntryModal')
+const shouldOpenLayoutSettings = ref(false)
+
+function openQuickEntryModal() {
+  if (isDirty.value) {
+    tempFormData.value = { ...      _organization.value }
+    shouldOpenLayoutSettings.value = true
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    nextTick(() => {
+      showQuickEntryModal.value = true
+      show.value = false
+    })
+  }
+}
+
+function handleFieldChange() {
+  isDirty.value = true
+}
+
+function handleClose() {
+  if (isDirty.value) {
+    tempFormData.value = { ...      _organization.value }
+    showConfirmClose.value = true
+  } else {
+    dialogShow.value = false
+    show.value = false
+  }
+}
+
+function confirmClose() {
+  isDirty.value = false
+  tempFormData.value = null
+  _organization.value = {}
+  dialogShow.value = false
+  show.value = false
+  
+  if (shouldOpenLayoutSettings.value) {
+    nextTick(() => {
+      showQuickEntryModal.value = true
+      shouldOpenLayoutSettings.value = false
+    })
+  }
+}
+
+function cancelClose() {
+  showConfirmClose.value = false
+  shouldOpenLayoutSettings.value = false
+  if (tempFormData.value) {
+    _organization.value = tempFormData.value
+    tempFormData.value = null
+  }
+}
+
+watch(
+  () => dialogShow.value,
+  (value) => {
+    if (value) return
+    if (isDirty.value) {
+      showConfirmClose.value = true
+      nextTick(() => {
+        if (tempFormData.value) {
+          _organization.value = tempFormData.value
+        }
+        dialogShow.value = true
+      })
+    } else {
+      _organization.value = {}
+      tempFormData.value = null
+      show.value = false
+    }
+  }
+)
+
+watch(
+  () => show.value,
+  (value) => {
+    if (value === dialogShow.value) return
+    if (value) {
+      isDirty.value = false
+      dialogShow.value = true
+    } else {
+      tempFormData.value = null
+      dialogShow.value = true
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => showQuickEntryModal.value,
+  (value) => {
+    if (!value) {
+      tabs.reload()
+    }
+  }
+)
+</script>
+
 watch(
   () => show.value,
   (value) => {
@@ -163,49 +265,3 @@ watch(
   },
   { immediate: true }
 )
-
-watch(
-  () => dialogShow.value,
-  (value) => {
-    if (value) return
-    if (isDirty.value) {
-      showConfirmClose.value = true
-      nextTick(() => {
-        dialogShow.value = true
-      })
-    } else {
-      show.value = false
-    }
-  }
-)
-
-function handleFieldChange() {
-  isDirty.value = true
-}
-
-function handleClose() {
-  if (isDirty.value) {
-    showConfirmClose.value = true
-  } else {
-    dialogShow.value = false
-    show.value = false
-  }
-}
-
-function confirmClose() {
-  isDirty.value = false
-  dialogShow.value = false
-  show.value = false
-}
-
-function cancelClose() {
-  showConfirmClose.value = false
-}
-
-const showQuickEntryModal = defineModel('showQuickEntryModal')
-
-function openQuickEntryModal() {
-  showQuickEntryModal.value = true
-  nextTick(() => (show.value = false))
-}
-</script>

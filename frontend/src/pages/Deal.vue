@@ -288,11 +288,17 @@
   />
   <ContactModal
     v-model="showContactModal"
+    v-model:showQuickEntryModal="showQuickEntryModal"
     :contact="_contact"
     :options="{
       redirect: false,
       afterInsert: (doc) => addContact(doc.name),
     }"
+  />
+  <QuickEntryModal 
+    v-if="showQuickEntryModal" 
+    v-model="showQuickEntryModal" 
+    doctype="Contact"
   />
   <FilesUploader
     v-if="deal.data?.name"
@@ -331,6 +337,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
@@ -375,6 +382,19 @@ const props = defineProps({
   dealId: {
     type: String,
     required: true,
+  },
+})
+
+const dealContacts = createResource({
+  url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
+  params: { name: props.dealId },
+  cache: ['deal_contacts', props.dealId],
+  auto: true,
+  transform: (data) => {
+    data.forEach((contact) => {
+      contact.opened = false
+    })
+    return data
   },
 })
 
@@ -622,6 +642,7 @@ function getParsedSections(_sections) {
 
 const showContactModal = ref(false)
 const _contact = ref({})
+const showQuickEntryModal = ref(false)
 
 function contactOptions(contact) {
   let options = [
@@ -712,18 +733,6 @@ function trackPhoneActivities(type = 'phone') {
     contactName: primaryContact.name
   })
 }
-const dealContacts = createResource({
-  url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
-  params: { name: props.dealId },
-  cache: ['deal_contacts', props.dealId],
-  auto: true,
-  transform: (data) => {
-    data.forEach((contact) => {
-      contact.opened = false
-    })
-    return data
-  },
-})
 
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)

@@ -273,10 +273,10 @@
     :doc="docname"
   />
   <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Deal"
-  />
+   v-if="showQuickEntryModal"
+   v-model="showQuickEntryModal"
+   doctype="CRM Deal"
+   />
 </template>
 
 <script setup>

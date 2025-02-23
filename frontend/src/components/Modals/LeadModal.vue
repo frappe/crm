@@ -23,7 +23,10 @@
           </div>
         </div>
         <div>
-          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead" @change="handleFieldChange" />
+          <FieldLayout v-if="tabs.data"
+          :tabs="tabs.data"
+          :data="lead"
+          @change="handleFieldChange" />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
@@ -189,12 +192,19 @@ function createNewLead() {
 }
 
 const showQuickEntryModal = defineModel('quickEntry')
+const shouldOpenLayoutSettings = ref(false)
 
 function openQuickEntryModal() {
-  showQuickEntryModal.value = true
-  nextTick(() => {
-    show.value = false
-  })
+  if (isDirty.value) {
+    shouldOpenLayoutSettings.value = true
+    showConfirmClose.value = true
+  } else {
+    showQuickEntryModal.value = true
+    nextTick(() => {
+      dialogShow.value = false
+      show.value = false
+    })
+  }
 }
 
 function handleFieldChange() {
@@ -214,22 +224,19 @@ function confirmClose() {
   isDirty.value = false
   dialogShow.value = false
   show.value = false
+  
+  if (shouldOpenLayoutSettings.value) {
+    showQuickEntryModal.value = true
+    nextTick(() => {
+      shouldOpenLayoutSettings.value = false
+    })
+  }
 }
 
 function cancelClose() {
   showConfirmClose.value = false
+  shouldOpenLayoutSettings.value = false
 }
-
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    nextTick(() => {
-      isDirty.value = false
-      dialogShow.value = true
-    })
-  }
-)
 
 watch(
   () => dialogShow.value,
@@ -252,6 +259,8 @@ watch(
     if (value === dialogShow.value) return
     if (value) {
       isDirty.value = false
+      dialogShow.value = true
+    } else {
       dialogShow.value = true
     }
   },
