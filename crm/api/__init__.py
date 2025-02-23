@@ -43,14 +43,12 @@ def get_user_signature():
 		return
 
 	soup = BeautifulSoup(signature, "html.parser")
-	html_signature = soup.find("div", {"class": "ql-editor read-mode"})
-	_signature = None
-	if html_signature:
-		_signature = html_signature.renderContents()
-	content = ""
-	if (cstr(_signature) or signature):
-		content = f'<br><p class="signature">{signature}</p>'
-	return content
+	
+	# Replace paragraphs with plain text and newlines
+	for p in soup.find_all('p'):
+		p.replace_with(p.get_text() + '\n')
+
+	return '\n' + soup.get_text()
 
 
 @frappe.whitelist()
