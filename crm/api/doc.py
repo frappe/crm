@@ -228,11 +228,6 @@ def get_data(
 	kanban_fields = frappe.parse_json(kanban_fields or "[]")
 	kanban_columns = frappe.parse_json(kanban_columns or "[]")
 
-	print("DEBUG: Initial state")
-	print(f"custom_view: {custom_view}")
-	print(f"columns: {columns}")
-	print(f"rows: {rows}")
-
 	custom_view_name = view.get("custom_view_name") if view else None
 	view_type = view.get("view_type") if view else None
 	group_by_field = view.get("group_by_field") if view else None
@@ -269,10 +264,6 @@ def get_data(
 			columns = frappe.parse_json(columns)
 			rows = frappe.parse_json(rows)
 
-		print("DEBUG: After custom view check")
-		print(f"custom_view: {custom_view}")
-		print(f"columns: {columns}")
-
 		if not columns:
 			columns = [
 				{"label": _("Name"), "type": "Data", "key": "name", "width": "16rem"},
@@ -289,24 +280,14 @@ def get_data(
 			"user": frappe.session.user,
 		}
 
-		print("DEBUG: Default view filters")
-		print(f"filters: {default_view_filters}")
-		print(f"exists: {frappe.db.exists('CRM View Settings', default_view_filters)}")
-
 		if not custom_view and frappe.db.exists("CRM View Settings", default_view_filters):
 			list_view_settings = frappe.get_doc("CRM View Settings", default_view_filters)
-			print("DEBUG: View settings found")
-			print(f"settings columns: {list_view_settings.columns}")
-			print(f"settings rows: {list_view_settings.rows}")
-			
 			columns = frappe.parse_json(list_view_settings.columns)
 			rows = frappe.parse_json(list_view_settings.rows)
 			is_default = False
 		elif not custom_view or (is_default and hasattr(_list, "default_list_data")):
-			print("DEBUG: Using default list data")
 			rows = default_rows
 			columns = _list.default_list_data().get("columns")
-			print(f"default columns: {columns}")
 
 		# check if rows has all keys from columns if not add them
 		for column in columns:
