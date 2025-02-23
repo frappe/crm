@@ -16,6 +16,7 @@ def after_install(force=False):
 	add_default_fields_layout(force)
 	add_property_setter()
 	add_email_template_custom_fields()
+	add_email_template_permissions()
 	add_default_industries()
 	add_default_lead_sources()
 	add_standard_dropdown_items()
@@ -251,6 +252,63 @@ def add_email_template_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Email Template")
+
+
+def add_email_template_permissions():
+	"""Add permissions for Email Template to Sales Manager and Sales User roles"""
+	if not frappe.db.exists("DocPerm", {"parent": "Email Template", "role": "Sales Manager"}):
+		click.secho("* Adding Email Template permissions for Sales Manager")
+		
+		doc = frappe.get_doc({
+			"doctype": "DocPerm",
+			"parent": "Email Template",
+			"parentfield": "permissions",
+			"parenttype": "DocType",
+			"role": "Sales Manager",
+			"permlevel": 0,
+			"read": 1,
+			"write": 1,
+			"create": 1,
+			"delete": 1,
+			"submit": 0,
+			"cancel": 1,
+			"amend": 1,
+			"print": 1,
+			"email": 1,
+			"report": 1,
+			"share": 1,
+			"export": 1
+		})
+		
+		doc.insert(ignore_permissions=True)
+		
+	if not frappe.db.exists("DocPerm", {"parent": "Email Template", "role": "Sales User"}):
+		click.secho("* Adding Email Template permissions for Sales User")
+		
+		doc = frappe.get_doc({
+			"doctype": "DocPerm",
+			"parent": "Email Template",
+			"parentfield": "permissions",
+			"parenttype": "DocType",
+			"role": "Sales User",
+			"permlevel": 0,
+			"read": 1,
+			"write": 0,
+			"create": 0,
+			"delete": 0,
+			"submit": 0,
+			"cancel": 0,
+			"amend": 0,
+			"print": 1,
+			"email": 1,
+			"report": 0,
+			"share": 0,
+			"export": 0
+		})
+		
+		doc.insert(ignore_permissions=True)
+		
+	frappe.db.commit()
 
 
 def add_default_industries():
