@@ -120,6 +120,43 @@ const htmlContent = `
       --bg-surface-gray-4: #424242;
     }
 
+    /* Scrollbar styles */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(82, 82, 91, 0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(82, 82, 91, 0.5);
+    }
+
+    [data-theme="dark"] ::-webkit-scrollbar-thumb {
+      background-color: rgba(64, 64, 77, 0.5);
+    }
+
+    [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(64, 64, 77, 0.7);
+    }
+
+    /* Firefox scrollbar styling */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(82, 82, 91, 0.3) transparent;
+    }
+
+    [data-theme="dark"] * {
+      scrollbar-color: rgba(64, 64, 77, 0.5) transparent;
+    }
+
     .replied-content .collapse {
       margin: 10px 0 10px 0;
       visibility: visible;

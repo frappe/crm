@@ -5,6 +5,7 @@
       'prose-sm max-w-none',
       editable && 'min-h-[7rem]',
       '[&_p.reply-to-content]:hidden',
+      'dark-scrollbar'
     ]"
     :content="content"
     @change="editable ? (content = $event) : null"
