@@ -100,21 +100,15 @@ const countryCodeMap = {
 }
 
 const defaultCountry = createResource({
-  url: 'frappe.client.get_value',
-  params: {
-    doctype: 'System Settings',
-    fieldname: 'country'
-  },
+  url: 'crm.api.address.get_default_country',
   transform(data) {
-    const systemCountry = data?.message?.country
-    if (systemCountry) return systemCountry
-
+    if (data) return data
     try {
       const locale = new Intl.Locale(navigator.language)
       const region = locale.maximize().region
-      return region || ''
+      return countryCodeMap[region] || 'Russian Federation'
     } catch (e) {
-      return ''
+      return 'Russian Federation'
     }
   },
   auto: true
