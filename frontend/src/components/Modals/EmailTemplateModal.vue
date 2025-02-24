@@ -248,6 +248,7 @@ async function callInsertDoc() {
 
 function handleEmailTemplateUpdate(doc) {
   emailTemplates.value?.reload()
+  isDirty.value = false
   handleClose()
 }
 
