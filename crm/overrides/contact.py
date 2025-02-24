@@ -8,7 +8,19 @@ class CustomContact(Contact):
 	def default_list_data():
 		columns = [
 			{
-				'label': 'Name',
+				'label': 'First Name',
+				'type': 'Data',
+				'key': 'first_name',
+				'width': '10rem',
+			},
+			{
+				'label': 'Last Name',
+				'type': 'Data',
+				'key': 'last_name',
+				'width': '10rem',
+			},
+			{
+				'label': 'Full Name',
 				'type': 'Data',
 				'key': 'full_name',
 				'width': '17rem',
@@ -40,6 +52,8 @@ class CustomContact(Contact):
 		]
 		rows = [
 			"name",
+			"first_name",
+			"last_name",
 			"full_name",
 			"company_name",
 			"email_id",
