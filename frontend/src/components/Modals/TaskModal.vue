@@ -192,11 +192,16 @@ async function updateTask() {
   if (!_task.value.assigned_to) {
     _task.value.assigned_to = getUser().name
   }
+  const taskData = {
+    ..._task.value,
+    status: extractValue(_task.value.status),
+    priority: extractValue(_task.value.priority)
+  }
   if (_task.value.name) {
     let d = await call('frappe.client.set_value', {
       doctype: 'CRM Task',
       name: _task.value.name,
-      fieldname: _task.value,
+      fieldname: taskData,
     })
     if (d.name) {
       tasks.value?.reload()
@@ -208,7 +213,7 @@ async function updateTask() {
         doctype: 'CRM Task',
         reference_doctype: props.doctype,
         reference_docname: props.doc || null,
-        ..._task.value,
+        ...taskData,
       },
     })
     if (d.name) {
