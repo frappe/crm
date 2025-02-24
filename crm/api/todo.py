@@ -3,7 +3,10 @@ from frappe import _
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
-def after_insert(doc, method):
+def after_insert(doc, method=None):
+    """Handle document sharing after ToDo creation"""
+    share_on_assignment(doc)
+
     if (
         doc.reference_type in ["CRM Lead", "CRM Deal"]
         and doc.reference_name
@@ -26,7 +29,10 @@ def after_insert(doc, method):
         notify_assigned_user(doc)
 
 
-def on_update(doc, method):
+def on_update(doc, method=None):
+    """Handle document sharing on ToDo update"""
+    share_on_assignment(doc)
+
     if (
         doc.has_value_changed("status")
         and doc.status == "Cancelled"
@@ -130,3 +136,64 @@ def get_redirect_to_doc(doc):
         return reference_doc.reference_doctype, reference_doc.reference_docname
 
     return doc.reference_type, doc.reference_name
+
+
+def share_on_assignment(todo):
+    """Share the referenced document with the assigned user"""
+    try:
+        if not todo.reference_type or not todo.reference_name or not todo.allocated_to:
+            frappe.msgprint("[Debug] Missing required fields in ToDo")
+            return
+            
+        frappe.msgprint(f"[Debug] Processing ToDo assignment - Doc: {todo.reference_type}/{todo.reference_name}, User: {todo.allocated_to}")
+        
+        # If ToDo is cancelled, remove share
+        if todo.status == "Cancelled":
+            frappe.msgprint(f"[Debug] ToDo cancelled, removing share for user {todo.allocated_to}")
+            frappe.share.remove(
+                todo.reference_type,
+                todo.reference_name,
+                todo.allocated_to,
+                flags={"ignore_share_permission": True}
+            )
+            return
+            
+        # Get the referenced document
+        doc = frappe.get_doc(todo.reference_type, todo.reference_name)
+        
+        # Check if document sharing is already set up
+        existing_share = frappe.db.exists(
+            "DocShare",
+            {
+                "user": todo.allocated_to,
+                "share_doctype": todo.reference_type,
+                "share_name": todo.reference_name
+            }
+        )
+        
+        if existing_share:
+            frappe.msgprint(f"[Debug] Document already shared with user {todo.allocated_to}")
+            # Update existing share to ensure correct permissions
+            share_doc = frappe.get_doc("DocShare", existing_share)
+            share_doc.read = 1
+            share_doc.write = 1
+            share_doc.share = 0
+            share_doc.notify = 1
+            share_doc.flags.ignore_permissions = True
+            share_doc.save()
+            return
+            
+        # Create new share
+        frappe.share.add_docshare(
+            todo.reference_type,
+            todo.reference_name,
+            todo.allocated_to,
+            write=1,
+            flags={"ignore_share_permission": True}
+        )
+        
+        frappe.msgprint(f"[Debug] Successfully shared document with user {todo.allocated_to}")
+        
+    except Exception as e:
+        frappe.log_error(f"Error sharing document on assignment: {str(e)}")
+        frappe.throw(_("Error sharing document on assignment"))
