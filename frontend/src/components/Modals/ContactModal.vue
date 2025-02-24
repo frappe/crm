@@ -63,14 +63,18 @@ import { useRouter } from 'vue-router'
 const props = defineProps({
   contact: {
     type: Object,
-    default: {},
+    default: () => ({}),
   },
   options: {
     type: Object,
-    default: {
+    default: () => ({
       redirect: true,
       afterInsert: () => {},
-    },
+    }),
+  },
+  initialValues: {
+    type: Object,
+    default: () => ({}),
   },
 })
 
@@ -251,6 +255,10 @@ watch(
     if (value === dialogShow.value) return
     if (value) {
       isDirty.value = false
+      _contact.value = {
+        ...props.contact,
+        ...props.initialValues,
+      }
       dialogShow.value = true
     } else {
       tempFormData.value = null

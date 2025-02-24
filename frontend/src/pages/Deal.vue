@@ -156,7 +156,6 @@
                 :onCreate="
                   (value, close) => {
                     _contact = {
-                      first_name: value,
                       company_name: deal.data.organization,
                     }
                     showContactModal = true
@@ -290,6 +289,9 @@
     v-model="showContactModal"
     v-model:showQuickEntryModal="showQuickEntryModal"
     :contact="_contact"
+    :initial-values="{
+      company_name: deal.data?.organization,
+    }"
     :options="{
       redirect: false,
       afterInsert: (doc) => addContact(doc.name),
