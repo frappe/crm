@@ -100,16 +100,22 @@ async function createContact() {
     delete _contact.value.mobile_no
   }
 
-  const doc = await call('frappe.client.insert', {
-    doc: {
-      doctype: 'Contact',
-      ..._contact.value,
-    },
-  })
-  
-  if (doc.name) {
-    capture('contact_created')
-    handleContactUpdate(doc)
+  loading.value = true
+  try {
+    const doc = await call('frappe.client.insert', {
+      doc: {
+        doctype: 'Contact',
+        ..._contact.value,
+      },
+    })
+    
+    if (doc.name) {
+      capture('contact_created')
+      isDirty.value = false
+      handleContactUpdate(doc)
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -121,6 +127,7 @@ function handleContactUpdate(doc) {
       params: { contactId: doc.name },
     })
   }
+  isDirty.value = false
   dialogShow.value = false
   show.value = false
   props.options.afterInsert && props.options.afterInsert(doc)

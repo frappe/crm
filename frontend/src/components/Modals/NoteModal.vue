@@ -174,6 +174,9 @@ async function updateNote() {
     if (d.name) {
       notes.value?.reload()
       emit('after', d)
+      isDirty.value = false
+      dialogShow.value = false
+      show.value = false
     }
   } else {
     let d = await call('frappe.client.insert', {
@@ -189,9 +192,11 @@ async function updateNote() {
       capture('note_created')
       notes.value?.reload()
       emit('after', d, true)
+      isDirty.value = false
+      dialogShow.value = false
+      show.value = false
     }
   }
-  show.value = false
 }
 
 function redirect() {
