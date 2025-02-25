@@ -128,7 +128,7 @@ class Opportunity(Opportunity):
                     flags={"ignore_share_permission": True},
                 )
             elif user != agent:
-                frappe.share.remove(self.doctype, self.name, user)
+                frappe.delete_doc("DocShare", self.name, ignore_permissions=True)
 
     def set_sla(self):
         """

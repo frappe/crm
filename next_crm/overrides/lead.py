@@ -86,7 +86,7 @@ class Lead(Lead):
                     flags={"ignore_share_permission": True},
                 )
             elif user != agent:
-                frappe.share.remove(self.doctype, self.name, user)
+                frappe.delete_doc("DocShare", self.name, ignore_permissions=True)
 
     def create_contact(self, throw=False):
         if not self.lead_name:
