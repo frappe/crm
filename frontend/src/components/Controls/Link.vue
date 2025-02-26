@@ -82,7 +82,7 @@ const props = defineProps({
     required: true,
   },
   filters: {
-    type: [Array, String],
+    type: [Array, Object, String],
     default: [],
   },
   modelValue: {
@@ -133,7 +133,7 @@ watchDebounced(
 
 const options = createResource({
   url: 'frappe.desk.search.search_link',
-  cache: [props.doctype, text.value, props.hideMe],
+  cache: [props.doctype, text.value, props.hideMe, props.filters],
   method: 'POST',
   params: {
     txt: text.value,

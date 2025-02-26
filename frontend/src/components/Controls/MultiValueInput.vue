@@ -39,7 +39,6 @@
 </template>
 
 <script setup>
-import { TextInput } from 'frappe-ui'
 import { ref, nextTick } from 'vue'
 
 const props = defineProps({

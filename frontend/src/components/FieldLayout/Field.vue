@@ -81,6 +81,12 @@
       </Button>
     </div>
 
+    <TableMultiselectInput
+      v-else-if="field.fieldtype === 'Table MultiSelect'"
+      v-model="data[field.fieldname]"
+      :doctype="field.options"
+    />
+
     <Link
       v-else-if="field.fieldtype === 'User'"
       class="form-control"
@@ -175,6 +181,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
 import { getFormat, evaluateDependsOnValue } from '@/utils'

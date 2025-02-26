@@ -47,7 +47,7 @@
             <span class="text-p-sm text-ink-gray-6">
               {{
                 __(
-                  'Appears in the top sidebar. Recommended size is 32x32 px in PNG or SVG',
+                  'Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG',
                 )
               }}
             </span>
@@ -90,11 +90,11 @@
         </div>
       </div>
 
-      <!-- dropdown settings -->
+      <!-- Home actions -->
 
       <div class="flex flex-col justify-between gap-4">
         <span class="text-base font-semibold text-ink-gray-9">
-          {{ __('Dropdown settings') }}
+          {{ __('Home actions') }}
         </span>
         <div class="flex flex-1">
           <Grid
