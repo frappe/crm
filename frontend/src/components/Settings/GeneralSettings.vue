@@ -47,7 +47,7 @@
             <span class="text-p-sm text-ink-gray-6">
               {{
                 __(
-                  'Appears in the top sidebar. Recommended size is 32x32 px in PNG or SVG',
+                  'Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG',
                 )
               }}
             </span>
