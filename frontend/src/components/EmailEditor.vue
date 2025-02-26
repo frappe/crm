@@ -262,6 +262,15 @@ function removeAttachment(attachment) {
 
 const showEmailTemplateSelectorModal = ref(false)
 
+async function addSignature(editor) {
+  const signature = await call('crm.api.get_user_signature')
+  if (signature) {
+    let signatureHtml = signature.replace(/\n/g, '<br>')
+    let currentContent = editor.getHTML()
+    editor.commands.setContent(currentContent + signatureHtml)
+  }
+}
+
 async function applyEmailTemplate(template) {
   let data = await call(
     'frappe.email.doctype.email_template.email_template.get_email_template',
@@ -278,6 +287,7 @@ async function applyEmailTemplate(template) {
   if (template.response) {
     content.value = data.message
     editor.value.commands.setContent(data.message)
+    await addSignature(editor.value)
   }
   showEmailTemplateSelectorModal.value = false
   capture('email_template_applied', { doctype: props.doctype })
@@ -308,6 +318,7 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
+  addSignature,
 })
 
 const textEditorMenuButtons = [

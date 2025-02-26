@@ -133,15 +133,14 @@ const signature = createResource({
   auto: true,
 })
 
-function setSignature(editor) {
+async function setSignature(editor) {
   if (!signature.data) return
-  signature.data = signature.data.replace(/\n/g, '<br>')
   let emailContent = editor.getHTML()
   emailContent = emailContent.startsWith('<p></p>')
     ? emailContent.slice(7)
     : emailContent
-  editor.commands.setContent(signature.data + emailContent)
-  editor.commands.focus('start')
+  editor.commands.setContent(emailContent)
+  await newEmailEditor.value.addSignature(editor)
 }
 
 watch(
