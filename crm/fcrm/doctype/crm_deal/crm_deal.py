@@ -26,7 +26,15 @@ class CRMDeal(Document):
 			add_status_change_log(self)
 
 	def after_insert(self):
-		if self.deal_owner:
+		# Only create assignment if there are no active assignment rules
+		assignment_rules = frappe.get_all(
+			"Assignment Rule",
+			filters={
+				"document_type": "CRM Deal",
+				"disabled": 0
+			}, ignore_permissions=True
+		)
+		if not assignment_rules and self.deal_owner:
 			self.assign_agent(self.deal_owner)
 
 	def before_save(self):

@@ -158,6 +158,7 @@ const props = defineProps({
 
 const restrictedFieldTypes = [
   'Table',
+  'Table MultiSelect',
   'Geolocation',
   'Attach',
   'Attach Image',
