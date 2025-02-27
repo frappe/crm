@@ -685,6 +685,8 @@ const updateQuickFilters = createResource({
   url: 'crm.api.doc.update_quick_filters',
   onSuccess() {
     customizeQuickFilter.value = false
+
+    quickFilters.update({ params: { doctype: props.doctype, cached: false } })
     quickFilters.reload()
 
     createToast({
