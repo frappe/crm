@@ -670,7 +670,9 @@ function addQuickFilter(f) {
 }
 
 function removeQuickFilter(f) {
-  // 
+  newQuickFilters.value = newQuickFilters.value.filter(
+    (filter) => filter.fieldname !== f.fieldname,
+  )
 }
 
 function saveQuickFilters() {
