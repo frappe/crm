@@ -485,9 +485,7 @@ def get_data(
 		"page_length_count": page_length_count,
 		"is_default": is_default,
 		"views": get_views(doctype),
-		"total_count": frappe.get_list(
-			doctype, filters=filters, fields="count(*) as total_count"
-		)[0].total_count,
+		"total_count": frappe.db.count(doctype, filters=filters),
 		"row_count": len(data),
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),
