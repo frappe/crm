@@ -1,5 +1,10 @@
 <template>
-  <Popover placement="right-start" class="flex w-full">
+  <Popover
+    placement="right-start"
+    trigger="hover"
+    :hoverDelay="0.1"
+    :leaveDelay="0.1"
+  >
     <template #target="{ togglePopover }">
       <button
         :class="[
@@ -19,19 +24,19 @@
     </template>
     <template #body>
       <div
-        class="grid grid-cols-3 justify-between mx-3 p-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="flex w-fit mx-2 min-w-32 max-w-48 flex-col rounded-lg border border-outline-gray-2 bg-surface-white p-1.5 text-sm text-ink-gray-8 shadow-xl auto-fill-[100px]"
       >
-        <div v-for="app in apps.data" :key="app.name">
-          <a
-            :href="app.route"
-            class="flex flex-col gap-1.5 rounded justify-center items-center py-2 px-1 hover:bg-surface-gray-2"
-          >
-            <img class="size-8" :src="app.logo" />
-            <div class="text-sm text-ink-gray-7" @click="app.onClick">
-              {{ app.title }}
-            </div>
-          </a>
-        </div>
+        <a
+          :href="app.route"
+          v-for="app in apps.data"
+          key="name"
+          class="flex items-center gap-2 rounded p-1.5 hover:bg-surface-gray-2"
+        >
+          <img class="size-6" :src="app.logo" />
+          <span class="max-w-18 w-full truncate">
+            {{ app.title }}
+          </span>
+        </a>
       </div>
     </template>
   </Popover>
