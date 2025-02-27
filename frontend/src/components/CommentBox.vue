@@ -94,7 +94,7 @@ import { usersStore } from '@/stores/users'
 import { TextEditorBubbleMenu, TextEditor, FileUploader } from 'frappe-ui'
 import { capture } from '@/telemetry'
 import { EditorContent } from '@tiptap/vue-3'
-import { ref, computed, defineModel } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   placeholder: {

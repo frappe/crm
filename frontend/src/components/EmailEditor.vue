@@ -183,7 +183,7 @@ import { capture } from '@/telemetry'
 import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
-import { ref, computed, defineModel, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 
 const props = defineProps({
   placeholder: {
