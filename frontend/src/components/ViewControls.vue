@@ -58,6 +58,62 @@
       </div>
     </div>
   </div>
+  <div
+    v-else-if="customizeQuickFilter"
+    class="flex items-center justify-between gap-2 p-5"
+  >
+    <div class="flex gap-2">
+      <template v-for="filter in newQuickFilters" :key="filter.fieldname">
+        <Tooltip :text="filter.fieldname">
+          <Button :label="filter.label" class="group">
+            <template #suffix>
+              <FeatherIcon
+                class="h-3.5 cursor-pointer group-hover:flex hidden"
+                name="x"
+                @click.stop="removeQuickFilter(filter)"
+              />
+            </template>
+          </Button>
+        </Tooltip>
+      </template>
+      <Autocomplete
+        value=""
+        :options="quickFilterOptions"
+        @change="(e) => addQuickFilter(e)"
+      >
+        <template #target="{ togglePopover }">
+          <Button
+            variant="ghost"
+            @click="togglePopover()"
+            :label="__('Add filter')"
+          >
+            <template #prefix>
+              <FeatherIcon name="plus" class="h-4" />
+            </template>
+          </Button>
+        </template>
+        <template #item-label="{ option }">
+          <Tooltip :text="option.value" :hover-delay="1">
+            <div class="flex-1 truncate text-ink-gray-7">
+              {{ option.label }}
+            </div>
+          </Tooltip>
+        </template>
+      </Autocomplete>
+    </div>
+    <div class="flex gap-1">
+      <Button
+        :label="__('Save')"
+        :loading="updateQuickFilters.loading"
+        @click="saveQuickFilters"
+      />
+      <Button @click="customizeQuickFilter = false">
+        <template #icon>
+          <FeatherIcon name="x" class="h-4 w-4" />
+        </template>
+      </Button>
+    </div>
+  </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
     <FadedScrollableDiv
       class="flex flex-1 items-center overflow-x-auto -ml-1"
@@ -130,9 +186,13 @@
               items: [
                 {
                   label: __('Export'),
-                  icon: () =>
-                    h(FeatherIcon, { name: 'download', class: 'h-4 w-4' }),
+                  icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
                   onClick: () => (showExportDialog = true),
+                },
+                {
+                  label: __('Customize quick filters'),
+                  icon: () => h(QuickFilterIcon, { class: 'h-4 w-4' }),
+                  onClick: () => (customizeQuickFilter = true),
                 },
               ],
             },
@@ -218,7 +278,10 @@ import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
+import ExportIcon from '@/components/Icons/ExportIcon.vue'
+import QuickFilterIcon from '@/components/Icons/QuickFilterIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import GroupBy from '@/components/GroupBy.vue'
@@ -229,8 +292,10 @@ import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
-import { isEmoji } from '@/utils'
+import { getMeta } from '@/stores/meta'
+import { isEmoji, createToast } from '@/utils'
 import {
+  Tooltip,
   createResource,
   Dropdown,
   call,
@@ -594,11 +659,28 @@ const viewsDropdownOptions = computed(() => {
   return _views
 })
 
+const { getFields } = getMeta(props.doctype)
+
+const customizeQuickFilter = ref(false)
+
+const newQuickFilters = ref([])
+
+function addQuickFilter(f) {
+  // 
+}
+
+function removeQuickFilter(f) {
+  // 
+}
+
+function saveQuickFilters() {
+  // 
+}
+
+const quickFilterOptions = []
+
 const quickFilterList = computed(() => {
-  let filters = [{ fieldname: 'name', fieldtype: 'Data', label: __('ID') }]
-  if (quickFilters.data) {
-    filters.push(...quickFilters.data)
-  }
+  let filters = quickFilters.data || []
 
   filters.forEach((filter) => {
     filter['value'] = filter.fieldtype == 'Check' ? false : ''
@@ -630,6 +712,13 @@ const quickFilters = createResource({
   params: { doctype: props.doctype },
   cache: ['Quick Filters', props.doctype],
   auto: true,
+  onSuccess(filters) {
+    newQuickFilters.value = filters.map((f) => ({
+      label: f.label,
+      fieldname: f.fieldname,
+      fieldtype: f.fieldtype,
+    }))
+  },
 })
 
 function applyQuickFilter(filter, value) {
