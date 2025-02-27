@@ -285,9 +285,9 @@ async function applyEmailTemplate(template) {
   }
 
   if (template.response) {
-    content.value = data.message
     editor.value.commands.setContent(data.message)
     await addSignature(editor.value)
+    content.value = editor.value.getHTML()
   }
   showEmailTemplateSelectorModal.value = false
   capture('email_template_applied', { doctype: props.doctype })
