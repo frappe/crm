@@ -2,6 +2,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 from frappe.model import no_value_fields
 from frappe.model.document import get_controller
 from frappe.utils import make_filter_tuple
@@ -206,6 +207,40 @@ def get_quick_filters(doctype: str):
 
 
 @frappe.whitelist()
+def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
+	quick_filters = json.loads(quick_filters)
+	old_filters = json.loads(old_filters)
+
+	new_filters = [filter for filter in quick_filters if filter not in old_filters]
+	removed_filters = [filter for filter in old_filters if filter not in quick_filters]
+
+	# remove old filters
+	for filter in removed_filters:
+		update_in_standard_filter(filter, doctype, 0)
+
+	# add new filters
+	for filter in new_filters:
+		update_in_standard_filter(filter, doctype, 1)
+
+
+def update_in_standard_filter(fieldname, doctype, value):
+	if property_name := frappe.db.exists(
+		"Property Setter",
+		{"doc_type": doctype, "field_name": fieldname, "property": "in_standard_filter"},
+	):
+		frappe.db.set_value("Property Setter", property_name, "value", value)
+	else:
+		make_property_setter(
+			doctype,
+			fieldname,
+			"in_standard_filter",
+			value,
+			"Check",
+			validate_fields_for_doctype=False,
+		)
+
+
+@frappe.whitelist()
 def get_data(
 	doctype: str,
 	filters: dict,
@@ -382,7 +417,7 @@ def get_data(
 				all_count = frappe.get_list(
 					doctype,
 					filters=convert_filter_to_tuple(doctype, new_filters),
-					fields="count(*) as total_count"
+					fields="count(*) as total_count",
 				)[0].total_count
 
 				kc["all_count"] = all_count
@@ -485,9 +520,9 @@ def get_data(
 		"page_length_count": page_length_count,
 		"is_default": is_default,
 		"views": get_views(doctype),
-		"total_count": frappe.get_list(
-			doctype, filters=filters, fields="count(*) as total_count"
-		)[0].total_count,
+		"total_count": frappe.get_list(doctype, filters=filters, fields="count(*) as total_count")[
+			0
+		].total_count,
 		"row_count": len(data),
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),

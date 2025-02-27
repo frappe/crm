@@ -681,8 +681,34 @@ function removeQuickFilter(f) {
   )
 }
 
+const updateQuickFilters = createResource({
+  url: 'crm.api.doc.update_quick_filters',
+  onSuccess() {
+    customizeQuickFilter.value = false
+    quickFilters.reload()
+
+    createToast({
+      title: __('Quick Filters updated successfully'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
+  },
+})
+
 function saveQuickFilters() {
-  // 
+  let new_filters =
+    newQuickFilters.value?.map((filter) => filter.fieldname) || []
+  let old_filters = quickFilters.data?.map((filter) => filter.fieldname) || []
+
+  updateQuickFilters.update({
+    params: {
+      quick_filters: JSON.stringify(new_filters),
+      old_filters: JSON.stringify(old_filters),
+      doctype: props.doctype,
+    },
+  })
+
+  updateQuickFilters.fetch()
 }
 
 const quickFilterOptions = computed(() => {
