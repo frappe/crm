@@ -666,7 +666,13 @@ const customizeQuickFilter = ref(false)
 const newQuickFilters = ref([])
 
 function addQuickFilter(f) {
-  // 
+  if (!newQuickFilters.value.some((filter) => filter.fieldname === f.value)) {
+    newQuickFilters.value.push({
+      label: f.label,
+      fieldname: f.value,
+      fieldtype: f.fieldtype,
+    })
+  }
 }
 
 function removeQuickFilter(f) {
@@ -679,7 +685,29 @@ function saveQuickFilters() {
   // 
 }
 
-const quickFilterOptions = []
+const quickFilterOptions = computed(() => {
+  let fields = getFields()
+  if (!fields) return []
+
+  let restrictedFieldtypes = ['Tab Break', 'Section Break', 'Column Break']
+  let options = fields
+    .filter((f) => f.label && !restrictedFieldtypes.includes(f.fieldtype))
+    .map((field) => ({
+      label: field.label,
+      value: field.fieldname,
+      fieldtype: field.fieldtype,
+    }))
+
+  if (!options.some((f) => f.fieldname === 'name')) {
+    options.push({
+      label: __('Name'),
+      fieldname: 'name',
+      fieldtype: 'Data',
+    })
+  }
+
+  return options
+})
 
 const quickFilterList = computed(() => {
   let filters = quickFilters.data || []
