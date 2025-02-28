@@ -723,7 +723,18 @@ const quickFilterOptions = computed(() => {
   let fields = getFields()
   if (!fields) return []
 
-  let restrictedFieldtypes = ['Tab Break', 'Section Break', 'Column Break']
+  let restrictedFieldtypes = [
+    'Tab Break',
+    'Section Break',
+    'Column Break',
+    'Table',
+    'Table MultiSelect',
+    'HTML',
+    'Button',
+    'Image',
+    'Fold',
+    'Heading',
+  ]
   let options = fields
     .filter((f) => f.label && !restrictedFieldtypes.includes(f.fieldtype))
     .map((field) => ({
