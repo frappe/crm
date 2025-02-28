@@ -220,6 +220,9 @@ def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
 	new_filters = [filter for filter in quick_filters if filter not in old_filters]
 	removed_filters = [filter for filter in old_filters if filter not in quick_filters]
 
+	# update or create global quick filter settings
+	create_update_global_settings(doctype, quick_filters)
+
 	# remove old filters
 	for filter in removed_filters:
 		update_in_standard_filter(filter, doctype, 0)
@@ -227,6 +230,18 @@ def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
 	# add new filters
 	for filter in new_filters:
 		update_in_standard_filter(filter, doctype, 1)
+
+
+def create_update_global_settings(doctype, quick_filters):
+	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
+		frappe.db.set_value("CRM Global Settings", global_settings, "json", json.dumps(quick_filters))
+	else:
+		# create CRM Global Settings doc
+		doc = frappe.new_doc("CRM Global Settings")
+		doc.dt = doctype
+		doc.type = "Quick Filters"
+		doc.json = json.dumps(quick_filters)
+		doc.insert()
 
 
 def update_in_standard_filter(fieldname, doctype, value):
