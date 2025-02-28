@@ -46,7 +46,7 @@ import { Dropdown, Tooltip } from 'frappe-ui'
 import { timeAgo, formatDate, formatTime } from '@/utils'
 import { statusesStore } from '@/stores/statuses'
 import { capture } from '@/telemetry'
-import { computed, defineModel } from 'vue'
+import { computed } from 'vue'
 
 const data = defineModel()
 const emit = defineEmits(['updateField'])
