@@ -186,22 +186,32 @@ def get_quick_filters(doctype: str, cached: bool = True):
 	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
 		_quick_filters = frappe.db.get_value("CRM Global Settings", global_settings, "json")
 		_quick_filters = json.loads(_quick_filters) or []
-		fields = [field for field in meta.fields if field.fieldname in _quick_filters]
+
+		fields = []
+
+		for filter in _quick_filters:
+			if filter == "name":
+				fields.append({"label": "Name", "fieldname": "name", "fieldtype": "Data"})
+			else:
+				field = next((f for f in meta.fields if f.fieldname == filter), None)
+				if field:
+					fields.append(field)
+
 	else:
 		fields = [field for field in meta.fields if field.in_standard_filter]
 
 	for field in fields:
-		options = field.options
-		if field.fieldtype == "Select" and options and isinstance(options, str):
+		options = field.get("options")
+		if field.get("fieldtype") == "Select" and options and isinstance(options, str):
 			options = options.split("\n")
 			options = [{"label": option, "value": option} for option in options]
 			if not any([not option.get("value") for option in options]):
 				options.insert(0, {"label": "", "value": ""})
 		quick_filters.append(
 			{
-				"label": _(field.label),
-				"fieldname": field.fieldname,
-				"fieldtype": field.fieldtype,
+				"label": _(field.get("label")),
+				"fieldname": field.get("fieldname"),
+				"fieldtype": field.get("fieldtype"),
 				"options": options,
 			}
 		)

@@ -729,7 +729,7 @@ const quickFilterOptions = computed(() => {
   if (!options.some((f) => f.fieldname === 'name')) {
     options.push({
       label: __('Name'),
-      fieldname: 'name',
+      value: 'name',
       fieldtype: 'Data',
     })
   }
