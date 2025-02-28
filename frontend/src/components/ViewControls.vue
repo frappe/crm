@@ -62,23 +62,35 @@
     v-else-if="customizeQuickFilter"
     class="flex items-center justify-between gap-2 p-5"
   >
-    <FadedScrollableDiv
-      class="flex flex-1 items-center gap-2 overflow-x-auto -ml-1"
-      orientation="horizontal"
-    >
-      <template v-for="filter in newQuickFilters" :key="filter.fieldname">
-        <Tooltip :text="filter.fieldname">
-          <Button :label="filter.label" class="group whitespace-nowrap">
-            <template #suffix>
-              <FeatherIcon
-                class="h-3.5 cursor-pointer group-hover:flex hidden"
-                name="x"
-                @click.stop="removeQuickFilter(filter)"
-              />
-            </template>
-          </Button>
-        </Tooltip>
-      </template>
+    <div class="flex flex-1 items-center overflow-hidden pl-1 gap-2">
+      <FadedScrollableDiv
+        class="flex items-center gap-2 overflow-x-auto -ml-1"
+        orientation="horizontal"
+      >
+        <Draggable
+          class="flex gap-2"
+          :list="newQuickFilters"
+          group="filters"
+          item-key="fieldname"
+        >
+          <template #item="{ element: filter }">
+            <Button class="group whitespace-nowrap cursor-grab">
+              <template #default>
+                <Tooltip :text="filter.fieldname">
+                  <span>{{ filter.label }}</span>
+                </Tooltip>
+              </template>
+              <template #suffix>
+                <FeatherIcon
+                  class="h-3.5 cursor-pointer group-hover:flex hidden"
+                  name="x"
+                  @click.stop="removeQuickFilter(filter)"
+                />
+              </template>
+            </Button>
+          </template>
+        </Draggable>
+      </FadedScrollableDiv>
       <Autocomplete
         value=""
         :options="quickFilterOptions"
@@ -86,7 +98,7 @@
       >
         <template #target="{ togglePopover }">
           <Button
-            class="whitespace-nowrap mr-4"
+            class="whitespace-nowrap mr-2"
             variant="ghost"
             @click="togglePopover()"
             :label="__('Add filter')"
@@ -104,7 +116,7 @@
           </Tooltip>
         </template>
       </Autocomplete>
-    </FadedScrollableDiv>
+    </div>
     <div class="-ml-2 h-[70%] border-l" />
     <div class="flex gap-1">
       <Button
@@ -312,6 +324,7 @@ import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
+import Draggable from 'vuedraggable'
 import _ from 'lodash'
 
 const props = defineProps({
