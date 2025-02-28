@@ -31,7 +31,7 @@
     "@vitejs/plugin-vue-jsx": "^3.0.1",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.5",
-    "vite": "^4.4.9",
+    "vite": "^6.1.1",
     "vite-plugin-pwa": "^0.15.0"
   }
 }
