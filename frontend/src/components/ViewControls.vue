@@ -62,10 +62,13 @@
     v-else-if="customizeQuickFilter"
     class="flex items-center justify-between gap-2 p-5"
   >
-    <div class="flex gap-2">
+    <FadedScrollableDiv
+      class="flex flex-1 items-center gap-2 overflow-x-auto -ml-1"
+      orientation="horizontal"
+    >
       <template v-for="filter in newQuickFilters" :key="filter.fieldname">
         <Tooltip :text="filter.fieldname">
-          <Button :label="filter.label" class="group">
+          <Button :label="filter.label" class="group whitespace-nowrap">
             <template #suffix>
               <FeatherIcon
                 class="h-3.5 cursor-pointer group-hover:flex hidden"
@@ -83,6 +86,7 @@
       >
         <template #target="{ togglePopover }">
           <Button
+            class="whitespace-nowrap mr-4"
             variant="ghost"
             @click="togglePopover()"
             :label="__('Add filter')"
@@ -100,7 +104,8 @@
           </Tooltip>
         </template>
       </Autocomplete>
-    </div>
+    </FadedScrollableDiv>
+    <div class="-ml-2 h-[70%] border-l" />
     <div class="flex gap-1">
       <Button
         :label="__('Save')"
