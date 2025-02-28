@@ -181,8 +181,14 @@ def get_doctype_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fi
 @frappe.whitelist()
 def get_quick_filters(doctype: str, cached: bool = True):
 	meta = frappe.get_meta(doctype, cached)
-	fields = [field for field in meta.fields if field.in_standard_filter]
 	quick_filters = []
+
+	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
+		_quick_filters = frappe.db.get_value("CRM Global Settings", global_settings, "json")
+		_quick_filters = json.loads(_quick_filters) or []
+		fields = [field for field in meta.fields if field.fieldname in _quick_filters]
+	else:
+		fields = [field for field in meta.fields if field.in_standard_filter]
 
 	for field in fields:
 		options = field.options
