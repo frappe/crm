@@ -193,6 +193,7 @@
                   label: __('Customize quick filters'),
                   icon: () => h(QuickFilterIcon, { class: 'h-4 w-4' }),
                   onClick: () => (customizeQuickFilter = true),
+                  condition: () => isManager(),
                 },
               ],
             },
