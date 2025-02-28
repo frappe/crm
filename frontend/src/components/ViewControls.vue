@@ -192,7 +192,7 @@
                 {
                   label: __('Customize quick filters'),
                   icon: () => h(QuickFilterIcon, { class: 'h-4 w-4' }),
-                  onClick: () => (customizeQuickFilter = true),
+                  onClick: () => showCustomizeQuickFilter(),
                   condition: () => isManager(),
                 },
               ],
@@ -664,6 +664,11 @@ const { getFields } = getMeta(props.doctype)
 
 const customizeQuickFilter = ref(false)
 
+function showCustomizeQuickFilter() {
+  customizeQuickFilter.value = true
+  setupNewQuickFilters(quickFilters.data)
+}
+
 const newQuickFilters = ref([])
 
 function addQuickFilter(f) {
@@ -772,13 +777,17 @@ const quickFilters = createResource({
   cache: ['Quick Filters', props.doctype],
   auto: true,
   onSuccess(filters) {
-    newQuickFilters.value = filters.map((f) => ({
-      label: f.label,
-      fieldname: f.fieldname,
-      fieldtype: f.fieldtype,
-    }))
+    setupNewQuickFilters(filters)
   },
 })
+
+function setupNewQuickFilters(filters) {
+  newQuickFilters.value = filters.map((f) => ({
+    label: f.label,
+    fieldname: f.fieldname,
+    fieldtype: f.fieldtype,
+  }))
+}
 
 function applyQuickFilter(filter, value) {
   let filters = { ...list.value.params.filters }
