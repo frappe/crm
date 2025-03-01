@@ -2,6 +2,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 from frappe.model import no_value_fields
 from frappe.model.document import get_controller
 from frappe.utils import make_filter_tuple
@@ -178,23 +179,39 @@ def get_doctype_fields_meta(DocField, doctype, allowed_fieldtypes, restricted_fi
 
 
 @frappe.whitelist()
-def get_quick_filters(doctype: str):
-	meta = frappe.get_meta(doctype)
-	fields = [field for field in meta.fields if field.in_standard_filter]
+def get_quick_filters(doctype: str, cached: bool = True):
+	meta = frappe.get_meta(doctype, cached)
 	quick_filters = []
 
+	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
+		_quick_filters = frappe.db.get_value("CRM Global Settings", global_settings, "json")
+		_quick_filters = json.loads(_quick_filters) or []
+
+		fields = []
+
+		for filter in _quick_filters:
+			if filter == "name":
+				fields.append({"label": "Name", "fieldname": "name", "fieldtype": "Data"})
+			else:
+				field = next((f for f in meta.fields if f.fieldname == filter), None)
+				if field:
+					fields.append(field)
+
+	else:
+		fields = [field for field in meta.fields if field.in_standard_filter]
+
 	for field in fields:
-		options = field.options
-		if field.fieldtype == "Select" and options and isinstance(options, str):
+		options = field.get("options")
+		if field.get("fieldtype") == "Select" and options and isinstance(options, str):
 			options = options.split("\n")
 			options = [{"label": option, "value": option} for option in options]
 			if not any([not option.get("value") for option in options]):
 				options.insert(0, {"label": "", "value": ""})
 		quick_filters.append(
 			{
-				"label": _(field.label),
-				"fieldname": field.fieldname,
-				"fieldtype": field.fieldtype,
+				"label": _(field.get("label")),
+				"fieldname": field.get("fieldname"),
+				"fieldtype": field.get("fieldtype"),
 				"options": options,
 			}
 		)
@@ -203,6 +220,55 @@ def get_quick_filters(doctype: str):
 		quick_filters = [filter for filter in quick_filters if filter.get("fieldname") != "converted"]
 
 	return quick_filters
+
+
+@frappe.whitelist()
+def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
+	quick_filters = json.loads(quick_filters)
+	old_filters = json.loads(old_filters)
+
+	new_filters = [filter for filter in quick_filters if filter not in old_filters]
+	removed_filters = [filter for filter in old_filters if filter not in quick_filters]
+
+	# update or create global quick filter settings
+	create_update_global_settings(doctype, quick_filters)
+
+	# remove old filters
+	for filter in removed_filters:
+		update_in_standard_filter(filter, doctype, 0)
+
+	# add new filters
+	for filter in new_filters:
+		update_in_standard_filter(filter, doctype, 1)
+
+
+def create_update_global_settings(doctype, quick_filters):
+	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
+		frappe.db.set_value("CRM Global Settings", global_settings, "json", json.dumps(quick_filters))
+	else:
+		# create CRM Global Settings doc
+		doc = frappe.new_doc("CRM Global Settings")
+		doc.dt = doctype
+		doc.type = "Quick Filters"
+		doc.json = json.dumps(quick_filters)
+		doc.insert()
+
+
+def update_in_standard_filter(fieldname, doctype, value):
+	if property_name := frappe.db.exists(
+		"Property Setter",
+		{"doc_type": doctype, "field_name": fieldname, "property": "in_standard_filter"},
+	):
+		frappe.db.set_value("Property Setter", property_name, "value", value)
+	else:
+		make_property_setter(
+			doctype,
+			fieldname,
+			"in_standard_filter",
+			value,
+			"Check",
+			validate_fields_for_doctype=False,
+		)
 
 
 @frappe.whitelist()
@@ -382,7 +448,7 @@ def get_data(
 				all_count = frappe.get_list(
 					doctype,
 					filters=convert_filter_to_tuple(doctype, new_filters),
-					fields="count(*) as total_count"
+					fields="count(*) as total_count",
 				)[0].total_count
 
 				kc["all_count"] = all_count
@@ -485,9 +551,9 @@ def get_data(
 		"page_length_count": page_length_count,
 		"is_default": is_default,
 		"views": get_views(doctype),
-		"total_count": frappe.get_list(
-			doctype, filters=filters, fields="count(*) as total_count"
-		)[0].total_count,
+		"total_count": frappe.get_list(doctype, filters=filters, fields="count(*) as total_count")[
+			0
+		].total_count,
 		"row_count": len(data),
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),
