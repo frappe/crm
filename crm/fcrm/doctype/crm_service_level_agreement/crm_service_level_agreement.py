@@ -25,7 +25,7 @@ class CRMServiceLevelAgreement(Document):
 		if self.default:
 			other_slas = frappe.get_all(
 				"CRM Service Level Agreement",
-				filters={"apply_on": self.apply_on, "default": True},
+				filters={"apply_on": self.apply_on, "default": True, "name": ["!=", self.name]},
 				fields=["name"],
 			)
 			if other_slas:
