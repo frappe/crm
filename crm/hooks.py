@@ -132,7 +132,6 @@ before_uninstall = "crm.uninstall.before_uninstall"
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
-	"User": "crm.overrides.user.CustomUser",
 }
 
 # Document Events
@@ -161,6 +160,7 @@ doc_events = {
 	},
 	"User": {
 		"before_validate": ["crm.api.demo.validate_user"],
+		"validate_reset_password": ["crm.api.demo.validate_reset_password"],
 	},
 }
 
