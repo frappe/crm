@@ -135,7 +135,7 @@
       </Button>
     </div>
   </div>
-  <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
+  <div v-else class="flex items-start justify-between gap-2 px-5 py-4">
     <FadedScrollableDiv
       class="flex flex-1 items-center overflow-x-auto -ml-1 -mt-1 scroll-smooth"
       orientation="horizontal"
@@ -156,7 +156,7 @@
       </div>
     </FadedScrollableDiv>
     <div class="-ml-2 h-[70%] border-l" />
-    <div class="flex items-center gap-2 flex-shrink-0">
+    <div class="flex items-start gap-2 flex-shrink-0">
       <div
         v-if="viewUpdated && route.query.view && (!view.public || isManager())"
         class="flex items-center gap-2 border-r pr-2"
@@ -164,7 +164,7 @@
         <Button :label="__('Cancel')" @click="cancelChanges" />
         <Button :label="__('Save Changes')" @click="saveView" />
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-start gap-2">
         <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
           <template #icon>
             <RefreshIcon class="h-4 w-4" />
@@ -201,18 +201,19 @@
           @update="(isDefault) => updateColumns(isDefault)"
         />
         <Dropdown
-          v-if="route.params.viewType !== 'kanban'"
           :options="[
             {
               group: __('Options'),
               hideLabel: true,
               items: [
-                {
-                  label: __('Export'),
-                  icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
-                  onClick: () => (showExportDialog = true),
-                  condition: () => !options.hideColumnsButton,
-                },
+                ...(route.params.viewType !== 'kanban' ? [
+                  {
+                    label: __('Export'),
+                    icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
+                    onClick: () => (showExportDialog = true),
+                    condition: () => !options.hideColumnsButton,
+                  }
+                ] : []),
                 {
                   label: __('Customize quick filters'),
                   icon: () => h(QuickFilterIcon, { class: 'h-4 w-4' }),
@@ -449,7 +450,7 @@ const quickFilterOptions = computed(() => {
   let options = fields
     .filter((f) => f.label && !restrictedFieldtypes.includes(f.fieldtype))
     .map((field) => ({
-      label: field.label,
+      label: __(field.label),
       value: field.fieldname,
       fieldtype: field.fieldtype,
     }))
@@ -509,6 +510,25 @@ function setupNewQuickFilters(filters) {
     fieldname: f.fieldname,
     fieldtype: f.fieldtype,
   }))
+}
+
+function applyQuickFilter(filter, value) {
+  let filters = { ...list.value.params.filters }
+  let field = filter.fieldname
+  if (value) {
+    if (
+      ['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.fieldtype)
+    ) {
+      filters[field] = value
+    } else {
+      filters[field] = ['LIKE', `%${value}%`]
+    }
+    filter['value'] = value
+  } else {
+    delete filters[field]
+    filter['value'] = ''
+  }
+  updateFilter(filters)
 }
 
 function getViewType() {

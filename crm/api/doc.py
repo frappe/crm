@@ -204,7 +204,7 @@ def get_quick_filters(doctype: str, cached: bool = True):
 		options = field.get("options")
 		if field.get("fieldtype") == "Select" and options and isinstance(options, str):
 			options = options.split("\n")
-			options = [{"label": option, "value": option} for option in options]
+			options = [{"label": _(option), "value": option} for option in options]
 			if not any([not option.get("value") for option in options]):
 				options.insert(0, {"label": "", "value": ""})
 		quick_filters.append(
@@ -242,16 +242,9 @@ def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
 		update_in_standard_filter(filter, doctype, 1)
 
 
-def create_update_global_settings(doctype, quick_filters):
-	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
-		frappe.db.set_value("CRM Global Settings", global_settings, "json", json.dumps(quick_filters))
-	else:
-		# create CRM Global Settings doc
-		doc = frappe.new_doc("CRM Global Settings")
-		doc.dt = doctype
-		doc.type = "Quick Filters"
-		doc.json = json.dumps(quick_filters)
-		doc.insert()
+def clear_quick_filters_cache(doctype):
+	"""Clear the quick filters cache for a specific doctype"""
+	frappe.cache().delete_key(['Quick Filters', doctype])
 
 
 def update_in_standard_filter(fieldname, doctype, value):
@@ -269,6 +262,24 @@ def update_in_standard_filter(fieldname, doctype, value):
 			"Check",
 			validate_fields_for_doctype=False,
 		)
+	
+	# Clear cache after updating standard filter
+	clear_quick_filters_cache(doctype)
+
+
+def create_update_global_settings(doctype, quick_filters):
+	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
+		frappe.db.set_value("CRM Global Settings", global_settings, "json", json.dumps(quick_filters))
+	else:
+		# create CRM Global Settings doc
+		doc = frappe.new_doc("CRM Global Settings")
+		doc.dt = doctype
+		doc.type = "Quick Filters"
+		doc.json = json.dumps(quick_filters)
+		doc.insert()
+	
+	# Clear cache after updating global settings
+	clear_quick_filters_cache(doctype)
 
 
 @frappe.whitelist()
