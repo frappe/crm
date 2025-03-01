@@ -1323,7 +1323,13 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
 
   let filters = { ...list.value.params.filters }
 
-  let value = item.name || item.label || item
+  let value = item
+  // For status field, use the original value (name) instead of translated label
+  if (column.key === 'status' && typeof item === 'object') {
+    value = item.name || item.value || item
+  } else {
+    value = item.name || item.label || item
+  }
 
   if (value) {
     filters[column.key] = value
