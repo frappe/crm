@@ -142,6 +142,7 @@ async function setSignature(editor) {
   editor.commands.setContent(emailContent)
   await newEmailEditor.value.addSignature(editor)
   newEmail.value = editor.getHTML()
+  editor.commands.focus('start')
 }
 
 watch(
@@ -181,7 +182,6 @@ async function sendMail() {
   if (attachments.value.length) {
     capture('email_attachments_added')
   }
-  
   await call('frappe.core.doctype.communication.email.make', {
     recipients: recipients.join(', '),
     attachments: attachments.value.map((x) => x.name),

@@ -351,7 +351,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-23 03:43:36.327957",
+ "modified": "2024-12-11 14:31:41.058895",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
@@ -383,7 +383,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

@@ -130,7 +130,6 @@ permission_query_conditions = {
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
-	"User": "crm.overrides.user.CustomUser",
 }
 
 # Document Events
@@ -157,10 +156,13 @@ doc_events = {
 		"on_update": ["crm.api.avito.on_update"],
 	},
 	"CRM Deal": {
-		"on_update": ["crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"],
+		"on_update": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+		],
 	},
 	"User": {
 		"before_validate": ["crm.api.demo.validate_user"],
+		"validate_reset_password": ["crm.api.demo.validate_reset_password"],
 	}
 }
 

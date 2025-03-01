@@ -52,7 +52,6 @@ import Link from '@/components/Controls/Link.vue'
 import { FormControl } from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
 import { timespanOptions } from '@/utils/timeOptions'
-import { computed } from 'vue'
 
 const props = defineProps({
   filter: {

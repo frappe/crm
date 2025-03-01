@@ -119,7 +119,7 @@
    "label": "Icon"
   },
   {
-   "default": "kanban",
+   "default": "list",
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",

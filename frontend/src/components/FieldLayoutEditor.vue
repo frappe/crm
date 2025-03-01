@@ -294,7 +294,7 @@ const fields = createResource({
       })
       .map(field => ({
         ...field,
-        label: field.label
+        label: __(field.label)
       }))
   },
 })

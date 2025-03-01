@@ -58,7 +58,84 @@
       </div>
     </div>
   </div>
-  <div v-else class="flex items-start justify-between gap-2 px-5 py-4">
+  <div
+    v-else-if="customizeQuickFilter"
+    class="flex items-center justify-between gap-2 p-5"
+  >
+    <div class="flex flex-1 items-center overflow-hidden pl-1 gap-2">
+      <FadedScrollableDiv
+        class="flex items-center gap-2 overflow-x-auto -ml-1 scroll-smooth"
+        orientation="horizontal"
+        @wheel.prevent="(e) => {
+          const container = e.currentTarget
+          container.scrollLeft += e.deltaY
+        }"
+      >
+        <Draggable
+          class="flex gap-2"
+          :list="newQuickFilters"
+          group="filters"
+          item-key="fieldname"
+        >
+          <template #item="{ element: filter }">
+            <Button class="group whitespace-nowrap cursor-grab">
+              <template #default>
+                <Tooltip :text="filter.fieldname">
+                  <span>{{ filter.label }}</span>
+                </Tooltip>
+              </template>
+              <template #suffix>
+                <FeatherIcon
+                  class="h-3.5 cursor-pointer group-hover:flex hidden"
+                  name="x"
+                  @click.stop="removeQuickFilter(filter)"
+                />
+              </template>
+            </Button>
+          </template>
+        </Draggable>
+      </FadedScrollableDiv>
+      <Autocomplete
+        value=""
+        :options="quickFilterOptions"
+        @change="(e) => addQuickFilter(e)"
+      >
+        <template #target="{ togglePopover }">
+          <Button
+            class="whitespace-nowrap mr-2"
+            variant="ghost"
+            @click="togglePopover()"
+            :label="__('Add filter')"
+          >
+            <template #prefix>
+              <FeatherIcon name="plus" class="h-4" />
+            </template>
+          </Button>
+        </template>
+        <template #item-label="{ option }">
+          <Tooltip :text="option.value" :hover-delay="1">
+            <div class="flex-1 truncate text-ink-gray-7">
+              {{ option.label }}
+            </div>
+          </Tooltip>
+        </template>
+      </Autocomplete>
+    </div>
+    <div class="-ml-2 h-[70%] border-l" />
+    <div class="flex gap-1">
+      <Button
+        :label="__('Save')"
+        :loading="updateQuickFilters.loading"
+        @click="saveQuickFilters"
+      />
+      <Button @click="customizeQuickFilter = false">
+        <template #icon>
+          <FeatherIcon name="x" class="h-4 w-4" />
+        </template>
+      </Button>
+    </div>
+  </div>
+  <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
     <FadedScrollableDiv
       class="flex flex-1 items-center overflow-x-auto -ml-1 -mt-1 scroll-smooth"
       orientation="horizontal"
@@ -67,17 +144,15 @@
         container.scrollLeft += e.deltaY
       }"
     >
-      <div class="flex items-center gap-2">
-        <div
-          v-for="filter in quickFilterList"
-          :key="filter.fieldname"
-          class="m-1 min-w-36"
-        >
-          <QuickFilterField
-            :filter="filter"
-            @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
-          />
-        </div>
+      <div
+        v-for="filter in quickFilterList"
+        :key="filter.fieldname"
+        class="m-1 min-w-36"
+      >
+        <QuickFilterField
+          :filter="filter"
+          @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
+        />
       </div>
     </FadedScrollableDiv>
     <div class="-ml-2 h-[70%] border-l" />
@@ -126,9 +201,7 @@
           @update="(isDefault) => updateColumns(isDefault)"
         />
         <Dropdown
-          v-if="
-            !options.hideColumnsButton && route.params.viewType !== 'kanban'
-          "
+          v-if="route.params.viewType !== 'kanban'"
           :options="[
             {
               group: __('Options'),
@@ -136,9 +209,15 @@
               items: [
                 {
                   label: __('Export'),
-                  icon: () =>
-                    h(FeatherIcon, { name: 'download', class: 'h-4 w-4' }),
+                  icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
                   onClick: () => (showExportDialog = true),
+                  condition: () => !options.hideColumnsButton,
+                },
+                {
+                  label: __('Customize quick filters'),
+                  icon: () => h(QuickFilterIcon, { class: 'h-4 w-4' }),
+                  onClick: () => showCustomizeQuickFilter(),
+                  condition: () => isManager(),
                 },
               ],
             },
@@ -224,7 +303,10 @@ import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
+import ExportIcon from '@/components/Icons/ExportIcon.vue'
+import QuickFilterIcon from '@/components/Icons/QuickFilterIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import GroupBy from '@/components/GroupBy.vue'
@@ -235,8 +317,10 @@ import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
-import { isEmoji } from '@/utils'
+import { getMeta } from '@/stores/meta'
+import { isEmoji, createToast } from '@/utils'
 import {
+  Tooltip,
   createResource,
   Dropdown,
   call,
@@ -247,6 +331,7 @@ import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
+import Draggable from 'vuedraggable'
 import _ from 'lodash'
 
 const props = defineProps({
@@ -285,6 +370,146 @@ const defaultParams = ref('')
 
 const viewUpdated = ref(false)
 const showViewModal = ref(false)
+
+const { getFields } = getMeta(props.doctype)
+
+const customizeQuickFilter = ref(false)
+
+function showCustomizeQuickFilter() {
+  customizeQuickFilter.value = true
+  setupNewQuickFilters(quickFilters.data)
+}
+
+const newQuickFilters = ref([])
+
+function addQuickFilter(f) {
+  if (!newQuickFilters.value.some((filter) => filter.fieldname === f.value)) {
+    newQuickFilters.value.push({
+      label: f.label,
+      fieldname: f.value,
+      fieldtype: f.fieldtype,
+    })
+  }
+}
+
+function removeQuickFilter(f) {
+  newQuickFilters.value = newQuickFilters.value.filter(
+    (filter) => filter.fieldname !== f.fieldname,
+  )
+}
+
+const updateQuickFilters = createResource({
+  url: 'crm.api.doc.update_quick_filters',
+  onSuccess() {
+    customizeQuickFilter.value = false
+
+    quickFilters.update({ params: { doctype: props.doctype, cached: false } })
+    quickFilters.reload()
+
+    createToast({
+      title: __('Quick Filters updated successfully'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
+  },
+})
+
+function saveQuickFilters() {
+  let new_filters =
+    newQuickFilters.value?.map((filter) => filter.fieldname) || []
+  let old_filters = quickFilters.data?.map((filter) => filter.fieldname) || []
+
+  updateQuickFilters.update({
+    params: {
+      quick_filters: JSON.stringify(new_filters),
+      old_filters: JSON.stringify(old_filters),
+      doctype: props.doctype,
+    },
+  })
+
+  updateQuickFilters.fetch()
+}
+
+const quickFilterOptions = computed(() => {
+  let fields = getFields()
+  if (!fields) return []
+
+  let restrictedFieldtypes = [
+    'Tab Break',
+    'Section Break',
+    'Column Break',
+    'Table',
+    'Table MultiSelect',
+    'HTML',
+    'Button',
+    'Image',
+    'Fold',
+    'Heading',
+  ]
+  let options = fields
+    .filter((f) => f.label && !restrictedFieldtypes.includes(f.fieldtype))
+    .map((field) => ({
+      label: field.label,
+      value: field.fieldname,
+      fieldtype: field.fieldtype,
+    }))
+
+  if (!options.some((f) => f.fieldname === 'name')) {
+    options.push({
+      label: __('Name'),
+      value: 'name',
+      fieldtype: 'Data',
+    })
+  }
+
+  return options
+})
+
+const quickFilterList = computed(() => {
+  let filters = quickFilters.data || []
+
+  filters.forEach((filter) => {
+    filter['value'] = filter.fieldtype == 'Check' ? false : ''
+    if (list.value.params?.filters[filter.fieldname]) {
+      let value = list.value.params.filters[filter.fieldname]
+      if (Array.isArray(value)) {
+        if (
+          (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
+            filter.fieldtype,
+          ) &&
+            value[0]?.toLowerCase() == 'like') ||
+          value[0]?.toLowerCase() != 'like'
+        )
+          return
+        filter['value'] = value[1]?.replace(/%/g, '')
+      } else if (typeof value == 'boolean') {
+        filter['value'] = value
+      } else {
+        filter['value'] = value?.replace(/%/g, '')
+      }
+    }
+  })
+
+  return filters
+})
+
+const quickFilters = createResource({
+  url: 'crm.api.doc.get_quick_filters',
+  params: { doctype: props.doctype },
+  cache: ['Quick Filters', props.doctype],
+  auto: true,
+  onSuccess(filters) {
+    setupNewQuickFilters(filters)
+  },
+})
+
+function setupNewQuickFilters(filters) {
+  newQuickFilters.value = filters.map((f) => ({
+    label: f.label,
+    fieldname: f.fieldname,
+    fieldtype: f.fieldtype,
+  }))
+}
 
 function getViewType() {
   let viewType = route.params.viewType || 'list'
@@ -599,63 +824,6 @@ const viewsDropdownOptions = computed(() => {
 
   return _views
 })
-
-const quickFilterList = computed(() => {
-  let filters = [{ fieldname: 'name', fieldtype: 'Data', label: __('ID') }]
-  if (quickFilters.data) {
-    filters.push(...quickFilters.data)
-  }
-
-  filters.forEach((filter) => {
-    filter['value'] = filter.fieldtype == 'Check' ? false : ''
-    if (list.value.params?.filters[filter.fieldname]) {
-      let value = list.value.params.filters[filter.fieldname]
-      if (Array.isArray(value)) {
-        if (
-          (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.fieldtype,
-          ) &&
-            value[0]?.toLowerCase() == 'like') ||
-          value[0]?.toLowerCase() != 'like'
-        )
-          return
-        filter['value'] = value[1]?.replace(/%/g, '')
-      } else if (typeof value == 'boolean') {
-        filter['value'] = value
-      } else {
-        filter['value'] = value?.replace(/%/g, '')
-      }
-    }
-  })
-
-  return filters
-})
-
-const quickFilters = createResource({
-  url: 'crm.api.doc.get_quick_filters',
-  params: { doctype: props.doctype },
-  cache: ['Quick Filters', props.doctype],
-  auto: true,
-})
-
-function applyQuickFilter(filter, value) {
-  let filters = { ...list.value.params.filters }
-  let field = filter.fieldname
-  if (value) {
-    if (
-      ['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(filter.fieldtype)
-    ) {
-      filters[field] = value
-    } else {
-      filters[field] = ['LIKE', `%${value}%`]
-    }
-    filter['value'] = value
-  } else {
-    delete filters[field]
-    filter['value'] = ''
-  }
-  updateFilter(filters)
-}
 
 function updateFilter(filters) {
   viewUpdated.value = true

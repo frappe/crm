@@ -301,7 +301,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-23 03:34:15.466556",
+ "modified": "2025-01-02 22:14:01.991054",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
@@ -342,7 +342,6 @@
    "share": 1
   }
  ],
- "row_format": "Dynamic",
  "sender_field": "email",
  "sender_name_field": "first_name",
  "show_title_field_in_link": 1,
