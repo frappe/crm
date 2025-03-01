@@ -133,7 +133,7 @@
                   <Button
                     v-if="lead.data.mobile_no && !callEnabled"
                     size="sm"
-                    @click.once="trackPhoneActivities('phone')"
+                    @click="trackPhoneActivities('phone')"
                   >
                     <PhoneIcon class="h-4 w-4" />
                   </Button>
@@ -142,7 +142,7 @@
                   <Button
                     v-if="lead.data.mobile_no"
                     size="sm"
-                    @click.once="trackPhoneActivities('whatsapp')"
+                    @click="trackPhoneActivities('whatsapp')"
                   >
                     <WhatsAppIcon class="h-4 w-4" />
                   </Button>
