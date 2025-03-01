@@ -12,16 +12,27 @@
     :modalRef="modalRef"
   />
   <FadedScrollableDiv
+    ref="scrollContainer"
     :maskHeight="30"
     class="flex flex-col flex-1 overflow-y-auto dark-scrollbar"
+    @scroll="handleScroll"
   >
     <div
-      v-if="all_activities?.loading"
+      v-if="isLoadingMore"
+      class="flex items-center justify-center py-4"
+    >
+      <LoadingIndicator class="h-6 w-6" />
+      <span class="ml-2 text-ink-gray-4">{{ __('Loading more...') }}</span>
+    </div>
+
+    <div
+      v-if="all_activities?.loading && !activities?.length"
       class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
     >
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
     </div>
+
     <div
       v-else-if="
         activities?.length ||
@@ -117,6 +128,7 @@
       <div
         v-else
         v-for="(activity, i) in activities"
+        :key="activity.name || activity.creation"
         class="activity px-3 sm:px-10"
         :class="
           ['Activity', 'Emails'].includes(title)
@@ -565,15 +577,67 @@ const changeTabTo = (tabName) => {
   tabIndex.value = index
 }
 
+const scrollContainer = ref(null)
+const isLoadingMore = ref(false)
+const noMoreActivities = ref(false)
+
 const all_activities = createResource({
   url: 'crm.api.activities.get_activities',
-  params: { name: doc.value.data.name },
+  params: { 
+    name: doc.value.data.name,
+    limit: 20,
+    offset: 0
+  },
   cache: ['activity', doc.value.data.name],
   auto: true,
   transform: ([versions, calls, notes, tasks, attachments]) => {
     return { versions, calls, notes, tasks, attachments }
   },
 })
+
+async function loadMore() {
+  if (isLoadingMore.value || noMoreActivities.value) return
+  
+  isLoadingMore.value = true
+  const currentLength = activities.value?.length || 0
+  
+  try {
+    const result = await createResource({
+      url: 'crm.api.activities.get_activities',
+      params: {
+        name: doc.value.data.name,
+        limit: 20,
+        offset: currentLength
+      }
+    }).submit()
+
+    const [versions, calls, notes, tasks, attachments] = result
+    
+    // Merge new activities with existing ones
+    if (!versions?.length && !calls?.length) {
+      noMoreActivities.value = true
+    } else {
+      all_activities.data.versions = [...(all_activities.data.versions || []), ...(versions || [])]
+      all_activities.data.calls = [...(all_activities.data.calls || []), ...(calls || [])]
+      all_activities.data.notes = [...(all_activities.data.notes || []), ...(notes || [])]
+      all_activities.data.tasks = [...(all_activities.data.tasks || []), ...(tasks || [])]
+      all_activities.data.attachments = [...(all_activities.data.attachments || []), ...(attachments || [])]
+    }
+  } catch (error) {
+    console.error('Error loading more activities:', error)
+  } finally {
+    isLoadingMore.value = false
+  }
+}
+
+function handleScroll(e) {
+  const el = e.target
+  const threshold = 100 // pixels from top
+  
+  if (el.scrollTop <= threshold && !isLoadingMore.value && !noMoreActivities.value) {
+    loadMore()
+  }
+}
 
 const showWhatsappTemplates = ref(false)
 
@@ -600,7 +664,6 @@ const avitoMessages = createResource({
   transform: (data) => sortByCreation(data),
   onSuccess: () => nextTick(() => scroll()),
 })
-
 
 onBeforeUnmount(() => {
   $socket.off('whatsapp_message')
@@ -637,6 +700,18 @@ onMounted(() => {
       scroll(hash)
     }
   })
+
+  nextTick(() => {
+    if (scrollContainer.value) {
+      const el = scrollContainer.value.$el
+      el.scrollTop = el.scrollHeight
+    }
+  })
+})
+
+watch(title, () => {
+  noMoreActivities.value = false
+  isLoadingMore.value = false
 })
 
 function sendTemplate(template) {
@@ -837,7 +912,6 @@ const emailBox = ref(null)
 const whatsappBox = ref(null)
 const avitoBox = ref(null)
 
-
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
     all_activities.reload()
@@ -870,3 +944,9 @@ function formatActivityDate(date, format) {
 
 defineExpose({ emailBox, all_activities })
 </script>
+
+<style>
+.activities {
+  scroll-behavior: smooth;
+}
+</style>

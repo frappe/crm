@@ -10,16 +10,16 @@ from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 
 
 @frappe.whitelist()
-def get_activities(name):
+def get_activities(name, limit=20, offset=0):
 	if frappe.db.exists("CRM Deal", name):
-		return get_deal_activities(name)
+		return get_deal_activities(name, limit, offset)
 	elif frappe.db.exists("CRM Lead", name):
-		return get_lead_activities(name)
+		return get_lead_activities(name, limit, offset)
 	else:
 		frappe.throw(_("Document not found"), frappe.DoesNotExistError)
 
 
-def get_deal_activities(name):
+def get_deal_activities(name, limit=20, offset=0):
 	get_docinfo("", "CRM Deal", name)
 	docinfo = frappe.response["docinfo"]
 	deal_meta = frappe.get_meta("CRM Deal")
@@ -141,10 +141,13 @@ def get_deal_activities(name):
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 
+	total_count = len(activities)
+	activities = activities[offset:offset + limit]
+
 	return activities, calls, notes, tasks, attachments
 
 
-def get_lead_activities(name):
+def get_lead_activities(name, limit=20, offset=0):
 	get_docinfo("", "CRM Lead", name)
 	docinfo = frappe.response["docinfo"]
 	lead_meta = frappe.get_meta("CRM Lead")
@@ -254,6 +257,9 @@ def get_lead_activities(name):
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
+
+	total_count = len(activities)
+	activities = activities[offset:offset + limit]
 
 	return activities, calls, notes, tasks, attachments
 
