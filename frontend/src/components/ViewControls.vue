@@ -201,24 +201,22 @@
           @update="(isDefault) => updateColumns(isDefault)"
         />
         <Dropdown
+          v-if="isManager()"
           :options="[
             {
               group: __('Options'),
               hideLabel: true,
               items: [
-                ...(route.params.viewType !== 'kanban' ? [
-                  {
-                    label: __('Export'),
-                    icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
-                    onClick: () => (showExportDialog = true),
-                    condition: () => !options.hideColumnsButton,
-                  }
-                ] : []),
+                {
+                  label: __('Export'),
+                  icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
+                  onClick: () => (showExportDialog = true),
+                  condition: () => !options.hideColumnsButton,
+                },
                 {
                   label: __('Customize quick filters'),
                   icon: () => h(QuickFilterIcon, { class: 'h-4 w-4' }),
                   onClick: () => showCustomizeQuickFilter(),
-                  condition: () => isManager(),
                 },
               ],
             },
@@ -288,6 +286,7 @@
           type="checkbox"
           :label="__('Export All {0} Record(s)', [list.data.total_count])"
           v-model="export_all"
+          :disabled="route.params.viewType === 'kanban'"
         />
       </div>
     </template>
@@ -711,8 +710,44 @@ const showExportDialog = ref(false)
 const export_type = ref('Excel')
 const export_all = ref(false)
 
+watch(() => route.params.viewType, (newType) => {
+  export_all.value = newType === 'kanban'
+})
+
+onMounted(() => {
+  export_all.value = route.params.viewType === 'kanban'
+})
+
 async function exportRows() {
-  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
+  let fields = []
+  if (route.params.viewType === 'kanban') {
+    // Get fields from kanban_fields
+    let kanbanFields = list.value.data.kanban_fields
+    if (typeof kanbanFields === 'string') {
+      kanbanFields = JSON.parse(kanbanFields)
+    }
+    fields = kanbanFields || []
+
+    // Ensure we have the column field (status) if it's not already included
+    if (view.value.column_field && !fields.includes(view.value.column_field)) {
+      fields.push(view.value.column_field)
+    }
+
+    // Ensure we have the name field if it's not already included
+    if (!fields.includes('name')) {
+      fields.unshift('name')
+    }
+  } else {
+    // For list view, get fields from columns
+    fields = list.value.data.columns
+      .filter(f => f && f.key)
+      .map(f => f.key)
+  }
+
+  // Ensure we have at least one field
+  if (!fields.length) {
+    fields = ['name']
+  }
 
   let filters = JSON.stringify({
     ...props.filters,
@@ -725,9 +760,9 @@ async function exportRows() {
     page_length = list.value.data.total_count
   }
 
-  window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
+  window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${JSON.stringify(fields)}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
   showExportDialog.value = false
-  export_all.value = false
+  export_all.value = route.params.viewType === 'kanban'
   export_type.value = 'Excel'
 }
 
