@@ -8,6 +8,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import indexCss from '/src/index.css?inline'
 
 const props = defineProps({
   content: {
@@ -15,9 +16,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-const files = import.meta.globEager('/src/index.css', { query: '?inline' })
-const css = files['/src/index.css'].default
 
 const iframeRef = ref(null)
 const _content = ref(props.content)
@@ -110,7 +108,7 @@ const htmlContent = `
 <html>
 <head>
   <style>
-    ${css}
+    ${indexCss}
     :root {
       --bg-surface-gray-3: #ededed;
       --bg-surface-gray-4: #e2e2e2;
