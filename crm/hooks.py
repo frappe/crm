@@ -137,6 +137,15 @@ override_doctype_class = {
 # Hook on document methods and events
 
 doc_events = {
+	"CRM Lead": {
+		"on_update": "crm.api.doc.on_doc_update",
+	},
+	"CRM Deal": {
+		"on_update": [
+			"crm.api.doc.on_doc_update",
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+		],
+	},
 	"Contact": {
 		"validate": ["crm.api.contact.validate"],
 	},
@@ -154,11 +163,6 @@ doc_events = {
 	"Avito Message": {
 		"validate": ["crm.api.avito.validate"],
 		"on_update": ["crm.api.avito.on_update"],
-	},
-	"CRM Deal": {
-		"on_update": [
-			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
-		],
 	},
 	"User": {
 		"before_validate": ["crm.api.demo.validate_user"],

@@ -738,3 +738,62 @@ def getCounts(d, doctype):
 		"FCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")}
 	)
 	return d
+
+
+def get_changed_fields(doc):
+	"""Get fields that were changed in the document"""
+	if not doc._doc_before_save:
+		return {}
+		
+	changed = {}
+	for key, value in doc.as_dict().items():
+		if (
+			key not in ['modified', 'creation'] and 
+			doc._doc_before_save.get(key) != value
+		):
+			changed[key] = value
+			
+	return changed
+
+
+@frappe.whitelist()
+def subscribe_doc(doctype, name):
+	"""Subscribe to document updates"""
+	if not frappe.has_permission(doctype, "read", name):
+		frappe.throw(_("Not permitted"))
+		
+	# Add to session subscriptions
+	if not hasattr(frappe.local, 'document_subscriptions'):
+		frappe.local.document_subscriptions = set()
+	
+	frappe.local.document_subscriptions.add(f"{doctype}:{name}")
+	return True
+
+
+@frappe.whitelist()
+def unsubscribe_doc(doctype, name):
+	"""Unsubscribe from document updates"""
+	if hasattr(frappe.local, 'document_subscriptions'):
+		frappe.local.document_subscriptions.remove(f"{doctype}:{name}")
+	return True
+
+
+def on_doc_update(doc, method=None):
+	"""Publish updates to subscribed clients"""
+	# Only handle CRM Lead and CRM Deal
+	if doc.doctype not in ['CRM Lead', 'CRM Deal']:
+		return
+		
+	# Get relevant fields that were changed
+	changed_fields = get_changed_fields(doc)
+	if changed_fields:
+		# Publish only to subscribed users
+		frappe.publish_realtime(
+			'doc_update',
+			{
+				'doctype': doc.doctype,
+				'name': doc.name,
+				'data': changed_fields
+			},
+			after_commit=True
+		)

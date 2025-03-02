@@ -81,7 +81,7 @@
               <template #item="{ element: fields }">
                 <component
                   :is="options.getRoute ? 'router-link' : 'div'"
-                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-surface-white text-base flex flex-col text-ink-gray-9 shadow-sm hover:shadow-md transition-all duration-200 dark:bg-surface-gray-1 dark:border-surface-gray-3 hover:border-gray-300 dark:hover:border-surface-gray-4 dark:hover:bg-surface-gray-2 dark:hover:shadow-lg dark:hover:shadow-gray-900/30"
+                  class="relative pt-3 px-3.5 pb-2.5 rounded-lg border bg-surface-white text-base flex flex-col text-ink-gray-9 shadow-sm hover:shadow-md transition-all duration-200 dark:bg-surface-gray-1 dark:border-surface-gray-3 hover:border-gray-300 dark:hover:border-surface-gray-4 dark:hover:bg-surface-gray-2 dark:hover:shadow-lg dark:hover:shadow-gray-900/30"
                   :data-name="fields.name"
                   v-bind="{
                     to: options.getRoute ? options.getRoute(fields) : undefined,
@@ -90,6 +90,15 @@
                       : undefined,
                   }"
                 >
+                  <div 
+                    v-if="updatingCards.has(fields.name)"
+                    class="absolute right-2 top-2 z-10"
+                  >
+                    <FeatherIcon 
+                      name="refresh-cw" 
+                      class="text-info-500 animate-spin h-4 w-4" 
+                    />
+                  </div>
                   <slot
                     name="title"
                     v-bind="{ fields, titleField, itemName: fields.name }"
@@ -165,6 +174,32 @@
     </div>
   </div>
 </template>
+
+<style>
+.remote-update-highlight {
+  animation: remote-update 2.5s ease;
+}
+
+@keyframes remote-update {
+  0% {
+    background: linear-gradient(45deg, transparent, var(--info-100), transparent);
+    border-color: var(--info-300);
+  }
+  15% {
+    background: linear-gradient(45deg, transparent, var(--info-200), transparent);
+    border-color: var(--info-500);
+  }
+  85% {
+    background: linear-gradient(45deg, transparent, var(--info-100), transparent);
+    border-color: var(--info-300);
+  }
+  100% {
+    background: transparent;
+    border-color: var(--surface-border);
+  }
+}
+</style>
+
 <script setup>
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
@@ -172,7 +207,9 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { isTouchScreenDevice, colors, parseColor } from '@/utils'
 import Draggable from 'vuedraggable'
 import { Dropdown } from 'frappe-ui'
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, watch, nextTick, ref } from 'vue'
+import { useSocket, PRIORITY, startTransaction, endTransaction, isLocalTransaction } from '@/socket'
+import { FeatherIcon } from 'frappe-ui'
 
 const props = defineProps({
   options: {
@@ -186,8 +223,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update', 'loadMore'])
-
 const kanban = defineModel()
+const socket = useSocket()
+
+// Track active subscriptions
+const subscriptions = new Map()
+
+// Track cards being updated
+const updatingCards = ref(new Set())
 
 const titleField = computed(() => {
   return kanban.value?.data?.title_field
@@ -205,6 +248,142 @@ const columns = computed(() => {
     })
   }
   return _columns
+})
+
+async function updateColumn(d) {
+  let toColumn = d?.to?.dataset.column
+  let fromColumn = d?.from?.dataset.column
+  let itemName = d?.item?.dataset.name
+
+  let _columns = []
+  columns.value.forEach((col) => {
+    col.column['order'] = col.data.map((d) => d.name)
+    if (col.column.page_length) {
+      delete col.column.page_length
+    }
+    _columns.push(col.column)
+  })
+
+  let data = { kanban_columns: _columns }
+  const doctype = kanban.value.params.doctype
+
+  if (toColumn != fromColumn) {
+    // Start transaction for card movement
+    const transactionId = startTransaction(doctype, itemName)
+    data = { 
+      item: itemName, 
+      to: toColumn, 
+      kanban_columns: _columns,
+      // Include transaction ID in server request
+      _transaction: transactionId 
+    }
+    
+    try {
+      await emit('update', data)
+    } finally {
+      // Clean up transaction after server response
+      endTransaction(doctype, itemName, transactionId)
+    }
+  } else {
+    emit('update', data)
+  }
+}
+
+// Helper function to highlight remote updates
+function highlightRemoteUpdate(element, cardName) {
+  if (!element) return
+  
+  updatingCards.value.add(cardName)
+  element.classList.add('remote-update-highlight')
+  
+  setTimeout(() => {
+    element.classList.remove('remote-update-highlight')
+    updatingCards.value.delete(cardName)
+  }, 2500)
+}
+
+// Subscribe to updates for visible cards
+function subscribeToVisibleCards() {
+  // Safety check - ensure we have doctype
+  const doctype = kanban.value?.params?.doctype
+  if (!doctype) return
+
+  // Unsubscribe from all current subscriptions
+  for (const unsubscribe of subscriptions.values()) {
+    unsubscribe()
+  }
+  subscriptions.clear()
+
+  // Subscribe to all visible cards
+  columns.value.forEach(column => {
+    if (!column.column.delete) {
+      column.data.forEach(card => {
+        const unsubscribe = socket.subscribeToDoc(doctype, card.name, async (data) => {
+          // Skip processing if update is from local transaction
+          if (data._transaction && isLocalTransaction(doctype, card.name, data._transaction)) {
+            return
+          }
+          
+          // For remote updates, directly update the card data
+          if (data.status && data.status !== card.status) {
+            // Find the target column
+            const targetColumn = columns.value.find(col => 
+              col.column.name === data.status
+            )
+            
+            if (targetColumn) {
+              // Remove card from current column
+              const sourceColumn = columns.value.find(col => 
+                col.data.some(c => c.name === card.name)
+              )
+              if (sourceColumn) {
+                sourceColumn.data = sourceColumn.data.filter(c => 
+                  c.name !== card.name
+                )
+              }
+              
+              // Add card to target column
+              Object.assign(card, data)
+              targetColumn.data.push(card)
+              
+              // Wait for DOM update and highlight the moved card
+              await nextTick()
+              const cardElement = document.querySelector(`[data-name="${card.name}"]`)
+              highlightRemoteUpdate(cardElement, card.name)
+            }
+          } else {
+            // Just update card data for other changes
+            Object.assign(card, data)
+            // Highlight the updated card
+            const cardElement = document.querySelector(`[data-name="${card.name}"]`)
+            highlightRemoteUpdate(cardElement, card.name)
+          }
+        }, PRIORITY.VIEWPORT)
+        
+        subscriptions.set(card.name, unsubscribe)
+      })
+    }
+  })
+}
+
+// Watch for changes in visible cards and doctype
+watch([
+  () => columns.value.map(col => col.data.map(card => card.name)).flat(),
+  () => kanban.value?.params?.doctype
+], () => {
+  subscribeToVisibleCards()
+}, { deep: true })
+
+onMounted(() => {
+  subscribeToVisibleCards()
+})
+
+onUnmounted(() => {
+  // Cleanup all subscriptions
+  for (const unsubscribe of subscriptions.values()) {
+    unsubscribe()
+  }
+  subscriptions.clear()
 })
 
 const deletedColumns = computed(() => {
@@ -238,28 +417,5 @@ function addColumn(e) {
   let column = columns.value.find((col) => col.column.name == e.value)
   column.column['delete'] = false
   updateColumn()
-}
-
-function updateColumn(d) {
-  let toColumn = d?.to?.dataset.column
-  let fromColumn = d?.from?.dataset.column
-  let itemName = d?.item?.dataset.name
-
-  let _columns = []
-  columns.value.forEach((col) => {
-    col.column['order'] = col.data.map((d) => d.name)
-    if (col.column.page_length) {
-      delete col.column.page_length
-    }
-    _columns.push(col.column)
-  })
-
-  let data = { kanban_columns: _columns }
-
-  if (toColumn != fromColumn) {
-    data = { item: itemName, to: toColumn, kanban_columns: _columns }
-  }
-
-  emit('update', data)
 }
 </script>
