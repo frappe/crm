@@ -784,16 +784,15 @@ def on_doc_update(doc, method=None):
 	if doc.doctype not in ['CRM Lead', 'CRM Deal']:
 		return
 		
-	# Get relevant fields that were changed
-	changed_fields = get_changed_fields(doc)
-	if changed_fields:
-		# Publish only to subscribed users
-		frappe.publish_realtime(
-			'doc_update',
-			{
-				'doctype': doc.doctype,
-				'name': doc.name,
-				'data': changed_fields
-			},
-			after_commit=True
-		)
+	# Send only document identifier and event type
+	frappe.publish_realtime(
+		'doc_update',
+		{
+			'doctype': doc.doctype,
+			'name': doc.name,
+			'data': {
+				'event': 'modified'  # Just a signal that the document has been changed
+			}
+		},
+		after_commit=True
+	)

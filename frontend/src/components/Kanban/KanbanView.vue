@@ -209,7 +209,7 @@ import Draggable from 'vuedraggable'
 import { Dropdown } from 'frappe-ui'
 import { computed, onMounted, onUnmounted, watch, nextTick, ref } from 'vue'
 import { useSocket, PRIORITY, startTransaction, endTransaction, isLocalTransaction } from '@/socket'
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, call } from 'frappe-ui'
 
 const props = defineProps({
   options: {
@@ -293,11 +293,13 @@ async function updateColumn(d) {
 function highlightRemoteUpdate(element, cardName) {
   if (!element) return
   
-  updatingCards.value.add(cardName)
+  // Should already be added to updatingCards when update begins
+  // Now just add the animation class
   element.classList.add('remote-update-highlight')
   
   setTimeout(() => {
     element.classList.remove('remote-update-highlight')
+    // Remove card from updating list after animation completes
     updatingCards.value.delete(cardName)
   }, 2500)
 }
@@ -324,46 +326,76 @@ function subscribeToVisibleCards() {
             return
           }
           
-          // For remote updates, directly update the card data
-          if (data.status && data.status !== card.status) {
-            // Find the target column
-            const targetColumn = columns.value.find(col => 
-              col.column.name === data.status
-            )
+          // If received a modification notification
+          if (data.event === 'modified') {
+            // Show update indicator
+            updatingCards.value.add(card.name)
             
-            if (targetColumn) {
-              // Remove card from current column
-              const sourceColumn = columns.value.find(col => 
-                col.data.some(c => c.name === card.name)
-              )
-              if (sourceColumn) {
-                sourceColumn.data = sourceColumn.data.filter(c => 
-                  c.name !== card.name
-                )
+            try {
+              // Request current document data
+              const updatedDoc = await call('frappe.client.get', {
+                doctype: doctype,
+                name: card.name
+              });
+              
+              // Check if status has changed
+              if (updatedDoc.status !== card.status) {
+                // Find target column
+                const targetColumn = columns.value.find(col => 
+                  col.column.name === updatedDoc.status
+                );
+                
+                if (targetColumn) {
+                  // Remove card from current column
+                  const sourceColumn = columns.value.find(col => 
+                    col.data.some(c => c.name === card.name)
+                  );
+                  if (sourceColumn) {
+                    sourceColumn.data = sourceColumn.data.filter(c => 
+                      c.name !== card.name
+                    );
+                  }
+                  
+                  // Update card data
+                  Object.assign(card, updatedDoc);
+                  
+                  // Add card to target column and sort according to order_by
+                  targetColumn.data.push(card);
+                  
+                  // Sort the column data according to the current order_by parameter
+                  const order_by = kanban.value?.params?.order_by;
+                  if (order_by) {
+                    const [field, direction] = order_by.split(' ');
+                    targetColumn.data.sort((a, b) => {
+                      if (direction === 'desc') {
+                        return a[field] > b[field] ? -1 : 1;
+                      } else {
+                        return a[field] < b[field] ? -1 : 1;
+                      }
+                    });
+                  }
+                } 
+              } else {
+                // Just update card data
+                Object.assign(card, updatedDoc);
               }
               
-              // Add card to target column
-              Object.assign(card, data)
-              targetColumn.data.push(card)
-              
-              // Wait for DOM update and highlight the moved card
-              await nextTick()
-              const cardElement = document.querySelector(`[data-name="${card.name}"]`)
-              highlightRemoteUpdate(cardElement, card.name)
+              // Highlight updated card
+              await nextTick();
+              const cardElement = document.querySelector(`[data-name="${card.name}"]`);
+              highlightRemoteUpdate(cardElement, card.name);
+            } catch (error) {
+              console.error('Error fetching updated document:', error);
+              // Remove update indicator in case of error
+              updatingCards.value.delete(card.name);
             }
-          } else {
-            // Just update card data for other changes
-            Object.assign(card, data)
-            // Highlight the updated card
-            const cardElement = document.querySelector(`[data-name="${card.name}"]`)
-            highlightRemoteUpdate(cardElement, card.name)
           }
-        }, PRIORITY.VIEWPORT)
+        }, PRIORITY.VIEWPORT);
         
-        subscriptions.set(card.name, unsubscribe)
-      })
+        subscriptions.set(card.name, unsubscribe);
+      });
     }
-  })
+  });
 }
 
 // Watch for changes in visible cards and doctype

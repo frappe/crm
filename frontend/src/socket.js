@@ -93,22 +93,6 @@ export function initSocket() {
     }
   })
 
-  // Handle doc update events from other tabs
-  window.addEventListener('storage', (event) => {
-    if (event.key === 'doc_update') {
-      try {
-        const { doctype, name, data } = JSON.parse(event.newValue)
-        const key = `${doctype}:${name}`
-        const callbacks = subscriptions.get(key)
-        if (callbacks) {
-          callbacks.forEach(callback => callback(data))
-        }
-      } catch (e) {
-        console.error('Error processing cross-tab update:', e)
-      }
-    }
-  })
-
   // Handle reconnection
   socket.on('connect', () => {
     // Resubscribe to all documents
@@ -148,12 +132,6 @@ export function useSocket() {
     },
     emit(event, data) {
       socket.emit(event, data)
-      // If this is a doc update, broadcast to other tabs
-      if (event === 'doc_update') {
-        localStorage.setItem('doc_update', JSON.stringify(data))
-        // Clear immediately to allow future updates of the same document
-        setTimeout(() => localStorage.removeItem('doc_update'), 100)
-      }
     },
     subscribeToDoc(doctype, name, callback, priority = PRIORITY.BACKGROUND) {
       return subscribeToDoc(doctype, name, callback, priority)
