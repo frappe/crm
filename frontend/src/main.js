@@ -5,7 +5,6 @@ import { createPinia } from 'pinia'
 import { createDialog } from './utils/dialogs'
 import { initSocket } from './socket'
 import router from './router'
-import translationPlugin from './translation'
 import { posthogPlugin } from './telemetry'
 import App from './App.vue'
 
@@ -22,6 +21,7 @@ import {
   setConfig,
   frappeRequest,
   FeatherIcon,
+  translationPlugin,
 } from 'frappe-ui'
 
 let globalComponents = {
