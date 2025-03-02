@@ -784,14 +784,21 @@ def on_doc_update(doc, method=None):
 	if doc.doctype not in ['CRM Lead', 'CRM Deal']:
 		return
 		
-	# Send only document identifier and event type
+	# Determine event type based on method
+	event = 'modified'
+	if method == 'after_insert':
+		event = 'created'
+	elif method == 'on_trash':
+		event = 'deleted'
+		
+	# Send document identifier and event type
 	frappe.publish_realtime(
 		'doc_update',
 		{
 			'doctype': doc.doctype,
 			'name': doc.name,
 			'data': {
-				'event': 'modified'  # Just a signal that the document has been changed
+				'event': event  # Signal the type of document event
 			}
 		},
 		after_commit=True

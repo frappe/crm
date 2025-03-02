@@ -139,12 +139,16 @@ override_doctype_class = {
 doc_events = {
 	"CRM Lead": {
 		"on_update": "crm.api.doc.on_doc_update",
+		"after_insert": "crm.api.doc.on_doc_update",
+		"on_trash": "crm.api.doc.on_doc_update",
 	},
 	"CRM Deal": {
 		"on_update": [
 			"crm.api.doc.on_doc_update",
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
 		],
+		"after_insert": "crm.api.doc.on_doc_update",
+		"on_trash": "crm.api.doc.on_doc_update",
 	},
 	"Contact": {
 		"validate": ["crm.api.contact.validate"],

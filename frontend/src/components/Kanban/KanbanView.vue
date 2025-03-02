@@ -232,6 +232,13 @@ const subscriptions = new Map()
 // Track cards being updated
 const updatingCards = ref(new Set())
 
+// Flag to track if view needs refresh
+const needsRefresh = ref(false)
+
+// Store event handlers for cleanup
+let docCreatedHandler = null;
+let docDeletedHandler = null;
+
 const titleField = computed(() => {
   return kanban.value?.data?.title_field
 })
@@ -326,6 +333,21 @@ function subscribeToVisibleCards() {
             return
           }
           
+          // Handle document deletion
+          if (data.event === 'deleted') {
+            // Find and remove the card from its column
+            const sourceColumn = columns.value.find(col => 
+              col.data.some(c => c.name === card.name)
+            );
+            
+            if (sourceColumn) {
+              sourceColumn.data = sourceColumn.data.filter(c => 
+                c.name !== card.name
+              );
+            }
+            return;
+          }
+          
           // If received a modification notification
           if (data.event === 'modified') {
             // Show update indicator
@@ -398,24 +420,128 @@ function subscribeToVisibleCards() {
   });
 }
 
+// Listen for document creation events
+function setupDocCreationListener() {
+  const doctype = kanban.value?.params?.doctype;
+  if (!doctype) return;
+  
+  // Listen for document creation events using CustomEvent
+  const handleDocCreated = (event) => {
+    const { doctype: eventDoctype, name } = event.detail;
+    console.log(`[KanbanView] Received document creation event: ${eventDoctype}/${name}`);
+    
+    if (eventDoctype === doctype) {
+      // Set flag to refresh view on next user interaction or after a delay
+      needsRefresh.value = true;
+      console.log(`[KanbanView] Setting refresh flag for ${doctype}`);
+      
+      // Refresh the view after a short delay to avoid too many refreshes
+      // if multiple documents are created in quick succession
+      setTimeout(() => {
+        if (needsRefresh.value) {
+          console.log(`[KanbanView] Refreshing view for ${doctype}`);
+          refreshView();
+          needsRefresh.value = false;
+        }
+      }, 1000);
+    }
+  };
+  
+  // Add event listener
+  window.addEventListener('crm:doc_created', handleDocCreated);
+  console.log(`[KanbanView] Set up document creation listener for ${doctype}`);
+  
+  // Store the handler for cleanup
+  return handleDocCreated;
+}
+
+// Listen for document deletion events
+function setupDocDeletionListener() {
+  const doctype = kanban.value?.params?.doctype;
+  if (!doctype) return;
+  
+  // Listen for document deletion events using CustomEvent
+  const handleDocDeleted = (event) => {
+    const { doctype: eventDoctype, name } = event.detail;
+    console.log(`[KanbanView] Received document deletion event: ${eventDoctype}/${name}`);
+    
+    if (eventDoctype === doctype) {
+      // Check if the document is in any column
+      let found = false;
+      
+      columns.value.forEach(column => {
+        if (!column.column.delete) {
+          // Find the card in the column
+          const cardIndex = column.data.findIndex(card => card.name === name);
+          
+          if (cardIndex !== -1) {
+            console.log(`[KanbanView] Removing deleted card ${name} from column ${column.column.name}`);
+            // Remove the card from the column
+            column.data.splice(cardIndex, 1);
+            found = true;
+          }
+        }
+      });
+      
+      // If we didn't find the card in any column, it might be outside our view
+      // We'll refresh the view to ensure consistency
+      if (!found) {
+        console.log(`[KanbanView] Deleted card ${name} not found in current view, refreshing`);
+        needsRefresh.value = true;
+        
+        setTimeout(() => {
+          if (needsRefresh.value) {
+            refreshView();
+            needsRefresh.value = false;
+          }
+        }, 1000);
+      }
+    }
+  };
+  
+  // Add event listener
+  window.addEventListener('crm:doc_deleted', handleDocDeleted);
+  console.log(`[KanbanView] Set up document deletion listener for ${doctype}`);
+  
+  // Store the handler for cleanup
+  return handleDocDeleted;
+}
+
+// Refresh the kanban view to get new documents
+function refreshView() {
+  console.log(`[KanbanView] Reloading kanban view`);
+  kanban.value.reload();
+}
+
 // Watch for changes in visible cards and doctype
 watch([
   () => columns.value.map(col => col.data.map(card => card.name)).flat(),
   () => kanban.value?.params?.doctype
 ], () => {
-  subscribeToVisibleCards()
+  subscribeToVisibleCards();
 }, { deep: true })
 
 onMounted(() => {
-  subscribeToVisibleCards()
+  subscribeToVisibleCards();
+  // Setup document creation and deletion listeners
+  docCreatedHandler = setupDocCreationListener();
+  docDeletedHandler = setupDocDeletionListener();
 })
 
 onUnmounted(() => {
   // Cleanup all subscriptions
   for (const unsubscribe of subscriptions.values()) {
-    unsubscribe()
+    unsubscribe();
   }
-  subscriptions.clear()
+  subscriptions.clear();
+  
+  // Remove document event listeners
+  if (docCreatedHandler) {
+    window.removeEventListener('crm:doc_created', docCreatedHandler);
+  }
+  if (docDeletedHandler) {
+    window.removeEventListener('crm:doc_deleted', docDeletedHandler);
+  }
 })
 
 const deletedColumns = computed(() => {

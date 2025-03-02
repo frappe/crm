@@ -87,6 +87,38 @@ export function initSocket() {
   // Handle doc update events from server
   socket.on('doc_update', ({ doctype, name, data }) => {
     const key = `${doctype}:${name}`
+    
+    // Handle document creation events
+    if (data.event === 'created') {
+      console.log(`[Socket] Document created: ${doctype}/${name}`);
+      // Dispatch a custom event for document creation
+      window.dispatchEvent(new CustomEvent('crm:doc_created', { 
+        detail: { doctype, name } 
+      }));
+      return
+    }
+    
+    // Handle document deletion events
+    if (data.event === 'deleted') {
+      console.log(`[Socket] Document deleted: ${doctype}/${name}`);
+      // If we have subscriptions for this document, notify them about deletion
+      const callbacks = subscriptions.get(key)
+      if (callbacks) {
+        callbacks.forEach(callback => callback({ event: 'deleted' }))
+        
+        // Clean up subscriptions for deleted document
+        subscriptions.delete(key)
+        subscriptionQueue.delete(key)
+      }
+      
+      // Dispatch a custom event for document deletion
+      window.dispatchEvent(new CustomEvent('crm:doc_deleted', { 
+        detail: { doctype, name } 
+      }));
+      return
+    }
+    
+    // Handle regular document updates
     const callbacks = subscriptions.get(key)
     if (callbacks) {
       callbacks.forEach(callback => callback(data))
