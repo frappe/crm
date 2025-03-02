@@ -193,7 +193,7 @@
           @update="(isDefault) => updateColumns(isDefault)"
         />
         <Dropdown
-          v-if="route.params.viewType !== 'kanban'"
+          v-if="route.params.viewType !== 'kanban' || isManager()"
           :options="[
             {
               group: __('Options'),
@@ -203,7 +203,7 @@
                   label: __('Export'),
                   icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
                   onClick: () => (showExportDialog = true),
-                  condition: () => !options.hideColumnsButton,
+                  condition: () => !options.hideColumnsButton && route.params.viewType !== 'kanban',
                 },
                 {
                   label: __('Customize quick filters'),
