@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-05 11:20\n"
+"PO-Revision-Date: 2025-03-06 11:24\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -809,7 +809,7 @@ msgstr "Confirmer"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Lead.vue:254
 #: frontend/src/pages/MobileLead.vue:133
 msgid "Contact"
-msgstr ""
+msgstr "Contact"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:194
 msgid "Contact Already Exists"
@@ -1709,7 +1709,7 @@ msgstr ""
 
 #: frontend/src/components/GroupBy.vue:8
 msgid "Group By: "
-msgstr ""
+msgstr "Grouper par: "
 
 #: frontend/src/components/CommunicationArea.vue:58
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
@@ -1785,7 +1785,7 @@ msgstr "Icône"
 #. Label of the image (Attach Image) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Image"
-msgstr ""
+msgstr "Image"
 
 #: frontend/src/components/Filter.vue:263
 #: frontend/src/components/Filter.vue:284
@@ -1952,7 +1952,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:381
 #: frontend/src/components/ViewControls.vue:583 frontend/src/utils/view.js:20
 msgid "Kanban"
-msgstr ""
+msgstr "Kanban"
 
 #. Label of the kanban_columns (Code) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -2233,7 +2233,7 @@ msgstr ""
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Message"
-msgstr ""
+msgstr "Message"
 
 #. Label of the middle_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -2257,7 +2257,7 @@ msgstr ""
 #. Label of the mobile_no (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Mobile No."
-msgstr ""
+msgstr "N° Mobile."
 
 #: frontend/src/components/Telephony/CallUI.vue:22
 msgid "Mobile Number"
@@ -3215,7 +3215,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:342
 msgid "Section"
-msgstr ""
+msgstr "Section"
 
 #: frontend/src/components/FieldLayout/Field.vue:258
 msgid "Select {0}"
@@ -3893,7 +3893,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "black"
-msgstr ""
+msgstr "noir"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3915,7 +3915,7 @@ msgstr "Commenter"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "cyan"
-msgstr ""
+msgstr "cyan"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3947,7 +3947,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "kanban"
-msgstr ""
+msgstr "kanban"
 
 #: crm/api/doc.py:38 crm/api/doc.py:156 crm/api/doc.py:500
 msgid "label"
@@ -3965,7 +3965,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:374
 msgid "next"
-msgstr ""
+msgstr "suivant"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3979,15 +3979,15 @@ msgstr "Orange"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "pink"
-msgstr ""
+msgstr "rose"
 
 #: frontend/src/components/FieldLayoutEditor.vue:374
 msgid "previous"
-msgstr ""
+msgstr "précedent"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:97
 msgid "private"
-msgstr ""
+msgstr "privé"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:97
 msgid "public"
