@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-05 11:20\n"
+"PO-Revision-Date: 2025-03-06 11:24\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -146,7 +146,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Accepted"
-msgstr ""
+msgstr "Elfogadva"
 
 #. Label of the accepted_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -305,7 +305,7 @@ msgstr ""
 #: frontend/src/components/Kanban/KanbanSettings.vue:107
 #: frontend/src/components/Kanban/KanbanView.vue:45
 msgid "Apply"
-msgstr ""
+msgstr "Alkalmaz"
 
 #. Label of the apply_on (Link) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -315,7 +315,7 @@ msgstr ""
 #. Label of the view (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Apply To"
-msgstr ""
+msgstr "Alkalmazás erre"
 
 #: frontend/src/components/Apps.vue:19
 msgid "Apps"
@@ -349,7 +349,7 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:193
 #: frontend/src/components/Modals/AssignmentModal.vue:5
 msgid "Assign To"
-msgstr ""
+msgstr "Hozzárendelni"
 
 #: frontend/src/components/AssignTo.vue:9
 msgid "Assign to"
@@ -368,7 +368,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Assignment Rule"
-msgstr ""
+msgstr "Hozzárendelési szabály"
 
 #: frontend/src/components/ListBulkActions.vue:158
 msgid "Assignment cleared successfully"
@@ -381,7 +381,7 @@ msgstr ""
 #: frontend/src/components/FilesUploader/FilesUploader.vue:5
 #: frontend/src/components/FilesUploader/FilesUploader.vue:76
 msgid "Attach"
-msgstr ""
+msgstr "Csatolás"
 
 #: frontend/src/pages/Deal.vue:106 frontend/src/pages/Lead.vue:156
 msgid "Attach a file"
@@ -431,7 +431,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:2
 msgid "Bulk Edit"
-msgstr ""
+msgstr "Tömeges szerkesztés"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -643,7 +643,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:51
 msgid "Camera"
-msgstr ""
+msgstr "Kamera"
 
 #: frontend/src/components/ColumnSettings.vue:128
 #: frontend/src/components/Modals/AssignmentModal.vue:9
@@ -651,7 +651,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:56
 #: frontend/src/components/ViewControls.vue:156
 msgid "Cancel"
-msgstr ""
+msgstr "Mégsem"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
@@ -694,7 +694,7 @@ msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:60
 msgid "Clear"
-msgstr ""
+msgstr "Egyértelmű"
 
 #: frontend/src/components/ListBulkActions.vue:139
 #: frontend/src/components/ListBulkActions.vue:147
@@ -726,7 +726,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:78
 msgid "Collapse"
-msgstr ""
+msgstr "Összeomlás"
 
 #: frontend/src/components/FieldLayoutEditor.vue:350
 msgid "Collapsible"
@@ -737,11 +737,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Color"
-msgstr ""
+msgstr "Szín"
 
 #: frontend/src/components/FieldLayoutEditor.vue:423
 msgid "Column"
-msgstr ""
+msgstr "Oszlop"
 
 #. Label of the column_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -760,7 +760,7 @@ msgstr ""
 #: frontend/src/components/CommentBox.vue:80
 #: frontend/src/components/CommunicationArea.vue:17
 msgid "Comment"
-msgstr ""
+msgstr "Megjegyzés"
 
 #: frontend/src/pages/Deal.vue:516 frontend/src/pages/Lead.vue:506
 #: frontend/src/pages/MobileDeal.vue:444 frontend/src/pages/MobileLead.vue:348
@@ -797,11 +797,11 @@ msgstr ""
 #. Label of the condition (Code) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Condition"
-msgstr ""
+msgstr "Feltétel"
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
-msgstr ""
+msgstr "Megerősítés"
 
 #. Label of the contact (Link) field in DocType 'CRM Contacts'
 #. Label of the contact (Link) field in DocType 'CRM Deal'
@@ -809,7 +809,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Lead.vue:254
 #: frontend/src/pages/MobileLead.vue:133
 msgid "Contact"
-msgstr ""
+msgstr "Kapcsolat"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:194
 msgid "Contact Already Exists"
@@ -855,7 +855,7 @@ msgstr ""
 #: frontend/src/components/Modals/EmailTemplateModal.vue:74
 #: frontend/src/components/Modals/NoteModal.vue:47
 msgid "Content"
-msgstr ""
+msgstr "Tartalom"
 
 #: frontend/src/components/Modals/EmailTemplateModal.vue:51
 msgid "Content Type"
@@ -921,7 +921,7 @@ msgstr ""
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:45
 #: frontend/src/components/SidePanelLayout.vue:125
 msgid "Create New"
-msgstr ""
+msgstr "Új létrehozása"
 
 #: frontend/src/components/Activities/Activities.vue:383
 #: frontend/src/components/Modals/NoteModal.vue:18
@@ -967,7 +967,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:521 frontend/src/pages/Lead.vue:511
 #: frontend/src/pages/MobileDeal.vue:449 frontend/src/pages/MobileLead.vue:353
 msgid "Data"
-msgstr ""
+msgstr "Adat"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -1136,7 +1136,7 @@ msgstr ""
 #: frontend/src/pages/MobileDeal.vue:428 frontend/src/pages/MobileLead.vue:332
 #: frontend/src/pages/MobileOrganization.vue:356
 msgid "Details"
-msgstr ""
+msgstr "Részletek"
 
 #. Label of the call_receiving_device (Select) field in DocType 'CRM Telephony
 #. Agent'
@@ -1147,12 +1147,12 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 msgid "Disable"
-msgstr ""
+msgstr "Tiltva"
 
 #: frontend/src/components/CommentBox.vue:76
 #: frontend/src/components/EmailEditor.vue:155
 msgid "Discard"
-msgstr ""
+msgstr "Elvet"
 
 #. Label of the dt (Link) field in DocType 'CRM Form Script'
 #. Label of the dt (Link) field in DocType 'CRM Global Settings'
@@ -1192,7 +1192,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:56
 msgid "Drop files here"
-msgstr ""
+msgstr "Dobja ide a fájlokat"
 
 #. Label of the dropdown_items_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -1380,7 +1380,7 @@ msgstr ""
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: frontend/src/components/Modals/EmailTemplateModal.vue:92
 msgid "Enabled"
-msgstr ""
+msgstr "Engedélyezve"
 
 #. Label of the end_date (Date) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -1392,7 +1392,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "End Time"
-msgstr ""
+msgstr "Befejezés dátuma"
 
 #: frontend/src/components/FieldLayout/Field.vue:260
 msgid "Enter {0}"
@@ -1406,7 +1406,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:319
 #: frontend/src/components/Filter.vue:335
 msgid "Equals"
-msgstr ""
+msgstr "Egyenlő"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:169
 #: frontend/src/components/Settings/SettingsPage.vue:91
@@ -1492,7 +1492,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:78
 msgid "Expand"
-msgstr ""
+msgstr "Kiterjed"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -1510,7 +1510,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:262
 msgid "Export Type"
-msgstr ""
+msgstr "Export típusa"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
@@ -1547,7 +1547,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:5
 msgid "Field"
-msgstr ""
+msgstr "Mező"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
 #: frontend/src/components/Kanban/KanbanSettings.vue:51
@@ -1564,7 +1564,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:6
 msgid "Filter"
-msgstr ""
+msgstr "Szűrő"
 
 #. Label of the filters (Code) field in DocType 'CRM View Settings'
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
@@ -1581,7 +1581,7 @@ msgstr ""
 #: frontend/src/components/SortBy.vue:6 frontend/src/components/SortBy.vue:106
 #: frontend/src/components/SortBy.vue:140
 msgid "First Name"
-msgstr ""
+msgstr "Vezetéknév"
 
 #: frontend/src/components/Modals/LeadModal.vue:139
 msgid "First Name is mandatory"
@@ -1637,7 +1637,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Friday"
-msgstr ""
+msgstr "Péntek"
 
 #. Label of the from (Data) field in DocType 'CRM Call Log'
 #. Label of the from (Data) field in DocType 'CRM Status Change Log'
@@ -1656,7 +1656,7 @@ msgstr ""
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "From User"
-msgstr ""
+msgstr "Felhasználótól"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -1670,7 +1670,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Full Name"
-msgstr ""
+msgstr "Teljes név"
 
 #. Label of the gender (Link) field in DocType 'CRM Contacts'
 #. Label of the gender (Link) field in DocType 'CRM Deal'
@@ -1679,12 +1679,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Gender"
-msgstr ""
+msgstr "Neme"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:92
 msgid "General"
-msgstr ""
+msgstr "Általános"
 
 #: frontend/src/pages/Deal.vue:94 frontend/src/pages/Lead.vue:144
 msgid "Go to website"
@@ -1709,7 +1709,7 @@ msgstr ""
 
 #: frontend/src/components/GroupBy.vue:8
 msgid "Group By: "
-msgstr ""
+msgstr "Csoportosít: "
 
 #: frontend/src/components/CommunicationArea.vue:58
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
@@ -1718,11 +1718,11 @@ msgstr ""
 #. Label of the hidden (Check) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Hidden"
-msgstr ""
+msgstr "Rejtett"
 
 #: frontend/src/components/Activities/Activities.vue:230
 msgid "Hide"
-msgstr ""
+msgstr "Elrejt"
 
 #: frontend/src/components/Activities/CallArea.vue:74
 msgid "Hide Recording"
@@ -1764,7 +1764,7 @@ msgstr ""
 #. Label of the holidays (Table) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Holidays"
-msgstr ""
+msgstr "Szabadnapok"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:97
 msgid "Home actions"
@@ -1780,7 +1780,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Icon"
-msgstr ""
+msgstr "Ikon"
 
 #. Label of the image (Attach Image) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -1793,7 +1793,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:312
 #: frontend/src/components/Filter.vue:326
 msgid "In"
-msgstr ""
+msgstr "Tartalmazza"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
@@ -1850,7 +1850,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:106
 msgid "Integrations"
-msgstr ""
+msgstr "Integrációk"
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:33
 msgid "Invalid Account SID or Auth Token."
@@ -1894,12 +1894,12 @@ msgstr ""
 #: frontend/src/components/Filter.vue:328
 #: frontend/src/components/Filter.vue:337
 msgid "Is"
-msgstr ""
+msgstr "Van"
 
 #. Label of the is_default (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Is Default"
-msgstr ""
+msgstr "Ez alapértelmezett"
 
 #. Label of the is_erpnext_in_different_site (Check) field in DocType 'ERPNext
 #. CRM Settings'
@@ -1938,7 +1938,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Job Title"
-msgstr ""
+msgstr "Beosztás"
 
 #: frontend/src/components/Filter.vue:75 frontend/src/components/Filter.vue:108
 #: frontend/src/components/Modals/AssignmentModal.vue:35
@@ -1980,7 +1980,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ColumnSettings.vue:105
 msgid "Label"
-msgstr ""
+msgstr "Felirat"
 
 #: frontend/src/components/Filter.vue:607
 msgid "Last 6 Months"
@@ -1995,7 +1995,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Last Name"
-msgstr ""
+msgstr "Keresztnév"
 
 #: frontend/src/components/Filter.vue:603
 msgid "Last Quarter"
@@ -2077,7 +2077,7 @@ msgstr ""
 #. Label of the lft (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Left"
-msgstr ""
+msgstr "Elhagyja"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
 msgid "Library"
@@ -2089,7 +2089,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:310
 #: frontend/src/components/Filter.vue:324
 msgid "Like"
-msgstr ""
+msgstr "Tetszik"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
 msgid "Link"
@@ -2098,7 +2098,7 @@ msgstr ""
 #. Label of the links (Table) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Links"
-msgstr ""
+msgstr "Összekapcsolások"
 
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #. Label of the list_tab (Tab Break) field in DocType 'CRM View Settings'
@@ -2121,13 +2121,13 @@ msgstr ""
 
 #: frontend/src/components/Kanban/KanbanView.vue:139
 msgid "Load More"
-msgstr ""
+msgstr "Töltsön be többet"
 
 #: frontend/src/components/Activities/Activities.vue:22
 #: frontend/src/components/Activities/DataFields.vue:35
 #: frontend/src/pages/Deal.vue:169 frontend/src/pages/MobileDeal.vue:111
 msgid "Loading..."
-msgstr ""
+msgstr "Betöltés..."
 
 #. Label of the log_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the log_tab (Tab Break) field in DocType 'CRM Lead'
@@ -2196,7 +2196,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/AttachmentArea.vue:107
 msgid "Make {0}"
-msgstr ""
+msgstr "Készítsen {0}"
 
 #: frontend/src/components/Telephony/CallUI.vue:34
 msgid "Make {0} as default calling medium"
@@ -2233,7 +2233,7 @@ msgstr ""
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Message"
-msgstr ""
+msgstr "Üzenet"
 
 #. Label of the middle_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -2247,7 +2247,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Mobile No"
-msgstr ""
+msgstr "Mobil:"
 
 #: frontend/src/components/Modals/DealModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:151
@@ -2278,7 +2278,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Monday"
-msgstr ""
+msgstr "Hétfő"
 
 #: frontend/src/components/FieldLayoutEditor.vue:454
 msgid "Move to next section"
@@ -2314,7 +2314,7 @@ msgstr ""
 #. Label of the naming_series (Select) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Naming Series"
-msgstr ""
+msgstr "Elnevezési sorozatok"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:87
 msgid "New"
@@ -2322,7 +2322,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AddressModal.vue:95
 msgid "New Address"
-msgstr ""
+msgstr "Új cím"
 
 #: frontend/src/components/Modals/CallLogModal.vue:100
 msgid "New Call Log"
@@ -2336,13 +2336,13 @@ msgstr ""
 
 #: frontend/src/components/Modals/ContactModal.vue:8
 msgid "New Contact"
-msgstr ""
+msgstr "Új kapcsolat"
 
 #: frontend/src/components/Activities/Activities.vue:388
 #: frontend/src/components/Activities/ActivityHeader.vue:17
 #: frontend/src/components/Activities/ActivityHeader.vue:131
 msgid "New Email"
-msgstr ""
+msgstr "Új Email"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:78
 msgid "New Message"
@@ -2502,7 +2502,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:309
 #: frontend/src/components/Filter.vue:336
 msgid "Not Equals"
-msgstr ""
+msgstr "Nem egyenlő"
 
 #: frontend/src/components/Filter.vue:264
 #: frontend/src/components/Filter.vue:285
@@ -2510,7 +2510,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:313
 #: frontend/src/components/Filter.vue:327
 msgid "Not In"
-msgstr ""
+msgstr "Nincs ebben"
 
 #: frontend/src/components/Filter.vue:262
 #: frontend/src/components/Filter.vue:273
@@ -2518,7 +2518,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:311
 #: frontend/src/components/Filter.vue:325
 msgid "Not Like"
-msgstr ""
+msgstr "Nem mint"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:10
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:10
@@ -2529,7 +2529,7 @@ msgstr ""
 #: frontend/src/components/Settings/SettingsPage.vue:9
 #: frontend/src/components/Settings/TelephonySettings.vue:9
 msgid "Not Saved"
-msgstr ""
+msgstr "Nincs mentve"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:214
 msgid "Not allowed to add contact to Deal"
@@ -2563,7 +2563,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/EmailArea.vue:13
 msgid "Notification"
-msgstr ""
+msgstr "Értesítés"
 
 #. Label of the notification_text (Text) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -2587,7 +2587,7 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:17
 #: frontend/src/pages/MobileNotification.vue:6
 msgid "Notifications"
-msgstr ""
+msgstr "Értesítések"
 
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
@@ -2597,7 +2597,7 @@ msgstr ""
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Old Parent"
-msgstr ""
+msgstr "Régi szülő"
 
 #: frontend/src/pages/Contact.vue:276 frontend/src/pages/Lead.vue:561
 #: frontend/src/pages/MobileContact.vue:269
@@ -2609,7 +2609,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:56
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:23
 msgid "Only one {0} can be set as primary."
-msgstr ""
+msgstr "Csak egy {0} állítható be elsődlegesként."
 
 #: frontend/src/components/Modals/NoteModal.vue:25
 #: frontend/src/components/Modals/TaskModal.vue:25
@@ -2639,7 +2639,7 @@ msgstr ""
 #: frontend/src/components/Modals/CallLogDetailModal.vue:15
 #: frontend/src/components/ViewControls.vue:199
 msgid "Options"
-msgstr ""
+msgstr "Választhatók"
 
 #. Label of the order_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #. Label of the order_by (Code) field in DocType 'CRM View Settings'
@@ -2834,7 +2834,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:89
 msgid "Private"
-msgstr ""
+msgstr "Magán"
 
 #. Label of the probability (Percent) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -2852,7 +2852,7 @@ msgstr ""
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Public"
-msgstr ""
+msgstr "Nyilvános"
 
 #: frontend/src/components/ViewControls.vue:655
 msgid "Public Views"
@@ -2861,7 +2861,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Queued"
-msgstr ""
+msgstr "Sorba állított"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -2880,7 +2880,7 @@ msgstr ""
 #. Label of the read (Check) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Read"
-msgstr ""
+msgstr "Olvas"
 
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -2910,7 +2910,7 @@ msgstr ""
 #. Label of the reference_doctype (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Reference Doctype"
-msgstr ""
+msgstr "Referencia Doctype"
 
 #. Label of the reference_doctype (Link) field in DocType 'CRM Call Log'
 #. Label of the reference_doctype (Link) field in DocType 'CRM Task'
@@ -2943,7 +2943,7 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:591
 msgid "Remove"
-msgstr ""
+msgstr "eltávolítás"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:23
 msgid "Remove all"
@@ -2975,11 +2975,11 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:31
 #: frontend/src/components/CommunicationArea.vue:8
 msgid "Reply"
-msgstr ""
+msgstr "Válasz"
 
 #: frontend/src/components/Activities/EmailArea.vue:44
 msgid "Reply All"
-msgstr ""
+msgstr "Válasz mindenkinek"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -3030,7 +3030,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:14
 msgid "Restore"
-msgstr ""
+msgstr "visszaállítás"
 
 #. Label of the restore_defaults (Button) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:13
@@ -3049,7 +3049,7 @@ msgstr ""
 #. Label of the rgt (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Right"
-msgstr ""
+msgstr "Jobb"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3064,13 +3064,13 @@ msgstr ""
 #. Label of the role (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Role"
-msgstr ""
+msgstr "Beosztás"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #. Label of the route (Data) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Route"
-msgstr ""
+msgstr "Útvonal"
 
 #. Label of the route_name (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -3171,14 +3171,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Salutation"
-msgstr ""
+msgstr "Megszólítás"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Saturday"
-msgstr ""
+msgstr "Szombat"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:87
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:26
@@ -3219,7 +3219,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayout/Field.vue:258
 msgid "Select {0}"
-msgstr ""
+msgstr "Válassza ki a {0}"
 
 #: frontend/src/components/EmailEditor.vue:159
 msgid "Send"
@@ -3282,7 +3282,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:230
 msgid "Show"
-msgstr ""
+msgstr "Előadás"
 
 #: frontend/src/components/FieldLayoutEditor.vue:360
 msgid "Show border"
@@ -3335,7 +3335,7 @@ msgstr ""
 #. Label of the source_name (Data) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 msgid "Source Name"
-msgstr ""
+msgstr "Forrá név"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:15
 msgid "Standard Form Scripts can not be modified, duplicate the Form Script instead."
@@ -3358,7 +3358,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Start Time"
-msgstr ""
+msgstr "Kezdés ideje"
 
 #. Label of the status (Select) field in DocType 'CRM Call Log'
 #. Label of the status (Data) field in DocType 'CRM Communication Status'
@@ -3419,7 +3419,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Sunday"
-msgstr ""
+msgstr "Vasárnap"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:49
 msgid "Switch camera"
@@ -3530,11 +3530,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Thursday"
-msgstr ""
+msgstr "Csütörtök"
 
 #: frontend/src/components/Filter.vue:343
 msgid "Timespan"
-msgstr ""
+msgstr "Időtartam"
 
 #. Label of the title (Data) field in DocType 'CRM Task'
 #. Label of the title (Data) field in DocType 'FCRM Note'
@@ -3569,11 +3569,11 @@ msgstr ""
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "To User"
-msgstr ""
+msgstr "Felhasználónak"
 
 #: frontend/src/components/Filter.vue:619
 msgid "Today"
-msgstr ""
+msgstr "Ma"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -3596,7 +3596,7 @@ msgstr ""
 #. Label of the total_holidays (Int) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Total Holidays"
-msgstr ""
+msgstr "Ünnepek összesen"
 
 #: frontend/src/components/SignupBanner.vue:12
 msgid "Try Frappe CRM for free with a 14-day trial."
@@ -3607,7 +3607,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Tuesday"
-msgstr ""
+msgstr "Kedd"
 
 #. Label of the twiml_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -3715,7 +3715,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:86
 msgid "Upload"
-msgstr ""
+msgstr "Feltöltés"
 
 #: frontend/src/components/Activities/Activities.vue:403
 #: frontend/src/components/Activities/ActivityHeader.vue:67
@@ -3793,7 +3793,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Wednesday"
-msgstr ""
+msgstr "Szerda"
 
 #. Label of the weekly_off (Check) field in DocType 'CRM Holiday'
 #. Label of the weekly_off (Select) field in DocType 'CRM Holiday List'
@@ -3824,7 +3824,7 @@ msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:113
 msgid "Width"
-msgstr ""
+msgstr "Szélesség"
 
 #: frontend/src/components/ColumnSettings.vue:118
 msgid "Width can be in number, pixel or rem (eg. 3, 30px, 10rem)"
@@ -3851,7 +3851,7 @@ msgstr ""
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
-msgstr ""
+msgstr "Ön"
 
 #: frontend/src/components/Telephony/CallUI.vue:38
 msgid "You can change the default calling medium from the settings"
@@ -3875,7 +3875,7 @@ msgstr ""
 
 #: crm/api/todo.py:46
 msgid "Your assignment on {0} {1} has been removed by {2}"
-msgstr ""
+msgstr "A (z) {0} {1} feladatot {2} eltávolította"
 
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
@@ -3893,7 +3893,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "black"
-msgstr ""
+msgstr "fekete"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3951,7 +3951,7 @@ msgstr ""
 
 #: crm/api/doc.py:38 crm/api/doc.py:156 crm/api/doc.py:500
 msgid "label"
-msgstr ""
+msgstr "felirat"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -3965,7 +3965,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:374
 msgid "next"
-msgstr ""
+msgstr "következő"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3983,15 +3983,15 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:374
 msgid "previous"
-msgstr ""
+msgstr "előző"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:97
 msgid "private"
-msgstr ""
+msgstr "magán"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:97
 msgid "public"
-msgstr ""
+msgstr "nyilvános"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
