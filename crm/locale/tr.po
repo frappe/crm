@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-05 11:20\n"
+"PO-Revision-Date: 2025-03-06 11:24\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -442,7 +442,7 @@ msgstr "Meşgul"
 #: frontend/src/components/EmailEditor.vue:33
 #: frontend/src/components/EmailEditor.vue:55
 msgid "CC"
-msgstr ""
+msgstr "Bilgi"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -1114,7 +1114,7 @@ msgstr ""
 
 #: frontend/src/components/ListBulkActions.vue:114
 msgid "Deleted successfully"
-msgstr ""
+msgstr "Başarıyla silindi"
 
 #. Label of the description (Text Editor) field in DocType 'CRM Holiday'
 #. Label of the description (Text Editor) field in DocType 'CRM Task'
@@ -1709,7 +1709,7 @@ msgstr ""
 
 #: frontend/src/components/GroupBy.vue:8
 msgid "Group By: "
-msgstr ""
+msgstr "Grup: "
 
 #: frontend/src/components/CommunicationArea.vue:58
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
@@ -1894,7 +1894,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:328
 #: frontend/src/components/Filter.vue:337
 msgid "Is"
-msgstr ""
+msgstr "Değeri"
 
 #. Label of the is_default (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -2228,7 +2228,7 @@ msgstr "Orta"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "Bahsetme"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -2257,7 +2257,7 @@ msgstr ""
 #. Label of the mobile_no (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Mobile No."
-msgstr ""
+msgstr "Cep No."
 
 #: frontend/src/components/Telephony/CallUI.vue:22
 msgid "Mobile Number"
@@ -2597,7 +2597,7 @@ msgstr "Numara"
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Old Parent"
-msgstr ""
+msgstr "Eski Üst Öğe"
 
 #: frontend/src/pages/Contact.vue:276 frontend/src/pages/Lead.vue:561
 #: frontend/src/pages/MobileContact.vue:269
@@ -2790,7 +2790,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:170
 msgid "Please enter a valid URL"
-msgstr ""
+msgstr "Lütfen geçerli bir URL girin"
 
 #: frontend/src/pages/Lead.vue:601 frontend/src/pages/MobileLead.vue:435
 msgid "Please select an existing contact"
@@ -2813,7 +2813,7 @@ msgstr "Pozisyon"
 
 #: frontend/src/pages/Deal.vue:198 frontend/src/pages/MobileDeal.vue:143
 msgid "Primary"
-msgstr ""
+msgstr "Birincil"
 
 #: frontend/src/pages/Deal.vue:655 frontend/src/pages/MobileDeal.vue:583
 msgid "Primary contact set"
@@ -3893,7 +3893,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "black"
-msgstr ""
+msgstr "siyah"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3947,7 +3947,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "kanban"
-msgstr ""
+msgstr "kanban"
 
 #: crm/api/doc.py:38 crm/api/doc.py:156 crm/api/doc.py:500
 msgid "label"
@@ -3965,7 +3965,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:374
 msgid "next"
-msgstr ""
+msgstr "sonraki"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3983,15 +3983,15 @@ msgstr "pembe"
 
 #: frontend/src/components/FieldLayoutEditor.vue:374
 msgid "previous"
-msgstr ""
+msgstr "önceki"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:97
 msgid "private"
-msgstr ""
+msgstr "özel"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:97
 msgid "public"
-msgstr ""
+msgstr "herkese Açık"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -4024,7 +4024,7 @@ msgstr "giden"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "violet"
-msgstr ""
+msgstr "mor"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'

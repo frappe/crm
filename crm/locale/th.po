@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-05 11:20\n"
+"PO-Revision-Date: 2025-03-06 11:24\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Thai\n"
 "MIME-Version: 1.0\n"
@@ -264,7 +264,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:487
 #: frontend/src/pages/Organization.vue:505
 msgid "Amount"
-msgstr ""
+msgstr "จำนวน"
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
