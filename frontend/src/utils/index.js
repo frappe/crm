@@ -3,6 +3,7 @@ import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { usersStore } from '@/stores/users'
 import { gemoji } from 'gemoji'
 import { useTimeAgo } from '@vueuse/core'
+import { getMeta } from '@/stores/meta'
 import { toast, dayjsLocal, dayjs } from 'frappe-ui'
 import { h } from 'vue'
 
@@ -74,20 +75,39 @@ export function timeAgo(date) {
   return useTimeAgo(date).value
 }
 
+const taskMeta = getMeta('CRM Task')
+
 export function taskStatusOptions(action, data) {
-  return ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled'].map(
-    (status) => {
-      return {
-        icon: () => h(TaskStatusIcon, { status }),
-        label: status,
-        onClick: () => action && action(status, data),
-      }
-    },
-  )
+  let options = ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled']
+  let statusMeta = taskMeta
+    .getFields()
+    ?.find((field) => field.fieldname == 'status')
+  if (statusMeta) {
+    options = statusMeta.options
+      .map((option) => option.value)
+      .filter((option) => option)
+  }
+  return options.map((status) => {
+    return {
+      icon: () => h(TaskStatusIcon, { status }),
+      label: status,
+      onClick: () => action && action(status, data),
+    }
+  })
 }
 
 export function taskPriorityOptions(action, data) {
-  return ['Low', 'Medium', 'High'].map((priority) => {
+  let options = ['Low', 'Medium', 'High']
+  let priorityMeta = taskMeta
+    .getFields()
+    ?.find((field) => field.fieldname == 'priority')
+  if (priorityMeta) {
+    options = priorityMeta.options
+      .map((option) => option.value)
+      .filter((option) => option)
+  }
+
+  return options.map((priority) => {
     return {
       label: priority,
       icon: () => h(TaskPriorityIcon, { priority }),
