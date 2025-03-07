@@ -1053,6 +1053,7 @@ function updateCustomView() {
 }
 
 function updatePageLength(value, loadMore = false) {
+  if (list.value.loading) return
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }

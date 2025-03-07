@@ -126,7 +126,7 @@ router.beforeEach(async (to, from, next) => {
     route_name = route_name || 'Leads'
 
     if (name && !is_standard) {
-      next({ name: route_name, params: { viewType: type }, query: { name } })
+      next({ name: route_name, params: { viewType: type }, query: { view: name } })
     } else {
       next({ name: route_name, params: { viewType: type } })
     }
