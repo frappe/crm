@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-05 11:20\n"
+"PO-Revision-Date: 2025-03-06 11:24\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -189,7 +189,7 @@ msgstr ""
 
 #: frontend/src/components/Controls/Grid.vue:237
 msgid "Add Row"
-msgstr ""
+msgstr "إضافة صف"
 
 #: frontend/src/components/FieldLayoutEditor.vue:200
 #: frontend/src/components/SidePanelLayoutEditor.vue:128
@@ -319,7 +319,7 @@ msgstr ""
 
 #: frontend/src/components/Apps.vue:19
 msgid "Apps"
-msgstr ""
+msgstr "التطبيقات"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
@@ -405,7 +405,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:31
 msgid "Back"
-msgstr ""
+msgstr "خلف"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:31
 msgid "Back to file upload"
@@ -666,7 +666,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:94
 msgid "Capture"
-msgstr ""
+msgstr "التقاط"
 
 #: frontend/src/components/Activities/TaskArea.vue:44
 msgid "Change Status"
@@ -741,7 +741,7 @@ msgstr "اللون"
 
 #: frontend/src/components/FieldLayoutEditor.vue:423
 msgid "Column"
-msgstr ""
+msgstr "عمود"
 
 #. Label of the column_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -817,7 +817,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:20
 msgid "Contact Us"
-msgstr ""
+msgstr "اتصل بنا"
 
 #: frontend/src/pages/Deal.vue:625 frontend/src/pages/MobileDeal.vue:553
 msgid "Contact added"
@@ -1179,7 +1179,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Done"
-msgstr ""
+msgstr "تم"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:166
 #: frontend/src/components/ViewControls.vue:252
@@ -1350,7 +1350,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:511 frontend/src/pages/Lead.vue:501
 #: frontend/src/pages/MobileDeal.vue:439 frontend/src/pages/MobileLead.vue:343
 msgid "Emails"
-msgstr ""
+msgstr "البريد الإلكتروني"
 
 #: frontend/src/components/ListViews/ListRows.vue:12
 msgid "Empty"
@@ -1621,7 +1621,7 @@ msgstr ""
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Form"
-msgstr ""
+msgstr "نموذج"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:19
 msgid "Form Script updated successfully"
@@ -1709,7 +1709,7 @@ msgstr ""
 
 #: frontend/src/components/GroupBy.vue:8
 msgid "Group By: "
-msgstr ""
+msgstr "مجموعة من: "
 
 #: frontend/src/components/CommunicationArea.vue:58
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
@@ -2081,7 +2081,7 @@ msgstr "ترك"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
 msgid "Library"
-msgstr ""
+msgstr "ﺔﺒﺘﻜﻣ"
 
 #: frontend/src/components/Filter.vue:261
 #: frontend/src/components/Filter.vue:272
@@ -2257,7 +2257,7 @@ msgstr ""
 #. Label of the mobile_no (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Mobile No."
-msgstr ""
+msgstr "رقم الجوال."
 
 #: frontend/src/components/Telephony/CallUI.vue:22
 msgid "Mobile Number"
@@ -3729,7 +3729,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:140
 msgid "Upload Image"
-msgstr ""
+msgstr "تحميل الصور"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:148
 msgid "Upload Video"
@@ -3893,7 +3893,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "black"
-msgstr ""
+msgstr "أسود"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3915,14 +3915,14 @@ msgstr "تعليق"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "cyan"
-msgstr ""
+msgstr "أزرق سماوي"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "gray"
-msgstr ""
+msgstr "اللون الرمادي"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3947,7 +3947,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "kanban"
-msgstr ""
+msgstr "لوحة المهام"
 
 #: crm/api/doc.py:38 crm/api/doc.py:156 crm/api/doc.py:500
 msgid "label"
@@ -3965,7 +3965,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:374
 msgid "next"
-msgstr ""
+msgstr "التالي"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3983,15 +3983,15 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:374
 msgid "previous"
-msgstr ""
+msgstr "سابق"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:97
 msgid "private"
-msgstr ""
+msgstr "خاص"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:97
 msgid "public"
-msgstr ""
+msgstr "جمهور"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -4024,7 +4024,7 @@ msgstr "إلى"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "violet"
-msgstr ""
+msgstr "بنفسجي"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
