@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-07 11:57\n"
+"PO-Revision-Date: 2025-03-08 12:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -872,7 +872,7 @@ msgstr "Pretvori"
 #: frontend/src/pages/Lead.vue:38 frontend/src/pages/Lead.vue:203
 #: frontend/src/pages/MobileLead.vue:92
 msgid "Convert to Deal"
-msgstr "Pretvorite u Dogovor"
+msgstr "Pretvori u Dogovor"
 
 #. Label of the converted (Check) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -1308,7 +1308,7 @@ msgstr "Uredi bilješku"
 #: frontend/src/components/Settings/ProfileSettings.vue:19
 #: frontend/src/components/Settings/ProfileSettings.vue:23
 msgid "Edit profile photo"
-msgstr "Uredite profilnu sliku"
+msgstr "Uredi profilnu sliku"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:24
 msgid "Edit task"
@@ -2633,7 +2633,7 @@ msgstr "Otvori u novom prozoru"
 
 #: frontend/src/pages/Organization.vue:92
 msgid "Open website"
-msgstr "Otvorite web stranicu"
+msgstr "Otvori web stranicu"
 
 #: frontend/src/components/Kanban/KanbanView.vue:221
 #: frontend/src/components/Modals/CallLogDetailModal.vue:15
@@ -3886,7 +3886,7 @@ msgstr "dodao"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "amber"
-msgstr "amber"
+msgstr "jantar"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -4012,7 +4012,7 @@ msgstr "crveno"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "teal"
-msgstr "teal"
+msgstr "plavozelena"
 
 #: frontend/src/components/Activities/Activities.vue:274
 #: frontend/src/components/Activities/Activities.vue:337
