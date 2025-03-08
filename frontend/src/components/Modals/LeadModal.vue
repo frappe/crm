@@ -122,7 +122,7 @@ const createLead = createResource({
 const leadStatuses = computed(() => {
   let statuses = statusOptions('lead')
   if (!lead.status) {
-    lead.status = statuses[0].value
+    lead.status = statuses?.[0]?.value
   }
   return statuses
 })
@@ -192,7 +192,7 @@ onMounted(() => {
   if (!lead.lead_owner) {
     lead.lead_owner = getUser().name
   }
-  if (!lead.status && leadStatuses.value[0].value) {
+  if (!lead.status && leadStatuses.value[0]?.value) {
     lead.status = leadStatuses.value[0].value
   }
 })
