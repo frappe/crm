@@ -74,7 +74,13 @@
     <div class="m-2 flex flex-col gap-1">
       <SignupBanner :isSidebarCollapsed="isSidebarCollapsed" />
       <TrialBanner v-if="isFCSite" />
+      <GettingStartedBanner
+        v-if="!isOnboardingStepsCompleted"
+        :isSidebarCollapsed="isSidebarCollapsed"
+        @completeNow="showHelpModal = true"
+      />
       <SidebarLink
+        v-else
         :label="__('Help')"
         :isCollapsed="isSidebarCollapsed"
         @click="showHelpModal = !showHelpModal"
@@ -101,7 +107,11 @@
     </div>
     <Notifications />
     <Settings />
-    <HelpModal v-if="showHelpModal" v-model="showHelpModal" />
+    <HelpModal
+      v-if="showHelpModal"
+      v-model="showHelpModal"
+      :isOnboardingStepsCompleted="isOnboardingStepsCompleted"
+    />
   </div>
 </template>
 
@@ -124,6 +134,7 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import SignupBanner from '@/components/SignupBanner.vue'
+import GettingStartedBanner from '@/components/GettingStartedBanner.vue'
 import HelpModal from '@/components/Modals/HelpModal.vue'
 import { viewsStore } from '@/stores/views'
 import {
@@ -246,5 +257,9 @@ function getIcon(routeName, icon) {
   }
 }
 
+const isOnboardingStepsCompleted = useStorage(
+  'isOnboardingStepsCompleted',
+  false,
+)
 const showHelpModal = ref(false)
 </script>

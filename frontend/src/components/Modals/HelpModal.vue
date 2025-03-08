@@ -24,6 +24,10 @@ import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import MaximizeIcon from '@/components/Icons/MaximizeIcon.vue'
 import { ref } from 'vue'
 
+const props = defineProps({
+  isOnboardingStepsCompleted: Boolean,
+})
+
 const show = defineModel()
 const minimize = ref(false)
 </script>
