@@ -184,3 +184,23 @@ def search_emails(txt: str):
     )
 
     return results
+
+
+@frappe.whitelist()
+def get_linked_contact(link_doctype, link_name=None):
+    dict_list = frappe.get_list(
+        "Dynamic Link",
+        [
+            ["parenttype", "=", "Contact"],
+            ["link_doctype", "=", link_doctype],
+            ["link_name", "=", link_name],
+        ],
+    )
+
+    names = []
+
+    for dict in dict_list:
+        doc = frappe.get_doc("Dynamic Link", dict.name)
+        names.append(doc.parent)
+
+    return names
