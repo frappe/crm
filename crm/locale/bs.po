@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-08 12:02\n"
+"PO-Revision-Date: 2025-03-09 11:10\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -2786,7 +2786,7 @@ msgstr "Brzina izvođenja"
 
 #: crm/integrations/twilio/twilio_handler.py:119
 msgid "Please enable twilio settings before making a call."
-msgstr "Omogućite Twilio Postavke prije pozivanja."
+msgstr "Omogući Twilio Postavke prije pozivanja."
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:170
 msgid "Please enter a valid URL"
@@ -2798,7 +2798,7 @@ msgstr "Odaberi postojeći kontakt"
 
 #: frontend/src/pages/Lead.vue:611 frontend/src/pages/MobileLead.vue:445
 msgid "Please select an existing organization"
-msgstr "Odaberite postojeću organizaciju"
+msgstr "Odaberi postojeću organizaciju"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Please setup Exotel intergration"
@@ -3286,7 +3286,7 @@ msgstr "Prikaži"
 
 #: frontend/src/components/FieldLayoutEditor.vue:360
 msgid "Show border"
-msgstr "Prikaži granicu"
+msgstr "Prikaži okvir"
 
 #: frontend/src/components/FieldLayoutEditor.vue:355
 msgid "Show label"
@@ -3600,7 +3600,7 @@ msgstr "Ukupno Praznika"
 
 #: frontend/src/components/SignupBanner.vue:12
 msgid "Try Frappe CRM for free with a 14-day trial."
-msgstr "Isprobajte Frappe CRM besplatno uz 14-dnevnu probnu verziju."
+msgstr "Isprobaj Frappe CRM besplatno uz 14-dnevnu probnu verziju."
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
