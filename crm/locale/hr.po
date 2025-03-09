@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-08 12:02\n"
+"PO-Revision-Date: 2025-03-09 11:10\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -1165,7 +1165,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EmailTemplateModal.vue:32
 msgid "Doctype"
-msgstr ""
+msgstr "DocType"
 
 #. Label of the dt (Link) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
