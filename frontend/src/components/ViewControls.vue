@@ -528,6 +528,13 @@ list.value = createResource({
       page_length_count: params.page_length_count,
     }
   },
+  transform(data){
+    data.fields.forEach((field)=>{
+      field.type=field.fieldtype
+      field.key=field.fieldname
+    })
+    return data
+  }
 })
 
 onMounted(() => useDebounceFn(reload, 100)())
