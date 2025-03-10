@@ -2,6 +2,7 @@
 *.pyc
 *.egg-info
 *.swp
+.env
 __pycache__
 dev-dist
 tags
