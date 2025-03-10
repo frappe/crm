@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-09 11:10\n"
+"PO-Revision-Date: 2025-03-10 11:20\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -777,7 +777,7 @@ msgstr "Status Konverzacije"
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Communication Statuses"
-msgstr "Statusi Konverzacije"
+msgstr "Status Konverzacije"
 
 #. Label of the erpnext_company (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
@@ -997,7 +997,7 @@ msgstr "Status Dogovora"
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Deal Statuses"
-msgstr "Statusi Dogovora"
+msgstr "Status Dogovora"
 
 #: frontend/src/pages/Contact.vue:626 frontend/src/pages/MobileContact.vue:622
 #: frontend/src/pages/MobileOrganization.vue:508
@@ -1056,7 +1056,7 @@ msgstr "Standard Medij"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:18
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:30
 msgid "Default statuses, custom fields and layouts restored successfully."
-msgstr "Standard statusi, prilagođena polja i izgledi uspješno su vraćeni."
+msgstr "Standard status, prilagođena polja i izgledi uspješno su vraćeni."
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2057,12 +2057,12 @@ msgstr "Odgovorni za Potencijalnog Klijenta ne može biti isti kao i adresa e-po
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Lead Sources"
-msgstr "Izvori Potencijalnog Klijenta"
+msgstr "Izvor Potencijalnog Klijenta"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Lead Statuses"
-msgstr "Statusi Potencijalnog Klijenta"
+msgstr "Status Potencijalnog Klijenta"
 
 #: frontend/src/pages/Lead.vue:429 frontend/src/pages/MobileLead.vue:265
 msgid "Lead updated"
@@ -2450,7 +2450,7 @@ msgstr "Broj mobilnog nije postavljen"
 #: frontend/src/components/Notifications.vue:83
 #: frontend/src/pages/MobileNotification.vue:67
 msgid "No new notifications"
-msgstr "Nema novih obavijesti"
+msgstr "Nema novih obaviještenja"
 
 #: frontend/src/pages/Lead.vue:126
 msgid "No phone number set"
@@ -2481,7 +2481,7 @@ msgstr "Nema {0} Dostupnog"
 #: frontend/src/pages/Notes.vue:92 frontend/src/pages/Organization.vue:157
 #: frontend/src/pages/Organizations.vue:56 frontend/src/pages/Tasks.vue:181
 msgid "No {0} Found"
-msgstr "Nije pronađeno {0}"
+msgstr "{0}"
 
 #. Label of the no_of_employees (Select) field in DocType 'CRM Deal'
 #. Label of the no_of_employees (Select) field in DocType 'CRM Lead'
