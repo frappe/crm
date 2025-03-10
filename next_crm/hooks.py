@@ -143,6 +143,7 @@ override_doctype_class = {
     "Opportunity": "next_crm.overrides.opportunity.Opportunity",
     "ToDo": "next_crm.overrides.todo.ToDo",
     "Prospect": "next_crm.overrides.prospect.Prospect",
+    "Address": "next_crm.overrides.address.CustomAddress",
 }
 
 # Document Events

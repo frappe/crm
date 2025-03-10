@@ -120,6 +120,20 @@
             :columns="columns"
             :options="{ selectable: false, showTooltip: false }"
           />
+          <ContactsListView
+            class="mt-4"
+            v-if="tab.label === 'Contacts' && rows.length"
+            :rows="rows"
+            :columns="columns"
+            :options="{ selectable: false, showTooltip: false }"
+          />
+          <AddressesListView
+            class="mt-4"
+            v-if="tab.label === 'Addresses' && rows.length"
+            :rows="rows"
+            :columns="columns"
+            :options="{ selectable: false, showTooltip: false }"
+          />
           <div
             v-if="!rows.length"
             class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
@@ -195,10 +209,13 @@
   import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
   import AddressModal from '@/components/Modals/AddressModal.vue'
   import OpportunitiesListView from '@/components/ListViews/OpportunitiesListView.vue'
+  import ContactsListView from '@/components/ListViews/ContactsListView.vue'
+  import AddressesListView from '@/components/ListViews/AddressesListView.vue'
   import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
   import EditIcon from '@/components/Icons/EditIcon.vue'
   import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
   import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
+  import AddressIcon from '@/components/Icons/AddressIcon.vue'
   import Link from '@/components/Controls/Link.vue'
   import { globalStore } from '@/stores/global'
   import { usersStore } from '@/stores/users'
@@ -399,6 +416,16 @@
       icon: h(OpportunitiesIcon, { class: 'h-4 w-4' }),
       count: computed(() => opportunities.data?.length),
     },
+    {
+      label: 'Contacts',
+      icon: h(ContactsIcon, { class: 'h-4 w-4' }),
+      count: computed(() => contacts.data?.length),
+    },
+    {
+      label: 'Addresses',
+      icon: h(AddressIcon, { class: 'h-4 w-4' }),
+      count: computed(() => addresses.data?.length),
+    },
   ]
   
   const opportunities = createListResource({
@@ -423,20 +450,94 @@
     auto: true,
   })
   
-  const rows = computed(() => {
-    let list = []
+  async function getContactsList() { 
+  const contact_names = await call('next_crm.api.contact.get_linked_contact', {
+    link_doctype: 'Prospect',
+    link_name: props.prospectId,
+  })
+
+  const list = createListResource({
+    type: 'list',
+    doctype: 'Contact',
+    fields: [
+      'name',
+      'first_name',
+      'image',
+      'email_id',
+      'company_name',
+      'modified',
+    ],
+    filters: {
+      name: ['in', contact_names],
+    },
+    orderBy: 'modified desc',
+    pageLength: 20,
+    auto: true,
+  })
+
+  return list
+}
+
+async function getAddressesList() { 
+  const address_names = await call('next_crm.api.address.get_linked_address', {
+    link_doctype: 'Prospect',
+    link_name: props.prospectId,
+  })
+
+  const list = createListResource({
+    type: 'list',
+    doctype: 'Address',
+    fields: [
+      'name',
+      'address_title',
+      'address_type',
+      'address_line1',
+      'phone',
+      'modified',
+    ],
+    filters: {
+      name: ['in', address_names],
+    },
+    orderBy: 'modified desc',
+    pageLength: 20,
+    auto: true,
+  })
+
+  return list
+}
+
+const contacts = await getContactsList();
+const addresses = await getAddressesList();
+
+const rows = computed(() => {
+  let list = []
+  if (tabIndex.value === 0)
     list = opportunities
-  
-    if (!list.data) return []
-  
-    return list.data.map((row) => {
+  else if (tabIndex.value === 1)
+    list = contacts
+  else if (tabIndex.value === 2)
+    list = addresses
+
+  if (!list.data) return []
+
+  return list.data.map((row) => {
+    if (tabIndex.value === 0)
       return getOpportunityRowObject(row)
-    })
+    else if (tabIndex.value === 1)
+      return getContactRowObject(row)
+    else if (tabIndex.value === 2)
+      return getAddressRowObject(row)
   })
-  
-  const columns = computed(() => {
+})
+
+const columns = computed(() => {
+  if (tabIndex.value === 0)
     return opportunityColumns
-  })
+  else if (tabIndex.value === 1)
+    return contactColumns
+  else if (tabIndex.value === 2)
+    return addressColumns
+})
   
   function getOpportunityRowObject(opportunity) {
     return {
@@ -461,6 +562,40 @@
       },
     }
   }
+
+  function getContactRowObject(contact) {
+  return {
+    name: contact.name,
+    full_name: {
+      label: contact.full_name,
+      image_label: contact.full_name,
+      image: contact.image,
+    },
+    email: contact.email_id,
+    mobile_no: contact.mobile_no,
+    company_name: {
+      label: contact.company_name,
+      logo: props.customer?.image,
+    },
+    modified: {
+      label: dateFormat(contact.modified, dateTooltipFormat),
+      timeAgo: __(timeAgo(contact.modified)),
+    },
+  }
+}
+
+function getAddressRowObject(address) {
+  return {
+    address_title: address.address_title,
+    address_type: address.address_type,
+    address_line1: address.address_line1,
+    phone: address.phone,
+    modified: {
+      label: dateFormat(address.modified, dateTooltipFormat),
+      timeAgo: __(timeAgo(address.modified)),
+    },
+  }
+}
 
   // Convert to Opportunity
   const showConvertToOpportunityModal = ref(false)
@@ -506,4 +641,55 @@
       width: '8rem',
     },
   ]
+
+  const contactColumns = [
+  {
+    label: __('Name'),
+    key: 'name',
+    width: '17rem',
+  },
+  {
+    label: __('Email'),
+    key: 'email',
+    width: '12rem' ,
+  },
+  {
+    label: __('Company'),
+    key: 'company_name',
+    width: '12rem',
+  },
+  {
+    label: __('Last modified'),
+    key: 'modified',
+    width: '8rem',
+  },
+]
+
+const addressColumns = [
+  {
+    label: __('Title'),
+    key: 'address_title',
+    width: '17rem',
+  },
+  {
+    label: __('Type'),
+    key: 'address_type',
+    width: '12rem' ,
+  },
+  {
+    label: __('Line 1'),
+    key: 'address_line1',
+    width: '12rem',
+  },
+  {
+    label: __('Phone'),
+    key: 'phone',
+    width: '12rem',
+  },
+  {
+    label: __('Last modified'),
+    key: 'modified',
+    width: '8rem',
+  },
+]
   </script>
