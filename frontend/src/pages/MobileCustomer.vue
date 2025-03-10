@@ -144,6 +144,13 @@
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
+        <AddressesListView
+          class="mt-4"
+          v-if="tab.label === 'Addresses' && rows.length"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false, showTooltip: false }"
+        />
         <div
           v-if="!rows.length && tab.name !== 'Details'"
           class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
@@ -165,12 +172,14 @@ import SectionFields from '@/components/SectionFields.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
+import AddressesListView from '@/components/ListViews/AddressesListView.vue'
 import OpportunitiesListView from '@/components/ListViews/OpportunitiesListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import AddressIcon from '@/components/Icons/AddressIcon.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
@@ -395,6 +404,12 @@ const tabs = [
     icon: h(ContactsIcon, { class: 'h-4 w-4' }),
     count: computed(() => contacts.data?.length),
   },
+  {
+    label: 'Addresses',
+    label: __('Addresses'),
+    icon: h(AddressIcon, { class: 'h-4 w-4' }),
+    count: computed(() => addresses.data?.length),
+  },
 ]
 
 const opportunities = createListResource({
@@ -448,21 +463,65 @@ async function getContactsList() {
   return list
 }
 
+async function getAddressesList() { 
+  const address_names = await call('next_crm.api.address.get_linked_address', {
+    link_doctype: 'Customer', 
+    link_name: props.customerId,
+  })
+
+  const list = createListResource({
+    type: 'list',
+    doctype: 'Address',
+    fields: [
+      'name',
+      'address_title',
+      'address_type',
+      'address_line1',
+      'phone',
+      'modified',
+    ],
+    filters: {
+      name: ['in', address_names],
+    },
+    orderBy: 'modified desc',
+    pageLength: 20,
+    auto: true,
+  })
+
+  return list
+}
+
 const contacts = await getContactsList();
+const addresses = await getAddressesList();
 
 const rows = computed(() => {
   let list = []
-  list = !tabIndex.value ? opportunities : contacts
+  if (tabIndex.value === 1)
+    list = opportunities
+  else if (tabIndex.value === 2)
+    list = contacts
+  else if (tabIndex.value === 3)
+    list = addresses
 
   if (!list.data) return []
 
   return list.data.map((row) => {
-    return !tabIndex.value ? getOpportunityRowObject(row) : getContactRowObject(row)
+    if (tabIndex.value === 1)
+      return getOpportunityRowObject(row)
+    else if (tabIndex.value === 2)
+      return getContactRowObject(row)
+    else if (tabIndex.value === 3)
+      return getAddressRowObject(row)
   })
 })
 
 const columns = computed(() => {
-  return tabIndex.value === 0 ? opportunityColumns : contactColumns
+  if (tabIndex.value === 1)
+    return opportunityColumns
+  else if (tabIndex.value === 2)
+    return contactColumns
+  else if (tabIndex.value === 3)
+    return addressColumns
 })
 
 function getOpportunityRowObject(opportunity) {
@@ -514,6 +573,19 @@ function getContactRowObject(contact) {
   }
 }
 
+function getAddressRowObject(address) {
+  return {
+    address_title: address.address_title,
+    address_type: address.address_type,
+    address_line1: address.address_line1,
+    phone: address.phone,
+    modified: {
+      label: dateFormat(address.modified, dateTooltipFormat),
+      timeAgo: __(timeAgo(address.modified)),
+    },
+  }
+}
+
 const opportunityColumns = [
   {
     label: __('Amount'),
@@ -561,6 +633,34 @@ const contactColumns = [
   {
     label: __('Company'),
     key: 'company_name',
+    width: '12rem',
+  },
+  {
+    label: __('Last modified'),
+    key: 'modified',
+    width: '8rem',
+  },
+]
+
+const addressColumns = [
+  {
+    label: __('Title'),
+    key: 'address_title',
+    width: '17rem',
+  },
+  {
+    label: __('Type'),
+    key: 'address_type',
+    width: '12rem' ,
+  },
+  {
+    label: __('Line 1'),
+    key: 'address_line1',
+    width: '12rem',
+  },
+  {
+    label: __('Phone'),
+    key: 'phone',
     width: '12rem',
   },
   {
