@@ -211,7 +211,6 @@ class CRMLead(Document):
 			"HTML",
 			"Button",
 			"Attach",
-			"Table",
 		]
 		restricted_map_fields = [
 			"name",
@@ -233,6 +232,7 @@ class CRMLead(Document):
 			"first_responded_on",
 			"communication_status",
 			"sla_creation",
+			"status_change_log",
 		]
 
 		for field in self.meta.fields:
