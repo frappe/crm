@@ -1,6 +1,7 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import re
 import frappe
 from frappe import _
 from frappe.desk.form.assign_to import add as assign
@@ -22,6 +23,7 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+		self.validate_mobile()
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
 			self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
@@ -74,6 +76,14 @@ class CRMLead(Document):
 
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
+
+	def validate_mobile(self):
+		if self.mobile_no:
+			if re.search(r"[\s()\-]", self.mobile_no):
+				frappe.throw("Phone number should not contain spaces, parentheses, or hyphens.")
+			# Check that the phone number contains a '+' sign
+			if '+' not in self.mobile_no:
+				frappe.throw("Phone number must contain the country prefix starting with +.")
 
 	def assign_agent(self, agent):
 		if not agent:
