@@ -15,6 +15,7 @@ def get_users():
             "full_name",
             "user_type",
         ],
+        filters={"user_type": "System User"},
         order_by="full_name asc",
         distinct=True,
     ).run(as_dict=1)
