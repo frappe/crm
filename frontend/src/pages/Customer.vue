@@ -458,26 +458,35 @@ const opportunities = createListResource({
   auto: true,
 })
 
-const contacts = createListResource({
-  type: 'list',
-  doctype: 'Contact',
-  cache: ['contacts', props.customerId],
-  fields: [
-    'name',
-    'full_name',
-    'image',
-    'email_id',
-    'mobile_no',
-    'company_name',
-    'modified',
-  ],
-  filters: {
-    company_name: props.customerId,
-  },
-  orderBy: 'modified desc',
-  pageLength: 20,
-  auto: true,
-})
+async function getContactsList() { 
+  const contact_names = await call('next_crm.api.contact.get_linked_contact', {
+    link_doctype: 'Customer',
+    link_name: props.customerId,
+  })
+
+  const list = createListResource({
+    type: 'list',
+    doctype: 'Contact',
+    fields: [
+      'name',
+      'first_name',
+      'image',
+      'email_id',
+      'company_name',
+      'modified',
+    ],
+    filters: {
+      name: ['in', contact_names],
+    },
+    orderBy: 'modified desc',
+    pageLength: 20,
+    auto: true,
+  })
+
+  return list
+}
+
+const contacts = await getContactsList();
 
 const rows = computed(() => {
   let list = []
@@ -579,21 +588,16 @@ const opportunityColumns = [
 const contactColumns = [
   {
     label: __('Name'),
-    key: 'full_name',
+    key: 'name',
     width: '17rem',
   },
   {
     label: __('Email'),
     key: 'email',
-    width: '12rem',
+    width: '12rem' ,
   },
   {
-    label: __('Phone'),
-    key: 'mobile_no',
-    width: '12rem',
-  },
-  {
-    label: __('Customer'),
+    label: __('Company'),
     key: 'company_name',
     width: '12rem',
   },

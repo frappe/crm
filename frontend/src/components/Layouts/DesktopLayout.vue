@@ -5,7 +5,9 @@
     </div>
     <div class="flex-1 flex flex-col h-full overflow-auto bg-surface-white">
       <AppHeader />
-      <slot />
+      <Suspense>
+        <slot />
+      </Suspense>
     </div>
   </div>
 </template>

@@ -3,7 +3,9 @@
     <MobileSidebar />
     <div class="flex h-full flex-1 flex-col overflow-auto bg-surface-white">
       <MobileAppHeader />
-      <slot />
+      <Suspense>
+        <slot />
+      </Suspense>
     </div>
   </div>
 </template>
