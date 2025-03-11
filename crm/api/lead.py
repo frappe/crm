@@ -9,8 +9,8 @@ def delete_lead_and_links(name):
 		'File': 'attached_to_name',
 		'Dynamic Link': 'link_name',
 		'CRM Call Log': 'reference_docname',
-		'CRM Task': 'reference_docname',
 		'CRM Notification': 'reference_name',
+		'CRM Task': 'reference_docname',
 		'FCRM Note': 'reference_docname',
 	}
 	for doctype, fieldname in linked_doctypes.items():
