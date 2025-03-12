@@ -1,6 +1,6 @@
 <template>
   <div
-    class="activity group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-surface-gray-1 px-4 py-3 hover:bg-surface-gray-2"
+    class="activity group flex max-h-64 cursor-pointer flex-col justify-between gap-2 rounded-md bg-surface-gray-1 px-4 py-3 hover:bg-surface-gray-2"
   >
     <div class="flex items-center justify-between">
       <div class="truncate text-lg font-medium text-ink-gray-8">
