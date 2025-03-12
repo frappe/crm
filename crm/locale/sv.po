@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-06 11:24\n"
+"PO-Revision-Date: 2025-03-10 11:20\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -2481,7 +2481,7 @@ msgstr "Ingen {0} Tillgänglig"
 #: frontend/src/pages/Notes.vue:92 frontend/src/pages/Organization.vue:157
 #: frontend/src/pages/Organizations.vue:56 frontend/src/pages/Tasks.vue:181
 msgid "No {0} Found"
-msgstr "Ingen {0} Hittades"
+msgstr "{0}"
 
 #. Label of the no_of_employees (Select) field in DocType 'CRM Deal'
 #. Label of the no_of_employees (Select) field in DocType 'CRM Lead'

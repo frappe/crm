@@ -14,6 +14,7 @@
           :error-message="
             (value) => __('{0} is an invalid email address', [value])
           "
+          :description="__('Press enter to add email')"
         />
         <FormControl
           type="select"
@@ -26,7 +27,6 @@
           ]"
           :description="description"
         />
-        <ErrorMessage class="mt-2" v-if="error" :message="error" />
       </div>
       <template v-if="pendingInvitations.data?.length && !invitees.length">
         <div class="flex flex-col gap-4">
@@ -67,7 +67,8 @@
         </div>
       </template>
     </div>
-    <div class="flex flex-row-reverse">
+    <div class="flex justify-between items-center gap-2">
+      <div><ErrorMessage v-if="error" :message="error" /></div>
       <Button
         :label="__('Send Invites')"
         variant="solid"
@@ -124,8 +125,8 @@ const inviteByEmail = createResource({
     pendingInvitations.reload()
     updateOnboardingStep('invite_your_team')
   },
-  onError(error) {
-    error.value = error
+  onError(err) {
+    error.value = err?.messages?.[0]
   },
 })
 
