@@ -348,6 +348,7 @@ import {
   callEnabled,
   isMobileView,
 } from '@/composables/settings'
+import { useOnboarding } from '@/composables/onboarding'
 import { capture } from '@/telemetry'
 import {
   createResource,
@@ -370,6 +371,7 @@ const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
+const { updateOnboardingStep } = useOnboarding()
 const route = useRoute()
 const router = useRouter()
 
@@ -658,6 +660,7 @@ async function convertToDeal(updated) {
       })
     })
     if (_deal) {
+      updateOnboardingStep('convert_lead_to_deal')
       capture('convert_lead_to_deal')
       if (updated) {
         await contacts.reload()

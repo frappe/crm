@@ -17,3 +17,15 @@ def update_user_onboarding_status(steps: str):
 	frappe.db.set_value(
 		"User", frappe.session.user, "onboarding_status", json.dumps(onboarding_status), update_modified=False
 	)
+
+
+@frappe.whitelist()
+def get_first_non_converted_lead():
+	lead = frappe.get_all(
+		"CRM Lead",
+		filters={"converted": 0},
+		fields=["name"],
+		order_by="creation",
+		limit=1,
+	)
+	return lead[0].name if lead else None

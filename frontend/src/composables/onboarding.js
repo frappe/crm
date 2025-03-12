@@ -49,6 +49,18 @@ const steps = reactive([
     title: 'Convert lead to deal',
     icon: markRaw(ConvertIcon),
     completed: false,
+    onClick: async () => {
+      minimize.value = true
+
+      let leadName = await call(
+        'crm.api.onboarding.get_first_non_converted_lead',
+      )
+      if (leadName) {
+        router.push({ name: 'Lead', params: { leadId: leadName } })
+      } else {
+        router.push({ name: 'Leads' })
+      }
+    },
   },
   {
     name: 'create_first_note',
