@@ -20,7 +20,7 @@ def update_user_onboarding_status(steps: str):
 
 
 @frappe.whitelist()
-def get_first_non_converted_lead():
+def get_first_lead():
 	lead = frappe.get_all(
 		"CRM Lead",
 		filters={"converted": 0},

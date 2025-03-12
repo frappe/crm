@@ -227,6 +227,7 @@ async function submitEmail() {
   reload.value = true
   emit('scroll')
   capture('email_sent', { doctype: props.doctype })
+  updateOnboardingStep('send_first_email')
 }
 
 async function submitComment() {

@@ -55,12 +55,10 @@ const steps = reactive([
     onClick: async () => {
       minimize.value = true
 
-      firstLead.value =
-        !firstLead.value &&
-        (await call('crm.api.onboarding.get_first_non_converted_lead'))
+      let lead = await getFirstLead()
 
-      if (firstLead.value) {
-        router.push({ name: 'Lead', params: { leadId: firstLead.value } })
+      if (lead) {
+        router.push({ name: 'Lead', params: { leadId: lead } })
       } else {
         router.push({ name: 'Leads' })
       }
@@ -73,13 +71,12 @@ const steps = reactive([
     completed: false,
     onClick: async () => {
       minimize.value = true
-      firstDeal.value =
-        !firstDeal.value && (await call('crm.api.onboarding.get_first_deal'))
+      let deal = await getFirstDeal()
 
-      if (firstDeal.value) {
+      if (deal) {
         router.push({
           name: 'Deal',
-          params: { dealId: firstDeal.value },
+          params: { dealId: deal },
           hash: '#tasks',
         })
       } else {
@@ -94,13 +91,12 @@ const steps = reactive([
     completed: false,
     onClick: async () => {
       minimize.value = true
-      firstDeal.value =
-        !firstDeal.value && (await call('crm.api.onboarding.get_first_deal'))
+      let deal = await getFirstDeal()
 
-      if (firstDeal.value) {
+      if (deal) {
         router.push({
           name: 'Deal',
-          params: { dealId: firstDeal.value },
+          params: { dealId: deal },
           hash: '#notes',
         })
       } else {
@@ -115,13 +111,12 @@ const steps = reactive([
     completed: false,
     onClick: async () => {
       minimize.value = true
-      firstDeal.value =
-        !firstDeal.value && (await call('crm.api.onboarding.get_first_deal'))
+      let deal = await getFirstDeal()
 
-      if (firstDeal.value) {
+      if (deal) {
         router.push({
           name: 'Deal',
-          params: { dealId: firstDeal.value },
+          params: { dealId: deal },
           hash: '#comments',
         })
       } else {
@@ -130,10 +125,24 @@ const steps = reactive([
     },
   },
   {
-    name: 'send_email',
+    name: 'send_first_email',
     title: 'Send email',
     icon: markRaw(EmailIcon),
     completed: false,
+    onClick: async () => {
+      minimize.value = true
+      let deal = await getFirstDeal()
+
+      if (deal) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: deal },
+          hash: '#emails',
+        })
+      } else {
+        router.push({ name: 'Leads' })
+      }
+    },
   },
   {
     name: 'change_deal_status',
@@ -142,6 +151,16 @@ const steps = reactive([
     completed: false,
   },
 ])
+
+async function getFirstLead() {
+  if (firstLead.value) return firstLead.value
+  return await call('crm.api.onboarding.get_first_lead')
+}
+
+async function getFirstDeal() {
+  if (firstDeal.value) return firstDeal.value
+  return await call('crm.api.onboarding.get_first_deal')
+}
 
 const stepsCompleted = computed(
   () => steps.filter((step) => step.completed).length,
