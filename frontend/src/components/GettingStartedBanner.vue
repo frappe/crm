@@ -9,7 +9,9 @@
         <div class="text-ink-gray-9 font-medium">
           {{ __('Gettings started') }}
         </div>
-        <div class="text-ink-gray-7">{{ __('4/10 steps') }}</div>
+        <div class="text-ink-gray-7">
+          {{ __('{0}/{1} steps', [stepsCompleted, totalSteps]) }}
+        </div>
       </div>
     </div>
     <Button
@@ -21,6 +23,7 @@
 </template>
 <script setup>
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
+import { useOnboarding } from '@/composables/onboarding'
 
 const props = defineProps({
   isSidebarCollapsed: {
@@ -30,4 +33,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['completeNow'])
+
+const { stepsCompleted, totalSteps } = useOnboarding()
 </script>
