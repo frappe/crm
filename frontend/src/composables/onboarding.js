@@ -190,6 +190,18 @@ export function useOnboarding() {
 
   syncStatus()
 
+  function skip(step) {
+    updateOnboardingStep(step, true)
+  }
+
+  function skipAll() {
+    updateAll(true)
+  }
+
+  function reset() {
+    updateAll(false)
+  }
+
   function updateOnboardingStep(step, skipped = false) {
     if (isOnboardingStepsCompleted.value) return
     let user = window.user
@@ -223,8 +235,37 @@ export function useOnboarding() {
     })
   }
 
-  function skip(step) {
-    updateOnboardingStep(step, true)
+  function updateAll(value) {
+    if (isOnboardingStepsCompleted.value) return
+    let user = window.user
+    if (!user) return false
+
+    let _steps
+
+    if (!user.onboarding_status['frappe_crm_onboarding_status']) {
+      user.onboarding_status['frappe_crm_onboarding_status'] = steps.map(
+        (s) => {
+          return { name: s.name, completed: value }
+        },
+      )
+    } else {
+      _steps = user.onboarding_status['frappe_crm_onboarding_status']
+      _steps.forEach((step) => {
+        step.completed = value
+      })
+    }
+
+    steps.forEach((step) => {
+      step.completed = value
+    })
+
+    window.user = user
+
+    capture(value ? 'onboarding_skipped_all' : 'onboarding_reset_steps')
+
+    call('crm.api.onboarding.update_user_onboarding_status', {
+      steps: JSON.stringify(_steps),
+    })
   }
 
   function syncStatus() {
@@ -250,5 +291,7 @@ export function useOnboarding() {
     completedPercentage,
     updateOnboardingStep,
     skip,
+    skipAll,
+    reset,
   }
 }

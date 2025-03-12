@@ -7,7 +7,7 @@
   >
     <div class="flex items-center justify-between">
       <div class="text-base font-medium ml-1">
-        <div v-if="minimize && !isOnboardingStepsCompleted && !showHelpCenter">
+        <div v-if="!isOnboardingStepsCompleted && !showHelpCenter">
           {{ __('Getting started') }}
         </div>
         <div v-else-if="showHelpCenter">
