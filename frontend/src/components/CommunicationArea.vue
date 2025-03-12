@@ -4,7 +4,9 @@
       <Button
         ref="sendEmailRef"
         variant="ghost"
-        :class="[showEmailBox ? '!bg-surface-gray-4 hover:!bg-surface-gray-3' : '']"
+        :class="[
+          showEmailBox ? '!bg-surface-gray-4 hover:!bg-surface-gray-3' : '',
+        ]"
         :label="__('Reply')"
         @click="toggleEmailBox()"
       >
@@ -15,7 +17,9 @@
       <Button
         variant="ghost"
         :label="__('Comment')"
-        :class="[showCommentBox ? '!bg-surface-gray-4 hover:!bg-surface-gray-3' : '']"
+        :class="[
+          showCommentBox ? '!bg-surface-gray-4 hover:!bg-surface-gray-3' : '',
+        ]"
         @click="toggleCommentBox()"
       >
         <template #prefix>
@@ -90,6 +94,7 @@ import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { capture } from '@/telemetry'
 import { usersStore } from '@/stores/users'
+import { useOnboarding } from '@/composables/onboarding'
 import { useStorage } from '@vueuse/core'
 import { call, createResource } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
@@ -107,6 +112,7 @@ const reload = defineModel('reload')
 const emit = defineEmits(['scroll'])
 
 const { getUser } = usersStore()
+const { updateOnboardingStep } = useOnboarding()
 
 const showEmailBox = ref(false)
 const showCommentBox = ref(false)
@@ -152,7 +158,7 @@ watch(
       editor.commands.focus()
       setSignature(editor)
     }
-  }
+  },
 )
 
 watch(
@@ -161,7 +167,7 @@ watch(
     if (value) {
       newCommentEditor.value.editor.commands.focus()
     }
-  }
+  },
 )
 
 const commentEmpty = computed(() => {
@@ -231,6 +237,7 @@ async function submitComment() {
   reload.value = true
   emit('scroll')
   capture('comment_sent', { doctype: props.doctype })
+  updateOnboardingStep('add_first_comment')
 }
 
 function toggleEmailBox() {

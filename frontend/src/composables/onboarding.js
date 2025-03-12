@@ -22,6 +22,9 @@ export const isOnboardingStepsCompleted = useStorage(
   false,
 )
 
+const firstLead = ref('')
+const firstDeal = ref('')
+
 const steps = reactive([
   {
     name: 'create_first_lead',
@@ -52,11 +55,12 @@ const steps = reactive([
     onClick: async () => {
       minimize.value = true
 
-      let leadName = await call(
-        'crm.api.onboarding.get_first_non_converted_lead',
-      )
-      if (leadName) {
-        router.push({ name: 'Lead', params: { leadId: leadName } })
+      firstLead.value =
+        !firstLead.value &&
+        (await call('crm.api.onboarding.get_first_non_converted_lead'))
+
+      if (firstLead.value) {
+        router.push({ name: 'Lead', params: { leadId: firstLead.value } })
       } else {
         router.push({ name: 'Leads' })
       }
@@ -69,11 +73,13 @@ const steps = reactive([
     completed: false,
     onClick: async () => {
       minimize.value = true
-      let dealName = await call('crm.api.onboarding.get_first_deal')
-      if (dealName) {
+      firstDeal.value =
+        !firstDeal.value && (await call('crm.api.onboarding.get_first_deal'))
+
+      if (firstDeal.value) {
         router.push({
           name: 'Deal',
-          params: { dealId: dealName },
+          params: { dealId: firstDeal.value },
           hash: '#tasks',
         })
       } else {
@@ -88,11 +94,13 @@ const steps = reactive([
     completed: false,
     onClick: async () => {
       minimize.value = true
-      let dealName = await call('crm.api.onboarding.get_first_deal')
-      if (dealName) {
+      firstDeal.value =
+        !firstDeal.value && (await call('crm.api.onboarding.get_first_deal'))
+
+      if (firstDeal.value) {
         router.push({
           name: 'Deal',
-          params: { dealId: dealName },
+          params: { dealId: firstDeal.value },
           hash: '#notes',
         })
       } else {
@@ -105,6 +113,21 @@ const steps = reactive([
     title: 'Add your first comment',
     icon: markRaw(CommentIcon),
     completed: false,
+    onClick: async () => {
+      minimize.value = true
+      firstDeal.value =
+        !firstDeal.value && (await call('crm.api.onboarding.get_first_deal'))
+
+      if (firstDeal.value) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: firstDeal.value },
+          hash: '#comments',
+        })
+      } else {
+        router.push({ name: 'Leads' })
+      }
+    },
   },
   {
     name: 'send_email',
