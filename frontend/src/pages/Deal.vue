@@ -331,6 +331,10 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
+  isOnboardingStepsCompleted,
+  useOnboarding,
+} from '@/composables/onboarding'
+import {
   createResource,
   Dropdown,
   Tooltip,
@@ -347,6 +351,8 @@ import { useActiveTabManager } from '@/composables/useActiveTabManager'
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
+const { updateOnboardingStep } = useOnboarding()
+
 const route = useRoute()
 const router = useRouter()
 
@@ -690,6 +696,10 @@ function triggerCall() {
 }
 
 function updateField(name, value, callback) {
+  if (name == 'status' && !isOnboardingStepsCompleted.value) {
+    updateOnboardingStep('change_deal_status')
+  }
+
   updateDeal(name, value, () => {
     deal.data[name] = value
     callback?.()

@@ -149,6 +149,20 @@ const steps = reactive([
     title: 'Change deal status',
     icon: markRaw(StepsIcon),
     completed: false,
+    onClick: async () => {
+      minimize.value = true
+      let deal = await getFirstDeal()
+
+      if (deal) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: deal },
+          hash: '#activity',
+        })
+      } else {
+        router.push({ name: 'Leads' })
+      }
+    },
   },
 ])
 
