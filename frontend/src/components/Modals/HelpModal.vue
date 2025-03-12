@@ -75,8 +75,7 @@ import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import MaximizeIcon from '@/components/Icons/MaximizeIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
-import { useOnboarding } from '@/composables/onboarding'
-import { ref } from 'vue'
+import { useOnboarding, minimize } from '@/composables/onboarding'
 
 const props = defineProps({
   isOnboardingStepsCompleted: Boolean,
@@ -84,6 +83,6 @@ const props = defineProps({
 
 const show = defineModel()
 
-const { steps, stepsCompleted, totalSteps, completedPercentage, minimize } =
+const { steps, stepsCompleted, totalSteps, completedPercentage } =
   useOnboarding()
 </script>

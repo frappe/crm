@@ -8,13 +8,19 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
 import { capture } from '@/telemetry'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
+import { useStorage } from '@vueuse/core'
 import { call } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, reactive, computed, markRaw } from 'vue'
 
 let router
 
-const minimize = ref(false)
+export const minimize = ref(false)
+
+export const isOnboardingStepsCompleted = useStorage(
+  'isOnboardingStepsCompleted',
+  false,
+)
 
 const steps = reactive([
   {
@@ -94,19 +100,8 @@ export function useOnboarding() {
 
   syncStatus()
 
-  function checkOnboardingStatus() {
-    let user = window.user
-    if (!user) return false
-    if (user.onboarding_status['frappe_crm_onboarding_status']) {
-      return user.onboarding_status['frappe_crm_onboarding_status'].every(
-        (step) => step.completed,
-      )
-    }
-    return false
-  }
-
   function updateOnboardingStep(step) {
-    if (stepsCompleted.value) return
+    if (isOnboardingStepsCompleted.value) return
     let user = window.user
     if (!user) return false
 
@@ -135,6 +130,7 @@ export function useOnboarding() {
   }
 
   function syncStatus() {
+    if (isOnboardingStepsCompleted.value) return
     let user = window.user
     if (!user) return false
 
@@ -143,16 +139,17 @@ export function useOnboarding() {
       _steps.forEach((step, index) => {
         steps[index].completed = step.completed
       })
+      isOnboardingStepsCompleted.value = _steps.every((step) => step.completed)
+    } else {
+      isOnboardingStepsCompleted.value = false
     }
   }
 
   return {
-    minimize,
     steps,
     stepsCompleted,
     totalSteps,
     completedPercentage,
-    checkOnboardingStatus,
     updateOnboardingStep,
   }
 }

@@ -141,14 +141,13 @@ import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
-import { useOnboarding } from '@/composables/onboarding'
+import { isOnboardingStepsCompleted } from '@/composables/onboarding'
 import { FeatherIcon, TrialBanner } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { ref, computed, h } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
-const { checkOnboardingStatus } = useOnboarding()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
@@ -259,9 +258,5 @@ function getIcon(routeName, icon) {
   }
 }
 
-const isOnboardingStepsCompleted = useStorage(
-  'isOnboardingStepsCompleted',
-  checkOnboardingStatus(),
-)
 const showHelpModal = ref(false)
 </script>
