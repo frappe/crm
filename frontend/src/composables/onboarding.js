@@ -92,6 +92,8 @@ const completedPercentage = computed(() =>
 export function useOnboarding() {
   router = useRouter()
 
+  syncStatus()
+
   function checkOnboardingStatus() {
     let user = window.user
     if (!user) return false
@@ -130,6 +132,18 @@ export function useOnboarding() {
     call('crm.api.onboarding.update_user_onboarding_status', {
       steps: JSON.stringify(_steps),
     })
+  }
+
+  function syncStatus() {
+    let user = window.user
+    if (!user) return false
+
+    if (user.onboarding_status['frappe_crm_onboarding_status']) {
+      let _steps = user.onboarding_status['frappe_crm_onboarding_status']
+      _steps.forEach((step, index) => {
+        steps[index].completed = step.completed
+      })
+    }
   }
 
   return {
