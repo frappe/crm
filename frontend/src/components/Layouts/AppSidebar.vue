@@ -112,11 +112,7 @@
     </div>
     <Notifications />
     <Settings />
-    <HelpModal
-      v-if="showHelpModal"
-      v-model="showHelpModal"
-      :isOnboardingStepsCompleted="isOnboardingStepsCompleted"
-    />
+    <HelpModal v-if="showHelpModal" v-model="showHelpModal" />
   </div>
 </template>
 
