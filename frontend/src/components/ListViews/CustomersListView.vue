@@ -1,5 +1,6 @@
 <template>
   <ListView
+    :class="$attrs.class"
     :columns="columns"
     :rows="rows"
     :options="{
@@ -101,6 +102,7 @@
     </ListSelectBanner>
   </ListView>
   <ListFooter
+    v-if="pageLengthCount"
     class="border-t sm:px-5 px-3 py-2"
     v-model="pageLengthCount"
     :options="{
