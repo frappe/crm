@@ -25,7 +25,12 @@
         <FeatherIcon
           name="x"
           class="h-4 cursor-pointer"
-          @click="isOnboardingStepsCompleted = true"
+          @click="
+            () => {
+              emit('showHelpCenter')
+              isOnboardingStepsCompleted = true
+            }
+          "
         />
       </div>
       <div class="text-p-sm text-ink-gray-7">
@@ -46,7 +51,6 @@ import {
   isOnboardingStepsCompleted,
   useOnboarding,
 } from '@/composables/onboarding'
-import FeatherIcon from 'frappe-ui/src/components/FeatherIcon.vue'
 
 const props = defineProps({
   isSidebarCollapsed: {
@@ -55,7 +59,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['completeNow'])
+const emit = defineEmits(['completeNow', 'showHelpCenter'])
 
 const { stepsCompleted, totalSteps } = useOnboarding()
 </script>

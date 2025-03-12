@@ -83,6 +83,7 @@
             showHelpModal = true
           }
         "
+        @showHelpCenter="showHelpCenter = true"
       />
       <SidebarLink
         v-else
@@ -112,7 +113,11 @@
     </div>
     <Notifications />
     <Settings />
-    <HelpModal v-if="showHelpModal" v-model="showHelpModal" />
+    <HelpModal
+      v-if="showHelpModal"
+      v-model="showHelpModal"
+      v-model:showHelpCenter="showHelpCenter"
+    />
   </div>
 </template>
 
@@ -260,4 +265,5 @@ function getIcon(routeName, icon) {
 }
 
 const showHelpModal = ref(false)
+const showHelpCenter = ref(false)
 </script>

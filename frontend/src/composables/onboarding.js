@@ -293,5 +293,6 @@ export function useOnboarding() {
     skip,
     skipAll,
     reset,
+    syncStatus,
   }
 }

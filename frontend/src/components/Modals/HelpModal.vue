@@ -49,7 +49,7 @@ import {
 import { onMounted, computed } from 'vue'
 
 const show = defineModel()
-const showHelpCenter = ref(false)
+const showHelpCenter = defineModel('showHelpCenter')
 
 const title = computed(() => {
   if (!isOnboardingStepsCompleted.value && !showHelpCenter.value) {
@@ -65,6 +65,7 @@ const footerItems = computed(() => {
       icon: HelpIcon,
       label: __('Help centre'),
       onClick: () => {
+        useOnboarding().syncStatus()
         showHelpCenter.value = true
       },
       condition: !isOnboardingStepsCompleted.value && !showHelpCenter.value,
@@ -87,8 +88,7 @@ const footerItems = computed(() => {
 })
 
 function resetOnboardingSteps() {
-  const { reset } = useOnboarding()
-  reset()
+  useOnboarding().reset()
   isOnboardingStepsCompleted.value = false
   showHelpCenter.value = false
 }
