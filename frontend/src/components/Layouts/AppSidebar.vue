@@ -82,6 +82,7 @@
 </template>
 
 <script setup>
+import AddressIcon from '@/components/Icons/AddressIcon.vue'
 import Section from '@/components/Section.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
@@ -128,6 +129,11 @@ const links = [
     label: 'Contacts',
     icon: ContactsIcon,
     to: 'Contacts',
+  },
+  {
+    label: 'Addresses',
+    icon: AddressIcon,
+    to: 'Addresses',
   },
   {
     label: 'Customers',
@@ -202,6 +208,8 @@ function getIcon(routeName, icon) {
       return OpportunitiesIcon
     case 'Contacts':
       return ContactsIcon
+    case 'Addresses':
+      return AddressIcon
     case 'Customers':
       return CustomersIcon
     case 'Notes':
