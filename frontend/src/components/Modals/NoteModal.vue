@@ -49,6 +49,7 @@
             :content="_note.note"
             @change="(val) => (_note.note = val)"
             :placeholder="__('Took a call with John Doe and discussed the new project.')"
+            :mentions="users"
           />
         </div>
       </div>
@@ -60,7 +61,7 @@
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import { capture } from '@/telemetry'
 import { TextEditor, call } from 'frappe-ui'
-import { ref, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usersStore } from '@/stores/users'
 
@@ -84,7 +85,7 @@ const notes = defineModel('reloadNotes')
 
 const emit = defineEmits(['after'])
 
-const { getUser } = usersStore()
+const { users: usersList, getUser } = usersStore()
 import { dateFormat } from '@/utils'
 
 const router = useRouter()
@@ -139,6 +140,17 @@ function redirect() {
   }
   router.push({ name: name, params: params })
 }
+
+const users = computed(() => {
+  return (
+    usersList.data
+      ?.filter((user) => user.enabled)
+      .map((user) => ({
+        label: user.full_name.trimEnd(),
+        value: user.name,
+      })) || []
+  )
+})
 
 watch(
   () => show.value,
