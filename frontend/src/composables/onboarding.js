@@ -9,11 +9,9 @@ import StepsIcon from '@/components/Icons/StepsIcon.vue'
 import { capture } from '@/telemetry'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { useStorage } from '@vueuse/core'
+import router from '@/router'
 import { call } from 'frappe-ui'
-import { useRouter } from 'vue-router'
 import { ref, reactive, computed, markRaw } from 'vue'
-
-let router
 
 export const minimize = ref(false)
 
@@ -186,8 +184,6 @@ const completedPercentage = computed(() =>
 )
 
 export function useOnboarding() {
-  router = useRouter()
-
   syncStatus()
 
   function skip(step) {
