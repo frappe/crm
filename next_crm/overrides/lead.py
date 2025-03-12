@@ -126,7 +126,7 @@ class Lead(Lead):
 
         return contact.name
 
-    def create_customer(self):
+    def create_prospect(self):
         if not self.company_name:
             return
 
@@ -134,20 +134,26 @@ class Lead(Lead):
             "Customer", {"customer_name": self.company_name}
         )
         if existing_customer:
-            return existing_customer
+            return {"Customer": existing_customer}
 
-        customer = frappe.new_doc("Customer")
-        customer.update(
+        existing_prospect = frappe.db.exists(
+            "Prospect", {"company_name": self.company_name}
+        )
+        if existing_prospect:
+            return {"Prospect": existing_customer}
+
+        prospect = frappe.new_doc("Prospect")
+        prospect.update(
             {
-                "customer_name": self.company_name,
+                "company_name": self.company_name,
                 "website": self.website,
                 "territory": self.territory,
                 "industry": self.industry,
                 "annual_revenue": self.annual_revenue,
             }
         )
-        customer.insert(ignore_permissions=True)
-        return customer.name
+        prospect.insert(ignore_permissions=True)
+        return {"Prospect": prospect.name}
 
     def contact_exists(self, throw=True):
         email_exist = frappe.db.exists("Contact Email", {"email_id": self.email_id})
@@ -178,12 +184,16 @@ class Lead(Lead):
 
         return False
 
-    def create_opportunity(self, contact, customer):
+    def create_opportunity(self, contact, customer_or_prospect):
         from erpnext.crm.doctype.lead.lead import make_opportunity
 
         opportunity = make_opportunity(self.name)
 
-        opportunity.update({"contacts": [{"contact": contact}], "customer": customer})
+        opportunity.update({"contacts": [{"contact": contact}]})
+        if "Customer" in customer_or_prospect:
+            opportunity.update({"customer": customer_or_prospect["Customer"]})
+        else:
+            opportunity.update({"custom_prospect": customer_or_prospect["Prospect"]})
 
         if self.first_responded_on:
             opportunity.update(
@@ -323,6 +333,6 @@ def convert_to_opportunity(lead, doc=None):
         lead.communication_status = "Replied"
     lead.save(ignore_permissions=True)
     contact = lead.create_contact(False)
-    customer = lead.create_customer()
-    opportunity = lead.create_opportunity(contact, customer)
+    customer_or_prospect = lead.create_prospect()
+    opportunity = lead.create_opportunity(contact, customer_or_prospect)
     return opportunity

@@ -268,7 +268,7 @@ def set_primary_contact(opportunity, contact):
     return True
 
 
-def create_customer(doc):
+def create_prospect(doc):
     if not doc.get("customer_name"):
         return
 
@@ -276,20 +276,25 @@ def create_customer(doc):
         "Customer", {"customer_name": doc.get("customer_name")}
     )
     if existing_customer:
-        return existing_customer
+        return {"Customer": existing_customer}
+    existing_prospect = frappe.db.exists(
+        "Prospect", {"company_name": doc.get("customer_name")}
+    )
+    if existing_prospect:
+        return {"Prospect": existing_prospect}
 
-    customer = frappe.new_doc("Customer")
-    customer.update(
+    prospect = frappe.new_doc("Prospect")
+    prospect.update(
         {
-            "customer_name": doc.get("customer_name"),
+            "company_name": doc.get("customer_name"),
             "website": doc.get("website"),
             "territory": doc.get("territory"),
             "industry": doc.get("industry"),
             "annual_revenue": doc.get("opportunity_amount"),
         }
     )
-    customer.insert(ignore_permissions=True)
-    return customer.name
+    prospect.insert(ignore_permissions=True)
+    return {"Prospect": prospect.company_name}
 
 
 def contact_exists(doc):
@@ -378,7 +383,21 @@ def create_opportunity(args):
 
     opportunity.update(
         {
-            "customer": args.get("customer") or create_customer(args),
+            "customer": args.get("customer"),
+            "custom_prospect": args.get("custom_prospect"),
+        }
+    )
+
+    customer_or_prospect = create_prospect(args)
+    if customer_or_prospect and "Customer" in customer_or_prospect:
+        opportunity.update({"customer": customer_or_prospect["Customer"]})
+    elif customer_or_prospect:
+        opportunity.update({"custom_prospect": customer_or_prospect["Prospect"]})
+        opportunity_from = "prospect"
+        party_name = customer_or_prospect["Prospect"]
+
+    opportunity.update(
+        {
             "contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
             "opportunity_from": opportunity_from,
             "party_name": party_name,
