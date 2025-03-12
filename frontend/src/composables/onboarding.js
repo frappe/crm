@@ -190,7 +190,7 @@ export function useOnboarding() {
 
   syncStatus()
 
-  function updateOnboardingStep(step) {
+  function updateOnboardingStep(step, skipped = false) {
     if (isOnboardingStepsCompleted.value) return
     let user = window.user
     if (!user) return false
@@ -212,11 +212,19 @@ export function useOnboarding() {
 
     window.user = user
 
-    capture('onboarding_' + step)
+    if (skipped) {
+      capture('onboarding_skipped_' + step)
+    } else {
+      capture('onboarding_' + step)
+    }
 
     call('crm.api.onboarding.update_user_onboarding_status', {
       steps: JSON.stringify(_steps),
     })
+  }
+
+  function skip(step) {
+    updateOnboardingStep(step, true)
   }
 
   function syncStatus() {
@@ -241,5 +249,6 @@ export function useOnboarding() {
     totalSteps,
     completedPercentage,
     updateOnboardingStep,
+    skip,
   }
 }

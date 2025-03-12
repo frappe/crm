@@ -21,14 +21,24 @@
       <div
         v-for="step in steps"
         :key="step.title"
-        class="w-full flex gap-2 items-center hover:bg-surface-gray-1 rounded px-2 py-1.5 cursor-pointer"
-        :class="[
-          step.completed ? 'text-ink-gray-5 line-through' : 'text-ink-gray-8',
-        ]"
-        @click="() => !step.completed && step.onClick()"
+        class="group w-full flex gap-2 justify-between items-center hover:bg-surface-gray-1 rounded px-2 py-1.5 cursor-pointer"
+        @click.stop="() => !step.completed && step.onClick()"
       >
-        <component :is="step.icon" class="h-4" />
-        <div class="text-base">{{ step.title }}</div>
+        <div
+          class="flex gap-2 items-center"
+          :class="[step.completed ? 'text-ink-gray-5' : 'text-ink-gray-8']"
+        >
+          <component :is="step.icon" class="h-4" />
+          <div class="text-base" :class="{ 'line-through': step.completed }">
+            {{ step.title }}
+          </div>
+        </div>
+        <Button
+          v-if="!step.completed"
+          :label="__('Skip')"
+          class="!h-4 text-xs !text-ink-gray-6 hidden group-hover:flex"
+          @click="() => skip(step.name)"
+        />
       </div>
     </div>
   </div>
@@ -39,6 +49,6 @@ import { useOnboarding } from '@/composables/onboarding'
 
 const emit = defineEmits(['close'])
 
-const { steps, stepsCompleted, totalSteps, completedPercentage } =
+const { steps, stepsCompleted, totalSteps, completedPercentage, skip } =
   useOnboarding()
 </script>
