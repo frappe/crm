@@ -6,7 +6,10 @@ import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
+import { useRouter } from 'vue-router'
 import { ref, reactive, computed, markRaw } from 'vue'
+
+let router
 
 const minimize = ref(false)
 
@@ -16,6 +19,12 @@ const steps = reactive([
     title: 'Create your first lead',
     icon: markRaw(LeadsIcon),
     completed: false,
+    onClick: () => {
+      if (steps[0].completed) return
+      minimize.value = true
+
+      router.push({ name: 'Leads' })
+    },
   },
   {
     name: 'invite_your_team',
@@ -71,6 +80,8 @@ const completedPercentage = computed(() =>
 )
 
 export function useOnboarding() {
+  router = useRouter()
+
   function checkOnboardingStatus() {
     let user = window.user
     if (!user) return false

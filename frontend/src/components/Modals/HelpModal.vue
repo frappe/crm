@@ -52,6 +52,7 @@
                 ? 'text-ink-gray-5 line-through'
                 : 'text-ink-gray-8',
             ]"
+            @click="step.onClick"
           >
             <component :is="step.icon" class="h-4" />
             <div class="text-base">{{ step.title }}</div>
