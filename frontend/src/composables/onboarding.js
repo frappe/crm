@@ -199,7 +199,7 @@ export function useOnboarding() {
   }
 
   function reset() {
-    updateAll(false)
+    updateAll(false, true)
   }
 
   function updateOnboardingStep(step, skipped = false) {
@@ -235,8 +235,8 @@ export function useOnboarding() {
     })
   }
 
-  function updateAll(value) {
-    if (isOnboardingStepsCompleted.value) return
+  function updateAll(value, reset = false) {
+    if (isOnboardingStepsCompleted.value && !reset) return
     let user = window.user
     if (!user) return false
 
