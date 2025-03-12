@@ -6,12 +6,18 @@
     @click.stop
   >
     <div class="overflow-hidden flex flex-col gap-4">
-      <div class="flex justify-between">
-        <div></div>
+      <div class="flex items-center justify-between">
+        <div>
+          <div v-if="minimize" class="text-base font-medium ml-1">
+            {{ __('Getting started') }}
+          </div>
+        </div>
         <div>
           <Button @click="minimize = !minimize" variant="ghost">
-            <MaximizeIcon v-if="minimize" class="h-3.5 w-3.5" />
-            <MinimizeIcon v-else class="h-3.5 w-3.5" />
+            <component
+              :is="minimize ? MaximizeIcon : MinimizeIcon"
+              class="h-3.5"
+            />
           </Button>
           <Button variant="ghost" @click="show = false">
             <FeatherIcon name="x" class="h-3.5" />
