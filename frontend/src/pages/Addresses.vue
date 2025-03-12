@@ -63,6 +63,9 @@
     v-model="showAddressModal"
     v-model:quickEntry="showQuickEntryModal"
     :address="{}"
+    :options="{
+      afterInsert: redirectToAddress
+    }"
   />
   <QuickEntryModal
     v-if="showQuickEntryModal"
@@ -83,8 +86,10 @@ import ViewControls from '@/components/ViewControls.vue'
 import { customersStore } from '@/stores/customers.js'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { getCustomer } = customersStore()
+const router = useRouter()
 
 const showAddressModal = ref(false)
 const showQuickEntryModal = ref(false)
@@ -130,4 +135,13 @@ const rows = computed(() => {
     return _rows
   })
 })
+
+function redirectToAddress(doc) {
+  if (doc.name) {
+    router.push({
+      name: 'Address',
+      params: { addressId: doc.name },
+    })
+  }
+}
 </script>
