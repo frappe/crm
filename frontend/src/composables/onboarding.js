@@ -6,6 +6,9 @@ import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
+import { capture } from '@/telemetry'
+import { showSettings, activeSettingsPage } from '@/composables/settings'
+import { call } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { ref, reactive, computed, markRaw } from 'vue'
 
@@ -31,6 +34,13 @@ const steps = reactive([
     title: 'Invite your team',
     icon: markRaw(InviteIcon),
     completed: false,
+    onClick: () => {
+      if (steps[1].completed) return
+      minimize.value = true
+
+      showSettings.value = true
+      activeSettingsPage.value = 'Invite Members'
+    },
   },
   {
     name: 'convert_lead_to_deal',
@@ -93,6 +103,35 @@ export function useOnboarding() {
     return false
   }
 
+  function updateOnboardingStep(step) {
+    if (stepsCompleted.value) return
+    let user = window.user
+    if (!user) return false
+
+    if (!user.onboarding_status['frappe_crm_onboarding_status']) {
+      user.onboarding_status['frappe_crm_onboarding_status'] = steps.map(
+        (s) => {
+          return { name: s.name, completed: false }
+        },
+      )
+    }
+
+    let _steps = user.onboarding_status['frappe_crm_onboarding_status']
+    let index = _steps.findIndex((s) => s.name === step)
+    if (index !== -1) {
+      _steps[index].completed = true
+      steps[index].completed = true
+    }
+
+    window.user = user
+
+    capture('onboarding_' + step)
+
+    call('crm.api.onboarding.update_user_onboarding_status', {
+      steps: JSON.stringify(_steps),
+    })
+  }
+
   return {
     minimize,
     steps,
@@ -100,5 +139,6 @@ export function useOnboarding() {
     totalSteps,
     completedPercentage,
     checkOnboardingStatus,
+    updateOnboardingStep,
   }
 }

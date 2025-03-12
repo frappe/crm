@@ -47,6 +47,7 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
+import { useOnboarding } from '@/composables/onboarding'
 import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
 import { computed, onMounted, ref, reactive, nextTick } from 'vue'
@@ -58,6 +59,7 @@ const props = defineProps({
 
 const { getUser, isManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
+const { updateOnboardingStep } = useOnboarding()
 
 const show = defineModel()
 const router = useRouter()
@@ -166,6 +168,7 @@ function createNewLead() {
       isLeadCreating.value = false
       show.value = false
       router.push({ name: 'Lead', params: { leadId: data.name } })
+      updateOnboardingStep('create_first_lead')
     },
     onError(err) {
       isLeadCreating.value = false
