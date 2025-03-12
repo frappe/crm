@@ -82,8 +82,7 @@ const props = defineProps({
 })
 
 const show = defineModel()
-const minimize = ref(false)
 
-const { steps, stepsCompleted, totalSteps, completedPercentage } =
+const { steps, stepsCompleted, totalSteps, completedPercentage, minimize } =
   useOnboarding()
 </script>

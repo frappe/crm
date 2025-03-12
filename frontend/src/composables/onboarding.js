@@ -8,6 +8,8 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
 import { ref, reactive, computed, markRaw } from 'vue'
 
+const minimize = ref(false)
+
 const steps = reactive([
   {
     name: 'create_first_lead',
@@ -81,6 +83,7 @@ export function useOnboarding() {
   }
 
   return {
+    minimize,
     steps,
     stepsCompleted,
     totalSteps,
