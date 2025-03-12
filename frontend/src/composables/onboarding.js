@@ -86,6 +86,19 @@ const steps = reactive([
     title: 'Create your first note',
     icon: markRaw(NoteIcon),
     completed: false,
+    onClick: async () => {
+      minimize.value = true
+      let dealName = await call('crm.api.onboarding.get_first_deal')
+      if (dealName) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: dealName },
+          hash: '#notes',
+        })
+      } else {
+        router.push({ name: 'Notes' })
+      }
+    },
   },
   {
     name: 'add_first_comment',

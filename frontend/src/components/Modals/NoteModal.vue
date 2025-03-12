@@ -65,6 +65,7 @@
 <script setup>
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import { capture } from '@/telemetry'
+import { useOnboarding } from '@/composables/onboarding'
 import { TextEditor, call } from 'frappe-ui'
 import { ref, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -90,6 +91,8 @@ const notes = defineModel('reloadNotes')
 const emit = defineEmits(['after'])
 
 const router = useRouter()
+
+const { updateOnboardingStep } = useOnboarding()
 
 const title = ref(null)
 const editMode = ref(false)
@@ -123,6 +126,7 @@ async function updateNote() {
       },
     })
     if (d.name) {
+      updateOnboardingStep('create_first_note')
       capture('note_created')
       notes.value?.reload()
       emit('after', d, true)
