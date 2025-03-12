@@ -29,9 +29,7 @@ const steps = reactive([
     icon: markRaw(LeadsIcon),
     completed: false,
     onClick: () => {
-      if (steps[0].completed) return
       minimize.value = true
-
       router.push({ name: 'Leads' })
     },
   },
@@ -41,9 +39,7 @@ const steps = reactive([
     icon: markRaw(InviteIcon),
     completed: false,
     onClick: () => {
-      if (steps[1].completed) return
       minimize.value = true
-
       showSettings.value = true
       activeSettingsPage.value = 'Invite Members'
     },

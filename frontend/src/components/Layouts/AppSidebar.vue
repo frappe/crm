@@ -77,7 +77,12 @@
       <GettingStartedBanner
         v-if="!isOnboardingStepsCompleted"
         :isSidebarCollapsed="isSidebarCollapsed"
-        @completeNow="showHelpModal = true"
+        @completeNow="
+          () => {
+            minimize = false
+            showHelpModal = true
+          }
+        "
       />
       <SidebarLink
         v-else
@@ -141,7 +146,7 @@ import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
-import { isOnboardingStepsCompleted } from '@/composables/onboarding'
+import { isOnboardingStepsCompleted, minimize } from '@/composables/onboarding'
 import { FeatherIcon, TrialBanner } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { ref, computed, h } from 'vue'
