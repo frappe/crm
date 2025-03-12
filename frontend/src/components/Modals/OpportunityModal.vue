@@ -83,7 +83,7 @@ const opportunity = reactive({
 })
 
 const isOpportunityCreating = ref(false)
-const chooseExistingCustomer = ref(false)
+const chooseExistingCustomer = ref(true)
 const chooseExistingContact = ref(false)
 
 const sections = createResource({
