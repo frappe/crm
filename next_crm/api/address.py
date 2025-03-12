@@ -51,3 +51,5 @@ def get_linked_docs(address, link_doctype=None):
     for dict in dict_list:
         doc = frappe.get_doc("Dynamic Link", dict.name)
         names.append(doc.link_name)
+
+    return names
