@@ -117,6 +117,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
+import { useOnboarding } from '@/composables/onboarding'
 import { capture } from '@/telemetry'
 import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
 import { ref, watch, nextTick, onMounted } from 'vue'
@@ -144,6 +145,7 @@ const emit = defineEmits(['updateTask', 'after'])
 
 const router = useRouter()
 const { getUser } = usersStore()
+const { updateOnboardingStep } = useOnboarding()
 
 const title = ref(null)
 const editMode = ref(false)
@@ -200,6 +202,7 @@ async function updateTask() {
       },
     })
     if (d.name) {
+      updateOnboardingStep('create_first_task')
       capture('task_created')
       tasks.value?.reload()
       emit('after', d, true)
