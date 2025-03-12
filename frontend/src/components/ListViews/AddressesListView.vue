@@ -4,6 +4,11 @@
     :columns="columns"
     :rows="rows"
     :options="{
+      getRowRoute: (row) => ({
+        name: 'Address',
+        params: { addressId: row.name },
+        query: { view: route.query.view, viewType: route.params.viewType },
+      }),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
       resizeColumn: options.resizeColumn,
