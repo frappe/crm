@@ -10,41 +10,49 @@ import { ref, reactive, computed, markRaw } from 'vue'
 
 const steps = reactive([
   {
+    name: 'create_first_lead',
     title: 'Create your first lead',
     icon: markRaw(LeadsIcon),
-    completed: true,
+    completed: false,
   },
   {
+    name: 'invite_your_team',
     title: 'Invite your team',
     icon: markRaw(InviteIcon),
     completed: false,
   },
   {
+    name: 'convert_lead_to_deal',
     title: 'Convert lead to deal',
     icon: markRaw(ConvertIcon),
     completed: false,
   },
   {
+    name: 'create_first_note',
     title: 'Create your first note',
     icon: markRaw(NoteIcon),
     completed: false,
   },
   {
+    name: 'create_first_task',
     title: 'Create your first task',
     icon: markRaw(TaskIcon),
     completed: false,
   },
   {
+    name: 'add_first_comment',
     title: 'Add your first comment',
     icon: markRaw(CommentIcon),
     completed: false,
   },
   {
+    name: 'send_email',
     title: 'Send email',
     icon: markRaw(EmailIcon),
     completed: false,
   },
   {
+    name: 'change_deal_status',
     title: 'Change deal status',
     icon: markRaw(StepsIcon),
     completed: false,
@@ -61,12 +69,15 @@ const completedPercentage = computed(() =>
 )
 
 export function useOnboarding() {
-  const incrementStep = () => {
-    stepsCompleted.value++
-  }
-
-  const decrementStep = () => {
-    stepsCompleted.value--
+  function checkOnboardingStatus() {
+    let user = window.user
+    if (!user) return false
+    if (user.onboarding_status['frappe_crm_onboarding_status']) {
+      return user.onboarding_status['frappe_crm_onboarding_status'].every(
+        (step) => step.completed,
+      )
+    }
+    return false
   }
 
   return {
@@ -74,7 +85,6 @@ export function useOnboarding() {
     stepsCompleted,
     totalSteps,
     completedPercentage,
-    incrementStep,
-    decrementStep,
+    checkOnboardingStatus,
   }
 }
