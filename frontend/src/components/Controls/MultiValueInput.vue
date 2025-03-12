@@ -11,7 +11,7 @@
         :label="value"
         theme="gray"
         variant="subtle"
-        class="rounded bg-surface-gray-3 group-hover:bg-surface-gray-4 focus-visible:ring-outline-gray-4"
+        class="rounded bg-surface-white hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
@@ -35,6 +35,9 @@
       </div>
     </div>
     <ErrorMessage class="mt-2 pl-2" v-if="error" :message="error" />
+    <p v-if="description" class="text-xs text-ink-gray-5 mt-1.5">
+      {{ description }}
+    </p>
   </div>
 </template>
 
@@ -45,6 +48,10 @@ const props = defineProps({
   validate: {
     type: Function,
     default: null,
+  },
+  description: {
+    type: String,
+    default: '',
   },
   errorMessage: {
     type: Function,
