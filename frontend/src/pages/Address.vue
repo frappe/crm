@@ -99,6 +99,13 @@
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
+        <ProspectsListView
+          class="mt-4"
+          v-if="tab.label === 'Prospects' && rows.length"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false, showTooltip: false }"
+        />
         <div
           v-if="!rows.length"
           class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
@@ -136,7 +143,9 @@ import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
+import ProspectsIcon from '@/components/Icons/ProspectsIcon.vue'
 import CustomersListView from '@/components/ListViews/CustomersListView.vue'
+import ProspectsListView from '@/components/ListViews/ProspectsListView.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { customersStore } from '@/stores/customers.js'
@@ -184,6 +193,11 @@ const tabs = [
     icon: h(CustomersIcon, { class: 'h-4 w-4' }),
     count: computed(() => customers.data?.length),
   },
+  {
+    label: 'Prospects',
+    icon: h(ProspectsIcon, { class: 'h-4 w-4' }),
+    count: computed(() => prospects.data?.length),
+  },
 ]
 
 async function getCustomersList() { 
@@ -216,11 +230,6 @@ async function getCustomersList() {
 
 const customers = await getCustomersList();
 
-const rows = computed(() => {
-  if (!customers.data || customers.data == []) return []
-  return customers.data.map((row) => getCustomerRowObject(row))
-})
-
 function getCustomerRowObject(customer) {
   console.log(getCustomer(customer?.image))
   return {
@@ -231,10 +240,68 @@ function getCustomerRowObject(customer) {
     },
     website: customer.website,
     Industry: customer.industry,
-    mobile_no: customer.contact_mobile,
     modified: {
       label: dateFormat(customer.modified, dateTooltipFormat),
       timeAgo: __(timeAgo(customer.modified)),
+    },
+  }
+}
+
+async function getProspectsList() { 
+  const prospect_names = await call('next_crm.api.address.get_linked_docs', {
+    link_doctype: 'Prospect',
+    address: props.addressId,
+  })
+
+  const list = createListResource({
+    type: 'list',
+    doctype: 'Prospect',
+    fields: [
+      'name',
+      "company_name",
+      'industry',
+      'website',
+      'modified',
+    ],
+    filters: {
+      company_name: ['in', prospect_names],
+    },
+    orderBy: 'modified desc',
+    pageLength: 20,
+    auto: true,
+  })
+
+  return list
+}
+
+const prospects = await getProspectsList();
+
+const rows = computed(() => {
+  let list = []
+  if (tabIndex.value === 0)
+    list = customers
+  else if (tabIndex.value === 1)
+    list = prospects
+
+  if (!list.data) return []
+
+  return list.data.map((row) => {
+    if (tabIndex.value === 0)
+      return getCustomerRowObject(row)
+    else if (tabIndex.value === 1)
+      return getProspectRowObject(row)
+  })
+})
+
+function getProspectRowObject(prospect) {
+  return {
+    name: prospect.name,
+    company_name: prospect.company_name,
+    website: prospect.website,
+    Industry: prospect.industry,
+    modified: {
+      label: dateFormat(prospect.modified, dateTooltipFormat),
+      timeAgo: __(timeAgo(prospect.modified)),
     },
   }
 }
@@ -374,12 +441,40 @@ function getParsedFields(data) {
   })
 }
 
-const columns = computed(() => customerColumns)
+const columns = computed(() => {
+  if (tabIndex.value === 0)
+    return customerColumns
+  else if (tabIndex.value === 1)
+    return prospectColumns
+})
 
 const customerColumns = [
   {
     label: __('Name'),
     key: 'customer_name',
+    width: '11rem',
+  },
+  {
+    label: __('Website'),
+    key: 'website',
+    width: '9rem',
+  },
+  {
+    label: __('Industry'),
+    key: 'industry',
+    width: '10rem',
+  },
+  {
+    label: __('Last modified'),
+    key: 'modified',
+    width: '8rem',
+  },
+]
+
+const prospectColumns = [
+  {
+    label: __('Name'),
+    key: 'company_name',
     width: '11rem',
   },
   {
