@@ -19,7 +19,7 @@ def get_address(name):
 
 @frappe.whitelist()
 def get_linked_address(link_doctype, link_name=None):
-    dynamic_links = frappe.get_list(
+    dynamic_links = frappe.get_all(
         "Dynamic Link",
         [
             ["parenttype", "=", "Address"],
@@ -39,7 +39,7 @@ def get_linked_address(link_doctype, link_name=None):
 
 @frappe.whitelist()
 def get_linked_docs(address, link_doctype=None):
-    dynamic_links = frappe.get_list(
+    dynamic_links = frappe.get_all(
         "Dynamic Link",
         [
             ["parenttype", "=", "Address"],
