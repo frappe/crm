@@ -54,11 +54,15 @@ def get_contacts():
         )
         return contacts, filtered_contact_names
 
+    # Get contacts  from `tabContact` which has mobile number set.
     filters = {"mobile_no": ["is", "set"]}
     contacts_1, filtered_contact_names = get_contact_data(filters)
 
+    # Get list of contacts to be fetched from  `tabContact Email` and `tabContact Phone` combine them, and finally fetch the contacts.
     filters.update({"name": ["in", filtered_contact_names]})
     contacts_2, _ = get_contact_data(filters)
+
+    # Combine the contacts from both the queries.
     return list(chain(contacts_1, contacts_2))
 
 
