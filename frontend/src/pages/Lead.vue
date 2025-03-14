@@ -71,7 +71,7 @@
               <Avatar
                 size="3xl"
                 class="size-12"
-                :label="lead.data.first_name || __('Untitled')"
+                :label="title"
                 :image="lead.data.image"
               />
               <component
@@ -112,7 +112,7 @@
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="lead.data.lead_name || __('Set first name')">
                 <div class="truncate text-2xl font-medium text-ink-gray-9">
-                  {{ lead.data.lead_name || __('Untitled') }}
+                  {{ title }}
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
@@ -343,6 +343,7 @@ import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
+import { getMeta } from '@/stores/meta'
 import {
   whatsappEnabled,
   callEnabled,
@@ -371,7 +372,10 @@ const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
+const { doctypeMeta } = getMeta('CRM Lead')
+
 const { updateOnboardingStep } = useOnboarding()
+
 const route = useRoute()
 const router = useRouter()
 
@@ -478,15 +482,20 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: lead.data.lead_name || __('Untitled'),
+    label: title.value,
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
 })
 
+const title = computed(() => {
+  let t = doctypeMeta['CRM Lead']?.title_field || 'name'
+  return lead.data?.[t] || props.leadId
+})
+
 usePageMeta(() => {
   return {
-    title: lead.data?.lead_name || lead.data?.name,
+    title: title.value,
     icon: brand.favicon,
   }
 })

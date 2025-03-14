@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-06 11:24\n"
+"POT-Creation-Date: 2025-03-09 09:34+0000\n"
+"PO-Revision-Date: 2025-03-11 11:43\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Crowdin-File-ID: 97\n"
 "Language: hu_HU\n"
 
-#: frontend/src/components/ViewControls.vue:1201
+#: frontend/src/components/ViewControls.vue:1202
 msgid " (New)"
 msgstr " (Új)"
 
@@ -162,7 +162,7 @@ msgstr ""
 
 #: frontend/src/components/CustomActions.vue:73
 #: frontend/src/components/ViewControls.vue:666
-#: frontend/src/components/ViewControls.vue:1093
+#: frontend/src/components/ViewControls.vue:1094
 msgid "Actions"
 msgstr ""
 
@@ -1072,8 +1072,8 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:96
 #: frontend/src/components/ListBulkActions.vue:104
 #: frontend/src/components/ListBulkActions.vue:186
-#: frontend/src/components/ViewControls.vue:1145
-#: frontend/src/components/ViewControls.vue:1156
+#: frontend/src/components/ViewControls.vue:1146
+#: frontend/src/components/ViewControls.vue:1157
 #: frontend/src/pages/Contact.vue:105 frontend/src/pages/Contact.vue:296
 #: frontend/src/pages/MobileContact.vue:81
 #: frontend/src/pages/MobileContact.vue:289
@@ -1093,8 +1093,8 @@ msgstr ""
 msgid "Delete Task"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1141
-#: frontend/src/components/ViewControls.vue:1149
+#: frontend/src/components/ViewControls.vue:1142
+#: frontend/src/components/ViewControls.vue:1150
 msgid "Delete View"
 msgstr ""
 
@@ -1205,7 +1205,7 @@ msgid "Due Date"
 msgstr ""
 
 #: frontend/src/components/Modals/ViewModal.vue:15
-#: frontend/src/components/ViewControls.vue:1097
+#: frontend/src/components/ViewControls.vue:1098
 msgid "Duplicate"
 msgstr ""
 
@@ -1261,7 +1261,7 @@ msgstr ""
 #: frontend/src/components/FieldLayoutEditor.vue:319
 #: frontend/src/components/FieldLayoutEditor.vue:345
 #: frontend/src/components/ListBulkActions.vue:179
-#: frontend/src/components/ViewControls.vue:1115
+#: frontend/src/components/ViewControls.vue:1116
 msgid "Edit"
 msgstr ""
 
@@ -2159,11 +2159,11 @@ msgstr ""
 msgid "Make Call"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1130
+#: frontend/src/components/ViewControls.vue:1131
 msgid "Make Private"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1130
+#: frontend/src/components/ViewControls.vue:1131
 msgid "Make Public"
 msgstr ""
 
@@ -2767,7 +2767,7 @@ msgstr ""
 msgid "Phone Numbers"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1122
+#: frontend/src/components/ViewControls.vue:1123
 msgid "Pin View"
 msgstr ""
 
@@ -3267,7 +3267,7 @@ msgstr ""
 msgid "Set as Primary Contact"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1107
+#: frontend/src/components/ViewControls.vue:1108
 msgid "Set as default"
 msgstr ""
 
@@ -3675,7 +3675,7 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1122
+#: frontend/src/components/ViewControls.vue:1123
 msgid "Unpin View"
 msgstr ""
 
@@ -3847,7 +3847,7 @@ msgstr ""
 msgid "Yesterday"
 msgstr ""
 
-#: crm/api/whatsapp.py:216 crm/api/whatsapp.py:230
+#: crm/api/whatsapp.py:36 crm/api/whatsapp.py:216 crm/api/whatsapp.py:230
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
@@ -3873,7 +3873,11 @@ msgstr ""
 msgid "You need to be in developer mode to edit a Standard Form Script"
 msgstr ""
 
-#: crm/api/todo.py:46
+#: crm/api/todo.py:111
+msgid "Your assignment on task {0} has been removed by {1}"
+msgstr ""
+
+#: crm/api/todo.py:46 crm/api/todo.py:89
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "A (z) {0} {1} feladatot {2} eltávolította"
 
@@ -3886,6 +3890,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "amber"
+msgstr ""
+
+#: crm/api/todo.py:120
+msgid "assigned a new task {0} to you"
+msgstr ""
+
+#: crm/api/todo.py:100
+msgid "assigned a {0} {1} to you"
 msgstr ""
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
@@ -3958,7 +3970,7 @@ msgstr "felirat"
 msgid "list"
 msgstr ""
 
-#: frontend/src/components/Notifications.vue:65
+#: crm/api/comment.py:36 frontend/src/components/Notifications.vue:65
 #: frontend/src/pages/MobileNotification.vue:52
 msgid "mentioned you in {0}"
 msgstr ""
@@ -3998,6 +4010,10 @@ msgstr "nyilvános"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "purple"
+msgstr ""
+
+#: crm/api/whatsapp.py:37
+msgid "received a whatsapp message in {0}"
 msgstr ""
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'

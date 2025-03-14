@@ -180,6 +180,7 @@ import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
+import { getMeta } from '@/stores/meta'
 import {
   whatsappEnabled,
   callEnabled,
@@ -204,6 +205,7 @@ const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
+const { doctypeMeta } = getMeta('CRM Lead')
 const route = useRoute()
 const router = useRouter()
 
@@ -312,15 +314,20 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: lead.data.lead_name || __('Untitled'),
+    label: title.value,
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
 })
 
+const title = computed(() => {
+  let t = doctypeMeta['CRM Lead']?.title_field || 'name'
+  return lead.data?.[t] || props.leadId
+})
+
 usePageMeta(() => {
   return {
-    title: lead.data?.lead_name || lead.data?.name,
+    title: title.value,
     icon: brand.favicon,
   }
 })
