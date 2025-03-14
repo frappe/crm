@@ -27,10 +27,7 @@
           :messages="whatsappMessages.data"
         />
       </div>
-      <div
-        v-else-if="title == 'Notes'"
-        class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
-      >
+      <div v-else-if="title == 'Notes'" class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5">
         <div v-for="note in activities" @click="modalRef.showNote(note)">
           <NoteArea :note="note" v-model="all_activities" />
         </div>
