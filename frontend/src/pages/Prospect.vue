@@ -1,203 +1,203 @@
 <template>
-    <LayoutHeader v-if="prospect.doc">
-      <template #left-header>
-        <Breadcrumbs :items="breadcrumbs">
-          <template #prefix="{ item }">
-            <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
-          </template>
-        </Breadcrumbs>
-      </template>
-      <template #right-header>
-        <Button
-          :label="__('Convert to Opportunity')"
-          variant="solid"
-          @click=convertToOpportunity
-        />
-      </template>
-    </LayoutHeader>
-    <div ref="parentRef" class="flex h-full">
-      <Resizer
-        v-if="prospect.doc"
-        :parent="$refs.parentRef"
-        class="flex h-full flex-col overflow-hidden border-r"
-      >
-        <div class="border-b">
-              <div class="flex flex-col items-start justify-start gap-4 p-5">
-                <div class="flex gap-4 items-center">
-                  <div class="flex flex-col gap-2 truncate">
-                    <div class="truncate text-2xl font-medium text-ink-gray-9">
-                      <span>{{ prospect.doc.name }}</span>
-                    </div>
-                    <div
-                      v-if="prospect.doc.website"
-                      class="flex items-center gap-1.5 text-base text-ink-gray-8"
-                    >
-                      <WebsiteIcon class="size-4" />
-                      <span>{{ website(prospect.doc.website) }}</span>
-                    </div>
-                    <ErrorMessage :message="__(error)" />
+  <LayoutHeader v-if="prospect.doc">
+    <template #left-header>
+      <Breadcrumbs :items="breadcrumbs">
+        <template #prefix="{ item }">
+          <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
+        </template>
+      </Breadcrumbs>
+    </template>
+    <template #right-header>
+      <Button
+        :label="__('Convert to Opportunity')"
+        variant="solid"
+        @click=convertToOpportunity
+      />
+    </template>
+  </LayoutHeader>
+  <div ref="parentRef" class="flex h-full">
+    <Resizer
+      v-if="prospect.doc"
+      :parent="$refs.parentRef"
+      class="flex h-full flex-col overflow-hidden border-r"
+    >
+      <div class="border-b">
+            <div class="flex flex-col items-start justify-start gap-4 p-5">
+              <div class="flex gap-4 items-center">
+                <div class="flex flex-col gap-2 truncate">
+                  <div class="truncate text-2xl font-medium text-ink-gray-9">
+                    <span>{{ prospect.doc.name }}</span>
                   </div>
-                </div>
-                <div class="flex gap-1.5">
-                  <Button
-                    :label="__('Delete')"
-                    theme="red"
-                    size="sm"
-                    @click="deleteProspect"
+                  <div
+                    v-if="prospect.doc.website"
+                    class="flex items-center gap-1.5 text-base text-ink-gray-8"
                   >
-                    <template #prefix>
-                      <FeatherIcon name="trash-2" class="h-4 w-4" />
-                    </template>
-                  </Button>
-                  <Tooltip :text="__('Open website')">
-                    <div>
-                      <Button @click="openWebsite">
-                        <FeatherIcon name="link" class="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </Tooltip>
+                    <WebsiteIcon class="size-4" />
+                    <span>{{ website(prospect.doc.website) }}</span>
+                  </div>
+                  <ErrorMessage :message="__(error)" />
                 </div>
               </div>
-        </div>
-        <div
-          v-if="fieldsLayout.data"
-          class="flex flex-1 flex-col justify-between overflow-hidden"
-        >
-          <div class="flex flex-col overflow-y-auto">
-            <div
-              v-for="(section, i) in fieldsLayout.data"
-              :key="section.label"
-              class="flex flex-col p-3"
-              :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-            >
-              <Section :is-opened="section.opened" :label="section.label">
-                <template #actions>
-                  <Button
-                    v-if="i == 0 && isManager()"
-                    variant="ghost"
-                    class="w-7"
-                    @click="showSidePanelModal = true"
-                  >
-                    <EditIcon class="h-4 w-4" />
-                  </Button>
-                </template>
-                <SectionFields
-                  v-if="section.fields"
-                  :fields="section.fields"
-                  :isLastSection="i == fieldsLayout.data.length - 1"
-                  v-model="prospect.doc"
-                  @update="updateField"
-                />
-              </Section>
+              <div class="flex gap-1.5">
+                <Button
+                  :label="__('Delete')"
+                  theme="red"
+                  size="sm"
+                  @click="deleteProspect"
+                >
+                  <template #prefix>
+                    <FeatherIcon name="trash-2" class="h-4 w-4" />
+                  </template>
+                </Button>
+                <Tooltip :text="__('Open website')">
+                  <div>
+                    <Button @click="openWebsite">
+                      <FeatherIcon name="link" class="h-4 w-4" />
+                    </Button>
+                  </div>
+                </Tooltip>
+              </div>
             </div>
-          </div>
-        </div>
-      </Resizer>
-      <Tabs as="div" v-model="tabIndex" :tabs="tabs">
-        <template #tab-item="{ tab, selected }">
-          <button
-            class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-gray-400 hover:text-ink-gray-9"
-            :class="{ 'text-ink-gray-9': selected }"
-          >
-            <component v-if="tab.icon" :is="tab.icon" class="h-5" />
-            {{ __(tab.label) }}
-            <Badge
-              class="group-hover:bg-surface-gray-9"
-              :class="[selected ? 'bg-surface-gray-9' : 'bg-surface-gray-5']"
-              variant="solid"
-              theme="gray"
-              size="sm"
-            >
-              {{ tab.count }}
-            </Badge>
-          </button>
-        </template>
-        <template #tab-panel="{ tab }">
-          <OpportunitiesListView
-            class="mt-4"
-            v-if="tab.label === 'Opportunities' && rows.length"
-            :rows="rows"
-            :columns="columns"
-            :options="{ selectable: false, showTooltip: false }"
-          />
-          <ContactsListView
-            class="mt-4"
-            v-if="tab.label === 'Contacts' && rows.length"
-            :rows="rows"
-            :columns="columns"
-            :options="{ selectable: false, showTooltip: false }"
-          />
-          <AddressesListView
-            class="mt-4"
-            v-if="tab.label === 'Addresses' && rows.length"
-            :rows="rows"
-            :columns="columns"
-            :options="{ selectable: false, showTooltip: false }"
-          />
+      </div>
+      <div
+        v-if="fieldsLayout.data"
+        class="flex flex-1 flex-col justify-between overflow-hidden"
+      >
+        <div class="flex flex-col overflow-y-auto">
           <div
-            v-if="!rows.length"
-            class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
+            v-for="(section, i) in fieldsLayout.data"
+            :key="section.label"
+            class="flex flex-col p-3"
+            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
           >
-            <div class="flex flex-col items-center justify-center space-y-3">
-              <component :is="tab.icon" class="!h-10 !w-10" />
-              <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
-            </div>
+            <Section :is-opened="section.opened" :label="section.label">
+              <template #actions>
+                <Button
+                  v-if="i == 0 && isManager()"
+                  variant="ghost"
+                  class="w-7"
+                  @click="showSidePanelModal = true"
+                >
+                  <EditIcon class="h-4 w-4" />
+                </Button>
+              </template>
+              <SectionFields
+                v-if="section.fields"
+                :fields="section.fields"
+                :isLastSection="i == fieldsLayout.data.length - 1"
+                v-model="prospect.doc"
+                @update="updateField"
+              />
+            </Section>
           </div>
-        </template>
-      </Tabs>
-    </div>
-    <Dialog
-      v-model="showConvertToOpportunityModal"
-      :options="{
-        title: __('Convert to Opportunity'),
-        size: 'xl',
-        actions: [
-          {
-            label: __('Convert'),
-            variant: 'solid',
-            onClick: convertToOpportunity,
-          },
-        ],
-      }"
-    >
-      <template #body-content>
-        <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
-          <ContactsIcon class="h-4 w-4" />
-          <label class="block text-base">{{ __('Contact') }}</label>
         </div>
-        <div class="ml-6">
-          <div class="flex items-center justify-between text-base">
-            <div>{{ __('Choose Existing') }}</div>
-            <Switch v-model="existingContactChecked" />
-          </div>
-          <Link
-            v-if="existingContactChecked"
-            class="form-control mt-2.5"
-            variant="outline"
-            size="md"
-            :value="existingContact"
-            doctype="Contact"
-            @change="(data) => (existingContact = data)"
-          />
-          <div v-else class="mt-2.5 text-base">
-            {{ __("New contact will be created based on the person's details") }}
+      </div>
+    </Resizer>
+    <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+      <template #tab-item="{ tab, selected }">
+        <button
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:border-gray-400 hover:text-ink-gray-9"
+          :class="{ 'text-ink-gray-9': selected }"
+        >
+          <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+          {{ __(tab.label) }}
+          <Badge
+            class="group-hover:bg-surface-gray-9"
+            :class="[selected ? 'bg-surface-gray-9' : 'bg-surface-gray-5']"
+            variant="solid"
+            theme="gray"
+            size="sm"
+          >
+            {{ tab.count }}
+          </Badge>
+        </button>
+      </template>
+      <template #tab-panel="{ tab }">
+        <OpportunitiesListView
+          class="mt-4"
+          v-if="tab.label === 'Opportunities' && rows.length"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false, showTooltip: false }"
+        />
+        <ContactsListView
+          class="mt-4"
+          v-if="tab.label === 'Contacts' && rows.length"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false, showTooltip: false }"
+        />
+        <AddressesListView
+          class="mt-4"
+          v-if="tab.label === 'Addresses' && rows.length"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false, showTooltip: false }"
+        />
+        <div
+          v-if="!rows.length"
+          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
+        >
+          <div class="flex flex-col items-center justify-center space-y-3">
+            <component :is="tab.icon" class="!h-10 !w-10" />
+            <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
           </div>
         </div>
       </template>
-    </Dialog>
-    <SidePanelModal
-      v-if="showSidePanelModal"
-      v-model="showSidePanelModal"
-      doctype="Prospect"
-      @reload="() => fieldsLayout.reload()"
-    />
-    <QuickEntryModal
-      v-if="showQuickEntryModal"
-      v-model="showQuickEntryModal"
-      doctype="Prospect"
-    />
-    <AddressModal v-model="showAddressModal" v-model:address="_address" />
-  </template>
+    </Tabs>
+  </div>
+  <Dialog
+    v-model="showConvertToOpportunityModal"
+    :options="{
+      title: __('Convert to Opportunity'),
+      size: 'xl',
+      actions: [
+        {
+          label: __('Convert'),
+          variant: 'solid',
+          onClick: convertToOpportunity,
+        },
+      ],
+    }"
+  >
+    <template #body-content>
+      <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
+        <ContactsIcon class="h-4 w-4" />
+        <label class="block text-base">{{ __('Contact') }}</label>
+      </div>
+      <div class="ml-6">
+        <div class="flex items-center justify-between text-base">
+          <div>{{ __('Choose Existing') }}</div>
+          <Switch v-model="existingContactChecked" />
+        </div>
+        <Link
+          v-if="existingContactChecked"
+          class="form-control mt-2.5"
+          variant="outline"
+          size="md"
+          :value="existingContact"
+          doctype="Contact"
+          @change="(data) => (existingContact = data)"
+        />
+        <div v-else class="mt-2.5 text-base">
+          {{ __("New contact will be created based on the person's details") }}
+        </div>
+      </div>
+    </template>
+  </Dialog>
+  <SidePanelModal
+    v-if="showSidePanelModal"
+    v-model="showSidePanelModal"
+    doctype="Prospect"
+    @reload="() => fieldsLayout.reload()"
+  />
+  <QuickEntryModal
+    v-if="showQuickEntryModal"
+    v-model="showQuickEntryModal"
+    doctype="Prospect"
+  />
+  <AddressModal v-model="showAddressModal" v-model:address="_address" />
+</template>
   
   <script setup>
   import Resizer from '@/components/Resizer.vue'
@@ -586,6 +586,7 @@ const columns = computed(() => {
 
 function getAddressRowObject(address) {
   return {
+    name: address.name,
     address_title: address.address_title,
     address_type: address.address_type,
     address_line1: address.address_line1,

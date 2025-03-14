@@ -19,18 +19,19 @@ def get_address(name):
 
 @frappe.whitelist()
 def get_linked_address(link_doctype, link_name=None):
-    dict_list = frappe.get_list(
+    dynamic_links = frappe.get_list(
         "Dynamic Link",
         [
             ["parenttype", "=", "Address"],
             ["link_doctype", "=", link_doctype],
             ["link_name", "=", link_name],
         ],
+        pluck="name",
     )
 
     names = []
-    for dict in dict_list:
-        doc = frappe.get_doc("Dynamic Link", dict.name)
+    for name in dynamic_links:
+        doc = frappe.get_doc("Dynamic Link", name)
         names.append(doc.parent)
 
     return names
@@ -38,16 +39,19 @@ def get_linked_address(link_doctype, link_name=None):
 
 @frappe.whitelist()
 def get_linked_docs(address, link_doctype=None):
-    dict_list = frappe.get_list(
+    dynamic_links = frappe.get_list(
         "Dynamic Link",
         [
             ["parenttype", "=", "Address"],
             ["link_doctype", "=", link_doctype],
             ["parent", "=", address],
         ],
+        pluck="name",
     )
 
     names = []
-    for dict in dict_list:
-        doc = frappe.get_doc("Dynamic Link", dict.name)
+    for name in dynamic_links:
+        doc = frappe.get_doc("Dynamic Link", name)
         names.append(doc.link_name)
+
+    return names

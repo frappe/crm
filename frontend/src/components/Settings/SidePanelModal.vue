@@ -13,7 +13,7 @@
             type="select"
             class="w-1/4"
             v-model="_doctype"
-            :options="['Lead', 'Opportunity', 'Prospect', 'Contact', 'Customer']"
+            :options="['Lead', 'Opportunity', 'Prospect', 'Contact', 'Address', 'Customer']"
             @change="reload"
           />
           <Switch v-model="preview" :label="preview ? __('Hide preview') : __('Show preview')" size="sm" />

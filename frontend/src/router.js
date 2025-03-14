@@ -59,6 +59,19 @@ const routes = [
     props: true,
   },
   {
+    alias: '/addresses',
+    path: '/addresses/view/:viewType?',
+    name: 'Addresses',
+    component: () => import('@/pages/Addresses.vue'),
+    meta: { scrollPos: { top: 0, left: 0 } },
+  },
+  {
+    path: '/addresses/:addressId',
+    name: 'Address',
+    component: () => import(`@/pages/${handleMobileView('Address')}.vue`),
+    props: true,
+  },
+  {
     alias: '/customers',
     path: '/customers/view/:viewType?',
     name: 'Customers',

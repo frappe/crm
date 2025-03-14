@@ -612,6 +612,7 @@ function getContactRowObject(contact) {
 
 function getAddressRowObject(address) {
   return {
+    name: address.name,
     address_title: address.address_title,
     address_type: address.address_type,
     address_line1: address.address_line1,
