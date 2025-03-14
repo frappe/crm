@@ -195,6 +195,7 @@ const { brand } = getSettings()
 const { getUser } = usersStore()
 const { $dialog } = globalStore()
 const { getDealStatus } = statusesStore()
+const { doctypeMeta } = getMeta('CRM Organization')
 
 const route = useRoute()
 const router = useRouter()
@@ -241,7 +242,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: props.organizationId,
+    label: title.value,
     route: {
       name: 'Organization',
       params: { organizationId: props.organizationId },
@@ -250,9 +251,14 @@ const breadcrumbs = computed(() => {
   return items
 })
 
+const title = computed(() => {
+  let t = doctypeMeta['CRM Organization']?.title_field || 'name'
+  return organization.doc?.[t] || props.organizationId
+})
+
 usePageMeta(() => {
   return {
-    title: props.organizationId,
+    title: title.value,
     icon: brand.favicon,
   }
 })
