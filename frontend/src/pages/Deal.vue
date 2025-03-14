@@ -62,7 +62,7 @@
             <Avatar
               size="3xl"
               class="size-12"
-              :label="organization.data?.name || __('Untitled')"
+              :label="title"
               :image="organization.data?.organization_logo"
             />
           </div>
@@ -70,7 +70,7 @@
         <div class="flex flex-col gap-2.5 truncate text-ink-gray-9">
           <Tooltip :text="organization.data?.name || __('Set an organization')">
             <div class="truncate text-2xl font-medium">
-              {{ organization.data?.name || __('Untitled') }}
+              {{ title }}
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
@@ -329,6 +329,7 @@ import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
+import { getMeta } from '@/stores/meta'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   createResource,
@@ -347,6 +348,7 @@ import { useActiveTabManager } from '@/composables/useActiveTabManager'
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
+const { doctypeMeta } = getMeta('CRM Deal')
 const route = useRoute()
 const router = useRouter()
 
@@ -486,15 +488,20 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.data?.name || __('Untitled'),
+    label: title.value,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
 })
 
+const title = computed(() => {
+  let t = doctypeMeta['CRM Deal']?.title_field || 'name'
+  return deal.data?.[t] || props.dealId
+})
+
 usePageMeta(() => {
   return {
-    title: organization.data?.name || deal.data?.name,
+    title: title.value,
     icon: brand.favicon,
   }
 })

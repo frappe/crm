@@ -262,6 +262,7 @@ import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
+import { getMeta } from '@/stores/meta'
 import {
   whatsappEnabled,
   callEnabled,
@@ -285,6 +286,7 @@ import { useRoute, useRouter } from 'vue-router'
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
+const { doctypeMeta } = getMeta('CRM Deal')
 const route = useRoute()
 const router = useRouter()
 
@@ -408,15 +410,20 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: organization.data?.name || __('Untitled'),
+    label: title.value,
     route: { name: 'Deal', params: { dealId: deal.data.name } },
   })
   return items
 })
 
+const title = computed(() => {
+  let t = doctypeMeta['CRM Deal']?.title_field || 'name'
+  return deal.data?.[t] || props.dealId
+})
+
 usePageMeta(() => {
   return {
-    title: organization.data?.name || deal.data?.name,
+    title: title.value,
     icon: brand.favicon,
   }
 })
