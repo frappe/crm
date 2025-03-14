@@ -48,7 +48,7 @@ def get_opportunity_activities(name):
 
     if opportunity_from == "Lead":
         lead = doc[3]
-        activities, calls, notes, todos, attachments = get_lead_activities(lead)
+        activities, calls, notes, todos, attachments = get_lead_activities(lead, False)
         creation_text = "converted the lead to this opportunity"
 
     activities.append(
@@ -203,7 +203,7 @@ def get_opportunity_activities(name):
     return activities, calls, notes, todos, attachments
 
 
-def get_lead_activities(name):
+def get_lead_activities(name, get_events=True):
     get_docinfo("", "Lead", name)
     docinfo = frappe.response["docinfo"]
     lead_meta = frappe.get_meta("Lead")
@@ -297,6 +297,8 @@ def get_lead_activities(name):
         activities.append(activity)
 
     for communication in docinfo.communications + docinfo.automated_messages:
+        if communication.get("communication_medium") == "Event" and not get_events:
+            continue
         activity = {
             "activity_type": "communication",
             "communication_type": communication.communication_type,
