@@ -317,7 +317,7 @@ class Lead(Lead):
 
 
 @frappe.whitelist()
-def convert_to_opportunity(lead, doc=None):
+def convert_to_opportunity(lead, prospect, doc=None):
     if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
         "Lead", "write", lead
     ):
@@ -333,6 +333,10 @@ def convert_to_opportunity(lead, doc=None):
         lead.communication_status = "Replied"
     lead.save(ignore_permissions=True)
     contact = lead.create_contact(False)
-    customer_or_prospect = lead.create_prospect()
+    customer_or_prospect = None
+    if prospect:
+        customer_or_prospect = {"Prospect": prospect}
+    else:
+        customer_or_prospect = lead.create_prospect()
     opportunity = lead.create_opportunity(contact, customer_or_prospect)
     return opportunity
