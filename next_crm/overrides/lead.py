@@ -121,7 +121,7 @@ class Lead(Lead):
                 "phone_nos", {"phone": self.mobile_no, "is_primary_mobile_no": 1}
             )
 
-        contact.insert(ignore_permissions=True)
+        contact.insert()
         contact.reload()  # load changes by hooks on contact
 
         return contact.name
@@ -152,7 +152,7 @@ class Lead(Lead):
                 "annual_revenue": self.annual_revenue,
             }
         )
-        prospect.insert(ignore_permissions=True)
+        prospect.insert()
         return {"Prospect": prospect.name}
 
     def contact_exists(self, throw=True):
@@ -207,7 +207,7 @@ class Lead(Lead):
                 }
             )
 
-        opportunity.insert(ignore_permissions=True)
+        opportunity.insert()
         return opportunity.name
 
     def set_sla(self):
@@ -331,7 +331,7 @@ def convert_to_opportunity(lead, prospect, doc=None):
     lead.converted = 1
     if lead.sla and frappe.db.exists("CRM Communication Status", "Replied"):
         lead.communication_status = "Replied"
-    lead.save(ignore_permissions=True)
+    lead.save()
     contact = lead.create_contact(False)
     customer_or_prospect = None
     if prospect:

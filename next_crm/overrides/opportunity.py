@@ -293,7 +293,7 @@ def create_prospect(doc):
             "annual_revenue": doc.get("opportunity_amount"),
         }
     )
-    prospect.insert(ignore_permissions=True)
+    prospect.insert()
     return {"Prospect": prospect.company_name}
 
 
@@ -339,7 +339,7 @@ def create_contact(doc):
             "phone_nos", {"phone": doc.get("contact_mobile"), "is_primary_mobile_no": 1}
         )
 
-    contact.insert(ignore_permissions=True)
+    contact.insert()
     contact.reload()  # load changes by hooks on contact
 
     return contact.name
@@ -410,5 +410,5 @@ def create_opportunity(args):
 
     opportunity.update(args)
 
-    opportunity.insert(ignore_permissions=True)
+    opportunity.insert()
     return opportunity.name
