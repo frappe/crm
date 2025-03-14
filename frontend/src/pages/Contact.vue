@@ -209,6 +209,7 @@ const { $dialog, makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
+const { doctypeMeta } = getMeta('Contact')
 
 const props = defineProps({
   contactId: {
@@ -257,15 +258,20 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: contact.data?.full_name,
+    label: title.value,
     route: { name: 'Contact', params: { contactId: props.contactId } },
   })
   return items
 })
 
+const title = computed(() => {
+  let t = doctypeMeta['Contact']?.title_field || 'name'
+  return contact.data?.[t] || props.contactId
+})
+
 usePageMeta(() => {
   return {
-    title: contact.data?.full_name || contact.data?.name,
+    title: title.value,
     icon: brand.favicon,
   }
 })

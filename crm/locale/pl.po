@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-03-05 16:31+0553\n"
-"PO-Revision-Date: 2025-03-06 11:24\n"
+"POT-Creation-Date: 2025-03-09 09:34+0000\n"
+"PO-Revision-Date: 2025-03-11 11:43\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Crowdin-File-ID: 97\n"
 "Language: pl_PL\n"
 
-#: frontend/src/components/ViewControls.vue:1201
+#: frontend/src/components/ViewControls.vue:1202
 msgid " (New)"
 msgstr ""
 
@@ -99,7 +99,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EmailTemplateModal.vue:67
 msgid "<p>Dear {{ lead_name }},</p>\\n\\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\\n\\n<p>Thanks,</p>\\n<p>Frappé</p>"
-msgstr ""
+msgstr "<p>Drogi {{ lead_name }},</p>\\n\\n<p>Przypominamy o zapłacie {{ grand_total }}.</p>\\n\\n<p>Dziękuję,</p>\\n<p>Frappé</p>"
 
 #. Header text in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -108,7 +108,7 @@ msgstr ""
 
 #: frontend/src/components/CommunicationArea.vue:81
 msgid "@John, can you please check this?"
-msgstr ""
+msgstr "@John, czy możesz to sprawdzić?"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:56
 msgid "A Lead requires either a person's name or an organization's name"
@@ -128,7 +128,7 @@ msgstr "Klucz API"
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "API Secret"
-msgstr ""
+msgstr "Tajny API"
 
 #. Label of the api_token (Password) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
@@ -162,7 +162,7 @@ msgstr ""
 
 #: frontend/src/components/CustomActions.vue:73
 #: frontend/src/components/ViewControls.vue:666
-#: frontend/src/components/ViewControls.vue:1093
+#: frontend/src/components/ViewControls.vue:1094
 msgid "Actions"
 msgstr ""
 
@@ -208,7 +208,7 @@ msgstr ""
 #. 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Add Weekly Holidays"
-msgstr ""
+msgstr "Dodaj cotygodniowe święta"
 
 #: frontend/src/components/FieldLayoutEditor.vue:426
 msgid "Add column"
@@ -269,7 +269,7 @@ msgstr ""
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]"
-msgstr ""
+msgstr "Plik ikona z .ico rozszerzenia. Powinno być 16 x 16 px. Generowane przy użyciu generator favicon. [favicon-generator.org]"
 
 #. Description of the 'Logo' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -296,7 +296,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/GeneralSettings.vue:49
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
-msgstr ""
+msgstr "Pojawia się na lewym pasku bocznym. Zalecany rozmiar to 32x32 px w PNG lub SVG"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:84
 msgid "Appears next to the title in your browser tab. Recommended size is 32x32 px in PNG or ICO"
@@ -310,7 +310,7 @@ msgstr ""
 #. Label of the apply_on (Link) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Apply On"
-msgstr ""
+msgstr "Zastosuj Na"
 
 #. Label of the view (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -340,7 +340,7 @@ msgstr ""
 
 #: frontend/src/composables/frappecloud.js:24
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
-msgstr ""
+msgstr "Czy na pewno chcesz zalogować się do panelu Frappe Cloud?"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
@@ -422,7 +422,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/GeneralSettings.vue:19
 msgid "Brand Name"
-msgstr ""
+msgstr "Nazwa Marki"
 
 #. Label of the branding_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -601,7 +601,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:8
 msgid "Call Details"
-msgstr ""
+msgstr "Szczegóły połączenia"
 
 #. Label of the receiver (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -709,7 +709,7 @@ msgstr ""
 #. Label of the clear_table (Button) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Clear Table"
-msgstr ""
+msgstr "Wyczyść tabelę"
 
 #: frontend/src/components/Filter.vue:18 frontend/src/components/Filter.vue:150
 msgid "Clear all Filter"
@@ -722,7 +722,7 @@ msgstr ""
 #. Label of the close_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Close Date"
-msgstr ""
+msgstr "Data zamkniecia"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:78
 msgid "Collapse"
@@ -730,7 +730,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:350
 msgid "Collapsible"
-msgstr ""
+msgstr "Składany"
 
 #. Label of the color (Select) field in DocType 'CRM Deal Status'
 #. Label of the color (Select) field in DocType 'CRM Lead Status'
@@ -1035,7 +1035,7 @@ msgstr ""
 #. Priority'
 #: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
 msgid "Default Priority"
-msgstr ""
+msgstr "Domyślny priorytet"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:33
 msgid "Default Service Level Agreement already exists for {0}"
@@ -1072,8 +1072,8 @@ msgstr "Domyślne ustawienia  "
 #: frontend/src/components/ListBulkActions.vue:96
 #: frontend/src/components/ListBulkActions.vue:104
 #: frontend/src/components/ListBulkActions.vue:186
-#: frontend/src/components/ViewControls.vue:1145
-#: frontend/src/components/ViewControls.vue:1156
+#: frontend/src/components/ViewControls.vue:1146
+#: frontend/src/components/ViewControls.vue:1157
 #: frontend/src/pages/Contact.vue:105 frontend/src/pages/Contact.vue:296
 #: frontend/src/pages/MobileContact.vue:81
 #: frontend/src/pages/MobileContact.vue:289
@@ -1093,8 +1093,8 @@ msgstr ""
 msgid "Delete Task"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1141
-#: frontend/src/components/ViewControls.vue:1149
+#: frontend/src/components/ViewControls.vue:1142
+#: frontend/src/components/ViewControls.vue:1150
 msgid "Delete View"
 msgstr ""
 
@@ -1205,7 +1205,7 @@ msgid "Due Date"
 msgstr ""
 
 #: frontend/src/components/Modals/ViewModal.vue:15
-#: frontend/src/components/ViewControls.vue:1097
+#: frontend/src/components/ViewControls.vue:1098
 msgid "Duplicate"
 msgstr ""
 
@@ -1235,7 +1235,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext Settings updated"
-msgstr ""
+msgstr "Zaktualizowano ustawienia ERPnext"
 
 #. Label of the section_break_oubd (Section Break) field in DocType 'ERPNext
 #. CRM Settings'
@@ -1261,7 +1261,7 @@ msgstr ""
 #: frontend/src/components/FieldLayoutEditor.vue:319
 #: frontend/src/components/FieldLayoutEditor.vue:345
 #: frontend/src/components/ListBulkActions.vue:179
-#: frontend/src/components/ViewControls.vue:1115
+#: frontend/src/components/ViewControls.vue:1116
 msgid "Edit"
 msgstr ""
 
@@ -1366,7 +1366,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 msgid "Enable"
-msgstr ""
+msgstr "Włączyć"
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -1452,7 +1452,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:266
 #: frontend/src/components/ViewControls.vue:275
 msgid "Excel"
-msgstr ""
+msgstr "Przewyższać"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
@@ -1592,7 +1592,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "First Responded On"
-msgstr ""
+msgstr "Data pierwszej odpowiedzi"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -1663,7 +1663,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Fulfilled"
-msgstr ""
+msgstr "Spełniony"
 
 #. Label of the full_name (Data) field in DocType 'CRM Contacts'
 #. Label of the lead_name (Data) field in DocType 'CRM Lead'
@@ -1757,7 +1757,7 @@ msgstr ""
 #. Label of the holiday_list_name (Data) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Holiday List Name"
-msgstr ""
+msgstr "Nazwa dla Listy Świąt"
 
 #. Label of the holidays_section (Section Break) field in DocType 'CRM Holiday
 #. List'
@@ -1833,7 +1833,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Industry"
-msgstr ""
+msgstr "Przedsiębiorstwo"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -1917,7 +1917,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
 msgid "Is Primary"
-msgstr ""
+msgstr "Jest podstawowa"
 
 #. Label of the is_standard (Check) field in DocType 'CRM Dropdown Item'
 #. Label of the is_standard (Check) field in DocType 'CRM Form Script'
@@ -1988,7 +1988,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:599
 msgid "Last Month"
-msgstr ""
+msgstr "W zeszłym miesiącu"
 
 #. Label of the last_name (Data) field in DocType 'CRM Deal'
 #. Label of the last_name (Data) field in DocType 'CRM Lead'
@@ -1999,7 +1999,7 @@ msgstr "Nazwisko"
 
 #: frontend/src/components/Filter.vue:603
 msgid "Last Quarter"
-msgstr ""
+msgstr "Ostatni kwartał"
 
 #. Label of the last_status_change_log (Link) field in DocType 'CRM Status
 #. Change Log'
@@ -2009,11 +2009,11 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:595
 msgid "Last Week"
-msgstr ""
+msgstr "Zeszły tydzień"
 
 #: frontend/src/components/Filter.vue:611
 msgid "Last Year"
-msgstr ""
+msgstr "Ostatni rok"
 
 #: frontend/src/pages/Contact.vue:631 frontend/src/pages/MobileContact.vue:627
 #: frontend/src/pages/MobileOrganization.vue:513
@@ -2093,7 +2093,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
 msgid "Link"
-msgstr ""
+msgstr "Połączyć"
 
 #. Label of the links (Table) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -2107,7 +2107,7 @@ msgstr "Linki"
 #: frontend/src/components/ViewControls.vue:371
 #: frontend/src/components/ViewControls.vue:572 frontend/src/utils/view.js:12
 msgid "List"
-msgstr ""
+msgstr "Lista"
 
 #: frontend/src/components/Activities/CallArea.vue:74
 msgid "Listen"
@@ -2159,11 +2159,11 @@ msgstr ""
 msgid "Make Call"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1130
+#: frontend/src/components/ViewControls.vue:1131
 msgid "Make Private"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1130
+#: frontend/src/components/ViewControls.vue:1131
 msgid "Make Public"
 msgstr ""
 
@@ -2228,7 +2228,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "Wzmianka"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -2592,7 +2592,7 @@ msgstr ""
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
 msgid "Number"
-msgstr ""
+msgstr "Numer"
 
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -2767,7 +2767,7 @@ msgstr ""
 msgid "Phone Numbers"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1122
+#: frontend/src/components/ViewControls.vue:1123
 msgid "Pin View"
 msgstr ""
 
@@ -2809,11 +2809,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Position"
-msgstr ""
+msgstr "Pozycja"
 
 #: frontend/src/pages/Deal.vue:198 frontend/src/pages/MobileDeal.vue:143
 msgid "Primary"
-msgstr ""
+msgstr "Główny"
 
 #: frontend/src/pages/Deal.vue:655 frontend/src/pages/MobileDeal.vue:583
 msgid "Primary contact set"
@@ -2895,7 +2895,7 @@ msgstr ""
 #. Label of the recording_url (Data) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Recording URL"
-msgstr ""
+msgstr "Adres URL nagrywania"
 
 #. Label of the reference_name (Dynamic Link) field in DocType 'CRM
 #. Notification'
@@ -3011,7 +3011,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Response By"
-msgstr ""
+msgstr "Odpowiedź wg"
 
 #. Label of the response_details_section (Section Break) field in DocType 'CRM
 #. Deal'
@@ -3211,7 +3211,7 @@ msgstr ""
 #. Label of the script (Code) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Script"
-msgstr ""
+msgstr "Skrypt"
 
 #: frontend/src/components/FieldLayoutEditor.vue:342
 msgid "Section"
@@ -3267,7 +3267,7 @@ msgstr ""
 msgid "Set as Primary Contact"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1107
+#: frontend/src/components/ViewControls.vue:1108
 msgid "Set as default"
 msgstr ""
 
@@ -3307,7 +3307,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Sidebar Items"
-msgstr ""
+msgstr "Elementy paska bocznego"
 
 #: frontend/src/components/SignupBanner.vue:15
 msgid "Sign up now"
@@ -3397,7 +3397,7 @@ msgstr ""
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 msgid "Subdomain"
-msgstr ""
+msgstr "Subdomena"
 
 #: frontend/src/components/Modals/EmailTemplateModal.vue:42
 msgid "Subject"
@@ -3486,12 +3486,12 @@ msgstr ""
 #. Label of the territory_manager (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Territory Manager"
-msgstr ""
+msgstr "Kierownik Regionalny"
 
 #. Label of the territory_name (Data) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Territory Name"
-msgstr ""
+msgstr "Nazwa Regionu"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:46
 msgid "The Condition '{0}' is invalid: {1}"
@@ -3549,7 +3549,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Kanban/KanbanSettings.vue:32
 msgid "Title Field"
-msgstr ""
+msgstr "Pole tytułu"
 
 #. Label of the to (Data) field in DocType 'CRM Call Log'
 #. Label of the to (Data) field in DocType 'CRM Status Change Log'
@@ -3675,7 +3675,7 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1122
+#: frontend/src/components/ViewControls.vue:1123
 msgid "Unpin View"
 msgstr ""
 
@@ -3752,7 +3752,7 @@ msgstr ""
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "User Name"
-msgstr ""
+msgstr "Nazwa Użytkownika"
 
 #. Label of the section_break_nevd (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
@@ -3800,7 +3800,7 @@ msgstr "Środa"
 #: crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Weekly Off"
-msgstr ""
+msgstr "Tygodniowy wyłączony"
 
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:11
 msgid "Welcome Message"
@@ -3847,7 +3847,7 @@ msgstr ""
 msgid "Yesterday"
 msgstr ""
 
-#: crm/api/whatsapp.py:216 crm/api/whatsapp.py:230
+#: crm/api/whatsapp.py:36 crm/api/whatsapp.py:216 crm/api/whatsapp.py:230
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
@@ -3873,7 +3873,11 @@ msgstr ""
 msgid "You need to be in developer mode to edit a Standard Form Script"
 msgstr ""
 
-#: crm/api/todo.py:46
+#: crm/api/todo.py:111
+msgid "Your assignment on task {0} has been removed by {1}"
+msgstr ""
+
+#: crm/api/todo.py:46 crm/api/todo.py:89
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr ""
 
@@ -3886,6 +3890,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "amber"
+msgstr ""
+
+#: crm/api/todo.py:120
+msgid "assigned a new task {0} to you"
+msgstr ""
+
+#: crm/api/todo.py:100
+msgid "assigned a {0} {1} to you"
 msgstr ""
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
@@ -3908,7 +3920,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/CommentArea.vue:11
 msgid "comment"
-msgstr ""
+msgstr "komentarz"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -3956,9 +3968,9 @@ msgstr "etykieta"
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "list"
-msgstr ""
+msgstr "lista"
 
-#: frontend/src/components/Notifications.vue:65
+#: crm/api/comment.py:36 frontend/src/components/Notifications.vue:65
 #: frontend/src/pages/MobileNotification.vue:52
 msgid "mentioned you in {0}"
 msgstr ""
@@ -3999,6 +4011,10 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "purple"
 msgstr "fioletowy"
+
+#: crm/api/whatsapp.py:37
+msgid "received a whatsapp message in {0}"
+msgstr ""
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
