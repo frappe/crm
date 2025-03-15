@@ -806,11 +806,12 @@ const quickFilters = createResource({
   url: 'crm.api.doc.get_quick_filters',
   params: { doctype: props.doctype },
   cache: ['Quick Filters', props.doctype],
-  auto: true,
   onSuccess(filters) {
     setupNewQuickFilters(filters)
   },
 })
+
+if (!quickFilters.data) quickFilters.fetch()
 
 function setupNewQuickFilters(filters) {
   newQuickFilters.value = filters.map((f) => ({
