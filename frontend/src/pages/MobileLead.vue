@@ -178,7 +178,6 @@ import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
-import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import {
@@ -186,6 +185,7 @@ import {
   callEnabled,
   isMobileView,
 } from '@/composables/settings'
+import { capture } from '@/telemetry'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   createResource,
@@ -203,7 +203,6 @@ import { useRouter, useRoute } from 'vue-router'
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
-const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
 const route = useRoute()
@@ -433,9 +432,7 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 
-async function convertToDeal(updated) {
-  let valueUpdated = false
-
+async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
     createToast({
       title: __('Error'),
@@ -456,49 +453,28 @@ async function convertToDeal(updated) {
     return
   }
 
-  if (existingContactChecked.value && existingContact.value) {
-    lead.data.salutation = getContactByName(existingContact.value).salutation
-    lead.data.first_name = getContactByName(existingContact.value).first_name
-    lead.data.last_name = getContactByName(existingContact.value).last_name
-    lead.data.email_id = getContactByName(existingContact.value).email_id
-    lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
-    existingContactChecked.value = false
-    valueUpdated = true
+  if (!existingContactChecked.value && existingContact.value) {
+    existingContact.value = ''
   }
 
-  if (existingOrganizationChecked.value && existingOrganization.value) {
-    lead.data.organization = existingOrganization.value
-    existingOrganizationChecked.value = false
-    valueUpdated = true
+  if (!existingOrganizationChecked.value && existingOrganization.value) {
+    existingOrganization.value = ''
   }
 
-  if (valueUpdated) {
-    updateLead(
-      {
-        salutation: lead.data.salutation,
-        first_name: lead.data.first_name,
-        last_name: lead.data.last_name,
-        email_id: lead.data.email_id,
-        mobile_no: lead.data.mobile_no,
-        organization: lead.data.organization,
-      },
-      '',
-      () => convertToDeal(true),
-    )
+  let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
+    lead: lead.data.name,
+    deal: {},
+    existing_contact: existingContact.value,
+    existing_organization: existingOrganization.value,
+  })
+  if (deal) {
     showConvertToDealModal.value = false
-  } else {
-    let deal = await call(
-      'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
-      {
-        lead: lead.data.name,
-      },
-    )
-    if (deal) {
-      if (updated) {
-        await contacts.reload()
-      }
-      router.push({ name: 'Deal', params: { dealId: deal } })
-    }
+    existingContactChecked.value = false
+    existingOrganizationChecked.value = false
+    existingContact.value = ''
+    existingOrganization.value = ''
+    capture('convert_lead_to_deal')
+    router.push({ name: 'Deal', params: { dealId: deal } })
   }
 }
 </script>
