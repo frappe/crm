@@ -24,7 +24,7 @@ export function getMeta(doctype) {
     },
   })
 
-  if (!doctypeMeta[doctype]) {
+  if (!doctypeMeta[doctype] && !meta.loading) {
     meta.fetch()
   }
 
