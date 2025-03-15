@@ -75,11 +75,9 @@ export function timeAgo(date) {
   return useTimeAgo(date).value
 }
 
-const taskMeta = getMeta('CRM Task')
-
 export function taskStatusOptions(action, data) {
   let options = ['Backlog', 'Todo', 'In Progress', 'Done', 'Canceled']
-  let statusMeta = taskMeta
+  let statusMeta = getMeta('CRM Task')
     .getFields()
     ?.find((field) => field.fieldname == 'status')
   if (statusMeta) {
@@ -98,7 +96,7 @@ export function taskStatusOptions(action, data) {
 
 export function taskPriorityOptions(action, data) {
   let options = ['Low', 'Medium', 'High']
-  let priorityMeta = taskMeta
+  let priorityMeta = getMeta('CRM Task')
     .getFields()
     ?.find((field) => field.fieldname == 'priority')
   if (priorityMeta) {

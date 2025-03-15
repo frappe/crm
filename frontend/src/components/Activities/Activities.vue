@@ -487,7 +487,6 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { contactsStore } from '@/stores/contacts'
 import { whatsappEnabled } from '@/composables/settings'
 import { capture } from '@/telemetry'
 import { Button, Tooltip, createResource } from 'frappe-ui'
@@ -506,7 +505,6 @@ import { useRoute } from 'vue-router'
 
 const { makeCall, $socket } = globalStore()
 const { getUser } = usersStore()
-const { getContact, getLeadContact } = contactsStore()
 
 const props = defineProps({
   doctype: {
