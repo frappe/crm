@@ -20,9 +20,13 @@ def get_deal_contacts(name):
 		"CRM Contacts",
 		filters={"parenttype": "CRM Deal", "parent": name},
 		fields=["contact", "is_primary"],
+		distinct=True,
 	)
 	deal_contacts = []
 	for contact in contacts:
+		if not contact.contact:
+			continue
+
 		is_primary = contact.is_primary
 		contact = frappe.get_doc("Contact", contact.contact).as_dict()
 
