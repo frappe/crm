@@ -341,7 +341,6 @@ import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
-import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import {
@@ -370,7 +369,6 @@ import { useActiveTabManager } from '@/composables/useActiveTabManager'
 const { brand } = getSettings()
 const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
-const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
 
@@ -603,9 +601,7 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 
-async function convertToDeal(updated) {
-  let valueUpdated = false
-
+async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
     createToast({
       title: __('Error'),
@@ -626,56 +622,36 @@ async function convertToDeal(updated) {
     return
   }
 
-  if (existingContactChecked.value && existingContact.value) {
-    lead.data.salutation = getContactByName(existingContact.value).salutation
-    lead.data.first_name = getContactByName(existingContact.value).first_name
-    lead.data.last_name = getContactByName(existingContact.value).last_name
-    lead.data.email_id = getContactByName(existingContact.value).email_id
-    lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
-    existingContactChecked.value = false
-    valueUpdated = true
+  if (!existingContactChecked.value && existingContact.value) {
+    existingContact.value = ''
   }
 
-  if (existingOrganizationChecked.value && existingOrganization.value) {
-    lead.data.organization = existingOrganization.value
-    existingOrganizationChecked.value = false
-    valueUpdated = true
+  if (!existingOrganizationChecked.value && existingOrganization.value) {
+    existingOrganization.value = ''
   }
 
-  if (valueUpdated) {
-    updateLead(
-      {
-        salutation: lead.data.salutation,
-        first_name: lead.data.first_name,
-        last_name: lead.data.last_name,
-        email_id: lead.data.email_id,
-        mobile_no: lead.data.mobile_no,
-        organization: lead.data.organization,
-      },
-      '',
-      () => convertToDeal(true),
-    )
-    showConvertToDealModal.value = false
-  } else {
-    let _deal = await call(
-      'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
-      { lead: lead.data.name, deal },
-    ).catch((err) => {
-      createToast({
-        title: __('Error converting to deal'),
-        text: __(err.messages?.[0]),
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
+  let _deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
+    lead: lead.data.name,
+    deal,
+    existing_contact: existingContact.value,
+    existing_organization: existingOrganization.value,
+  }).catch((err) => {
+    createToast({
+      title: __('Error converting to deal'),
+      text: __(err.messages?.[0]),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
     })
-    if (_deal) {
-      updateOnboardingStep('convert_lead_to_deal')
-      capture('convert_lead_to_deal')
-      if (updated) {
-        await contacts.reload()
-      }
-      router.push({ name: 'Deal', params: { dealId: _deal } })
-    }
+  })
+  if (_deal) {
+    showConvertToDealModal.value = false
+    existingContactChecked.value = false
+    existingOrganizationChecked.value = false
+    existingContact.value = ''
+    existingOrganization.value = ''
+    updateOnboardingStep('convert_lead_to_deal')
+    capture('convert_lead_to_deal')
+    router.push({ name: 'Deal', params: { dealId: _deal } })
   }
 }
 

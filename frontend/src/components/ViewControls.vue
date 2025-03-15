@@ -203,7 +203,9 @@
                   label: __('Export'),
                   icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
                   onClick: () => (showExportDialog = true),
-                  condition: () => !options.hideColumnsButton && route.params.viewType !== 'kanban',
+                  condition: () =>
+                    !options.hideColumnsButton &&
+                    route.params.viewType !== 'kanban',
                 },
                 {
                   label: __('Customize quick filters'),
@@ -535,6 +537,7 @@ onMounted(() => useDebounceFn(reload, 100)())
 const isLoading = computed(() => list.value?.loading)
 
 function reload() {
+  if (isLoading.value) return
   list.value.params = getParams()
   list.value.reload()
 }
@@ -803,11 +806,12 @@ const quickFilters = createResource({
   url: 'crm.api.doc.get_quick_filters',
   params: { doctype: props.doctype },
   cache: ['Quick Filters', props.doctype],
-  auto: true,
   onSuccess(filters) {
     setupNewQuickFilters(filters)
   },
 })
+
+if (!quickFilters.data) quickFilters.fetch()
 
 function setupNewQuickFilters(filters) {
   newQuickFilters.value = filters.map((f) => ({

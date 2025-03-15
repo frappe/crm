@@ -571,9 +571,10 @@ const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   cache: ['sidePanelSections', 'CRM Deal'],
   params: { doctype: 'CRM Deal' },
-  auto: true,
   transform: (data) => getParsedSections(data),
 })
+
+if (!sections.data) sections.fetch()
 
 function getParsedSections(_sections) {
   _sections.forEach((section) => {
@@ -677,7 +678,6 @@ const dealContacts = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal_contacts',
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
-  auto: true,
   transform: (data) => {
     data.forEach((contact) => {
       contact.opened = false
@@ -685,6 +685,8 @@ const dealContacts = createResource({
     return data
   },
 })
+
+if (!dealContacts.data) dealContacts.fetch()
 
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
