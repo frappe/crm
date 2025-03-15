@@ -348,6 +348,7 @@ import {
   callEnabled,
   isMobileView,
 } from '@/composables/settings'
+import { useOnboarding } from '@/composables/onboarding'
 import { capture } from '@/telemetry'
 import {
   createResource,
@@ -370,6 +371,9 @@ const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
+
+const { updateOnboardingStep } = useOnboarding()
+
 const route = useRoute()
 const router = useRouter()
 
@@ -645,6 +649,7 @@ async function convertToDeal() {
     existingOrganizationChecked.value = false
     existingContact.value = ''
     existingOrganization.value = ''
+    updateOnboardingStep('convert_lead_to_deal')
     capture('convert_lead_to_deal')
     router.push({ name: 'Deal', params: { dealId: _deal } })
   }

@@ -74,6 +74,27 @@
     <div class="m-2 flex flex-col gap-1">
       <SignupBanner :isSidebarCollapsed="isSidebarCollapsed" />
       <TrialBanner v-if="isFCSite" />
+      <GettingStartedBanner
+        v-if="!isOnboardingStepsCompleted"
+        :isSidebarCollapsed="isSidebarCollapsed"
+        @completeNow="
+          () => {
+            minimize = false
+            showHelpModal = true
+          }
+        "
+        @showHelpCenter="showHelpCenter = true"
+      />
+      <SidebarLink
+        v-else
+        :label="__('Help')"
+        :isCollapsed="isSidebarCollapsed"
+        @click="showHelpModal = !showHelpModal"
+      >
+        <template #icon>
+          <HelpIcon class="h-4 w-4" />
+        </template>
+      </SidebarLink>
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
@@ -81,9 +102,9 @@
         class=""
       >
         <template #icon>
-          <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
+          <span class="grid h-4 w-4 flex-shrink-0 place-items-center">
             <CollapseSidebar
-              class="h-4.5 w-4.5 text-ink-gray-7 duration-300 ease-in-out"
+              class="h-4 w-4 text-ink-gray-7 duration-300 ease-in-out"
               :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
             />
           </span>
@@ -92,6 +113,11 @@
     </div>
     <Notifications />
     <Settings />
+    <HelpModal
+      v-if="showHelpModal"
+      v-model="showHelpModal"
+      v-model:showHelpCenter="showHelpCenter"
+    />
   </div>
 </template>
 
@@ -109,15 +135,19 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
+import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import SignupBanner from '@/components/SignupBanner.vue'
+import GettingStartedBanner from '@/components/GettingStartedBanner.vue'
+import HelpModal from '@/components/Modals/HelpModal.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
+import { isOnboardingStepsCompleted, minimize } from '@/composables/onboarding'
 import { FeatherIcon, TrialBanner } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { ref, computed, h } from 'vue'
@@ -233,4 +263,7 @@ function getIcon(routeName, icon) {
       return PinIcon
   }
 }
+
+const showHelpModal = ref(false)
+const showHelpCenter = ref(false)
 </script>
