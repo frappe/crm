@@ -234,7 +234,7 @@
         <Link
           v-if="existingCustomerChecked"
           class="form-control mt-2.5"
-          variant="outline"
+          variant="subtle"
           size="md"
           :value="existingCustomer"
           doctype="Customer"
@@ -261,7 +261,7 @@
         <Link
           v-if="existingContactChecked"
           class="form-control mt-2.5"
-          variant="outline"
+          variant="subtle"
           size="md"
           :value="existingContact"
           doctype="Contact"
