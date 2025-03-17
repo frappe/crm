@@ -49,7 +49,9 @@ def get_opportunity_activities(name):
 
     if opportunity_from == "Lead":
         lead = doc[3]
-        activities, calls, notes, todos, events, attachments = get_lead_activities(lead)
+        activities, calls, notes, todos, events, attachments = get_lead_activities(
+            lead, False
+        )
         creation_text = "converted the lead to this opportunity"
 
     activities.append(
