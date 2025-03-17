@@ -473,6 +473,8 @@ def get_data(
 			"fieldtype": field.fieldtype,
 			"fieldname": field.fieldname,
 			"options": field.options,
+			"type": field.fieldtype,
+   			"key": field.fieldname,
 		}
 		for field in fields
 		if field.label and field.fieldname
