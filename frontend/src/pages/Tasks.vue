@@ -262,9 +262,17 @@ function parseRows(rows, columns = []) {
     tasks.value?.data.rows.forEach((row) => {
       _rows[row] = task[row]
 
-      let fieldType = columns?.find(
-        (col) => (col.key || col.value) == row,
-      )?.type
+      let fieldType;
+      if (tasks.value.data.view_type === 'kanban') {
+        fieldType = columns?.find(
+          (col) => (col.fieldname || col.value) == row,
+        )?.fieldtype
+      }
+      else {
+        fieldType = columns?.find(
+          (col) => (col.key || col.value) == row,
+        )?.type
+      }
 
       if (
         fieldType &&
