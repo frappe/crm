@@ -7,6 +7,14 @@
     :doc="doc.data?.name"
     @after="redirect('todos')"
   />
+  <EventModal
+    v-model="showEventModal"
+    v-model:reloadEvents="activities"
+    :event="event"
+    :doctype="doctype"
+    :doc="doc.data?.name"
+    @after="redirect('events')"
+  />
   <NoteModal
     v-model="showNoteModal"
     v-model:reloadNotes="activities"
@@ -18,6 +26,7 @@
 </template>
 <script setup>
 import ToDoModal from '@/components/Modals/ToDoModal.vue'
+import EventModal from '@/components/Modals/EventModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
@@ -32,7 +41,9 @@ const doc = defineModel('doc')
 
 // ToDos
 const showToDoModal = ref(false)
+const showEventModal = ref(false)
 const todo = ref({})
+const event = ref({})
 
 function showToDo(t) {
   todo.value = t || {
@@ -46,9 +57,29 @@ function showToDo(t) {
   showToDoModal.value = true
 }
 
+function showEvent(t) {
+  event.value = t || {
+    subtitle: '',
+    description: '',
+    _assign: '',
+    starts_on: '',
+    ends_on: '',
+    status: 'Open',
+  }
+  showEventModal.value = true
+}
+
 async function deleteToDo(name) {
   await call('frappe.client.delete', {
     doctype: 'ToDo',
+    name,
+  })
+  activities.value.reload()
+}
+
+async function deleteEvent(name) {
+  await call('frappe.client.delete', {
+    doctype: 'Event',
     name,
   })
   activities.value.reload()
@@ -58,6 +89,17 @@ function updateToDoStatus(status, todo) {
   call('frappe.client.set_value', {
     doctype: 'ToDo',
     name: todo.name,
+    fieldname: 'status',
+    value: status,
+  }).then(() => {
+    activities.value.reload()
+  })
+}
+
+function updateEventStatus(status, event) {
+  call('frappe.client.set_value', {
+    doctype: 'Event',
+    name: event.name,
     fieldname: 'status',
     value: status,
   }).then(() => {
@@ -94,6 +136,9 @@ defineExpose({
   showToDo,
   deleteToDo,
   updateToDoStatus,
+  showEvent,
+  deleteEvent,
+  updateEventStatus,
   showNote,
 })
 </script>

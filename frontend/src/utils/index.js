@@ -1,4 +1,5 @@
 import ToDoStatusIcon from '@/components/Icons/ToDoStatusIcon.vue'
+import EventStatusIcon from '@/components/Icons/EventStatusIcon.vue'
 import ToDoPriorityIcon from '@/components/Icons/ToDoPriorityIcon.vue'
 import { useDateFormat, useTimeAgo } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
@@ -54,6 +55,18 @@ export function todoStatusOptions(action, data) {
     (status) => {
       return {
         icon: () => h(ToDoStatusIcon, { status }),
+        label: status,
+        onClick: () => action && action(status, data),
+      }
+    },
+  )
+}
+
+export function eventStatusOptions(action, data) {
+  return ['Open', 'Completed', 'Closed', 'Cancelled'].map(
+    (status) => {
+      return {
+        icon: () => h(EventStatusIcon, { status }),
         label: status,
         onClick: () => action && action(status, data),
       }

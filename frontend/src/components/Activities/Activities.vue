@@ -50,6 +50,9 @@
       <div v-else-if="title == 'ToDos'" class="px-3 pb-3 sm:px-10 sm:pb-5">
         <ToDoArea :modalRef="modalRef" :todos="activities" :doctype="doctype" />
       </div>
+      <div v-else-if="title == 'Events'" class="px-3 pb-3 sm:px-10 sm:pb-5">
+        <EventArea :modalRef="modalRef" :events="activities" :doctype="doctype" />
+      </div>
       <div v-else-if="title == 'Calls'" class="activity">
         <div v-for="(call, i) in activities">
           <div class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10">
@@ -251,6 +254,7 @@
       <Button v-else-if="title == 'Emails'" :label="__('New Email')" @click="emailBox.show = true" />
       <Button v-else-if="title == 'Comments'" :label="__('New Comment')" @click="emailBox.showComment = true" />
       <Button v-else-if="title == 'ToDos'" :label="__('Create ToDo')" @click="modalRef.showToDo()" />
+      <Button v-else-if="title == 'Events'" :label="__('Create Events')" @click="modalRef.showEvent()" />
       <Button v-else-if="title == 'Attachments'" :label="__('Upload Attachment')" @click="showFilesUploader = true" />
     </div>
   </FadedScrollableDiv>
@@ -298,6 +302,7 @@ import CommentArea from '@/components/Activities/CommentArea.vue'
 import CallArea from '@/components/Activities/CallArea.vue'
 import NoteArea from '@/components/Activities/NoteArea.vue'
 import ToDoArea from '@/components/Activities/ToDoArea.vue'
+import EventArea from '@/components/Activities/EventArea.vue'
 import AttachmentArea from '@/components/Activities/AttachmentArea.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -305,6 +310,7 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
@@ -374,7 +380,7 @@ const all_activities = createResource({
   params: { name: doc.value.data.name },
   cache: ['activity', doc.value.data.name],
   auto: true,
-  transform: ([versions, calls, notes, todos, attachments]) => {
+  transform: ([versions, calls, notes, todos, events, attachments]) => {
     if (calls?.length) {
       calls.forEach((doc) => {
         doc.show_recording = false
@@ -401,7 +407,7 @@ const all_activities = createResource({
         }
       })
     }
-    return { versions, calls, notes, todos, attachments }
+    return { versions, calls, notes, todos, events, attachments }
   },
 })
 
@@ -469,6 +475,9 @@ const activities = computed(() => {
   } else if (title.value == 'ToDos') {
     if (!all_activities.data?.todos) return []
     return sortByCreation(all_activities.data.todos)
+  } else if (title.value == 'Events') {
+    if (!all_activities.data?.events) return []
+    return sortByCreation(all_activities.data.events)
   } else if (title.value == 'Notes') {
     if (!all_activities.data?.notes) return []
     return sortByCreation(all_activities.data.notes)
@@ -536,6 +545,8 @@ const emptyText = computed(() => {
     text = 'No Notes'
   } else if (title.value == 'ToDos') {
     text = 'No ToDos'
+  } else if (title.value == 'Events') {
+    text = 'No Events'
   } else if (title.value == 'Attachments') {
     text = 'No Attachments'
   } else if (title.value == 'WhatsApp') {
@@ -556,6 +567,8 @@ const emptyTextIcon = computed(() => {
     icon = NoteIcon
   } else if (title.value == 'ToDos') {
     icon = ToDoIcon
+  } else if (title.value == 'Events') {
+    icon = EventIcon
   } else if (title.value == 'Attachments') {
     icon = AttachmentIcon
   } else if (title.value == 'WhatsApp') {

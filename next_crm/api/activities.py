@@ -43,12 +43,15 @@ def get_opportunity_activities(name):
     calls = []
     notes = []
     todos = []
+    events = []
     attachments = []
     creation_text = "created this opportunity"
 
     if opportunity_from == "Lead":
         lead = doc[3]
-        activities, calls, notes, todos, attachments = get_lead_activities(lead, False)
+        activities, calls, notes, todos, events, attachments = get_lead_activities(
+            lead, False
+        )
         creation_text = "converted the lead to this opportunity"
 
     activities.append(
@@ -195,12 +198,13 @@ def get_opportunity_activities(name):
     calls = calls + get_linked_calls(name)
     notes = notes + get_linked_notes(name)
     todos = todos + get_linked_todos(name)
+    events = events + get_linked_events(name)
     attachments = attachments + get_attachments("Opportunity", name)
 
     activities.sort(key=lambda x: x["creation"], reverse=True)
     activities = handle_multiple_versions(activities)
 
-    return activities, calls, notes, todos, attachments
+    return activities, calls, notes, todos, events, attachments
 
 
 def get_lead_activities(name, get_events=True):
@@ -367,12 +371,13 @@ def get_lead_activities(name, get_events=True):
     calls = get_linked_calls(name)
     notes = get_linked_notes(name)
     todos = get_linked_todos(name)
+    events = get_linked_events(name)
     attachments = get_attachments("Lead", name)
 
     activities.sort(key=lambda x: x["creation"], reverse=True)
     activities = handle_multiple_versions(activities)
 
-    return activities, calls, notes, todos, attachments
+    return activities, calls, notes, todos, events, attachments
 
 
 def get_attachments(doctype, name):
@@ -469,7 +474,7 @@ def get_linked_notes(name):
 
 
 def get_linked_todos(name):
-    todos = frappe.db.get_all(
+    todos = frappe.db.get_list(
         "ToDo",
         filters={"reference_name": name},
         fields=[
@@ -484,6 +489,27 @@ def get_linked_todos(name):
         ],
     )
     return todos or []
+
+
+def get_linked_events(name):
+    events = frappe.db.get_list(
+        "Event",
+        filters=[["Event Participants", "reference_docname", "=", name]],
+        fields=[
+            "name",
+            "subject",
+            "description",
+            "_assign",
+            "starts_on",
+            "ends_on",
+            "event_category",
+            "status",
+            "event_type",
+            "modified",
+        ],
+    )
+
+    return events or []
 
 
 def parse_attachment_log(html, type):
