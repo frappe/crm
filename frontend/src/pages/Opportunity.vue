@@ -322,6 +322,7 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
@@ -556,6 +557,11 @@ const tabs = computed(() => {
       name: 'ToDos',
       label: __('ToDos'),
       icon: ToDoIcon,
+    },
+    {
+      name: 'Events',
+      label: __('Events'),
+      icon: EventIcon,
     },
     {
       name: 'Notes',
