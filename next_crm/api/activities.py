@@ -207,7 +207,7 @@ def get_opportunity_activities(name):
     return activities, calls, notes, todos, events, attachments
 
 
-def get_lead_activities(name):
+def get_lead_activities(name, get_events=True):
     get_docinfo("", "Lead", name)
     docinfo = frappe.response["docinfo"]
     lead_meta = frappe.get_meta("Lead")
@@ -301,6 +301,8 @@ def get_lead_activities(name):
         activities.append(activity)
 
     for communication in docinfo.communications + docinfo.automated_messages:
+        if communication.get("communication_medium") == "Event" and not get_events:
+            continue
         activity = {
             "activity_type": "communication",
             "communication_type": communication.communication_type,

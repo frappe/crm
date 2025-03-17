@@ -108,27 +108,27 @@
   >
     <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
-        <CustomersIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Customer') }}</label>
+        <ProspectsIcon class="h-4 w-4" />
+        <label class="block text-base">{{ __('Prospect') }}</label>
       </div>
       <div class="ml-6">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingCustomerChecked" />
+          <Switch v-model="existingProspectChecked" />
         </div>
         <Link
-          v-if="existingCustomerChecked"
+          v-if="existingProspectChecked"
           class="form-control mt-2.5"
-          variant="outline"
+          variant="subtle"
           size="md"
-          :value="existingCustomer"
-          doctype="Customer"
-          @change="(data) => (existingCustomer = data)"
+          :value="existingProspect"
+          doctype="Prospect"
+          @change="(data) => (existingProspect = data)"
         />
         <div v-else class="mt-2.5 text-base">
           {{
             __(
-              'New customer will be created based on the data in details section',
+              'New prospect will be created based on the data in details section',
             )
           }}
         </div>
@@ -146,7 +146,7 @@
         <Link
           v-if="existingContactChecked"
           class="form-control mt-2.5"
-          variant="outline"
+          variant="subtle"
           size="md"
           :value="existingContact"
           doctype="Contact"
@@ -171,7 +171,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
+import ProspectsIcon from '@/components/Icons/ProspectsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
@@ -419,10 +419,10 @@ async function deleteLead(name) {
 // Convert to Opportunity
 const showConvertToOpportunityModal = ref(false)
 const existingContactChecked = ref(false)
-const existingCustomerChecked = ref(false)
+const existingProspectChecked = ref(false)
 
 const existingContact = ref('')
-const existingCustomer = ref('')
+const existingProspect = ref('')
 
 async function convertToOpportunity(updated) {
   let valueUpdated = false
@@ -437,10 +437,10 @@ async function convertToOpportunity(updated) {
     return
   }
 
-  if (existingCustomerChecked.value && !existingCustomer.value) {
+  if (existingProspectChecked.value && !existingProspect.value) {
     createToast({
       title: __('Error'),
-      text: __('Please select an existing customer'),
+      text: __('Please select an existing prospect'),
       icon: 'x',
       iconClasses: 'text-ink-red-4',
     })
@@ -457,9 +457,8 @@ async function convertToOpportunity(updated) {
     valueUpdated = true
   }
 
-  if (existingCustomerChecked.value && existingCustomer.value) {
-    lead.data.customer = existingCustomer.value
-    existingCustomerChecked.value = false
+  if (existingProspectChecked.value && existingProspect.value) {e
+    existingProspectChecked.value = false
     valueUpdated = true
   }
 
@@ -471,7 +470,6 @@ async function convertToOpportunity(updated) {
         last_name: lead.data.last_name,
         email_id: lead.data.email_id,
         mobile_no: lead.data.mobile_no,
-        customer: lead.data.customer,
       },
       '',
       () => convertToOpportunity(true),
@@ -482,6 +480,7 @@ async function convertToOpportunity(updated) {
       'next_crm.overrides.lead.convert_to_opportunity',
       {
         lead: lead.data.name,
+        prospect: existingProspect.value
       },
     )
     if (opportunity) {

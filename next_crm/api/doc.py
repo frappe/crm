@@ -379,7 +379,7 @@ def get_data(
             order = kc.get("order")
             if (
                 column_field in filters
-                and filters.get(column_field) != kc.name
+                and filters.get(column_field) != kc.get("name")
                 or kc.get("delete")
             ):
                 column_data = []
