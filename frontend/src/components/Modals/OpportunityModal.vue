@@ -21,7 +21,7 @@
           <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div class="flex items-center gap-3 text-sm text-ink-gray-5">
               <div>{{ __('Choose Existing Customer, Lead or Prospect') }}</div>
-              <Switch v-model="chooseExistingCustomer" />
+              <Switch v-model="chooseExistingCustomerLeadProspect" />
             </div>
             <div class="flex items-center gap-3 text-sm text-ink-gray-5">
               <div>{{ __('Choose Existing Contact') }}</div>
@@ -83,7 +83,7 @@ const opportunity = reactive({
 })
 
 const isOpportunityCreating = ref(false)
-const chooseExistingCustomer = ref(false)
+const chooseExistingCustomerLeadProspect = ref(true)
 const chooseExistingContact = ref(false)
 
 const sections = createResource({
@@ -112,7 +112,7 @@ const filteredSections = computed(() => {
 
   let _filteredSections = []
 
-  if (chooseExistingCustomer.value) {
+  if (chooseExistingCustomerLeadProspect.value) {
     _filteredSections.push(allSections.find((s) => s.label === 'Select Customer'))
   } else {
     _filteredSections.push(allSections.find((s) => s.label === 'Customer Details'))
