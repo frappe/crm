@@ -348,7 +348,6 @@ import {
   callEnabled,
   isMobileView,
 } from '@/composables/settings'
-import { useOnboarding } from '@/composables/onboarding'
 import { capture } from '@/telemetry'
 import {
   createResource,
@@ -361,6 +360,7 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
+  useOnboarding,
 } from 'frappe-ui'
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -372,7 +372,7 @@ const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
 
-const { updateOnboardingStep } = useOnboarding()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const route = useRoute()
 const router = useRouter()

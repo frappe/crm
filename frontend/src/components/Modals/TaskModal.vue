@@ -117,9 +117,15 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { useOnboarding } from '@/composables/onboarding'
 import { capture } from '@/telemetry'
-import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
+import {
+  TextEditor,
+  Dropdown,
+  Tooltip,
+  call,
+  DateTimePicker,
+  useOnboarding,
+} from 'frappe-ui'
 import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -145,7 +151,7 @@ const emit = defineEmits(['updateTask', 'after'])
 
 const router = useRouter()
 const { getUser } = usersStore()
-const { updateOnboardingStep } = useOnboarding()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const title = ref(null)
 const editMode = ref(false)

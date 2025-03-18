@@ -80,17 +80,17 @@
 </template>
 <script setup>
 import MultiValueInput from '@/components/Controls/MultiValueInput.vue'
-import { useOnboarding } from '@/composables/onboarding'
 import { validateEmail, convertArrayToString } from '@/utils'
 import {
   createListResource,
   createResource,
   FormControl,
   Tooltip,
+  useOnboarding,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
-const { updateOnboardingStep } = useOnboarding()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const invitees = ref([])
 const role = ref('Sales User')

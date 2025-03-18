@@ -47,9 +47,8 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
-import { useOnboarding } from '@/composables/onboarding'
 import { capture } from '@/telemetry'
-import { createResource } from 'frappe-ui'
+import { createResource, useOnboarding } from 'frappe-ui'
 import { computed, onMounted, ref, reactive, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -59,7 +58,7 @@ const props = defineProps({
 
 const { getUser, isManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
-const { updateOnboardingStep } = useOnboarding()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const show = defineModel()
 const router = useRouter()

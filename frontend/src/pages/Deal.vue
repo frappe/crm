@@ -332,10 +332,6 @@ import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
-  isOnboardingStepsCompleted,
-  useOnboarding,
-} from '@/composables/onboarding'
-import {
   createResource,
   Dropdown,
   Tooltip,
@@ -344,6 +340,8 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
+  isOnboardingStepsCompleted,
+  useOnboarding,
 } from 'frappe-ui'
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -354,7 +352,7 @@ const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
 
-const { updateOnboardingStep } = useOnboarding()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const route = useRoute()
 const router = useRouter()
