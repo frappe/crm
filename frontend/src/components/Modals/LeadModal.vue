@@ -49,7 +49,7 @@ import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
 import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding } from 'frappe-ui/src/frappe'
 import { computed, onMounted, ref, reactive, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 

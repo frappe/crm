@@ -87,7 +87,7 @@ import {
   FormControl,
   Tooltip,
 } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding } from 'frappe-ui/src/frappe'
 import { ref, computed } from 'vue'
 
 const { updateOnboardingStep } = useOnboarding('frappecrm')

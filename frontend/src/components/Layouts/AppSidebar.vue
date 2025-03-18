@@ -155,7 +155,7 @@ import {
   useOnboarding,
   showHelpModal,
   minimize,
-} from 'frappe-ui/frappe'
+} from 'frappe-ui/src/frappe'
 import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'

@@ -361,7 +361,7 @@ import {
   call,
   usePageMeta,
 } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding } from 'frappe-ui/src/frappe'
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
