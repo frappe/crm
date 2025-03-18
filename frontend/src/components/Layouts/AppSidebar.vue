@@ -106,7 +106,14 @@
     </div>
     <Notifications />
     <Settings />
-    <HelpModal v-if="showHelpModal" v-model="showHelpModal" :logo="CRMLogo" />
+    <HelpModal
+      v-if="showHelpModal"
+      v-model="showHelpModal"
+      :logo="CRMLogo"
+      :afterSkip="(step) => capture('onboarding_step_skipped_' + step)"
+      :afterSkipAll="() => capture('onboarding_steps_skipped')"
+      :afterReset="() => capture('onboarding_steps_reset')"
+    />
   </div>
 </template>
 
@@ -151,6 +158,7 @@ import {
   minimize,
   call,
 } from 'frappe-ui'
+import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { ref, reactive, computed, h, markRaw, onMounted } from 'vue'
