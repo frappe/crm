@@ -296,7 +296,7 @@ const steps = reactive([
     name: 'create_first_lead',
     title: 'Create your first lead',
     icon: markRaw(LeadsIcon),
-    completed: true,
+    completed: false,
     onClick: () => {
       minimize.value = true
       router.push({ name: 'Leads' })

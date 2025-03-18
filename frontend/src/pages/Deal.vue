@@ -340,7 +340,6 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
-  isOnboardingStepsCompleted,
   useOnboarding,
 } from 'frappe-ui'
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
@@ -352,7 +351,8 @@ const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
 
-const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { updateOnboardingStep, isOnboardingStepsCompleted } =
+  useOnboarding('frappecrm')
 
 const route = useRoute()
 const router = useRouter()
