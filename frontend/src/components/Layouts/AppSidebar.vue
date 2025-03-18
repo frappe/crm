@@ -82,7 +82,12 @@
         v-else
         :label="__('Help')"
         :isCollapsed="isSidebarCollapsed"
-        @click="showHelpModal = !showHelpModal"
+        @click="
+          () => {
+            showHelpModal = minimize ? true : !showHelpModal
+            minimize = !showHelpModal
+          }
+        "
       >
         <template #icon>
           <HelpIcon class="h-4 w-4" />
@@ -109,10 +114,12 @@
     <HelpModal
       v-if="showHelpModal"
       v-model="showHelpModal"
+      v-model:articles="articles"
       :logo="CRMLogo"
       :afterSkip="(step) => capture('onboarding_step_skipped_' + step)"
       :afterSkipAll="() => capture('onboarding_steps_skipped')"
       :afterReset="() => capture('onboarding_steps_reset')"
+      docsLink="https://docs.frappe.io/crm"
     />
   </div>
 </template>
@@ -292,7 +299,7 @@ async function getFirstDeal() {
 const steps = reactive([
   {
     name: 'create_first_lead',
-    title: 'Create your first lead',
+    title: __('Create your first lead'),
     icon: markRaw(LeadsIcon),
     completed: false,
     onClick: () => {
@@ -302,7 +309,7 @@ const steps = reactive([
   },
   {
     name: 'invite_your_team',
-    title: 'Invite your team',
+    title: __('Invite your team'),
     icon: markRaw(InviteIcon),
     completed: false,
     onClick: () => {
@@ -313,7 +320,7 @@ const steps = reactive([
   },
   {
     name: 'convert_lead_to_deal',
-    title: 'Convert lead to deal',
+    title: __('Convert lead to deal'),
     icon: markRaw(ConvertIcon),
     completed: false,
     onClick: async () => {
@@ -330,7 +337,7 @@ const steps = reactive([
   },
   {
     name: 'create_first_task',
-    title: 'Create your first task',
+    title: __('Create your first task'),
     icon: markRaw(TaskIcon),
     completed: false,
     onClick: async () => {
@@ -350,7 +357,7 @@ const steps = reactive([
   },
   {
     name: 'create_first_note',
-    title: 'Create your first note',
+    title: __('Create your first note'),
     icon: markRaw(NoteIcon),
     completed: false,
     onClick: async () => {
@@ -370,7 +377,7 @@ const steps = reactive([
   },
   {
     name: 'add_first_comment',
-    title: 'Add your first comment',
+    title: __('Add your first comment'),
     icon: markRaw(CommentIcon),
     completed: false,
     onClick: async () => {
@@ -390,7 +397,7 @@ const steps = reactive([
   },
   {
     name: 'send_first_email',
-    title: 'Send email',
+    title: __('Send email'),
     icon: markRaw(EmailIcon),
     completed: false,
     onClick: async () => {
@@ -410,7 +417,7 @@ const steps = reactive([
   },
   {
     name: 'change_deal_status',
-    title: 'Change deal status',
+    title: __('Change deal status'),
     icon: markRaw(StepsIcon),
     completed: false,
     onClick: async () => {
@@ -431,4 +438,89 @@ const steps = reactive([
 ])
 
 onMounted(() => setUp(steps))
+
+// help center
+const articles = ref([
+  {
+    title: __('Introduction'),
+    opened: false,
+    subArticles: [
+      { name: 'introduction', title: __('Introduction') },
+      { name: 'setting-up', title: __('Setting up') },
+    ],
+  },
+  {
+    title: __('Settings'),
+    opened: false,
+    subArticles: [
+      { name: 'profile', title: __('Profile') },
+      { name: 'custom-branding', title: __('Custom branding') },
+      { name: 'home-actions', title: __('Home actions') },
+      { name: 'invite-members', title: __('Invite members') },
+    ],
+  },
+  {
+    title: __('Masters'),
+    opened: false,
+    subArticles: [
+      { name: 'lead', title: __('Lead') },
+      { name: 'deal', title: __('Deal') },
+      { name: 'contact', title: __('Contact') },
+      { name: 'organization', title: __('Organization') },
+      { name: 'note', title: __('Note') },
+      { name: 'task', title: __('Task') },
+      { name: 'call-log', title: __('Call log') },
+      { name: 'email-template', title: __('Email template') },
+    ],
+  },
+  {
+    title: __('Views'),
+    opened: false,
+    subArticles: [
+      { name: 'view', title: __('Saved view') },
+      { name: 'public-view', title: __('Public view') },
+      { name: 'pinned-view', title: __('Pinned view') },
+    ],
+  },
+  {
+    title: __('Other features'),
+    opened: false,
+    subArticles: [
+      { name: 'email-communication', title: __('Email communication') },
+      { name: 'comment', title: __('Comment') },
+      { name: 'data', title: __('Data') },
+      { name: 'service-level-agreement', title: __('Service level agreement') },
+      { name: 'assignment-rule', title: __('Assignment rule') },
+      { name: 'notification', title: __('Notification') },
+    ],
+  },
+  {
+    title: __('Customization'),
+    opened: false,
+    subArticles: [
+      { name: 'custom-fields', title: __('Custom fields') },
+      { name: 'custom-actions', title: __('Custom actions') },
+      { name: 'custom-statuses', title: __('Custom statuses') },
+      { name: 'custom-list-actions', title: __('Custom list actions') },
+      { name: 'quick-entry-layout', title: __('Quick entry layout') },
+    ],
+  },
+  {
+    title: __('Integration'),
+    opened: false,
+    subArticles: [
+      { name: 'twilio', title: __('Twilio') },
+      { name: 'exotel', title: __('Exotel') },
+      { name: 'whatsapp', title: __('WhatsApp') },
+      { name: 'erpnext', title: __('ERPNext') },
+    ],
+  },
+  {
+    title: __('Frappe CRM mobile'),
+    opened: false,
+    subArticles: [
+      { name: 'mobile-app-installation', title: __('Mobile app installation') },
+    ],
+  },
+])
 </script>
