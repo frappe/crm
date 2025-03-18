@@ -118,14 +118,8 @@ import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import {
-  TextEditor,
-  Dropdown,
-  Tooltip,
-  call,
-  DateTimePicker,
-  useOnboarding,
-} from 'frappe-ui'
+import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
+import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 

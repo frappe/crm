@@ -340,8 +340,8 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
-  useOnboarding,
 } from 'frappe-ui'
+import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
