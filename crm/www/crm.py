@@ -38,7 +38,6 @@ def get_boot():
 			"sysdefaults": frappe.defaults.get_defaults(),
 			"is_demo_site": frappe.conf.get("is_demo_site"),
 			"is_fc_site": is_fc_site(),
-			"user": get_user(),
 			"timezone": {
 				"system": get_system_timezone(),
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
@@ -50,25 +49,3 @@ def get_boot():
 
 def get_default_route():
 	return "/crm"
-
-
-def get_user():
-	"""get user info"""
-	user = frappe.db.get_value(
-		"User",
-		frappe.session.user,
-		[
-			"creation",
-			"email",
-			"email_signature",
-			"first_name",
-			"language",
-			"last_name",
-			"user_type",
-			"onboarding_status",
-		],
-		as_dict=True,
-	)
-	user.onboarding_status = frappe.parse_json(user.onboarding_status)
-
-	return user
