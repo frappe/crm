@@ -9,6 +9,7 @@
         :actions="leadsListView.customListActions"
       />
       <Button
+        v-if="hasCreateAccess"
         variant="solid"
         :label="__('Create')"
         @click="showLeadModal = true"
@@ -314,7 +315,7 @@ import {
   website,
   formatTime,
 } from '@/utils'
-import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
+import { Avatar, Tooltip, Dropdown, call } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
 
@@ -329,6 +330,15 @@ const showLeadModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
+
+// Create button is shown only with write access
+const hasCreateAccess = ref(false)
+
+call('next_crm.api.doc.check_create_access', {
+  doctype: "Lead"
+}).then((show) => {
+  hasCreateAccess.value = show;       
+})
 
 // leads data is loaded in the ViewControls component
 const leads = ref({})

@@ -4,15 +4,8 @@
       <ViewBreadcrumbs v-model="viewControls" routeName="Contacts" />
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="contactsListView?.customListActions"
-        :actions="contactsListView.customListActions"
-      />
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        @click="showContactModal = true"
-      >
+      <CustomActions v-if="contactsListView?.customListActions" :actions="contactsListView.customListActions" />
+      <Button v-if="hasCreateAccess" variant="solid" :label="__('Create')" @click="showContactModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -45,13 +38,8 @@
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
   />
-  <div
-    v-else-if="contacts.data"
-    class="flex h-full items-center justify-center"
-  >
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
+  <div v-else-if="contacts.data" class="flex h-full items-center justify-center">
+    <div class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4">
       <ContactsIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Contacts')]) }}</span>
       <Button :label="__('Create')" @click="showContactModal = true">
@@ -59,16 +47,8 @@
       </Button>
     </div>
   </div>
-  <ContactModal
-    v-model="showContactModal"
-    v-model:quickEntry="showQuickEntryModal"
-    :contact="{}"
-  />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Contact"
-  />
+  <ContactModal v-model="showContactModal" v-model:quickEntry="showQuickEntryModal" :contact="{}" />
+  <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" doctype="Contact" />
 </template>
 
 <script setup>
@@ -83,6 +63,7 @@ import ViewControls from '@/components/ViewControls.vue'
 import { customersStore } from '@/stores/customers.js'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { ref, computed } from 'vue'
+import { call } from 'frappe-ui'
 
 const { getCustomer } = customersStore()
 
@@ -90,6 +71,15 @@ const showContactModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const contactsListView = ref(null)
+
+// Create button is shown only with write access
+const hasCreateAccess = ref(false)
+
+call('next_crm.api.doc.check_create_access', {
+  doctype: 'Contact',
+}).then((show) => {
+  hasCreateAccess.value = show
+})
 
 // contacts data is loaded in the ViewControls component
 const contacts = ref({})
@@ -99,11 +89,7 @@ const updatedPageCount = ref(20)
 const viewControls = ref(null)
 
 const rows = computed(() => {
-  if (
-    !contacts.value?.data?.data ||
-    !['list', 'group_by'].includes(contacts.value.data.view_type)
-  )
-    return []
+  if (!contacts.value?.data?.data || !['list', 'group_by'].includes(contacts.value.data.view_type)) return []
   return contacts.value?.data.data.map((contact) => {
     let _rows = {}
     contacts.value?.data.rows.forEach((row) => {

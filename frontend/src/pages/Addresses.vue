@@ -9,6 +9,7 @@
         :actions="addressesListView.customListActions"
       />
       <Button
+        v-if="hasCreateAccess"
         variant="solid"
         :label="__('Create')"
         @click="showAddressModal = true"
@@ -87,6 +88,7 @@ import { customersStore } from '@/stores/customers.js'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { call } from 'frappe-ui'
 
 const { getCustomer } = customersStore()
 const router = useRouter()
@@ -95,6 +97,15 @@ const showAddressModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const addressesListView = ref(null)
+
+// Create button is shown only with write access
+const hasCreateAccess = ref(false)
+
+call('next_crm.api.doc.check_create_access', {
+  doctype: "Address"
+}).then((show) => {
+  hasCreateAccess.value = show;       
+})
 
 // addresses data is loaded in the ViewControls component
 const addresses = ref({})

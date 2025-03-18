@@ -9,6 +9,7 @@
         :actions="opportunitiesListView.customListActions"
       />
       <Button
+        v-if="hasCreateAccess"
         variant="solid"
         :label="__('Create')"
         @click="showOpportunityModal = true"
@@ -294,7 +295,7 @@ import {
   formatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
-import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
+import { Tooltip, Avatar, Dropdown, call } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
 
@@ -310,6 +311,15 @@ const showOpportunityModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
+
+// Create button is shown only with write access
+const hasCreateAccess = ref(false)
+
+call('next_crm.api.doc.check_create_access', {
+  doctype: "Opportunity"
+}).then((show) => {
+  hasCreateAccess.value = show;       
+})
 
 // opportunities data is loaded in the ViewControls component
 const opportunities = ref({})
