@@ -71,12 +71,13 @@ class Prospect(Prospect):
 
 
 @frappe.whitelist()
-def convert_to_opportunity(prospect, doc=None):
-    if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
-        "Prospect", "write", prospect
-    ):
+def create_opportunity(prospect, doc=None):
+    if (
+        not (doc and doc.flags.get("ignore_permissions"))
+        and not frappe.has_permission("Prospect", "write", prospect)
+    ) or not frappe.has_permission("Opportunity", "create"):
         frappe.throw(
-            _("Not allowed to convert Prospect to Opportunity"), frappe.PermissionError
+            _("Not allowed to create Opportunity from Prospect"), frappe.PermissionError
         )
 
     prospect = frappe.get_cached_doc("Prospect", prospect)

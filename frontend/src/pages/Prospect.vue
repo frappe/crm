@@ -9,9 +9,9 @@
     </template>
     <template #right-header>
       <Button
-        :label="__('Convert to Opportunity')"
+        :label="__('Create Opportunity')"
         variant="solid"
-        @click=convertToOpportunity
+        @click=createOpportunity
       />
     </template>
   </LayoutHeader>
@@ -558,16 +558,15 @@ function getAddressRowObject(address) {
 }
 
   // Convert to Opportunity
-  async function convertToOpportunity() {
-
+  async function createOpportunity() {
       let opportunity = await call(
-        'next_crm.overrides.prospect.convert_to_opportunity',
+        'next_crm.overrides.prospect.create_opportunity',
         {
           prospect: prospect.name,
         },
       )
       if (opportunity) {
-        capture('convert_prospect_to_opportunity')
+        capture('create_prospect_from_opportunity')
         router.push({ name: 'Opportunity', params: { opportunityId: opportunity } })
       }
   }
