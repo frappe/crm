@@ -73,7 +73,7 @@
     </div>
     <div class="m-2 flex flex-col gap-1">
       <SignupBanner :isSidebarCollapsed="isSidebarCollapsed" />
-      <TrialBanner v-if="isFCSite" />
+      <TrialBanner v-if="isFCSite" :isSidebarCollapsed="isSidebarCollapsed" />
       <GettingStartedBanner
         v-if="!isOnboardingStepsCompleted"
         :isSidebarCollapsed="isSidebarCollapsed"
