@@ -8,12 +8,17 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    frappeui(),
-    vue({
-      script: {
-        propsDestructure: true,
+    frappeui({
+      frappeProxy: true,
+      lucideIcons: true,
+      jinjaBootData: true,
+      buildConfig: {
+        indexHtmlPath: '../crm/www/crm.html',
+        emptyOutDir: true,
+        sourcemap: true,
       },
     }),
+    vue(),
     vueJsx(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -55,38 +60,11 @@ export default defineConfig({
         ],
       },
     }),
-    {
-      name: 'transform-index.html',
-      transformIndexHtml(html, context) {
-        if (!context.server) {
-          return html.replace(
-            /<\/body>/,
-            `
-            <script>
-                {% for key in boot %}
-                window["{{ key }}"] = {{ boot[key] | tojson }};
-                {% endfor %}
-            </script>
-            </body>
-            `
-          )
-        }
-        return html
-      },
-    },
   ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
-  },
-  build: {
-    outDir: '../crm/public/frontend',
-    emptyOutDir: true,
-    commonjsOptions: {
-      include: [/tailwind.config.js/, /node_modules/],
-    },
-    sourcemap: true,
   },
   optimizeDeps: {
     include: [
