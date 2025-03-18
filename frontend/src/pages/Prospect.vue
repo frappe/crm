@@ -146,45 +146,6 @@
       </template>
     </Tabs>
   </div>
-  <Dialog
-    v-model="showConvertToOpportunityModal"
-    :options="{
-      title: __('Convert to Opportunity'),
-      size: 'xl',
-      actions: [
-        {
-          label: __('Convert'),
-          variant: 'solid',
-          onClick: convertToOpportunity,
-        },
-      ],
-    }"
-  >
-    <template #body-content>
-      <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
-        <ContactsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Contact') }}</label>
-      </div>
-      <div class="ml-6">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingContactChecked" />
-        </div>
-        <Link
-          v-if="existingContactChecked"
-          class="form-control mt-2.5"
-          variant="outline"
-          size="md"
-          :value="existingContact"
-          doctype="Contact"
-          @change="(data) => (existingContact = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{ __("New contact will be created based on the person's details") }}
-        </div>
-      </div>
-    </template>
-  </Dialog>
   <SidePanelModal
     v-if="showSidePanelModal"
     v-model="showSidePanelModal"
@@ -216,7 +177,6 @@
   import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
   import OpportunitiesIcon from '@/components/Icons/OpportunitiesIcon.vue'
   import AddressIcon from '@/components/Icons/AddressIcon.vue'
-  import Link from '@/components/Controls/Link.vue'
   import { globalStore } from '@/stores/global'
   import { usersStore } from '@/stores/users'
   import { statusesStore } from '@/stores/statuses'
@@ -232,7 +192,6 @@
     Tooltip,
     Breadcrumbs,
     Tabs,
-    Switch,
     call,
     createListResource,
     createDocumentResource,
@@ -599,10 +558,7 @@ function getAddressRowObject(address) {
 }
 
   // Convert to Opportunity
-  const showConvertToOpportunityModal = ref(false)
-
   async function createOpportunity() {
-
       let opportunity = await call(
         'next_crm.overrides.prospect.create_opportunity',
         {
@@ -693,4 +649,4 @@ const addressColumns = [
     width: '8rem',
   },
 ]
-  </script>
+</script>
