@@ -10,7 +10,7 @@
     <template #right-header>
       <Dropdown
         v-slot="{ open }"
-        :button= "'Create'"
+        :button= "__('Create')"
         :options="[
           {
             label: __('Opportunity'),
