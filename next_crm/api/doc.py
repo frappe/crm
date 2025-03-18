@@ -809,3 +809,10 @@ def getCounts(d, doctype):
         filters={"parenttype": doctype, "parent": d.get("name")},
     )
     return d
+
+
+@frappe.whitelist()
+def check_create_access(doctype):
+    if frappe.has_permission(doctype, "create"):
+        return True
+    return False

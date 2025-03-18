@@ -9,6 +9,7 @@
         :actions="emailTemplatesListView.customListActions"
       />
       <Button
+        v-if="hasCreateAccess"
         variant="solid"
         :label="__('Create')"
         @click="() => showEmailTemplate()"
@@ -77,8 +78,18 @@ import EmailTemplatesListView from '@/components/ListViews/EmailTemplatesListVie
 import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { computed, ref } from 'vue'
+import { call } from 'frappe-ui'
 
 const emailTemplatesListView = ref(null)
+
+// Create button is shown only with write access
+const hasCreateAccess = ref(false)
+
+call('next_crm.api.doc.check_create_access', {
+  doctype: "Email Template"
+}).then((show) => {
+  hasCreateAccess.value = show;       
+})
 
 // emailTemplates data is loaded in the ViewControls component
 const emailTemplates = ref({})

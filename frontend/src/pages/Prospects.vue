@@ -5,7 +5,7 @@
     </template>
     <template #right-header>
       <CustomActions v-if="prospectsListView?.customListActions" :actions="prospectsListView.customListActions" />
-      <Button variant="solid" :label="__('Create')" @click="showProspectModal = true">
+      <Button v-if="hasCreateAccess" variant="solid" :label="__('Create')" @click="showProspectModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -85,7 +85,7 @@ import { customersStore } from '@/stores/customers'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
 import { dateFormat, dateTooltipFormat, timeAgo, website, formatNumberIntoCurrency, formatTime } from '@/utils'
-import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
 
@@ -101,6 +101,15 @@ const showProspectModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
+
+// Create button is shown only with write access
+const hasCreateAccess = ref(false)
+
+call('next_crm.api.doc.check_create_access', {
+  doctype: 'Prospect',
+}).then((show) => {
+  hasCreateAccess.value = show
+})
 
 // prospects data is loaded in the ViewControls component
 const prospects = ref({})

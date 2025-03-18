@@ -9,6 +9,7 @@
         :actions="customersListView.customListActions"
       />
       <Button
+        v-if="hasCreateAccess"
         variant="solid"
         :label="__('Create')"
         @click="showCustomerModal = true"
@@ -86,10 +87,20 @@ import {
   formatNumberIntoCurrency,
 } from '@/utils'
 import { ref, computed } from 'vue'
+import { call } from 'frappe-ui'
 
 const customersListView = ref(null)
 const showCustomerModal = ref(false)
 const showQuickEntryModal = ref(false)
+
+// Create button is shown only with write access
+const hasCreateAccess = ref(false)
+
+call('next_crm.api.doc.check_create_access', {
+  doctype: "Customer"
+}).then((show) => {
+  hasCreateAccess.value = show;       
+})
 
 // customers data is loaded in the ViewControls component
 const customers = ref({})
