@@ -77,13 +77,6 @@
       <GettingStartedBanner
         v-if="!isOnboardingStepsCompleted"
         :isSidebarCollapsed="isSidebarCollapsed"
-        @completeNow="
-          () => {
-            minimize = false
-            showHelpModal = true
-          }
-        "
-        @showHelpCenter="showHelpCenter = true"
       />
       <SidebarLink
         v-else
@@ -113,15 +106,17 @@
     </div>
     <Notifications />
     <Settings />
-    <HelpModal
-      v-if="showHelpModal"
-      v-model="showHelpModal"
-      v-model:showHelpCenter="showHelpCenter"
-    />
+    <HelpModal v-if="showHelpModal" v-model="showHelpModal" :logo="CRMLogo" />
   </div>
 </template>
 
 <script setup>
+import CRMLogo from '@/components/Icons/CRMLogo.vue'
+import InviteIcon from '@/components/Icons/InviteIcon.vue'
+import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import StepsIcon from '@/components/Icons/StepsIcon.vue'
 import Section from '@/components/Section.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
@@ -140,17 +135,24 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import SignupBanner from '@/components/SignupBanner.vue'
-import GettingStartedBanner from '@/components/GettingStartedBanner.vue'
-import HelpModal from '@/components/Modals/HelpModal.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
-import { isOnboardingStepsCompleted, minimize } from '@/composables/onboarding'
-import { FeatherIcon, TrialBanner } from 'frappe-ui'
+import { showSettings, activeSettingsPage } from '@/composables/settings'
+import {
+  FeatherIcon,
+  TrialBanner,
+  HelpModal,
+  GettingStartedBanner,
+  useOnboarding,
+  showHelpModal,
+  minimize,
+} from 'frappe-ui'
+import router from '@/router'
 import { useStorage } from '@vueuse/core'
-import { ref, computed, h } from 'vue'
+import { ref, reactive, computed, h, markRaw, onMounted } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -264,6 +266,162 @@ function getIcon(routeName, icon) {
   }
 }
 
-const showHelpModal = ref(false)
-const showHelpCenter = ref(false)
+// onboarding
+const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
+
+const firstLead = ref('')
+const firstDeal = ref('')
+
+async function getFirstLead() {
+  if (firstLead.value) return firstLead.value
+  return await call('crm.api.onboarding.get_first_lead')
+}
+
+async function getFirstDeal() {
+  if (firstDeal.value) return firstDeal.value
+  return await call('crm.api.onboarding.get_first_deal')
+}
+
+const steps = reactive([
+  {
+    name: 'create_first_lead',
+    title: 'Create your first lead',
+    icon: markRaw(LeadsIcon),
+    completed: true,
+    onClick: () => {
+      minimize.value = true
+      router.push({ name: 'Leads' })
+    },
+  },
+  {
+    name: 'invite_your_team',
+    title: 'Invite your team',
+    icon: markRaw(InviteIcon),
+    completed: false,
+    onClick: () => {
+      minimize.value = true
+      showSettings.value = true
+      activeSettingsPage.value = 'Invite Members'
+    },
+  },
+  {
+    name: 'convert_lead_to_deal',
+    title: 'Convert lead to deal',
+    icon: markRaw(ConvertIcon),
+    completed: false,
+    onClick: async () => {
+      minimize.value = true
+
+      let lead = await getFirstLead()
+
+      if (lead) {
+        router.push({ name: 'Lead', params: { leadId: lead } })
+      } else {
+        router.push({ name: 'Leads' })
+      }
+    },
+  },
+  {
+    name: 'create_first_task',
+    title: 'Create your first task',
+    icon: markRaw(TaskIcon),
+    completed: false,
+    onClick: async () => {
+      minimize.value = true
+      let deal = await getFirstDeal()
+
+      if (deal) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: deal },
+          hash: '#tasks',
+        })
+      } else {
+        router.push({ name: 'Tasks' })
+      }
+    },
+  },
+  {
+    name: 'create_first_note',
+    title: 'Create your first note',
+    icon: markRaw(NoteIcon),
+    completed: false,
+    onClick: async () => {
+      minimize.value = true
+      let deal = await getFirstDeal()
+
+      if (deal) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: deal },
+          hash: '#notes',
+        })
+      } else {
+        router.push({ name: 'Notes' })
+      }
+    },
+  },
+  {
+    name: 'add_first_comment',
+    title: 'Add your first comment',
+    icon: markRaw(CommentIcon),
+    completed: false,
+    onClick: async () => {
+      minimize.value = true
+      let deal = await getFirstDeal()
+
+      if (deal) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: deal },
+          hash: '#comments',
+        })
+      } else {
+        router.push({ name: 'Leads' })
+      }
+    },
+  },
+  {
+    name: 'send_first_email',
+    title: 'Send email',
+    icon: markRaw(EmailIcon),
+    completed: false,
+    onClick: async () => {
+      minimize.value = true
+      let deal = await getFirstDeal()
+
+      if (deal) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: deal },
+          hash: '#emails',
+        })
+      } else {
+        router.push({ name: 'Leads' })
+      }
+    },
+  },
+  {
+    name: 'change_deal_status',
+    title: 'Change deal status',
+    icon: markRaw(StepsIcon),
+    completed: false,
+    onClick: async () => {
+      minimize.value = true
+      let deal = await getFirstDeal()
+
+      if (deal) {
+        router.push({
+          name: 'Deal',
+          params: { dealId: deal },
+          hash: '#activity',
+        })
+      } else {
+        router.push({ name: 'Leads' })
+      }
+    },
+  },
+])
+
+onMounted(() => setUp(steps))
 </script>
