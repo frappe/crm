@@ -8,11 +8,27 @@
       </Breadcrumbs>
     </template>
     <template #right-header>
-      <Button
-        :label="__('Create Opportunity')"
-        variant="solid"
-        @click=createOpportunity
-      />
+      <Dropdown
+        v-slot="{ open }"
+        :button= "'Create'"
+        :options="[
+          {
+            label: __('Opportunity'),
+            onClick: createOpportunity
+          },
+          {
+            label: __('Customer'),
+            onClick: createCustomer
+          },
+        ]"
+        @click.stop
+      >
+        <Button :label="'Create'">
+          <template #suffix>
+            <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4" />
+          </template>
+        </Button>
+      </Dropdown>
     </template>
   </LayoutHeader>
   <div ref="parentRef" class="flex h-full">
@@ -191,6 +207,7 @@
   import {
     Tooltip,
     Breadcrumbs,
+    Dropdown,
     Tabs,
     call,
     createListResource,
@@ -555,6 +572,36 @@ function getAddressRowObject(address) {
       timeAgo: __(timeAgo(address.modified)),
     },
   }
+}
+
+async function createCustomer() {
+  $dialog({
+    title: __('Create Customer'),
+    message: __('Are you sure you want to create a new Customer from this Prospect\'s details?'),
+    actions: [
+      {
+        label: __('Create'),
+        theme: 'green',
+        variant: 'solid',
+        async onClick(close) {
+          try {
+            const customer = await call('next_crm.overrides.prospect.create_customer', {
+              prospect: prospect.name,
+            })
+            close()
+            router.push({ name: 'Customer', params: { customerId: customer } })
+          } catch (error) {
+            createToast({
+              title: __('Error'),
+              text: error,
+              icon: 'x',
+              iconClasses: 'text-ink-red-4',
+            });
+          }
+        },
+      },
+    ],
+  })
 }
 
   // Convert to Opportunity
