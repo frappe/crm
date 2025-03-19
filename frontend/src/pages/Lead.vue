@@ -361,6 +361,7 @@ import {
   call,
   usePageMeta,
 } from 'frappe-ui'
+import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
@@ -370,6 +371,9 @@ const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
+
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+
 const route = useRoute()
 const router = useRouter()
 
@@ -645,6 +649,7 @@ async function convertToDeal() {
     existingOrganizationChecked.value = false
     existingContact.value = ''
     existingOrganization.value = ''
+    updateOnboardingStep('convert_lead_to_deal')
     capture('convert_lead_to_deal')
     router.push({ name: 'Deal', params: { dealId: _deal } })
   }
