@@ -96,7 +96,7 @@ import { capture } from '@/telemetry'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
 import { call, createResource } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/src/frappe'
+import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, watch, computed } from 'vue'
 
 const props = defineProps({

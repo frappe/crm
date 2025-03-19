@@ -155,14 +155,15 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { FeatherIcon, TrialBanner, call } from 'frappe-ui'
+import { FeatherIcon, call } from 'frappe-ui'
 import {
+  TrialBanner,
   HelpModal,
   GettingStartedBanner,
   useOnboarding,
   showHelpModal,
   minimize,
-} from 'frappe-ui/src/frappe'
+} from 'frappe-ui/frappe'
 import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'

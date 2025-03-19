@@ -5,6 +5,8 @@ module.exports = {
     './src/**/*.{vue,js,ts,jsx,tsx}',
     './node_modules/frappe-ui/src/**/*.{vue,js,ts,jsx,tsx}',
     '../node_modules/frappe-ui/src/**/*.{vue,js,ts,jsx,tsx}',
+    './node_modules/frappe-ui/frappe/**/*.{vue,js,ts,jsx,tsx}',
+    '../node_modules/frappe-ui/frappe/**/*.{vue,js,ts,jsx,tsx}',
   ],
   safelist: [{ pattern: /!(text|bg)-/, variants: ['hover', 'active'] }],
   theme: {
