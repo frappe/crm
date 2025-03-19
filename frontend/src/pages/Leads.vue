@@ -407,17 +407,11 @@ function parseRows(rows, columns = []) {
     leads.value?.data.rows.forEach((row) => {
       _rows[row] = lead[row]
 
-      let fieldType;
-      if (leads.value.data.view_type === 'kanban') {
-        fieldType = columns?.find(
-          (col) => (col.fieldname || col.value) == row,
-        )?.fieldtype
-      }
-      else {
-        fieldType = columns?.find(
-          (col) => (col.key || col.value) == row,
-        )?.type
-      }
+      let fieldname = deals.value.data.view_type === 'kanban' ? 'fieldname' : 'key'
+      let fieldtype = deals.value.data.view_type === 'kanban' ? 'fieldtype' : 'type'
+      let fieldType = columns?.find(
+        (col) => (col[fieldname] || col.value) == row,
+      )?.[fieldtype]
 
       if (
         fieldType &&
