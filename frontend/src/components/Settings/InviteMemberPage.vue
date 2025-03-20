@@ -87,7 +87,10 @@ import {
   FormControl,
   Tooltip,
 } from 'frappe-ui'
+import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, computed } from 'vue'
+
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const invitees = ref([])
 const role = ref('Sales User')
@@ -120,6 +123,7 @@ const inviteByEmail = createResource({
     role.value = 'Sales User'
     error.value = null
     pendingInvitations.reload()
+    updateOnboardingStep('invite_your_team')
   },
   onError(err) {
     error.value = err?.messages?.[0]

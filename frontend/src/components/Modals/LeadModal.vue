@@ -49,6 +49,7 @@ import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
 import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
+import { useOnboarding } from 'frappe-ui/frappe'
 import { computed, onMounted, ref, reactive, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -58,6 +59,7 @@ const props = defineProps({
 
 const { getUser, isManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const show = defineModel()
 const router = useRouter()
@@ -122,7 +124,7 @@ const createLead = createResource({
 const leadStatuses = computed(() => {
   let statuses = statusOptions('lead')
   if (!lead.status) {
-    lead.status = statuses[0].value
+    lead.status = statuses?.[0]?.value
   }
   return statuses
 })
@@ -166,6 +168,7 @@ function createNewLead() {
       isLeadCreating.value = false
       show.value = false
       router.push({ name: 'Lead', params: { leadId: data.name } })
+      updateOnboardingStep('create_first_lead')
     },
     onError(err) {
       isLeadCreating.value = false
@@ -192,7 +195,7 @@ onMounted(() => {
   if (!lead.lead_owner) {
     lead.lead_owner = getUser().name
   }
-  if (!lead.status && leadStatuses.value[0].value) {
+  if (!lead.status && leadStatuses.value[0]?.value) {
     lead.status = leadStatuses.value[0].value
   }
 })
