@@ -503,6 +503,8 @@ def get_linked_events(name):
             "starts_on",
             "ends_on",
             "event_category",
+            "sync_with_google_calendar",
+            "google_calendar",
             "status",
             "event_type",
             "modified",

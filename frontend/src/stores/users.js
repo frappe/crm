@@ -44,6 +44,7 @@ export const usersStore = defineStore('crm-users', () => {
         last_name: '',
         user_image: null,
         role: null,
+        google_calendar: null,
       }
     }
     return usersByName[email]

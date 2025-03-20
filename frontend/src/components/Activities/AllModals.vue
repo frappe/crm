@@ -31,6 +31,9 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { usersStore } from '@/stores/users'
+
+const { getUser } = usersStore()
 
 const props = defineProps({
   doctype: String,
@@ -65,6 +68,8 @@ function showEvent(t) {
     starts_on: '',
     ends_on: '',
     status: 'Open',
+    sync_with_google_calendar: 1,
+    google_calendar: getUser().google_calendar,
   }
   showEventModal.value = true
 }

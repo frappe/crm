@@ -100,6 +100,31 @@
             input-class="border-none"
           />
         </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <FormControl
+            class="form-control"
+            type="checkbox"
+            v-model="_event.sync_with_google_calendar"
+            @change="(e) => (_event.sync_with_google_calendar = e.target.checked)"
+          />
+          <label
+            class="text-sm text-ink-gray-5"
+            @click="_event.sync_with_google_calendar = !_event.sync_with_google_calendar"
+          >
+            {{ __('Sync with Google Calendar') }}
+          </label>
+          <Link
+            v-if="_event.sync_with_google_calendar"
+            class="form-control"
+            :value="_event.google_calendar"
+            doctype="Google Calendar"
+            @change="(option) => (_event.google_calendar = option)"
+            :placeholder="__('Google Calendar')"
+            :hideMe="true"
+            :filters="{'enable': 1}"
+          >
+          </Link>
+        </div>
       </div>
     </template>
   </Dialog>
@@ -150,6 +175,8 @@ const _event = ref({
   status: 'Open',
   event_type: 'Private',
   event_category: 'Event',
+  sync_with_google_calendar: true,
+  google_calendar: getUser().google_calendar,
 })
 
 const eventMeta = ref(
@@ -177,6 +204,9 @@ const fields = createResource({
 async function updateEvent() {
   if (!_event.value.allocated_to) {
     _event.value.allocated_to = getUser().name
+  }
+  if (!_event.value.sync_with_google_calendar) {
+    _event.value.google_calendar = null
   }
   _event.value.assigned_by = getUser().name
   if (_event.value.name) {
