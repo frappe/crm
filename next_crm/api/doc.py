@@ -715,7 +715,7 @@ def get_type(field):
         return "checkbox"
     elif field.fieldtype == "Int":
         return "number"
-    elif field.fieldtype in ["Small Text", "Text", "Long Text"]:
+    elif field.fieldtype in ["Small Text", "Text", "Long Text", "Text Editor"]:
         return "textarea"
     elif field.read_only:
         return "read_only"
