@@ -374,17 +374,39 @@ def get_data(
             if field not in rows:
                 rows.append(field)
 
-        for kc in kanban_columns:
+        enabled_columns = []
+        cf_in_filter = True
+        if (
+            column_field in filters
+            and isinstance(filters.get(column_field), list)
+            and filters.get(column_field)[0] == "in"
+        ):
+            selected_columns = [
+                enabled_column.strip()
+                for enabled_column in filters.get(column_field)[1].split(",")
+            ]
+            for kc in kanban_columns:
+                if kc.get("name") not in selected_columns:
+                    continue
+                enabled_columns.append(kc)
+        else:
+            cf_in_filter = False
+            enabled_columns = kanban_columns
+
+        for kc in enabled_columns:
             column_filters = {column_field: kc.get("name")}
             order = kc.get("order")
+
             if (
                 column_field in filters
                 and filters.get(column_field) != kc.get("name")
+                and not cf_in_filter
                 or kc.get("delete")
             ):
                 column_data = []
             else:
-                column_filters.update(filters.copy())
+                if not cf_in_filter:
+                    column_filters.update(filters.copy())
                 page_length = 20
 
                 if kc.get("page_length"):
