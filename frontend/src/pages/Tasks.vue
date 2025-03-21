@@ -257,16 +257,18 @@ function getKanbanRows(data, columns) {
 }
 
 function parseRows(rows, columns = []) {
+  let view_type = tasks.value.data.view_type
+  let key = view_type === 'kanban' ? 'fieldname' : 'key'
+  let type = view_type === 'kanban' ? 'fieldtype' : 'type'
+
   return rows.map((task) => {
     let _rows = {}
     tasks.value?.data.rows.forEach((row) => {
       _rows[row] = task[row]
 
-      let fieldname = deals.value.data.view_type === 'kanban' ? 'fieldname' : 'key'
-      let fieldtype = deals.value.data.view_type === 'kanban' ? 'fieldtype' : 'type'
-      let fieldType = columns?.find(
-        (col) => (col[fieldname] || col.value) == row,
-      )?.[fieldtype]
+      let fieldType = columns?.find((col) => (col[key] || col.value) == row)?.[
+        type
+      ]
 
       if (
         fieldType &&
