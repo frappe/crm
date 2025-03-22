@@ -80,6 +80,7 @@
       <Button
         :label="__('Send Invites')"
         variant="solid"
+        :disabled="!invitees.length"
         @click="inviteByEmail.submit()"
         :loading="inviteByEmail.loading"
       />
