@@ -42,9 +42,11 @@
             @click.stop
           >
             <Tooltip :text="__('Change Status')">
-              <Button variant="ghosted" class="hover:bg-surface-gray-4">
-                <TaskStatusIcon :status="task.status" />
-              </Button>
+              <div>
+                <Button variant="ghosted" class="hover:bg-surface-gray-4">
+                  <TaskStatusIcon :status="task.status" />
+                </Button>
+              </div>
             </Tooltip>
           </Dropdown>
           <Dropdown
