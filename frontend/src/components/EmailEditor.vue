@@ -20,8 +20,9 @@
       <div class="flex flex-col gap-3">
         <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
           <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
-          <MultiselectInput
+          <MultiSelectEmailInput
             class="flex-1"
+            variant="ghost"
             v-model="toEmails"
             :validate="validateEmail"
             :error-message="
@@ -53,9 +54,10 @@
         </div>
         <div v-if="cc" class="sm:mx-10 mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('CC') }}:</span>
-          <MultiselectInput
+          <MultiSelectEmailInput
             ref="ccInput"
             class="flex-1"
+            variant="ghost"
             v-model="ccEmails"
             :validate="validateEmail"
             :error-message="
@@ -65,9 +67,10 @@
         </div>
         <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('BCC') }}:</span>
-          <MultiselectInput
+          <MultiSelectEmailInput
             ref="bccInput"
             class="flex-1"
+            variant="ghost"
             v-model="bccEmails"
             :validate="validateEmail"
             :error-message="
@@ -176,7 +179,7 @@ import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
-import MultiselectInput from '@/components/Controls/MultiselectInput.vue'
+import MultiSelectEmailInput from '@/components/Controls/MultiSelectEmailInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { capture } from '@/telemetry'
