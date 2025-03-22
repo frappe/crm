@@ -168,7 +168,9 @@ function createNewLead() {
       isLeadCreating.value = false
       show.value = false
       router.push({ name: 'Lead', params: { leadId: data.name } })
-      updateOnboardingStep('create_first_lead')
+      updateOnboardingStep('create_first_lead', true, false, () => {
+        localStorage.setItem('firstLead', data.name)
+      })
     },
     onError(err) {
       isLeadCreating.value = false

@@ -657,7 +657,9 @@ async function convertToDeal() {
     existingOrganizationChecked.value = false
     existingContact.value = ''
     existingOrganization.value = ''
-    updateOnboardingStep('convert_lead_to_deal')
+    updateOnboardingStep('convert_lead_to_deal', true, false, () => {
+      localStorage.setItem('firstDeal', _deal)
+    })
     capture('convert_lead_to_deal')
     router.push({ name: 'Deal', params: { dealId: _deal } })
   }
