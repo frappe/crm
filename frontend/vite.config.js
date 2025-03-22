@@ -73,6 +73,7 @@ export default defineConfig({
       'tailwind.config.js',
       'engine.io-client',
       'prosemirror-state',
+      'lowlight',
     ],
   },
 })
