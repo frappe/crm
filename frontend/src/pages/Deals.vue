@@ -350,7 +350,9 @@ function getGroupedByRows(listRows, groupByField, columns) {
     if (!option) {
       filteredRows = listRows.filter((row) => !row[groupByField.fieldname])
     } else {
-      filteredRows = listRows.filter((row) => row[groupByField.fieldname] == option)
+      filteredRows = listRows.filter(
+        (row) => row[groupByField.fieldname] == option,
+      )
     }
 
     let groupDetail = {
@@ -382,14 +384,18 @@ function getKanbanRows(data, columns) {
 }
 
 function parseRows(rows, columns = []) {
+  let view_type = deals.value.data.view_type
+  let key = view_type === 'kanban' ? 'fieldname' : 'key'
+  let type = view_type === 'kanban' ? 'fieldtype' : 'type'
+
   return rows.map((deal) => {
     let _rows = {}
     deals.value.data.rows.forEach((row) => {
       _rows[row] = deal[row]
 
-      let fieldType = columns?.find(
-        (col) => (col.key || col.value) == row,
-      )?.type
+      let fieldType = columns?.find((col) => (col[key] || col.value) == row)?.[
+        type
+      ]
 
       if (
         fieldType &&
