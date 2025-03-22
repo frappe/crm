@@ -8,7 +8,10 @@
         :label="value"
         theme="gray"
         variant="subtle"
-        class="rounded"
+        :class="{
+          'rounded bg-surface-white hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4':
+            variant === 'subtle',
+        }"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
@@ -25,7 +28,14 @@
             <template #target="{ togglePopover }">
               <ComboboxInput
                 ref="search"
-                class="search-input form-input w-full border-none bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
+                class="search-input form-input w-full border-none focus:border-none focus:!shadow-none focus-visible:!ring-0"
+                :class="[
+                  variant == 'ghost'
+                    ? 'bg-surface-white hover:bg-surface-white'
+                    : 'bg-surface-gray-2 hover:bg-surface-gray-3',
+                  inputClass,
+                ]"
+                :placeholder="placeholder"
                 type="text"
                 :value="query"
                 @change="
@@ -84,6 +94,12 @@
       </div>
     </div>
     <ErrorMessage class="mt-2 pl-2" v-if="error" :message="error" />
+    <div
+      v-if="info"
+      class="whitespace-pre-line text-sm text-ink-blue-3 mt-2 pl-2"
+    >
+      {{ info }}
+    </div>
   </div>
 </template>
 
@@ -105,6 +121,18 @@ const props = defineProps({
     type: Function,
     default: null,
   },
+  variant: {
+    type: String,
+    default: 'subtle',
+  },
+  placeholder: {
+    type: String,
+    default: '',
+  },
+  inputClass: {
+    type: String,
+    default: '',
+  },
   errorMessage: {
     type: Function,
     default: (value) => `${value} is an Invalid value`,
@@ -116,6 +144,7 @@ const values = defineModel()
 const emails = ref([])
 const search = ref(null)
 const error = ref(null)
+const info = ref(null)
 const query = ref('')
 const text = ref('')
 const showOptions = ref(false)
@@ -181,6 +210,7 @@ function reload(val) {
 
 const addValue = (value) => {
   error.value = null
+  info.value = null
   if (value) {
     const splitValues = value.split(',')
     splitValues.forEach((value) => {
@@ -191,6 +221,7 @@ const addValue = (value) => {
           // check if value is valid
           if (value && props.validate && !props.validate(value)) {
             error.value = props.errorMessage(value)
+            query.value = value
             return
           }
           // add value to values array
@@ -200,6 +231,8 @@ const addValue = (value) => {
             values.value.push(value)
           }
           value = value.replace(value, '')
+        } else {
+          info.value = __('email already exists')
         }
       }
     })

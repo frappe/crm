@@ -175,7 +175,11 @@ const commentEmpty = computed(() => {
 })
 
 const emailEmpty = computed(() => {
-  return !newEmail.value || newEmail.value === '<p></p>'
+  return (
+    !newEmail.value ||
+    newEmail.value === '<p></p>' ||
+    !newEmailEditor.value?.toEmails?.length
+  )
 })
 
 async function sendMail() {
