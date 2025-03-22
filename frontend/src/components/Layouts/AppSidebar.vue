@@ -296,16 +296,15 @@ function getIcon(routeName, icon) {
 // onboarding
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
-const firstLead = ref('')
-const firstDeal = ref('')
-
 async function getFirstLead() {
-  if (firstLead.value) return firstLead.value
+  let firstLead = localStorage.getItem('firstLead')
+  if (firstLead) return firstLead
   return await call('crm.api.onboarding.get_first_lead')
 }
 
 async function getFirstDeal() {
-  if (firstDeal.value) return firstDeal.value
+  let firstDeal = localStorage.getItem('firstDeal')
+  if (firstDeal) return firstDeal
   return await call('crm.api.onboarding.get_first_deal')
 }
 
