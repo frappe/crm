@@ -43,25 +43,29 @@
                 attachment.is_private ? __('Make public') : __('Make private')
               "
             >
-              <Button
-                class="!size-5"
-                @click.stop="
-                  togglePrivate(attachment.name, attachment.is_private)
-                "
-              >
-                <FeatherIcon
-                  :name="attachment.is_private ? 'lock' : 'unlock'"
-                  class="size-3 text-ink-gray-7"
-                />
-              </Button>
+              <div>
+                <Button
+                  class="!size-5"
+                  @click.stop="
+                    togglePrivate(attachment.name, attachment.is_private)
+                  "
+                >
+                  <FeatherIcon
+                    :name="attachment.is_private ? 'lock' : 'unlock'"
+                    class="size-3 text-ink-gray-7"
+                  />
+                </Button>
+              </div>
             </Tooltip>
             <Tooltip :text="__('Delete attachment')">
-              <Button
-                class="!size-5"
-                @click.stop="() => deleteAttachment(attachment.name)"
-              >
-                <FeatherIcon name="trash-2" class="size-3 text-ink-gray-7" />
-              </Button>
+              <div>
+                <Button
+                  class="!size-5"
+                  @click.stop="() => deleteAttachment(attachment.name)"
+                >
+                  <FeatherIcon name="trash-2" class="size-3 text-ink-gray-7" />
+                </Button>
+              </div>
             </Tooltip>
           </div>
         </div>

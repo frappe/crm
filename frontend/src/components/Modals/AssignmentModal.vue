@@ -52,22 +52,21 @@
           v-for="assignee in assignees"
           :key="assignee.name"
         >
-          <Button
-            :label="getUser(assignee.name).full_name"
-            theme="gray"
-          >
-            <template #prefix>
-              <UserAvatar :user="assignee.name" size="sm" />
-            </template>
-            <template #suffix>
-              <FeatherIcon
-                v-if="assignee.name !== owner"
-                class="h-3.5"
-                name="x"
-                @click.stop="removeValue(assignee.name)"
-              />
-            </template>
-          </Button>
+          <div>
+            <Button :label="getUser(assignee.name).full_name" theme="gray">
+              <template #prefix>
+                <UserAvatar :user="assignee.name" size="sm" />
+              </template>
+              <template #suffix>
+                <FeatherIcon
+                  v-if="assignee.name !== owner"
+                  class="h-3.5"
+                  name="x"
+                  @click.stop="removeValue(assignee.name)"
+                />
+              </template>
+            </Button>
+          </div>
         </Tooltip>
       </div>
       <ErrorMessage class="mt-2" v-if="error" :message="__(error)" />

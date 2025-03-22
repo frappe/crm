@@ -75,38 +75,46 @@
           </Tooltip>
           <div class="flex gap-1.5">
             <Tooltip v-if="callEnabled" :text="__('Make a call')">
-              <Button class="h-7 w-7" @click="triggerCall">
-                <PhoneIcon class="h-4 w-4" />
-              </Button>
+              <div>
+                <Button class="h-7 w-7" @click="triggerCall">
+                  <PhoneIcon class="h-4 w-4" />
+                </Button>
+              </div>
             </Tooltip>
             <Tooltip :text="__('Send an email')">
-              <Button class="h-7 w-7">
-                <Email2Icon
-                  class="h-4 w-4"
-                  @click="
-                    deal.data.email
-                      ? openEmailBox()
-                      : errorMessage(__('No email set'))
-                  "
-                />
-              </Button>
+              <div>
+                <Button class="h-7 w-7">
+                  <Email2Icon
+                    class="h-4 w-4"
+                    @click="
+                      deal.data.email
+                        ? openEmailBox()
+                        : errorMessage(__('No email set'))
+                    "
+                  />
+                </Button>
+              </div>
             </Tooltip>
             <Tooltip :text="__('Go to website')">
-              <Button class="h-7 w-7">
-                <LinkIcon
-                  class="h-4 w-4"
-                  @click="
-                    deal.data.website
-                      ? openWebsite(deal.data.website)
-                      : errorMessage(__('No website set'))
-                  "
-                />
-              </Button>
+              <div>
+                <Button class="h-7 w-7">
+                  <LinkIcon
+                    class="h-4 w-4"
+                    @click="
+                      deal.data.website
+                        ? openWebsite(deal.data.website)
+                        : errorMessage(__('No website set'))
+                    "
+                  />
+                </Button>
+              </div>
             </Tooltip>
             <Tooltip :text="__('Attach a file')">
-              <Button class="size-7" @click="showFilesUploader = true">
-                <AttachmentIcon class="size-4" />
-              </Button>
+              <div>
+                <Button class="size-7" @click="showFilesUploader = true">
+                  <AttachmentIcon class="size-4" />
+                </Button>
+              </div>
             </Tooltip>
           </div>
         </div>
