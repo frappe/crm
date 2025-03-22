@@ -72,14 +72,24 @@
       </div>
     </div>
     <div class="m-2 flex flex-col gap-1">
-      <SignupBanner :isSidebarCollapsed="isSidebarCollapsed" />
-      <TrialBanner v-if="isFCSite" :isSidebarCollapsed="isSidebarCollapsed" />
-      <GettingStartedBanner
-        v-if="!isOnboardingStepsCompleted"
-        :isSidebarCollapsed="isSidebarCollapsed"
-      />
+      <div class="flex flex-col gap-2 mb-1">
+        <SignupBanner
+          v-if="isDemoSite"
+          :isSidebarCollapsed="isSidebarCollapsed"
+          :afterSignup="() => capture('signup_from_demo_site')"
+        />
+        <TrialBanner
+          v-if="isFCSite"
+          :isSidebarCollapsed="isSidebarCollapsed"
+          :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
+        />
+        <GettingStartedBanner
+          v-if="!isOnboardingStepsCompleted"
+          :isSidebarCollapsed="isSidebarCollapsed"
+        />
+      </div>
       <SidebarLink
-        v-else
+        v-if="isOnboardingStepsCompleted"
         :label="__('Help')"
         :isCollapsed="isSidebarCollapsed"
         @click="
@@ -118,7 +128,8 @@
       :logo="CRMLogo"
       :afterSkip="(step) => capture('onboarding_step_skipped_' + step)"
       :afterSkipAll="() => capture('onboarding_steps_skipped')"
-      :afterReset="() => capture('onboarding_steps_reset')"
+      :afterReset="(step) => capture('onboarding_step_reset_' + step)"
+      :afterResetAll="() => capture('onboarding_steps_reset')"
       docsLink="https://docs.frappe.io/crm"
     />
   </div>
@@ -148,7 +159,6 @@ import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
-import SignupBanner from '@/components/SignupBanner.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
@@ -157,6 +167,7 @@ import {
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
+  SignupBanner,
   TrialBanner,
   HelpModal,
   GettingStartedBanner,
@@ -175,6 +186,7 @@ const { toggle: toggleNotificationPanel } = notificationsStore()
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 const isFCSite = ref(window.is_fc_site)
+const isDemoSite = ref(window.is_demo_site)
 
 const links = [
   {
