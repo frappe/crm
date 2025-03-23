@@ -4,26 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  * {
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+  }
+}
+
 @layer components {
-	.prose-f {
-		@apply
-		break-all
-		max-w-none
-		prose
-		prose-code:break-all
-		prose-code:whitespace-pre-wrap
-		prose-img:border
-		prose-img:rounded-lg
-		prose-sm
-		prose-table:table-fixed
-		prose-td:border
-		prose-td:border-outline-gray-2
-		prose-td:p-2
-		prose-td:relative
-		prose-th:bg-surface-gray-2
-		prose-th:border
-		prose-th:border-outline-gray-2
-		prose-th:p-2
-		prose-th:relative
-	}
+  .prose-f {
+    @apply
+      break-all
+      max-w-none
+      prose
+      prose-code:break-all
+      prose-code:whitespace-pre-wrap
+      prose-img:border
+      prose-img:rounded-lg
+      prose-sm
+      prose-table:table-fixed
+      prose-td:border
+      prose-td:border-outline-gray-2
+      prose-td:p-2
+      prose-td:relative
+      prose-th:bg-surface-gray-2
+      prose-th:border
+      prose-th:border-outline-gray-2
+      prose-th:p-2
+      prose-th:relative;
+  }
 }
