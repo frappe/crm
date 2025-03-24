@@ -28,6 +28,8 @@ def get_users():
             "Sales Manager" in frappe.get_roles(user.name)
             or user.name == "Administrator"
         )
+
+        user.google_calendar = frappe.db.get_value("Google Calendar", {"user": user.name, "enable": 1}, "name")
     return users
 
 
