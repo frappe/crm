@@ -192,7 +192,6 @@ declare module 'vue' {
     SidePanelLayout: typeof import('./src/components/SidePanelLayout.vue')['default']
     SidePanelLayoutEditor: typeof import('./src/components/SidePanelLayoutEditor.vue')['default']
     SidePanelModal: typeof import('./src/components/Modals/SidePanelModal.vue')['default']
-    SignupBanner: typeof import('./src/components/SignupBanner.vue')['default']
     SLASection: typeof import('./src/components/SLASection.vue')['default']
     SmileIcon: typeof import('./src/components/Icons/SmileIcon.vue')['default']
     SortBy: typeof import('./src/components/SortBy.vue')['default']
