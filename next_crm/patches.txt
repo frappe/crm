@@ -10,3 +10,4 @@ next_crm.patches.v1_0.create_default_sidebar_fields_layout
 next_crm.patches.v1_0.update_opportunity_quick_entry_layout
 next_crm.patches.v1_0.update_crm_settings_lead_contact_creation
 next_crm.patches.v1_0.add_address_sidepanel_layout
+next_crm.patches.v1_0.add_multiple_address_sidepanel_section
