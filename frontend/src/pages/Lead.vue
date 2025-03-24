@@ -293,13 +293,6 @@
                             <div class="truncate">
                               {{ contact.full_name }}
                             </div>
-                            <Badge
-                              v-if="contact.is_primary"
-                              class="ml-2"
-                              variant="outline"
-                              :label="__('Primary')"
-                              theme="green"
-                            />
                           </div>
                           <div class="flex items-center">
                             <Dropdown :options="contactOptions(contact)">
@@ -778,15 +771,6 @@ function contactOptions(contact) {
       onClick: () => removeContact(contact.name),
     },
   ]
-
-  if (!contact.is_primary) {
-    options.push({
-      label: __('Set as Primary Contact'),
-      icon: h(SuccessIcon, { class: 'h-4 w-4' }),
-      onClick: () => setPrimaryContact(contact.name),
-    })
-  }
-
   return options
 }
 

@@ -233,7 +233,6 @@ def get_lead_opportunity_contacts(doctype, docname):
     linked_contacts = []
     for contact in contacts:
         contact = frappe.get_doc("Contact", contact).as_dict()
-        is_primary = contact.is_primary
 
         _contact = {
             "name": contact.name,
@@ -241,7 +240,6 @@ def get_lead_opportunity_contacts(doctype, docname):
             "full_name": contact.full_name,
             "email": get_primary_email(contact),
             "mobile_no": get_primary_mobile_no(contact),
-            "is_primary": is_primary,
         }
         linked_contacts.append(_contact)
     return linked_contacts
