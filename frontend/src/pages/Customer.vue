@@ -484,12 +484,12 @@ const tabs = [
   {
     label: 'Contacts',
     icon: h(ContactsIcon, { class: 'h-4 w-4' }),
-    count: computed(() => contacts.data?.length),
+    count: computed(() => contacts.value.data?.length),
   },
   {
     label: 'Addresses',
     icon: h(AddressIcon, { class: 'h-4 w-4' }),
-    count: computed(() => addresses.data?.length),
+    count: computed(() => addresses.value.data?.length),
   },
 ]
 
@@ -694,7 +694,7 @@ async function afterAddAddress(address) {
     icon: 'check',
     iconClasses: 'text-ink-green-3',
   })
-  address.value = await getAddressesList()
+  addresses.value = await getAddressesList()
 }
 
 const opportunityColumns = [

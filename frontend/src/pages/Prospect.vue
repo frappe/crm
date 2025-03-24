@@ -199,11 +199,17 @@
     v-model="showAddAddressModal"
     doctype="Prospect",
     :docname="prospect.doc.name"
+    :options="{
+      afterAddAddress: afterAddAddress
+    }"
   />
   <LinkContactModal
     v-model="showAddContactModal"
     doctype="Prospect",
     :docname="prospect.doc.name"
+    :options="{
+      afterAddContact: afterAddContact
+    }"
   />
 </template>
   
@@ -430,12 +436,12 @@
     {
       label: 'Contacts',
       icon: h(ContactsIcon, { class: 'h-4 w-4' }),
-      count: computed(() => contacts.data?.length),
+      count: computed(() => contacts.value.data?.length),
     },
     {
       label: 'Addresses',
       icon: h(AddressIcon, { class: 'h-4 w-4' }),
-      count: computed(() => addresses.data?.length),
+      count: computed(() => addresses.value.data?.length),
     },
   ]
   
@@ -645,6 +651,27 @@ function addAddressButtonCB() {
 
 function addContactButtonCB() {
   showAddContactModal.value = true
+}
+
+async function afterAddContact(contact) {
+  createToast({
+    title: __('Contact Linked'),
+    text: __(`Contact ${contact} linked`),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
+  contacts.value = await getContactsList()
+}
+
+
+async function afterAddAddress(address) {
+  createToast({
+    title: __('Address Linked'),
+    text: __(`Address ${address} linked`),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
+  addresses.value = await getAddressesList()
 }
 
   // Convert to Opportunity
