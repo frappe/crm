@@ -235,18 +235,6 @@ def get_lead_opportunity_contacts(doctype, docname):
         contact = frappe.get_doc("Contact", contact).as_dict()
         is_primary = contact.is_primary
 
-        def get_primary_email(contact):
-            for email in contact.email_ids:
-                if email.is_primary:
-                    return email.email_id
-            return contact.email_ids[0].email_id if contact.email_ids else ""
-
-        def get_primary_mobile_no(contact):
-            for phone in contact.phone_nos:
-                if phone.is_primary:
-                    return phone.phone
-            return contact.phone_nos[0].phone if contact.phone_nos else ""
-
         _contact = {
             "name": contact.name,
             "image": contact.image,
@@ -257,3 +245,17 @@ def get_lead_opportunity_contacts(doctype, docname):
         }
         linked_contacts.append(_contact)
     return linked_contacts
+
+
+def get_primary_email(contact):
+    for email in contact.email_ids:
+        if email.is_primary:
+            return email.email_id
+    return contact.email_ids[0].email_id if contact.email_ids else ""
+
+
+def get_primary_mobile_no(contact):
+    for phone in contact.phone_nos:
+        if phone.is_primary:
+            return phone.phone
+    return contact.phone_nos[0].phone if contact.phone_nos else ""
