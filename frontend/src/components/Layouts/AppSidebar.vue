@@ -349,7 +349,7 @@ const steps = reactive([
       currentStep.value = {
         title: __('Convert lead to deal'),
         buttonLabel: __('Convert'),
-        videoURL: '/assets/crm/videos/convert_to_deal.mov',
+        videoURL: '/assets/crm/videos/convertToDeal.mov',
         onClick: async () => {
           showIntermediateModal.value = false
           currentStep.value = {}
@@ -456,7 +456,7 @@ const steps = reactive([
       currentStep.value = {
         title: __('Change deal status'),
         buttonLabel: __('Change'),
-        videoURL: '/assets/crm/videos/change_deal_status.mov',
+        videoURL: '/assets/crm/videos/changeDealStatus.mov',
         onClick: async () => {
           showIntermediateModal.value = false
           currentStep.value = {}
