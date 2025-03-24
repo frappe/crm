@@ -515,6 +515,13 @@ const articles = ref([
     ],
   },
   {
+    title: __('Capturing leads'),
+    opened: false,
+    subArticles: [
+      { name: 'web-form', title: __('Web form') },
+    ],
+  },
+  {
     title: __('Views'),
     opened: false,
     subArticles: [
