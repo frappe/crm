@@ -67,8 +67,8 @@
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncat text-ink-gray-9">
           <Tooltip :text="customer.data?.name || opportunity.data?.party_name || __('Set an customer')">
-            <div class="truncate text-2xl font-medium">
-              {{ customer.data?.name || opportunity.data?.party_name || __('Untitled') }}
+            <div class="truncate text-2xl font-medium" @click="showRenameModal = true">
+              {{ customer.data?.name || opportunity.data?.title || opportunity.data?.party_name || __('Untitled') }}
             </div>
           </Tooltip>
           <div class="flex gap-1.5">
@@ -310,6 +310,15 @@
       }
     "
   />
+  <RenameModal
+      v-model="showRenameModal"
+      doctype="Opportunity"
+      :docname="opportunity?.data?.name"
+      :title="opportunity?.data?.title"
+      :options="{
+        afterRename: afterRename
+      }"
+  />
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -337,6 +346,7 @@ import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import RenameModal from '@/components/Modals/RenameModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
@@ -448,6 +458,7 @@ const reload = ref(false)
 const showCustomerModal = ref(false)
 const showSidePanelModal = ref(false)
 const showFilesUploader = ref(false)
+const showRenameModal = ref(false)
 const _customer = ref({})
 
 function updateOpportunity(fieldname, value, callback) {
@@ -518,7 +529,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: customer.data?.name || opportunity.data?.party_name || __('Untitled'),
+    label: customer.data?.name || opportunity.data?.title || opportunity.data?.party_name || __('Untitled'),
     route: { name: 'Opportunity', params: { opportunityId: opportunity.data.name } },
   })
   return items
@@ -730,6 +741,12 @@ const activities = ref(null)
 
 function openEmailBox() {
   activities.value.emailBox.show = true
+}
+
+function afterRename(renamed_docname) {
+  router.push({ name: props.doctype, params: { opportunityId: renamed_docname } }).then(() => {
+    location.reload();
+  });
 }
 </script>
 

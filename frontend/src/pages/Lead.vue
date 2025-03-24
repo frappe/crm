@@ -109,8 +109,8 @@
             </div>
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="lead.data.lead_name || __('Set first name')">
-                <div class="truncate text-2xl font-medium text-ink-gray-9">
-                  {{ lead.data.lead_name || __('Untitled') }}
+                <div class="truncate text-2xl font-medium text-ink-gray-9" @click="showRenameModal = true">
+                  {{ lead.data.lead_name || lead.data.title || __('Untitled') }}
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
@@ -290,6 +290,15 @@
       }
     "
   />
+  <RenameModal
+      v-model="showRenameModal"
+      doctype="Lead"
+      :docname="lead?.data?.name"
+      :title="lead?.data?.title"
+      :options="{
+        afterRename: afterRename
+      }"
+  />
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -315,6 +324,7 @@ import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import RenameModal from '@/components/Modals/RenameModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
@@ -402,6 +412,7 @@ onMounted(() => {
 const reload = ref(false)
 const showSidePanelModal = ref(false)
 const showFilesUploader = ref(false)
+const showRenameModal = ref(false)
 
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
@@ -471,7 +482,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: lead.data.lead_name || __('Untitled'),
+    label: lead.data.lead_name || lead.data.title || __('Untitled'),
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
@@ -659,5 +670,11 @@ const activities = ref(null)
 
 function openEmailBox() {
   activities.value.emailBox.show = true
+}
+
+function afterRename(renamed_docname) {
+  router.push({ name: props.doctype, params: { leadId: renamed_docname } }).then(() => {
+    location.reload();
+  });
 }
 </script>
