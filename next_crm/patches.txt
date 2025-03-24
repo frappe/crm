@@ -11,3 +11,4 @@ next_crm.patches.v1_0.update_opportunity_quick_entry_layout
 next_crm.patches.v1_0.update_crm_settings_lead_contact_creation
 next_crm.patches.v1_0.add_address_sidepanel_layout
 next_crm.patches.v1_0.add_multiple_address_sidepanel_section
+next_crm.patches.v1_0.add_lead_contact_sidepanel_layout
