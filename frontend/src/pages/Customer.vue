@@ -7,6 +7,29 @@
         </template>
       </Breadcrumbs>
     </template>
+    <template #right-header>
+      <Dropdown
+        v-slot="{ open }"
+        :button= "__('Add')"
+        :options="[
+          {
+            label: __('Address'),
+            onClick: addAddressButtonCB
+          },
+          {
+            label: __('Contact'),
+            onClick: addContactButtonCB
+          },
+        ]"
+        @click.stop
+      >
+        <Button :label="'Add'">
+            <template #suffix>
+              <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4" />
+            </template>
+          </Button>
+      </Dropdown>
+    </template>
   </LayoutHeader>
   <div ref="parentRef" class="flex h-full">
     <Resizer
@@ -200,6 +223,22 @@
     doctype="Customer"
   />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
+  <LinkAddressModal
+    v-model="showAddAddressModal"
+    doctype="Customer",
+    :docname="customer.doc.name"
+    :options="{
+      afterAddAddress: afterAddAddress
+    }"
+  />
+  <LinkContactModal
+    v-model="showAddContactModal"
+    doctype="Customer",
+    :docname="customer.doc.name"
+    :options="{
+      afterAddContact: afterAddContact
+    }"
+  />
 </template>
 
 <script setup>
@@ -211,6 +250,8 @@ import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
+import LinkAddressModal from '@/components/Modals/LinkAddressModal.vue'
+import LinkContactModal from '@/components/Modals/LinkContactModal.vue'
 import OpportunitiesListView from '@/components/ListViews/OpportunitiesListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import AddressesListView from '@/components/ListViews/AddressesListView.vue'
@@ -336,6 +377,9 @@ async function changeCustomerImage(file) {
   })
   customer.reload()
 }
+
+const showAddAddressModal = ref(false)
+const showAddContactModal = ref(false)
 
 async function deleteCustomer() {
   $dialog({
@@ -528,17 +572,17 @@ async function getAddressesList() {
   return list
 }
 
-const contacts = await getContactsList();
-const addresses = await getAddressesList();
+const contacts = ref(await getContactsList());
+const addresses = ref(await getAddressesList());
 
 const rows = computed(() => {
   let list = []
   if (tabIndex.value === 0)
     list = opportunities
   else if (tabIndex.value === 1)
-    list = contacts
+    list = contacts.value
   else if (tabIndex.value === 2)
-    list = addresses
+    list = addresses.value
 
   if (!list.data) return []
 
@@ -622,6 +666,35 @@ function getAddressRowObject(address) {
       timeAgo: __(timeAgo(address.modified)),
     },
   }
+}
+
+function addAddressButtonCB() {
+  showAddAddressModal.value = true
+}
+
+function addContactButtonCB() {
+  showAddContactModal.value = true
+}
+
+async function afterAddContact(contact) {
+  createToast({
+    title: __('Contact Linked'),
+    text: __(`Contact ${contact} linked`),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
+  contacts.value = await getContactsList()
+}
+
+
+async function afterAddAddress(address) {
+  createToast({
+    title: __('Address Linked'),
+    text: __(`Address ${address} linked`),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
+  address.value = await getAddressesList()
 }
 
 const opportunityColumns = [

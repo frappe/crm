@@ -10,6 +10,27 @@
     <template #right-header>
       <Dropdown
         v-slot="{ open }"
+        :button= "__('Add')"
+        :options="[
+          {
+            label: __('Address'),
+            onClick: addAddressButtonCB
+          },
+          {
+            label: __('Contact'),
+            onClick: addContactButtonCB
+          },
+        ]"
+        @click.stop
+      >
+        <Button :label="'Add'">
+            <template #suffix>
+              <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4" />
+            </template>
+          </Button>
+      </Dropdown>
+      <Dropdown
+        v-slot="{ open }"
         :button= "__('Create')"
         :options="[
           {
@@ -174,13 +195,25 @@
     doctype="Prospect"
   />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
+  <LinkAddressModal
+    v-model="showAddAddressModal"
+    doctype="Prospect",
+    :docname="prospect.doc.name"
+  />
+  <LinkContactModal
+    v-model="showAddContactModal"
+    doctype="Prospect",
+    :docname="prospect.doc.name"
+  />
 </template>
   
-  <script setup>
+<script setup>
   import Resizer from '@/components/Resizer.vue'
   import Section from '@/components/Section.vue'
   import SectionFields from '@/components/SectionFields.vue'
   import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+  import LinkAddressModal from '@/components/Modals/LinkAddressModal.vue'
+  import LinkContactModal from '@/components/Modals/LinkContactModal.vue'
   import Icon from '@/components/Icon.vue'
   import LayoutHeader from '@/components/LayoutHeader.vue'
   import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
@@ -231,6 +264,8 @@
   const { getDealStatus } = statusesStore()
   const showSidePanelModal = ref(false)
   const showQuickEntryModal = ref(false)
+  const showAddContactModal = ref(false)
+  const showAddAddressModal = ref(false)
   
   const route = useRoute()
   const router = useRouter()
@@ -482,17 +517,17 @@ async function getAddressesList() {
   return list
 }
 
-const contacts = await getContactsList();
-const addresses = await getAddressesList();
+const contacts = ref(await getContactsList());
+const addresses = ref(await getAddressesList());
 
 const rows = computed(() => {
   let list = []
   if (tabIndex.value === 0)
     list = opportunities
   else if (tabIndex.value === 1)
-    list = contacts
+    list = contacts.value
   else if (tabIndex.value === 2)
-    list = addresses
+    list = addresses.value
 
   if (!list.data) return []
 
@@ -539,7 +574,7 @@ const columns = computed(() => {
     }
   }
 
-  function getContactRowObject(contact) {
+function getContactRowObject(contact) {
   return {
     name: contact.name,
     full_name: {
@@ -602,6 +637,14 @@ async function createCustomer() {
       },
     ],
   })
+}
+
+function addAddressButtonCB() {
+  showAddAddressModal.value = true
+}
+
+function addContactButtonCB() {
+  showAddContactModal.value = true
 }
 
   // Convert to Opportunity
