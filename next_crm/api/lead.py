@@ -25,19 +25,15 @@ def get_lead(name):
 
 @frappe.whitelist()
 def get_lead_addresses(name):
-    addresses = frappe.get_list(
+    lead_addresses = frappe.get_list(
         "Address",
-        [
+        fields=["address_line1", "phone", "title", "name"],
+        filters=[
             ["Dynamic Link", "link_doctype", "=", "Lead"],
             ["Dynamic Link", "link_name", "=", name],
         ],
-        pluck="name",
+        distinct=True,
     )
-    addresses = set(addresses)
-    lead_addresses = []
-    for address in addresses:
-        address = frappe.get_doc("Address", address).as_dict()
-        lead_addresses.append(address)
     return lead_addresses
 
 

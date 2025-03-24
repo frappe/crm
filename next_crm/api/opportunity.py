@@ -75,9 +75,10 @@ def get_opportunity_addresses(name):
 
     opportunity = frappe.get_cached_doc("Opportunity", name)
 
-    addresses = frappe.get_list(
+    opportunity_addresses = frappe.get_list(
         "Address",
-        [
+        fields=["address_line1", "phone", "title", "name"],
+        filters=[
             [
                 "Dynamic Link",
                 "link_doctype",
@@ -86,13 +87,8 @@ def get_opportunity_addresses(name):
             ],
             ["Dynamic Link", "link_name", "in", [name, opportunity.party_name]],
         ],
-        pluck="name",
+        distinct=True,
     )
-    addresses = set(addresses)
-    opportunity_addresses = []
-    for address in addresses:
-        address = frappe.get_doc("Address", address).as_dict()
-        opportunity_addresses.append(address)
     return opportunity_addresses
 
 
