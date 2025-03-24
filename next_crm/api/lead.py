@@ -21,3 +21,34 @@ def get_lead(name):
     lead["_form_script"] = get_form_script("Lead")
     lead["_assign"] = get_assigned_users("Lead", lead.name)
     return lead
+
+
+@frappe.whitelist()
+def get_lead_addresses(name):
+    addresses = frappe.get_list(
+        "Address",
+        [
+            ["Dynamic Link", "link_doctype", "=", "Lead"],
+            ["Dynamic Link", "link_name", "=", name],
+        ],
+        pluck="name",
+    )
+    addresses = set(addresses)
+    lead_addresses = []
+    for address in addresses:
+        address = frappe.get_doc("Address", address).as_dict()
+        lead_addresses.append(address)
+    return lead_addresses
+
+
+@frappe.whitelist()
+def remove_address(lead, address):
+    if not frappe.has_permission("Lead", "write", lead):
+        frappe.throw(
+            _("Not allowed to remove address from Lead"), frappe.PermissionError
+        )
+
+    address_doc = frappe.get_doc("Address", address)
+    address_doc.links = [d for d in address_doc.links if d.link_name != lead]
+    address_doc.save()
+    return True

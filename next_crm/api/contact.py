@@ -198,3 +198,62 @@ def get_linked_contact(link_doctype, link_name):
     )
 
     return contacts
+
+
+@frappe.whitelist()
+def link_contact_to_doc(contact, doctype, docname):
+    if not frappe.has_permission(doctype, "write", docname):
+        frappe.throw(_("Not allowed to link contact to doc"), frappe.PermissionError)
+
+    contact_doc = frappe.get_doc("Contact", contact)
+
+    contact_doc.append("links", {"link_doctype": doctype, "link_name": docname})
+
+    contact_doc.save()
+
+    return contact_doc.name
+
+
+@frappe.whitelist()
+def remove_link_from_contact(contact, doctype, docname):
+    if not frappe.has_permission(doctype, "write", docname):
+        frappe.throw(_("Not allowed to remove contact"), frappe.PermissionError)
+
+    contact_doc = frappe.get_doc("Contact", contact)
+
+    contact_doc.links = [d for d in contact_doc.links if d.link_name != docname]
+    contact_doc.save()
+
+    return contact_doc.name
+
+
+@frappe.whitelist()
+def get_lead_opportunity_contacts(doctype, docname):
+    contacts = get_linked_contact(doctype, docname)
+    linked_contacts = []
+    for contact in contacts:
+        contact = frappe.get_doc("Contact", contact).as_dict()
+        is_primary = contact.is_primary
+
+        def get_primary_email(contact):
+            for email in contact.email_ids:
+                if email.is_primary:
+                    return email.email_id
+            return contact.email_ids[0].email_id if contact.email_ids else ""
+
+        def get_primary_mobile_no(contact):
+            for phone in contact.phone_nos:
+                if phone.is_primary:
+                    return phone.phone
+            return contact.phone_nos[0].phone if contact.phone_nos else ""
+
+        _contact = {
+            "name": contact.name,
+            "image": contact.image,
+            "full_name": contact.full_name,
+            "email": get_primary_email(contact),
+            "mobile_no": get_primary_mobile_no(contact),
+            "is_primary": is_primary,
+        }
+        linked_contacts.append(_contact)
+    return linked_contacts
