@@ -153,9 +153,34 @@
                     </template>
                   </Link>
                 </div>
+                <div v-else-if="section.addresses" class="pr-2">
+                  <Link
+                    value=""
+                    doctype="Address"
+                    @change="(e) => addAddress(e)"
+                    :onCreate="
+                      (value, close) => {
+                        _address = {
+                          name: value,
+                        }
+                        showAddressModal = true
+                        close()
+                      }
+                    "
+                  >
+                    <template #target="{ togglePopover }">
+                      <Button
+                        class="h-7 px-3"
+                        variant="ghost"
+                        icon="plus"
+                        @click="togglePopover()"
+                      />
+                    </template>
+                  </Link>
+                </div>
                 <Button
                   v-else-if="
-                    ((!section.contacts && i == 1) || i == 0) && isManager()
+                    ((!section.contacts && !section.addresses && i == 2) || i == 0) && isManager()
                   "
                   variant="ghost"
                   class="w-7 mr-2"
@@ -174,7 +199,7 @@
               <div v-else>
                 <div
                   v-if="
-                    opportunityContacts?.loading && opportunityContacts?.data?.length == 0
+                    section.contacts && opportunityContacts?.loading && opportunityContacts?.data?.length == 0
                   "
                   class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-ink-gray-4"
                 >
@@ -182,7 +207,16 @@
                   <span>{{ __('Loading...') }}</span>
                 </div>
                 <div
-                  v-else-if="opportunityContacts?.data?.length"
+                  v-if="
+                    section.addresses && opportunityAddresses?.loading && opportunityAddresses?.data?.length == 0
+                  "
+                  class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-ink-gray-4"
+                >
+                  <LoadingIndicator class="h-4 w-4" />
+                  <span>{{ __('Loading...') }}</span>
+                </div>
+                <div
+                  v-else-if="section.contacts && opportunityContacts?.data?.length"
                   v-for="(contact, i) in opportunityContacts.data"
                   :key="contact.name"
                 >
@@ -264,6 +298,96 @@
                   />
                 </div>
                 <div
+                  v-else-if="section.addresses && opportunityAddresses?.data?.length"
+                  v-for="(address, i) in opportunityAddresses.data"
+                  :key="address.name"
+                >
+                  <div
+                    class="px-2 pb-2.5"
+                    :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
+                  >
+                    <Section :is-opened="address.opened">
+                      <template #header="{ opened, toggle }">
+                        <div
+                          class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
+                        >
+                          <div
+                            class="flex h-7 items-center gap-2 truncate"
+                            @click="toggle()"
+                          >
+                            <div class="truncate">
+                              {{ address.name }}
+                            </div>
+                            <Badge
+                              v-if="address.is_primary_address"
+                              class="ml-2"
+                              variant="outline"
+                              :label="__('Bill')"
+                              theme="green"
+                            />
+                            <Badge
+                              v-if="address.is_shipping_address"
+                              class="ml-0"
+                              variant="outline"
+                              :label="__('Ship')"
+                              theme="green"
+                            />
+                          </div>
+                          <div class="flex items-center">
+                            <Dropdown :options="addressOptions(address)">
+                              <Button
+                                icon="more-horizontal"
+                                class="text-ink-gray-5"
+                                variant="ghost"
+                              />
+                            </Dropdown>
+                            <Button
+                              variant="ghost"
+                              @click="
+                                router.push({
+                                  name: 'Address',
+                                  params: { addressId: address.name },
+                                })
+                              "
+                            >
+                              <ArrowUpRightIcon class="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" @click="toggle()">
+                              <FeatherIcon
+                                name="chevron-right"
+                                class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+                                :class="{ 'rotate-90': opened }"
+                              />
+                            </Button>
+                          </div>
+                        </div>
+                      </template>
+                      <div
+                        class="flex flex-col gap-1.5 text-base text-ink-gray-8"
+                      >
+                        <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
+                          <AddressIcon class="h-4 w-4" />
+                          {{ address.address_line1 }}
+                        </div>
+                        <div class="flex items-center gap-3 p-1 py-1.5">
+                          <PhoneIcon class="h-4 w-4" />
+                          {{ address.phone }}
+                        </div>
+                      </div>
+                    </Section>
+                  </div>
+                  <div
+                    v-if="i != opportunityAddresses.data.length - 1"
+                    class="mx-2 h-px border-t border-gray-200"
+                  />
+                </div>
+                <div
+                  v-else-if="section.addresses"
+                  class="flex h-20 items-center justify-center text-base text-ink-gray-5"
+                >
+                  {{ __('No addresses added') }}
+                </div>
+                <div
                   v-else
                   class="flex h-20 items-center justify-center text-base text-ink-gray-5"
                 >
@@ -290,6 +414,13 @@
     :options="{
       redirect: false,
       afterInsert: (doc) => addContact(doc.name),
+    }"
+  />
+  <AddressModal
+    v-model="showAddressModal"
+    :address="_address"
+    :options="{
+      afterInsert: (doc) => addAddress(doc.name),
     }"
   />
   <SidePanelModal
@@ -328,6 +459,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import AddressIcon from '@/components/Icons/AddressIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import ToDoIcon from '@/components/Icons/ToDoIcon.vue'
@@ -344,6 +476,7 @@ import Activities from '@/components/Activities/Activities.vue'
 import CustomerModal from '@/components/Modals/CustomerModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
+import AddressModal from '@/components/Modals/AddressModal.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
 import RenameModal from '@/components/Modals/RenameModal.vue'
@@ -605,7 +738,7 @@ const fieldsLayout = createResource({
 
 function getParsedFields(sections) {
   sections.forEach((section) => {
-    if (section.name == 'contacts_section') return
+    if (section.name == 'contacts_section' || section.name == 'addresses_section') return
     section.fields.forEach((field) => {
       if (field.name == 'customer') {
         field.create = (value, close) => {
@@ -625,6 +758,7 @@ function getParsedFields(sections) {
 }
 
 const showContactModal = ref(false)
+const showAddressModal = ref(false)
 const _contact = ref({})
 
 function contactOptions(contact) {
@@ -647,6 +781,17 @@ function contactOptions(contact) {
   return options
 }
 
+function addressOptions(address) {
+  let options = [
+    {
+      label: __('Remove'),
+      icon: 'trash-2',
+      onClick: () => removeAddress(address.name),
+    },
+  ]
+  return options
+}
+
 async function addContact(contact) {
   let d = await call('next_crm.overrides.opportunity.add_contact', {
     opportunity: props.opportunityId,
@@ -662,6 +807,21 @@ async function addContact(contact) {
   }
 }
 
+async function addAddress(address) {
+  let d = await call('next_crm.api.opportunity.add_address', {
+    opportunity: props.opportunityId,
+    address,
+  })
+  if (d) {
+    opportunityAddresses.reload()
+    createToast({
+      title: __('Address added'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
+  }
+}
+
 async function removeContact(contact) {
   let d = await call('next_crm.overrides.opportunity.remove_contact', {
     opportunity: props.opportunityId,
@@ -671,6 +831,21 @@ async function removeContact(contact) {
     opportunityContacts.reload()
     createToast({
       title: __('Contact removed'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
+  }
+}
+
+async function removeAddress(address) {
+  let d = await call('next_crm.api.opportunity.remove_address', {
+    opportunity: props.opportunityId,
+    address,
+  })
+  if (d) {
+    opportunityAddresses.reload()
+    createToast({
+      title: __('Address removed'),
       icon: 'check',
       iconClasses: 'text-ink-green-3',
     })
@@ -700,6 +875,19 @@ const opportunityContacts = createResource({
   transform: (data) => {
     data.forEach((contact) => {
       contact.opened = false
+    })
+    return data
+  },
+})
+
+const opportunityAddresses = createResource({
+  url: '/api/method/next_crm.api.opportunity.get_opportunity_addresses',
+  params: { name: props.opportunityId },
+  cache: ['opportunity_addresses', props.opportunityId],
+  auto: true,
+  transform: (data) => {
+    data.forEach((address) => {
+      address.opened = false
     })
     return data
   },

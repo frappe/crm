@@ -41,3 +41,17 @@ def get_linked_docs(address, link_doctype):
             names.append(link.link_name)
 
     return names
+
+
+@frappe.whitelist()
+def link_address_to_doc(address, doctype, docname):
+    if not frappe.has_permission(doctype, "write", docname):
+        frappe.throw(_("Not allowed to link address"), frappe.PermissionError)
+
+    address_doc = frappe.get_doc("Address", address)
+
+    address_doc.append("links", {"link_doctype": doctype, "link_name": docname})
+
+    address_doc.save()
+
+    return address_doc.name
