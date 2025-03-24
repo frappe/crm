@@ -132,6 +132,10 @@
       :afterResetAll="() => capture('onboarding_steps_reset')"
       docsLink="https://docs.frappe.io/crm"
     />
+    <IntermediateStepModal
+      v-model="showIntermediateModal"
+      :currentStep="currentStep"
+    />
   </div>
 </template>
 
@@ -174,6 +178,7 @@ import {
   useOnboarding,
   showHelpModal,
   minimize,
+  IntermediateStepModal,
 } from 'frappe-ui/frappe'
 import { capture } from '@/telemetry'
 import router from '@/router'
@@ -308,6 +313,9 @@ async function getFirstDeal() {
   return await call('crm.api.onboarding.get_first_deal')
 }
 
+const showIntermediateModal = ref(false)
+const currentStep = ref({})
+
 const steps = reactive([
   {
     name: 'create_first_lead',
@@ -338,13 +346,23 @@ const steps = reactive([
     onClick: async () => {
       minimize.value = true
 
-      let lead = await getFirstLead()
+      currentStep.value = {
+        title: __('Convert lead to deal'),
+        buttonLabel: __('Convert'),
+        videoURL: '/assets/crm/videos/convert_to_deal.mov',
+        onClick: async () => {
+          showIntermediateModal.value = false
+          currentStep.value = {}
 
-      if (lead) {
-        router.push({ name: 'Lead', params: { leadId: lead } })
-      } else {
-        router.push({ name: 'Leads' })
+          let lead = await getFirstLead()
+          if (lead) {
+            router.push({ name: 'Lead', params: { leadId: lead } })
+          } else {
+            router.push({ name: 'Leads' })
+          }
+        },
       }
+      showIntermediateModal.value = true
     },
   },
   {
@@ -434,17 +452,28 @@ const steps = reactive([
     completed: false,
     onClick: async () => {
       minimize.value = true
-      let deal = await getFirstDeal()
 
-      if (deal) {
-        router.push({
-          name: 'Deal',
-          params: { dealId: deal },
-          hash: '#activity',
-        })
-      } else {
-        router.push({ name: 'Leads' })
+      currentStep.value = {
+        title: __('Change deal status'),
+        buttonLabel: __('Change'),
+        videoURL: '/assets/crm/videos/change_deal_status.mov',
+        onClick: async () => {
+          showIntermediateModal.value = false
+          currentStep.value = {}
+
+          let deal = await getFirstDeal()
+          if (deal) {
+            router.push({
+              name: 'Deal',
+              params: { dealId: deal },
+              hash: '#activity',
+            })
+          } else {
+            router.push({ name: 'Leads' })
+          }
+        },
       }
+      showIntermediateModal.value = true
     },
   },
 ])
