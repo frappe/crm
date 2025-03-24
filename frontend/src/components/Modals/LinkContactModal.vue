@@ -34,13 +34,7 @@
       <div class="ml-6 mt-3">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Create New') }}</div>
-          <Button
-            variant="ghost"
-            @click="
-              show = false
-              showNewContactModal = true
-            "
-          >
+          <Button variant="ghost" @click="showContactModal">
             <ArrowUpRightIcon class="h-4 w-4" />
           </Button>
         </div>
@@ -96,5 +90,10 @@ async function addContact() {
       iconClasses: 'text-ink-red-4',
     })
   }
+}
+
+function showContactModal() {
+  show.value = false
+  showNewContactModal.value = true
 }
 </script>

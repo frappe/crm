@@ -34,13 +34,7 @@
       <div class="ml-6 mt-3">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Create New') }}</div>
-          <Button
-            variant="ghost"
-            @click="
-              show = false
-              showNewAddressModal = true
-            "
-          >
+          <Button variant="ghost" @click="showAddressModal">
             <ArrowUpRightIcon class="h-4 w-4" />
           </Button>
         </div>
@@ -106,5 +100,10 @@ async function addAddress() {
 function addNewAddress(doc) {
   existingAddress.value = doc.name
   addAddress()
+}
+
+function showAddressModal() {
+  show.value = false
+  showNewAddressModal.value = true
 }
 </script>
