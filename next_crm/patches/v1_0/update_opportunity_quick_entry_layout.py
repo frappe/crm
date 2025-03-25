@@ -14,7 +14,7 @@ def execute():
     layout = json.loads(opportunity)
     for section in layout:
         if section.get("label") in [
-            "Select Customer",
+            "Select Opportunity From",
             "Customer Details",
             "Select Contact",
         ]:
