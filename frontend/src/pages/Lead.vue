@@ -117,46 +117,54 @@
               </Tooltip>
               <div class="flex gap-1.5">
                 <Tooltip v-if="callEnabled" :text="__('Make a call')">
-                  <Button
-                    class="h-7 w-7"
-                    @click="
-                      () =>
-                        lead.data.mobile_no
-                          ? makeCall(lead.data.mobile_no)
-                          : errorMessage(__('No phone number set'))
-                    "
-                  >
-                    <PhoneIcon class="h-4 w-4" />
-                  </Button>
+                  <div>
+                    <Button
+                      class="h-7 w-7"
+                      @click="
+                        () =>
+                          lead.data.mobile_no
+                            ? makeCall(lead.data.mobile_no)
+                            : errorMessage(__('No phone number set'))
+                      "
+                    >
+                      <PhoneIcon class="h-4 w-4" />
+                    </Button>
+                  </div>
                 </Tooltip>
                 <Tooltip :text="__('Send an email')">
-                  <Button class="h-7 w-7">
-                    <Email2Icon
-                      class="h-4 w-4"
-                      @click="
-                        lead.data.email
-                          ? openEmailBox()
-                          : errorMessage(__('No email set'))
-                      "
-                    />
-                  </Button>
+                  <div>
+                    <Button class="h-7 w-7">
+                      <Email2Icon
+                        class="h-4 w-4"
+                        @click="
+                          lead.data.email
+                            ? openEmailBox()
+                            : errorMessage(__('No email set'))
+                        "
+                      />
+                    </Button>
+                  </div>
                 </Tooltip>
                 <Tooltip :text="__('Go to website')">
-                  <Button class="h-7 w-7">
-                    <LinkIcon
-                      class="h-4 w-4"
-                      @click="
-                        lead.data.website
-                          ? openWebsite(lead.data.website)
-                          : errorMessage(__('No website set'))
-                      "
-                    />
-                  </Button>
+                  <div>
+                    <Button class="h-7 w-7">
+                      <LinkIcon
+                        class="h-4 w-4"
+                        @click="
+                          lead.data.website
+                            ? openWebsite(lead.data.website)
+                            : errorMessage(__('No website set'))
+                        "
+                      />
+                    </Button>
+                  </div>
                 </Tooltip>
                 <Tooltip :text="__('Attach a file')">
-                  <Button class="h-7 w-7" @click="showFilesUploader = true">
-                    <AttachmentIcon class="h-4 w-4" />
-                  </Button>
+                  <div>
+                    <Button class="h-7 w-7" @click="showFilesUploader = true">
+                      <AttachmentIcon class="h-4 w-4" />
+                    </Button>
+                  </div>
                 </Tooltip>
               </div>
               <ErrorMessage :message="__(error)" />
@@ -649,7 +657,9 @@ async function convertToDeal() {
     existingOrganizationChecked.value = false
     existingContact.value = ''
     existingOrganization.value = ''
-    updateOnboardingStep('convert_lead_to_deal')
+    updateOnboardingStep('convert_lead_to_deal', true, false, () => {
+      localStorage.setItem('firstDeal', _deal)
+    })
     capture('convert_lead_to_deal')
     router.push({ name: 'Deal', params: { dealId: _deal } })
   }

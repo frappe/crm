@@ -72,14 +72,24 @@
       </div>
     </div>
     <div class="m-2 flex flex-col gap-1">
-      <SignupBanner :isSidebarCollapsed="isSidebarCollapsed" />
-      <TrialBanner v-if="isFCSite" :isSidebarCollapsed="isSidebarCollapsed" />
-      <GettingStartedBanner
-        v-if="!isOnboardingStepsCompleted"
-        :isSidebarCollapsed="isSidebarCollapsed"
-      />
+      <div class="flex flex-col gap-2 mb-1">
+        <SignupBanner
+          v-if="isDemoSite"
+          :isSidebarCollapsed="isSidebarCollapsed"
+          :afterSignup="() => capture('signup_from_demo_site')"
+        />
+        <TrialBanner
+          v-if="isFCSite"
+          :isSidebarCollapsed="isSidebarCollapsed"
+          :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
+        />
+        <GettingStartedBanner
+          v-if="!isOnboardingStepsCompleted"
+          :isSidebarCollapsed="isSidebarCollapsed"
+        />
+      </div>
       <SidebarLink
-        v-else
+        v-if="isOnboardingStepsCompleted"
         :label="__('Help')"
         :isCollapsed="isSidebarCollapsed"
         @click="
@@ -118,8 +128,13 @@
       :logo="CRMLogo"
       :afterSkip="(step) => capture('onboarding_step_skipped_' + step)"
       :afterSkipAll="() => capture('onboarding_steps_skipped')"
-      :afterReset="() => capture('onboarding_steps_reset')"
+      :afterReset="(step) => capture('onboarding_step_reset_' + step)"
+      :afterResetAll="() => capture('onboarding_steps_reset')"
       docsLink="https://docs.frappe.io/crm"
+    />
+    <IntermediateStepModal
+      v-model="showIntermediateModal"
+      :currentStep="currentStep"
     />
   </div>
 </template>
@@ -148,7 +163,6 @@ import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
-import SignupBanner from '@/components/SignupBanner.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
@@ -157,12 +171,14 @@ import {
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
+  SignupBanner,
   TrialBanner,
   HelpModal,
   GettingStartedBanner,
   useOnboarding,
   showHelpModal,
   minimize,
+  IntermediateStepModal,
 } from 'frappe-ui/frappe'
 import { capture } from '@/telemetry'
 import router from '@/router'
@@ -175,6 +191,7 @@ const { toggle: toggleNotificationPanel } = notificationsStore()
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 const isFCSite = ref(window.is_fc_site)
+const isDemoSite = ref(window.is_demo_site)
 
 const links = [
   {
@@ -284,18 +301,20 @@ function getIcon(routeName, icon) {
 // onboarding
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
-const firstLead = ref('')
-const firstDeal = ref('')
-
 async function getFirstLead() {
-  if (firstLead.value) return firstLead.value
+  let firstLead = localStorage.getItem('firstLead')
+  if (firstLead) return firstLead
   return await call('crm.api.onboarding.get_first_lead')
 }
 
 async function getFirstDeal() {
-  if (firstDeal.value) return firstDeal.value
+  let firstDeal = localStorage.getItem('firstDeal')
+  if (firstDeal) return firstDeal
   return await call('crm.api.onboarding.get_first_deal')
 }
+
+const showIntermediateModal = ref(false)
+const currentStep = ref({})
 
 const steps = reactive([
   {
@@ -327,13 +346,23 @@ const steps = reactive([
     onClick: async () => {
       minimize.value = true
 
-      let lead = await getFirstLead()
+      currentStep.value = {
+        title: __('Convert lead to deal'),
+        buttonLabel: __('Convert'),
+        videoURL: '/assets/crm/videos/convertToDeal.mov',
+        onClick: async () => {
+          showIntermediateModal.value = false
+          currentStep.value = {}
 
-      if (lead) {
-        router.push({ name: 'Lead', params: { leadId: lead } })
-      } else {
-        router.push({ name: 'Leads' })
+          let lead = await getFirstLead()
+          if (lead) {
+            router.push({ name: 'Lead', params: { leadId: lead } })
+          } else {
+            router.push({ name: 'Leads' })
+          }
+        },
       }
+      showIntermediateModal.value = true
     },
   },
   {
@@ -423,17 +452,28 @@ const steps = reactive([
     completed: false,
     onClick: async () => {
       minimize.value = true
-      let deal = await getFirstDeal()
 
-      if (deal) {
-        router.push({
-          name: 'Deal',
-          params: { dealId: deal },
-          hash: '#activity',
-        })
-      } else {
-        router.push({ name: 'Leads' })
+      currentStep.value = {
+        title: __('Change deal status'),
+        buttonLabel: __('Change'),
+        videoURL: '/assets/crm/videos/changeDealStatus.mov',
+        onClick: async () => {
+          showIntermediateModal.value = false
+          currentStep.value = {}
+
+          let deal = await getFirstDeal()
+          if (deal) {
+            router.push({
+              name: 'Deal',
+              params: { dealId: deal },
+              hash: '#activity',
+            })
+          } else {
+            router.push({ name: 'Leads' })
+          }
+        },
       }
+      showIntermediateModal.value = true
     },
   },
 ])
@@ -472,6 +512,13 @@ const articles = ref([
       { name: 'task', title: __('Task') },
       { name: 'call-log', title: __('Call log') },
       { name: 'email-template', title: __('Email template') },
+    ],
+  },
+  {
+    title: __('Capturing leads'),
+    opened: false,
+    subArticles: [
+      { name: 'web-form', title: __('Web form') },
     ],
   },
   {
