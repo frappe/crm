@@ -261,7 +261,7 @@ function render() {
   nextTick(() => {
     title.value?.el?.focus?.()
     _event.value = { ...props.event }
-    if (_event.value.description) {
+    if (_event.value.subject) {
       editMode.value = true
     }
   })
