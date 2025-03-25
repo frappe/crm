@@ -12,36 +12,20 @@
       >
         {{ section.label }}
       </div>
-      <div
-        class="grid gap-4"
-        :class="
-          section.columns
-            ? 'grid-cols-' + section.columns
-            : 'grid-cols-2 sm:grid-cols-3'
-        "
-      >
+      <div class="grid gap-4" :class="section.columns ? 'grid-cols-' + section.columns : 'grid-cols-2 sm:grid-cols-3'">
         <div v-for="field in section.fields" :key="field.name">
           <div
             class="settings-field"
             v-if="
-              (field.type == 'Check' ||
-                (field.read_only && data[field.name]) ||
-                !field.read_only ||
-                !field.hidden) &&
+              (field.type == 'Check' || (field.read_only && data[field.name]) || !field.read_only || !field.hidden) &&
               (!field.depends_on || field.display_via_depends_on)
             "
           >
-            <div
-              v-if="field.type != 'Check'"
-              class="mb-2 text-sm text-ink-gray-5"
-            >
+            <div v-if="field.type != 'Check'" class="mb-2 text-sm text-ink-gray-5">
               {{ __(field.label) }}
               <span
                 class="text-red-500"
-                v-if="
-                  field.mandatory ||
-                  (field.mandatory_depends_on && field.mandatory_via_depends_on)
-                "
+                v-if="field.mandatory || (field.mandatory_depends_on && field.mandatory_via_depends_on)"
                 >*</span
               >
             </div>
@@ -65,10 +49,7 @@
                 <IndicatorIcon :class="field.prefix" />
               </template>
             </FormControl>
-            <div
-              v-else-if="field.type == 'Check'"
-              class="flex items-center gap-2"
-            >
+            <div v-else-if="field.type == 'Check'" class="flex items-center gap-2">
               <FormControl
                 class="form-control"
                 type="checkbox"
@@ -76,17 +57,14 @@
                 @change="(e) => (data[field.name] = e.target.checked)"
                 :disabled="Boolean(field.read_only)"
               />
-              <label
-                class="text-sm text-ink-gray-5"
-                @click="data[field.name] = !data[field.name]"
-              >
+              <label class="text-sm text-ink-gray-5" @click="data[field.name] = !data[field.name]">
                 {{ __(field.label) }}
                 <span class="text-red-500" v-if="field.mandatory">*</span>
               </label>
             </div>
             <div class="flex gap-1" v-else-if="field.type === 'Link'">
               <Link
-                class="form-control flex-1"
+                class="form-control flex-1 truncate"
                 :value="data[field.name]"
                 :doctype="field.options"
                 :filters="field.filters"
@@ -143,9 +121,7 @@
               input-class="border-none"
             />
             <FormControl
-              v-else-if="
-                ['Small Text', 'Text', 'Long Text'].includes(field.type)
-              "
+              v-else-if="['Small Text', 'Text', 'Long Text'].includes(field.type)"
               type="textarea"
               :placeholder="getPlaceholder(field)"
               v-model="data[field.name]"
