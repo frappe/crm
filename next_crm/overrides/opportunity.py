@@ -272,17 +272,6 @@ def create_prospect(doc):
     if not doc.get("customer_name"):
         return
 
-    existing_customer = frappe.db.exists(
-        "Customer", {"customer_name": doc.get("customer_name")}
-    )
-    if existing_customer:
-        return {"Customer": existing_customer}
-    existing_prospect = frappe.db.exists(
-        "Prospect", {"company_name": doc.get("customer_name")}
-    )
-    if existing_prospect:
-        return {"Prospect": existing_prospect}
-
     prospect = frappe.new_doc("Prospect")
     prospect.update(
         {
@@ -294,7 +283,7 @@ def create_prospect(doc):
         }
     )
     prospect.insert()
-    return {"Prospect": prospect.company_name}
+    return prospect.company_name
 
 
 def contact_exists(doc):
@@ -358,43 +347,20 @@ def create_opportunity(args):
     ):
         contact = create_contact(args)
 
-    customer = (
-        args.get("customer")
-        if args.get("customer") != ""
-        else args.get("customer_name")
-    )
-
-    prospect = args.get("custom_prospect") if args.get("custom_prospect") else None
-    if customer != "":
-        if args.get("lead") != "" or prospect:
-            frappe.throw(_("Please enter only Customer, Lead or Prospect details"))
-        opportunity_from = "customer"
-        party_name = customer
-    elif args.get("lead") != "":
-        if prospect:
-            frappe.throw(_("Please enter only Customer, Lead or Prospect details"))
-        opportunity_from = "lead"
-        party_name = args.get("lead")
-    elif prospect:
-        opportunity_from = "prospect"
-        party_name = prospect
+    opportunity_from = args.get("opportunity_from")
+    party_name = args.get("party_name")
+    if party_name:
+        if party_name == "":
+            frappe.throw(_("Please enter either Customer, Lead or Prospect details"))
+    elif args.get("customer_name") == "":
+        frappe.throw(_("Please enter details for Prospect creation"))
     else:
-        frappe.throw(_("Please enter either Customer, Lead or Prospect details"))
+        opportunity_from = "Prospect"
+        party_name = create_prospect(args)
+        opportunity.update({"custom_prospect": party_name})
 
-    opportunity.update(
-        {
-            "customer": args.get("customer"),
-            "custom_prospect": args.get("custom_prospect"),
-        }
-    )
-
-    customer_or_prospect = create_prospect(args)
-    if customer_or_prospect and "Customer" in customer_or_prospect:
-        opportunity.update({"customer": customer_or_prospect["Customer"]})
-    elif customer_or_prospect:
-        opportunity.update({"custom_prospect": customer_or_prospect["Prospect"]})
-        opportunity_from = "prospect"
-        party_name = customer_or_prospect["Prospect"]
+    if opportunity_from == "Customer":
+        opportunity.update({"customer": party_name})
 
     opportunity.update(
         {
