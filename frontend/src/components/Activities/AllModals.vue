@@ -50,7 +50,7 @@ const event = ref({})
 
 function showToDo(t) {
   todo.value = t || {
-    title: '',
+    custom_title: '',
     description: '',
     allocated_to: '',
     date: '',
