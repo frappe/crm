@@ -405,8 +405,10 @@ def get_data(
             ):
                 column_data = []
             else:
-                if not cf_in_filter:
-                    column_filters.update(filters.copy())
+                if cf_in_filter:
+                    filters.pop(column_field, None)
+                column_filters.update(filters.copy())
+
                 page_length = 20
 
                 if kc.get("page_length"):
