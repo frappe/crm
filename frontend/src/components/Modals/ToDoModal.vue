@@ -33,7 +33,7 @@
       <div class="flex flex-col gap-4">
         <div>
           <FormControl
-            ref="title"
+            ref="custom_title"
             :label="__('Title')"
             v-model="_todo.custom_title"
             :placeholder="__('Call with John Doe')"
@@ -138,10 +138,10 @@ const emit = defineEmits(['updateToDo', 'after'])
 const router = useRouter()
 const { getUser } = usersStore()
 
-const title = ref(null)
+const custom_title = ref(null)
 const editMode = ref(false)
 const _todo = ref({
-  title: '',
+  custom_title: '',
   description: '',
   allocated_to: '',
   assigned_by: '',
@@ -205,7 +205,7 @@ async function updateToDo() {
 function render() {
   editMode.value = false
   nextTick(() => {
-    title.value?.el?.focus?.()
+    custom_title.value?.el?.focus?.()
     _todo.value = { ...props.todo }
     if (_todo.value.description) {
       editMode.value = true

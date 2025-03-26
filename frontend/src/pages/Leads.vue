@@ -116,7 +116,7 @@
         </div>
         <div
           v-else-if="getRow(itemName, titleField).label"
-          class="truncate text-base"
+          class="text-base"
         >
           {{ getRow(itemName, titleField).label }}
         </div>

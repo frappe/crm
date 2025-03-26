@@ -113,7 +113,7 @@ const filteredSections = computed(() => {
   let _filteredSections = []
 
   if (chooseExistingCustomerLeadProspect.value) {
-    _filteredSections.push(allSections.find((s) => s.label === 'Select Customer'))
+    _filteredSections.push(allSections.find((s) => s.label === 'Select Opportunity From'))
   } else {
     _filteredSections.push(allSections.find((s) => s.label === 'Customer Details'))
   }
@@ -125,7 +125,7 @@ const filteredSections = computed(() => {
   }
 
   allSections.forEach((s) => {
-    if (!['Select Customer', 'Customer Details', 'Select Contact', 'Contact Details'].includes(s.label)) {
+    if (!['Select Opportunity From', 'Customer Details', 'Select Contact', 'Contact Details'].includes(s.label)) {
       _filteredSections.push(s)
     }
   })
