@@ -242,7 +242,7 @@
                               {{ contact.full_name }}
                             </div>
                             <Badge
-                              v-if="contact.is_primary"
+                              v-if="contact.is_primary_contact"
                               class="ml-2"
                               variant="outline"
                               :label="__('Primary')"
@@ -770,7 +770,7 @@ function contactOptions(contact) {
     },
   ]
 
-  if (!contact.is_primary) {
+  if (!contact.is_primary_contact) {
     options.push({
       label: __('Set as Primary Contact'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
@@ -793,9 +793,10 @@ function addressOptions(address) {
 }
 
 async function addContact(contact) {
-  let d = await call('next_crm.overrides.opportunity.add_contact', {
-    opportunity: props.opportunityId,
-    contact,
+  let d = await call('next_crm.api.contact.link_contact_to_doc', {
+    contact: contact,
+    doctype: "Opportunity",
+    docname: props.opportunityId,
   })
   if (d) {
     opportunityContacts.reload()
@@ -823,9 +824,10 @@ async function addAddress(address) {
 }
 
 async function removeContact(contact) {
-  let d = await call('next_crm.overrides.opportunity.remove_contact', {
-    opportunity: props.opportunityId,
+  let d = await call('next_crm.api.contact.remove_link_from_contact', {
     contact,
+    docname: props.opportunityId,
+    doctype: "Opportunity",
   })
   if (d) {
     opportunityContacts.reload()
@@ -853,8 +855,9 @@ async function removeAddress(address) {
 }
 
 async function setPrimaryContact(contact) {
-  let d = await call('next_crm.overrides.opportunity.set_primary_contact', {
-    opportunity: props.opportunityId,
+  let d = await call('next_crm.api.contact.set_primary_contact', {
+    doctype: "Opportunity",
+    docname: props.opportunityId,
     contact,
   })
   if (d) {
@@ -868,8 +871,11 @@ async function setPrimaryContact(contact) {
 }
 
 const opportunityContacts = createResource({
-  url: '/api/method/next_crm.api.opportunity.get_opportunity_contacts',
-  params: { name: props.opportunityId },
+  url: '/api/method/next_crm.api.contact.get_lead_opportunity_contacts',
+  params: {
+    doctype: "Opportunity",
+    docname: props.opportunityId 
+  },
   cache: ['opportunity_contacts', props.opportunityId],
   auto: true,
   transform: (data) => {
@@ -894,7 +900,7 @@ const opportunityAddresses = createResource({
 })
 
 function triggerCall() {
-  let primaryContact = opportunityContacts.data?.find((c) => c.is_primary)
+  let primaryContact = opportunityContacts.data?.find((c) => c.is_primary_contact)
   let mobile_no = primaryContact.mobile_no || null
 
   if (!primaryContact) {

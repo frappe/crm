@@ -24,8 +24,9 @@ class Opportunity(Opportunity):
         self.set_sla()
 
     def validate(self):
-        self.set_primary_contact()
-        self.set_primary_email_mobile_no()
+        from next_crm.api.contact import set_primary_contact
+
+        set_primary_contact("Opportunity", self.name)
         if not self.is_new():
             curr_owner = frappe.db.get_value(
                 self.doctype, self.name, "opportunity_owner"
@@ -33,7 +34,8 @@ class Opportunity(Opportunity):
             if self.opportunity_owner and self.opportunity_owner != curr_owner:
                 self.share_with_agent(self.opportunity_owner)
                 self.assign_agent(self.opportunity_owner)
-
+        else:
+            self.set_primary_email_mobile_no()
         if self.has_value_changed("status"):
             add_status_change_log(self)
         super().validate()
@@ -51,43 +53,30 @@ class Opportunity(Opportunity):
     def before_save(self):
         self.apply_sla()
 
-    def set_primary_contact(self, contact=None):
-        if not self.contacts:
-            return
-
-        if not contact and len(self.contacts) == 1:
-            self.contacts[0].is_primary = 1
-        elif contact:
-            for d in self.contacts:
-                if d.contact == contact:
-                    d.is_primary = 1
-                else:
-                    d.is_primary = 0
-
     def set_primary_email_mobile_no(self):
-        if not self.contacts:
-            self.email = ""
-            self.mobile_no = ""
+        from next_crm.api.contact import get_lead_opportunity_contacts
+
+        contacts = get_lead_opportunity_contacts("Opportunity", self.name)
+        if not contacts:
+            self.contact_email = ""
+            self.contact_mobile = ""
             self.phone = ""
             return
 
-        if len([contact for contact in self.contacts if contact.is_primary]) > 1:
-            frappe.throw(
-                _("Only one {0} can be set as primary.").format(frappe.bold("Contact"))
-            )
-
         primary_contact_exists = False
-        for d in self.contacts:
-            if d.is_primary == 1:
+        for d in contacts:
+            if d.get("is_primary_contact") == 1:
                 primary_contact_exists = True
-                self.email = d.email.strip() if d.email else ""
-                self.mobile_no = d.mobile_no.strip() if d.mobile_no else ""
-                self.phone = d.phone.strip() if d.phone else ""
+                self.contact_email = d.get("email").strip() if d.get("email") else ""
+                self.contact_mobile = (
+                    d.get("mobile_no").strip() if d.get("mobile_no") else ""
+                )
+                self.phone = d.get("phone").strip() if d.get("phone") else ""
                 break
 
         if not primary_contact_exists:
-            self.email = ""
-            self.mobile_no = ""
+            self.contact_email = ""
+            self.contact_mobile = ""
             self.phone = ""
 
     def assign_agent(self, agent):
@@ -228,46 +217,6 @@ class Opportunity(Opportunity):
         }
 
 
-@frappe.whitelist()
-def add_contact(opportunity, contact):
-    if not frappe.has_permission("Opportunity", "write", opportunity):
-        frappe.throw(
-            _("Not allowed to add contact to Opportunity"), frappe.PermissionError
-        )
-
-    opportunity = frappe.get_cached_doc("Opportunity", opportunity)
-    opportunity.append("contacts", {"contact": contact})
-    opportunity.save()
-    return True
-
-
-@frappe.whitelist()
-def remove_contact(opportunity, contact):
-    if not frappe.has_permission("Opportunity", "write", opportunity):
-        frappe.throw(
-            _("Not allowed to remove contact from Opportunity"), frappe.PermissionError
-        )
-
-    opportunity = frappe.get_cached_doc("Opportunity", opportunity)
-    opportunity.contacts = [d for d in opportunity.contacts if d.contact != contact]
-    opportunity.save()
-    return True
-
-
-@frappe.whitelist()
-def set_primary_contact(opportunity, contact):
-    if not frappe.has_permission("Opportunity", "write", opportunity):
-        frappe.throw(
-            _("Not allowed to set primary contact for Opportunity"),
-            frappe.PermissionError,
-        )
-
-    opportunity = frappe.get_cached_doc("Opportunity", opportunity)
-    opportunity.set_primary_contact(contact)
-    opportunity.save()
-    return True
-
-
 def create_prospect(doc):
     if not doc.get("customer_name"):
         return
@@ -398,7 +347,6 @@ def create_opportunity(args):
 
     opportunity.update(
         {
-            "contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
             "opportunity_from": opportunity_from,
             "party_name": party_name,
         }
@@ -411,4 +359,10 @@ def create_opportunity(args):
     opportunity.update(args)
 
     opportunity.insert()
+
+    if contact:
+        from next_crm.api.contact import link_contact_to_doc
+
+        link_contact_to_doc(contact, "Opportunity", opportunity.name)
+
     return opportunity.name
