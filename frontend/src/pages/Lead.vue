@@ -1005,20 +1005,14 @@ async function convertToOpportunity() {
     return
   }
 
-  if (existingContactChecked.value && existingContact.value) {
-    existingContact.value = ''
-  }
 
-  if (existingProspectChecked.value && existingProspect.value) {
-    existingProspectChecked.value = false
-
-  }
 
   let opportunity = await call(
     'next_crm.overrides.lead.convert_to_opportunity',
     {
       lead: lead.data.name,
-      prospect: existingProspect.value
+      prospect: existingProspect.value,
+      existing_contact: existingContact.value,
     },
   ).catch((err) => {
     createToast({
@@ -1031,8 +1025,6 @@ async function convertToOpportunity() {
 
   if (opportunity) {
     capture('convert_lead_to_opportunity')
-
-      await contacts.reload()
     
     router.push({ name: 'Opportunity', params: { opportunityId: opportunity } })
   }

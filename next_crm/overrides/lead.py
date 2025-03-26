@@ -135,7 +135,7 @@ class Lead(Lead):
                 "salutation": contact.salutation,
                 "first_name": contact.first_name,
                 "last_name": contact.last_name,
-                "email": contact.email_id,
+                "email_id": contact.email_id,
                 "mobile_no": contact.mobile_no,
             },
         )

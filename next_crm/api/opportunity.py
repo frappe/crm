@@ -44,10 +44,10 @@ def get_opportunity_contacts(name):
     )
     opportunity_contacts = []
     for contact in contacts:
-        is_primary = contact.is_primary
-        contact = frappe.get_doc("Contact", contact.contact).as_dict()
         if not contact.contact:
             continue
+        is_primary = contact.is_primary
+        contact = frappe.get_doc("Contact", contact.contact).as_dict()
 
         def get_primary_email(contact):
             for email in contact.email_ids:
