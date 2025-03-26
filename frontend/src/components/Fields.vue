@@ -83,6 +83,27 @@
                 </template>
               </Button>
             </div>
+            <div class="flex gap-1" v-else-if="field.type === 'Dynamic Link'">
+              <Link
+                class="form-control flex-1"
+                :value="data[field.name]"
+                :doctype="data[field.options]"
+                :filters="field.filters"
+                @change="(v) => (data[field.name] = v)"
+                :placeholder="getPlaceholder(field)"
+                :onCreate="field.create"
+              />
+              <Button
+                v-if="data[field.name] && field.edit"
+                class="shrink-0"
+                :label="__('Edit')"
+                @click="field.edit(data[field.name])"
+              >
+                <template #prefix>
+                  <EditIcon class="h-4 w-4" />
+                </template>
+              </Button>
+            </div>
 
             <Link
               v-else-if="field.type === 'User'"
