@@ -118,6 +118,25 @@ def remove_duplicates(l):
     return list(dict.fromkeys(l))
 
 
+@frappe.whitelist()
+def set_as_default(name=None, type=None, doctype=None):
+    if name:
+        frappe.db.set_value("CRM View Settings", name, "is_default", 1)
+    else:
+        doc = create_or_update_default_view(
+            {"type": type, "doctype": doctype, "is_default": 1}
+        )
+        name = doc.name
+
+    # remove default from other views of same user
+    frappe.db.set_value(
+        "CRM View Settings",
+        {"name": ("!=", name), "user": frappe.session.user, "is_default": 1},
+        "is_default",
+        0,
+    )
+
+
 def sync_default_rows(doctype, type="list"):
     list = get_controller(doctype)
     rows = []
