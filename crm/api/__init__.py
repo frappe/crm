@@ -94,8 +94,13 @@ def accept_invitation(key: str | None = None):
 @frappe.whitelist()
 def invite_by_email(emails: str, role: str):
 	frappe.only_for("Sales Manager")
+
+	if role not in ["Sales Manager", "Sales User"]:
+		frappe.throw("Cannot invite for this role")
+
 	if not emails:
 		return
+
 	email_string = validate_email_address(emails, throw=False)
 	email_list = split_emails(email_string)
 	if not email_list:
