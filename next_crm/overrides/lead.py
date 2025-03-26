@@ -13,7 +13,6 @@ from next_crm.ncrm.doctype.crm_status_change_log.crm_status_change_log import (
 
 
 class Lead(Lead):
-
     def before_validate(self):
         self.set_sla()
         super()
@@ -88,13 +87,14 @@ class Lead(Lead):
             elif user != agent:
                 frappe.delete_doc("DocShare", self.name, ignore_permissions=True)
 
-    def create_contact(self, throw=False):
+    def create_contact(self, existing_contact=None, throw=False):
         if not self.lead_name:
             self.set_full_name()
             self.set_lead_name()
 
-        existing_contact = self.contact_exists(throw)
+        existing_contact = existing_contact or self.contact_exists(throw)
         if existing_contact:
+            self.update_lead_contact(existing_contact)
             return existing_contact
 
         contact = frappe.new_doc("Contact")
@@ -125,6 +125,20 @@ class Lead(Lead):
         contact.reload()  # load changes by hooks on contact
 
         return contact.name
+
+    def update_lead_contact(self, contact):
+        contact = frappe.get_cached_doc("Contact", contact)
+        frappe.db.set_value(
+            "Lead",
+            self.name,
+            {
+                "salutation": contact.salutation,
+                "first_name": contact.first_name,
+                "last_name": contact.last_name,
+                "email": contact.email_id,
+                "mobile_no": contact.mobile_no,
+            },
+        )
 
     def create_prospect(self):
         if not self.company_name:
@@ -317,7 +331,7 @@ class Lead(Lead):
 
 
 @frappe.whitelist()
-def convert_to_opportunity(lead, prospect, doc=None):
+def convert_to_opportunity(lead, prospect, existing_contact=None, doc=None):
     if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
         "Lead", "write", lead
     ):
@@ -332,7 +346,7 @@ def convert_to_opportunity(lead, prospect, doc=None):
     if lead.sla and frappe.db.exists("CRM Communication Status", "Replied"):
         lead.communication_status = "Replied"
     lead.save()
-    contact = lead.create_contact(False)
+    contact = lead.create_contact(existing_contact, False)
     customer_or_prospect = None
     if prospect:
         customer_or_prospect = {"Prospect": prospect}

@@ -40,11 +40,14 @@ def get_opportunity_contacts(name):
         "CRM Contacts",
         filters={"parenttype": "Opportunity", "parent": name},
         fields=["contact", "is_primary"],
+        distinct=True,
     )
     opportunity_contacts = []
     for contact in contacts:
         is_primary = contact.is_primary
         contact = frappe.get_doc("Contact", contact.contact).as_dict()
+        if not contact.contact:
+            continue
 
         def get_primary_email(contact):
             for email in contact.email_ids:
@@ -72,7 +75,6 @@ def get_opportunity_contacts(name):
 
 @frappe.whitelist()
 def get_opportunity_addresses(name):
-
     opportunity = frappe.get_cached_doc("Opportunity", name)
 
     opportunity_addresses = frappe.get_list(
