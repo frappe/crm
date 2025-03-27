@@ -1,12 +1,12 @@
 import { validateEmail } from '../../utils'
 
-const LogoGmail = '/images/gmail.png'
-const LogoOutlook = '/images/outlook.png'
-const LogoSendgrid = '/images/sendgrid.png'
-const LogoSparkpost = '/images/sparkpost.webp'
-const LogoYahoo = '/images/yahoo.png'
-const LogoYandex = '/images/yandex.png'
-const LogoFrappeMail = '/images/frappe-mail.svg'
+import LogoGmail from '@/images/gmail.png'
+import LogoOutlook from '@/images/outlook.png'
+import LogoSendgrid from '@/images/sendgrid.png'
+import LogoSparkpost from '@/images/sparkpost.webp'
+import LogoYahoo from '@/images/yahoo.png'
+import LogoYandex from '@/images/yandex.png'
+import LogoFrappeMail from '@/images/frappe-mail.svg'
 
 const fixedFields = [
   {
