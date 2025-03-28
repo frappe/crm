@@ -249,8 +249,9 @@ def update_in_standard_filter(fieldname, doctype, value):
             "property": "in_standard_filter",
         },
     ):
+        # DO NOT USE frappe.set_value here, it will not work
         property_setter = frappe.get_doc("Property Setter", property_name)
-        property_setter.value = value
+        property_setter.value = str(value)
         property_setter.flags.ignore_permissions = True
         property_setter.flags.validate_fields_for_doctype = False
         property_setter.save()
