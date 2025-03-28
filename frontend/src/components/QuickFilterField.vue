@@ -1,13 +1,13 @@
 <template>
   <FormControl
-    v-if="filter.type == 'Check'"
+    v-if="filter.fieldtype == 'Check'"
     :label="filter.label"
     type="checkbox"
     v-model="filter.value"
     @change.stop="updateFilter(filter, $event.target.checked)"
   />
   <FormControl
-    v-else-if="filter.type === 'Select'"
+    v-else-if="filter.fieldtype === 'Select'"
     class="form-control cursor-pointer [&_select]:cursor-pointer"
     type="select"
     v-model="filter.value"
@@ -16,7 +16,7 @@
     @change.stop="updateFilter(filter, $event.target.value)"
   />
   <Link
-    v-else-if="filter.type === 'Link'"
+    v-else-if="filter.fieldtype === 'Link'"
     :value="filter.value"
     :doctype="filter.options"
     :placeholder="filter.label"
@@ -24,9 +24,9 @@
     @change="(data) => updateFilter(filter, data)"
   />
   <component
-    v-else-if="['Date', 'Datetime'].includes(filter.type)"
+    v-else-if="['Date', 'Datetime'].includes(filter.fieldtype)"
     class="border-none"
-    :is="filter.type === 'Date' ? DatePicker : DateTimePicker"
+    :is="filter.fieldtype === 'Date' ? DatePicker : DateTimePicker"
     :value="filter.value"
     @change="(v) => updateFilter(filter, v)"
     :placeholder="filter.label"

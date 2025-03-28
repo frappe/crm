@@ -30,7 +30,6 @@ def get_opportunity(name):
 
 @frappe.whitelist()
 def get_opportunity_addresses(name):
-
     opportunity = frappe.get_cached_doc("Opportunity", name)
 
     opportunity_addresses = frappe.get_list(

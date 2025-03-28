@@ -184,7 +184,6 @@ import CustomActions from '@/components/CustomActions.vue'
 import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
-import { contactsStore } from '@/stores/contacts'
 import { statusesStore } from '@/stores/statuses'
 import {
   whatsappEnabled,
@@ -206,7 +205,6 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const { $dialog, $socket } = globalStore()
-const { getContactByName, contacts } = contactsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const route = useRoute()
 const router = useRouter()
@@ -424,71 +422,59 @@ const existingProspectChecked = ref(false)
 const existingContact = ref('')
 const existingProspect = ref('')
 
-async function convertToOpportunity(updated) {
-  let valueUpdated = false
+async function convertToOpportunity() {
 
-  if (existingContactChecked.value && !existingContact.value) {
-    createToast({
-      title: __('Error'),
-      text: __('Please select an existing contact'),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
-    return
-  }
+if (existingContactChecked.value && !existingContact.value) {
+  createToast({
+    title: __('Error'),
+    text: __('Please select an existing contact'),
+    icon: 'x',
+    iconClasses: 'text-ink-red-4',
+  })
+  return
+}
 
-  if (existingProspectChecked.value && !existingProspect.value) {
-    createToast({
-      title: __('Error'),
-      text: __('Please select an existing prospect'),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
-    return
-  }
+if (existingProspectChecked.value && !existingProspect.value) {
+  createToast({
+    title: __('Error'),
+    text: __('Please select an existing prospect'),
+    icon: 'x',
+    iconClasses: 'text-ink-red-4',
+  })
+  return
+}
 
-  if (existingContactChecked.value && existingContact.value) {
-    lead.data.salutation = getContactByName(existingContact.value).salutation
-    lead.data.first_name = getContactByName(existingContact.value).first_name
-    lead.data.last_name = getContactByName(existingContact.value).last_name
-    lead.data.email_id = getContactByName(existingContact.value).email_id
-    lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
-    existingContactChecked.value = false
-    valueUpdated = true
-  }
+if (existingContactChecked.value && existingContact.value) {
+  existingContact.value = ''
+}
 
-  if (existingProspectChecked.value && existingProspect.value) {e
-    existingProspectChecked.value = false
-    valueUpdated = true
-  }
+if (existingProspectChecked.value && existingProspect.value) {
+  existingProspectChecked.value = false
 
-  if (valueUpdated) {
-    updateLead(
-      {
-        salutation: lead.data.salutation,
-        first_name: lead.data.first_name,
-        last_name: lead.data.last_name,
-        email_id: lead.data.email_id,
-        mobile_no: lead.data.mobile_no,
-      },
-      '',
-      () => convertToOpportunity(true),
-    )
-    showConvertToOpportunityModal.value = false
-  } else {
-    let opportunity = await call(
-      'next_crm.overrides.lead.convert_to_opportunity',
-      {
-        lead: lead.data.name,
-        prospect: existingProspect.value
-      },
-    )
-    if (opportunity) {
-      if (updated) {
-        await contacts.reload()
-      }
-      router.push({ name: 'Opportunity', params: { opportunityId: opportunity } })
-    }
-  }
+}
+
+let opportunity = await call(
+  'next_crm.overrides.lead.convert_to_opportunity',
+  {
+    lead: lead.data.name,
+    prospect: existingProspect.value
+  },
+).catch((err) => {
+  createToast({
+    title: __('Error converting to Opportunity'),
+    text: __(err.messages?.[0]),
+    icon: 'x',
+    iconClasses: 'text-ink-red-4',
+  })
+})
+
+if (opportunity) {
+  capture('convert_lead_to_opportunity')
+
+    await contacts.reload()
+  
+  router.push({ name: 'Opportunity', params: { opportunityId: opportunity } })
+}
+
 }
 </script>

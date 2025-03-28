@@ -2,6 +2,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 from frappe.model import no_value_fields
 from frappe.model.document import get_controller
 from frappe.utils import make_filter_tuple
@@ -194,19 +195,18 @@ def get_quick_filters(doctype: str):
     quick_filters = []
 
     for field in fields:
-
-        if field.fieldtype == "Select":
-            field.options = field.options.split("\n")
-            field.options = [
-                {"label": option, "value": option} for option in field.options
-            ]
-            field.options.insert(0, {"label": "", "value": ""})
+        options = field.get("options")
+        if field.get("fieldtype") == "Select" and options and isinstance(options, str):
+            options = options.split("\n")
+            options = [{"label": option, "value": option} for option in options]
+            if not any([not option.get("value") for option in options]):
+                options.insert(0, {"label": "", "value": ""})
         quick_filters.append(
             {
-                "label": _(field.label),
-                "name": field.fieldname,
-                "type": field.fieldtype,
-                "options": field.options,
+                "label": _(field.get("label")),
+                "fieldname": field.get("fieldname"),
+                "fieldtype": field.get("fieldtype"),
+                "options": options,
                 "filters": (
                     [["name", "in", ["Customer", "Lead", "Prospect"]]]
                     if field.fieldname == "opportunity_from"
@@ -221,6 +221,50 @@ def get_quick_filters(doctype: str):
         ]
 
     return quick_filters
+
+
+@frappe.whitelist()
+def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
+    quick_filters = json.loads(quick_filters)
+    old_filters = json.loads(old_filters)
+
+    new_filters = [filter for filter in quick_filters if filter not in old_filters]
+    removed_filters = [filter for filter in old_filters if filter not in quick_filters]
+
+    # remove old filters
+    for filter in removed_filters:
+        update_in_standard_filter(filter, doctype, 0)
+
+    # add new filters
+    for filter in new_filters:
+        update_in_standard_filter(filter, doctype, 1)
+
+
+def update_in_standard_filter(fieldname, doctype, value):
+    if property_name := frappe.db.exists(
+        "Property Setter",
+        {
+            "doc_type": doctype,
+            "field_name": fieldname,
+            "property": "in_standard_filter",
+        },
+    ):
+        # DO NOT USE frappe.set_value here, it will not work
+        property_setter = frappe.get_doc("Property Setter", property_name)
+        property_setter.value = str(value)
+        property_setter.flags.ignore_permissions = True
+        property_setter.flags.validate_fields_for_doctype = False
+        property_setter.save()
+
+    else:
+        make_property_setter(
+            doctype,
+            fieldname,
+            "in_standard_filter",
+            value,
+            "Check",
+            validate_fields_for_doctype=False,
+        )
 
 
 @frappe.whitelist()
@@ -310,7 +354,7 @@ def get_data(
             columns = frappe.parse_json(list_view_settings.columns)
             rows = frappe.parse_json(list_view_settings.rows)
             is_default = False
-        elif not custom_view or is_default and hasattr(_list, "default_list_data"):
+        elif not custom_view or (is_default and hasattr(_list, "default_list_data")):
             rows = default_rows
             columns = _list.default_list_data().get("columns")
 
@@ -401,8 +445,7 @@ def get_data(
                 column_field in filters
                 and filters.get(column_field) != kc.get("name")
                 and not cf_in_filter
-                or kc.get("delete")
-            ):
+            ) or kc.get("delete"):
                 column_data = []
             else:
                 if not cf_in_filter:
