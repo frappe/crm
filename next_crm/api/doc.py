@@ -228,12 +228,15 @@ def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
     quick_filters = json.loads(quick_filters)
     old_filters = json.loads(old_filters)
 
+    new_filters = [filter for filter in quick_filters if filter not in old_filters]
+    removed_filters = [filter for filter in old_filters if filter not in quick_filters]
+
     # remove old filters
-    for filter in old_filters:
+    for filter in removed_filters:
         update_in_standard_filter(filter, doctype, 0)
 
     # add new filters
-    for filter in quick_filters:
+    for filter in new_filters:
         update_in_standard_filter(filter, doctype, 1)
 
 
@@ -246,7 +249,12 @@ def update_in_standard_filter(fieldname, doctype, value):
             "property": "in_standard_filter",
         },
     ):
-        frappe.db.set_value("Property Setter", property_name, "value", value)
+        property_setter = frappe.get_doc("Property Setter", property_name)
+        property_setter.value = value
+        property_setter.flags.ignore_permissions = True
+        property_setter.flags.validate_fields_for_doctype = False
+        property_setter.save()
+
     else:
         make_property_setter(
             doctype,
