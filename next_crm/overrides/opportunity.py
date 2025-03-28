@@ -18,15 +18,11 @@ from next_crm.ncrm.doctype.crm_status_change_log.crm_status_change_log import (
 )
 
 
-class Opportunity(Opportunity):
-
+class OverrideOpportunity(Opportunity):
     def before_validate(self):
         self.set_sla()
 
     def validate(self):
-        from next_crm.api.contact import set_primary_contact
-
-        set_primary_contact("Opportunity", self.name)
         if not self.is_new():
             curr_owner = frappe.db.get_value(
                 self.doctype, self.name, "opportunity_owner"
@@ -34,13 +30,14 @@ class Opportunity(Opportunity):
             if self.opportunity_owner and self.opportunity_owner != curr_owner:
                 self.share_with_agent(self.opportunity_owner)
                 self.assign_agent(self.opportunity_owner)
-        else:
-            self.set_primary_email_mobile_no()
+
         if self.has_value_changed("status"):
             add_status_change_log(self)
         super().validate()
 
     def after_insert(self):
+        from next_crm.api.contact import set_primary_contact
+
         if self.opportunity_from == "Lead":
             link_open_tasks(self.opportunity_from, self.party_name, self)
             link_open_events(self.opportunity_from, self.party_name, self)
@@ -49,6 +46,8 @@ class Opportunity(Opportunity):
             ):
                 copy_comments(self.opportunity_from, self.party_name, self)
                 link_communications(self.opportunity_from, self.party_name, self)
+        self.set_primary_email_mobile_no()
+        set_primary_contact("Opportunity", self.name)
 
     def before_save(self):
         self.apply_sla()
