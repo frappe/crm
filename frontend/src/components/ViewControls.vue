@@ -1020,14 +1020,6 @@ const viewActions = (view) => {
     },
   ]
 
-  if (!isDefaultView(_view, isDefault)) {
-    actions[0].items.unshift({
-      label: __('Set as default'),
-      icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
-      onClick: () => setAsDefault(_view),
-    })
-  }
-
   if (!isDefault && (!_view.public || isManager())) {
     actions[0].items.push({
       label: __('Edit'),
@@ -1100,17 +1092,6 @@ function createView() {
   viewModalObj.value = view.value
   viewModalObj.value.mode = 'create'
   showViewModal.value = true
-}
-
-function setAsDefault(v) {
-  call('next_crm.ncrm.doctype.crm_view_settings.crm_view_settings.set_as_default', {
-    name: v.name,
-    type: v.type,
-    doctype: v.dt,
-  }).then(() => {
-    reloadView()
-    list.value.reload()
-  })
 }
 
 function duplicateView(v) {
