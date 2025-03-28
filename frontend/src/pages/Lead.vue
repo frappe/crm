@@ -293,6 +293,13 @@
                             <div class="truncate">
                               {{ contact.full_name }}
                             </div>
+                            <Badge
+                              v-if="contact.is_primary_contact"
+                              class="ml-2"
+                              variant="outline"
+                              :label="__('Primary')"
+                              theme="green"
+                            />
                           </div>
                           <div class="flex items-center">
                             <Dropdown :options="contactOptions(contact)">
@@ -661,6 +668,7 @@ const lead = createResource({
       deleteDoc: deleteLead,
       resource: {
         lead,
+        leadContacts,
         fieldsLayout,
       },
       call,
@@ -774,6 +782,15 @@ function contactOptions(contact) {
       onClick: () => removeContact(contact.name),
     },
   ]
+
+  if (!contact.is_primary_contact) {
+    options.push({
+      label: __('Set as Primary Contact'),
+      icon: h(SuccessIcon, { class: 'h-4 w-4' }),
+      onClick: () => setPrimaryContact(contact.name),
+    })
+  }
+
   return options
 }
 
@@ -845,6 +862,22 @@ async function removeAddress(address) {
     leadAddresses.reload()
     createToast({
       title: __('Address removed'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
+  }
+}
+
+async function setPrimaryContact(contact) {
+  let d = await call('next_crm.api.contact.set_primary_contact', {
+    doctype: "Lead",
+    docname: props.leadId,
+    contact,
+  })
+  if (d) {
+    leadContacts.reload()
+    createToast({
+      title: __('Primary contact set'),
       icon: 'check',
       iconClasses: 'text-ink-green-3',
     })

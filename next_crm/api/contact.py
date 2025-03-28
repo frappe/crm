@@ -7,7 +7,6 @@ def validate(doc, method):
     set_primary_mobile_no(doc)
     doc.set_primary_email()
     doc.set_primary("mobile_no")
-    update_opportunities_email_mobile_no(doc)
 
 
 def set_primary_email(doc):
@@ -24,24 +23,6 @@ def set_primary_mobile_no(doc):
 
     if len(doc.phone_nos) == 1:
         doc.phone_nos[0].is_primary_mobile_no = 1
-
-
-def update_opportunities_email_mobile_no(doc):
-    linked_opportunities = frappe.get_all(
-        "CRM Contacts",
-        filters={"contact": doc.name, "is_primary": 1},
-        fields=["parent"],
-    )
-
-    for linked_opportunity in linked_opportunities:
-        opportunity = frappe.get_cached_doc("Opportunity", linked_opportunity.parent)
-        if (
-            opportunity.contact_email != doc.email_id
-            or opportunity.contact_mobile != doc.mobile_no
-        ):
-            opportunity.contact_email = doc.email_id
-            opportunity.contact_mobile = doc.mobile_no
-            opportunity.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
@@ -72,23 +53,14 @@ def get_contact(name):
 @frappe.whitelist()
 def get_linked_opportunities(contact):
     """Get linked opportunities for a contact"""
-
-    if not frappe.has_permission("Contact", "read", contact):
-        frappe.throw("Not permitted", frappe.PermissionError)
-
-    opportunity_names = frappe.get_all(
-        "CRM Contacts",
-        filters={"contact": contact, "parenttype": "Opportunity"},
-        fields=["parent"],
-        distinct=True,
-    )
+    opportunity_names = get_linked_docs(contact, "Opportunity")
 
     # get opportunities data
     opportunities = []
-    for d in opportunity_names:
+    for opportunity_name in opportunity_names:
         opportunity = frappe.get_cached_doc(
             "Opportunity",
-            d.parent,
+            opportunity_name,
             fields=[
                 "name",
                 "customer",
@@ -104,6 +76,18 @@ def get_linked_opportunities(contact):
         opportunities.append(opportunity.as_dict())
 
     return opportunities
+
+
+@frappe.whitelist()
+def get_linked_docs(contact, link_doctype):
+    contact_doc = frappe.get_doc("Contact", contact)
+
+    names = []
+    for link in contact_doc.links:
+        if link.link_doctype == link_doctype:
+            names.append(link.link_name)
+
+    return names
 
 
 @frappe.whitelist()
@@ -188,12 +172,21 @@ def search_emails(txt: str):
 
 @frappe.whitelist()
 def get_linked_contact(link_doctype, link_name):
+    link_names = [link_name]
+    link_doctypes = [link_doctype]
+    if link_doctype == "Opportunity":
+        opportunity = frappe.get_cached_doc("Opportunity", link_name)
+        if opportunity.opportunity_from:
+            link_doctypes.append(opportunity.opportunity_from)
+            link_names.append(opportunity.party_name)
+
     contacts = frappe.get_list(
         "Contact",
         [
-            ["Dynamic Link", "link_doctype", "=", link_doctype],
-            ["Dynamic Link", "link_name", "=", link_name],
+            ["Dynamic Link", "link_doctype", "in", link_doctypes],
+            ["Dynamic Link", "link_name", "in", link_names],
         ],
+        distinct=True,
         pluck="name",
     )
 
@@ -207,8 +200,19 @@ def link_contact_to_doc(contact, doctype, docname):
 
     contact_doc = frappe.get_doc("Contact", contact)
 
-    contact_doc.append("links", {"link_doctype": doctype, "link_name": docname})
+    if doctype == "Opportunity":
+        opportunity_doc = frappe.get_cached_doc("Opportunity", docname)
 
+        if opportunity_doc.opportunity_from:
+            contact_doc.append(
+                "links",
+                {
+                    "link_doctype": opportunity_doc.opportunity_from,
+                    "link_name": opportunity_doc.party_name,
+                },
+            )
+
+    contact_doc.append("links", {"link_doctype": doctype, "link_name": docname})
     contact_doc.save()
 
     return contact_doc.name
@@ -221,7 +225,13 @@ def remove_link_from_contact(contact, doctype, docname):
 
     contact_doc = frappe.get_doc("Contact", contact)
 
-    contact_doc.links = [d for d in contact_doc.links if d.link_name != docname]
+    link_names = [docname]
+    if doctype == "Opportunity":
+        opportunity_doc = frappe.get_cached_doc("Opportunity", docname)
+        if opportunity_doc.opportunity_from:
+            link_names.append(opportunity_doc.party_name)
+
+    contact_doc.links = [d for d in contact_doc.links if d.link_name not in link_names]
     contact_doc.save()
 
     return contact_doc.name
@@ -240,9 +250,31 @@ def get_lead_opportunity_contacts(doctype, docname):
             "full_name": contact.full_name,
             "email": get_primary_email(contact),
             "mobile_no": get_primary_mobile_no(contact),
+            "is_primary_contact": contact.is_primary_contact,
         }
         linked_contacts.append(_contact)
     return linked_contacts
+
+
+@frappe.whitelist()
+def set_primary_contact(doctype, docname, contact=None):
+    linked_contacts = get_linked_contact(doctype, docname)
+    if not linked_contacts:
+        return
+
+    if not contact and len(linked_contacts) == 1:
+        contact_doc = frappe.get_doc("Contact", linked_contacts[0])
+        contact_doc.is_primary_contact = 1
+        contact_doc.save()
+    elif contact:
+        for linked_contact in linked_contacts:
+            primary = 0
+            if contact == linked_contact:
+                primary = 1
+            frappe.db.set_value(
+                "Contact", linked_contact, "is_primary_contact", primary
+            )
+    return True
 
 
 def get_primary_email(contact):
