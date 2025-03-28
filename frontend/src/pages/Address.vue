@@ -231,7 +231,7 @@ async function getCustomersList() {
 const customers = await getCustomersList();
 
 function getCustomerRowObject(customer) {
-  console.log(getCustomer(customer?.image))
+
   return {
     name: customer.name,
     customer_name: {

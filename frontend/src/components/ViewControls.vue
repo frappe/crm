@@ -697,7 +697,6 @@ const quickFilterOptions = computed(() => {
       fieldtype: 'Data',
     })
   }
-  console.log(options)
   return options
 })
 

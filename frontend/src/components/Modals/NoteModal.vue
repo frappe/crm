@@ -131,7 +131,6 @@ async function updateNote() {
 }
 
 function redirect() {
-  console.log(props.note)
   if (!props.note?.parent) return
   let name = props.note.parenttype == 'Opportunity' ? 'Opportunity' : 'Lead'
   let params = { leadId: props.note.parent }
