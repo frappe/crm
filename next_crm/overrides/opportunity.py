@@ -298,7 +298,7 @@ def create_contact(doc):
 def create_opportunity(args):
     opportunity = frappe.new_doc("Opportunity")
 
-    contact = args.get("contact")
+    contact = args.get("contact_person")
     if not contact and (
         args.get("first_name")
         or args.get("last_name")
