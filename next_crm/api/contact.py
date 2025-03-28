@@ -7,7 +7,6 @@ def validate(doc, method):
     set_primary_mobile_no(doc)
     doc.set_primary_email()
     doc.set_primary("mobile_no")
-    update_opportunities_email_mobile_no(doc)
 
 
 def set_primary_email(doc):
@@ -24,20 +23,6 @@ def set_primary_mobile_no(doc):
 
     if len(doc.phone_nos) == 1:
         doc.phone_nos[0].is_primary_mobile_no = 1
-
-
-def update_opportunities_email_mobile_no(doc):
-    linked_opportunities = get_linked_docs(doc.name, "Opportunity")
-
-    for linked_opportunity in linked_opportunities:
-        opportunity = frappe.get_cached_doc("Opportunity", linked_opportunity)
-        if (
-            opportunity.contact_email != doc.email_id
-            or opportunity.contact_mobile != doc.mobile_no
-        ):
-            opportunity.contact_email = doc.email_id
-            opportunity.contact_mobile = doc.mobile_no
-            opportunity.save()
 
 
 @frappe.whitelist()
