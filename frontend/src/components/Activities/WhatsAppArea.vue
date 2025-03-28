@@ -202,14 +202,6 @@ function messageOptions(message) {
         }
       },
     },
-    // {
-    //   label: 'Forward',
-    //   onClick: () => console.log('Forward'),
-    // },
-    // {
-    //   label: 'Delete',
-    //   onClick: () => console.log('Delete'),
-    // },
   ]
 }
 

@@ -165,12 +165,11 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '@/stores/global'
-import { contactsStore } from '@/stores/contacts'
+
 import { capture } from '@/telemetry'
 import { Avatar, call } from 'frappe-ui'
 import { onMounted, ref, watch } from 'vue'
 
-const { getContact, getLeadContact } = contactsStore()
 const { setMakeCall, setTwilioEnabled } = globalStore()
 
 let device = ''
@@ -274,12 +273,6 @@ function toggleMute() {
 function handleIncomingCall(call) {
   log.value = `Incoming call from ${call.parameters.From}`
 
-  // get name of the caller from the phone number
-  contact.value = getContact(call.parameters.From)
-  if (!contact.value) {
-    contact.value = getLeadContact(call.parameters.From)
-  }
-
   if (!contact.value) {
     contact.value = {
       full_name: __('Unknown'),
@@ -348,20 +341,6 @@ function handleDisconnectedIncomingCall() {
 }
 
 async function makeOutgoingCall(number) {
-  // check if number has a country code
-  // if (number?.replace(/[^0-9+]/g, '').length == 10) {
-  //   $dialog({
-  //     title: 'Invalid Mobile Number',
-  //     message: `${number} is not a valid mobile number. Either add a country code or check the number again.`,
-  //   })
-  //   return
-  // }
-
-  contact.value = getContact(number)
-  if (!contact.value) {
-    contact.value = getLeadContact(number)
-  }
-
   if (device) {
     log.value = `Attempting to call ${number} ...`
 

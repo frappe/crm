@@ -213,3 +213,4 @@ def create_or_update_default_view(view):
         doc.rows = json.dumps(rows)
         doc.is_default = True
         doc.insert()
+    return doc

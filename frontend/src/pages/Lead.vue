@@ -582,6 +582,8 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import AddressIcon from '@/components/Icons/AddressIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
+import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
@@ -605,7 +607,7 @@ import {
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global'
-import { contactsStore } from '@/stores/contacts'
+
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
@@ -627,7 +629,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
 const { $dialog, $socket, makeCall } = globalStore()
-const { getContactByName, contacts } = contactsStore()
+
 const { statusOptions, getLeadStatus } = statusesStore()
 const { isManager } = usersStore()
 const route = useRoute()
@@ -642,7 +644,8 @@ const props = defineProps({
 
 const customActions = ref([])
 const customStatuses = ref([])
-
+const showAssignmentModal = ref(false)
+const _address = ref({})
 const lead = createResource({
   url: '/api/method/next_crm.api.lead.get_lead',
   params: { name: props.leadId },
@@ -980,8 +983,7 @@ const existingProspectChecked = ref(false)
 const existingContact = ref('')
 const existingProspect = ref('')
 
-async function convertToOpportunity(updated) {
-  let valueUpdated = false
+async function convertToOpportunity() {
 
   if (existingContactChecked.value && !existingContact.value) {
     createToast({
@@ -1003,50 +1005,30 @@ async function convertToOpportunity(updated) {
     return
   }
 
-  if (existingContactChecked.value && existingContact.value) {
-    lead.data.salutation = getContactByName(existingContact.value).salutation
-    lead.data.first_name = getContactByName(existingContact.value).first_name
-    lead.data.last_name = getContactByName(existingContact.value).last_name
-    lead.data.email_id = getContactByName(existingContact.value).email_id
-    lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
-    existingContactChecked.value = false
-    valueUpdated = true
-  }
 
-  if (existingProspectChecked.value && existingProspect.value) {
-    existingProspectChecked.value = false
-    valueUpdated = true
-  }
 
-  if (valueUpdated) {
-    updateLead(
-      {
-        salutation: lead.data.salutation,
-        first_name: lead.data.first_name,
-        last_name: lead.data.last_name,
-        email_id: lead.data.email_id,
-        mobile_no: lead.data.mobile_no,
-      },
-      '',
-      () => convertToOpportunity(true),
-    )
-    showConvertToOpportunityModal.value = false
-  } else {
-    let opportunity = await call(
-      'next_crm.overrides.lead.convert_to_opportunity',
-      {
-        lead: lead.data.name,
-        prospect: existingProspect.value
-      },
-    )
-    if (opportunity) {
-      capture('convert_lead_to_opportunity')
-      if (updated) {
-        await contacts.reload()
-      }
-      router.push({ name: 'Opportunity', params: { opportunityId: opportunity } })
-    }
+  let opportunity = await call(
+    'next_crm.overrides.lead.convert_to_opportunity',
+    {
+      lead: lead.data.name,
+      prospect: existingProspect.value,
+      existing_contact: existingContact.value,
+    },
+  ).catch((err) => {
+    createToast({
+      title: __('Error converting to Opportunity'),
+      text: __(err.messages?.[0]),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
+  })
+
+  if (opportunity) {
+    capture('convert_lead_to_opportunity')
+    
+    router.push({ name: 'Opportunity', params: { opportunityId: opportunity } })
   }
+  
 }
 
 const activities = ref(null)

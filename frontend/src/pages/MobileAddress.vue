@@ -269,8 +269,7 @@ async function getCustomersList() {
     address: props.addressId,
   })
 
-  console.log("Namesss -")
-  console.log(customer_names)
+
 
   const list = createListResource({
     type: 'list',
@@ -302,7 +301,7 @@ const rows = computed(() => {
 })
 
 function getCustomerRowObject(customer) {
-  console.log(getCustomer(customer?.image))
+
   return {
     name: customer.name,
     customer_name: {
