@@ -29,7 +29,7 @@ export const incomingOutgoingFields = [
     name: 'enable_incoming',
     type: 'checkbox',
     description:
-      'If enabled, tickets can be created from the incoming emails on this account.',
+      'If enabled, records can be created from the incoming emails on this account.',
   },
   {
     label: 'Enable Outgoing',

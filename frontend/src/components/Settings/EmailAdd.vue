@@ -8,8 +8,8 @@
       </p>
     </div>
     <!-- email service provider selection -->
-    <div class="flex flex-wrap items-center gap-4">
-      <div v-for="s in services" :key="s.name" class="flex flex-col items-center gap-1 mt-4 min-w-3"
+    <div class="flex flex-wrap items-center">
+      <div v-for="s in services" :key="s.name" class="flex flex-col items-center gap-1 mt-4 w-[70px]"
         @click="handleSelect(s)">
         <EmailProviderIcon :service-name="s.name" :logo="s.icon" :selected="selectedService?.name === s?.name" />
       </div>
@@ -20,8 +20,7 @@
         <CircleAlert class="w-5 h-6 text-blue-500 w-min-5 w-max-5 min-h-5 max-w-5" />
         <div class="text-xs text-gray-700 text-wrap">
           {{ selectedService.info }}
-          <a :href="selectedService.link" target="_blank" class="text-blue-500 underline">here</a>
-          .
+          <a :href="selectedService.link" target="_blank" class="text-blue-500 underline">here</a>.
         </div>
       </div>
       <!-- service provider fields -->
