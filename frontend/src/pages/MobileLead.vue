@@ -461,7 +461,7 @@ let opportunity = await call(
   },
 ).catch((err) => {
   createToast({
-    title: __('Error converting to deal'),
+    title: __('Error converting to Opportunity'),
     text: __(err.messages?.[0]),
     icon: 'x',
     iconClasses: 'text-ink-red-4',
