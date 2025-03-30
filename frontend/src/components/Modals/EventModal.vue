@@ -26,6 +26,7 @@
             ref="subject"
             :label="__('Subject')"
             v-model="_event.subject"
+            :required="true"
             :placeholder="__('Call with John Doe')"
           />
         </div>
@@ -121,7 +122,7 @@
             @change="(option) => (_event.google_calendar = option)"
             :placeholder="__('Google Calendar')"
             :hideMe="true"
-            :filters="{'enable': 1}"
+            :filters="{ enable: 1 }"
           >
           </Link>
         </div>
@@ -134,12 +135,11 @@
 import EventStatusIcon from '@/components/Icons/EventStatusIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
-import { eventStatusOptions } from '@/utils'
+import { eventStatusOptions, createToast } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
 import { TextEditor, Dropdown, FormControl, Tooltip, call, DateTimePicker, createResource } from 'frappe-ui'
 import { ref, watch, nextTick, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 
 const props = defineProps({
   event: {
@@ -161,7 +161,6 @@ const events = defineModel('reloadEvents')
 
 const emit = defineEmits(['updateEvent', 'after'])
 
-const router = useRouter()
 const { getUser } = usersStore()
 
 const title = ref(null)
@@ -202,6 +201,15 @@ const fields = createResource({
 })
 
 async function updateEvent() {
+  if (!_event.value.subject) {
+    createToast({
+      title: __('Error'),
+      text: __('Subject is mandatory'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
+    return
+  }
   if (!_event.value.allocated_to) {
     _event.value.allocated_to = getUser().name
   }
@@ -253,7 +261,7 @@ function render() {
   nextTick(() => {
     title.value?.el?.focus?.()
     _event.value = { ...props.event }
-    if (_event.value.description) {
+    if (_event.value.subject) {
       editMode.value = true
     }
   })
