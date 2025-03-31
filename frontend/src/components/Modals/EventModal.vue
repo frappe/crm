@@ -174,7 +174,7 @@ const _event = ref({
   status: 'Open',
   event_type: 'Private',
   event_category: 'Event',
-  sync_with_google_calendar: true,
+  sync_with_google_calendar: (getUser().google_calendar ? 1 : 0),
   google_calendar: getUser().google_calendar,
 })
 
