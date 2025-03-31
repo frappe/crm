@@ -36,8 +36,6 @@ class OverrideOpportunity(Opportunity):
         super().validate()
 
     def after_insert(self):
-        from next_crm.api.contact import set_opportunity_primary_contact
-
         if self.opportunity_from == "Lead":
             link_open_tasks(self.opportunity_from, self.party_name, self)
             link_open_events(self.opportunity_from, self.party_name, self)
@@ -47,7 +45,6 @@ class OverrideOpportunity(Opportunity):
                 copy_comments(self.opportunity_from, self.party_name, self)
                 link_communications(self.opportunity_from, self.party_name, self)
         self.set_primary_email_mobile_no()
-        set_opportunity_primary_contact(self.name)
 
     def before_save(self):
         self.apply_sla()
@@ -284,6 +281,11 @@ def create_contact(doc):
 
 @frappe.whitelist()
 def create_opportunity(args):
+    from next_crm.api.contact import (
+        link_contact_to_doc,
+        set_opportunity_primary_contact,
+    )
+
     opportunity = frappe.new_doc("Opportunity")
 
     contact = args.get("contact_person")
@@ -324,10 +326,8 @@ def create_opportunity(args):
     opportunity.update(args)
 
     opportunity.insert()
-
     if contact:
-        from next_crm.api.contact import link_contact_to_doc
-
         link_contact_to_doc(contact, "Opportunity", opportunity.name)
+    set_opportunity_primary_contact(opportunity.name)
 
     return opportunity.name
