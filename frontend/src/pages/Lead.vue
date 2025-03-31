@@ -987,6 +987,16 @@ const existingProspect = ref('')
 
 async function convertToOpportunity() {
 
+  if (!lead.data.company_name) {
+    createToast({
+      title: __('Error'),
+      text: __('Please enter organisation name to create new Prospect'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
+    return
+  }
+
   if (existingContactChecked.value && !existingContact.value) {
     createToast({
       title: __('Error'),
