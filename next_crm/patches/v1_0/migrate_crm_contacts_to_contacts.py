@@ -26,6 +26,13 @@ def execute():
             link.link_name = crm_contact_doc.parent
             link.link_doctype = crm_contact_doc.parenttype
             link.owner = crm_contact_doc.owner
+            if (
+                crm_contact_doc.is_primary
+                and crm_contact_doc.parenttype == "Opportunity"
+            ):
+                opportunity_doc = frappe.get_doc("Opportunity", crm_contact_doc.parent)
+                opportunity_doc.contact_person = crm_contact_doc.contact
+                opportunity_doc.save()
             link.save()
 
         frappe.db.commit()
