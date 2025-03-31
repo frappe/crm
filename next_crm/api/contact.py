@@ -257,23 +257,17 @@ def get_lead_opportunity_contacts(doctype, docname):
 
 
 @frappe.whitelist()
-def set_primary_contact(doctype, docname, contact=None):
-    linked_contacts = get_linked_contact(doctype, docname)
+def set_opportunity_primary_contact(docname, contact=None):
+    linked_contacts = get_linked_contact("Opportunity", docname)
     if not linked_contacts:
         return
 
+    opportunity_doc = frappe.get_doc("Opportunity", docname)
     if not contact and len(linked_contacts) == 1:
-        contact_doc = frappe.get_doc("Contact", linked_contacts[0])
-        contact_doc.is_primary_contact = 1
-        contact_doc.save()
+        opportunity_doc.contact_person = linked_contacts[0]
     elif contact:
-        for linked_contact in linked_contacts:
-            primary = 0
-            if contact == linked_contact:
-                primary = 1
-            frappe.db.set_value(
-                "Contact", linked_contact, "is_primary_contact", primary
-            )
+        opportunity_doc.contact_person = contact
+    opportunity_doc.save()
     return True
 
 

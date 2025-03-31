@@ -36,7 +36,7 @@ class OverrideOpportunity(Opportunity):
         super().validate()
 
     def after_insert(self):
-        from next_crm.api.contact import set_primary_contact
+        from next_crm.api.contact import set_opportunity_primary_contact
 
         if self.opportunity_from == "Lead":
             link_open_tasks(self.opportunity_from, self.party_name, self)
@@ -47,7 +47,7 @@ class OverrideOpportunity(Opportunity):
                 copy_comments(self.opportunity_from, self.party_name, self)
                 link_communications(self.opportunity_from, self.party_name, self)
         self.set_primary_email_mobile_no()
-        set_primary_contact("Opportunity", self.name)
+        set_opportunity_primary_contact(self.name)
 
     def before_save(self):
         self.apply_sla()
