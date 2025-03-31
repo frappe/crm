@@ -242,7 +242,7 @@
                               {{ contact.full_name }}
                             </div>
                             <Badge
-                              v-if="contact.is_primary_contact"
+                              v-if="contact.name == opportunity.data.contact_person"
                               class="ml-2"
                               variant="outline"
                               :label="__('Primary')"
@@ -855,12 +855,12 @@ async function removeAddress(address) {
 }
 
 async function setPrimaryContact(contact) {
-  let d = await call('next_crm.api.contact.set_primary_contact', {
-    doctype: "Opportunity",
+  let d = await call('next_crm.api.contact.set_opportunity_primary_contact', {
     docname: props.opportunityId,
     contact,
   })
   if (d) {
+    opportunity.reload()
     opportunityContacts.reload()
     createToast({
       title: __('Primary contact set'),
