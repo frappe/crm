@@ -201,7 +201,10 @@ class Lead(Lead):
     def create_opportunity(self, contact, customer_or_prospect):
         from erpnext.crm.doctype.lead.lead import make_opportunity
 
-        from next_crm.api.contact import link_contact_to_doc
+        from next_crm.api.contact import (
+            link_contact_to_doc,
+            set_opportunity_primary_contact,
+        )
 
         opportunity = make_opportunity(self.name)
 
@@ -224,6 +227,7 @@ class Lead(Lead):
 
         opportunity.insert()
         link_contact_to_doc(contact, "Opportunity", opportunity.name)
+        set_opportunity_primary_contact(opportunity.name)
         return opportunity.name
 
     def set_sla(self):
