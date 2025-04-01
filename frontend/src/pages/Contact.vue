@@ -138,6 +138,7 @@
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
+            v-if="tab.count"
             class="group-hover:bg-surface-gray-7"
             :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
             variant="solid"
@@ -150,14 +151,23 @@
       </template>
       <template #tab-panel="{ tab }">
         <DealsListView
-          v-if="tab.label === 'Deals' && rows.length"
+          v-if="tab.name === 'Deals' && rows.length"
           class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
+        <Activities
+            v-if="tab.name !== 'Deals'"
+            ref="activities"
+            doctype="Contact"
+            :tabs="tabs"
+            v-model:reload="reload"
+            v-model:tabIndex="tabIndex"
+            v-model="contact"
+        />
         <div
-          v-if="!rows.length"
+          v-if="tab.name === 'Deals' && !rows.length"
           class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
@@ -189,7 +199,7 @@ import { globalStore } from '@/stores/global.js'
 import { usersStore } from '@/stores/users.js'
 import { organizationsStore } from '@/stores/organizations.js'
 import { statusesStore } from '@/stores/statuses'
-import { callEnabled } from '@/composables/settings'
+import {callEnabled, whatsappEnabled} from '@/composables/settings'
 import {
   Breadcrumbs,
   Avatar,
@@ -202,6 +212,15 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import ActivityIcon from "@/components/Icons/ActivityIcon.vue";
+import Activities from "@/components/Activities/Activities.vue";
+import EmailIcon from "@/components/Icons/EmailIcon.vue";
+import CommentIcon from "@/components/Icons/CommentIcon.vue";
+import DetailsIcon from "@/components/Icons/DetailsIcon.vue";
+import TaskIcon from "@/components/Icons/TaskIcon.vue";
+import NoteIcon from "@/components/Icons/NoteIcon.vue";
+import AttachmentIcon from "@/components/Icons/AttachmentIcon.vue";
+import WhatsAppIcon from "@/components/Icons/WhatsAppIcon.vue";
 
 const { brand } = getSettings()
 const { $dialog, makeCall } = globalStore()
@@ -315,13 +334,62 @@ async function deleteContact() {
   })
 }
 
+const reload = ref(false)
 const tabIndex = ref(0)
 const tabs = [
   {
-    label: 'Deals',
+    name: 'Deals',
+    label: __('Deals'),
     icon: h(DealsIcon, { class: 'h-4 w-4' }),
     count: computed(() => deals.data?.length),
   },
+  {
+    name: 'Activity',
+    label: __('Activity'),
+    icon: ActivityIcon,
+  },
+  {
+    name: 'Emails',
+    label: __('Emails'),
+    icon: EmailIcon,
+  },
+  {
+    name: 'Comments',
+    label: __('Comments'),
+    icon: CommentIcon,
+  },
+  {
+    name: 'Data',
+    label: __('Data'),
+    icon: DetailsIcon,
+  },
+  {
+    name: 'Calls',
+    label: __('Calls'),
+    icon: PhoneIcon,
+    condition: () => callEnabled.value,
+  },
+  {
+    name: 'Tasks',
+    label: __('Tasks'),
+    icon: TaskIcon,
+  },
+  {
+    name: 'Notes',
+    label: __('Notes'),
+    icon: NoteIcon,
+  },
+  {
+    name: 'Attachments',
+    label: __('Attachments'),
+    icon: AttachmentIcon,
+  },
+  {
+    name: 'WhatsApp',
+    label: __('WhatsApp'),
+    icon: WhatsAppIcon,
+    condition: () => whatsappEnabled.value,
+  }
 ]
 
 const deals = createResource({
