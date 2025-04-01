@@ -1,55 +1,36 @@
 <template>
   <Dialog v-model="show" :options="dialogOptions">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
+      <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
+        <div class="flex items-center justify-between mb-5">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
               {{ __(dialogOptions.title) || __('Untitled') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              @click="openQuickEntryModal"
-            >
-              <EditIcon class="h-4 w-4" />
+            <Button v-if="isManager() && !isMobileView" variant="ghost" class="w-7" @click="openQuickEntryModal">
+              <EditIcon class="w-4 h-4" />
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
+              <FeatherIcon name="x" class="w-4 h-4" />
             </Button>
           </div>
         </div>
         <div v-if="tabs.data">
-          <FieldLayout
-            :tabs="tabs.data"
-            :data="_callLog"
-            doctype="CRM Call Log"
-          />
-          <ErrorMessage class="mt-2" :message="error" />
+          <FieldLayout :tabs="tabs.data" :data="_callLog" doctype="CRM Call Log" />
+          <ErrorMessage class="mt-8" :message="error" />
         </div>
       </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="space-y-2">
-          <Button
-            class="w-full"
-            v-for="action in dialogOptions.actions"
-            :key="action.label"
-            v-bind="action"
-            :label="__(action.label)"
-            :loading="loading"
-          />
+          <Button class="w-full" v-for="action in dialogOptions.actions" :key="action.label" v-bind="action"
+            :label="__(action.label)" :loading="loading" />
         </div>
       </div>
     </template>
   </Dialog>
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Call Log"
-  />
+  <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" doctype="CRM Call Log" />
 </template>
 
 <script setup>
@@ -67,7 +48,7 @@ const props = defineProps({
   options: {
     type: Object,
     default: {
-      afterInsert: () => {},
+      afterInsert: () => { },
     },
   },
 })
@@ -175,6 +156,13 @@ const createCallLog = createResource({
   },
   onError(err) {
     loading.value = false
+    if (err.exc_type == 'MandatoryError') {
+      const errorMessage = err.messages
+        .map(msg => msg.split('Log:')[1].trim())
+        .join(', ')
+      error.value = `These fields are required: ${errorMessage}`
+      return
+    }
     error.value = err
   },
 })
