@@ -5,10 +5,12 @@
     v-model:showFilesUploader="showFilesUploader"
     :tabs="tabs"
     :title="title"
+    :doctype="doctype"
     :doc="doc"
     :emailBox="emailBox"
     :whatsappBox="whatsappBox"
     :modalRef="modalRef"
+    @reload="all_activities.reload()"
   />
   <FadedScrollableDiv
     :maskHeight="30"
