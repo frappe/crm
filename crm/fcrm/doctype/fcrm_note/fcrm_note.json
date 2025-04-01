@@ -19,7 +19,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Title"
+   "label": "Title",
+   "reqd": 1
   },
   {
    "fieldname": "content",
@@ -49,7 +50,7 @@
    "link_fieldname": "note"
   }
  ],
- "modified": "2024-01-19 21:56:30.123334",
+ "modified": "2025-04-01 15:30:14.742001",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Note",
