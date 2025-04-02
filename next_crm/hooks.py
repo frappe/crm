@@ -167,7 +167,7 @@ doc_events = {
         "on_update": ["next_crm.doc_events.whatsapp_message.on_update"],
     },
     "User": {
-        "before_validate": ["next_crm.doc_events.user.validate_user"],
+        "before_validate": ["next_crm.doc_events.user.before_validate"],
     },
 }
 

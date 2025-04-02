@@ -2,7 +2,7 @@ import frappe
 from frappe import _
 
 
-def validate_user(doc, event):
+def before_validate(doc, method=None):
     if (
         frappe.conf.demo_username
         and frappe.session.user == frappe.conf.demo_username
