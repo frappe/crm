@@ -7,25 +7,6 @@ from next_crm.api.doc import get_assigned_users
 from next_crm.ncrm.doctype.crm_notification.crm_notification import notify_user
 
 
-def validate(doc, method):
-    if doc.type == "Incoming" and doc.get("from"):
-        name, doctype = get_lead_or_opportunity_from_number(doc.get("from"))
-        doc.reference_doctype = doctype
-        doc.reference_name = name
-
-
-def on_update(doc, method):
-    frappe.publish_realtime(
-        "whatsapp_message",
-        {
-            "reference_doctype": doc.reference_doctype,
-            "reference_name": doc.reference_name,
-        },
-    )
-
-    notify_agent(doc)
-
-
 def notify_agent(doc):
     if doc.type == "Incoming":
         doctype = doc.reference_doctype

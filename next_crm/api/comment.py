@@ -7,10 +7,6 @@ from frappe import _
 from next_crm.ncrm.doctype.crm_notification.crm_notification import notify_user
 
 
-def on_update(self, method):
-    notify_mentions(self)
-
-
 def notify_mentions(doc):
     """
     Extract mentions from `content`, and notify.

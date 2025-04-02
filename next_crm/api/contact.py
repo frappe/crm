@@ -2,13 +2,6 @@ import frappe
 from frappe import _
 
 
-def validate(doc, method):
-    set_primary_email(doc)
-    set_primary_mobile_no(doc)
-    doc.set_primary_email()
-    doc.set_primary("mobile_no")
-
-
 def set_primary_email(doc):
     if not doc.email_ids:
         return
