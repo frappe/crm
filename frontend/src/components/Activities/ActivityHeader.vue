@@ -6,16 +6,27 @@
     <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
       {{ __(title) }}
     </div>
-    <Button
-      v-if="title == 'Emails'"
-      variant="solid"
-      @click="emailBox.show = true"
-    >
-      <template #prefix>
-        <FeatherIcon name="plus" class="h-4 w-4" />
-      </template>
-      <span>{{ __('New Email') }}</span>
-    </Button>
+    <div  v-if="title == 'Emails'">
+      <Button
+          variant="solid"
+          @click="showEmailUpload = true"
+      >
+        <template #prefix>
+          <FeatherIcon name="upload" class="h-4 w-4" />
+        </template>
+        <span>{{ __('Upload Email') }}</span>
+      </Button>
+      <Button
+          variant="solid"
+          @click="emailBox.show = true"
+          class="mr-2"
+      >
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4 w-4" />
+        </template>
+        <span>{{ __('New Email') }}</span>
+      </Button>
+    </div>
     <Button
       v-else-if="title == 'Comments'"
       variant="solid"
@@ -95,6 +106,12 @@
       </template>
     </Dropdown>
   </div>
+  <EmailUploadModal
+    v-model="showEmailUpload"
+    :doctype="doctype"
+    :docname="doc.data.name"
+    @uploaded="$emit('reload')"
+  />
 </template>
 <script setup>
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
@@ -107,11 +124,13 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { globalStore } from '@/stores/global'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import { Dropdown } from 'frappe-ui'
-import { computed, h } from 'vue'
+import { computed, h, ref } from 'vue'
+import EmailUploadModal from '@/components/Modals/EmailUploadModal.vue'
 
 const props = defineProps({
   tabs: Array,
   title: String,
+  doctype: String,
   doc: Object,
   modalRef: Object,
   emailBox: Object,
@@ -123,6 +142,7 @@ const { makeCall } = globalStore()
 const tabIndex = defineModel()
 const showWhatsappTemplates = defineModel('showWhatsappTemplates')
 const showFilesUploader = defineModel('showFilesUploader')
+const showEmailUpload = ref(false)
 
 const defaultActions = computed(() => {
   let actions = [
