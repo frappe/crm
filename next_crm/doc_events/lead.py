@@ -6,13 +6,12 @@ def on_trash(doc, method=None):
         "Dynamic Link",
         filters={"link_name": doc.name, "parenttype": ["in", ["Contact", "Address"]]},
     )
-    events = frappe.get_list(
+    frappe.db.delete(
         "Event",
         filters=[
             ["Event Participants", "reference_doctype", "=", "Lead"],
             ["Event Participants", "reference_docname", "=", doc.name],
         ],
-        pluck="name",
     )
     frappe.db.delete(
         "Event Participants",
@@ -21,7 +20,6 @@ def on_trash(doc, method=None):
             ["reference_docname", "=", doc.name],
         ],
     )
-    frappe.db.delete("Event", {"name": ["in", events]})
     frappe.db.delete("CRM Notification", {"reference_name": doc.name})
     gmail_threads = frappe.get_list(
         "Gmail Thread",
