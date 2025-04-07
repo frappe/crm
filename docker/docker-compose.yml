@@ -23,8 +23,8 @@ services:
       - SHELL=/bin/bash
     working_dir: /home/frappe
     volumes:
-      - ./:/workspace  # Mount the entire project to /workspace
-      - ./docker/init.sh:/home/frappe/init.sh  # Mount init.sh directly
+      - .:/workspace  # Entire project in /workspace
+      - ./docker:/home/frappe  # Mounts the `docker` folder to /home/frappe
     ports:
       - 8001:8000
       - 9000:9000
