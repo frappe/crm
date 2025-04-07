@@ -457,9 +457,6 @@ function parseRows(rows, columns = []) {
         }
       } else if (row == '_assign') {
         let assignees = JSON.parse(deal._assign || '[]')
-        if (!assignees.length && deal.deal_owner) {
-          assignees = [deal.deal_owner]
-        }
         _rows[row] = assignees.map((user) => ({
           name: user,
           image: getUser(user).user_image,
