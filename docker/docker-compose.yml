@@ -18,7 +18,7 @@ services:
 
   frappe:
     image: frappe/bench:latest
-    command: bash /workspace/docker/init.sh
+    command: bash /workspace/init.sh
     environment:
       - SHELL=/bin/bash
     working_dir: /home/frappe
