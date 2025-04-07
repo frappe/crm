@@ -156,6 +156,7 @@ declare module 'vue' {
     MobileLayout: typeof import('./src/components/Layouts/MobileLayout.vue')['default']
     MobileSidebar: typeof import('./src/components/Mobile/MobileSidebar.vue')['default']
     MoneyIcon: typeof import('./src/components/Icons/MoneyIcon.vue')['default']
+    MultiActionButton: typeof import('./src/components/MultiActionButton.vue')['default']
     MultipleAvatar: typeof import('./src/components/MultipleAvatar.vue')['default']
     MultiSelectEmailInput: typeof import('./src/components/Controls/MultiSelectEmailInput.vue')['default']
     MuteIcon: typeof import('./src/components/Icons/MuteIcon.vue')['default']
