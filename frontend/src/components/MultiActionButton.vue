@@ -12,8 +12,13 @@
       @click="() => activeButton.onClick()"
     >
       <template #prefix>
+        <FeatherIcon
+          v-if="activeButton.icon && typeof activeButton.icon === 'string'"
+          :name="activeButton.icon"
+          class="h-4 w-4"
+        />
         <component
-          v-if="activeButton.icon"
+          v-else-if="activeButton.icon"
           :is="activeButton.icon"
           class="h-4 w-4"
         />
