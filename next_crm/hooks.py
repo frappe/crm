@@ -152,22 +152,22 @@ override_doctype_class = {
 
 doc_events = {
     "Contact": {
-        "validate": ["next_crm.api.contact.validate"],
+        "validate": ["next_crm.doc_events.contact.validate"],
     },
     "ToDo": {
-        "after_insert": ["next_crm.api.todo.after_insert"],
-        "on_update": ["next_crm.api.todo.on_update"],
-        "before_insert": ["next_crm.api.todo.before_insert"],
+        "after_insert": ["next_crm.doc_events.todo.after_insert"],
+        "on_update": ["next_crm.doc_events.todo.on_update"],
+        "before_insert": ["next_crm.doc_events.todo.before_insert"],
     },
     "Comment": {
-        "on_update": ["next_crm.api.comment.on_update"],
+        "on_update": ["next_crm.doc_events.comment.on_update"],
     },
     "WhatsApp Message": {
-        "validate": ["next_crm.api.whatsapp.validate"],
-        "on_update": ["next_crm.api.whatsapp.on_update"],
+        "validate": ["next_crm.doc_events.whatsapp_message.validate"],
+        "on_update": ["next_crm.doc_events.whatsapp_message.on_update"],
     },
     "User": {
-        "before_validate": ["next_crm.api.demo.validate_user"],
+        "before_validate": ["next_crm.doc_events.user.before_validate"],
     },
 }
 
