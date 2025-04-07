@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center">
     <Button
-      variant="solid"
+      :variant="$attrs.variant"
       class="border-0"
       :label="activeButton.label"
       :size="$attrs.size"
@@ -28,7 +28,7 @@
     >
       <template v-slot="{ togglePopover }">
         <Button
-          variant="solid"
+          :variant="$attrs.variant"
           @click="togglePopover"
           icon="chevron-down"
           class="!w-6 justify-start rounded-bl-none rounded-tl-none border-0 pr-0 text-xs"
