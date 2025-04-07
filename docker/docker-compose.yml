@@ -7,7 +7,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
       - --skip-character-set-client-handshake
-      - --skip-innodb-read-only-compressed # Temporary fix for MariaDB 10.6
+      - --skip-innodb-read-only-compressed
     environment:
       MYSQL_ROOT_PASSWORD: 123
     volumes:
@@ -18,13 +18,13 @@ services:
 
   frappe:
     image: frappe/bench:latest
-    command: bash ./init.sh
+    command: bash /home/frappe/init.sh
     environment:
       - SHELL=/bin/bash
     working_dir: /home/frappe
     volumes:
       - .:/workspace
-      - .:/home/frappe
+      - ./docker:/home/frappe  # Mounts docker dir to container's working dir
     ports:
       - 8001:8000
       - 9000:9000
