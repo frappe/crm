@@ -18,12 +18,13 @@ services:
 
   frappe:
     image: frappe/bench:latest
-    command: bash /workspace/init.sh
+    command: bash ./init.sh
     environment:
       - SHELL=/bin/bash
     working_dir: /home/frappe
     volumes:
       - .:/workspace
+      - .:/home/frappe
     ports:
       - 8001:8000
       - 9000:9000
