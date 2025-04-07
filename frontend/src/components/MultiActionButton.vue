@@ -2,10 +2,13 @@
   <div class="flex items-center">
     <Button
       variant="solid"
-      class="border-0 rounded-br-none rounded-tr-none"
+      class="border-0"
       :label="activeButton.label"
       :size="$attrs.size"
-      :class="$attrs.class"
+      :class="[
+        $attrs.class,
+        showDropdown ? 'rounded-br-none rounded-tr-none' : '',
+      ]"
       @click="() => activeButton.onClick()"
     >
       <template #prefix>
@@ -17,6 +20,7 @@
       </template>
     </Button>
     <Dropdown
+      v-show="showDropdown"
       :options="parsedOptions"
       size="sm"
       class="flex-1 [&>div>div>div]:w-full"
@@ -44,6 +48,7 @@ const props = defineProps({
   },
 })
 
+const showDropdown = ref(props.options?.length > 1)
 const activeButton = ref(props.options?.[0] || {})
 
 const parsedOptions = computed(() => {
