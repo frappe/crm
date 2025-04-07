@@ -100,10 +100,16 @@
                     :disabled="true"
                   />
                   <Link
-                    v-else-if="field.fieldtype === 'Link'"
+                    v-else-if="
+                      ['Link', 'Dynamic Link'].includes(field.fieldtype)
+                    "
                     class="text-sm text-ink-gray-8"
                     v-model="row[field.fieldname]"
-                    :doctype="field.options"
+                    :doctype="
+                      field.fieldtype == 'Link'
+                        ? field.options
+                        : row[field.options]
+                    "
                     :filters="field.filters"
                   />
                   <Link

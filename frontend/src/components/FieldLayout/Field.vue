@@ -59,11 +59,16 @@
         <span class="text-ink-red-3" v-if="field.mandatory">*</span>
       </label>
     </div>
-    <div class="flex gap-1" v-else-if="field.fieldtype === 'Link'">
+    <div
+      class="flex gap-1"
+      v-else-if="['Link', 'Dynamic Link'].includes(field.fieldtype)"
+    >
       <Link
         class="form-control flex-1 truncate"
         :value="data[field.fieldname]"
-        :doctype="field.options"
+        :doctype="
+          field.fieldtype == 'Link' ? field.options : data[field.options]
+        "
         :filters="field.filters"
         @change="(v) => (data[field.fieldname] = v)"
         :placeholder="getPlaceholder(field)"
