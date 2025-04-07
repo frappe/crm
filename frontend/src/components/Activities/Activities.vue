@@ -373,11 +373,7 @@
     >
       <component :is="emptyTextIcon" class="h-10 w-10" />
       <span>{{ __(emptyText) }}</span>
-      <Button
-        v-if="title == 'Calls'"
-        :label="__('Make a Call')"
-        @click="makeCall(doc.data.mobile_no)"
-      />
+      <MultiActionButton v-if="title == 'Calls'" :options="callActions" />
       <Button
         v-else-if="title == 'Notes'"
         :label="__('Create Note')"
@@ -470,6 +466,7 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
+import MultiActionButton from '@/components/MultiActionButton.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
@@ -487,7 +484,7 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { whatsappEnabled } from '@/composables/settings'
+import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import { capture } from '@/telemetry'
 import { Button, Tooltip, createResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
@@ -784,6 +781,24 @@ function scroll(hash) {
     }
   }, 500)
 }
+
+const callActions = computed(() => {
+  let actions = [
+    {
+      label: __('Create Call Log'),
+      onClick: () => modalRef.value.createCallLog(),
+    },
+    {
+      label: __('Make a Call'),
+      onClick: () => makeCall(doc.data.mobile_no),
+      condition: () => callEnabled.value,
+    },
+  ]
+
+  return actions.filter((action) =>
+    action.condition ? action.condition() : true,
+  )
+})
 
 defineExpose({ emailBox, all_activities })
 </script>

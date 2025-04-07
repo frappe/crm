@@ -26,16 +26,11 @@
       </template>
       <span>{{ __('New Comment') }}</span>
     </Button>
-    <Button
+    <MultiActionButton
       v-else-if="title == 'Calls'"
       variant="solid"
-      @click="makeCall(doc.data.mobile_no)"
-    >
-      <template #prefix>
-        <PhoneIcon class="h-4 w-4" />
-      </template>
-      <span>{{ __('Make a Call') }}</span>
-    </Button>
+      :options="callActions"
+    />
     <Button
       v-else-if="title == 'Notes'"
       variant="solid"
@@ -97,6 +92,7 @@
   </div>
 </template>
 <script setup>
+import MultiActionButton from '@/components/MultiActionButton.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -138,6 +134,11 @@ const defaultActions = computed(() => {
     },
     {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      label: __('Create Call Log'),
+      onClick: () => props.modalRef.createCallLog(),
+    },
+    {
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
       label: __('Make a Call'),
       onClick: () => makeCall(props.doc.data.mobile_no),
       condition: () => callEnabled.value,
@@ -172,4 +173,24 @@ const defaultActions = computed(() => {
 function getTabIndex(name) {
   return props.tabs.findIndex((tab) => tab.name === name)
 }
+
+const callActions = computed(() => {
+  let actions = [
+    {
+      label: __('Create Call Log'),
+      icon: 'plus',
+      onClick: () => props.modalRef.createCallLog(),
+    },
+    {
+      label: __('Make a Call'),
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      onClick: () => makeCall(doc.data.mobile_no),
+      condition: () => callEnabled.value,
+    },
+  ]
+
+  return actions.filter((action) =>
+    action.condition ? action.condition() : true,
+  )
+})
 </script>
