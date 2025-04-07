@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-03-30 09:35+0000\n"
-"PO-Revision-Date: 2025-03-30 09:35+0000\n"
+"POT-Creation-Date: 2025-04-06 09:35+0000\n"
+"PO-Revision-Date: 2025-04-06 09:35+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 msgid " (New)"
 msgstr ""
 
-#: frontend/src/components/Modals/TaskModal.vue:95
+#: frontend/src/components/Modals/TaskModal.vue:66
 #: frontend/src/components/Telephony/TaskPanel.vue:67
 msgid "01/04/2024 11:30 PM"
 msgstr ""
@@ -631,8 +631,8 @@ msgstr ""
 msgid "Call using {0}"
 msgstr ""
 
-#: frontend/src/components/Modals/NoteModal.vue:43
-#: frontend/src/components/Modals/TaskModal.vue:43
+#: frontend/src/components/Modals/NoteModal.vue:30
+#: frontend/src/components/Modals/TaskModal.vue:30
 msgid "Call with John Doe"
 msgstr ""
 
@@ -886,7 +886,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 #: frontend/src/components/Modals/EmailTemplateModal.vue:61
 #: frontend/src/components/Modals/EmailTemplateModal.vue:74
-#: frontend/src/components/Modals/NoteModal.vue:47
+#: frontend/src/components/Modals/NoteModal.vue:34
 msgid "Content"
 msgstr ""
 
@@ -923,14 +923,14 @@ msgid "Converted successfully"
 msgstr ""
 
 #: frontend/src/components/Modals/AddressModal.vue:100
-#: frontend/src/components/Modals/CallLogModal.vue:104
+#: frontend/src/components/Modals/CallLogModal.vue:85
 #: frontend/src/components/Modals/ContactModal.vue:37
 #: frontend/src/components/Modals/DealModal.vue:63
 #: frontend/src/components/Modals/EmailTemplateModal.vue:9
 #: frontend/src/components/Modals/LeadModal.vue:34
-#: frontend/src/components/Modals/NoteModal.vue:8
-#: frontend/src/components/Modals/OrganizationModal.vue:37
-#: frontend/src/components/Modals/TaskModal.vue:8
+#: frontend/src/components/Modals/NoteModal.vue:6
+#: frontend/src/components/Modals/OrganizationModal.vue:25
+#: frontend/src/components/Modals/TaskModal.vue:6
 #: frontend/src/components/Modals/ViewModal.vue:16
 #: frontend/src/pages/CallLogs.vue:11 frontend/src/pages/Contacts.vue:13
 #: frontend/src/pages/Contacts.vue:57 frontend/src/pages/Deals.vue:13
@@ -963,12 +963,12 @@ msgid "Create New"
 msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:383
-#: frontend/src/components/Modals/NoteModal.vue:18
+#: frontend/src/components/Modals/NoteModal.vue:15
 msgid "Create Note"
 msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:398
-#: frontend/src/components/Modals/TaskModal.vue:18
+#: frontend/src/components/Modals/TaskModal.vue:15
 msgid "Create Task"
 msgstr ""
 
@@ -1197,7 +1197,7 @@ msgstr ""
 #. Label of the description (Text Editor) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
-#: frontend/src/components/Modals/TaskModal.vue:48
+#: frontend/src/components/Modals/TaskModal.vue:35
 msgid "Description"
 msgstr ""
 
@@ -1343,7 +1343,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: frontend/src/components/Modals/CallLogModal.vue:100
+#: frontend/src/components/Modals/CallLogModal.vue:81
 msgid "Edit Call Log"
 msgstr ""
 
@@ -1363,7 +1363,7 @@ msgstr ""
 msgid "Edit Grid Row Fields Layout"
 msgstr ""
 
-#: frontend/src/components/Modals/NoteModal.vue:18
+#: frontend/src/components/Modals/NoteModal.vue:15
 msgid "Edit Note"
 msgstr ""
 
@@ -1371,7 +1371,7 @@ msgstr ""
 msgid "Edit Quick Entry Layout"
 msgstr ""
 
-#: frontend/src/components/Modals/TaskModal.vue:18
+#: frontend/src/components/Modals/TaskModal.vue:15
 msgid "Edit Task"
 msgstr ""
 
@@ -2059,7 +2059,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:75 frontend/src/components/Filter.vue:108
 #: frontend/src/components/Modals/AssignmentModal.vue:35
-#: frontend/src/components/Modals/TaskModal.vue:75
+#: frontend/src/components/Modals/TaskModal.vue:51
 #: frontend/src/components/Telephony/TaskPanel.vue:47
 msgid "John Doe"
 msgstr ""
@@ -2446,7 +2446,7 @@ msgstr ""
 msgid "New Address"
 msgstr ""
 
-#: frontend/src/components/Modals/CallLogModal.vue:100
+#: frontend/src/components/Modals/CallLogModal.vue:81
 msgid "New Call Log"
 msgstr ""
 
@@ -2735,13 +2735,13 @@ msgstr ""
 msgid "Only one {0} can be set as primary."
 msgstr ""
 
-#: frontend/src/components/Modals/NoteModal.vue:25
-#: frontend/src/components/Modals/TaskModal.vue:25
+#: frontend/src/components/Modals/NoteModal.vue:18
+#: frontend/src/components/Modals/TaskModal.vue:18
 msgid "Open Deal"
 msgstr ""
 
-#: frontend/src/components/Modals/NoteModal.vue:26
-#: frontend/src/components/Modals/TaskModal.vue:26
+#: frontend/src/components/Modals/NoteModal.vue:19
+#: frontend/src/components/Modals/TaskModal.vue:19
 msgid "Open Lead"
 msgstr ""
 
@@ -3331,7 +3331,7 @@ msgstr ""
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:26
 #: frontend/src/components/DropdownItem.vue:21
 #: frontend/src/components/Modals/AddressModal.vue:100
-#: frontend/src/components/Modals/CallLogModal.vue:104
+#: frontend/src/components/Modals/CallLogModal.vue:85
 #: frontend/src/components/Modals/DataFieldsModal.vue:26
 #: frontend/src/components/Modals/QuickEntryModal.vue:26
 #: frontend/src/components/Modals/SidePanelModal.vue:26
@@ -3709,8 +3709,8 @@ msgstr ""
 #. Label of the title (Data) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
-#: frontend/src/components/Modals/NoteModal.vue:41
-#: frontend/src/components/Modals/TaskModal.vue:41
+#: frontend/src/components/Modals/NoteModal.vue:30
+#: frontend/src/components/Modals/TaskModal.vue:30
 msgid "Title"
 msgstr ""
 
@@ -3757,8 +3757,8 @@ msgstr ""
 msgid "Tomorrow"
 msgstr ""
 
-#: frontend/src/components/Modals/NoteModal.vue:56
-#: frontend/src/components/Modals/TaskModal.vue:58
+#: frontend/src/components/Modals/NoteModal.vue:37
+#: frontend/src/components/Modals/TaskModal.vue:39
 msgid "Took a call with John Doe and discussed the new project."
 msgstr ""
 
@@ -3860,8 +3860,8 @@ msgstr ""
 #: frontend/src/components/ColumnSettings.vue:134
 #: frontend/src/components/Modals/AssignmentModal.vue:17
 #: frontend/src/components/Modals/EmailTemplateModal.vue:9
-#: frontend/src/components/Modals/NoteModal.vue:8
-#: frontend/src/components/Modals/TaskModal.vue:8
+#: frontend/src/components/Modals/NoteModal.vue:6
+#: frontend/src/components/Modals/TaskModal.vue:6
 #: frontend/src/components/Settings/GeneralSettings.vue:112
 #: frontend/src/components/Settings/ProfileSettings.vue:71
 #: frontend/src/components/Settings/SettingsPage.vue:31
@@ -4144,7 +4144,7 @@ msgstr ""
 msgid "kanban"
 msgstr ""
 
-#: crm/api/doc.py:38 crm/api/doc.py:156 crm/api/doc.py:500
+#: crm/api/doc.py:38 crm/api/doc.py:156 crm/api/doc.py:501
 msgid "label"
 msgstr ""
 

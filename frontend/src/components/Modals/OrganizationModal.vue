@@ -1,43 +1,28 @@
 <template>
   <Dialog v-model="show" :options="{ size: 'xl' }">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
+      <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
+        <div class="flex items-center justify-between mb-5">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
               {{ __('New Organization') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              @click="openQuickEntryModal"
-            >
-              <EditIcon class="h-4 w-4" />
+            <Button v-if="isManager() && !isMobileView" variant="ghost" class="w-7" @click="openQuickEntryModal">
+              <EditIcon class="w-4 h-4" />
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
+              <FeatherIcon name="x" class="w-4 h-4" />
             </Button>
           </div>
         </div>
-        <FieldLayout
-          v-if="tabs.data?.length"
-          :tabs="tabs.data"
-          :data="_organization"
-          doctype="CRM Organization"
-        />
+        <FieldLayout v-if="tabs.data?.length" :tabs="tabs.data" :data="_organization" doctype="CRM Organization" />
+        <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
       </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="space-y-2">
-          <Button
-            class="w-full"
-            variant="solid"
-            :label="__('Create')"
-            :loading="loading"
-            @click="createOrganization"
-          />
+          <Button class="w-full" variant="solid" :label="__('Create')" :loading="loading" @click="createOrganization" />
         </div>
       </div>
     </template>
@@ -59,7 +44,7 @@ const props = defineProps({
     type: Object,
     default: {
       redirect: true,
-      afterInsert: () => {},
+      afterInsert: () => { },
     },
   },
 })
@@ -84,6 +69,7 @@ let _organization = ref({
 })
 
 let doc = ref({})
+const error = ref(null)
 
 async function createOrganization() {
   const doc = await call('frappe.client.insert', {
@@ -91,6 +77,12 @@ async function createOrganization() {
       doctype: 'CRM Organization',
       ..._organization.value,
     },
+  }, {
+    onError: (err) => {
+      if (err.error.exc_type == 'ValidationError') {
+        error.value = err.error?.messages?.[0]
+      }
+    }
   })
   loading.value = false
   if (doc.name) {

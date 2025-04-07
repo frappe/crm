@@ -545,7 +545,6 @@ const tabs = computed(() => {
       name: 'Calls',
       label: __('Calls'),
       icon: PhoneIcon,
-      condition: () => callEnabled.value,
     },
     {
       name: 'Tasks',
