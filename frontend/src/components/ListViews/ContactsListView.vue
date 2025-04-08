@@ -14,7 +14,7 @@
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
-    ref="listViewRef"
+    @update:selections="$emit('selectionsChanged', Array.from($event || []))"
   >
     <ListHeader
       class="mx-3 sm:mx-5"
@@ -229,14 +229,6 @@ watch(pageLengthCount, (val, old_value) => {
 })
 
 const listBulkActionsRef = ref(null)
-const listViewRef = ref(null)
-
-watch(
-  () => Array.from(listViewRef.value?.selections || []),
-  (selections) => {
-    emit('selectionsChanged', selections)
-  },
-)
 
 defineExpose({
   customListActions: computed(
