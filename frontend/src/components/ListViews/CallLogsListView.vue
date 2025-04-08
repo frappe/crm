@@ -10,6 +10,7 @@
     }"
     row-key="name"
     v-bind="$attrs"
+    ref="listViewRef"
   >
     <ListHeader
       class="sm:mx-5 mx-3"
@@ -205,6 +206,7 @@ const emit = defineEmits([
   'applyFilter',
   'applyLikeFilter',
   'likeDoc',
+  'selectionsChanged',
 ])
 
 const pageLengthCount = defineModel()
@@ -229,7 +231,14 @@ watch(pageLengthCount, (val, old_value) => {
 })
 
 const listBulkActionsRef = ref(null)
+const listViewRef = ref(null)
 
+watch(
+  () => Array.from(listViewRef.value?.selections || []),
+  (selections) => {
+    emit('selectionsChanged', selections)
+  },
+)
 defineExpose({
   customListActions: computed(
     () => listBulkActionsRef.value?.customListActions,

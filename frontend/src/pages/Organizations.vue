@@ -44,6 +44,9 @@
     @applyFilter="(data) => viewControls.applyFilter(data)"
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
+    @selectionsChanged="
+      (selections) => viewControls.handleSelectionsChange(selections)
+    "
   />
   <div
     v-else-if="organizations.data"
