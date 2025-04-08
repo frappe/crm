@@ -15,10 +15,16 @@
     :doc="doc.data?.name"
     @after="redirect('notes')"
   />
+  <CallLogModal
+    v-model="showCallLogModal"
+    v-model:callLog="callLog"
+    :options="{ afterInsert: () => activities.reload() }"
+  />
 </template>
 <script setup>
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
+import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -77,6 +83,22 @@ function showNote(n) {
   showNoteModal.value = true
 }
 
+// Call Logs
+const showCallLogModal = ref(false)
+const callLog = ref({})
+
+function createCallLog() {
+  let doctype = props.doctype
+  let docname = props.doc.data?.name
+  callLog.value = {
+    data: {
+      reference_doctype: doctype,
+      reference_docname: docname,
+    },
+  }
+  showCallLogModal.value = true
+}
+
 // common
 const route = useRoute()
 const router = useRouter()
@@ -95,5 +117,6 @@ defineExpose({
   deleteTask,
   updateTaskStatus,
   showNote,
+  createCallLog,
 })
 </script>
