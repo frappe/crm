@@ -124,7 +124,7 @@
                         () =>
                           lead.data.mobile_no
                             ? makeCall(lead.data.mobile_no)
-                            : errorMessage(__('No phone number set'))
+                            : _errorMessage(__('No phone number set'))
                       "
                     >
                       <PhoneIcon class="h-4 w-4" />
@@ -139,7 +139,7 @@
                         @click="
                           lead.data.email
                             ? openEmailBox()
-                            : errorMessage(__('No email set'))
+                            : _errorMessage(__('No email set'))
                         "
                       />
                     </Button>
@@ -153,7 +153,7 @@
                         @click="
                           lead.data.website
                             ? openWebsite(lead.data.website)
-                            : errorMessage(__('No website set'))
+                            : _errorMessage(__('No website set'))
                         "
                       />
                     </Button>
@@ -191,6 +191,7 @@
       </div>
     </Resizer>
   </div>
+  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
@@ -309,6 +310,7 @@
   />
 </template>
 <script setup>
+import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import Resizer from '@/components/Resizer.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
@@ -342,7 +344,7 @@ import {
   createToast,
   setupAssignees,
   setupCustomizations,
-  errorMessage,
+  errorMessage as _errorMessage,
   copyToClipboard,
 } from '@/utils'
 import { getView } from '@/utils/view'
@@ -392,11 +394,16 @@ const props = defineProps({
   },
 })
 
+const errorTitle = ref('')
+const errorMessage = ref('')
+
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   onSuccess: (data) => {
+    errorTitle.value = ''
+    errorMessage.value = ''
     setupAssignees(lead)
     setupCustomizations(lead, {
       doc: data,
@@ -409,6 +416,14 @@ const lead = createResource({
       resource: { lead, sections },
       call,
     })
+  },
+  onError: (err) => {
+    if (err.messages?.[0]) {
+      errorTitle.value = __('Not permitted')
+      errorMessage.value = __(err.messages?.[0])
+    } else {
+      router.push({ name: 'Leads' })
+    }
   },
 })
 
