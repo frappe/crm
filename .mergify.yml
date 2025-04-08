@@ -24,6 +24,16 @@ pull_request_rules:
               assignees:
                   - "{{ author }}"
 
+    - name: backport to main-hotfix
+      conditions:
+          - label="backport main-hotfix"
+      actions:
+          backport:
+              branches:
+                  - main-hotfix
+              assignees:
+                  - "{{ author }}"
+
     - name: backport to main
       conditions:
           - label="backport main"
