@@ -89,7 +89,7 @@
                     @click="
                       deal.data.email
                         ? openEmailBox()
-                        : errorMessage(__('No email set'))
+                        : _errorMessage(__('No email set'))
                     "
                   />
                 </Button>
@@ -103,7 +103,7 @@
                     @click="
                       deal.data.website
                         ? openWebsite(deal.data.website)
-                        : errorMessage(__('No website set'))
+                        : _errorMessage(__('No website set'))
                     "
                   />
                 </Button>
@@ -267,6 +267,7 @@
       </div>
     </Resizer>
   </div>
+  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
   <OrganizationModal
     v-model="showOrganizationModal"
     v-model:organization="_organization"
@@ -297,6 +298,7 @@
   />
 </template>
 <script setup>
+import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import Resizer from '@/components/Resizer.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
@@ -330,7 +332,7 @@ import {
   createToast,
   setupAssignees,
   setupCustomizations,
-  errorMessage,
+  errorMessage as _errorMessage,
   copyToClipboard,
 } from '@/utils'
 import { getView } from '@/utils/view'
@@ -372,11 +374,17 @@ const props = defineProps({
   },
 })
 
+const errorTitle = ref('')
+const errorMessage = ref('')
+
 const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: (data) => {
+    errorTitle.value = ''
+    errorMessage.value = ''
+
     if (data.organization) {
       organization.update({
         params: { doctype: 'CRM Organization', name: data.organization },
@@ -400,6 +408,14 @@ const deal = createResource({
       },
       call,
     })
+  },
+  onError: (err) => {
+    if (err.messages?.[0]) {
+      errorTitle.value = __('Not permitted')
+      errorMessage.value = __(err.messages?.[0])
+    } else {
+      router.push({ name: 'Deals' })
+    }
   },
 })
 
@@ -698,12 +714,12 @@ function triggerCall() {
   let mobile_no = primaryContact.mobile_no || null
 
   if (!primaryContact) {
-    errorMessage(__('No primary contact set'))
+    _errorMessage(__('No primary contact set'))
     return
   }
 
   if (!mobile_no) {
-    errorMessage(__('No mobile number set'))
+    _errorMessage(__('No mobile number set'))
     return
   }
 
