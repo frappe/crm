@@ -3,6 +3,7 @@ import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import { viewsStore } from '@/stores/views'
 import { markRaw } from 'vue'
+import { call } from 'frappe-ui'
 
 const { getView: getViewDetails } = viewsStore()
 
@@ -32,4 +33,10 @@ export function getView(view, type, doctype) {
     viewDetails.icon = defaultView(viewType).icon
   }
   return viewDetails || defaultView(viewType)
+}
+
+export async function setDefaultViewCache() {
+   const defaultOpenViews = await call('next_crm.api.views.get_default_open_view')
+   localStorage.setItem("defaultOpenViews", JSON.stringify(defaultOpenViews));
+   return defaultOpenViews
 }
