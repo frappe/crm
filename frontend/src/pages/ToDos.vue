@@ -208,11 +208,13 @@ import { usersStore } from '@/stores/users'
 import { dateFormat, dateTooltipFormat, timeAgo } from '@/utils'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { setDefaultViewCache } from '@/utils/view'
 
 const { getUser } = usersStore()
 
 const router = useRouter()
+const route = useRoute()
 
 const todosListView = ref(null)
 
@@ -222,6 +224,15 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+let defaultOpenViews = JSON.parse(localStorage.getItem("defaultOpenViews"));
+if (!defaultOpenViews) {
+  defaultOpenViews = await setDefaultViewCache()
+}
+
+if (!route.params.viewType && defaultOpenViews.ToDo) {
+  route.params.viewType = defaultOpenViews.ToDo
+}
 
 function getRow(name, field) {
   function getValue(value) {

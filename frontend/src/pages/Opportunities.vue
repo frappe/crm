@@ -295,6 +295,7 @@ import {
   formatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
+import { setDefaultViewCache } from '@/utils/view'
 import { Tooltip, Avatar, Dropdown, call } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
@@ -311,6 +312,15 @@ const showOpportunityModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
+
+let defaultOpenViews = JSON.parse(localStorage.getItem("defaultOpenViews"));
+if (!defaultOpenViews) {
+  defaultOpenViews = await setDefaultViewCache()
+}
+
+if (!route.params.viewType && defaultOpenViews.Opportunity) {
+  route.params.viewType = defaultOpenViews.Opportunity
+}
 
 // Create button is shown only with write access
 const hasCreateAccess = ref(false)
