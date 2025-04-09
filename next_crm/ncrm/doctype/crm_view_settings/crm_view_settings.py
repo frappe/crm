@@ -149,8 +149,11 @@ def sync_default_columns(view):
 
 
 @frappe.whitelist()
-def create_or_update_default_view(view):
+def create_or_update_default_view(view, set_default_open=False):
     view = frappe._dict(view)
+
+    if set_default_open:
+        reset_default_open_view(view.doctype)
 
     filters = parse_json(view.filters) or {}
     columns = parse_json(view.columns or "[]")
@@ -191,6 +194,8 @@ def create_or_update_default_view(view):
         doc.kanban_fields = json.dumps(kanban_fields)
         doc.columns = json.dumps(columns)
         doc.rows = json.dumps(rows)
+        if set_default_open:
+            doc.default_open_view = set_default_open
         doc.save()
     else:
         doc = frappe.new_doc("CRM View Settings")
@@ -212,5 +217,23 @@ def create_or_update_default_view(view):
         doc.columns = json.dumps(columns)
         doc.rows = json.dumps(rows)
         doc.is_default = True
+        doc.default_open_view = set_default_open
         doc.insert()
     return doc
+
+
+def reset_default_open_view(doctype):
+    views = frappe.get_list(
+        "CRM View Settings",
+        fields="name",
+        filters={
+            "user": frappe.session.user,
+            "is_default": 1,
+            "default_open_view": 1,
+            "dt": doctype,
+        },
+        pluck="name",
+    )
+
+    for view in views:
+        frappe.db.set_value("CRM View Settings", view, "default_open_view", 0)
