@@ -30,7 +30,7 @@ def get_default_open_view():
         },
     )
 
-    fallback_views = frappe.get_list(
+    fallback_views = frappe.get_all(
         "CRM View Settings",
         fields=["dt", "type"],
         filters={
