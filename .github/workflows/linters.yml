@@ -13,7 +13,7 @@ concurrency:
 jobs:
   pre-commit:
     name: "Frappe Linter"
-    runs-on: ["self-hosted", "python"]
+    runs-on: ubuntu-latest
     container:
       image: alpine:latest # latest used here for simplicity, not recommended
     defaults:
