@@ -1,0 +1,55 @@
+name: Vulnerable Dependency Check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deps-vulnerable-check:
+    name: Vulnerable Dependency Check
+    runs-on: ["self-hosted", "python"]
+    container:
+      image: python:latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      # Check for file changes based on path
+      - name: Check if frontend changed
+        id: changed-frontend
+        run: |
+          if git --no-pager diff --name-only HEAD^ HEAD | grep '^frontend/'; then
+            echo "frontend_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "frontend_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Python dependencies vulnerability check
+      - name: Install and run pip-audit
+        if: steps.changed-frontend.outputs.frontend_changed == 'false'
+        run: |
+          pip install pip-audit
+          cd ${GITHUB_WORKSPACE}
+          pip-audit --desc on .
+
+      # npm dependencies vulnerability check
+      - name: Install Node
+        if: steps.changed-frontend.outputs.frontend_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Run npm audit
+        if: steps.changed-frontend.outputs.frontend_changed == 'true'
+        run: |
+          cd ${GITHUB_WORKSPACE}/frontend
+          npm install
+          npm audit
