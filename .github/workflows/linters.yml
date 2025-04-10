@@ -1,0 +1,52 @@
+name: Linters
+
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    name: "Frappe Linter"
+    runs-on: ["self-hosted", "python"]
+    container:
+      image: alpine:latest # latest used here for simplicity, not recommended
+    defaults:
+      run:
+        shell: sh
+    steps:
+      - name: fix tar dependency in alpine container image
+        run: |
+          apk --no-cache add tar nodejs npm python3 git bash py3-pip
+          apk --no-cache add prettier --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing
+          # check python modules installed versions
+          python3 -m pip freeze --local
+          pip install pre-commit --break-system-packages
+
+      - uses: actions/checkout@v4
+      - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+
+      - name: Get changed files
+        id: file_changes
+        run: |
+          export DIFF=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }})
+          echo "Diff between ${{ github.base_ref }} and ${{ github.sha }}"
+          echo "files=$( echo "$DIFF" | xargs echo )" >> $GITHUB_OUTPUT
+
+
+      - name: Cache pre-commit since we use pre-commit from container
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Execute pre-commit
+        run: |
+          pre-commit run --color=always --show-diff-on-failure --files ${{ steps.file_changes.outputs.files }}
