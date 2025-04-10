@@ -789,6 +789,23 @@ function addressOptions(address) {
       onClick: () => removeAddress(address.name),
     },
   ]
+
+  if (!address.is_primary_address) {
+    options.push({
+      label: __('Set as Billing'),
+      icon: h(SuccessIcon, { class: 'h-4 w-4' }),
+      onClick: () => setBillingShippingAddress(address.name, true, false),
+    })
+  }
+
+  if (!address.is_shipping_address) {
+    options.push({
+      label: __('Set as Shipping'),
+      icon: h(SuccessIcon, { class: 'h-4 w-4' }),
+      onClick: () => setBillingShippingAddress(address.name, false, true),
+    })
+  }
+
   return options
 }
 
@@ -848,6 +865,25 @@ async function removeAddress(address) {
     opportunityAddresses.reload()
     createToast({
       title: __('Address removed'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
+  }
+}
+
+async function setBillingShippingAddress(address_name, billing=false, shipping=false) {
+  let d = await call('next_crm.api.address.set_billing_shipping', {
+    address_name,
+    billing,
+    shipping,
+  })
+  if (d) {
+    opportunityAddresses.reload()
+    let changed = 'Billing'
+    if (shipping)
+      changed = 'Shipping'
+    createToast({
+      title: __(`${changed} address modified`),
       icon: 'check',
       iconClasses: 'text-ink-green-3',
     })

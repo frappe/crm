@@ -27,7 +27,14 @@ def get_lead(name):
 def get_lead_addresses(name):
     lead_addresses = frappe.get_list(
         "Address",
-        fields=["address_line1", "phone", "title", "name"],
+        fields=[
+            "address_line1",
+            "phone",
+            "title",
+            "name",
+            "is_primary_address",
+            "is_shipping_address",
+        ],
         filters=[
             ["Dynamic Link", "link_doctype", "=", "Lead"],
             ["Dynamic Link", "link_name", "=", name],

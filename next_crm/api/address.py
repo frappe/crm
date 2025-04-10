@@ -55,3 +55,17 @@ def link_address_to_doc(address, doctype, docname):
     address_doc.save()
 
     return address_doc.name
+
+
+@frappe.whitelist()
+def set_billing_shipping(address_name, billing, shipping):
+    address = frappe.get_doc("Address", address_name)
+    if billing:
+        address.is_primary_address = billing
+    elif shipping:
+        address.is_shipping_address = shipping
+    else:
+        return
+
+    address.save()
+    return True

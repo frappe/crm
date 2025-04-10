@@ -34,7 +34,14 @@ def get_opportunity_addresses(name):
 
     opportunity_addresses = frappe.get_list(
         "Address",
-        fields=["address_line1", "phone", "title", "name"],
+        fields=[
+            "address_line1",
+            "phone",
+            "title",
+            "name",
+            "is_primary_address",
+            "is_shipping_address",
+        ],
         filters=[
             [
                 "Dynamic Link",
