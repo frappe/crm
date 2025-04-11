@@ -547,8 +547,8 @@ const export_type = ref('Excel')
 const export_all = ref(false)
 const selectedRows = ref([])
 
-function handleSelectionsChange(selections) {
-  selectedRows.value = selections
+function updateSelections(selections) {
+  selectedRows.value = Array.from(selections)
 }
 
 async function exportRows() {
@@ -1349,7 +1349,7 @@ defineExpose({
   viewActions,
   viewsDropdownOptions,
   currentView,
-  handleSelectionsChange,
+  updateSelections,
 })
 
 // Watchers

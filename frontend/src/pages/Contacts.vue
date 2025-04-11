@@ -45,7 +45,7 @@
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
     @selectionsChanged="
-      (selections) => viewControls.handleSelectionsChange(selections)
+      (selections) => viewControls.updateSelections(selections)
     "
   />
   <div
