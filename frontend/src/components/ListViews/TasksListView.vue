@@ -9,7 +9,7 @@
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
-    @update:selections="$emit('selectionsChanged', Array.from($event || []))"
+    @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
     <ListHeader
       class="mx-3 sm:mx-5"
