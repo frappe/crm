@@ -8,7 +8,7 @@
       </Breadcrumbs>
     </template>
   </LayoutHeader>
-  <div ref="parentRef" class="flex h-full">
+  <div v-if="organization.doc" ref="parentRef" class="flex h-full">
     <Resizer
       v-if="organization.doc"
       :parent="$refs.parentRef"
@@ -160,6 +160,7 @@
       </template>
     </Tabs>
   </div>
+  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
@@ -169,6 +170,7 @@
 </template>
 
 <script setup>
+import ErrorPage from '@/components/ErrorPage.vue'
 import Resizer from '@/components/Resizer.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import Icon from '@/components/Icon.vue'
@@ -221,12 +223,27 @@ const showQuickEntryModal = ref(false)
 const route = useRoute()
 const router = useRouter()
 
+const errorTitle = ref('')
+const errorMessage = ref('')
+
 const organization = createDocumentResource({
   doctype: 'CRM Organization',
   name: props.organizationId,
   cache: ['organization', props.organizationId],
   fields: ['*'],
   auto: true,
+  onSuccess: () => {
+    errorTitle.value = ''
+    errorMessage.value = ''
+  },
+  onError: (err) => {
+    if (err.messages?.[0]) {
+      errorTitle.value = __('Not permitted')
+      errorMessage.value = __(err.messages?.[0])
+    } else {
+      router.push({ name: 'Organizations' })
+    }
+  },
 })
 
 async function updateField(fieldname, value) {
