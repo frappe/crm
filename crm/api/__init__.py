@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from frappe.core.api.file import get_max_file_size
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
-from frappe.utils.modules import get_modules_from_all_apps_for_user
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
 
 
@@ -64,11 +63,7 @@ def check_app_permission():
 	if frappe.session.user == "Administrator":
 		return True
 
-<<<<<<< HEAD
-	allowed_modules = get_modules_from_all_apps_for_user()
-=======
 	allowed_modules = frappe.utils.modules.get_modules_from_all_apps_for_user()
->>>>>>> 3881179 (fix: restrict app in apps page if no access to FCRM module)
 	allowed_modules = [x["module_name"] for x in allowed_modules]
 	if "FCRM" not in allowed_modules:
 		return False
