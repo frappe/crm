@@ -64,7 +64,11 @@ def check_app_permission():
 	if frappe.session.user == "Administrator":
 		return True
 
+<<<<<<< HEAD
 	allowed_modules = get_modules_from_all_apps_for_user()
+=======
+	allowed_modules = frappe.utils.modules.get_modules_from_all_apps_for_user()
+>>>>>>> 3881179 (fix: restrict app in apps page if no access to FCRM module)
 	allowed_modules = [x["module_name"] for x in allowed_modules]
 	if "FCRM" not in allowed_modules:
 		return False
