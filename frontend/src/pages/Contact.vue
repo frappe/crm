@@ -8,7 +8,7 @@
       </Breadcrumbs>
     </template>
   </LayoutHeader>
-  <div ref="parentRef" class="flex h-full">
+  <div v-if="contact.data" ref="parentRef" class="flex h-full">
     <Resizer
       v-if="contact.data"
       :parent="$refs.parentRef"
@@ -178,10 +178,12 @@
       </template>
     </Tabs>
   </div>
+  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
+import ErrorPage from '@/components/ErrorPage.vue'
 import Resizer from '@/components/Resizer.vue'
 import Icon from '@/components/Icon.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
@@ -221,6 +223,7 @@ import TaskIcon from "@/components/Icons/TaskIcon.vue";
 import NoteIcon from "@/components/Icons/NoteIcon.vue";
 import AttachmentIcon from "@/components/Icons/AttachmentIcon.vue";
 import WhatsAppIcon from "@/components/Icons/WhatsAppIcon.vue";
+import { errorMessage as _errorMessage } from '../utils'
 
 const { brand } = getSettings()
 const { $dialog, makeCall } = globalStore()
@@ -244,6 +247,9 @@ const showAddressModal = ref(false)
 const _contact = ref({})
 const _address = ref({})
 
+const errorTitle = ref('')
+const errorMessage = ref('')
+
 const contact = createResource({
   url: 'crm.api.contact.get_contact',
   cache: ['contact', props.contactId],
@@ -254,6 +260,18 @@ const contact = createResource({
       ...data,
       actual_mobile_no: data.mobile_no,
       mobile_no: data.mobile_no,
+    }
+  },
+  onSuccess: () => {
+    errorTitle.value = ''
+    errorMessage.value = ''
+  },
+  onError: (err) => {
+    if (err.messages?.[0]) {
+      errorTitle.value = __('Not permitted')
+      errorMessage.value = __(err.messages?.[0])
+    } else {
+      router.push({ name: 'Contacts' })
     }
   },
 })

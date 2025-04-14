@@ -249,6 +249,9 @@
     @applyFilter="(data) => viewControls.applyFilter(data)"
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
+    @selectionsChanged="
+      (selections) => viewControls.updateSelections(selections)
+    "
   />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
     <div
@@ -480,9 +483,6 @@ function parseRows(rows, columns = []) {
         }
       } else if (row == '_assign') {
         let assignees = JSON.parse(lead._assign || '[]')
-        if (!assignees.length && lead.lead_owner) {
-          assignees = [lead.lead_owner]
-        }
         _rows[row] = assignees.map((user) => ({
           name: user,
           image: getUser(user).user_image,

@@ -215,10 +215,16 @@
                           </template>
                         </Link>
                         <Link
-                          v-else-if="field.fieldtype === 'Link'"
+                          v-else-if="
+                            ['Link', 'Dynamic Link'].includes(field.fieldtype)
+                          "
                           class="form-control select-text"
                           :value="data[field.fieldname]"
-                          :doctype="field.options"
+                          :doctype="
+                            field.fieldtype == 'Link'
+                              ? field.options
+                              : data[field.options]
+                          "
                           :filters="field.filters"
                           :placeholder="field.placeholder"
                           @change="

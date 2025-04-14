@@ -41,13 +41,15 @@
    "fieldname": "from",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "From"
+   "label": "From",
+   "reqd": 1
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Initiated\nRinging\nIn Progress\nCompleted\nFailed\nBusy\nNo Answer\nQueued\nCanceled"
+   "options": "Initiated\nRinging\nIn Progress\nCompleted\nFailed\nBusy\nNo Answer\nQueued\nCanceled",
+   "reqd": 1
   },
   {
    "fieldname": "start_time",
@@ -69,13 +71,15 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Type",
-   "options": "Incoming\nOutgoing"
+   "options": "Incoming\nOutgoing",
+   "reqd": 1
   },
   {
    "fieldname": "to",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "To"
+   "label": "To",
+   "reqd": 1
   },
   {
    "description": "Call duration in seconds",
@@ -153,7 +157,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-22 17:57:59.289548",
+ "modified": "2025-04-01 16:01:54.479309",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Call Log",
