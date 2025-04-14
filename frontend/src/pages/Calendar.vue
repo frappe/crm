@@ -76,12 +76,15 @@
 <script setup>
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import { sessionStore } from '@/stores/session'
 import { Calendar, createListResource, TabButtons } from 'frappe-ui'
+
+const { user } = sessionStore()
 
 const events = createListResource({
   doctype: 'Event',
   fields: ['name', 'status', 'subject', 'starts_on', 'ends_on'],
-  filters: { status: 'Open' },
+  filters: { status: 'Open', owner: user },
   auto: true,
   transform: (data) => {
     return data.map((event) => ({
