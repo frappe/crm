@@ -72,6 +72,7 @@ import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { dateFormat, dateTooltipFormat, timeAgo, website, formatNumberIntoCurrency } from '@/utils'
 import { ref, reactive, computed, h } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { getUser } = usersStore()
 
@@ -80,6 +81,16 @@ const showProspectModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
+const route = useRoute()
+
+let defaultOpenViews = JSON.parse(localStorage.getItem('defaultOpenViews'))
+if (!defaultOpenViews) {
+  defaultOpenViews = await setDefaultViewCache()
+}
+
+if (!route.params.viewType && defaultOpenViews.Prospect) {
+  route.params.viewType = defaultOpenViews.Prospect
+}
 
 // Create button is shown only with write access
 const hasCreateAccess = ref(false)

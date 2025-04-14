@@ -258,6 +258,7 @@ import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import { isEmoji, createToast } from '@/utils'
+import { setDefaultViewCache } from '@/utils/view'
 import { Tooltip, createResource, Dropdown, call, FeatherIcon, usePageMeta } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -511,7 +512,7 @@ if (allowedViews.includes('list')) {
     icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name })
+      router.push({ name: route.name, params: { viewType: 'list' } })
     },
   })
 }
@@ -920,11 +921,12 @@ function loadMoreKanban(columnName) {
   list.value.reload()
 }
 
-function create_or_update_default_view() {
+function create_or_update_default_view(set_default_open = false) {
   if (route.query.view) return
   view.value.doctype = props.doctype
   call('next_crm.ncrm.doctype.crm_view_settings.crm_view_settings.create_or_update_default_view', {
     view: view.value,
+    set_default_open: set_default_open,
   }).then(() => {
     reloadView()
     view.value = {
@@ -945,6 +947,7 @@ function create_or_update_default_view() {
       load_default_columns: view.value.load_default_columns,
     }
     viewUpdated.value = false
+    setDefaultViewCache()
   })
 }
 
@@ -1019,6 +1022,14 @@ const viewActions = (view) => {
       ],
     },
   ]
+
+  if (isDefault && getViewType().label == _view.label) {
+    actions[0].items.push({
+      label: __('Set as Default'),
+      icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
+      onClick: () => setDefault(),
+    })
+  }
 
   if (!isDefault && (!_view.public || isManager())) {
     actions[0].items.push({
@@ -1099,6 +1110,10 @@ function duplicateView(v) {
   viewModalObj.value = v
   viewModalObj.value.mode = 'duplicate'
   showViewModal.value = true
+}
+
+function setDefault() {
+  create_or_update_default_view(true)
 }
 
 function editView(v) {
