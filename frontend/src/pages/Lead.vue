@@ -792,7 +792,7 @@ function addressOptions(address) {
     options.push({
       label: __('Set as Billing'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
-      onClick: () => setBillingShippingAddress(address.name, true, false),
+      onClick: () => setBillingShippingAddress(address.name, true),
     })
   }
 
@@ -800,7 +800,7 @@ function addressOptions(address) {
     options.push({
       label: __('Set as Shipping'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
-      onClick: () => setBillingShippingAddress(address.name, false, true),
+      onClick: () => setBillingShippingAddress(address.name, false),
     })
   }
 
@@ -855,11 +855,10 @@ async function removeContact(contact) {
   }
 }
 
-async function setBillingShippingAddress(address_name, billing=false, shipping=false) {
+async function setBillingShippingAddress(address_name, is_billing) {
   let d = await call('next_crm.api.address.set_billing_shipping', {
     address_name,
-    billing,
-    shipping,
+    is_billing,
   })
   if (d) {
     leadAddresses.reload()
