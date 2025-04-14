@@ -14,6 +14,7 @@
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
+    @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
     <ListHeader
       class="sm:mx-5 mx-3"
@@ -245,6 +246,7 @@ const emit = defineEmits([
   'applyFilter',
   'applyLikeFilter',
   'likeDoc',
+  'selectionsChanged',
 ])
 
 const route = useRoute()
