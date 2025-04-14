@@ -78,67 +78,6 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { Calendar, createListResource, TabButtons } from 'frappe-ui'
 
-import { ref } from 'vue'
-
-const _events = ref([
-  {
-    title: 'English by Ryan Mathew',
-    participant: 'Ryan Mathew',
-    id: 'EDU-CSH-2024-00091',
-    venue: 'CNF-ROOM-2024-00001',
-    fromDate: '2025-04-02 16:30:00',
-    toDate: '2025-04-02 17:30:00',
-    color: 'violet',
-  },
-  {
-    title: 'English by Ryan Mathew',
-    participant: 'Ryan Mathew',
-    id: 'EDU-CSH-2024-00092',
-    venue: 'CNF-ROOM-2024-00002',
-    fromDate: '2025-04-04 13:30:00',
-    toDate: '2025-04-04 17:30:00',
-    color: 'green',
-  },
-  {
-    title: 'English by Sheldon',
-    participant: 'Sheldon',
-    id: 'EDU-CSH-2024-00093',
-    venue: 'CNF-ROOM-2024-00001',
-    fromDate: '2025-04-16 10:30:00',
-    toDate: '2025-04-16 11:30:00',
-    color: 'blue',
-  },
-  {
-    title: 'English by Ryan Mathew',
-    participant: 'Ryan Mathew',
-    id: 'EDU-CSH-2024-00094',
-    venue: 'CNF-ROOM-2024-00001',
-    fromDate: '2025-04-21 16:30:00',
-    toDate: '2025-04-21 17:30:00',
-    color: 'red',
-  },
-  {
-    title: 'Google Meet with John ',
-    participant: 'John',
-    id: '#htrht41',
-    venue: 'Google Meet',
-    fromDate: '2025-04-11 00:00:00',
-    toDate: '2025-04-11 23:59:59',
-    color: 'amber',
-    isFullDay: true,
-  },
-  {
-    title: 'Zoom Meet with Sheldon',
-    participant: 'Sheldon',
-    id: '#htrht42',
-    venue: 'Google Meet',
-    fromDate: '2025-04-07 00:00:00',
-    toDate: '2025-04-07 23:59:59',
-    color: 'amber',
-    isFullDay: true,
-  },
-])
-
 const events = createListResource({
   doctype: 'Event',
   fields: ['name', 'status', 'subject', 'starts_on', 'ends_on'],
