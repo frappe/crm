@@ -402,13 +402,13 @@ const tabs = [
     name: 'Contacts',
     label: __('Contacts'),
     icon: h(ContactsIcon, { class: 'h-4 w-4' }),
-    count: computed(() => contacts.data?.length),
+    count: computed(() => contacts.value.data?.length),
   },
   {
     label: 'Addresses',
     label: __('Addresses'),
     icon: h(AddressIcon, { class: 'h-4 w-4' }),
-    count: computed(() => addresses.data?.length),
+    count: computed(() => addresses.value.data?.length),
   },
 ]
 
@@ -491,21 +491,30 @@ async function getAddressesList() {
   return list
 }
 
-const contacts = await getContactsList();
-const addresses = await getAddressesList();
+const contacts = ref();
+async function setContactsList() {
+  contacts.value = await getContactsList()
+}
+setContactsList()
+
+const addresses = ref();
+async function setAddressesList() {
+  addresses.value = await getAddressesList()
+}
+setAddressesList()
 
 const rows = computed(() => {
-  let list = []
+  let list = ref([])
   if (tabIndex.value === 1)
-    list = opportunities
+    list.value = opportunities
   else if (tabIndex.value === 2)
-    list = contacts
+    list.value = contacts.value
   else if (tabIndex.value === 3)
-    list = addresses
+    list.value = addresses.value
 
-  if (!list.data) return []
+  if (!list.value.data) return []
 
-  return list.data.map((row) => {
+  return list.value.data.map((row) => {
     if (tabIndex.value === 1)
       return getOpportunityRowObject(row)
     else if (tabIndex.value === 2)

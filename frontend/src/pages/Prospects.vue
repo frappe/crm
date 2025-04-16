@@ -85,7 +85,8 @@ const route = useRoute()
 
 let defaultOpenViews = JSON.parse(localStorage.getItem('defaultOpenViews'))
 if (!defaultOpenViews) {
-  defaultOpenViews = await setDefaultViewCache()
+  defaultOpenViews = setDefaultViewCache()
+  window.location.reload()
 }
 
 if (!route.params.viewType && defaultOpenViews.Prospect) {
