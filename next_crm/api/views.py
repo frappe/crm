@@ -19,7 +19,7 @@ def get_views(doctype):
 @frappe.whitelist()
 def get_default_open_view():
 
-    views = frappe.get_list(
+    views = frappe.get_all(
         "CRM View Settings",
         fields=["dt", "type", "user", "is_default", "default_open_view"],
         filters={

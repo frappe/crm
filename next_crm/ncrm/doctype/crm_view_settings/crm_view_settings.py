@@ -223,7 +223,7 @@ def create_or_update_default_view(view, set_default_open=False):
 
 
 def reset_default_open_view(doctype):
-    views = frappe.get_list(
+    views = frappe.get_all(
         "CRM View Settings",
         fields="name",
         filters={
