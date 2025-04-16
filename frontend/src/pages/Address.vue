@@ -148,8 +148,6 @@ import CustomersListView from '@/components/ListViews/CustomersListView.vue'
 import ProspectsListView from '@/components/ListViews/ProspectsListView.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { customersStore } from '@/stores/customers.js'
-import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
   dateFormat,
@@ -176,10 +174,8 @@ const props = defineProps({
   },
 })
   
-const { getUser, isManager } = usersStore()
+const { isManager } = usersStore()
 const { $dialog } = globalStore()
-const { getDealStatus } = statusesStore()
-const { getCustomer } = customersStore()
 const showSidePanelModal = ref(false)
 const showQuickEntryModal = ref(false)
 
