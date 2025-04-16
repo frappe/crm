@@ -10,7 +10,6 @@
     <template #right-header>
       <Dropdown
         v-slot="{ open }"
-        :button= "__('Add')"
         :options="[
           {
             label: __('Address'),
@@ -31,7 +30,6 @@
       </Dropdown>
       <Dropdown
         v-slot="{ open }"
-        :button= "__('Create')"
         :options="[
           {
             label: __('Opportunity'),
@@ -72,7 +70,6 @@
                     <WebsiteIcon class="size-4" />
                     <span>{{ website(prospect.doc.website) }}</span>
                   </div>
-                  <ErrorMessage :message="__(error)" />
                 </div>
               </div>
               <div class="flex gap-1.5">
@@ -197,7 +194,7 @@
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
   <LinkAddressModal
     v-model="showAddAddressModal"
-    doctype="Prospect",
+    doctype="Prospect"
     :docname="prospect.doc.name"
     :options="{
       afterAddAddress: afterAddAddress
@@ -205,7 +202,7 @@
   />
   <LinkContactModal
     v-model="showAddContactModal"
-    doctype="Prospect",
+    doctype="Prospect"
     :docname="prospect.doc.name"
     :options="{
       afterAddContact: afterAddContact
