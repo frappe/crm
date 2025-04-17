@@ -87,7 +87,7 @@
             theme="gray"
             size="sm"
           >
-            {{ tab.count || 0 }}
+            {{ tab.count }}
           </Badge>
         </button>
       </template>
