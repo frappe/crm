@@ -520,21 +520,30 @@ async function getAddressesList() {
   return list
 }
 
-const contacts = ref(await getContactsList());
-const addresses = ref(await getAddressesList());
+const contacts = ref();
+async function setContactsList() {
+  contacts.value = await getContactsList()
+}
+setContactsList()
+
+const addresses = ref();
+async function setAddressesList() {
+  addresses.value = await getAddressesList()
+}
+setAddressesList()
 
 const rows = computed(() => {
-  let list = []
+  let list = ref([])
   if (tabIndex.value === 0)
-    list = opportunities
+    list.value = opportunities
   else if (tabIndex.value === 1)
-    list = contacts.value
+    list.value = contacts.value
   else if (tabIndex.value === 2)
-    list = addresses.value
+    list.value = addresses.value
 
-  if (!list.data) return []
+  if (!list.value.data) return []
 
-  return list.data.map((row) => {
+  return list.value.data.map((row) => {
     if (tabIndex.value === 0)
       return getOpportunityRowObject(row)
     else if (tabIndex.value === 1)

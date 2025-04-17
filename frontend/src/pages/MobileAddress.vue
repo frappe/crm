@@ -79,14 +79,14 @@
           </div>
         </div>
         <CustomersListView
-          v-else-if="tab.label === 'Customers' && rows.length"
+          v-else-if="tab.label === 'Customers' && rows?.length"
           class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
         <div
-          v-if="tab.label === 'Customers' && !rows.length"
+          v-if="tab.label === 'Customers' && !rows?.length"
           class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
@@ -245,7 +245,7 @@ const tabs = [
     name: 'Customers',
     label: __('Customers'),
     icon: h(CustomersIcon, { class: 'h-4 w-4' }),
-    count: computed(() => customers.data?.length),
+    count: computed(() => customers.value.data?.length),
   },
 ]
 
@@ -278,11 +278,16 @@ async function getCustomersList() {
   return list
 }
 
-const customers = await getCustomersList();
+const customers = ref([]);
+
+async function setCustomersList() {
+  customers.value = await getCustomersList()
+}
+setCustomersList()
 
 const rows = computed(() => {
-  if (!customers.data || customers.data == []) return []
-  return customers.data.map((row) => getCustomerRowObject(row))
+  if (!customers.value?.data || customers.value?.data == []) return []
+  return customers.value?.data.map((row) => getCustomerRowObject(row))
 })
 
 function getCustomerRowObject(customer) {
