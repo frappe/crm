@@ -87,21 +87,21 @@
             theme="gray"
             size="sm"
           >
-            {{ tab.count }}
+            {{ tab.count || 0 }}
           </Badge>
         </button>
       </template>
       <template #tab-panel="{ tab }">
         <CustomersListView
           class="mt-4"
-          v-if="tab.label === 'Customers' && rows.length"
+          v-if="tab.label === 'Customers' && rows?.length"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
         <ProspectsListView
           class="mt-4"
-          v-if="tab.label === 'Prospects' && rows.length"
+          v-if="tab.label === 'Prospects' && rows?.length"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
@@ -228,7 +228,7 @@ async function getCustomersList() {
   return list
 }
 
-const customers = ref();
+const customers = ref([]);
 
 async function setCustomersList() {
   customers.value = await getCustomersList()
@@ -279,7 +279,7 @@ async function getProspectsList() {
   return list
 }
 
-const prospects = ref();
+const prospects = ref([]);
 
 async function setProspectsList() {
   prospects.value = await getProspectsList()
@@ -293,8 +293,8 @@ const rows = computed(() => {
   else if (tabIndex.value === 1)
     list.value = prospects.value
 
-  if (!list.value.data) return []
-  return list.value.data.map((row) => {
+  if (!list.value?.data) return []
+  return list.value?.data.map((row) => {
     if (tabIndex.value === 0)
       return getCustomerRowObject(row)
     else if (tabIndex.value === 1)
