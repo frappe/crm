@@ -40,3 +40,14 @@ export async function setDefaultViewCache() {
    localStorage.setItem("defaultOpenViews", JSON.stringify(defaultOpenViews));
    return defaultOpenViews
 }
+
+export async function getDefaultView(doc, route) {
+  let defaultOpenViews = JSON.parse(localStorage.getItem("defaultOpenViews"));
+  if (!defaultOpenViews) {
+    defaultOpenViews = await setDefaultViewCache()
+  }
+
+  if ((!route.params.viewType || route.params.viewType == "") && defaultOpenViews[doc]) {
+    route.params.viewType = defaultOpenViews[doc]
+  }
+}

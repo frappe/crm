@@ -315,10 +315,10 @@ import {
   website,
   formatTime,
 } from '@/utils'
-import { setDefaultViewCache } from '@/utils/view'
+import { getDefaultView } from '@/utils/view'
 import { Avatar, Tooltip, Dropdown, call } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, computed, reactive, h } from 'vue'
+import { ref, computed, reactive, h, onBeforeMount, onBeforeUpdate } from 'vue'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
@@ -334,15 +334,6 @@ const defaults = reactive({})
 
 // Create button is shown only with write access
 const hasCreateAccess = ref(false)
-
-let defaultOpenViews = JSON.parse(localStorage.getItem("defaultOpenViews"));
-if (!defaultOpenViews) {
-  defaultOpenViews = await setDefaultViewCache()
-}
-
-if (!route.params.viewType && defaultOpenViews.Lead) {
-  route.params.viewType = defaultOpenViews.Lead
-}
 
 call('next_crm.api.doc.check_create_access', {
   doctype: "Lead"
@@ -570,4 +561,7 @@ function showToDo(name) {
   docname.value = name
   showToDoModal.value = true
 }
+
+onBeforeMount(() => getDefaultView("Lead", route))
+onBeforeUpdate(() => getDefaultView("Lead", route))
 </script>

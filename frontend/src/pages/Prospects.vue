@@ -71,7 +71,8 @@ import ViewControls from '@/components/ViewControls.vue'
 import { usersStore } from '@/stores/users'
 import { call } from 'frappe-ui'
 import { dateFormat, dateTooltipFormat, timeAgo, website, formatNumberIntoCurrency } from '@/utils'
-import { ref, reactive, computed, h } from 'vue'
+import { getDefaultView } from '@/utils/view'
+import { ref, reactive, computed, h, onBeforeMount, onBeforeUpdate } from 'vue'
 import { useRoute } from 'vue-router'
 
 const { getUser } = usersStore()
@@ -82,15 +83,6 @@ const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
 const route = useRoute()
-
-let defaultOpenViews = JSON.parse(localStorage.getItem('defaultOpenViews'))
-if (!defaultOpenViews) {
-  defaultOpenViews = await setDefaultViewCache()
-}
-
-if (!route.params.viewType && defaultOpenViews.Prospect) {
-  route.params.viewType = defaultOpenViews.Prospect
-}
 
 // Create button is shown only with write access
 const hasCreateAccess = ref(false)
@@ -168,4 +160,7 @@ function parseRows(rows) {
     return _rows
   })
 }
+
+onBeforeMount(() => getDefaultView('Prospect', route))
+onBeforeUpdate(() => getDefaultView('Prospect', route))
 </script>
