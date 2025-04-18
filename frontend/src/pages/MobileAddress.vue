@@ -79,14 +79,14 @@
           </div>
         </div>
         <CustomersListView
-          v-else-if="tab.label === 'Customers' && rows.length"
+          v-else-if="tab.label === 'Customers' && rows?.length"
           class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
         <div
-          v-if="tab.label === 'Customers' && !rows.length"
+          v-if="tab.label === 'Customers' && !rows?.length"
           class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
@@ -106,8 +106,6 @@ import Section from '@/components/Section.vue'
 import SectionFields from '@/components/SectionFields.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import CustomersIcon from '@/components/Icons/CustomersIcon.vue'
 import CustomersListView from '@/components/ListViews/CustomersListView.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
@@ -115,19 +113,12 @@ import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
-  formatNumberIntoCurrency,
   createToast,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { globalStore } from '@/stores/global.js'
-import { usersStore } from '@/stores/users.js'
-import { customersStore } from '@/stores/customers.js'
-import { statusesStore } from '@/stores/statuses'
-import { callEnabled } from '@/composables/settings'
 import {
   Breadcrumbs,
-  Avatar,
-  FileUploader,
   Tabs,
   TabList,
   TabPanel,
@@ -135,16 +126,11 @@ import {
   createListResource,
   createResource,
   usePageMeta,
-  Dropdown,
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const { $dialog, makeCall } = globalStore()
-
-const { getUser } = usersStore()
-const { getCustomer } = customersStore()
-const { getDealStatus } = statusesStore()
+const { $dialog } = globalStore()
 
 const props = defineProps({
   addressId: {
@@ -259,7 +245,7 @@ const tabs = [
     name: 'Customers',
     label: __('Customers'),
     icon: h(CustomersIcon, { class: 'h-4 w-4' }),
-    count: computed(() => customers.data?.length),
+    count: computed(() => customers.value.data?.length),
   },
 ]
 
@@ -268,7 +254,6 @@ async function getCustomersList() {
     link_doctype: 'Customer',
     address: props.addressId,
   })
-
 
 
   const list = createListResource({
@@ -293,11 +278,16 @@ async function getCustomersList() {
   return list
 }
 
-const customers = await getCustomersList();
+const customers = ref([]);
+
+async function setCustomersList() {
+  customers.value = await getCustomersList()
+}
+setCustomersList()
 
 const rows = computed(() => {
-  if (!customers.data || customers.data == []) return []
-  return customers.data.map((row) => getCustomerRowObject(row))
+  if (!customers.value?.data || customers.value?.data == []) return []
+  return customers.value?.data.map((row) => getCustomerRowObject(row))
 })
 
 function getCustomerRowObject(customer) {

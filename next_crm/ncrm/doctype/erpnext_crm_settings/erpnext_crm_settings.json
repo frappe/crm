@@ -1,70 +1,87 @@
 {
- "actions": [],
- "allow_rename": 1,
- "creation": "2024-07-02 15:23:17.022214",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "enabled",
-  "section_break_jnbn",
-  "create_customer_on_status_change",
-  "column_break_kbhw",
-  "deal_status"
- ],
- "fields": [
-  {
-   "default": "0",
-   "fieldname": "enabled",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Enabled"
-  },
-  {
-   "fieldname": "section_break_jnbn",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "0",
-   "depends_on": "enabled",
-   "fieldname": "create_customer_on_status_change",
-   "fieldtype": "Check",
-   "label": "Create customer on status change",
-   "mandatory_depends_on": "enabled"
-  },
-  {
-   "fieldname": "column_break_kbhw",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.enabled && doc.create_customer_on_status_change",
-   "fieldname": "deal_status",
-   "fieldtype": "Link",
-   "label": "Deal Status",
-   "mandatory_depends_on": "create_customer_on_status_change",
-   "options": "CRM Deal Status"
-  }
- ],
- "index_web_pages_for_search": 1,
- "issingle": 1,
- "links": [],
- "modified": "2024-11-22 12:08:08.092803",
- "modified_by": "Administrator",
- "module": "NCRM",
- "name": "ERPNext CRM Settings",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "creation",
- "sort_order": "DESC",
- "states": []
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2024-07-02 15:23:17.022214",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "enabled",
+    "section_break_jnbn",
+    "create_customer_on_status_change",
+    "column_break_kbhw",
+    "deal_status"
+  ],
+  "fields": [
+    {
+      "default": "0",
+      "fieldname": "enabled",
+      "fieldtype": "Check",
+      "hidden": 1,
+      "label": "Enabled"
+    },
+    {
+      "fieldname": "section_break_jnbn",
+      "fieldtype": "Section Break"
+    },
+    {
+      "default": "0",
+      "depends_on": "enabled",
+      "fieldname": "create_customer_on_status_change",
+      "fieldtype": "Check",
+      "label": "Create customer on status change",
+      "mandatory_depends_on": "enabled"
+    },
+    {
+      "fieldname": "column_break_kbhw",
+      "fieldtype": "Column Break"
+    },
+    {
+      "depends_on": "eval:doc.enabled && doc.create_customer_on_status_change",
+      "fieldname": "deal_status",
+      "fieldtype": "Link",
+      "label": "Deal Status",
+      "mandatory_depends_on": "create_customer_on_status_change",
+      "options": "CRM Deal Status"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "issingle": 1,
+  "links": [],
+  "modified": "2025-04-16 13:51:45.624924",
+  "modified_by": "Administrator",
+  "module": "NCRM",
+  "name": "ERPNext CRM Settings",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "Sales User",
+      "share": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "Sales Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
 }

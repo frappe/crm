@@ -94,14 +94,14 @@
       <template #tab-panel="{ tab }">
         <CustomersListView
           class="mt-4"
-          v-if="tab.label === 'Customers' && rows.length"
+          v-if="tab.label === 'Customers' && rows?.length"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
         <ProspectsListView
           class="mt-4"
-          v-if="tab.label === 'Prospects' && rows.length"
+          v-if="tab.label === 'Prospects' && rows?.length"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
@@ -148,8 +148,6 @@ import CustomersListView from '@/components/ListViews/CustomersListView.vue'
 import ProspectsListView from '@/components/ListViews/ProspectsListView.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { customersStore } from '@/stores/customers.js'
-import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
   dateFormat,
@@ -176,10 +174,8 @@ const props = defineProps({
   },
 })
   
-const { getUser, isManager } = usersStore()
+const { isManager } = usersStore()
 const { $dialog } = globalStore()
-const { getDealStatus } = statusesStore()
-const { getCustomer } = customersStore()
 const showSidePanelModal = ref(false)
 const showQuickEntryModal = ref(false)
 
@@ -191,12 +187,12 @@ const tabs = [
   {
     label: 'Customers',
     icon: h(CustomersIcon, { class: 'h-4 w-4' }),
-    count: computed(() => customers.data?.length),
+    count: computed(() => customers.value.data?.length),
   },
   {
     label: 'Prospects',
     icon: h(ProspectsIcon, { class: 'h-4 w-4' }),
-    count: computed(() => prospects.data?.length),
+    count: computed(() => prospects.value.data?.length),
   },
 ]
 
@@ -228,7 +224,12 @@ async function getCustomersList() {
   return list
 }
 
-const customers = await getCustomersList();
+const customers = ref([]);
+
+async function setCustomersList() {
+  customers.value = await getCustomersList()
+}
+setCustomersList()
 
 function getCustomerRowObject(customer) {
 
@@ -274,18 +275,22 @@ async function getProspectsList() {
   return list
 }
 
-const prospects = await getProspectsList();
+const prospects = ref([]);
+
+async function setProspectsList() {
+  prospects.value = await getProspectsList()
+}
+setProspectsList()
 
 const rows = computed(() => {
-  let list = []
+  let list = ref([])
   if (tabIndex.value === 0)
-    list = customers
+    list.value = customers.value
   else if (tabIndex.value === 1)
-    list = prospects
+    list.value = prospects.value
 
-  if (!list.data) return []
-
-  return list.data.map((row) => {
+  if (!list.value?.data) return []
+  return list.value?.data.map((row) => {
     if (tabIndex.value === 0)
       return getCustomerRowObject(row)
     else if (tabIndex.value === 1)
