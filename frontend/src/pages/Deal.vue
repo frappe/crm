@@ -267,7 +267,11 @@
       </div>
     </Resizer>
   </div>
-  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
+  <ErrorPage
+    v-else-if="errorTitle"
+    :errorTitle="errorTitle"
+    :errorMessage="errorMessage"
+  />
   <OrganizationModal
     v-model="showOrganizationModal"
     v-model:organization="_organization"
