@@ -108,9 +108,9 @@
               </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
-              <Tooltip :text="lead.data.lead_name || __('Set first name')">
+              <Tooltip :text="lead.data.first_name || __('Set first name')">
                 <div class="truncate text-2xl font-medium text-ink-gray-9" @click="showRenameModal = true">
-                  {{ lead.data.lead_name || lead.data.title || __('Untitled') }}
+                  {{ lead.data.first_name || lead.data.title || lead.data.name || __('Untitled') }}
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
@@ -751,7 +751,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: lead.data.lead_name || lead.data.title || __('Untitled'),
+    label: lead.data.title || lead.data.name || __('Untitled'),
     route: { name: 'Lead', params: { leadId: lead.data.name } },
   })
   return items
@@ -759,7 +759,7 @@ const breadcrumbs = computed(() => {
 
 usePageMeta(() => {
   return {
-    title: lead.data?.lead_name || lead.data?.name,
+    title: lead.data.title || lead.data?.name || lead.data?.name,
   }
 })
 

@@ -662,7 +662,7 @@ const breadcrumbs = computed(() => {
   }
 
   items.push({
-    label: customer.data?.name || opportunity.data?.title || opportunity.data?.party_name || __('Untitled'),
+    label: opportunity.data?.title || customer.data?.name || opportunity.data?.party_name || __('Untitled'),
     route: { name: 'Opportunity', params: { opportunityId: opportunity.data.name } },
   })
   return items
@@ -670,7 +670,7 @@ const breadcrumbs = computed(() => {
 
 usePageMeta(() => {
   return {
-    title: customer.data?.name || opportunity.data?.party_name || opportunity.data?.name,
+    title: opportunity.data?.title || customer.data?.name || opportunity.data?.party_name || opportunity.data?.name,
   }
 })
 
