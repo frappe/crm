@@ -64,7 +64,7 @@ import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { createToast } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -114,4 +114,20 @@ const tabs = createResource({
 function saveChanges() {
   data.save.submit()
 }
+
+watch(
+  () => data.doc,
+  (newValue, oldValue) => {
+    if (!oldValue) return
+    if (newValue && oldValue) {
+      const isDirty =
+        JSON.stringify(newValue) !== JSON.stringify(data.originalDoc)
+      data.isDirty = isDirty
+      if (isDirty) {
+        data.save.loading = false
+      }
+    }
+  },
+  { deep: true },
+)
 </script>
