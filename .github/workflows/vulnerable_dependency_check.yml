@@ -14,7 +14,7 @@ concurrency:
 jobs:
   deps-vulnerable-check:
     name: Vulnerable Dependency Check
-    runs-on: ["self-hosted", "python"]
+    runs-on: ubuntu-latest
     container:
       image: python:latest
     defaults:
