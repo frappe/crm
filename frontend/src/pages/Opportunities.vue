@@ -295,10 +295,10 @@ import {
   formatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
-import { setDefaultViewCache } from '@/utils/view'
+import { getDefaultView } from '@/utils/view'
 import { Tooltip, Avatar, Dropdown, call } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, onBeforeMount, onBeforeUpdate } from 'vue'
 
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
@@ -312,16 +312,6 @@ const showOpportunityModal = ref(false)
 const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
-
-let defaultOpenViews = JSON.parse(localStorage.getItem("defaultOpenViews"));
-if (!defaultOpenViews) {
-  defaultOpenViews = setDefaultViewCache()
-  window.location.reload()
-}
-
-if (!route.params.viewType && defaultOpenViews.Opportunity) {
-  route.params.viewType = defaultOpenViews.Opportunity
-}
 
 // Create button is shown only with write access
 const hasCreateAccess = ref(false)
@@ -554,4 +544,7 @@ function showToDo(name) {
   docname.value = name
   showToDoModal.value = true
 }
+
+onBeforeMount(() => getDefaultView("Opportunity", route))
+onBeforeUpdate(() => getDefaultView("Opportunity", route))
 </script>
