@@ -191,7 +191,11 @@
       </div>
     </Resizer>
   </div>
-  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
+  <ErrorPage
+    v-else-if="errorTitle"
+    :errorTitle="errorTitle"
+    :errorMessage="errorMessage"
+  />
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
