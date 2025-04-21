@@ -520,13 +520,13 @@ async function getAddressesList() {
   return list
 }
 
-const contacts = ref();
+const contacts = ref([]);
 async function setContactsList() {
   contacts.value = await getContactsList()
 }
 setContactsList()
 
-const addresses = ref();
+const addresses = ref([]);
 async function setAddressesList() {
   addresses.value = await getAddressesList()
 }
