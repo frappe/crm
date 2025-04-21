@@ -7,7 +7,7 @@ on:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout Entire Repository
         uses: actions/checkout@v2
