@@ -168,7 +168,11 @@
       </template>
     </Tabs>
   </div>
-  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
+  <ErrorPage
+    v-else-if="errorTitle"
+    :errorTitle="errorTitle"
+    :errorMessage="errorMessage"
+  />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
