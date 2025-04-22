@@ -160,7 +160,11 @@
       </template>
     </Tabs>
   </div>
-  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
+  <ErrorPage
+    v-else-if="errorTitle"
+    :errorTitle="errorTitle"
+    :errorMessage="errorMessage"
+  />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
