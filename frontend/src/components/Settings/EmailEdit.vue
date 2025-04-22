@@ -2,7 +2,9 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
-      <h2 class="text-xl font-semibold text-ink-gray-9">Edit Email</h2>
+      <h2 class="text-xl font-semibold text-ink-gray-9">
+        {{ __('Edit Email') }}
+      </h2>
     </div>
     <div class="w-fit">
       <EmailProviderIcon
@@ -19,7 +21,9 @@
       />
       <div class="text-xs text-gray-700 dark:text-gray-500 text-wrap">
         {{ info.description }}
-        <a :href="info.link" target="_blank" class="underline">here</a>
+        <a :href="info.link" target="_blank" class="underline">{{
+          __('here')
+        }}</a>
         .
       </div>
     </div>
@@ -60,14 +64,14 @@
     <!-- action buttons -->
     <div class="flex justify-between mt-auto">
       <Button
-        label="Back"
+        :label="__('Back')"
         theme="gray"
         variant="outline"
         :disabled="loading"
         @click="emit('update:step', 'email-list')"
       />
       <Button
-        label="Update Account"
+        :label="__('Update Account')"
         variant="solid"
         @click="updateAccount"
         :loading="loading"
@@ -112,7 +116,7 @@ const state = reactive({
 })
 
 const info = {
-  description: 'To know more about setting up email accounts, click',
+  description: __('To know more about setting up email accounts, click'),
   link: 'https://docs.erpnext.com/docs/user/manual/en/email-account',
 }
 
@@ -145,7 +149,7 @@ async function updateAccount() {
 
   if (!nameChanged && !otherFieldsChanged) {
     createToast({
-      title: 'No changes made',
+      title: __('No changes made'),
       icon: 'info',
       iconClasses: 'text-blue-600',
     })
@@ -207,7 +211,7 @@ async function callSetValue(values) {
 function succesHandler() {
   emit('update:step', 'email-list')
   createToast({
-    title: 'Email account updated successfully',
+    title: __('Email account updated successfully'),
     icon: 'check',
     iconClasses: 'text-green-600',
   })
@@ -215,6 +219,6 @@ function succesHandler() {
 
 function errorHandler() {
   loading.value = false
-  error.value = 'Failed to update email account, Invalid credentials'
+  error.value = __('Failed to update email account, Invalid credentials')
 }
 </script>
