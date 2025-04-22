@@ -13,7 +13,7 @@
       </div>
     </div>
     <div>
-      <Badge variant="subtle" :label="badgeTitleColor" :theme="gray" />
+      <Badge variant="subtle" :label="badgeTitle" :theme="gray" />
     </div>
     <!-- email id -->
   </div>
@@ -31,18 +31,18 @@ const props = defineProps({
   },
 })
 
-const badgeTitleColor = computed(() => {
+const badgeTitle = computed(() => {
   if (
     props.emailAccount.default_incoming &&
     props.emailAccount.default_outgoing
   ) {
-    return 'Default Sending and Inbox'
+    return __('Default Sending and Inbox')
   } else if (props.emailAccount.default_incoming) {
-    return 'Default Inbox'
+    return __('Default Inbox')
   } else if (props.emailAccount.default_outgoing) {
-    return 'Default Sending'
+    return __('Default Sending')
   } else {
-    return 'Inbox'
+    return __('Inbox')
   }
 })
 </script>

@@ -3,10 +3,10 @@
     <!-- header -->
     <div class="flex items-center justify-between text-ink-gray-9">
       <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-        Email Accounts
+        {{ __('Email Accounts') }}
       </h2>
       <Button
-        label="Add Account"
+        :label="__('Add Account')"
         theme="gray"
         variant="solid"
         @click="emit('update:step', 'email-add')"
@@ -31,7 +31,7 @@
     </div>
     <!-- fallback if no email accounts -->
     <div v-else class="flex items-center justify-center h-64 text-gray-500">
-      Please add an email account to continue.
+      {{ __('Please add an email account to continue.') }}
     </div>
   </div>
 </template>
