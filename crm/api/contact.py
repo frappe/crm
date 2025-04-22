@@ -30,15 +30,7 @@ def get_contact(name):
 
 	if not len(contact):
 		frappe.throw(_("Contact not found"), frappe.DoesNotExistError)
-	contact = contact.pop()
 
-	contact["doctype"] = "Contact"
-	contact["email_ids"] = frappe.get_all(
-		"Contact Email", filters={"parent": name}, fields=["name", "email_id", "is_primary"]
-	)
-	contact["phone_nos"] = frappe.get_all(
-		"Contact Phone", filters={"parent": name}, fields=["name", "phone", "is_primary_mobile_no"]
-	)
 	return contact
 
 
