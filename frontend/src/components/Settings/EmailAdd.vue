@@ -2,9 +2,11 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex flex-col gap-1">
-      <h2 class="text-xl font-semibold text-ink-gray-9">Setup Email</h2>
+      <h2 class="text-xl font-semibold text-ink-gray-9">
+        {{ __('Setup Email') }}
+      </h2>
       <p class="text-sm text-gray-600">
-        Choose the email service provider you want to configure.
+        {{ __('Choose the email service provider you want to configure.') }}
       </p>
     </div>
     <!-- email service provider selection -->
@@ -138,14 +140,14 @@ const addEmailRes = createResource({
   },
   onSuccess: () => {
     createToast({
-      title: 'Email account created successfully',
+      title: __('Email account created successfully'),
       icon: 'check',
       iconClasses: 'text-green-600',
     })
     emit('update:step', 'email-list')
   },
   onError: () => {
-    error.value = 'Failed to create email account, Invalid credentials'
+    error.value = __('Failed to create email account, Invalid credentials')
   },
 })
 
