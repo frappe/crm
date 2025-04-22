@@ -28,14 +28,9 @@ export const incomingOutgoingFields = [
     label: __('Enable Incoming'),
     name: 'enable_incoming',
     type: 'checkbox',
-<<<<<<< HEAD:frontend/src/components/Settings/emailConfig.ts
-    description:
-      'If enabled, tickets can be created from the incoming emails on this account.',
-=======
     description: __(
       'If enabled, records can be created from the incoming emails on this account.',
     ),
->>>>>>> 5eb46f6 (chore: add localization support for email account settings):frontend/src/components/Settings/emailConfig.js
   },
   {
     label: __('Enable Outgoing'),
