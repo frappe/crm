@@ -82,9 +82,11 @@
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { sessionStore } from '@/stores/session'
+import { globalStore } from '@/stores/global'
 import { Calendar, createListResource, TabButtons } from 'frappe-ui'
 
 const { user } = sessionStore()
+const { $dialog } = globalStore()
 
 const events = createListResource({
   doctype: 'Event',
@@ -154,6 +156,24 @@ function updateEvent(event) {
 }
 
 function deleteEvent(eventID) {
-  events.delete.submit(eventID)
+  if (!eventID) return
+
+  $dialog({
+    title: __('Delete'),
+    message: __('Are you sure you want to delete this event?'),
+    variant: 'solid',
+    theme: 'red',
+    actions: [
+      {
+        label: __('Delete'),
+        variant: 'solid',
+        theme: 'red',
+        onClick: (close) => {
+          events.delete.submit(eventID)
+          close()
+        },
+      },
+    ],
+  })
 }
 </script>
