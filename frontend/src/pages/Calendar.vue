@@ -88,15 +88,30 @@ const { user } = sessionStore()
 
 const events = createListResource({
   doctype: 'Event',
-  fields: ['name', 'status', 'subject', 'starts_on', 'ends_on'],
+  cache: ['calendar', user],
+  fields: [
+    'name',
+    'status',
+    'subject',
+    'description',
+    'starts_on',
+    'ends_on',
+    'all_day',
+    'event_type',
+    'color',
+  ],
   filters: { status: 'Open', owner: user },
   auto: true,
   transform: (data) => {
     return data.map((event) => ({
       id: event.name,
       title: event.subject,
+      description: event.description,
+      status: event.status,
       fromDate: event.starts_on,
       toDate: event.ends_on,
+      isFullDay: event.all_day,
+      eventType: event.event_type,
       color: event.color,
     }))
   },
