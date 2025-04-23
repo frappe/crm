@@ -12,6 +12,7 @@
   <div class="flex h-screen flex-col overflow-hidden">
     <Calendar
       v-if="events.data?.length"
+      ref="calendar"
       :config="{
         defaultMode: 'Week',
         isEditMode: true,
@@ -94,9 +95,12 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import { sessionStore } from '@/stores/session'
 import { globalStore } from '@/stores/global'
 import { Calendar, createListResource, TabButtons, dayjs } from 'frappe-ui'
+import { ref } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
+
+const calendar = ref(null)
 
 const events = createListResource({
   doctype: 'Event',
@@ -127,6 +131,25 @@ const events = createListResource({
       color: event.color,
     }))
   },
+  insert: {
+    onSuccess: async () => {
+      await events.reload()
+      calendar.value.reloadEvents()
+    },
+  },
+  delete: {
+    onSuccess: async () => {
+      await events.reload()
+      calendar.value.reloadEvents()
+    },
+  },
+  setValue: {
+    onSuccess: async () => {
+      await events.reload()
+      calendar.value.reloadEvents()
+    },
+  },
+})
 
 function saveEvent(event) {
   event.id ? updateEvent(event) : createEvent(event)
