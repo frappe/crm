@@ -67,6 +67,18 @@
         <div class="flex justify-between items-center">
           <div class="flex">
             <div class="flex items-center gap-x-2">
+              <ColorPicker v-model="_event.color">
+                <template #target="{ togglePopover }">
+                  <Button variant="ghost" @click="togglePopover">
+                    <div
+                      class="w-4 h-4 rounded-sm border"
+                      :style="{
+                        background: _event.color ? _event.color : '#e4faeb',
+                      }"
+                    />
+                  </Button>
+                </template>
+              </ColorPicker>
               <Button variant="ghost" @click="updateEventType">
                 <FeatherIcon
                   :name="_event.eventType == 'Private' ? 'lock' : 'unlock'"
@@ -102,6 +114,7 @@ import {
   TextInput,
   TextEditor,
   DatePicker,
+  ColorPicker,
   TimePicker,
 } from 'frappe-ui'
 import { getFormat } from '@/utils'
@@ -146,6 +159,9 @@ watch(
     nextTick(() => {
       title.value.el.focus()
       _event.value = { ...event.value }
+      if (!_event.value.color) {
+        _event.value.color = '#e4faeb'
+      }
     })
   },
 )
