@@ -67,6 +67,12 @@
         <div class="flex justify-between items-center">
           <div class="flex">
             <div class="flex items-center gap-x-2">
+              <Button variant="ghost" @click="updateEventType">
+                <FeatherIcon
+                  :name="_event.eventType == 'Private' ? 'lock' : 'unlock'"
+                  class="h-4 w-4"
+                />
+              </Button>
               <Button
                 v-if="_event.id"
                 variant="ghost"
@@ -110,6 +116,14 @@ const error = ref(null)
 const title = ref(null)
 
 let _event = ref({})
+
+function updateEventType() {
+  if (_event.value.eventType == 'Private') {
+    _event.value.eventType = 'Public'
+  } else {
+    _event.value.eventType = 'Private'
+  }
+}
 
 function saveEvent() {
   error.value = null
