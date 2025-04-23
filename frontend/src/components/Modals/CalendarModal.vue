@@ -32,26 +32,26 @@
               <DurationIcon class="h-4 w-4 text-ink-gray-5" />
               <DatePicker
                 class="max-w-28"
-                v-model="_event.date"
+                v-model="_event.fromDate"
                 :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
                 :placeholder="__('Start Date')"
               />
               <TimePicker
                 v-if="!_event.isFullDay"
                 class="max-w-20"
-                v-model="_event.from_time"
+                v-model="_event.fromTime"
                 :placeholder="__('Start Time')"
               />
               <div class="text-base text-ink-gray-6">-</div>
               <TimePicker
                 v-if="!_event.isFullDay"
                 class="max-w-20"
-                v-model="_event.to_time"
+                v-model="_event.toTime"
                 :placeholder="__('End Time')"
               />
               <DatePicker
                 class="max-w-28"
-                v-model="_event.date"
+                v-model="_event.toDate"
                 :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
                 :placeholder="__('End Date')"
               />
@@ -145,6 +145,11 @@ function saveEvent() {
     title.value.focus()
     return
   }
+
+  _event.value.fromDateTime =
+    _event.value.fromDate + ' ' + _event.value.fromTime
+  _event.value.toDateTime = _event.value.toDate + ' ' + _event.value.toTime
+
   emit('save', _event.value)
 }
 

@@ -155,22 +155,14 @@ function saveEvent(event) {
   event.id ? updateEvent(event) : createEvent(event)
 }
 
-function getFromDate(event) {
-  return event.date + ' ' + (event.from_time ? event.from_time : '00:00:00')
-}
-
-function getToDate(event) {
-  return event.date + ' ' + (event.to_time ? event.to_time : '00:00:00')
-}
-
 function createEvent(event) {
   if (!event.title) return
 
   events.insert.submit({
     subject: event.title,
     description: event.description,
-    starts_on: getFromDate(event),
-    ends_on: getToDate(event),
+    starts_on: event.fromDateTime,
+    ends_on: event.toDateTime,
     all_day: event.isFullDay,
     event_type: event.eventType,
     color: event.color,
@@ -187,8 +179,8 @@ function updateEvent(event) {
     name: event.id,
     subject: event.title,
     description: event.description,
-    starts_on: getFromDate(event),
-    ends_on: getToDate(event),
+    starts_on: event.fromDateTime,
+    ends_on: event.toDateTime,
     all_day: event.isFullDay,
     event_type: event.eventType,
     color: event.color,
@@ -232,14 +224,17 @@ function editDetails(e) {
 
 function showNewModal(e) {
   let [fromTime, toTime] = getFromToTime(e.time)
+  let fromDate = dayjs(e.date).format('YYYY-MM-DD')
 
   showModal.value = true
   event.value = {
     title: '',
     description: '',
-    date: dayjs(e.date).format('YYYY-MM-DD'),
-    from_time: fromTime,
-    to_time: toTime,
+    date: fromDate,
+    fromDate: fromDate,
+    toDate: fromDate,
+    fromTime,
+    toTime,
     isFullDay: false,
     eventType: 'Public',
   }
