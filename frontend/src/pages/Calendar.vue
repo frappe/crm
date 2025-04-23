@@ -79,7 +79,12 @@
         </p>
       </template>
     </Calendar>
-    <CalendarModal v-model="showModal" v-model:event="event" />
+    <CalendarModal
+      v-model="showModal"
+      v-model:event="event"
+      @save="saveEvent"
+      @delete="deleteEvent"
+    />
   </div>
 </template>
 <script setup>
@@ -88,7 +93,7 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { sessionStore } from '@/stores/session'
 import { globalStore } from '@/stores/global'
-import { Calendar, createListResource, TabButtons } from 'frappe-ui'
+import { Calendar, createListResource, TabButtons, dayjs } from 'frappe-ui'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
@@ -122,6 +127,10 @@ const events = createListResource({
       color: event.color,
     }))
   },
+
+function saveEvent(event) {
+  event.id ? updateEvent(event) : createEvent(event)
+}
 
 function getFromDate(event) {
   return event.date + ' ' + (event.from_time ? event.from_time : '00:00:00')
