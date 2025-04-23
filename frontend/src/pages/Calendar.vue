@@ -70,6 +70,11 @@
           </div>
         </div>
       </template>
+      <template #daily-header="{ parseDateWithDay, currentDate }">
+        <p class="ml-4 pb-2 text-base font-semibold text-ink-gray-8">
+          {{ parseDateWithDay(currentDate, (fullDay = true)) }}
+        </p>
+      </template>
     </Calendar>
   </div>
 </template>
