@@ -25,6 +25,9 @@
       @create="(event) => createEvent(event)"
       @update="(event) => updateEvent(event)"
       @delete="(eventID) => deleteEvent(eventID)"
+      :onClick="showDetails"
+      :onDblClick="editDetails"
+      :onCellDblClick="showNewModal"
     >
       <template
         #header="{
@@ -76,9 +79,11 @@
         </p>
       </template>
     </Calendar>
+    <CalendarModal v-model="showModal" v-model:event="event" />
   </div>
 </template>
 <script setup>
+import CalendarModal from '@/components/Modals/CalendarModal.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { sessionStore } from '@/stores/session'
@@ -138,6 +143,9 @@ function createEvent(event) {
     event_type: event.eventType,
     color: event.color,
   })
+
+  showModal.value = false
+  event.value = {}
 }
 
 function updateEvent(event) {
@@ -153,6 +161,9 @@ function updateEvent(event) {
     event_type: event.eventType,
     color: event.color,
   })
+
+  showModal.value = false
+  event.value = {}
 }
 
 function deleteEvent(eventID) {
@@ -175,5 +186,28 @@ function deleteEvent(eventID) {
       },
     ],
   })
+}
+
+const showModal = ref(false)
+const event = ref({})
+
+function showDetails(e) {}
+
+function editDetails(e) {
+  showModal.value = true
+  event.value = { ...e.calendarEvent }
+}
+
+function showNewModal(e) {
+  showModal.value = true
+  event.value = {
+    title: '',
+    description: '',
+    date: dayjs(e.date).format('YYYY-MM-DD'),
+    from_time: fromTime,
+    to_time: toTime,
+    isFullDay: false,
+    eventType: 'Public',
+  }
 }
 </script>
