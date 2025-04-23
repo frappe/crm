@@ -115,25 +115,44 @@ const events = createListResource({
       color: event.color,
     }))
   },
-})
+
+function getFromDate(event) {
+  return event.date + ' ' + (event.from_time ? event.from_time : '00:00:00')
+}
+
+function getToDate(event) {
+  return event.date + ' ' + (event.to_time ? event.to_time : '00:00:00')
+}
 
 function createEvent(event) {
+  if (!event.title) return
+
   events.insert.submit({
     subject: event.title,
-    starts_on: event.fromDate,
-    ends_on: event.toDate,
+    description: event.description,
+    starts_on: getFromDate(event),
+    ends_on: getToDate(event),
+    all_day: event.isFullDay,
+    event_type: event.eventType,
     color: event.color,
   })
 }
+
 function updateEvent(event) {
+  if (!event.id) return
+
   events.setValue.submit({
     name: event.id,
     subject: event.title,
-    starts_on: event.fromDate,
-    ends_on: event.toDate,
+    description: event.description,
+    starts_on: getFromDate(event),
+    ends_on: getToDate(event),
+    all_day: event.isFullDay,
+    event_type: event.eventType,
     color: event.color,
   })
 }
+
 function deleteEvent(eventID) {
   events.delete.submit(eventID)
 }
