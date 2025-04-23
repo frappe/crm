@@ -199,6 +199,8 @@ function editDetails(e) {
 }
 
 function showNewModal(e) {
+  let [fromTime, toTime] = getFromToTime(e.time)
+
   showModal.value = true
   event.value = {
     title: '',
@@ -209,5 +211,37 @@ function showNewModal(e) {
     isFullDay: false,
     eventType: 'Public',
   }
+}
+
+// utils
+function getFromToTime(time) {
+  let fromTime = '00:00'
+  let toTime = '01:00'
+
+  if (time.toLowerCase().includes('am') || time.toLowerCase().includes('pm')) {
+    // 12 hour format
+    time = time.trim().replace(' ', '')
+    const ampm = time.slice(-2)
+    time = time.slice(0, -2)
+    let hour = time
+
+    if (ampm === 'pm' && parseInt(hour) < 12) {
+      hour = parseInt(hour) + 12
+    } else if (ampm === 'am' && hour == 12) {
+      hour = 0
+    }
+
+    fromTime = `${hour}:00`
+    toTime = `${parseInt(hour) + 1}:00`
+  } else {
+    // 24 hour format
+    time = time.split(':')
+    let [hour, minute] = time
+
+    fromTime = `${hour}:${minute}`
+    toTime = `${parseInt(hour) + 1}:${minute}`
+  }
+
+  return [fromTime, toTime]
 }
 </script>
