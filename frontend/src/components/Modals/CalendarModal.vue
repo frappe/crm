@@ -76,6 +76,10 @@
                 <FeatherIcon name="trash-2" class="h-4 w-4" />
               </Button>
             </div>
+            <div v-if="error" class="flex items-center gap-x-2">
+              <div class="h-full border-l mx-2" />
+              <ErrorMessage :message="error" class="text-sm text-ink-red-3" />
+            </div>
           </div>
           <Button :label="__('Save')" variant="solid" @click="saveEvent" />
         </div>
@@ -88,6 +92,7 @@
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import {
   Switch,
+  ErrorMessage,
   TextInput,
   TextEditor,
   DatePicker,
@@ -101,11 +106,18 @@ const emit = defineEmits(['save', 'delete'])
 const show = defineModel()
 const event = defineModel('event')
 
+const error = ref(null)
 const title = ref(null)
 
 let _event = ref({})
 
 function saveEvent() {
+  error.value = null
+  if (!_event.value.title) {
+    error.value = __('Title is required')
+    title.value.focus()
+    return
+  }
   emit('save', _event.value)
 }
 
