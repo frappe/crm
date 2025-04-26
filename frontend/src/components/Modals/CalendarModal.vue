@@ -32,28 +32,32 @@
               <DurationIcon class="h-4 w-4 text-ink-gray-5" />
               <DatePicker
                 class="max-w-28"
-                v-model="_event.fromDate"
+                :value="_event.fromDate"
                 :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
                 :placeholder="__('Start Date')"
+                @update:modelValue="(date) => updateDate(date, true)"
               />
               <TimePicker
                 v-if="!_event.isFullDay"
                 class="max-w-20"
-                v-model="_event.fromTime"
+                :value="_event.fromTime"
                 :placeholder="__('Start Time')"
+                @update:modelValue="(time) => updateTime(time, true)"
               />
               <div class="text-base text-ink-gray-6">-</div>
               <TimePicker
                 v-if="!_event.isFullDay"
                 class="max-w-20"
-                v-model="_event.toTime"
+                :value="_event.toTime"
                 :placeholder="__('End Time')"
+                @update:modelValue="(time) => updateTime(time)"
               />
               <DatePicker
                 class="max-w-28"
-                v-model="_event.toDate"
+                :value="_event.toDate"
                 :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
                 :placeholder="__('End Date')"
+                @update:modelValue="(date) => updateDate(date)"
               />
             </div>
             <Switch
@@ -116,6 +120,7 @@ import {
   DatePicker,
   ColorPicker,
   TimePicker,
+  dayjs,
 } from 'frappe-ui'
 import { getFormat } from '@/utils'
 import { ref, nextTick, watch } from 'vue'
@@ -129,6 +134,62 @@ const error = ref(null)
 const title = ref(null)
 
 let _event = ref({})
+
+function updateDate(d, fromDate = false) {
+  error.value = null
+  let oldTo = _event.value.toDate || _event.value.fromDate
+
+  if (fromDate) {
+    _event.value.fromDate = d
+    if (!_event.value.toDate) {
+      _event.value.toDate = d
+    }
+  } else {
+    _event.value.toDate = d
+  }
+
+  if (_event.value.toDate && _event.value.fromDate) {
+    const diff = dayjs(_event.value.toDate).diff(
+      dayjs(_event.value.fromDate),
+      'day',
+    )
+
+    if (diff < 0) {
+      _event.value.toDate = oldTo
+      error.value = __('End date should be after start date')
+      return
+    }
+  }
+}
+
+function updateTime(t, fromTime = false) {
+  error.value = null
+  let oldTo = _event.value.toTime || _event.value.fromTime
+
+  if (fromTime) {
+    _event.value.fromTime = t
+    if (!_event.value.toTime) {
+      const hour = parseInt(t.split(':')[0])
+      const minute = parseInt(t.split(':')[1])
+      _event.value.toTime = `${hour + 1}:${minute}`
+    }
+  } else {
+    _event.value.toTime = t
+  }
+
+  if (_event.value.toTime && _event.value.fromTime) {
+    const diff = dayjs(_event.value.toDate + ' ' + _event.value.toTime).diff(
+      dayjs(_event.value.fromDate + ' ' + _event.value.fromTime),
+      'minute',
+    )
+
+    if (diff < 0) {
+      _event.value.toTime = oldTo
+      error.value = __('End time should be after start time')
+      return
+    }
+  }
+}
 
 function updateEventType() {
   if (_event.value.eventType == 'Private') {
