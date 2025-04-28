@@ -14,12 +14,13 @@
     <FormControl
       v-if="
         field.read_only &&
-        !['Float', 'Currency', 'Check'].includes(field.fieldtype)
+        !['Float', 'Currency', 'Check', 'Percent'].includes(field.fieldtype)
       "
       type="text"
       :placeholder="getPlaceholder(field)"
       v-model="data[field.fieldname]"
       :disabled="true"
+      :description="field.description"
     />
     <Grid
       v-else-if="field.fieldtype === 'Table'"
@@ -37,6 +38,7 @@
       v-model="data[field.fieldname]"
       @change="(e) => fieldChange(e.target.value, field)"
       :placeholder="getPlaceholder(field)"
+      :description="field.description"
     >
       <template v-if="field.prefix" #prefix>
         <IndicatorIcon :class="field.prefix" />
@@ -49,6 +51,7 @@
         v-model="data[field.fieldname]"
         @change="(e) => fieldChange(e.target.checked, field)"
         :disabled="Boolean(field.read_only)"
+        :description="field.description"
       />
       <label
         class="text-sm text-ink-gray-5"
@@ -150,8 +153,9 @@
         ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.fieldtype)
       "
       type="textarea"
-      :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
+      :placeholder="getPlaceholder(field)"
+      :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <FormControl
@@ -159,6 +163,7 @@
       type="number"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
+      :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <FormControl
@@ -167,6 +172,7 @@
       :value="getFormattedPercent(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
     <FormControl
@@ -175,6 +181,7 @@
       :value="getFormattedFloat(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
     <FormControl
@@ -183,6 +190,7 @@
       :value="getFormattedCurrency(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
     <FormControl
@@ -191,6 +199,7 @@
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
   </div>
