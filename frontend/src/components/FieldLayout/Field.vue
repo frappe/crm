@@ -25,6 +25,7 @@
     <Grid
       v-else-if="field.fieldtype === 'Table'"
       v-model="data[field.fieldname]"
+      v-model:parent="data"
       :doctype="field.options"
       :parentDoctype="doctype"
       :parentFieldname="field.fieldname"

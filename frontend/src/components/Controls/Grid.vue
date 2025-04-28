@@ -186,6 +186,35 @@
                     @change="fieldChange($event.target.value, field, row)"
                   />
                   <FormControl
+                    v-else-if="field.fieldtype === 'Float'"
+                    class="[&_input]:text-right"
+                    type="text"
+                    variant="outline"
+                    :value="getFormattedFloat(field.fieldname, row)"
+                    :disabled="Boolean(field.read_only)"
+                    @change="row[field.fieldname] = flt($event.target.value)"
+                  />
+                  <FormControl
+                    v-else-if="field.fieldtype === 'Percent'"
+                    class="[&_input]:text-right"
+                    type="text"
+                    variant="outline"
+                    :value="getFormattedPercent(field.fieldname, row)"
+                    :disabled="Boolean(field.read_only)"
+                    @change="row[field.fieldname] = flt($event.target.value)"
+                  />
+                  <FormControl
+                    v-else-if="field.fieldtype === 'Currency'"
+                    class="[&_input]:text-right"
+                    type="text"
+                    variant="outline"
+                    :value="
+                      getFormattedCurrency(field.fieldname, row, parentDoc)
+                    "
+                    :disabled="Boolean(field.read_only)"
+                    @change="row[field.fieldname] = flt($event.target.value)"
+                  />
+                  <FormControl
                     v-else-if="field.fieldtype === 'Select'"
                     class="text-sm text-ink-gray-8"
                     type="select"
@@ -350,6 +379,7 @@ getMeta(props.parentDoctype)
 const { getUser } = usersStore()
 
 const rows = defineModel()
+const parentDoc = defineModel('parent')
 const showRowList = ref(new Array(rows.value?.length || []).fill(false))
 const selectedRows = reactive(new Set())
 
