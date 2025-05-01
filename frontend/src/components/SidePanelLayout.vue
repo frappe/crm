@@ -143,11 +143,7 @@
                           type="checkbox"
                           v-model="document.doc[field.fieldname]"
                           @change.stop="
-                            emit(
-                              'update',
-                              field.fieldname,
-                              $event.target.checked,
-                            )
+                            fieldChange($event.target.checked, field)
                           "
                           :disabled="Boolean(field.read_only)"
                         />
@@ -165,9 +161,7 @@
                           :value="document.doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
-                          @change.stop="
-                            emit('update', field.fieldname, $event.target.value)
-                          "
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                         <FormControl
                           v-else-if="field.fieldtype === 'Select'"
@@ -187,7 +181,7 @@
                           "
                           doctype="User"
                           :filters="field.filters"
-                          @change="(v) => emit('update', field.fieldname, v)"
+                          @change="(v) => fieldChange(v, field)"
                           :placeholder="'Select' + ' ' + field.label + '...'"
                           :hideMe="true"
                         >
@@ -229,7 +223,7 @@
                           "
                           :filters="field.filters"
                           :placeholder="field.placeholder"
-                          @change="(v) => emit('update', field.fieldname, v)"
+                          @change="(v) => fieldChange(v, field)"
                           :onCreate="field.create"
                         />
                         <div
@@ -244,7 +238,7 @@
                             "
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            @change="(v) => emit('update', field.fieldname, v)"
+                            @change="(v) => fieldChange(v, field)"
                           />
                         </div>
                         <div
@@ -257,7 +251,7 @@
                             :formatter="(date) => getFormat(date, '', true)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            @change="(v) => emit('update', field.fieldname, v)"
+                            @change="(v) => fieldChange(v, field)"
                           />
                         </div>
                         <FormControl
@@ -270,11 +264,7 @@
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit(
-                              'update',
-                              field.fieldname,
-                              flt($event.target.value),
-                            )
+                            fieldChange(flt($event.target.value), field)
                           "
                         />
                         <FormControl
@@ -284,9 +274,7 @@
                           v-model="document.doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
-                          @change.stop="
-                            emit('update', field.fieldname, $event.target.value)
-                          "
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                         <FormControl
                           v-else-if="field.fieldtype === 'Float'"
@@ -298,11 +286,7 @@
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit(
-                              'update',
-                              field.fieldname,
-                              flt($event.target.value),
-                            )
+                            fieldChange(flt($event.target.value), field)
                           "
                         />
                         <FormControl
@@ -315,11 +299,7 @@
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
-                            emit(
-                              'update',
-                              field.fieldname,
-                              flt($event.target.value),
-                            )
+                            fieldChange(flt($event.target.value), field)
                           "
                         />
                         <FormControl
@@ -329,9 +309,7 @@
                           :value="document.doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
-                          @change.stop="
-                            emit('update', field.fieldname, $event.target.value)
-                          "
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                       </div>
                       <div class="ml-1">

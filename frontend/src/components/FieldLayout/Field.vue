@@ -43,7 +43,7 @@
         class="form-control"
         type="checkbox"
         v-model="data[field.fieldname]"
-        @change="(e) => (data[field.fieldname] = e.target.checked)"
+        @change="(e) => fieldChange(e.target.checked, field)"
         :disabled="Boolean(field.read_only)"
       />
       <label
@@ -71,7 +71,7 @@
           field.fieldtype == 'Link' ? field.options : data[field.options]
         "
         :filters="field.filters"
-        @change="(v) => (data[field.fieldname] = v)"
+        @change="(v) => fieldChange(v, field)"
         :placeholder="getPlaceholder(field)"
         :onCreate="field.create"
       />
@@ -99,7 +99,7 @@
       :value="data[field.fieldname] && getUser(data[field.fieldname]).full_name"
       :doctype="field.options"
       :filters="field.filters"
-      @change="(v) => (data[field.fieldname] = v)"
+      @change="(v) => fieldChange(v, field)"
       :placeholder="getPlaceholder(field)"
       :hideMe="true"
     >
@@ -124,19 +124,21 @@
     </Link>
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
-      v-model="data[field.fieldname]"
+      :value="data[field.fieldname]"
       icon-left=""
       :formatter="(date) => getFormat(date, '', true, true)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
+      @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
       icon-left=""
-      v-model="data[field.fieldname]"
+      :value="data[field.fieldname]"
       :formatter="(date) => getFormat(date, '', true)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
+      @change="(v) => fieldChange(v, field)"
     />
     <FormControl
       v-else-if="
@@ -144,13 +146,15 @@
       "
       type="textarea"
       :placeholder="getPlaceholder(field)"
-      v-model="data[field.fieldname]"
+      :value="data[field.fieldname]"
+      @change="fieldChange($event.target.value, field)"
     />
     <FormControl
       v-else-if="['Int'].includes(field.fieldtype)"
       type="number"
       :placeholder="getPlaceholder(field)"
-      v-model="data[field.fieldname]"
+      :value="data[field.fieldname]"
+      @change="fieldChange($event.target.value, field)"
     />
     <FormControl
       v-else-if="field.fieldtype === 'Percent'"
@@ -158,7 +162,7 @@
       :value="getFormattedPercent(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
-      @change="data[field.fieldname] = flt($event.target.value)"
+      @change="fieldChange(flt($event.target.value), field)"
     />
     <FormControl
       v-else-if="field.fieldtype === 'Float'"
@@ -166,7 +170,7 @@
       :value="getFormattedFloat(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
-      @change="data[field.fieldname] = flt($event.target.value)"
+      @change="fieldChange(flt($event.target.value), field)"
     />
     <FormControl
       v-else-if="field.fieldtype === 'Currency'"
@@ -174,14 +178,15 @@
       :value="getFormattedCurrency(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
-      @change="data[field.fieldname] = flt($event.target.value)"
+      @change="fieldChange(flt($event.target.value), field)"
     />
     <FormControl
       v-else
       type="text"
       :placeholder="getPlaceholder(field)"
-      v-model="data[field.fieldname]"
+      :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
+      @change="fieldChange($event.target.value, field)"
     />
   </div>
 </template>
