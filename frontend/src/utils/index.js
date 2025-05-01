@@ -152,6 +152,7 @@ export function setupAssignees(doc) {
 }
 
 async function getFormScript(script, obj) {
+  if (!script.includes('setupForm(')) return {}
   let scriptFn = new Function(script + '\nreturn setupForm')()
   let formScript = await scriptFn(obj)
   return formScript || {}
