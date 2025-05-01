@@ -1,15 +1,19 @@
+import { getScript } from '@/data/script'
 import { createToast } from '@/utils'
 import { createDocumentResource } from 'frappe-ui'
 
 const documentsCache = {}
 
 export function useDocument(doctype, docname) {
+  const { setupScript } = getScript(doctype)
+
   documentsCache[doctype] = documentsCache[doctype] || {}
 
   if (!documentsCache[doctype][docname]) {
     documentsCache[doctype][docname] = createDocumentResource({
       doctype: doctype,
       name: docname,
+      onSuccess: () => setupFormScript(),
       setValue: {
         onSuccess: () => {
           createToast({
@@ -30,7 +34,20 @@ export function useDocument(doctype, docname) {
     })
   }
 
+  function setupFormScript() {
+    const controllers = setupScript(documentsCache[doctype][docname])
+    const doctypeName = doctype.replace(/\s+/g, '')
+    const doctypeController = controllers[doctypeName]
+
+    if (!doctypeController) return
+
+    documentsCache[doctype][docname]['controller'] = doctypeController
+  }
+
   return {
     document: documentsCache[doctype][docname],
+    getActions: () =>
+      documentsCache[doctype][docname]?.controller?.actions || [],
+    setupFormScript,
   }
 }
