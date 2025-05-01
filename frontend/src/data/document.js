@@ -36,6 +36,8 @@ export function useDocument(doctype, docname) {
 
   function setupFormScript() {
     const controllers = setupScript(documentsCache[doctype][docname])
+    if (!controllers) return
+
     const doctypeName = doctype.replace(/\s+/g, '')
     const doctypeController = controllers[doctypeName]
 
