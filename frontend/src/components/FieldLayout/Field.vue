@@ -31,6 +31,7 @@
       :class="field.prefix ? 'prefix' : ''"
       :options="field.options"
       v-model="data[field.fieldname]"
+      @change="(e) => fieldChange(e.target.value, field)"
       :placeholder="getPlaceholder(field)"
     >
       <template v-if="field.prefix" #prefix>
@@ -195,6 +196,7 @@ import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
+import { useDocument } from '@/data/document'
 import { Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
 import { computed, inject } from 'vue'
 
@@ -208,7 +210,10 @@ const preview = inject('preview')
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(doctype)
+
 const { getUser } = usersStore()
+
+const { triggerOnChange } = useDocument(doctype, data.value.name)
 
 const field = computed(() => {
   let field = props.field
@@ -264,6 +269,12 @@ const getPlaceholder = (field) => {
   } else {
     return __('Enter {0}', [__(field.label)])
   }
+}
+
+function fieldChange(value, df) {
+  data.value[df.fieldname] = value
+
+  triggerOnChange(df.fieldname)
 }
 </script>
 <style scoped>

@@ -176,9 +176,7 @@
                           v-model="document.doc[field.fieldname]"
                           :options="field.options"
                           :placeholder="field.placeholder"
-                          @change.stop="
-                            emit('update', field.fieldname, $event.target.value)
-                          "
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                         <Link
                           v-else-if="field.fieldtype === 'User'"
@@ -428,7 +426,7 @@ const emit = defineEmits(['update', 'reload'])
 
 const showSidePanelModal = ref(false)
 
-const { document } = useDocument(props.doctype, props.docname)
+const { document, triggerOnChange } = useDocument(props.doctype, props.docname)
 
 const _sections = computed(() => {
   if (!props.sections?.length) return []
@@ -479,6 +477,14 @@ function parsedField(field) {
 
   _field.visible = isFieldVisible(_field)
   return _field
+}
+
+async function fieldChange(value, df) {
+  document.doc[df.fieldname] = value
+
+  await triggerOnChange(df.fieldname)
+
+  document.save.submit()
 }
 
 function parsedSection(section, editButtonAdded) {
