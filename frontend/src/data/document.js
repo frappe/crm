@@ -44,10 +44,30 @@ export function useDocument(doctype, docname) {
     documentsCache[doctype][docname]['controller'] = doctypeController
   }
 
+  async function triggerOnChange(fieldname) {
+    if (!documentsCache[doctype][docname]?.controller) return
+
+    const c = documentsCache[doctype][docname].controller
+    c.oldValue = getOldValue(fieldname)
+    c.value = documentsCache[doctype][docname].doc[fieldname]
+
+    return await c[fieldname]?.()
+  }
+
+  function getOldValue(fieldname) {
+    if (!documentsCache[doctype][docname]) return ''
+
+    const document = documentsCache[doctype][docname]
+    const oldDoc = document.originalDoc
+    return oldDoc?.[fieldname] || document.doc[fieldname]
+  }
+
   return {
     document: documentsCache[doctype][docname],
     getActions: () =>
       documentsCache[doctype][docname]?.controller?.actions || [],
+    getOldValue,
+    triggerOnChange,
     setupFormScript,
   }
 }
