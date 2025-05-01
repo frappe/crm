@@ -55,7 +55,10 @@
                         >
                       </div>
                     </Tooltip>
-                    <div class="flex items-center justify-between w-[65%]">
+                    <div
+                      v-if="!document.get.loading"
+                      class="flex items-center justify-between w-[65%]"
+                    >
                       <div
                         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
                       >
@@ -67,21 +70,21 @@
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
                         >
                           <Tooltip :text="__(field.tooltip)">
-                            <div>{{ data[field.fieldname] }}</div>
+                            <div>{{ document.doc[field.fieldname] }}</div>
                           </Tooltip>
                         </div>
                         <div v-else-if="field.fieldtype === 'Dropdown'">
                           <NestedPopover>
                             <template #target="{ open }">
                               <Button
-                                :label="data[field.fieldname]"
+                                :label="document.doc[field.fieldname]"
                                 class="dropdown-button flex w-full items-center justify-between rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3"
                               >
                                 <div
-                                  v-if="data[field.fieldname]"
+                                  v-if="document.doc[field.fieldname]"
                                   class="truncate"
                                 >
-                                  {{ data[field.fieldname] }}
+                                  {{ document.doc[field.fieldname] }}
                                 </div>
                                 <div
                                   v-else
@@ -138,7 +141,7 @@
                           v-else-if="field.fieldtype == 'Check'"
                           class="form-control"
                           type="checkbox"
-                          v-model="data[field.fieldname]"
+                          v-model="document.doc[field.fieldname]"
                           @change.stop="
                             emit(
                               'update',
@@ -159,7 +162,7 @@
                           "
                           class="form-control"
                           type="textarea"
-                          :value="data[field.fieldname]"
+                          :value="document.doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
@@ -170,7 +173,7 @@
                           v-else-if="field.fieldtype === 'Select'"
                           class="form-control cursor-pointer [&_select]:cursor-pointer truncate"
                           type="select"
-                          v-model="data[field.fieldname]"
+                          v-model="document.doc[field.fieldname]"
                           :options="field.options"
                           :placeholder="field.placeholder"
                           @change.stop="
@@ -181,21 +184,22 @@
                           v-else-if="field.fieldtype === 'User'"
                           class="form-control"
                           :value="
-                            data[field.fieldname] &&
-                            getUser(data[field.fieldname]).full_name
+                            document.doc[field.fieldname] &&
+                            getUser(document.doc[field.fieldname]).full_name
                           "
                           doctype="User"
                           :filters="field.filters"
-                          @change="
-                            (data) => emit('update', field.fieldname, data)
-                          "
+                          @change="(v) => emit('update', field.fieldname, v)"
                           :placeholder="'Select' + ' ' + field.label + '...'"
                           :hideMe="true"
                         >
-                          <template v-if="data[field.fieldname]" #prefix>
+                          <template
+                            v-if="document.doc[field.fieldname]"
+                            #prefix
+                          >
                             <UserAvatar
                               class="mr-1.5"
-                              :user="data[field.fieldname]"
+                              :user="document.doc[field.fieldname]"
                               size="sm"
                             />
                           </template>
@@ -219,17 +223,15 @@
                             ['Link', 'Dynamic Link'].includes(field.fieldtype)
                           "
                           class="form-control select-text"
-                          :value="data[field.fieldname]"
+                          :value="document.doc[field.fieldname]"
                           :doctype="
                             field.fieldtype == 'Link'
                               ? field.options
-                              : data[field.options]
+                              : document.doc[field.options]
                           "
                           :filters="field.filters"
                           :placeholder="field.placeholder"
-                          @change="
-                            (data) => emit('update', field.fieldname, data)
-                          "
+                          @change="(v) => emit('update', field.fieldname, v)"
                           :onCreate="field.create"
                         />
                         <div
@@ -238,15 +240,13 @@
                         >
                           <DateTimePicker
                             icon-left=""
-                            :value="data[field.fieldname]"
+                            :value="document.doc[field.fieldname]"
                             :formatter="
                               (date) => getFormat(date, '', true, true)
                             "
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            @change="
-                              (data) => emit('update', field.fieldname, data)
-                            "
+                            @change="(v) => emit('update', field.fieldname, v)"
                           />
                         </div>
                         <div
@@ -255,20 +255,20 @@
                         >
                           <DatePicker
                             icon-left=""
-                            :value="data[field.fieldname]"
+                            :value="document.doc[field.fieldname]"
                             :formatter="(date) => getFormat(date, '', true)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            @change="
-                              (data) => emit('update', field.fieldname, data)
-                            "
+                            @change="(v) => emit('update', field.fieldname, v)"
                           />
                         </div>
                         <FormControl
                           v-else-if="field.fieldtype === 'Percent'"
                           class="form-control"
                           type="text"
-                          :value="getFormattedPercent(field.fieldname, data)"
+                          :value="
+                            getFormattedPercent(field.fieldname, document.doc)
+                          "
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
@@ -283,7 +283,7 @@
                           v-else-if="field.fieldtype === 'Int'"
                           class="form-control"
                           type="number"
-                          v-model="data[field.fieldname]"
+                          v-model="document.doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
@@ -294,7 +294,9 @@
                           v-else-if="field.fieldtype === 'Float'"
                           class="form-control"
                           type="text"
-                          :value="getFormattedFloat(field.fieldname, data)"
+                          :value="
+                            getFormattedFloat(field.fieldname, document.doc)
+                          "
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
@@ -309,7 +311,9 @@
                           v-else-if="field.fieldtype === 'Currency'"
                           class="form-control"
                           type="text"
-                          :value="getFormattedCurrency(field.fieldname, data)"
+                          :value="
+                            getFormattedCurrency(field.fieldname, document.doc)
+                          "
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
@@ -324,7 +328,7 @@
                           v-else
                           class="form-control"
                           type="text"
-                          :value="data[field.fieldname]"
+                          :value="document.doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="
@@ -337,19 +341,23 @@
                           v-if="
                             field.fieldtype === 'Link' &&
                             field.link &&
-                            data[field.fieldname]
+                            document.doc[field.fieldname]
                           "
                           class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                          @click.stop="field.link(data[field.fieldname])"
+                          @click.stop="
+                            field.link(document.doc[field.fieldname])
+                          "
                         />
                         <EditIcon
                           v-if="
                             field.fieldtype === 'Link' &&
                             field.edit &&
-                            data[field.fieldname]
+                            document.doc[field.fieldname]
                           "
                           class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                          @click.stop="field.edit(data[field.fieldname])"
+                          @click.stop="
+                            field.edit(document.doc[field.fieldname])
+                          "
                         />
                       </div>
                     </div>
@@ -386,6 +394,7 @@ import { isMobileView } from '@/composables/settings'
 import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
+import { useDocument } from '@/data/document'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -395,6 +404,11 @@ const props = defineProps({
   doctype: {
     type: String,
     default: 'CRM Lead',
+    required: true,
+  },
+  docname: {
+    type: String,
+    required: true,
   },
   preview: {
     type: Boolean,
@@ -407,12 +421,14 @@ const props = defineProps({
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(props.doctype)
+
 const { isManager, getUser } = usersStore()
 
 const emit = defineEmits(['update', 'reload'])
 
-const data = defineModel()
 const showSidePanelModal = ref(false)
+
+const { document } = useDocument(props.doctype, props.docname)
 
 const _sections = computed(() => {
   if (!props.sections?.length) return []
@@ -453,11 +469,11 @@ function parsedField(field) {
     placeholder: field.placeholder || field.label,
     display_via_depends_on: evaluateDependsOnValue(
       field.depends_on,
-      data.value,
+      document.doc,
     ),
     mandatory_via_depends_on: evaluateDependsOnValue(
       field.mandatory_depends_on,
-      data.value,
+      document.doc,
     ),
   }
 
@@ -485,7 +501,7 @@ function isFieldVisible(field) {
   if (props.preview) return true
   return (
     (field.fieldtype == 'Check' ||
-      (field.read_only && data.value[field.fieldname]) ||
+      (field.read_only && document.doc?.[field.fieldname]) ||
       !field.read_only) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden

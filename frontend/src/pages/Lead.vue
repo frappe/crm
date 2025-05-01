@@ -182,9 +182,9 @@
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
         <SidePanelLayout
-          v-model="lead.data"
           :sections="sections.data"
           doctype="CRM Lead"
+          :docname="lead.data.name"
           @update="updateField"
           @reload="sections.reload"
         />
