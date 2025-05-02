@@ -60,6 +60,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['change'])
+
 const { getFields } = getMeta(props.doctype)
 
 const values = defineModel()
@@ -109,14 +111,16 @@ const addValue = (value) => {
 
   if (value) {
     values.value.push({ [linkField.value.fieldname]: value })
+    emit('change', values.value)
     !error.value && (query.value = '')
   }
 }
 
 const removeValue = (value) => {
-  values.value = values.value.filter(
+  let _value = values.value.filter(
     (row) => row[linkField.value.fieldname] !== value,
   )
+  emit('change', _value)
 }
 
 const removeLastValue = () => {
@@ -125,12 +129,11 @@ const removeLastValue = () => {
   let valueRef = valuesRef.value[valuesRef.value.length - 1]?.$el
   if (document.activeElement === valueRef) {
     values.value.pop()
+    emit('change', values.value)
     nextTick(() => {
       if (values.value.length) {
         valueRef = valuesRef.value[valuesRef.value.length - 1].$el
         valueRef?.focus()
-      } else {
-        setFocus()
       }
     })
   } else {
