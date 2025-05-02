@@ -53,7 +53,22 @@ export function getScript(doctype, view = 'Form') {
       if (!script) continue
       try {
         const className = getClassName(script)
-        if (!className) throw new Error('No class found')
+        if (!className) {
+          if (script.includes('setupForm(')) {
+            let message = __(
+              'setupForm() is deprecated, use class syntax instead. Check the documentation for more details.',
+            )
+            createToast({
+              title: __('Deprecation Warning'),
+              text: message,
+              icon: 'alert-triangle',
+              iconClasses: 'text-orange-500',
+              timeout: 10,
+            })
+            console.warn(message)
+          }
+          throw new Error(__('No class found in script'))
+        }
 
         const FormClass = evaluateFormClass(script, className, helpers)
         controllers[className] = setupFormController(FormClass, document)
