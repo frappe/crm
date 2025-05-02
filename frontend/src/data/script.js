@@ -52,26 +52,30 @@ export function getScript(doctype, view = 'Form') {
       let script = scriptStrings[scriptName]?.script
       if (!script) continue
       try {
-        const className = getClassName(script)
-        if (!className) {
-          if (script.includes('setupForm(')) {
-            let message = __(
-              'setupForm() is deprecated, use class syntax instead. Check the documentation for more details.',
-            )
-            createToast({
-              title: __('Deprecation Warning'),
-              text: message,
-              icon: 'alert-triangle',
-              iconClasses: 'text-orange-500',
-              timeout: 10,
-            })
-            console.warn(message)
-          }
-          throw new Error(__('No class found in script'))
-        }
+        const classNames = getClassNames(script)
+        if (!classNames) continue
 
-        const FormClass = evaluateFormClass(script, className, helpers)
-        controllers[className] = setupFormController(FormClass, document)
+        classNames.forEach((className) => {
+          if (!className) {
+            if (script.includes('setupForm(')) {
+              let message = __(
+                'setupForm() is deprecated, use class syntax instead. Check the documentation for more details.',
+              )
+              createToast({
+                title: __('Deprecation Warning'),
+                text: message,
+                icon: 'alert-triangle',
+                iconClasses: 'text-orange-500',
+                timeout: 10,
+              })
+              console.warn(message)
+            }
+            throw new Error(__('No class found in script'))
+          }
+
+          const FormClass = evaluateFormClass(script, className, helpers)
+          controllers[className] = setupFormController(FormClass, document)
+        })
       } catch (err) {
         console.error('Failed to load form controller:', err)
       }
@@ -97,9 +101,12 @@ export function getScript(doctype, view = 'Form') {
   }
 
   // utility function to setup a form controller
-  function getClassName(script) {
-    const match = script.match(/class\s+([A-Za-z0-9_]+)/)
-    return match ? match[1] : null
+  function getClassNames(script) {
+    return (
+      [...script.matchAll(/class\s+([A-Za-z0-9_]+)/g)].map(
+        (match) => match[1],
+      ) || []
+    )
   }
 
   function evaluateFormClass(script, className, helpers = {}) {
