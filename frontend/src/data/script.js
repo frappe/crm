@@ -74,7 +74,15 @@ export function getScript(doctype, view = 'Form') {
           }
 
           const FormClass = evaluateFormClass(script, className, helpers)
-          controllers[className] = setupFormController(FormClass, document)
+          if (FormClass) {
+            controllers[className] = new FormClass()
+          }
+        })
+
+        const instances = Object.values(controllers)
+
+        instances.forEach((instance) => {
+          setupFormController(instance, document, instances)
         })
       } catch (err) {
         console.error('Failed to load form controller:', err)
@@ -84,20 +92,26 @@ export function getScript(doctype, view = 'Form') {
     return controllers
   }
 
-  function setupFormController(FormClass, document) {
-    const controller = new FormClass()
-
+  function setupFormController(instance, document, allInstances) {
     for (const key in document) {
       if (document.hasOwnProperty(key)) {
-        controller[key] = document[key]
+        instance[key] = document[key]
       }
     }
 
-    controller.actions = (controller.actions || []).filter(
+    instance.trigger = function (methodName, ...args) {
+      for (const i of allInstances) {
+        if (typeof i[methodName] === 'function') {
+          return i[methodName].apply(i, args)
+        }
+      }
+
+      console.warn(`Method '${methodName}' not found in any instance`)
+    }
+
+    instance.actions = (instance.actions || []).filter(
       (action) => typeof action.condition !== 'function' || action.condition(),
     )
-
-    return controller
   }
 
   // utility function to setup a form controller
