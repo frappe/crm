@@ -204,7 +204,7 @@ import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 import { Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
-import { computed, inject } from 'vue'
+import { computed, provide, inject } from 'vue'
 
 const props = defineProps({
   field: Object,
@@ -220,6 +220,9 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { getUser } = usersStore()
 
 const { triggerOnChange } = useDocument(doctype, data.value.name)
+
+provide('triggerOnChange', triggerOnChange)
+provide('fieldname', props.field.fieldname)
 
 const field = computed(() => {
   let field = props.field

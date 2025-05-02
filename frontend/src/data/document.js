@@ -38,29 +38,43 @@ export function useDocument(doctype, docname) {
     const controllers = setupScript(documentsCache[doctype][docname])
     if (!controllers) return
 
-    const doctypeName = doctype.replace(/\s+/g, '')
-    const doctypeController = controllers[doctypeName]
-
-    if (!doctypeController) return
-
-    documentsCache[doctype][docname]['controller'] = doctypeController
+    documentsCache[doctype][docname]['controllers'] = controllers
   }
 
-  async function triggerOnChange(fieldname) {
-    if (!documentsCache[doctype][docname]?.controller) return
+  async function triggerOnChange(fieldname, childTableObj) {
+    let controllers = documentsCache[doctype][docname]?.controllers
+    if (Object.keys(controllers).length === 0) return
 
-    const c = documentsCache[doctype][docname].controller
-    c.oldValue = getOldValue(fieldname)
-    c.value = documentsCache[doctype][docname].doc[fieldname]
+    let _dt = childTableObj.dt ? childTableObj.dt : doctype
+    let doctypeClassName = _dt.replace(/\s+/g, '')
+    const c = controllers[doctypeClassName]
+    if (!c) return
+
+    if (childTableObj) {
+      let grid = documentsCache[doctype][docname].doc[childTableObj.fieldname]
+      c.row = grid.find((row) => row.name === childTableObj.dn)
+      c.oldValue = getOldValue(fieldname, childTableObj)
+      c.value = c.row[fieldname]
+    } else {
+      c.oldValue = getOldValue(fieldname)
+      c.value = documentsCache[doctype][docname].doc[fieldname]
+    }
 
     return await c[fieldname]?.()
   }
 
-  function getOldValue(fieldname) {
+  function getOldValue(fieldname, childTableObj) {
     if (!documentsCache[doctype][docname]) return ''
 
     const document = documentsCache[doctype][docname]
     const oldDoc = document.originalDoc
+
+    if (childTableObj?.dn) {
+      return oldDoc?.[childTableObj.fieldname]?.find(
+        (r) => r.name === childTableObj.dn,
+      )?.[fieldname]
+    }
+
     return oldDoc?.[fieldname] || document.doc[fieldname]
   }
 
