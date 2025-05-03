@@ -327,7 +327,6 @@ const props = defineProps({
 })
 
 const triggerOnChange = inject('triggerOnChange')
-const fieldname = inject('fieldname')
 
 const {
   getGridViewSettings,
@@ -426,11 +425,7 @@ const deleteRows = () => {
 
 function fieldChange(value, field, row) {
   row[field.fieldname] = value
-  triggerOnChange(field.fieldname, {
-    fieldname: fieldname,
-    dt: props.doctype,
-    dn: row.name,
-  })
+  triggerOnChange(field.fieldname, row)
 }
 </script>
 

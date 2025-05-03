@@ -213,16 +213,23 @@ const props = defineProps({
 const data = inject('data')
 const doctype = inject('doctype')
 const preview = inject('preview')
+const isGridRow = inject('isGridRow')
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(doctype)
 
 const { getUser } = usersStore()
 
-const { triggerOnChange } = useDocument(doctype, data.value.name)
+let triggerOnChange
 
-provide('triggerOnChange', triggerOnChange)
-provide('fieldname', props.field.fieldname)
+if (!isGridRow) {
+  const { triggerOnChange: trigger } = useDocument(doctype, data.value.name)
+  triggerOnChange = trigger
+
+  provide('triggerOnChange', triggerOnChange)
+} else {
+  triggerOnChange = inject('triggerOnChange')
+}
 
 const field = computed(() => {
   let field = props.field
@@ -283,7 +290,11 @@ const getPlaceholder = (field) => {
 function fieldChange(value, df) {
   data.value[df.fieldname] = value
 
-  triggerOnChange(df.fieldname)
+  if (isGridRow) {
+    triggerOnChange(df.fieldname, data.value)
+  } else {
+    triggerOnChange(df.fieldname)
+  }
 }
 </script>
 <style scoped>
