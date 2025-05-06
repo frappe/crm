@@ -51,7 +51,7 @@ export function useDocument(doctype, docname) {
     if (!c) return
 
     if (row) {
-      c.row = () => row
+      c.currentRowIdx = row.idx
       c.value = row[fieldname]
       c.oldValue = getOldValue(fieldname, row)
     } else {
