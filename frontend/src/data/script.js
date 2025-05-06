@@ -74,15 +74,23 @@ export function getScript(doctype, view = 'Form') {
           }
 
           const FormClass = evaluateFormClass(script, className, helpers)
-          if (FormClass) {
-            controllers[className] = new FormClass()
+          if (!FormClass) return
+
+          let parentInstance = null
+          let doctypeName = doctype.replace(/\s+/g, '')
+
+          // if className is not doctype name, then it is a child doctype
+          let isChildDoctype = className !== doctypeName
+          if (isChildDoctype) {
+            parentInstance = controllers[doctypeName]
           }
-        })
 
-        const instances = Object.values(controllers)
-
-        instances.forEach((instance) => {
-          setupFormController(instance, document, instances)
+          controllers[className] = setupFormController(
+            FormClass,
+            document,
+            parentInstance,
+            isChildDoctype,
+          )
         })
       } catch (err) {
         console.error('Failed to load form controller:', err)
@@ -92,26 +100,58 @@ export function getScript(doctype, view = 'Form') {
     return controllers
   }
 
-  function setupFormController(instance, document, allInstances) {
+  function setupFormController(
+    FormClass,
+    document,
+    parentInstance = null,
+    isChildDoctype = false,
+  ) {
+    let instance = new FormClass()
+
     for (const key in document) {
       if (document.hasOwnProperty(key)) {
         instance[key] = document[key]
       }
     }
 
-    instance.trigger = function (methodName, ...args) {
-      for (const i of allInstances) {
-        if (typeof i[methodName] === 'function') {
-          return i[methodName].apply(i, args)
-        }
-      }
-
-      console.warn(`Method '${methodName}' not found in any instance`)
+    if (isChildDoctype) {
+      setupHelperMethods(FormClass, instance, document)
+      instance.doc = createDocProxy(document.doc, parentInstance)
+    } else {
+      instance.doc = createDocProxy(document.doc, instance)
     }
 
     instance.actions = (instance.actions || []).filter(
       (action) => typeof action.condition !== 'function' || action.condition(),
     )
+
+    return instance
+  }
+
+  function setupHelperMethods(FormClass, instance, document) {
+    FormClass.prototype.getRow = (parentField, idx) =>
+      getRow(parentField, idx, document.doc, instance)
+
+    exposeHiddenMethods(document.doc, instance, ['getRow'])
+  }
+
+  function getRow(parentField, idx, data, instance) {
+    idx = idx || instance.currentRowIdx
+
+    if (!data[parentField]) {
+      console.warn(`⚠️ No data found for parent field: ${parentField}`)
+      return null
+    }
+    const row = data[parentField].find((r) => r.idx === idx)
+
+    if (!row) {
+      console.warn(
+        `⚠️ No row found for idx: ${idx} in parent field: ${parentField}`,
+      )
+      return null
+    }
+
+    return createDocProxy(row, instance)
   }
 
   // utility function to setup a form controller
@@ -136,6 +176,49 @@ export function getScript(doctype, view = 'Form') {
       ...helperValues,
     )
     return FormClass
+  }
+
+  function createDocProxy(data, instance) {
+    return new Proxy(data, {
+      get(target, prop) {
+        if (prop === 'trigger') {
+          if ('trigger' in data) {
+            console.warn(
+              `⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.`,
+            )
+          }
+
+          return (methodName, ...args) => {
+            const method = instance[methodName]
+            if (typeof method === 'function') {
+              return method.apply(instance, args)
+            } else {
+              console.warn(`⚠️ Method "${methodName}" not found in class.`)
+            }
+          }
+        }
+
+        return target[prop]
+      },
+      set(target, prop, value) {
+        target[prop] = value
+        return true
+      },
+    })
+  }
+
+  function exposeHiddenMethods(doc, instance, methodNames = []) {
+    for (const name of methodNames) {
+      if (typeof instance[name] === 'function') {
+        // Show as actual method on doc, bound to instance
+        Object.defineProperty(doc, name, {
+          value: (...args) => instance[name](...args),
+          writable: false,
+          enumerable: false,
+          configurable: false,
+        })
+      }
+    }
   }
 
   return {
