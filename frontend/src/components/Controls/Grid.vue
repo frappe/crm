@@ -371,6 +371,10 @@ const fields = computed(() => {
   )
 })
 
+const allFields = computed(() => {
+  return getFields()?.map((f) => getFieldObj(f)) || []
+})
+
 function getFieldObj(field) {
   return {
     ...field,
@@ -416,7 +420,7 @@ const toggleSelectRow = (row) => {
 
 const addRow = () => {
   const newRow = {}
-  fields.value?.forEach((field) => {
+  allFields.value?.forEach((field) => {
     if (field.fieldtype === 'Check') {
       newRow[field.fieldname] = false
     } else {
