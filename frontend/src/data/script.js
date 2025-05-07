@@ -1,4 +1,5 @@
 import { globalStore } from '@/stores/global'
+import { getMeta } from '@/stores/meta'
 import { createToast } from '@/utils'
 import { call, createListResource } from 'frappe-ui'
 import { reactive } from 'vue'
@@ -79,6 +80,8 @@ export function getScript(doctype, view = 'Form') {
           let parentInstance = null
           let doctypeName = doctype.replace(/\s+/g, '')
 
+          let { doctypeMeta } = getMeta(doctype)
+
           // if className is not doctype name, then it is a child doctype
           let isChildDoctype = className !== doctypeName
           if (isChildDoctype) {
@@ -87,6 +90,7 @@ export function getScript(doctype, view = 'Form') {
 
           controllers[className] = setupFormController(
             FormClass,
+            doctypeMeta,
             document,
             parentInstance,
             isChildDoctype,
@@ -102,6 +106,7 @@ export function getScript(doctype, view = 'Form') {
 
   function setupFormController(
     FormClass,
+    meta,
     document,
     parentInstance = null,
     isChildDoctype = false,
@@ -112,6 +117,14 @@ export function getScript(doctype, view = 'Form') {
       if (document.hasOwnProperty(key)) {
         instance[key] = document[key]
       }
+    }
+
+    instance.getMeta = async (doctype) => {
+      if (!meta[doctype]) {
+        await getMeta(doctype)
+        return meta[doctype]
+      }
+      return meta[doctype]
     }
 
     if (isChildDoctype) {
