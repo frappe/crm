@@ -83,6 +83,36 @@ export function useDocument(doctype, docname) {
     return await c[fieldname]?.()
   }
 
+  async function triggerOnRowAdd(row) {
+    const dt = row?.doctype ? row.doctype : doctype
+    const c = getController(dt)
+    if (!c) return
+
+    c.currentRowIdx = row.idx
+    c.value = row
+
+    return await c[row.parentfield + '_add']?.()
+  }
+
+  async function triggerOnRowRemove(selectedRows, rows) {
+    if (!selectedRows) return
+    const dt = rows[0]?.doctype ? rows[0].doctype : doctype
+    const c = getController(dt)
+    if (!c) return
+
+    if (selectedRows.size === 1) {
+      const selectedRow = Array.from(selectedRows)[0]
+      c.currentRowIdx = rows.find((r) => r.name === selectedRow).idx
+    } else {
+      delete c.currentRowIdx
+    }
+
+    c.selectedRows = Array.from(selectedRows)
+    c.rows = rows
+
+    return await c[rows[0].parentfield + '_remove']?.()
+  }
+
   function getOldValue(fieldname, row) {
     if (!documentsCache[doctype][docname]) return ''
 
@@ -103,6 +133,8 @@ export function useDocument(doctype, docname) {
     actions: computed(() => getActions()),
     getOldValue,
     triggerOnChange,
+    triggerOnRowAdd,
+    triggerOnRowRemove,
     triggerOnRefresh,
     setupFormScript,
   }
