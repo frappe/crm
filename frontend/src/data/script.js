@@ -127,25 +127,23 @@ export function getScript(doctype, view = 'Form') {
       return meta[doctype]
     }
 
+    setupHelperMethods(FormClass, instance, parentInstance, document)
+
     if (isChildDoctype) {
-      setupHelperMethods(FormClass, instance, document)
       instance.doc = createDocProxy(document.doc, parentInstance)
     } else {
       instance.doc = createDocProxy(document.doc, instance)
     }
 
-    instance.actions = (instance.actions || []).filter(
-      (action) => typeof action.condition !== 'function' || action.condition(),
-    )
-
     return instance
   }
 
-  function setupHelperMethods(FormClass, instance, document) {
-    FormClass.prototype.getRow = (parentField, idx) =>
-      getRow(parentField, idx, document.doc, instance)
-
-    exposeHiddenMethods(document.doc, instance, ['getRow'])
+  function setupHelperMethods(FormClass, instance, parentInstance, document) {
+    if (typeof FormClass.prototype.getRow !== 'function') {
+      FormClass.prototype.getRow = (parentField, idx) =>
+        getRow(parentField, idx, document.doc, instance)
+    }
+    exposeHiddenMethods(instance, parentInstance, ['getRow'])
   }
 
   function getRow(parentField, idx, data, instance) {
@@ -220,15 +218,20 @@ export function getScript(doctype, view = 'Form') {
     })
   }
 
-  function exposeHiddenMethods(doc, instance, methodNames = []) {
+  function exposeHiddenMethods(instance, parentInstance, methodNames = []) {
     for (const name of methodNames) {
-      if (typeof instance[name] === 'function') {
+      // remove the method from parent instance if it exists
+      if (parentInstance && parentInstance[name]) {
+        delete instance.doc[name]
+      }
+
+      if (typeof instance[name] === 'function' && !instance.doc[name]) {
         // Show as actual method on doc, bound to instance
-        Object.defineProperty(doc, name, {
+        Object.defineProperty(instance.doc, name, {
           value: (...args) => instance[name](...args),
           writable: false,
           enumerable: false,
-          configurable: false,
+          configurable: true,
         })
       }
     }
