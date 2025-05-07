@@ -310,6 +310,7 @@ import {
   DateTimePicker,
   DatePicker,
   Tooltip,
+  dayjs,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject } from 'vue'
@@ -467,20 +468,20 @@ function getDefaultValue(defaultValue, fieldtype) {
   } else if (fieldtype === 'Int') {
     return parseInt(defaultValue)
   } else if (defaultValue === 'Today' && fieldtype === 'Date') {
-    return getFormat(new Date(), '', true)
+    return dayjs().format('YYYY-MM-DD')
   } else if (
     ['Now', 'now'].includes(defaultValue) &&
     fieldtype === 'Datetime'
   ) {
-    return getFormat(new Date(), '', true, true)
+    return dayjs().format('YYYY-MM-DD HH:mm:ss')
   } else if (['Now', 'now'].includes(defaultValue) && fieldtype === 'Time') {
-    return getFormat(new Date(), '', false, true)
+    return dayjs().format('HH:mm:ss')
   } else if (fieldtype === 'Date') {
-    return getFormat(defaultValue, '', true)
+    return dayjs(defaultValue).format('YYYY-MM-DD')
   } else if (fieldtype === 'Datetime') {
-    return getFormat(defaultValue, '', true, true)
+    return dayjs(defaultValue).format('YYYY-MM-DD HH:mm:ss')
   } else if (fieldtype === 'Time') {
-    return getFormat(defaultValue, '', false, true)
+    return dayjs(defaultValue).format('HH:mm:ss')
   }
 
   return defaultValue
