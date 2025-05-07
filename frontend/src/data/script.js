@@ -167,8 +167,13 @@ export function getScript(doctype, view = 'Form') {
 
   // utility function to setup a form controller
   function getClassNames(script) {
+    const withoutComments = script
+      .replace(/\/\/.*$/gm, '') // Remove single-line comments
+      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+
+    // Match class declarations
     return (
-      [...script.matchAll(/class\s+([A-Za-z0-9_]+)/g)].map(
+      [...withoutComments.matchAll(/class\s+([A-Za-z0-9_]+)/g)].map(
         (match) => match[1],
       ) || []
     )
