@@ -417,6 +417,8 @@ const addRow = () => {
   newRow.name = getRandom(10)
   showRowList.value.push(false)
   newRow['__islocal'] = true
+  newRow['idx'] = rows.value.length + 1
+  newRow['doctype'] = props.doctype
   rows.value.push(newRow)
 }
 
