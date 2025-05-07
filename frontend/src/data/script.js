@@ -162,6 +162,10 @@ export function getScript(doctype, view = 'Form') {
       return null
     }
 
+    row.parent = row.parent || data.name
+    row.parentype = row.parenttype || data.doctype
+    row.parentfield = row.parentfield || parentField
+
     return createDocProxy(row, instance)
   }
 
