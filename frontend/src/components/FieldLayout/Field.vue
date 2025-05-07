@@ -26,6 +26,7 @@
       v-model="data[field.fieldname]"
       :doctype="field.options"
       :parentDoctype="doctype"
+      :parentFieldname="field.fieldname"
     />
     <FormControl
       v-else-if="field.fieldtype === 'Select'"
@@ -226,10 +227,16 @@ const { getUser } = usersStore()
 let triggerOnChange
 
 if (!isGridRow) {
-  const { triggerOnChange: trigger } = useDocument(doctype, data.value.name)
+  const {
+    triggerOnChange: trigger,
+    triggerOnRowAdd,
+    triggerOnRowRemove,
+  } = useDocument(doctype, data.value.name)
   triggerOnChange = trigger
 
   provide('triggerOnChange', triggerOnChange)
+  provide('triggerOnRowAdd', triggerOnRowAdd)
+  provide('triggerOnRowRemove', triggerOnRowRemove)
 } else {
   triggerOnChange = inject('triggerOnChange')
 }

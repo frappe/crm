@@ -327,9 +327,15 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  parentFieldname: {
+    type: String,
+    required: true,
+  },
 })
 
 const triggerOnChange = inject('triggerOnChange')
+const triggerOnRowAdd = inject('triggerOnRowAdd')
+const triggerOnRowRemove = inject('triggerOnRowRemove')
 
 const {
   getGridViewSettings,
@@ -419,11 +425,16 @@ const addRow = () => {
   newRow['__islocal'] = true
   newRow['idx'] = rows.value.length + 1
   newRow['doctype'] = props.doctype
+  newRow['parentfield'] = props.parentFieldname
+  newRow['parenttype'] = props.parentDoctype
   rows.value.push(newRow)
+  triggerOnRowAdd(newRow)
 }
 
 const deleteRows = () => {
   rows.value = rows.value.filter((row) => !selectedRows.has(row.name))
+  triggerOnRowRemove(selectedRows, rows.value)
+
   showRowList.value.pop()
   selectedRows.clear()
 }
