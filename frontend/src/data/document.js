@@ -1,6 +1,7 @@
 import { getScript } from '@/data/script'
 import { createToast } from '@/utils'
 import { createDocumentResource } from 'frappe-ui'
+import { computed } from 'vue'
 
 const documentsCache = {}
 
@@ -35,19 +36,39 @@ export function useDocument(doctype, docname) {
   }
 
   function setupFormScript() {
+    if (documentsCache[doctype][docname]['controllers']) return
+
     const controllers = setupScript(documentsCache[doctype][docname])
     if (!controllers) return
 
     documentsCache[doctype][docname]['controllers'] = controllers
   }
 
-  async function triggerOnChange(fieldname, row) {
-    let controllers = documentsCache[doctype][docname]?.controllers
+  function getController(dt = null) {
+    let controllers = documentsCache[doctype][docname]?.controllers || {}
     if (Object.keys(controllers).length === 0) return
 
-    let _dt = row?.doctype ? row.doctype : doctype
-    let doctypeClassName = _dt.replace(/\s+/g, '')
+    dt = dt || doctype
+    let doctypeClassName = dt.replace(/\s+/g, '')
     const c = controllers[doctypeClassName]
+    return c || null
+  }
+
+  function getActions() {
+    let c = getController() || setupFormScript()
+    if (!c) return []
+    return c?.actions || []
+  }
+
+  async function triggerOnRefresh() {
+    const c = getController()
+    if (!c) return
+    return await c.refresh()
+  }
+
+  async function triggerOnChange(fieldname, row) {
+    const dt = row?.doctype ? row.doctype : doctype
+    const c = getController(dt)
     if (!c) return
 
     if (row) {
@@ -79,10 +100,10 @@ export function useDocument(doctype, docname) {
 
   return {
     document: documentsCache[doctype][docname],
-    getActions: () =>
-      documentsCache[doctype][docname]?.controller?.actions || [],
+    actions: computed(() => getActions()),
     getOldValue,
     triggerOnChange,
+    triggerOnRefresh,
     setupFormScript,
   }
 }
