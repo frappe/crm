@@ -12,7 +12,10 @@
       >
     </div>
     <FormControl
-      v-if="field.read_only && field.fieldtype !== 'Check'"
+      v-if="
+        field.read_only &&
+        !['Float', 'Currency', 'Check'].includes(field.fieldtype)
+      "
       type="text"
       :placeholder="getPlaceholder(field)"
       v-model="data[field.fieldname]"

@@ -93,7 +93,10 @@
                   :key="field.fieldname"
                 >
                   <FormControl
-                    v-if="field.read_only && field.fieldtype !== 'Check'"
+                    v-if="
+                      field.read_only &&
+                      !['Float', 'Currency', 'Check'].includes(field.fieldtype)
+                    "
                     type="text"
                     :placeholder="field.placeholder"
                     v-model="row[field.fieldname]"
