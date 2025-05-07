@@ -417,8 +417,15 @@ const toggleSelectRow = (row) => {
 const addRow = () => {
   const newRow = {}
   fields.value?.forEach((field) => {
-    if (field.fieldtype === 'Check') newRow[field.fieldname] = false
-    else newRow[field.fieldname] = ''
+    if (field.fieldtype === 'Check') {
+      newRow[field.fieldname] = false
+    } else {
+      newRow[field.fieldname] = ''
+    }
+
+    if (field.default) {
+      newRow[field.fieldname] = getDefaultValue(field.default, field.fieldtype)
+    }
   })
   newRow.name = getRandom(10)
   showRowList.value.push(false)
@@ -442,6 +449,37 @@ const deleteRows = () => {
 function fieldChange(value, field, row) {
   row[field.fieldname] = value
   triggerOnChange(field.fieldname, row)
+}
+
+function getDefaultValue(defaultValue, fieldtype) {
+  if (['Float', 'Currency', 'Percent'].includes(fieldtype)) {
+    return flt(defaultValue)
+  } else if (fieldtype === 'Check') {
+    if (['1', 'true', 'True'].includes(defaultValue)) {
+      return true
+    } else if (['0', 'false', 'False'].includes(defaultValue)) {
+      return false
+    }
+  } else if (fieldtype === 'Int') {
+    return parseInt(defaultValue)
+  } else if (defaultValue === 'Today' && fieldtype === 'Date') {
+    return getFormat(new Date(), '', true)
+  } else if (
+    ['Now', 'now'].includes(defaultValue) &&
+    fieldtype === 'Datetime'
+  ) {
+    return getFormat(new Date(), '', true, true)
+  } else if (['Now', 'now'].includes(defaultValue) && fieldtype === 'Time') {
+    return getFormat(new Date(), '', false, true)
+  } else if (fieldtype === 'Date') {
+    return getFormat(defaultValue, '', true)
+  } else if (fieldtype === 'Datetime') {
+    return getFormat(defaultValue, '', true, true)
+  } else if (fieldtype === 'Time') {
+    return getFormat(defaultValue, '', false, true)
+  }
+
+  return defaultValue
 }
 </script>
 
