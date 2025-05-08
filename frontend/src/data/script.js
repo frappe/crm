@@ -48,6 +48,7 @@ export function getScript(doctype, view = 'Form') {
 
   function setupMultipleFormControllers(scriptStrings, document, helpers) {
     const controllers = {}
+    let parentInstanceIdx = null
 
     for (let scriptName in scriptStrings) {
       let script = scriptStrings[scriptName]?.script
@@ -65,19 +66,34 @@ export function getScript(doctype, view = 'Form') {
 
           let { doctypeMeta } = getMeta(doctype)
 
-          // if className is not doctype name, then it is a child doctype
-          let isChildDoctype = className !== doctypeName
-          if (isChildDoctype) {
-            parentInstance = controllers[doctypeName]
+          if (!controllers[doctype]) {
+            controllers[doctype] = []
           }
 
-          controllers[className] = setupFormController(
+          // if className is not doctype name, then it is a child doctype
+          let isChildDoctype = className !== doctypeName
+
+          if (isChildDoctype) {
+            if (!controllers[doctype].length) {
+              console.error(
+                `⚠️ No class found for doctype: ${doctype}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present.`,
+              )
+              return
+            }
+            parentInstance = controllers[doctype][parentInstanceIdx]
+          } else {
+            parentInstanceIdx = controllers[doctype].length || 0
+          }
+
+          const instance = setupFormController(
             FormClass,
             doctypeMeta,
             document,
             parentInstance,
             isChildDoctype,
           )
+
+          controllers[doctype].push(instance)
         })
       } catch (err) {
         console.error('Failed to load form controller:', err)
