@@ -1,7 +1,6 @@
 import { getScript } from '@/data/script'
 import { createToast } from '@/utils'
 import { createDocumentResource } from 'frappe-ui'
-import { computed } from 'vue'
 
 const documentsCache = {}
 
@@ -44,73 +43,75 @@ export function useDocument(doctype, docname) {
     documentsCache[doctype][docname]['controllers'] = controllers
   }
 
-  function getController(dt = null) {
+  function getControllers(row = null, dt = null) {
     let controllers = documentsCache[doctype][docname]?.controllers || {}
     if (Object.keys(controllers).length === 0) return
 
     dt = dt || doctype
-    let doctypeClassName = dt.replace(/\s+/g, '')
-    const c = controllers[doctypeClassName]
-    return c || null
-  }
+    if (!controllers[dt].length) return []
 
-  function getActions() {
-    let c = getController() || setupFormScript()
-    if (!c) return []
-    return c?.actions || []
+    const _dt = row?.doctype ? row.doctype : doctype
+    const _controllers = controllers[dt].filter(
+      (c) => c.constructor.name === _dt.replace(/\s+/g, ''),
+    )
+    return _controllers || []
   }
 
   async function triggerOnRefresh() {
-    const c = getController()
-    if (!c) return
-    return await c.refresh()
+    const controllers = getControllers()
+    if (!controllers.length) return
+    for (const c of controllers) {
+      await c.refresh()
+    }
   }
 
   async function triggerOnChange(fieldname, row) {
-    const dt = row?.doctype ? row.doctype : doctype
-    const c = getController(dt)
-    if (!c) return
+    const controllers = getControllers(row)
+    if (!controllers.length) return
 
-    if (row) {
-      c.currentRowIdx = row.idx
-      c.value = row[fieldname]
-      c.oldValue = getOldValue(fieldname, row)
-    } else {
-      c.value = documentsCache[doctype][docname].doc[fieldname]
-      c.oldValue = getOldValue(fieldname)
+    for (const c of controllers) {
+      if (row) {
+        c.currentRowIdx = row.idx
+        c.value = row[fieldname]
+        c.oldValue = getOldValue(fieldname, row)
+      } else {
+        c.value = documentsCache[doctype][docname].doc[fieldname]
+        c.oldValue = getOldValue(fieldname)
+      }
+      await c[fieldname]?.()
     }
-
-    return await c[fieldname]?.()
   }
 
   async function triggerOnRowAdd(row) {
-    const dt = row?.doctype ? row.doctype : doctype
-    const c = getController(dt)
-    if (!c) return
+    const controllers = getControllers(row)
+    if (!controllers.length) return
 
-    c.currentRowIdx = row.idx
-    c.value = row
+    for (const c of controllers) {
+      c.currentRowIdx = row.idx
+      c.value = row
 
-    return await c[row.parentfield + '_add']?.()
+      await c[row.parentfield + '_add']?.()
+    }
   }
 
   async function triggerOnRowRemove(selectedRows, rows) {
     if (!selectedRows) return
-    const dt = rows[0]?.doctype ? rows[0].doctype : doctype
-    const c = getController(dt)
-    if (!c) return
+    const controllers = getControllers(rows[0])
+    if (!controllers.length) return
 
-    if (selectedRows.size === 1) {
-      const selectedRow = Array.from(selectedRows)[0]
-      c.currentRowIdx = rows.find((r) => r.name === selectedRow).idx
-    } else {
-      delete c.currentRowIdx
+    for (const c of controllers) {
+      if (selectedRows.size === 1) {
+        const selectedRow = Array.from(selectedRows)[0]
+        c.currentRowIdx = rows.find((r) => r.name === selectedRow).idx
+      } else {
+        delete c.currentRowIdx
+      }
+
+      c.selectedRows = Array.from(selectedRows)
+      c.rows = rows
+
+      await c[rows[0].parentfield + '_remove']?.()
     }
-
-    c.selectedRows = Array.from(selectedRows)
-    c.rows = rows
-
-    return await c[rows[0].parentfield + '_remove']?.()
   }
 
   function getOldValue(fieldname, row) {
@@ -130,8 +131,6 @@ export function useDocument(doctype, docname) {
 
   return {
     document: documentsCache[doctype][docname],
-    actions: computed(() => getActions()),
-    getOldValue,
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,
