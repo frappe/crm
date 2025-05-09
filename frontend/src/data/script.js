@@ -72,7 +72,10 @@ export function getScript(doctype, view = 'Form') {
           if (isChildDoctype) {
             if (!controllers.length) {
               console.error(
-                `⚠️ No class found for doctype: ${doctype}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present.`,
+                __(
+                  '⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present.',
+                  [doctype],
+                ),
               )
               return
             }
@@ -92,7 +95,7 @@ export function getScript(doctype, view = 'Form') {
           controllers.push(instance)
         })
       } catch (err) {
-        console.error('Failed to load form controller:', err)
+        console.error(__('Failed to load form controller: {0}', [err]))
       }
     }
 
@@ -145,14 +148,17 @@ export function getScript(doctype, view = 'Form') {
     idx = idx || instance.currentRowIdx
 
     if (!data[parentField]) {
-      console.warn(`⚠️ No data found for parent field: ${parentField}`)
+      console.warn(__('⚠️ No data found for parent field: {0}', [parentField]))
       return null
     }
     const row = data[parentField].find((r) => r.idx === idx)
 
     if (!row) {
       console.warn(
-        `⚠️ No row found for idx: ${idx} in parent field: ${parentField}`,
+        __('⚠️ No row found for idx: {0} in parent field: {1}', [
+          idx,
+          parentField,
+        ]),
       )
       return null
     }
@@ -197,7 +203,9 @@ export function getScript(doctype, view = 'Form') {
         if (prop === 'trigger') {
           if ('trigger' in data) {
             console.warn(
-              `⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.`,
+              __(
+                '⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.',
+              ),
             )
           }
 
@@ -206,7 +214,9 @@ export function getScript(doctype, view = 'Form') {
             if (typeof method === 'function') {
               return method.apply(instance, args)
             } else {
-              console.warn(`⚠️ Method "${methodName}" not found in class.`)
+              console.warn(
+                __('⚠️ Method "{0}" not found in class.', [methodName]),
+              )
             }
           }
         }
