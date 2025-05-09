@@ -47,7 +47,10 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 
 	for tab in tabs:
 		for section in tab.get("sections"):
+			if section.get("columns"):
+				section["columns"] = [column for column in section.get("columns") if column]
 			for column in section.get("columns") if section.get("columns") else []:
+				column["fields"] = [field for field in column.get("fields") if field]
 				for field in column.get("fields") if column.get("fields") else []:
 					field = next((f for f in fields if f.fieldname == field), None)
 					if field:
