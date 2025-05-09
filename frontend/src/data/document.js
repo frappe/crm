@@ -18,14 +18,14 @@ export function useDocument(doctype, docname) {
       setValue: {
         onSuccess: () => {
           createToast({
-            title: 'Data Updated',
+            title: __('Document updated successfully'),
             icon: 'check',
             iconClasses: 'text-ink-green-3',
           })
         },
         onError: (err) => {
           createToast({
-            title: 'Error',
+            title: __('Error updating document'),
             text: err.messages[0],
             icon: 'x',
             iconClasses: 'text-red-600',
