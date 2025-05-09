@@ -1,5 +1,5 @@
 import { getScript } from '@/data/script'
-import { createToast } from '@/utils'
+import { createToast, runSequentially } from '@/utils'
 import { createDocumentResource } from 'frappe-ui'
 
 const documentsCache = {}
@@ -52,43 +52,40 @@ export function useDocument(doctype, docname) {
     const controllers = getControllers()
     if (!controllers.length) return
 
-    await Promise.all(
-      controllers.map(async (c) => {
-        await c.refresh()
-      }),
-    )
+    const tasks = controllers.map((c) => async () => await c.refresh())
+    await runSequentially(tasks)
   }
 
   async function triggerOnChange(fieldname, row) {
     const controllers = getControllers(row)
     if (!controllers.length) return
 
-    await Promise.all(
-      controllers.map(async (c) => {
-        if (row) {
-          c.currentRowIdx = row.idx
-          c.value = row[fieldname]
-          c.oldValue = getOldValue(fieldname, row)
-        } else {
-          c.value = documentsCache[doctype][docname].doc[fieldname]
-          c.oldValue = getOldValue(fieldname)
-        }
-        await c[fieldname]?.()
-      }),
-    )
+    const tasks = controllers.map((c) => async () => {
+      if (row) {
+        c.currentRowIdx = row.idx
+        c.value = row[fieldname]
+        c.oldValue = getOldValue(fieldname, row)
+      } else {
+        c.value = documentsCache[doctype][docname].doc[fieldname]
+        c.oldValue = getOldValue(fieldname)
+      }
+      await c[fieldname]?.()
+    })
+
+    await runSequentially(tasks)
   }
 
   async function triggerOnRowAdd(row) {
     const controllers = getControllers(row)
     if (!controllers.length) return
 
-    await Promise.all(
-      controllers.map(async (c) => {
-        c.currentRowIdx = row.idx
-        c.value = row
-        await c[row.parentfield + '_add']?.()
-      }),
-    )
+    const tasks = controllers.map((c) => async () => {
+      c.currentRowIdx = row.idx
+      c.value = row
+      await c[row.parentfield + '_add']?.()
+    })
+
+    await runSequentially(tasks)
   }
 
   async function triggerOnRowRemove(selectedRows, rows) {
@@ -96,21 +93,21 @@ export function useDocument(doctype, docname) {
     const controllers = getControllers(rows[0])
     if (!controllers.length) return
 
-    await Promise.all(
-      controllers.map(async (c) => {
-        if (selectedRows.size === 1) {
-          const selectedRow = Array.from(selectedRows)[0]
-          c.currentRowIdx = rows.find((r) => r.name === selectedRow).idx
-        } else {
-          delete c.currentRowIdx
-        }
+    const tasks = controllers.map((c) => async () => {
+      if (selectedRows.size === 1) {
+        const selectedRow = Array.from(selectedRows)[0]
+        c.currentRowIdx = rows.find((r) => r.name === selectedRow).idx
+      } else {
+        delete c.currentRowIdx
+      }
 
-        c.selectedRows = Array.from(selectedRows)
-        c.rows = rows
+      c.selectedRows = Array.from(selectedRows)
+      c.rows = rows
 
-        await c[rows[0].parentfield + '_remove']?.()
-      }),
-    )
+      await c[rows[0].parentfield + '_remove']?.()
+    })
+
+    await runSequentially(tasks)
   }
 
   function getOldValue(fieldname, row) {

@@ -349,3 +349,9 @@ export function getRandom(len = 4) {
 
   return text
 }
+
+export function runSequentially(functions) {
+  return functions.reduce((promise, fn) => {
+    return promise.then(() => fn())
+  }, Promise.resolve())
+}
