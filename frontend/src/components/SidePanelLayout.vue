@@ -1,5 +1,8 @@
 <template>
-  <div class="sections flex flex-col overflow-y-auto">
+  <div
+    v-if="!document.get.loading"
+    class="sections flex flex-col overflow-y-auto"
+  >
     <template v-for="(section, i) in _sections" :key="section.name">
       <div v-if="section.visible" class="section flex flex-col">
         <div
@@ -55,10 +58,7 @@
                         >
                       </div>
                     </Tooltip>
-                    <div
-                      v-if="!document.get.loading"
-                      class="flex items-center justify-between w-[65%]"
-                    >
+                    <div class="flex items-center justify-between w-[65%]">
                       <div
                         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
                       >
