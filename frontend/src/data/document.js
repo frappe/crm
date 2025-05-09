@@ -49,63 +49,63 @@ export function useDocument(doctype, docname) {
   }
 
   async function triggerOnRefresh() {
-    const controllers = getControllers()
-    if (!controllers.length) return
-
-    const tasks = controllers.map((c) => async () => await c.refresh())
-    await runSequentially(tasks)
+    const handler = async function () {
+      await this.refresh()
+    }
+    await trigger(handler)
   }
 
   async function triggerOnChange(fieldname, row) {
-    const controllers = getControllers(row)
-    if (!controllers.length) return
-
-    const tasks = controllers.map((c) => async () => {
+    const handler = async function () {
       if (row) {
-        c.currentRowIdx = row.idx
-        c.value = row[fieldname]
-        c.oldValue = getOldValue(fieldname, row)
+        this.currentRowIdx = row.idx
+        this.value = row[fieldname]
+        this.oldValue = getOldValue(fieldname, row)
       } else {
-        c.value = documentsCache[doctype][docname].doc[fieldname]
-        c.oldValue = getOldValue(fieldname)
+        this.value = documentsCache[doctype][docname].doc[fieldname]
+        this.oldValue = getOldValue(fieldname)
       }
-      await c[fieldname]?.()
-    })
+      await this[fieldname]?.()
+    }
 
-    await runSequentially(tasks)
+    await trigger(handler, row)
   }
 
   async function triggerOnRowAdd(row) {
-    const controllers = getControllers(row)
-    if (!controllers.length) return
+    const handler = async function () {
+      this.currentRowIdx = row.idx
+      this.value = row
+      await this[row.parentfield + '_add']?.()
+    }
 
-    const tasks = controllers.map((c) => async () => {
-      c.currentRowIdx = row.idx
-      c.value = row
-      await c[row.parentfield + '_add']?.()
-    })
-
-    await runSequentially(tasks)
+    await trigger(handler, row)
   }
 
   async function triggerOnRowRemove(selectedRows, rows) {
-    if (!selectedRows) return
-    const controllers = getControllers(rows[0])
-    if (!controllers.length) return
-
-    const tasks = controllers.map((c) => async () => {
+    const handler = async function () {
       if (selectedRows.size === 1) {
         const selectedRow = Array.from(selectedRows)[0]
-        c.currentRowIdx = rows.find((r) => r.name === selectedRow).idx
+        this.currentRowIdx = rows.find((r) => r.name === selectedRow).idx
       } else {
-        delete c.currentRowIdx
+        delete this.currentRowIdx
       }
 
-      c.selectedRows = Array.from(selectedRows)
-      c.rows = rows
+      this.selectedRows = Array.from(selectedRows)
+      this.rows = rows
 
-      await c[rows[0].parentfield + '_remove']?.()
-    })
+      await this[rows[0].parentfield + '_remove']?.()
+    }
+
+    await trigger(handler, rows[0])
+  }
+
+  async function trigger(taskFn, row = null) {
+    const controllers = getControllers(row)
+    if (!controllers.length) return
+
+    const tasks = controllers.map(
+      (controller) => async () => await taskFn.call(controller),
+    )
 
     await runSequentially(tasks)
   }
