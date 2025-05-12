@@ -126,6 +126,7 @@
                     "
                     :filters="field.filters"
                     @change="(v) => fieldChange(v, field, row)"
+                    :onCreate="field.create"
                   />
                   <Link
                     v-else-if="field.fieldtype === 'User'"
@@ -321,6 +322,7 @@ import { getRandom, getFormat, isTouchScreenDevice } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
+import { createDocument } from '@/composables/document'
 import {
   FeatherIcon,
   FormControl,
@@ -399,6 +401,12 @@ const allFields = computed(() => {
 })
 
 function getFieldObj(field) {
+  if (field.fieldtype === 'Link' && field.options !== 'User') {
+    if (!field.create) {
+      field.create = (obj, close) => createDocument(field.options, obj, close)
+    }
+  }
+
   return {
     ...field,
     filters: field.link_filters && JSON.parse(field.link_filters),
