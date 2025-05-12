@@ -192,7 +192,7 @@
                     variant="outline"
                     :value="getFormattedFloat(field.fieldname, row)"
                     :disabled="Boolean(field.read_only)"
-                    @change="row[field.fieldname] = flt($event.target.value)"
+                    @change="fieldChange(flt($event.target.value), field, row)"
                   />
                   <FormControl
                     v-else-if="field.fieldtype === 'Percent'"
@@ -201,7 +201,7 @@
                     variant="outline"
                     :value="getFormattedPercent(field.fieldname, row)"
                     :disabled="Boolean(field.read_only)"
-                    @change="row[field.fieldname] = flt($event.target.value)"
+                    @change="fieldChange(flt($event.target.value), field, row)"
                   />
                   <FormControl
                     v-else-if="field.fieldtype === 'Currency'"
@@ -212,7 +212,7 @@
                       getFormattedCurrency(field.fieldname, row, parentDoc)
                     "
                     :disabled="Boolean(field.read_only)"
-                    @change="row[field.fieldname] = flt($event.target.value)"
+                    @change="fieldChange(flt($event.target.value), field, row)"
                   />
                   <FormControl
                     v-else-if="field.fieldtype === 'Select'"
