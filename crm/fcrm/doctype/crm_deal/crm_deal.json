@@ -46,9 +46,8 @@
   "products_tab",
   "products",
   "section_break_ccbj",
-  "total_qty",
-  "column_break_udbq",
   "total",
+  "column_break_udbq",
   "net_total",
   "sla_tab",
   "sla",
@@ -358,12 +357,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "total_qty",
-   "fieldtype": "Float",
-   "label": "Total Quantity",
-   "read_only": 1
-  },
-  {
    "fieldname": "column_break_udbq",
    "fieldtype": "Column Break"
   },
@@ -386,7 +379,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-28 15:55:18.175990",
+ "modified": "2025-05-12 12:30:55.415282",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
