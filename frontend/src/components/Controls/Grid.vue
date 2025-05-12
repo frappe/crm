@@ -33,6 +33,11 @@
           <div
             v-for="field in fields"
             class="border-r border-outline-gray-2 p-2 truncate"
+            :class="
+              ['Int', 'Float', 'Currency', 'Percent'].includes(field.fieldtype)
+                ? 'text-right'
+                : ''
+            "
             :key="field.fieldname"
             :title="field.label"
           >
