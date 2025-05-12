@@ -95,7 +95,13 @@
                   <FormControl
                     v-if="
                       field.read_only &&
-                      !['Float', 'Currency', 'Check'].includes(field.fieldtype)
+                      ![
+                        'Int',
+                        'Float',
+                        'Currency',
+                        'Percent',
+                        'Check',
+                      ].includes(field.fieldtype)
                     "
                     type="text"
                     :placeholder="field.placeholder"
@@ -186,13 +192,22 @@
                     @change="fieldChange($event.target.value, field, row)"
                   />
                   <FormControl
-                    v-else-if="field.fieldtype === 'Float'"
-                    class="[&_input]:text-right"
-                    type="text"
+                    v-else-if="field.fieldtype === 'Select'"
+                    class="text-sm text-ink-gray-8"
+                    type="select"
                     variant="outline"
-                    :value="getFormattedFloat(field.fieldname, row)"
+                    v-model="row[field.fieldname]"
+                    :options="field.options"
+                    @change="(e) => fieldChange(e.target.value, field, row)"
+                  />
+                  <FormControl
+                    v-else-if="['Int'].includes(field.fieldtype)"
+                    class="[&_input]:text-right"
+                    type="number"
+                    variant="outline"
+                    :value="row[field.fieldname]"
                     :disabled="Boolean(field.read_only)"
-                    @change="fieldChange(flt($event.target.value), field, row)"
+                    @change="fieldChange($event.target.value, field, row)"
                   />
                   <FormControl
                     v-else-if="field.fieldtype === 'Percent'"
@@ -200,6 +215,15 @@
                     type="text"
                     variant="outline"
                     :value="getFormattedPercent(field.fieldname, row)"
+                    :disabled="Boolean(field.read_only)"
+                    @change="fieldChange(flt($event.target.value), field, row)"
+                  />
+                  <FormControl
+                    v-else-if="field.fieldtype === 'Float'"
+                    class="[&_input]:text-right"
+                    type="text"
+                    variant="outline"
+                    :value="getFormattedFloat(field.fieldname, row)"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
@@ -211,46 +235,6 @@
                     :value="
                       getFormattedCurrency(field.fieldname, row, parentDoc)
                     "
-                    :disabled="Boolean(field.read_only)"
-                    @change="fieldChange(flt($event.target.value), field, row)"
-                  />
-                  <FormControl
-                    v-else-if="field.fieldtype === 'Select'"
-                    class="text-sm text-ink-gray-8"
-                    type="select"
-                    variant="outline"
-                    v-model="row[field.fieldname]"
-                    :options="field.options"
-                    @change="(e) => fieldChange(e.target.value, field, row)"
-                  />
-                  <FormControl
-                    v-else-if="['Int'].includes(field.fieldtype)"
-                    type="number"
-                    variant="outline"
-                    :value="row[field.fieldname]"
-                    @change="fieldChange($event.target.value, field, row)"
-                  />
-                  <FormControl
-                    v-else-if="field.fieldtype === 'Percent'"
-                    type="text"
-                    variant="outline"
-                    :value="getFormattedPercent(field.fieldname, row)"
-                    :disabled="Boolean(field.read_only)"
-                    @change="fieldChange(flt($event.target.value), field, row)"
-                  />
-                  <FormControl
-                    v-else-if="field.fieldtype === 'Float'"
-                    type="text"
-                    variant="outline"
-                    :value="getFormattedFloat(field.fieldname, row)"
-                    :disabled="Boolean(field.read_only)"
-                    @change="fieldChange(flt($event.target.value), field, row)"
-                  />
-                  <FormControl
-                    v-else-if="field.fieldtype === 'Currency'"
-                    type="text"
-                    variant="outline"
-                    :value="getFormattedCurrency(field.fieldname, row)"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
@@ -342,7 +326,7 @@ import {
   dayjs,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
-import { ref, reactive, computed, inject } from 'vue'
+import { ref, reactive, computed, inject, provide } from 'vue'
 
 const props = defineProps({
   label: {
@@ -380,6 +364,9 @@ const { getUser } = usersStore()
 
 const rows = defineModel()
 const parentDoc = defineModel('parent')
+
+provide('parentDoc', parentDoc)
+
 const showRowList = ref(new Array(rows.value?.length || []).fill(false))
 const selectedRows = reactive(new Set())
 

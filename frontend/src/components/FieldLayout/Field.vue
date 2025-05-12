@@ -14,7 +14,9 @@
     <FormControl
       v-if="
         field.read_only &&
-        !['Float', 'Currency', 'Check', 'Percent'].includes(field.fieldtype)
+        !['Int', 'Float', 'Currency', 'Percent', 'Check'].includes(
+          field.fieldtype,
+        )
       "
       type="text"
       :placeholder="getPlaceholder(field)"
@@ -164,6 +166,7 @@
       type="number"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
+      :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
@@ -188,7 +191,7 @@
     <FormControl
       v-else-if="field.fieldtype === 'Currency'"
       type="text"
-      :value="getFormattedCurrency(field.fieldname, data)"
+      :value="getFormattedCurrency(field.fieldname, data, parentDoc)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
@@ -235,6 +238,7 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { getUser } = usersStore()
 
 let triggerOnChange
+let parentDoc
 
 if (!isGridRow) {
   const {
@@ -249,6 +253,7 @@ if (!isGridRow) {
   provide('triggerOnRowRemove', triggerOnRowRemove)
 } else {
   triggerOnChange = inject('triggerOnChange')
+  parentDoc = inject('parentDoc')
 }
 
 const field = computed(() => {
