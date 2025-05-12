@@ -87,6 +87,7 @@
   },
   {
    "bold": 1,
+   "columns": 5,
    "fieldname": "product_code",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -105,7 +106,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-12 16:41:00.280290",
+ "modified": "2025-05-12 17:49:06.356878",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Products",
