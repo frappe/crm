@@ -156,8 +156,7 @@ export function getScript(doctype, view = 'Form') {
           const { getFields } = getMeta(data.doctype)
           let fields = getFields()
           let field = fields.find((f) => f.fieldname === parentField)
-          dt = field.options
-          dt = dt.replace(/\s+/g, '')
+          dt = field?.options?.replace(/\s+/g, '')
 
           if (!idx && dt) {
             idx = this.find((r) => r.constructor.name === dt)?.currentRowIdx
