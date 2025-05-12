@@ -706,10 +706,10 @@ const dealTabs = createResource({
   auto: true,
   transform: (_tabs) => {
     let hasFields = false
-    let parsedTabs = _tabs.forEach((tab) => {
-      tab.sections.forEach((section) => {
-        section.columns.forEach((column) => {
-          column.fields.forEach((field) => {
+    let parsedTabs = _tabs?.forEach((tab) => {
+      tab.sections?.forEach((section) => {
+        section.columns?.forEach((column) => {
+          column.fields?.forEach((field) => {
             hasFields = true
             if (field.fieldname == 'status') {
               field.fieldtype = 'Select'
