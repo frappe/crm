@@ -27,7 +27,9 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 	if not tabs and type != "Required Fields":
 		tabs = get_default_layout(doctype)
 
-	has_tabs = tabs[0].get("sections") if tabs and tabs[0] else False
+	has_tabs = False
+	if isinstance(tabs, list) and len(tabs) > 0 and isinstance(tabs[0], dict):
+		has_tabs = any("sections" in tab for tab in tabs)
 
 	if not has_tabs:
 		tabs = [{"name": "first_tab", "sections": tabs}]
