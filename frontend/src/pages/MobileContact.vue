@@ -130,10 +130,9 @@
             class="flex flex-1 flex-col justify-between overflow-hidden"
           >
             <SidePanelLayout
-              v-model="contact.data"
               :sections="sections.data"
               doctype="Contact"
-              @update="updateField"
+              :docname="contact.data.name"
               @reload="sections.reload"
             />
           </div>
