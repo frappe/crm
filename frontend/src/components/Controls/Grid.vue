@@ -206,7 +206,7 @@
                     :options="field.options"
                     @change="(e) => fieldChange(e.target.value, field, row)"
                   />
-                  <FormControl
+                  <FormattedInput
                     v-else-if="field.fieldtype === 'Int'"
                     class="[&_input]:text-right"
                     type="text"
