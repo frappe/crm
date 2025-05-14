@@ -5,6 +5,7 @@
     :doctype="createDocumentDoctype"
     :data="createDocumentData"
     @showQuickEntryModal="(dt) => openQuickEntryModal(dt)"
+    @callback="(data) => createDocumentCallback(data)"
   />
   <QuickEntryModal
     v-if="showQuickEntryModal"
@@ -19,6 +20,7 @@ import {
   showCreateDocumentModal,
   createDocumentDoctype,
   createDocumentData,
+  createDocumentCallback,
 } from '@/composables/document'
 import { ref } from 'vue'
 
