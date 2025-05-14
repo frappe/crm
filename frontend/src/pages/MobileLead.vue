@@ -70,7 +70,6 @@
               :sections="sections.data"
               doctype="CRM Lead"
               :docname="lead.data.name"
-              @update="updateField"
               @reload="sections.reload"
             />
           </div>

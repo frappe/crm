@@ -124,7 +124,6 @@
           :sections="sections.data"
           doctype="Contact"
           :docname="contact.data.name"
-          @update="updateField"
           @reload="sections.reload"
         />
       </div>
