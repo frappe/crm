@@ -36,14 +36,20 @@ export function useDocument(doctype, docname) {
   }
 
   function setupFormScript() {
-    if (controllersCache[doctype]) return
+    if (controllersCache[doctype]?.[docname]) return
 
-    controllersCache[doctype] = setupScript(documentsCache[doctype][docname])
+    if (!controllersCache[doctype]) {
+      controllersCache[doctype] = {}
+    }
+
+    controllersCache[doctype][docname] = setupScript(
+      documentsCache[doctype][docname],
+    )
   }
 
   function getControllers(row = null) {
     const _doctype = row?.doctype || doctype
-    return (controllersCache[doctype] || []).filter(
+    return (controllersCache[doctype]?.[docname] || []).filter(
       (c) => c.constructor.name === _doctype.replace(/\s+/g, ''),
     )
   }
