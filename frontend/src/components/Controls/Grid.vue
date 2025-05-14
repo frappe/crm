@@ -213,7 +213,7 @@
                     class="[&_input]:text-right"
                     type="text"
                     variant="outline"
-                    :value="row[field.fieldname]"
+                    :value="row[field.fieldname] || '0'"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange($event.target.value, field, row)"
                   />
@@ -223,7 +223,7 @@
                     type="text"
                     variant="outline"
                     :value="getFloatWithPrecision(field.fieldname, row)"
-                    :formattedValue="row[field.fieldname] + '%'"
+                    :formattedValue="(row[field.fieldname] || '0') + '%'"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
