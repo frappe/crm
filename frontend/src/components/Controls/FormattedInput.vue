@@ -1,14 +1,15 @@
 <template>
-  <FormControl
+  <TextInput
+    ref="inputRef"
     :value="displayValue"
-    @focus="isFocused = true"
+    @focus="handleFocus"
     @blur="isFocused = false"
     v-bind="$attrs"
   />
 </template>
 <script setup>
-import { FormControl } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { TextInput } from 'frappe-ui'
+import { ref, computed, nextTick } from 'vue'
 
 const props = defineProps({
   value: {
@@ -22,8 +23,19 @@ const props = defineProps({
 })
 
 const isFocused = ref(false)
+const inputRef = ref(null)
+
+function handleFocus() {
+  isFocused.value = true
+
+  nextTick(() => {
+    if (inputRef.value) {
+      inputRef.value.el?.select()
+    }
+  })
+}
 
 const displayValue = computed(() => {
-  return isFocused.value ? props.value : props.formattedValue
+  return isFocused.value ? props.value : props.formattedValue || props.value
 })
 </script>
