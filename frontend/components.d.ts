@@ -114,6 +114,7 @@ declare module 'vue' {
     FileVideoIcon: typeof import('./src/components/Icons/FileVideoIcon.vue')['default']
     Filter: typeof import('./src/components/Filter.vue')['default']
     FilterIcon: typeof import('./src/components/Icons/FilterIcon.vue')['default']
+    FormattedInput: typeof import('./src/components/Controls/FormattedInput.vue')['default']
     FrappeCloudIcon: typeof import('./src/components/Icons/FrappeCloudIcon.vue')['default']
     GenderIcon: typeof import('./src/components/Icons/GenderIcon.vue')['default']
     GeneralSettings: typeof import('./src/components/Settings/GeneralSettings.vue')['default']

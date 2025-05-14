@@ -207,38 +207,41 @@
                     @change="(e) => fieldChange(e.target.value, field, row)"
                   />
                   <FormControl
-                    v-else-if="['Int'].includes(field.fieldtype)"
+                    v-else-if="field.fieldtype === 'Int'"
                     class="[&_input]:text-right"
-                    type="number"
+                    type="text"
                     variant="outline"
                     :value="row[field.fieldname]"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange($event.target.value, field, row)"
                   />
-                  <FormControl
+                  <FormattedInput
                     v-else-if="field.fieldtype === 'Percent'"
                     class="[&_input]:text-right"
                     type="text"
                     variant="outline"
-                    :value="getFormattedPercent(field.fieldname, row)"
+                    :value="getFloatWithPrecision(field.fieldname, row)"
+                    :formattedValue="row[field.fieldname] + '%'"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
-                  <FormControl
+                  <FormattedInput
                     v-else-if="field.fieldtype === 'Float'"
                     class="[&_input]:text-right"
                     type="text"
                     variant="outline"
-                    :value="getFormattedFloat(field.fieldname, row)"
+                    :value="getFloatWithPrecision(field.fieldname, row)"
+                    :formattedValue="row[field.fieldname]"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
-                  <FormControl
+                  <FormattedInput
                     v-else-if="field.fieldtype === 'Currency'"
                     class="[&_input]:text-right"
                     type="text"
                     variant="outline"
-                    :value="
+                    :value="getCurrencyWithPrecision(field.fieldname, row)"
+                    :formattedValue="
                       getFormattedCurrency(field.fieldname, row, parentDoc)
                     "
                     :disabled="Boolean(field.read_only)"
@@ -312,6 +315,7 @@
 </template>
 
 <script setup>
+import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.vue'
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
 import GridRowModal from '@/components/Controls/GridRowModal.vue'
@@ -361,8 +365,8 @@ const triggerOnRowRemove = inject('triggerOnRowRemove')
 const {
   getGridViewSettings,
   getFields,
-  getFormattedPercent,
-  getFormattedFloat,
+  getFloatWithPrecision,
+  getCurrencyWithPrecision,
   getFormattedCurrency,
   getGridSettings,
 } = getMeta(props.doctype)
