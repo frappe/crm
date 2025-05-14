@@ -33,10 +33,23 @@
           <div
             v-for="field in fields"
             class="border-r border-outline-gray-2 p-2 truncate"
+            :class="
+              ['Int', 'Float', 'Currency', 'Percent'].includes(field.fieldtype)
+                ? 'text-right'
+                : ''
+            "
             :key="field.fieldname"
             :title="field.label"
           >
             {{ __(field.label) }}
+            <span
+              v-if="
+                field.reqd ||
+                (field.mandatory_depends_on && field.mandatory_via_depends_on)
+              "
+              class="text-ink-red-2"
+              >*</span
+            >
           </div>
         </div>
         <div class="w-12">
@@ -95,7 +108,13 @@
                   <FormControl
                     v-if="
                       field.read_only &&
-                      !['Float', 'Currency', 'Check'].includes(field.fieldtype)
+                      ![
+                        'Int',
+                        'Float',
+                        'Currency',
+                        'Percent',
+                        'Check',
+                      ].includes(field.fieldtype)
                     "
                     type="text"
                     :placeholder="field.placeholder"
@@ -115,6 +134,9 @@
                     "
                     :filters="field.filters"
                     @change="(v) => fieldChange(v, field, row)"
+                    :onCreate="
+                      (value, close) => field.create(v, field, row, close)
+                    "
                   />
                   <Link
                     v-else-if="field.fieldtype === 'User'"
@@ -194,34 +216,44 @@
                     :options="field.options"
                     @change="(e) => fieldChange(e.target.value, field, row)"
                   />
-                  <FormControl
-                    v-else-if="['Int'].includes(field.fieldtype)"
-                    type="number"
+                  <FormattedInput
+                    v-else-if="field.fieldtype === 'Int'"
+                    class="[&_input]:text-right"
+                    type="text"
                     variant="outline"
-                    :value="row[field.fieldname]"
+                    :value="row[field.fieldname] || '0'"
+                    :disabled="Boolean(field.read_only)"
                     @change="fieldChange($event.target.value, field, row)"
                   />
-                  <FormControl
+                  <FormattedInput
                     v-else-if="field.fieldtype === 'Percent'"
+                    class="[&_input]:text-right"
                     type="text"
                     variant="outline"
-                    :value="getFormattedPercent(field.fieldname, row)"
+                    :value="getFloatWithPrecision(field.fieldname, row)"
+                    :formattedValue="(row[field.fieldname] || '0') + '%'"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
-                  <FormControl
+                  <FormattedInput
                     v-else-if="field.fieldtype === 'Float'"
+                    class="[&_input]:text-right"
                     type="text"
                     variant="outline"
-                    :value="getFormattedFloat(field.fieldname, row)"
+                    :value="getFloatWithPrecision(field.fieldname, row)"
+                    :formattedValue="row[field.fieldname]"
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
-                  <FormControl
+                  <FormattedInput
                     v-else-if="field.fieldtype === 'Currency'"
+                    class="[&_input]:text-right"
                     type="text"
                     variant="outline"
-                    :value="getFormattedCurrency(field.fieldname, row)"
+                    :value="getCurrencyWithPrecision(field.fieldname, row)"
+                    :formattedValue="
+                      getFormattedCurrency(field.fieldname, row, parentDoc)
+                    "
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
@@ -293,6 +325,7 @@
 </template>
 
 <script setup>
+import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.vue'
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
 import GridRowModal from '@/components/Controls/GridRowModal.vue'
@@ -303,6 +336,7 @@ import { getRandom, getFormat, isTouchScreenDevice } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
+import { createDocument } from '@/composables/document'
 import {
   FeatherIcon,
   FormControl,
@@ -313,7 +347,7 @@ import {
   dayjs,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
-import { ref, reactive, computed, inject } from 'vue'
+import { ref, reactive, computed, inject, provide } from 'vue'
 
 const props = defineProps({
   label: {
@@ -341,8 +375,8 @@ const triggerOnRowRemove = inject('triggerOnRowRemove')
 const {
   getGridViewSettings,
   getFields,
-  getFormattedPercent,
-  getFormattedFloat,
+  getFloatWithPrecision,
+  getCurrencyWithPrecision,
   getFormattedCurrency,
   getGridSettings,
 } = getMeta(props.doctype)
@@ -350,6 +384,10 @@ getMeta(props.parentDoctype)
 const { getUser } = usersStore()
 
 const rows = defineModel()
+const parentDoc = defineModel('parent')
+
+provide('parentDoc', parentDoc)
+
 const showRowList = ref(new Array(rows.value?.length || []).fill(false))
 const selectedRows = reactive(new Set())
 
@@ -377,6 +415,17 @@ const allFields = computed(() => {
 })
 
 function getFieldObj(field) {
+  if (field.fieldtype === 'Link' && field.options !== 'User') {
+    if (!field.create) {
+      field.create = (value, field, row, close) => {
+        const callback = (d) => {
+          if (d) fieldChange(d.name, field, row)
+        }
+        createDocument(field.options, value, close, callback)
+      }
+    }
+  }
+
   return {
     ...field,
     filters: field.link_filters && JSON.parse(field.link_filters),

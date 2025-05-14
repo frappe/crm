@@ -111,6 +111,8 @@ export function getScript(doctype, view = 'Form') {
   ) {
     let instance = new FormClass()
 
+    instance._isChildDoctype = isChildDoctype
+
     for (const key in document) {
       if (document.hasOwnProperty(key)) {
         instance[key] = document[key]
@@ -125,10 +127,16 @@ export function getScript(doctype, view = 'Form') {
       return meta[doctype]
     }
 
-    setupHelperMethods(FormClass, instance, parentInstance, document)
+    setupHelperMethods(FormClass, document)
 
     if (isChildDoctype) {
-      instance.doc = createDocProxy(document.doc, parentInstance)
+      instance.doc = createDocProxy(document.doc, parentInstance, instance)
+
+      if (!parentInstance._childInstances) {
+        parentInstance._childInstances = []
+      }
+
+      parentInstance._childInstances.push(instance)
     } else {
       instance.doc = createDocProxy(document.doc, instance)
     }
@@ -136,36 +144,55 @@ export function getScript(doctype, view = 'Form') {
     return instance
   }
 
-  function setupHelperMethods(FormClass, instance, parentInstance, document) {
+  function setupHelperMethods(FormClass, document) {
     if (typeof FormClass.prototype.getRow !== 'function') {
-      FormClass.prototype.getRow = (parentField, idx) =>
-        getRow(parentField, idx, document.doc, instance)
+      FormClass.prototype.getRow = function (parentField, idx) {
+        let data = document.doc
+        idx = idx || this.currentRowIdx
+
+        let dt = null
+
+        if (this instanceof Array) {
+          const { getFields } = getMeta(data.doctype)
+          let fields = getFields()
+          let field = fields.find((f) => f.fieldname === parentField)
+          dt = field?.options?.replace(/\s+/g, '')
+
+          if (!idx && dt) {
+            idx = this.find((r) => r.constructor.name === dt)?.currentRowIdx
+          }
+        }
+
+        if (!data[parentField]) {
+          console.warn(
+            __('⚠️ No data found for parent field: {0}', [parentField]),
+          )
+          return null
+        }
+        const row = data[parentField].find((r) => r.idx === idx)
+
+        if (!row) {
+          console.warn(
+            __('⚠️ No row found for idx: {0} in parent field: {1}', [
+              idx,
+              parentField,
+            ]),
+          )
+          return null
+        }
+
+        row.parent = row.parent || data.name
+
+        if (this instanceof Array && dt) {
+          return createDocProxy(
+            row,
+            this.find((r) => r.constructor.name === dt),
+          )
+        }
+
+        return createDocProxy(row, this)
+      }
     }
-    exposeHiddenMethods(instance, parentInstance, ['getRow'])
-  }
-
-  function getRow(parentField, idx, data, instance) {
-    idx = idx || instance.currentRowIdx
-
-    if (!data[parentField]) {
-      console.warn(__('⚠️ No data found for parent field: {0}', [parentField]))
-      return null
-    }
-    const row = data[parentField].find((r) => r.idx === idx)
-
-    if (!row) {
-      console.warn(
-        __('⚠️ No row found for idx: {0} in parent field: {1}', [
-          idx,
-          parentField,
-        ]),
-      )
-      return null
-    }
-
-    row.parent = row.parent || data.name
-
-    return createDocProxy(row, instance)
   }
 
   // utility function to setup a form controller
@@ -197,7 +224,7 @@ export function getScript(doctype, view = 'Form') {
     return FormClass
   }
 
-  function createDocProxy(data, instance) {
+  function createDocProxy(data, instance, childInstance = null) {
     return new Proxy(data, {
       get(target, prop) {
         if (prop === 'trigger') {
@@ -221,6 +248,12 @@ export function getScript(doctype, view = 'Form') {
           }
         }
 
+        if (prop === 'getRow') {
+          return instance.getRow.bind(
+            childInstance || instance._childInstances || instance,
+          )
+        }
+
         return target[prop]
       },
       set(target, prop, value) {
@@ -228,25 +261,6 @@ export function getScript(doctype, view = 'Form') {
         return true
       },
     })
-  }
-
-  function exposeHiddenMethods(instance, parentInstance, methodNames = []) {
-    for (const name of methodNames) {
-      // remove the method from parent instance if it exists
-      if (parentInstance && parentInstance[name]) {
-        delete instance.doc[name]
-      }
-
-      if (typeof instance[name] === 'function' && !instance.doc[name]) {
-        // Show as actual method on doc, bound to instance
-        Object.defineProperty(instance.doc, name, {
-          value: (...args) => instance[name](...args),
-          writable: false,
-          enumerable: false,
-          configurable: true,
-        })
-      }
-    }
   }
 
   return {

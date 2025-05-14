@@ -4,6 +4,8 @@ import click
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
+from crm.fcrm.doctype.crm_products.crm_products import create_product_details_script
+
 
 def before_install():
 	pass
@@ -19,6 +21,7 @@ def after_install(force=False):
 	add_default_industries()
 	add_default_lead_sources()
 	add_standard_dropdown_items()
+	add_default_scripts()
 	frappe.db.commit()
 
 
@@ -353,3 +356,8 @@ def add_standard_dropdown_items():
 		crm_settings.append("dropdown_items", item)
 
 	crm_settings.save()
+
+
+def add_default_scripts():
+	for doctype in ["CRM Lead", "CRM Deal"]:
+		create_product_details_script(doctype)
