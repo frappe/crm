@@ -42,6 +42,14 @@
             :title="field.label"
           >
             {{ __(field.label) }}
+            <span
+              v-if="
+                field.reqd ||
+                (field.mandatory_depends_on && field.mandatory_via_depends_on)
+              "
+              class="text-ink-red-2"
+              >*</span
+            >
           </div>
         </div>
         <div class="w-12">

@@ -7,7 +7,7 @@
           field.reqd ||
           (field.mandatory_depends_on && field.mandatory_via_depends_on)
         "
-        class="text-ink-red-3"
+        class="text-ink-red-2"
         >*</span
       >
     </div>
@@ -161,7 +161,7 @@
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
-    <FormControl
+    <FormattedInput
       v-else-if="['Int'].includes(field.fieldtype)"
       type="number"
       :placeholder="getPlaceholder(field)"
@@ -170,7 +170,7 @@
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
-    <FormControl
+    <FormattedInput
       v-else-if="field.fieldtype === 'Percent'"
       type="text"
       :value="getFormattedPercent(field.fieldname, data)"
@@ -179,7 +179,7 @@
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
-    <FormControl
+    <FormattedInput
       v-else-if="field.fieldtype === 'Float'"
       type="text"
       :value="getFormattedFloat(field.fieldname, data)"
@@ -188,7 +188,7 @@
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
-    <FormControl
+    <FormattedInput
       v-else-if="field.fieldtype === 'Currency'"
       type="text"
       :value="getFormattedCurrency(field.fieldname, data, parentDoc)"
@@ -209,6 +209,7 @@
   </div>
 </template>
 <script setup>
+import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'

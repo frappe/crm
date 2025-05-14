@@ -53,7 +53,7 @@
                             (field.mandatory_depends_on &&
                               field.mandatory_via_depends_on)
                           "
-                          class="text-ink-red-3"
+                          class="text-ink-red-2"
                           >*</span
                         >
                       </div>
@@ -254,7 +254,7 @@
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
-                        <FormControl
+                        <FormattedInput
                           v-else-if="field.fieldtype === 'Percent'"
                           class="form-control"
                           type="text"
@@ -267,16 +267,16 @@
                             fieldChange(flt($event.target.value), field)
                           "
                         />
-                        <FormControl
+                        <FormattedInput
                           v-else-if="field.fieldtype === 'Int'"
                           class="form-control"
-                          type="number"
+                          type="text"
                           v-model="document.doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="fieldChange($event.target.value, field)"
                         />
-                        <FormControl
+                        <FormattedInput
                           v-else-if="field.fieldtype === 'Float'"
                           class="form-control"
                           type="text"
@@ -289,7 +289,7 @@
                             fieldChange(flt($event.target.value), field)
                           "
                         />
-                        <FormControl
+                        <FormattedInput
                           v-else-if="field.fieldtype === 'Currency'"
                           class="form-control"
                           type="text"
@@ -355,6 +355,7 @@
 </template>
 
 <script setup>
+import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import Section from '@/components/Section.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import DropdownItem from '@/components/DropdownItem.vue'
