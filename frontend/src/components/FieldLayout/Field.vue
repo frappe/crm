@@ -275,7 +275,12 @@ const field = computed(() => {
 
   if (field.fieldtype === 'Link' && field.options !== 'User') {
     if (!field.create) {
-      field.create = (obj, close) => createDocument(field.options, obj, close)
+      field.create = (value, close) => {
+        const callback = (d) => {
+          if (d) fieldChange(d.name, field)
+        }
+        createDocument(field.options, value, close, callback)
+      }
     }
   }
 

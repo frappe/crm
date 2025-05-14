@@ -62,7 +62,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['showQuickEntryModal'])
+const emit = defineEmits(['showQuickEntryModal', 'callback'])
 
 const { isManager } = usersStore()
 
@@ -100,11 +100,11 @@ const tabs = createResource({
   auto: true,
 })
 
-async function create(close) {
+async function create() {
   loading.value = true
   error.value = null
 
-  await call(
+  let doc = await call(
     'frappe.client.insert',
     {
       doc: {
@@ -124,6 +124,7 @@ async function create(close) {
 
   loading.value = false
   show.value = false
+  emit('callback', doc)
 }
 
 watch(

@@ -126,7 +126,9 @@
                     "
                     :filters="field.filters"
                     @change="(v) => fieldChange(v, field, row)"
-                    :onCreate="field.create"
+                    :onCreate="
+                      (value, close) => field.create(v, field, row, close)
+                    "
                   />
                   <Link
                     v-else-if="field.fieldtype === 'User'"
@@ -407,7 +409,12 @@ const allFields = computed(() => {
 function getFieldObj(field) {
   if (field.fieldtype === 'Link' && field.options !== 'User') {
     if (!field.create) {
-      field.create = (obj, close) => createDocument(field.options, obj, close)
+      field.create = (value, field, row, close) => {
+        const callback = (d) => {
+          if (d) fieldChange(d.name, field, row)
+        }
+        createDocument(field.options, value, close, callback)
+      }
     }
   }
 
