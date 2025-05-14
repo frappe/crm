@@ -139,9 +139,14 @@ const oldFields = computed(() => {
 const fields = ref(JSON.parse(JSON.stringify(oldFields.value || [])))
 
 const dropdownFields = computed(() => {
-  return getFields()?.filter(
-    (field) => !fields.value.find((f) => f.fieldname === field.fieldname),
-  )
+  return getFields()?.filter((field) => {
+    return (
+      !fields.value.find((f) => f.fieldname === field.fieldname) &&
+      !['Tab Break', 'Section Break', 'Column Break', 'Table'].includes(
+        field.fieldtype,
+      )
+    )
+  })
 })
 
 function reset() {

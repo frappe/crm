@@ -23,7 +23,13 @@
           </div>
         </div>
         <div>
-          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="data" />
+          <FieldLayout
+            v-if="tabs.data"
+            :tabs="tabs.data"
+            :data="data"
+            :doctype="doctype"
+            :isGridRow="true"
+          />
         </div>
       </div>
     </template>

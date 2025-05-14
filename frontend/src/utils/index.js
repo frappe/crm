@@ -152,6 +152,7 @@ export function setupAssignees(doc) {
 }
 
 async function getFormScript(script, obj) {
+  if (!script.includes('setupForm(')) return {}
   let scriptFn = new Function(script + '\nreturn setupForm')()
   let formScript = await scriptFn(obj)
   return formScript || {}
@@ -347,4 +348,10 @@ export function getRandom(len = 4) {
   })
 
   return text
+}
+
+export function runSequentially(functions) {
+  return functions.reduce((promise, fn) => {
+    return promise.then(() => fn())
+  }, Promise.resolve())
 }
