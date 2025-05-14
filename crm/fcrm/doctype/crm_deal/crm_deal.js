@@ -12,20 +12,10 @@ frappe.ui.form.on("CRM Deal", {
 		frm.doc.products.forEach((d) => {
 			total += d.amount;
 			total_qty += d.qty;
-			net_total += d.net_amount || d.amount;
+			net_total += d.net_amount;
 		});
 
-		if (total) {
-			frappe.model.set_value(frm.doctype, frm.docname, "total", total);
-		}
-		if (total_qty) {
-			frappe.model.set_value(
-				frm.doctype,
-				frm.docname,
-				"total_qty",
-				total_qty
-			);
-		}
+		frappe.model.set_value(frm.doctype, frm.docname, "total", total);
 		frappe.model.set_value(
 			frm.doctype,
 			frm.docname,
@@ -44,9 +34,7 @@ frappe.ui.form.on("CRM Products", {
 	},
 	product_code: function (frm, cdt, cdn) {
 		let d = frappe.get_doc(cdt, cdn);
-		if (!d.product_name) {
-			frappe.model.set_value(cdt, cdn, "product_name", d.product_code);
-		}
+		frappe.model.set_value(cdt, cdn, "product_name", d.product_code);
 	},
 	rate: function (frm, cdt, cdn) {
 		let d = frappe.get_doc(cdt, cdn);
