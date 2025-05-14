@@ -7,23 +7,27 @@
           field.reqd ||
           (field.mandatory_depends_on && field.mandatory_via_depends_on)
         "
-        class="text-ink-red-3"
+        class="text-ink-red-2"
         >*</span
       >
     </div>
     <FormControl
       v-if="
         field.read_only &&
-        !['Float', 'Currency', 'Check'].includes(field.fieldtype)
+        !['Int', 'Float', 'Currency', 'Percent', 'Check'].includes(
+          field.fieldtype,
+        )
       "
       type="text"
       :placeholder="getPlaceholder(field)"
       v-model="data[field.fieldname]"
       :disabled="true"
+      :description="field.description"
     />
     <Grid
       v-else-if="field.fieldtype === 'Table'"
       v-model="data[field.fieldname]"
+      v-model:parent="data"
       :doctype="field.options"
       :parentDoctype="doctype"
       :parentFieldname="field.fieldname"
@@ -37,6 +41,7 @@
       v-model="data[field.fieldname]"
       @change="(e) => fieldChange(e.target.value, field)"
       :placeholder="getPlaceholder(field)"
+      :description="field.description"
     >
       <template v-if="field.prefix" #prefix>
         <IndicatorIcon :class="field.prefix" />
@@ -49,6 +54,7 @@
         v-model="data[field.fieldname]"
         @change="(e) => fieldChange(e.target.checked, field)"
         :disabled="Boolean(field.read_only)"
+        :description="field.description"
       />
       <label
         class="text-sm text-ink-gray-5"
@@ -150,39 +156,45 @@
         ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.fieldtype)
       "
       type="textarea"
-      :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
+      :placeholder="getPlaceholder(field)"
+      :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
-    <FormControl
+    <FormattedInput
       v-else-if="['Int'].includes(field.fieldtype)"
       type="number"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
+      :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
-    <FormControl
+    <FormattedInput
       v-else-if="field.fieldtype === 'Percent'"
       type="text"
       :value="getFormattedPercent(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
-    <FormControl
+    <FormattedInput
       v-else-if="field.fieldtype === 'Float'"
       type="text"
       :value="getFormattedFloat(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
-    <FormControl
+    <FormattedInput
       v-else-if="field.fieldtype === 'Currency'"
       type="text"
-      :value="getFormattedCurrency(field.fieldname, data)"
+      :value="getFormattedCurrency(field.fieldname, data, parentDoc)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
     <FormControl
@@ -191,17 +203,20 @@
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
+      :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
   </div>
 </template>
 <script setup>
+import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
+import { createDocument } from '@/composables/document'
 import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
@@ -225,6 +240,7 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { getUser } = usersStore()
 
 let triggerOnChange
+let parentDoc
 
 if (!isGridRow) {
   const {
@@ -239,6 +255,7 @@ if (!isGridRow) {
   provide('triggerOnRowRemove', triggerOnRowRemove)
 } else {
   triggerOnChange = inject('triggerOnChange')
+  parentDoc = inject('parentDoc')
 }
 
 const field = computed(() => {
@@ -255,6 +272,17 @@ const field = computed(() => {
 
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
+  }
+
+  if (field.fieldtype === 'Link' && field.options !== 'User') {
+    if (!field.create) {
+      field.create = (value, close) => {
+        const callback = (d) => {
+          if (d) fieldChange(d.name, field)
+        }
+        createDocument(field.options, value, close, callback)
+      }
+    }
   }
 
   let _field = {

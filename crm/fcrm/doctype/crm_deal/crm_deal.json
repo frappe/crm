@@ -43,6 +43,12 @@
   "mobile_no",
   "phone",
   "gender",
+  "products_tab",
+  "products",
+  "section_break_ccbj",
+  "total",
+  "column_break_udbq",
+  "net_total",
   "sla_tab",
   "sla",
   "sla_creation",
@@ -334,11 +340,46 @@
    "fieldtype": "Link",
    "label": "Currency",
    "options": "Currency"
+  },
+  {
+   "fieldname": "products_tab",
+   "fieldtype": "Tab Break",
+   "label": "Products"
+  },
+  {
+   "fieldname": "products",
+   "fieldtype": "Table",
+   "label": "Products",
+   "options": "CRM Products"
+  },
+  {
+   "fieldname": "section_break_ccbj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_udbq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "description": "Total after discount",
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "options": "currency",
+   "read_only": 1
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-11 14:31:41.058895",
+ "modified": "2025-05-12 12:30:55.415282",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
@@ -370,6 +411,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
