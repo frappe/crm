@@ -65,7 +65,6 @@
               :sections="sections.data"
               doctype="CRM Deal"
               :docname="deal.data.name"
-              @update="updateField"
               @reload="sections.reload"
             >
               <template #actions="{ section }">

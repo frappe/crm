@@ -115,7 +115,6 @@
               :sections="sections.data"
               doctype="CRM Organization"
               :docname="organization.doc.name"
-              @update="updateField"
               @reload="sections.reload"
             />
           </div>
