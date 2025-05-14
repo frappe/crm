@@ -65,7 +65,14 @@
                         <div
                           v-if="
                             field.read_only &&
-                            !['Check', 'Dropdown'].includes(field.fieldtype)
+                            ![
+                              'Int',
+                              'Float',
+                              'Currency',
+                              'Percent',
+                              'Check',
+                              'Dropdown',
+                            ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
                         >
@@ -266,6 +273,7 @@
                           @change.stop="
                             fieldChange(flt($event.target.value), field)
                           "
+                          :disabled="Boolean(field.read_only)"
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Int'"
@@ -275,6 +283,7 @@
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="fieldChange($event.target.value, field)"
+                          :disabled="Boolean(field.read_only)"
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Float'"
@@ -288,6 +297,7 @@
                           @change.stop="
                             fieldChange(flt($event.target.value), field)
                           "
+                          :disabled="Boolean(field.read_only)"
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Currency'"
@@ -301,6 +311,7 @@
                           @change.stop="
                             fieldChange(flt($event.target.value), field)
                           "
+                          :disabled="Boolean(field.read_only)"
                         />
                         <FormControl
                           v-else
