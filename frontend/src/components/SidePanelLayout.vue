@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!document.get.loading"
+    v-if="!document.get?.loading"
     class="sections flex flex-col overflow-y-auto"
   >
     <template v-for="(section, i) in _sections" :key="section.name">
@@ -412,11 +412,18 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 
 const { isManager, getUser } = usersStore()
 
-const emit = defineEmits(['update', 'reload'])
+const emit = defineEmits(['reload'])
 
 const showSidePanelModal = ref(false)
 
-const { document, triggerOnChange } = useDocument(props.doctype, props.docname)
+let document = { doc: {} }
+let triggerOnChange
+
+if (props.docname) {
+  let d = useDocument(props.doctype, props.docname)
+  document = d.document
+  triggerOnChange = d.triggerOnChange
+}
 
 const _sections = computed(() => {
   if (!props.sections?.length) return []
@@ -470,6 +477,8 @@ function parsedField(field) {
 }
 
 async function fieldChange(value, df) {
+  if (props.preview) return
+
   document.doc[df.fieldname] = value
 
   await triggerOnChange(df.fieldname)
