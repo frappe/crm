@@ -62,10 +62,9 @@
             class="flex flex-1 flex-col justify-between overflow-hidden"
           >
             <SidePanelLayout
-              v-model="deal.data"
               :sections="sections.data"
               doctype="CRM Deal"
-              @update="updateField"
+              :docname="deal.data.name"
               @reload="sections.reload"
             >
               <template #actions="{ section }">
