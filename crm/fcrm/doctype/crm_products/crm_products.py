@@ -11,7 +11,7 @@ class CRMProducts(Document):
 
 def create_product_details_script(doctype):
 	if not frappe.db.exists("CRM Form Script", "Product Details Script for " + doctype):
-		script = get_product_details_script()
+		script = get_product_details_script(doctype)
 		frappe.get_doc(
 			{
 				"doctype": "CRM Form Script",
@@ -30,8 +30,8 @@ def get_product_details_script(doctype):
 
 	return (
 		doctype_class
+		+ " {"
 		+ """
- {
   update_total() {
     let total = 0
     let total_qty = 0
@@ -40,7 +40,6 @@ def get_product_details_script(doctype):
 
     this.doc.products.forEach((d) => {
       total += d.amount
-      total_qty += d.qty
       net_total += d.net_amount
       if (d.discount_percentage > 0) {
         discount_applied = true
