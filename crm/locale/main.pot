@@ -4161,15 +4161,9 @@ msgstr ""
 #: frontend/src/components/ColumnSettings.vue:134
 #: frontend/src/components/Modals/AssignmentModal.vue:17
 #: frontend/src/components/Modals/EmailTemplateModal.vue:9
-<<<<<<< HEAD
-#: frontend/src/components/Modals/NoteModal.vue:8
-#: frontend/src/components/Modals/TaskModal.vue:8
-#: frontend/src/components/Settings/GeneralSettings.vue:112
-=======
 #: frontend/src/components/Modals/NoteModal.vue:6
 #: frontend/src/components/Modals/TaskModal.vue:6
 #: frontend/src/components/Settings/GeneralSettings.vue:113
->>>>>>> 0cc69d9 (chore: update POT file)
 #: frontend/src/components/Settings/ProfileSettings.vue:71
 #: frontend/src/components/Settings/SettingsPage.vue:31
 #: frontend/src/components/Settings/TelephonySettings.vue:70
