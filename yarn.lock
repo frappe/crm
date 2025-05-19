@@ -1372,6 +1372,11 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-paragraph/-/extension-paragraph-2.10.3.tgz#128c8fcd46d2e854d214c7f566e6212f2ebff6f1"
   integrity sha512-sNkTX/iN+YoleDiTJsrWSBw9D7c4vsYwnW5y/G5ydfuJMIRQMF78pWSIWZFDRNOMkgK5UHkhu9anrbCFYgBfaA==
 
+"@tiptap/extension-paragraph@^2.12.0":
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-paragraph/-/extension-paragraph-2.12.0.tgz#35987cfa842f254e67ecec403441578a1b2189a1"
+  integrity sha512-QNK5cgewCunWFxpLlbvvoO1rrLgEtNKxiY79fctP9toV+e59R+1i1Q9lXC1O5mOfDgVxCb6uFDMsqmKhFjpPog==
+
 "@tiptap/extension-placeholder@^2.0.3":
   version "2.10.3"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-placeholder/-/extension-placeholder-2.10.3.tgz#eeb2b2f1916619e334af7d2a9d6885f77bb4ab78"
