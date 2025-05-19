@@ -1,5 +1,6 @@
 {
 	"private": true,
+	"type": "module",
 	"workspaces": ["frontend", "frappe-ui"],
 	"scripts": {
 		"postinstall": "cd frontend && yarn install",
