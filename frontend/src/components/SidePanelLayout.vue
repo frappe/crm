@@ -279,7 +279,7 @@
                           v-else-if="field.fieldtype === 'Int'"
                           class="form-control"
                           type="text"
-                          v-model="document.doc[field.fieldname]"
+                          :value="document.doc[field.fieldname] || '0'"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="fieldChange($event.target.value, field)"
