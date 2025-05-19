@@ -211,7 +211,7 @@ const filterOptions = createResource({
 
 const options = computed(() => {
   let searchedContacts = props.fetchContacts ? filterOptions.data : []
-  if (!searchedContacts.length && query.value) {
+  if (!searchedContacts?.length && query.value) {
     searchedContacts.push({
       label: query.value,
       value: query.value,
