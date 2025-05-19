@@ -169,6 +169,7 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
+import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
@@ -300,17 +301,18 @@ function getIcon(routeName, icon) {
 }
 
 // onboarding
+const { user } = sessionStore()
 const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
 async function getFirstLead() {
-  let firstLead = localStorage.getItem('firstLead')
+  let firstLead = localStorage.getItem('firstLead' + user)
   if (firstLead) return firstLead
   return await call('crm.api.onboarding.get_first_lead')
 }
 
 async function getFirstDeal() {
-  let firstDeal = localStorage.getItem('firstDeal')
+  let firstDeal = localStorage.getItem('firstDeal' + user)
   if (firstDeal) return firstDeal
   return await call('crm.api.onboarding.get_first_deal')
 }
