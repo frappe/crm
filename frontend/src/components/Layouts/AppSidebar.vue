@@ -168,6 +168,8 @@ import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
+import { usersStore } from '@/stores/users'
+import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
@@ -299,16 +301,18 @@ function getIcon(routeName, icon) {
 }
 
 // onboarding
+const { user } = sessionStore()
+const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
 async function getFirstLead() {
-  let firstLead = localStorage.getItem('firstLead')
+  let firstLead = localStorage.getItem('firstLead' + user)
   if (firstLead) return firstLead
   return await call('crm.api.onboarding.get_first_lead')
 }
 
 async function getFirstDeal() {
-  let firstDeal = localStorage.getItem('firstDeal')
+  let firstDeal = localStorage.getItem('firstDeal' + user)
   if (firstDeal) return firstDeal
   return await call('crm.api.onboarding.get_first_deal')
 }
@@ -337,12 +341,14 @@ const steps = reactive([
       showSettings.value = true
       activeSettingsPage.value = 'Invite Members'
     },
+    condition: () => isManager(),
   },
   {
     name: 'convert_lead_to_deal',
     title: __('Convert lead to deal'),
     icon: markRaw(ConvertIcon),
     completed: false,
+    dependsOn: 'create_first_lead',
     onClick: async () => {
       minimize.value = true
 
@@ -410,6 +416,7 @@ const steps = reactive([
     title: __('Add your first comment'),
     icon: markRaw(CommentIcon),
     completed: false,
+    dependsOn: 'create_first_lead',
     onClick: async () => {
       minimize.value = true
       let deal = await getFirstDeal()
@@ -430,6 +437,7 @@ const steps = reactive([
     title: __('Send email'),
     icon: markRaw(EmailIcon),
     completed: false,
+    dependsOn: 'create_first_lead',
     onClick: async () => {
       minimize.value = true
       let deal = await getFirstDeal()
@@ -450,6 +458,7 @@ const steps = reactive([
     title: __('Change deal status'),
     icon: markRaw(StepsIcon),
     completed: false,
+    dependsOn: 'convert_lead_to_deal',
     onClick: async () => {
       minimize.value = true
 
@@ -478,7 +487,18 @@ const steps = reactive([
   },
 ])
 
-onMounted(() => setUp(steps))
+onMounted(async () => {
+  await users.promise
+
+  const filteredSteps = steps.filter((step) => {
+    if (step.condition) {
+      return step.condition()
+    }
+    return true
+  })
+
+  setUp(filteredSteps)
+})
 
 // help center
 const articles = ref([
@@ -517,9 +537,7 @@ const articles = ref([
   {
     title: __('Capturing leads'),
     opened: false,
-    subArticles: [
-      { name: 'web-form', title: __('Web form') },
-    ],
+    subArticles: [{ name: 'web-form', title: __('Web form') }],
   },
   {
     title: __('Views'),
