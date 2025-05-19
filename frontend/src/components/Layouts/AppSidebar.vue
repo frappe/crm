@@ -346,6 +346,7 @@ const steps = reactive([
     title: __('Convert lead to deal'),
     icon: markRaw(ConvertIcon),
     completed: false,
+    dependsOn: 'create_first_lead',
     onClick: async () => {
       minimize.value = true
 
@@ -413,6 +414,7 @@ const steps = reactive([
     title: __('Add your first comment'),
     icon: markRaw(CommentIcon),
     completed: false,
+    dependsOn: 'create_first_lead',
     onClick: async () => {
       minimize.value = true
       let deal = await getFirstDeal()
@@ -433,6 +435,7 @@ const steps = reactive([
     title: __('Send email'),
     icon: markRaw(EmailIcon),
     completed: false,
+    dependsOn: 'create_first_lead',
     onClick: async () => {
       minimize.value = true
       let deal = await getFirstDeal()
@@ -453,6 +456,7 @@ const steps = reactive([
     title: __('Change deal status'),
     icon: markRaw(StepsIcon),
     completed: false,
+    dependsOn: 'convert_lead_to_deal',
     onClick: async () => {
       minimize.value = true
 
