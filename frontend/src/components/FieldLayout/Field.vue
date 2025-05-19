@@ -136,7 +136,6 @@
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
       :value="data[field.fieldname]"
-      icon-left=""
       :formatter="(date) => getFormat(date, '', true, true)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
@@ -144,7 +143,6 @@
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
-      icon-left=""
       :value="data[field.fieldname]"
       :formatter="(date) => getFormat(date, '', true)"
       :placeholder="getPlaceholder(field)"
@@ -162,10 +160,10 @@
       @change="fieldChange($event.target.value, field)"
     />
     <FormattedInput
-      v-else-if="['Int'].includes(field.fieldtype)"
-      type="number"
+      v-else-if="field.fieldtype === 'Int'"
+      type="text"
       :placeholder="getPlaceholder(field)"
-      :value="data[field.fieldname]"
+      :value="data[field.fieldname] || '0'"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
