@@ -168,6 +168,7 @@ import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
+import { usersStore } from '@/stores/users'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
@@ -299,6 +300,7 @@ function getIcon(routeName, icon) {
 }
 
 // onboarding
+const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
 async function getFirstLead() {
@@ -337,6 +339,7 @@ const steps = reactive([
       showSettings.value = true
       activeSettingsPage.value = 'Invite Members'
     },
+    condition: () => isManager(),
   },
   {
     name: 'convert_lead_to_deal',
@@ -478,7 +481,18 @@ const steps = reactive([
   },
 ])
 
-onMounted(() => setUp(steps))
+onMounted(async () => {
+  await users.promise
+
+  const filteredSteps = steps.filter((step) => {
+    if (step.condition) {
+      return step.condition()
+    }
+    return true
+  })
+
+  setUp(filteredSteps)
+})
 
 // help center
 const articles = ref([
@@ -517,9 +531,7 @@ const articles = ref([
   {
     title: __('Capturing leads'),
     opened: false,
-    subArticles: [
-      { name: 'web-form', title: __('Web form') },
-    ],
+    subArticles: [{ name: 'web-form', title: __('Web form') }],
   },
   {
     title: __('Views'),
