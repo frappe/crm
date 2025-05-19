@@ -12,7 +12,11 @@
   "dependencies": {
     "@twilio/voice-sdk": "^2.10.2",
     "@vueuse/integrations": "^10.3.0",
+<<<<<<< HEAD
     "frappe-ui": "^0.1.121",
+=======
+    "frappe-ui": "^0.1.145",
+>>>>>>> 1395a12 (build(deps): bump frappeui to 0.1.145)
     "gemoji": "^8.1.0",
     "lodash": "^4.17.21",
     "mime": "^4.0.1",
