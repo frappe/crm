@@ -79,8 +79,7 @@
 <script setup>
 import ProfileImageEditor from '@/components/Settings/ProfileImageEditor.vue'
 import { usersStore } from '@/stores/users'
-import { createToast } from '@/utils'
-import { Dialog, Avatar, createResource, ErrorMessage } from 'frappe-ui'
+import { Dialog, Avatar, createResource, ErrorMessage, toast } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 
 const { getUser, users } = usersStore()
@@ -115,11 +114,7 @@ function updateUser() {
       error.value = ''
       profile.value.new_password = ''
       showEditProfilePhotoModal.value = false
-      createToast({
-        title: __('Profile updated successfully'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Profile updated successfully'))
       users.reload()
     },
     onError: (err) => {

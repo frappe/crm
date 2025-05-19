@@ -1,6 +1,6 @@
 import { getScript } from '@/data/script'
-import { createToast, runSequentially } from '@/utils'
-import { createDocumentResource } from 'frappe-ui'
+import { runSequentially } from '@/utils'
+import { createDocumentResource, toast } from 'frappe-ui'
 
 const documentsCache = {}
 const controllersCache = {}
@@ -17,19 +17,11 @@ export function useDocument(doctype, docname) {
       onSuccess: () => setupFormScript(),
       setValue: {
         onSuccess: () => {
-          createToast({
-            title: __('Document updated successfully'),
-            icon: 'check',
-            iconClasses: 'text-ink-green-3',
-          })
+          toast.success(__('Document updated successfully'))
         },
         onError: (err) => {
-          createToast({
-            title: __('Error updating document'),
-            text: err.messages[0],
-            icon: 'x',
-            iconClasses: 'text-red-600',
-          })
+          toast.error(__('Error updating document'))
+          console.error(err)
         },
       },
     })
