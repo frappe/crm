@@ -127,11 +127,7 @@ function updateUser() {
       error.value = ''
       profile.value.new_password = ''
       showEditProfilePhotoModal.value = false
-      createToast({
-        title: __('Profile updated successfully'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Profile updated successfully'))
       users.reload()
     },
     onError: (err) => {

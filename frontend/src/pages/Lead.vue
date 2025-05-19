@@ -124,7 +124,7 @@
                         () =>
                           lead.data.mobile_no
                             ? makeCall(lead.data.mobile_no)
-                            : _errorMessage(__('No phone number set'))
+                            : toast.error(__('No phone number set'))
                       "
                     >
                       <PhoneIcon class="h-4 w-4" />
@@ -139,7 +139,7 @@
                         @click="
                           lead.data.email
                             ? openEmailBox()
-                            : _errorMessage(__('No email set'))
+                            : toast.error(__('No email set'))
                         "
                       />
                     </Button>
@@ -153,7 +153,7 @@
                         @click="
                           lead.data.website
                             ? openWebsite(lead.data.website)
-                            : _errorMessage(__('No website set'))
+                            : toast.error(__('No website set'))
                         "
                       />
                     </Button>
@@ -344,10 +344,8 @@ import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
   openWebsite,
-  createToast,
   setupAssignees,
   setupCustomizations,
-  errorMessage as _errorMessage,
   copyToClipboard,
 } from '@/utils'
 import { getView } from '@/utils/view'
@@ -374,6 +372,7 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
+  toast,
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, reactive, computed, onMounted, watch } from 'vue'
@@ -415,8 +414,9 @@ const lead = createResource({
       $dialog,
       $socket,
       router,
+      toast,
       updateField,
-      createToast,
+      createToast: toast.create,
       deleteDoc: deleteLead,
       resource: { lead, sections },
       call,
@@ -457,20 +457,11 @@ function updateLead(fieldname, value, callback) {
     onSuccess: () => {
       lead.reload()
       reload.value = true
-      createToast({
-        title: __('Lead updated'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Lead updated successfully'))
       callback?.()
     },
     onError: (err) => {
-      createToast({
-        title: __('Error updating lead'),
-        text: __(err.messages?.[0]),
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
+      toast.error(err.messages?.[0] || __('Error updating lead'))
     },
   })
 }
@@ -478,12 +469,7 @@ function updateLead(fieldname, value, callback) {
 function validateRequired(fieldname, value) {
   let meta = lead.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
-    createToast({
-      title: __('Error Updating Lead'),
-      text: __('{0} is a required field', [meta[fieldname].label]),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
+    toast.error(__('{0} is a required field', [meta[fieldname].label]))
     return true
   }
   return false
@@ -630,22 +616,12 @@ const existingOrganization = ref('')
 
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
-    createToast({
-      title: __('Error'),
-      text: __('Please select an existing contact'),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
+    toast.error(__('Please select an existing contact'))
     return
   }
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
-    createToast({
-      title: __('Error'),
-      text: __('Please select an existing organization'),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
+    toast.error(__('Please select an existing organization'))
     return
   }
 
@@ -663,12 +639,7 @@ async function convertToDeal() {
     existing_contact: existingContact.value,
     existing_organization: existingOrganization.value,
   }).catch((err) => {
-    createToast({
-      title: __('Error converting to deal'),
-      text: __(err.messages?.[0]),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
+    toast.error(__('Error converting to deal: {0}', [err.messages?.[0]]))
   })
   if (_deal) {
     showConvertToDealModal.value = false
