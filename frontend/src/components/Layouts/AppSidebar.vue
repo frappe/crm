@@ -150,7 +150,6 @@ import Section from '@/components/Section.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
-import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
@@ -322,17 +321,6 @@ const showIntermediateModal = ref(false)
 const currentStep = ref({})
 
 const steps = reactive([
-  {
-    name: 'setup_your_password',
-    title: __('Setup your password'),
-    icon: markRaw(SquareAsterisk),
-    completed: false,
-    onClick: () => {
-      minimize.value = true
-      showSettings.value = true
-      activeSettingsPage.value = 'Profile'
-    },
-  },
   {
     name: 'create_first_lead',
     title: __('Create your first lead'),

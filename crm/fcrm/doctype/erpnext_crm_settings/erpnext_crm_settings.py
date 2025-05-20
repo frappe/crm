@@ -264,7 +264,7 @@ def create_customer_in_remote_site(customer, erpnext_crm_settings):
 @frappe.whitelist()
 def get_crm_form_script():
 	return """
-async function setupForm({ doc, call, $dialog, updateField, toast }) {
+async function setupForm({ doc, call, $dialog, updateField, createToast }) {
 	let actions = [];
 	let is_erpnext_integration_enabled = await call("frappe.client.get_single_value", {doctype: "ERPNext CRM Settings", field: "enabled"});
 	if (!["Lost", "Won"].includes(doc?.status) && is_erpnext_integration_enabled) {

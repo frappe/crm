@@ -275,20 +275,11 @@
                           "
                           :disabled="Boolean(field.read_only)"
                         />
-                        <Password
-                          v-else-if="field.fieldtype === 'Password'"
-                          class="form-control"
-                          :value="document.doc[field.fieldname]"
-                          :placeholder="field.placeholder"
-                          :debounce="500"
-                          @change.stop="fieldChange($event.target.value, field)"
-                          :disabled="Boolean(field.read_only)"
-                        />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Int'"
                           class="form-control"
                           type="text"
-                          :value="document.doc[field.fieldname] || '0'"
+                          v-model="document.doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="fieldChange($event.target.value, field)"
@@ -375,7 +366,6 @@
 </template>
 
 <script setup>
-import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import Section from '@/components/Section.vue'
 import NestedPopover from '@/components/NestedPopover.vue'

@@ -35,9 +35,7 @@
           />
 
           <div v-if="isDefaultMedium" class="text-sm text-ink-gray-4">
-            {{
-              __('You can change the default calling medium from the settings')
-            }}
+            {{ __('You can change the default calling medium from the settings') }}
           </div>
         </div>
       </div>
@@ -53,7 +51,8 @@ import {
   defaultCallingMedium,
 } from '@/composables/settings'
 import { globalStore } from '@/stores/global'
-import { FormControl, call, toast } from 'frappe-ui'
+import { createToast } from '@/utils'
+import { FormControl, call } from 'frappe-ui'
 import { nextTick, ref, watch } from 'vue'
 
 const { setMakeCall } = globalStore()
@@ -108,9 +107,13 @@ async function setDefaultCallingMedium() {
   })
 
   defaultCallingMedium.value = callMedium.value
-  toast.success(
-    __('Default calling medium set successfully to {0}', [callMedium.value]),
-  )
+  createToast({
+    title: __('Default calling medium set successfully to {0}', [
+      callMedium.value,
+    ]),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
 }
 
 watch(
