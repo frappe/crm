@@ -123,12 +123,6 @@ def invite_by_email(emails: str, role: str):
 	for email in to_invite:
 		frappe.get_doc(doctype="CRM Invitation", email=email, role=role).insert(ignore_permissions=True)
 
-	return {
-		"existing_members": existing_members,
-		"existing_invites": existing_invites,
-		"to_invite": to_invite,
-	}
-
 
 @frappe.whitelist()
 def get_file_uploader_defaults(doctype: str):

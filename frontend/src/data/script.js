@@ -1,6 +1,7 @@
 import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
-import { call, createListResource, toast } from 'frappe-ui'
+import { createToast } from '@/utils'
+import { call, createListResource } from 'frappe-ui'
 import { reactive } from 'vue'
 import router from '@/router'
 
@@ -33,7 +34,7 @@ export function getScript(doctype, view = 'Form') {
     const { $dialog, $socket, makeCall } = globalStore()
 
     helpers.createDialog = $dialog
-    helpers.toast = toast
+    helpers.createToast = createToast
     helpers.socket = $socket
     helpers.router = router
     helpers.call = call

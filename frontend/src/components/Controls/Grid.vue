@@ -216,13 +216,6 @@
                     :options="field.options"
                     @change="(e) => fieldChange(e.target.value, field, row)"
                   />
-                  <Password
-                    v-else-if="field.fieldtype === 'Password'"
-                    variant="outline"
-                    :value="row[field.fieldname]"
-                    :disabled="Boolean(field.read_only)"
-                    @change="fieldChange($event.target.value, field, row)"
-                  />
                   <FormattedInput
                     v-else-if="field.fieldtype === 'Int'"
                     class="[&_input]:text-right"
@@ -332,7 +325,6 @@
 </template>
 
 <script setup>
-import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.vue'
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'

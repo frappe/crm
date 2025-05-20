@@ -82,7 +82,7 @@
 
 <script setup>
 import { computed, reactive, ref } from 'vue'
-import { call, toast } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import EmailProviderIcon from './EmailProviderIcon.vue'
 import {
   emailIcon,
@@ -92,6 +92,7 @@ import {
   validateInputs,
   incomingOutgoingFields,
 } from './emailConfig'
+import { createToast } from '@/utils'
 import CircleAlert from '~icons/lucide/circle-alert'
 
 const props = defineProps({
@@ -147,7 +148,11 @@ async function updateAccount() {
   const values = updatedEmailAccount
 
   if (!nameChanged && !otherFieldsChanged) {
-    toast.info(__('No changes made'))
+    createToast({
+      title: __('No changes made'),
+      icon: 'info',
+      iconClasses: 'text-blue-600',
+    })
     return
   }
 
@@ -205,7 +210,11 @@ async function callSetValue(values) {
 
 function succesHandler() {
   emit('update:step', 'email-list')
-  toast.success(__('Email account updated successfully'))
+  createToast({
+    title: __('Email account updated successfully'),
+    icon: 'check',
+    iconClasses: 'text-green-600',
+  })
 }
 
 function errorHandler() {
