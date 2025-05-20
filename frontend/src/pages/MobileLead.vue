@@ -173,7 +173,7 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { createToast, setupAssignees, setupCustomizations } from '@/utils'
+import { setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -196,6 +196,7 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
+  toast,
 } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -225,8 +226,9 @@ const lead = createResource({
       $dialog,
       $socket,
       router,
+      toast,
       updateField,
-      createToast,
+      createToast: toast.create,
       deleteDoc: deleteLead,
       resource: {
         lead,
@@ -261,20 +263,11 @@ function updateLead(fieldname, value, callback) {
     onSuccess: () => {
       lead.reload()
       reload.value = true
-      createToast({
-        title: __('Lead updated'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Lead updated successfully'))
       callback?.()
     },
     onError: (err) => {
-      createToast({
-        title: __('Error updating lead'),
-        text: __(err.messages?.[0]),
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
+      toast.error(__(err.messages?.[0] || 'Error updating lead'))
     },
   })
 }
@@ -282,12 +275,7 @@ function updateLead(fieldname, value, callback) {
 function validateRequired(fieldname, value) {
   let meta = lead.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
-    createToast({
-      title: __('Error Updating Lead'),
-      text: __('{0} is a required field', [meta[fieldname].label]),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
+    toast.error(__('{0} is a required field', [meta[fieldname].label]))
     return true
   }
   return false
@@ -433,22 +421,12 @@ const existingOrganization = ref('')
 
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
-    createToast({
-      title: __('Error'),
-      text: __('Please select an existing contact'),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
+    toast.error(__('Please select an existing contact'))
     return
   }
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
-    createToast({
-      title: __('Error'),
-      text: __('Please select an existing organization'),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
+    toast.error(__('Please select an existing organization'))
     return
   }
 

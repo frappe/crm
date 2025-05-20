@@ -19,10 +19,10 @@
 <script setup>
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
-import { setupListCustomizations, createToast } from '@/utils'
+import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { capture } from '@/telemetry'
-import { call } from 'frappe-ui'
+import { call, toast } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -75,11 +75,7 @@ function convertToDeal(selections, unselectAll) {
             call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
               lead: name,
             }).then(() => {
-              createToast({
-                title: __('Converted successfully'),
-                icon: 'check',
-                iconClasses: 'text-ink-green-3',
-              })
+              toast.success(__('Converted successfully'))
               list.value.reload()
               unselectAll()
               close()
@@ -110,11 +106,7 @@ function deleteValues(selections, unselectAll) {
             items: JSON.stringify(Array.from(selections)),
             doctype: props.doctype,
           }).then(() => {
-            createToast({
-              title: __('Deleted successfully'),
-              icon: 'check',
-              iconClasses: 'text-ink-green-3',
-            })
+            toast.success(__('Deleted successfully'))
             unselectAll()
             list.value.reload()
             close()
@@ -154,11 +146,7 @@ function clearAssignemnts(selections, unselectAll) {
             names: JSON.stringify(Array.from(selections)),
             ignore_permissions: true,
           }).then(() => {
-            createToast({
-              title: __('Assignment cleared successfully'),
-              icon: 'check',
-              iconClasses: 'text-ink-green-3',
-            })
+            toast.success(__('Assignment cleared successfully'))
             reload(unselectAll)
             close()
           })
@@ -215,7 +203,8 @@ function bulkActions(selections, unselectAll) {
           selections,
           unselectAll,
           call,
-          createToast,
+          createToast: toast.create,
+          toast,
           $dialog,
           router,
         }),
@@ -235,7 +224,8 @@ onMounted(async () => {
   let customization = await setupListCustomizations(list.value.data, {
     list: list.value,
     call,
-    createToast,
+    createToast: toast.create,
+    toast,
     $dialog,
     $socket,
     router,

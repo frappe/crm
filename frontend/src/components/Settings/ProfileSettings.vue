@@ -57,7 +57,7 @@
             v-model="profile.email"
             :disabled="true"
           />
-          <FormControl
+          <Password
             class="w-full"
             label="Set new password"
             v-model="profile.new_password"
@@ -77,13 +77,15 @@
   </div>
 </template>
 <script setup>
+import Password from '@/components/Controls/Password.vue'
 import ProfileImageEditor from '@/components/Settings/ProfileImageEditor.vue'
 import { usersStore } from '@/stores/users'
-import { createToast } from '@/utils'
-import { Dialog, Avatar, createResource, ErrorMessage } from 'frappe-ui'
+import { Dialog, Avatar, createResource, ErrorMessage, toast } from 'frappe-ui'
+import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, computed, onMounted } from 'vue'
 
 const { getUser, users } = usersStore()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const user = computed(() => getUser() || {})
 
@@ -95,6 +97,13 @@ const error = ref('')
 
 function updateUser() {
   loading.value = true
+
+  let passwordUpdated = false
+
+  if (profile.value.new_password) {
+    passwordUpdated = true
+  }
+
   const fieldname = {
     first_name: profile.value.first_name,
     last_name: profile.value.last_name,
@@ -111,15 +120,14 @@ function updateUser() {
     },
     auto: true,
     onSuccess: () => {
+      if (passwordUpdated) {
+        updateOnboardingStep('setup_your_password')
+      }
       loading.value = false
       error.value = ''
       profile.value.new_password = ''
       showEditProfilePhotoModal.value = false
-      createToast({
-        title: __('Profile updated successfully'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Profile updated successfully'))
       users.reload()
     },
     onError: (err) => {
