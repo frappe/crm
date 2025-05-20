@@ -159,6 +159,13 @@
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
+    <Password
+      v-else-if="field.fieldtype === 'Password'"
+      :value="data[field.fieldname]"
+      :placeholder="getPlaceholder(field)"
+      :description="field.description"
+      @change="fieldChange($event.target.value, field)"
+    />
     <FormattedInput
       v-else-if="field.fieldtype === 'Int'"
       type="text"
@@ -207,6 +214,7 @@
   </div>
 </template>
 <script setup>
+import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'

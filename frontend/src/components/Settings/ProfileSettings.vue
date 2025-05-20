@@ -57,7 +57,7 @@
             v-model="profile.email"
             :disabled="true"
           />
-          <FormControl
+          <Password
             class="w-full"
             label="Set new password"
             v-model="profile.new_password"
@@ -77,6 +77,7 @@
   </div>
 </template>
 <script setup>
+import Password from '@/components/Controls/Password.vue'
 import ProfileImageEditor from '@/components/Settings/ProfileImageEditor.vue'
 import { usersStore } from '@/stores/users'
 import { createToast } from '@/utils'
