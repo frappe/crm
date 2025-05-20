@@ -20,7 +20,6 @@
             :error-message="
               (value) => __('{0} is an invalid email address', [value])
             "
-            :fetchContacts="false"
           />
         </div>
         <FormControl
@@ -128,17 +127,10 @@ const inviteByEmail = createResource({
       role: role.value,
     }
   },
-  onSuccess(data) {
-    if (data?.existing_invites?.length) {
-      error.value = __('Agent with email {0} already exists', [
-        data.existing_invites.join(', '),
-      ])
-    } else {
-      role.value = 'Sales User'
-      error.value = null
-    }
-
+  onSuccess() {
     invitees.value = []
+    role.value = 'Sales User'
+    error.value = null
     pendingInvitations.reload()
     updateOnboardingStep('invite_your_team')
   },
