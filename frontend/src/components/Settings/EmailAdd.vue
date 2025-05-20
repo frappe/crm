@@ -93,9 +93,8 @@
 
 <script setup>
 import { computed, reactive, ref } from 'vue'
-import { createResource } from 'frappe-ui'
+import { createResource, toast } from 'frappe-ui'
 import CircleAlert from '~icons/lucide/circle-alert'
-import { createToast } from '@/utils'
 import {
   customProviderFields,
   popularProviderFields,
@@ -139,11 +138,7 @@ const addEmailRes = createResource({
     }
   },
   onSuccess: () => {
-    createToast({
-      title: __('Email account created successfully'),
-      icon: 'check',
-      iconClasses: 'text-green-600',
-    })
+    toast.success(__('Email account created successfully'))
     emit('update:step', 'email-list')
   },
   onError: () => {
