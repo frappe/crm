@@ -87,7 +87,8 @@ import {
 } from 'frappe-ui'
 import { defaultCallingMedium } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
-import { createToast, getRandom } from '@/utils'
+import { toast } from 'frappe-ui'
+import { getRandom } from '@/utils'
 import { ref, computed, watch } from 'vue'
 
 const { isManager, isAgent } = usersStore()
@@ -119,20 +120,10 @@ const twilio = createDocumentResource({
   auto: true,
   setValue: {
     onSuccess: () => {
-      createToast({
-        title: __('Success'),
-        text: __('Twilio settings updated successfully'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Twilio settings updated successfully'))
     },
     onError: (err) => {
-      createToast({
-        title: __('Error'),
-        text: err.message + ': ' + err.messages[0],
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
+      toast.error(err.message + ': ' + err.messages[0])
     },
   },
 })
@@ -144,20 +135,10 @@ const exotel = createDocumentResource({
   auto: true,
   setValue: {
     onSuccess: () => {
-      createToast({
-        title: __('Success'),
-        text: __('Exotel settings updated successfully'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Exotel settings updated successfully'))
     },
     onError: (err) => {
-      createToast({
-        title: __('Error'),
-        text: err.message + ': ' + err.messages[0],
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
+      toast.error(err.message + ': ' + err.messages[0])
     },
   },
 })
@@ -294,12 +275,7 @@ async function updateMedium() {
   })
   mediumChanged.value = false
   error.value = ''
-  createToast({
-    title: __('Success'),
-    text: __('Default calling medium updated successfully'),
-    icon: 'check',
-    iconClasses: 'text-ink-green-3',
-  })
+  toast.success(__('Default calling medium updated successfully'))
 }
 
 const error = ref('')
