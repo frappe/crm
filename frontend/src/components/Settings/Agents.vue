@@ -58,6 +58,15 @@
             </div>
           </div>
         </div>
+        <Dropdown
+          :options="getDropdownOptions(agent)"
+          :button="{
+            label: __(getUserRole(agent.name)),
+            iconRight: 'chevron-down',
+            variant: 'ghost',
+          }"
+          placement="right"
+        />
       </li>
       <!-- Load More Button -->
       <div class="flex justify-center">
@@ -75,8 +84,12 @@
 </template>
 
 <script setup>
-import { Avatar, createListResource, FormControl } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import LucideCheck from '~icons/lucide/check'
+import { usersStore } from '@/stores/users'
+import { Avatar, createListResource, FormControl, toast, call } from 'frappe-ui'
+import { ref, h, watch } from 'vue'
+
+const { users, getUserRole } = usersStore()
 
 const agents = createListResource({
   doctype: 'CRM Agent',
@@ -88,6 +101,68 @@ const agents = createListResource({
   pageLength: 20,
   orderBy: 'creation desc',
 })
+
+function getDropdownOptions(user) {
+  const agentRole = getUserRole(user.name)
+  return [
+    {
+      label: 'Sales Manager',
+      component: (props) =>
+        RoleOption({
+          role: 'Sales Manager',
+          active: props.active,
+          selected: agentRole === 'Sales Manager',
+          onClick: () => updateRole(user.name, 'Sales Manager'),
+        }),
+    },
+    {
+      label: 'Sales Agent',
+      component: (props) =>
+        RoleOption({
+          role: 'Sales Agent',
+          active: props.active,
+          selected: agentRole === 'Sales User',
+          onClick: () => updateRole(user.name, 'Sales User'),
+        }),
+    },
+  ]
+}
+
+function RoleOption({ active, role, onClick, selected }) {
+  return h(
+    'button',
+    {
+      class: [
+        active ? 'bg-surface-gray-2' : 'text-ink-gray-9',
+        'group flex w-full justify-between items-center rounded-md px-2 py-2 text-sm',
+      ],
+      onClick: !selected ? onClick : null,
+    },
+    [
+      h('span', { class: 'whitespace-nowrap' }, role),
+      selected
+        ? h(LucideCheck, {
+            class: ['h-4 w-4 shrink-0 text-ink-gray-7'],
+            'aria-hidden': true,
+          })
+        : null,
+    ],
+  )
+}
+
+function updateRole(agent, newRole) {
+  const currentRole = getUserRole(agent)
+  if (currentRole === newRole) return
+
+  call('crm.fcrm.doctype.crm_agent.crm_agent.update_agent_role', {
+    user: agent,
+    new_role: newRole,
+  }).then(() => {
+    toast.success(__('{0} role updated to {1}', [agent, newRole]))
+    users.reload()
+    agents.reload()
+  })
+}
 
 const search = ref('')
 watch(search, (newValue) => {
