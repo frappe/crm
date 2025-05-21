@@ -5,7 +5,7 @@
       <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
         {{ __('Agents') }}
       </h2>
-      <div class="flex item-center space-x-2">
+      <div class="flex item-center space-x-2 mr-2">
         <FormControl
           v-model="search"
           :placeholder="'Search'"
@@ -49,24 +49,41 @@
       >
         <div class="flex items-center">
           <Avatar :image="agent.image" :label="agent.agent_name" size="xl" />
-          <div class="ml-3">
-            <div class="text-base text-ink-gray-9">
+          <div class="flex flex-col gap-1 ml-3">
+            <div class="flex items-center gap-2 text-base text-ink-gray-9 h-4">
               {{ agent.agent_name }}
+              <Badge
+                v-if="!agent.is_active"
+                variant="subtle"
+                theme="gray"
+                size="sm"
+                label="Inactive"
+              />
             </div>
-            <div class="mt-1 text-base text-ink-gray-7">
+            <div class="text-base text-ink-gray-5">
               {{ agent.name }}
             </div>
           </div>
         </div>
-        <Dropdown
-          :options="getDropdownOptions(agent)"
-          :button="{
-            label: roleMap[getUserRole(agent.name)],
-            iconRight: 'chevron-down',
-            variant: 'ghost',
-          }"
-          placement="right"
-        />
+        <div class="flex gap-1 items-center flex-row-reverse">
+          <Dropdown
+            :options="getMoreOptions(agent)"
+            :button="{
+              icon: 'more-horizontal',
+              variant: 'ghost',
+            }"
+            placement="right"
+          />
+          <Dropdown
+            :options="getDropdownOptions(agent)"
+            :button="{
+              label: roleMap[getUserRole(agent.name)],
+              iconRight: 'chevron-down',
+              variant: 'ghost',
+            }"
+            placement="right"
+          />
+        </div>
       </li>
       <!-- Load More Button -->
       <div class="flex justify-center">
@@ -86,7 +103,14 @@
 <script setup>
 import LucideCheck from '~icons/lucide/check'
 import { usersStore } from '@/stores/users'
-import { Avatar, createListResource, FormControl, toast, call } from 'frappe-ui'
+import {
+  Avatar,
+  Badge,
+  createListResource,
+  FormControl,
+  toast,
+  call,
+} from 'frappe-ui'
 import { ref, h, watch } from 'vue'
 
 const { users, getUserRole } = usersStore()
@@ -94,8 +118,7 @@ const { users, getUserRole } = usersStore()
 const agents = createListResource({
   doctype: 'CRM Agent',
   cache: 'CRM Agents',
-  fields: ['name', 'image', 'agent_name'],
-  filters: { is_active: ['=', 1] },
+  fields: ['name', 'image', 'is_active', 'agent_name'],
   auto: true,
   start: 0,
   pageLength: 20,
@@ -105,6 +128,25 @@ const agents = createListResource({
 const roleMap = {
   'Sales Manager': __('Manager Access'),
   'Sales User': __('Regular Access'),
+}
+
+function getMoreOptions(agent) {
+  let options = [
+    {
+      label: __('Activate'),
+      icon: 'check-circle',
+      onClick: () => updateStatus(agent, true),
+      condition: () => !agent.is_active,
+    },
+    {
+      label: __('Deactivate'),
+      icon: 'x-circle',
+      onClick: () => updateStatus(agent, false),
+      condition: () => agent.is_active,
+    },
+  ]
+
+  return options.filter((option) => option.condition())
 }
 
 function getDropdownOptions(agent) {
@@ -167,6 +209,24 @@ function updateRole(agent, newRole) {
       __('{0} has been granted {1}', [agent.agent_name, roleMap[newRole]]),
     )
     users.reload()
+    agents.reload()
+  })
+}
+
+function updateStatus(agent, status) {
+  const currentStatus = agent.is_active
+  if (currentStatus === status) return
+
+  call('crm.fcrm.doctype.crm_agent.crm_agent.update_agent_status', {
+    agent: agent.name,
+    status,
+  }).then(() => {
+    toast.success(
+      __('{0} has been {1}', [
+        agent.agent_name,
+        status ? 'activated' : 'deactivated',
+      ]),
+    )
     agents.reload()
   })
 }
