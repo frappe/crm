@@ -61,7 +61,7 @@
         <Dropdown
           :options="getDropdownOptions(agent)"
           :button="{
-            label: __(getUserRole(agent.name)),
+            label: roleMap[getUserRole(agent.name)],
             iconRight: 'chevron-down',
             variant: 'ghost',
           }"
@@ -102,27 +102,32 @@ const agents = createListResource({
   orderBy: 'creation desc',
 })
 
-function getDropdownOptions(user) {
-  const agentRole = getUserRole(user.name)
+const roleMap = {
+  'Sales Manager': __('Manager Access'),
+  'Sales User': __('Regular Access'),
+}
+
+function getDropdownOptions(agent) {
+  const agentRole = getUserRole(agent.name)
   return [
     {
-      label: 'Sales Manager',
+      label: __('Manager Access'),
       component: (props) =>
         RoleOption({
-          role: 'Sales Manager',
+          role: __('Manager Access'),
           active: props.active,
           selected: agentRole === 'Sales Manager',
-          onClick: () => updateRole(user.name, 'Sales Manager'),
+          onClick: () => updateRole(agent, 'Sales Manager'),
         }),
     },
     {
-      label: 'Sales Agent',
+      label: __('Regular Access'),
       component: (props) =>
         RoleOption({
-          role: 'Sales Agent',
+          role: __('Regular Access'),
           active: props.active,
           selected: agentRole === 'Sales User',
-          onClick: () => updateRole(user.name, 'Sales User'),
+          onClick: () => updateRole(agent, 'Sales User'),
         }),
     },
   ]
@@ -151,14 +156,16 @@ function RoleOption({ active, role, onClick, selected }) {
 }
 
 function updateRole(agent, newRole) {
-  const currentRole = getUserRole(agent)
+  const currentRole = getUserRole(agent.name)
   if (currentRole === newRole) return
 
   call('crm.fcrm.doctype.crm_agent.crm_agent.update_agent_role', {
-    user: agent,
+    user: agent.name,
     new_role: newRole,
   }).then(() => {
-    toast.success(__('{0} role updated to {1}', [agent, newRole]))
+    toast.success(
+      __('{0} has been granted {1}', [agent.agent_name, roleMap[newRole]]),
+    )
     users.reload()
     agents.reload()
   })
