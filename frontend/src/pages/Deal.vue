@@ -8,6 +8,11 @@
       </Breadcrumbs>
     </template>
     <template #right-header>
+      <Button
+        :label="__('Delete')"
+        variant="subtle"
+        @click="deleteDealWithModal()"
+      />
       <CustomActions
         v-if="deal.data._customActions?.length"
         :actions="deal.data._customActions"
@@ -329,6 +334,13 @@
       }
     "
   />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'CRM Deal'"
+    :docname="props.dealId"
+    name="Deals"
+  />
 </template>
 <script setup>
 import ErrorPage from '@/components/ErrorPage.vue'
@@ -472,7 +484,11 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const showFilesUploader = ref(false)
 const _organization = ref({})
+const showDeleteLinkedDocModal = ref(false)
 
+async function deleteDealWithModal() {
+  showDeleteLinkedDocModal.value = true
+}
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
 

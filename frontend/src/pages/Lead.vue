@@ -49,6 +49,11 @@
         </template>
       </Dropdown>
       <Button
+        :label="__('Delete')"
+        variant="subtle"
+        @click="deleteLeadWithModal(lead.data.name)"
+      />
+      <Button
         :label="__('Convert to Deal')"
         variant="solid"
         @click="showConvertToDealModal = true"
@@ -333,6 +338,13 @@
       }
     "
   />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'CRM Lead'"
+    :docname="props.leadId"
+    name="Leads"
+  />
 </template>
 <script setup>
 import ErrorPage from '@/components/ErrorPage.vue'
@@ -423,6 +435,7 @@ const props = defineProps({
 
 const errorTitle = ref('')
 const errorMessage = ref('')
+const showDeleteLinkedDocModal = ref(false)
 
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
@@ -619,6 +632,10 @@ async function deleteLead(name) {
     name,
   })
   router.push({ name: 'Leads' })
+}
+
+async function deleteLeadWithModal(name) {
+  showDeleteLinkedDocModal.value = true
 }
 
 // Convert to Deal

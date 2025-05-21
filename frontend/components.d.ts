@@ -66,6 +66,7 @@ declare module 'vue' {
     DealsIcon: typeof import('./src/components/Icons/DealsIcon.vue')['default']
     DealsListView: typeof import('./src/components/ListViews/DealsListView.vue')['default']
     DeclinedCallIcon: typeof import('./src/components/Icons/DeclinedCallIcon.vue')['default']
+    DeleteLinkedDocModal: typeof import('./src/components/DeleteLinkedDocModal.vue')['default']
     DesendingIcon: typeof import('./src/components/Icons/DesendingIcon.vue')['default']
     DesktopLayout: typeof import('./src/components/Layouts/DesktopLayout.vue')['default']
     DetailsIcon: typeof import('./src/components/Icons/DetailsIcon.vue')['default']
