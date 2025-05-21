@@ -55,7 +55,11 @@ import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
-import { showSettings, isMobileView } from '@/composables/settings'
+import {
+  showSettings,
+  isMobileView,
+  showAboutModal,
+} from '@/composables/settings'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { Dropdown } from 'frappe-ui'
 import { theme, toggleTheme } from '@/stores/theme'
@@ -150,6 +154,12 @@ function getStandardItem(item) {
         label: __(item.label),
         onClick: () => confirmLoginToFrappeCloud(),
         condition: () => !isMobileView.value && window.is_fc_site,
+      }
+    case 'about':
+      return {
+        icon: item.icon,
+        label: __(item.label),
+        onClick: () => (showAboutModal.value = true),
       }
     case 'logout':
       return {

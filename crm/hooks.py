@@ -288,6 +288,14 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
+		"name1": "about",
+		"label": "About",
+		"type": "Route",
+		"icon": "info",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
 		"name1": "separator",
 		"label": "",
 		"type": "Separator",
