@@ -24,8 +24,14 @@ class FCRMSettings(Document):
 		standard_old_items = [d.name1 for d in old_items if d.is_standard]
 		deleted_standard_items = set(standard_old_items) - set(standard_new_items)
 		if deleted_standard_items:
+			standard_dropdown_items = get_standard_dropdown_items()
+			if not deleted_standard_items.intersection(standard_dropdown_items):
+				return
 			frappe.throw(_("Cannot delete standard items {0}").format(", ".join(deleted_standard_items)))
 
+
+def get_standard_dropdown_items():
+	return [item.get("name1") for item in frappe.get_hooks("standard_dropdown_items")]
 
 
 def after_migrate():
