@@ -10,6 +10,7 @@ from pypika import Criterion
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
+from crm.utils import get_dynamic_linked_docs, get_linked_docs
 
 
 @frappe.whitelist()
@@ -726,3 +727,57 @@ def getCounts(d, doctype):
 		"FCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")}
 	)
 	return d
+
+
+@frappe.whitelist()
+def getLinkedDocs(doctype, docname):
+	doc = frappe.get_doc(doctype, docname)
+	linked_docs = get_linked_docs(doc)
+	dynamic_linked_docs = get_dynamic_linked_docs(doc)
+	linked_docs.extend(dynamic_linked_docs)
+
+	return list({doc["reference_docname"]: doc for doc in linked_docs}.values())
+
+
+@frappe.whitelist()
+def removeLinkedDocReference(doctype=None, docname=None,removeAll=False,removeContact=None):
+
+	if (not doctype or not docname) and not removeAll:
+		return "Invalid doctype or docname"
+	
+	if removeAll:
+		if removeContact:
+			ref_doc = getLinkedDocs(doctype, docname)
+			for linked_doc in ref_doc:
+				removeContactLink(linked_doc["reference_doctype"], linked_doc["reference_docname"])
+
+			return "success"
+			
+		linked_docs = getLinkedDocs(doctype, docname)
+		for linked_doc in linked_docs:
+			removeDocLink(linked_doc["reference_doctype"], linked_doc["reference_docname"])
+		return "success"
+	else:
+		if removeContact:
+			removeContactLink(doctype, docname)
+			return "success"
+			
+		removeDocLink(doctype, docname)
+		return "success"
+
+def removeDocLink(doctype, docname):
+	linked_doc_data = frappe.get_doc(doctype, docname)
+	linked_doc_data.update({
+		"reference_doctype": None,
+		"reference_docname": None,
+	})
+	linked_doc_data.save(ignore_permissions=True)
+
+def removeContactLink(doctype, docname):
+	linked_doc_data = frappe.get_doc(doctype, docname)
+	linked_doc_data.update({
+		"contact": None,
+		"contacts": [],
+	})
+	linked_doc_data.save(ignore_permissions=True)
+	
