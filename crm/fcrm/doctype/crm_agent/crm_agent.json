@@ -49,6 +49,8 @@
    "label": "Image"
   },
   {
+   "fetch_from": "user.first_name",
+   "fetch_if_empty": 1,
    "fieldname": "first_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -70,7 +72,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-21 13:25:01.497196",
+ "modified": "2025-05-21 16:35:07.667954",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Agent",
