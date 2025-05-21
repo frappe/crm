@@ -13,7 +13,14 @@ class CRMAgent(Document):
 def update_agent_role(user, new_role):
 	"""
 	Update the role of the user to Agent
+	:param user: The name of the user
+	:param new_role: The new role to assign (Sales Manager or Sales User)
 	"""
+
+	frappe.only_for("Sales Manager")
+
+	if new_role not in ["Sales Manager", "Sales User"]:
+		frappe.throw("Cannot assign this role")
 
 	user_doc = frappe.get_doc("User", user)
 
@@ -25,3 +32,15 @@ def update_agent_role(user, new_role):
 			user_doc.remove_roles("Sales Manager", "System Manager")
 
 	user_doc.save()
+
+
+@frappe.whitelist()
+def update_agent_status(agent, status):
+	"""
+	Activate or deactivate the agent
+	:param agent: The name of the agent
+	:param status: The status to set (1 for active, 0 for inactive)
+	"""
+	frappe.only_for("Sales Manager")
+
+	frappe.db.set_value("CRM Agent", agent, "is_active", status)
