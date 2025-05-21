@@ -10,7 +10,6 @@
         theme="gray"
         variant="solid"
         @click="emit('update:step', 'email-add')"
-        class="mr-8"
       >
         <template #prefix>
           <LucidePlus class="w-4 h-4" />
