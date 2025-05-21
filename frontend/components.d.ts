@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AboutModal: typeof import('./src/components/Modals/AboutModal.vue')['default']
     Activities: typeof import('./src/components/Activities/Activities.vue')['default']
     ActivityHeader: typeof import('./src/components/Activities/ActivityHeader.vue')['default']
     ActivityIcon: typeof import('./src/components/Icons/ActivityIcon.vue')['default']
@@ -151,7 +152,9 @@ declare module 'vue' {
     ListRows: typeof import('./src/components/ListViews/ListRows.vue')['default']
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
     LucideCalendar: typeof import('~icons/lucide/calendar')['default']
+    LucideInfo: typeof import('~icons/lucide/info')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
+    LucideSearch: typeof import('~icons/lucide/search')['default']
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
     MenuIcon: typeof import('./src/components/Icons/MenuIcon.vue')['default']
@@ -221,6 +224,7 @@ declare module 'vue' {
     TaskPriorityIcon: typeof import('./src/components/Icons/TaskPriorityIcon.vue')['default']
     TasksListView: typeof import('./src/components/ListViews/TasksListView.vue')['default']
     TaskStatusIcon: typeof import('./src/components/Icons/TaskStatusIcon.vue')['default']
+    TelegramIcon: typeof import('./src/components/Icons/TelegramIcon.vue')['default']
     TelephonySettings: typeof import('./src/components/Settings/TelephonySettings.vue')['default']
     TerritoryIcon: typeof import('./src/components/Icons/TerritoryIcon.vue')['default']
     TwilioCallUI: typeof import('./src/components/Telephony/TwilioCallUI.vue')['default']
