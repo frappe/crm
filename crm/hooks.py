@@ -265,22 +265,6 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
-		"name1": "support_link",
-		"label": "Support",
-		"type": "Route",
-		"icon": "life-buoy",
-		"route": "https://t.me/frappecrm",
-		"is_standard": 1,
-	},
-	{
-		"name1": "docs_link",
-		"label": "Docs",
-		"type": "Route",
-		"icon": "book-open",
-		"route": "https://docs.frappe.io/crm",
-		"is_standard": 1,
-	},
-	{
 		"name1": "toggle_theme",
 		"label": "Toggle theme",
 		"type": "Route",

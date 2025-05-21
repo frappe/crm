@@ -131,20 +131,6 @@ function getStandardItem(item) {
       return {
         component: markRaw(Apps),
       }
-    case 'support_link':
-      return {
-        icon: item.icon,
-        label: __(item.label),
-        onClick: () =>
-          window.open(item.route, item.open_in_new_window ? '_blank' : ''),
-      }
-    case 'docs_link':
-      return {
-        icon: item.icon,
-        label: __(item.label),
-        onClick: () =>
-          window.open(item.route, item.open_in_new_window ? '_blank' : ''),
-      }
     case 'toggle_theme':
       return {
         icon: theme.value === 'dark' ? 'sun' : item.icon,
