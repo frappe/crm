@@ -54,6 +54,7 @@ import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import Agents from '@/components/Settings/Agents.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
@@ -90,6 +91,11 @@ const tabs = computed(() => {
               image: user.value.user_image,
             }),
           component: markRaw(ProfileSettings),
+        },
+        {
+          label: __('Agents'),
+          icon: 'user',
+          component: markRaw(Agents),
         },
         {
           label: __('General'),
