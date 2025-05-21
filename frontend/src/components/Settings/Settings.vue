@@ -33,15 +33,7 @@
             </nav>
           </div>
         </div>
-        <div
-          class="relative flex flex-col flex-1 overflow-y-auto bg-surface-modal"
-        >
-          <Button
-            class="absolute right-5 top-5"
-            variant="ghost"
-            icon="x"
-            @click="showSettings = false"
-          />
+        <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
