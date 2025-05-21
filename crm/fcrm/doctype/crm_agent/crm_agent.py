@@ -6,7 +6,19 @@ from frappe.model.document import Document
 
 
 class CRMAgent(Document):
-	pass
+	def validate(self):
+		if self.user:
+			user = frappe.get_doc("User", self.user)
+			if not self.first_name:
+				self.first_name = user.first_name
+			if not self.middle_name:
+				self.middle_name = user.middle_name
+			if not self.last_name:
+				self.last_name = user.last_name
+			if not self.agent_name:
+				self.agent_name = user.full_name
+			if not self.image:
+				self.image = user.user_image
 
 
 @frappe.whitelist()
