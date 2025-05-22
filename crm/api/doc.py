@@ -741,7 +741,7 @@ def getLinkedDocs(doctype, docname):
 
 @frappe.whitelist()
 def removeLinkedDocReference(doctype=None, docname=None,removeAll=False,removeContact=None):
-
+	
 	if (not doctype or not docname) and not removeAll:
 		return "Invalid doctype or docname"
 	
@@ -750,10 +750,11 @@ def removeLinkedDocReference(doctype=None, docname=None,removeAll=False,removeCo
 			ref_doc = getLinkedDocs(doctype, docname)
 			for linked_doc in ref_doc:
 				removeContactLink(linked_doc["reference_doctype"], linked_doc["reference_docname"])
-
 			return "success"
 			
+		
 		linked_docs = getLinkedDocs(doctype, docname)
+
 		for linked_doc in linked_docs:
 			removeDocLink(linked_doc["reference_doctype"], linked_doc["reference_docname"])
 		return "success"
@@ -781,3 +782,16 @@ def removeContactLink(doctype, docname):
 	})
 	linked_doc_data.save(ignore_permissions=True)
 	
+@frappe.whitelist()
+def deleteBulkDocs(doctype, items):
+	from frappe.desk.reportview import delete_bulk
+
+	items = frappe.parse_json(items)
+	for doc in items:
+		removeLinkedDocReference(doctype, doc, removeAll=True,removeContact=doctype=="Contact")
+	
+	if len(items) > 10:
+		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=items)
+	else:
+		delete_bulk(doctype, items)
+	return "success"
