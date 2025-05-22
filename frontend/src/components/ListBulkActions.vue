@@ -102,7 +102,7 @@ function deleteValues(selections, unselectAll) {
         theme: 'red',
         onClick: (close) => {
           capture('bulk_delete')
-          call('frappe.desk.reportview.delete_items', {
+          call('crm.api.doc.deleteBulkDocs', {
             items: JSON.stringify(Array.from(selections)),
             doctype: props.doctype,
           }).then(() => {
