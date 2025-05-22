@@ -12,16 +12,19 @@
     v-model="showQuickEntryModal"
     :doctype="quickEntryDoctype"
   />
+  <AboutModal v-model="showAboutModal" />
 </template>
 <script setup>
 import CreateDocumentModal from '@/components/Modals/CreateDocumentModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
+import AboutModal from '@/components/Modals/AboutModal.vue'
 import {
   showCreateDocumentModal,
   createDocumentDoctype,
   createDocumentData,
   createDocumentCallback,
 } from '@/composables/document'
+import { showAboutModal } from '@/composables/settings'
 import { ref } from 'vue'
 
 const showQuickEntryModal = ref(false)
