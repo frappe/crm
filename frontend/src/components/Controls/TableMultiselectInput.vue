@@ -64,7 +64,10 @@ const emit = defineEmits(['change'])
 
 const { getFields } = getMeta(props.doctype)
 
-const values = defineModel()
+const values = defineModel({
+  type: Array,
+  default: () => [],
+})
 
 const valuesRef = ref([])
 const error = ref(null)
