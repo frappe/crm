@@ -206,7 +206,7 @@
       v-else
       type="text"
       :placeholder="getPlaceholder(field)"
-      :value="data[field.fieldname]"
+      :value="getDataValue(data[field.fieldname], field)"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -339,6 +339,13 @@ function fieldChange(value, df) {
   } else {
     triggerOnChange(df.fieldname)
   }
+}
+
+function getDataValue(value, field) {
+  if (field.fieldtype === 'Duration') {
+    return value || 0
+  }
+  return value
 }
 </script>
 <style scoped>

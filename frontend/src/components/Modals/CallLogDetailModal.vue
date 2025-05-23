@@ -172,8 +172,9 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { useDocument } from '@/data/document'
 import { FeatherIcon, Dropdown, Avatar, Tooltip, call } from 'frappe-ui'
-import { ref, computed, h, nextTick } from 'vue'
+import { ref, computed, h, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { isManager } = usersStore()
@@ -289,9 +290,19 @@ const detailFields = computed(() => {
     .filter((detail) => (detail.condition ? detail.condition() : true))
 })
 
-function createLead() {
+const d = ref({})
+const leadDetails = ref({})
+
+async function createLead() {
+  await d.value.triggerOnCreateLead?.(
+    callLog.value?.data,
+    leadDetails.value,
+    () => (show.value = false),
+  )
+
   call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
     call_log: callLog.value?.data,
+    lead_details: leadDetails.value,
   }).then((d) => {
     if (d) {
       router.push({ name: 'Lead', params: { leadId: d } })
@@ -351,6 +362,14 @@ async function addTaskToCallLog(_task, insert_mode = false) {
     })
   }
 }
+
+watch(
+  () => callLog.value?.data?.name,
+  (value) => {
+    if (!value) return
+    d.value = useDocument('CRM Call Log', value)
+  },
+)
 </script>
 
 <style scoped>

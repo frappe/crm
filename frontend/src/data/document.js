@@ -97,6 +97,14 @@ export function useDocument(doctype, docname) {
     await trigger(handler, rows[0])
   }
 
+  async function triggerOnCreateLead() {
+    const args = Array.from(arguments)
+    const handler = async function () {
+      await this.on_create_lead(...args)
+    }
+    await trigger(handler)
+  }
+
   async function trigger(taskFn, row = null) {
     const controllers = getControllers(row)
     if (!controllers.length) return
@@ -130,5 +138,6 @@ export function useDocument(doctype, docname) {
     triggerOnRowRemove,
     triggerOnRefresh,
     setupFormScript,
+    triggerOnCreateLead,
   }
 }

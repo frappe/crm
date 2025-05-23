@@ -190,11 +190,20 @@ def get_call_log(name):
 
 
 @frappe.whitelist()
-def create_lead_from_call_log(call_log):
+def create_lead_from_call_log(call_log, lead_details=None):
 	lead = frappe.new_doc("CRM Lead")
-	lead.first_name = "Lead from call " + call_log.get("from")
-	lead.mobile_no = call_log.get("from")
-	lead.lead_owner = frappe.session.user
+	lead_details = frappe.parse_json(lead_details or "{}")
+
+	if not lead_details.get("lead_owner"):
+		lead_details["lead_owner"] = frappe.session.user
+	if not lead_details.get("mobile_no"):
+		lead_details["mobile_no"] = call_log.get("from") or ""
+	if not lead_details.get("first_name"):
+		lead_details["first_name"] = "Lead from call " + (
+			lead_details.get("mobile_no") or call_log.get("name")
+		)
+
+	lead.update(lead_details)
 	lead.save(ignore_permissions=True)
 
 	# link call log with lead
