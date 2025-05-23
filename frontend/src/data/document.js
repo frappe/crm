@@ -1,6 +1,7 @@
 import { getScript } from '@/data/script'
 import { runSequentially } from '@/utils'
 import { createDocumentResource, toast } from 'frappe-ui'
+import { watch } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
@@ -38,6 +39,20 @@ export function useDocument(doctype, docname) {
       documentsCache[doctype][docname],
     )
   }
+
+  // --- Ensure controllers/proxies are always up-to-date after document changes ---
+  watch(
+    () => documentsCache[doctype][docname]?.doc,
+    () => {
+      // Ensure the cache object exists
+      if (!controllersCache[doctype]) {
+        controllersCache[doctype] = {}
+      }
+      controllersCache[doctype][docname] = setupScript(documentsCache[doctype][docname])
+    },
+    { immediate: true }
+  )
+  // -----------------------------------------------------------------------------
 
   function getControllers(row = null) {
     const _doctype = row?.doctype || doctype
