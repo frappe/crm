@@ -127,9 +127,10 @@ export function getScript(doctype, view = 'Form') {
     }
 
     setupHelperMethods(FormClass, document)
+    const getDoc = () => document.doc
 
     if (isChildDoctype) {
-      instance.doc = createDocProxy(document.doc, parentInstance, instance)
+      instance.doc = createDocProxy(getDoc, parentInstance, instance)
 
       if (!parentInstance._childInstances) {
         parentInstance._childInstances = []
@@ -137,22 +138,21 @@ export function getScript(doctype, view = 'Form') {
 
       parentInstance._childInstances.push(instance)
     } else {
-      instance.doc = createDocProxy(document.doc, instance)
+      instance.doc = createDocProxy(getDoc, instance)
     }
 
     return instance
   }
 
-  function setupHelperMethods(FormClass, document) {
+  function setupHelperMethods(FormClass) {
     if (typeof FormClass.prototype.getRow !== 'function') {
       FormClass.prototype.getRow = function (parentField, idx) {
-        let data = document.doc
         idx = idx || this.currentRowIdx
 
         let dt = null
 
         if (this instanceof Array) {
-          const { getFields } = getMeta(data.doctype)
+          const { getFields } = getMeta(this.doc.doctype)
           let fields = getFields()
           let field = fields.find((f) => f.fieldname === parentField)
           dt = field?.options?.replace(/\s+/g, '')
@@ -162,13 +162,13 @@ export function getScript(doctype, view = 'Form') {
           }
         }
 
-        if (!data[parentField]) {
+        if (!this.doc[parentField]) {
           console.warn(
             __('⚠️ No data found for parent field: {0}', [parentField]),
           )
           return null
         }
-        const row = data[parentField].find((r) => r.idx === idx)
+        const row = this.doc[parentField].find((r) => r.idx === idx)
 
         if (!row) {
           console.warn(
@@ -180,7 +180,7 @@ export function getScript(doctype, view = 'Form') {
           return null
         }
 
-        row.parent = row.parent || data.name
+        row.parent = row.parent || this.doc.name
 
         if (this instanceof Array && dt) {
           return createDocProxy(
@@ -223,43 +223,70 @@ export function getScript(doctype, view = 'Form') {
     return FormClass
   }
 
-  function createDocProxy(data, instance, childInstance = null) {
-    return new Proxy(data, {
-      get(target, prop) {
-        if (prop === 'trigger') {
-          if ('trigger' in data) {
-            console.warn(
-              __(
-                '⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.',
-              ),
+  function createDocProxy(source, instance, childInstance = null) {
+    const isFunction = typeof source === 'function'
+    const getCurrentData = () => (isFunction ? source() : source)
+
+    return new Proxy(
+      {},
+      {
+        get(target, prop) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return undefined
+
+          if (prop === 'trigger') {
+            if (currentDocData && 'trigger' in currentDocData) {
+              console.warn(
+                __(
+                  '⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.',
+                ),
+              )
+            }
+
+            return (methodName, ...args) => {
+              const method = instance[methodName]
+              if (typeof method === 'function') {
+                return method.apply(instance, args)
+              } else {
+                console.warn(
+                  __('⚠️ Method "{0}" not found in class.', [methodName]),
+                )
+              }
+            }
+          }
+
+          if (prop === 'getRow') {
+            return instance.getRow.bind(
+              childInstance || instance._childInstances || instance,
             )
           }
 
-          return (methodName, ...args) => {
-            const method = instance[methodName]
-            if (typeof method === 'function') {
-              return method.apply(instance, args)
-            } else {
-              console.warn(
-                __('⚠️ Method "{0}" not found in class.', [methodName]),
-              )
-            }
-          }
-        }
+          return currentDocData[prop]
+        },
+        set(target, prop, value) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return false
 
-        if (prop === 'getRow') {
-          return instance.getRow.bind(
-            childInstance || instance._childInstances || instance,
-          )
-        }
-
-        return target[prop]
+          currentDocData[prop] = value
+          return true
+        },
+        has(target, prop) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return false
+          return prop in currentDocData
+        },
+        ownKeys(target) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return []
+          return Reflect.ownKeys(currentDocData)
+        },
+        getOwnPropertyDescriptor(target, prop) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return undefined
+          return Reflect.getOwnPropertyDescriptor(currentDocData, prop)
+        },
       },
-      set(target, prop, value) {
-        target[prop] = value
-        return true
-      },
-    })
+    )
   }
 
   return {
