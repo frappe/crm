@@ -126,7 +126,6 @@ export function getScript(doctype, view = 'Form') {
       return meta[doctype]
     }
 
-    setupHelperMethods(FormClass, document)
     const getDoc = () => document.doc
 
     if (isChildDoctype) {
@@ -220,6 +219,9 @@ export function getScript(doctype, view = 'Form') {
     const FormClass = new Function(...helperKeys, wrappedScript)(
       ...helperValues,
     )
+
+    setupHelperMethods(FormClass)
+
     return FormClass
   }
 
