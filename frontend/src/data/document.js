@@ -14,7 +14,7 @@ export function useDocument(doctype, docname) {
     documentsCache[doctype][docname] = createDocumentResource({
       doctype: doctype,
       name: docname,
-      onSuccess: () => setupFormScript(),
+      onSuccess: async () => await setupFormScript(),
       setValue: {
         onSuccess: () => {
           toast.success(__('Document updated successfully'))
@@ -27,23 +27,49 @@ export function useDocument(doctype, docname) {
     })
   }
 
-  function setupFormScript() {
-    if (controllersCache[doctype]?.[docname]) return
+  async function setupFormScript() {
+    if (
+      controllersCache[doctype] &&
+      typeof controllersCache[doctype][docname] === 'object'
+    ) {
+      return
+    }
 
     if (!controllersCache[doctype]) {
       controllersCache[doctype] = {}
     }
 
-    controllersCache[doctype][docname] = setupScript(
-      documentsCache[doctype][docname],
-    )
+    controllersCache[doctype][docname] = {}
+
+    const controllersArray = await setupScript(documentsCache[doctype][docname])
+
+    if (!controllersArray || controllersArray.length === 0) return
+
+    const organizedControllers = {}
+    for (const controller of controllersArray) {
+      const controllerKey = controller.constructor.name // e.g., "CRMLead", "CRMProducts"
+      if (!organizedControllers[controllerKey]) {
+        organizedControllers[controllerKey] = []
+      }
+      organizedControllers[controllerKey].push(controller)
+    }
+    controllersCache[doctype][docname] = organizedControllers
   }
 
   function getControllers(row = null) {
     const _doctype = row?.doctype || doctype
-    return (controllersCache[doctype]?.[docname] || []).filter(
-      (c) => c.constructor.name === _doctype.replace(/\s+/g, ''),
-    )
+    const controllerKey = _doctype.replace(/\s+/g, '')
+
+    const docControllers = controllersCache[doctype]?.[docname]
+
+    if (
+      typeof docControllers === 'object' &&
+      docControllers !== null &&
+      !Array.isArray(docControllers)
+    ) {
+      return docControllers[controllerKey] || []
+    }
+    return []
   }
 
   async function triggerOnRefresh() {
