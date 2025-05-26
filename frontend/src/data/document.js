@@ -100,7 +100,15 @@ export function useDocument(doctype, docname) {
   async function triggerOnCreateLead() {
     const args = Array.from(arguments)
     const handler = async function () {
-      await this.on_create_lead(...args)
+      await this.on_create_lead?.(...args)
+    }
+    await trigger(handler)
+  }
+
+  async function triggerConvertToDeal() {
+    const args = Array.from(arguments)
+    const handler = async function () {
+      await this.convert_to_deal?.(...args)
     }
     await trigger(handler)
   }
@@ -139,5 +147,6 @@ export function useDocument(doctype, docname) {
     triggerOnRefresh,
     setupFormScript,
     triggerOnCreateLead,
+    triggerConvertToDeal,
   }
 }
