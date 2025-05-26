@@ -734,37 +734,28 @@ def getLinkedDocs(doctype, docname):
 	doc = frappe.get_doc(doctype, docname)
 	linked_docs = get_linked_docs(doc)
 	dynamic_linked_docs = get_dynamic_linked_docs(doc)
+	
 	linked_docs.extend(dynamic_linked_docs)
-
-	return list({doc["reference_docname"]: doc for doc in linked_docs}.values())
-
-
-@frappe.whitelist()
-def removeLinkedDocReference(doctype=None, docname=None,removeAll=False,removeContact=None):
+	linked_docs = list({doc["reference_docname"]: doc for doc in linked_docs}.values())
 	
-	if (not doctype or not docname) and not removeAll:
-		return "Invalid doctype or docname"
-	
-	if removeAll:
-		if removeContact:
-			ref_doc = getLinkedDocs(doctype, docname)
-			for linked_doc in ref_doc:
-				removeContactLink(linked_doc["reference_doctype"], linked_doc["reference_docname"])
-			return "success"
-			
+	docs_data = []
+	for doc in linked_docs:
+		data = frappe.get_doc(doc["reference_doctype"], doc["reference_docname"])
+		title = data.get("title")
+		if data.doctype == "CRM Call Log":
+			title = f"CRM Call Log - from {data.get('from')} to {data.get('to')}"
 		
-		linked_docs = getLinkedDocs(doctype, docname)
+		if data.doctype == "CRM Deal":
+			title = data.get("organization")
+		
+		docs_data.append({
+			"doc": data.doctype,
+			"title": title or data.get("name"),
+			"reference_docname": doc["reference_docname"],
+			"reference_doctype": doc["reference_doctype"],
+		})
+	return docs_data
 
-		for linked_doc in linked_docs:
-			removeDocLink(linked_doc["reference_doctype"], linked_doc["reference_docname"])
-		return "success"
-	else:
-		if removeContact:
-			removeContactLink(doctype, docname)
-			return "success"
-			
-		removeDocLink(doctype, docname)
-		return "success"
 
 def removeDocLink(doctype, docname):
 	linked_doc_data = frappe.get_doc(doctype, docname)
@@ -781,14 +772,42 @@ def removeContactLink(doctype, docname):
 		"contacts": [],
 	})
 	linked_doc_data.save(ignore_permissions=True)
+
+@frappe.whitelist()
+def removeLinkedDocReference(items, removeContact=None, delete=False):
+
+	if isinstance(items, str):
+		items = frappe.parse_json(items)
+
+	for item in items:
+		if removeContact:
+			removeContactLink(item["doctype"], item["docname"])
+		else:
+			removeDocLink(item["doctype"], item["docname"])
+		
+		if delete:
+			frappe.delete_doc(item["doctype"], item["docname"])
+
+	return "success"
+
 	
 @frappe.whitelist()
-def deleteBulkDocs(doctype, items):
+def deleteBulkDocs(doctype, items, deleteLinked=False):
 	from frappe.desk.reportview import delete_bulk
 
 	items = frappe.parse_json(items)
 	for doc in items:
-		removeLinkedDocReference(doctype, doc, removeAll=True,removeContact=doctype=="Contact")
+		linked_docs = getLinkedDocs(doctype, doc)
+		for linked_doc in linked_docs:
+			removeLinkedDocReference([
+				{
+					"doctype": linked_doc["reference_doctype"],
+					"docname": linked_doc["reference_docname"],
+				}
+			] ,
+			removeContact=doctype=="Contact",
+			delete=deleteLinked
+			)
 	
 	if len(items) > 10:
 		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=items)
