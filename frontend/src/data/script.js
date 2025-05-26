@@ -20,15 +20,23 @@ export function getScript(doctype, view = 'Form') {
         doctypeScripts[doctype][script.name] = script || {}
       }
     },
+    onError: (err) => {
+      console.error(
+        `Error loading CRM Form Scripts for ${doctype} (view: ${view}):`,
+        err,
+      )
+    },
   })
 
   if (!doctypeScripts[doctype] && !scripts.loading) {
     scripts.fetch()
   }
 
-  function setupScript(document, helpers = {}) {
-    let scripts = doctypeScripts[doctype]
-    if (!scripts) return null
+  async function setupScript(document, helpers = {}) {
+    await scripts.promise
+
+    let scriptDefs = doctypeScripts[doctype]
+    if (!scriptDefs || Object.keys(scriptDefs).length === 0) return null
 
     const { $dialog, $socket, makeCall } = globalStore()
 
@@ -42,7 +50,7 @@ export function getScript(doctype, view = 'Form') {
       makePhoneCall: makeCall,
     }
 
-    return setupMultipleFormControllers(scripts, document, helpers)
+    return setupMultipleFormControllers(scriptDefs, document, helpers)
   }
 
   function setupMultipleFormControllers(scriptStrings, document, helpers) {
