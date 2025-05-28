@@ -57,10 +57,19 @@ export const usersStore = defineStore('crm-users', () => {
     return getUser(email).is_agent
   }
 
+  function getUserRole(email) {
+    const user = getUser(email)
+    if (user && user.role) {
+      return user.role
+    }
+    return null
+  }
+
   return {
     users,
     getUser,
     isManager,
     isAgent,
+    getUserRole,
   }
 })
