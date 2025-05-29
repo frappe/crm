@@ -158,6 +158,7 @@ declare module 'vue' {
     LucideCalendar: typeof import('~icons/lucide/calendar')['default']
     LucideInfo: typeof import('~icons/lucide/info')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
+    LucideSearch: typeof import('~icons/lucide/search')['default']
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
     MenuIcon: typeof import('./src/components/Icons/MenuIcon.vue')['default']

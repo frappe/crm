@@ -566,7 +566,7 @@ async function exportRows() {
     page_length = list.value.data.total_count
   }
 
-  let url = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
+  let url = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${encodeURIComponent(filters)}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
 
   // Add selected items parameter if rows are selected
   if (selectedRows.value?.length && !export_all.value) {
@@ -752,6 +752,7 @@ const quickFilterOptions = computed(() => {
   let fields = getFields()
   if (!fields) return []
 
+  let existingQuickFilters = newQuickFilters.value.map((f) => f.fieldname)
   let restrictedFieldtypes = [
     'Tab Break',
     'Section Break',
@@ -766,6 +767,7 @@ const quickFilterOptions = computed(() => {
   ]
   let options = fields
     .filter((f) => f.label && !restrictedFieldtypes.includes(f.fieldtype))
+    .filter((f) => !existingQuickFilters.includes(f.fieldname))
     .map((field) => ({
       label: field.label,
       value: field.fieldname,

@@ -374,6 +374,7 @@ import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
+import { useDocument } from '@/data/document'
 import {
   whatsappEnabled,
   callEnabled,
@@ -638,6 +639,8 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 
+const { triggerConvertToDeal } = useDocument('CRM Lead', props.leadId)
+
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
     toast.error(__('Please select an existing contact'))
@@ -656,6 +659,12 @@ async function convertToDeal() {
   if (!existingOrganizationChecked.value && existingOrganization.value) {
     existingOrganization.value = ''
   }
+
+  await triggerConvertToDeal?.(
+    lead.data,
+    deal,
+    () => (showConvertToDealModal.value = false),
+  )
 
   let _deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
     lead: lead.data.name,

@@ -124,6 +124,7 @@ def get_deal_activities(name):
 		activity = {
 			"activity_type": "communication",
 			"communication_type": communication.communication_type,
+			"communication_date": communication.communication_date or communication.creation,
 			"creation": communication.creation,
 			"data": {
 				"subject": communication.subject,
@@ -255,6 +256,7 @@ def get_lead_activities(name):
 		activity = {
 			"activity_type": "communication",
 			"communication_type": communication.communication_type,
+			"communication_date": communication.communication_date or communication.creation,
 			"creation": communication.creation,
 			"data": {
 				"subject": communication.subject,
