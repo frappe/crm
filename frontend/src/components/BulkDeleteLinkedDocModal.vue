@@ -22,7 +22,6 @@
               ])
             }}
           </div>
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-0 sm:px-6">
@@ -72,7 +71,6 @@
                   )
             }}
           </div>
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-0 sm:px-6">

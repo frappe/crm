@@ -52,7 +52,6 @@
               ])
             }}
           </div>
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-0 sm:px-6">
@@ -66,10 +65,10 @@
             <div class="flex gap-1">
               <FeatherIcon name="trash" class="h-4 w-4" />
               <span>
-                Delete and unlink
+                {{ __('Delete and unlink') }}
                 {{
                   viewControls?.selections?.length == 0
-                    ? 'all'
+                    ? __('all')
                     : `${viewControls?.selections?.length} item(s)`
                 }}
               </span>
@@ -83,10 +82,10 @@
             <div class="flex gap-1">
               <FeatherIcon name="unlock" class="h-4 w-4" />
               <span>
-                Unlink
+                {{ __('Unlink') }}
                 {{
                   viewControls?.selections?.length == 0
-                    ? 'all'
+                    ? __('all')
                     : `${viewControls?.selections?.length} item(s)`
                 }}
               </span>
