@@ -49,11 +49,6 @@
         </template>
       </Dropdown>
       <Button
-        :label="__('Delete')"
-        variant="subtle"
-        @click="deleteLeadWithModal(lead.data.name)"
-      />
-      <Button
         :label="__('Convert to Deal')"
         variant="solid"
         @click="showConvertToDealModal = true"
@@ -191,6 +186,18 @@
                       <template #icon>
                         <AttachmentIcon />
                       </template>
+                    </Button>
+                  </div>
+                </Tooltip>
+                <Tooltip :text="__('Delete')">
+                  <div>
+                    <Button
+                      class="h-7 w-7"
+                      @click="deleteLeadWithModal(lead.data.name)"
+                      variant="subtle"
+                      theme="red"
+                    >
+                      <FeatherIcon name="trash" class="h-4 w-4" />
                     </Button>
                   </div>
                 </Tooltip>

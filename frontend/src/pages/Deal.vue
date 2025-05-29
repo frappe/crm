@@ -8,11 +8,6 @@
       </Breadcrumbs>
     </template>
     <template #right-header>
-      <Button
-        :label="__('Delete')"
-        variant="subtle"
-        @click="deleteDealWithModal()"
-      />
       <CustomActions
         v-if="deal.data._customActions?.length"
         :actions="deal.data._customActions"
@@ -141,6 +136,18 @@
                   <template #icon>
                     <AttachmentIcon />
                   </template>
+                </Button>
+              </div>
+            </Tooltip>
+            <Tooltip :text="__('Delete')">
+              <div>
+                <Button
+                  class="h-7 w-7"
+                  @click="deleteDealWithModal(deal.data.name)"
+                  variant="subtle"
+                  theme="red"
+                >
+                  <FeatherIcon name="trash" class="h-4 w-4" />
                 </Button>
               </div>
             </Tooltip>
