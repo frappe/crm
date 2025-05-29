@@ -8,7 +8,7 @@
 
 **Simplify Sales, Amplify Relationships**
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/crm)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/crm)](https://github.com/frappe/crm/releases)
 
 <div>
     <picture>
