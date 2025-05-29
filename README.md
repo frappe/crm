@@ -181,6 +181,7 @@ You need Docker, docker-compose and git setup on your machine. Refer [Docker doc
 -   [Discuss Forum](https://discuss.frappe.io/c/frappe-crm)
 -   [Documentation](https://docs.frappe.io/crm)
 -   [YouTube](https://www.youtube.com/channel/UCn3bV5kx77HsVwtnlCeEi_A)
+-   [X/Twitter](https://x.com/frappetech)
 
 <br>
 <br>
