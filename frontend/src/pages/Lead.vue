@@ -124,7 +124,7 @@
                         () =>
                           lead.data.mobile_no
                             ? makeCall(lead.data.mobile_no)
-                            : toast.error(__('No phone number set'))
+                            : _errorMessage(__('No phone number set'))
                       "
                     >
                       <PhoneIcon class="h-4 w-4" />
@@ -139,7 +139,7 @@
                         @click="
                           lead.data.email
                             ? openEmailBox()
-                            : toast.error(__('No email set'))
+                            : _errorMessage(__('No email set'))
                         "
                       />
                     </Button>
@@ -153,7 +153,7 @@
                         @click="
                           lead.data.website
                             ? openWebsite(lead.data.website)
-                            : toast.error(__('No website set'))
+                            : _errorMessage(__('No website set'))
                         "
                       />
                     </Button>
@@ -182,19 +182,16 @@
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
         <SidePanelLayout
+          v-model="lead.data"
           :sections="sections.data"
           doctype="CRM Lead"
-          :docname="lead.data.name"
+          @update="updateField"
           @reload="sections.reload"
         />
       </div>
     </Resizer>
   </div>
-  <ErrorPage
-    v-else-if="errorTitle"
-    :errorTitle="errorTitle"
-    :errorMessage="errorMessage"
-  />
+  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
@@ -344,18 +341,18 @@ import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
   openWebsite,
+  createToast,
   setupAssignees,
   setupCustomizations,
+  errorMessage as _errorMessage,
   copyToClipboard,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
-import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
-import { useDocument } from '@/data/document'
 import {
   whatsappEnabled,
   callEnabled,
@@ -373,7 +370,6 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
-  toast,
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, reactive, computed, onMounted, watch } from 'vue'
@@ -381,7 +377,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
 const { brand } = getSettings()
-const { user } = sessionStore()
 const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
@@ -415,9 +410,8 @@ const lead = createResource({
       $dialog,
       $socket,
       router,
-      toast,
       updateField,
-      createToast: toast.create,
+      createToast,
       deleteDoc: deleteLead,
       resource: { lead, sections },
       call,
@@ -458,11 +452,20 @@ function updateLead(fieldname, value, callback) {
     onSuccess: () => {
       lead.reload()
       reload.value = true
-      toast.success(__('Lead updated successfully'))
+      createToast({
+        title: __('Lead updated'),
+        icon: 'check',
+        iconClasses: 'text-ink-green-3',
+      })
       callback?.()
     },
     onError: (err) => {
-      toast.error(err.messages?.[0] || __('Error updating lead'))
+      createToast({
+        title: __('Error updating lead'),
+        text: __(err.messages?.[0]),
+        icon: 'x',
+        iconClasses: 'text-ink-red-4',
+      })
     },
   })
 }
@@ -470,7 +473,12 @@ function updateLead(fieldname, value, callback) {
 function validateRequired(fieldname, value) {
   let meta = lead.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
-    toast.error(__('{0} is a required field', [meta[fieldname].label]))
+    createToast({
+      title: __('Error Updating Lead'),
+      text: __('{0} is a required field', [meta[fieldname].label]),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
     return true
   }
   return false
@@ -615,16 +623,24 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 
-const { triggerConvertToDeal } = useDocument('CRM Lead', props.leadId)
-
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
-    toast.error(__('Please select an existing contact'))
+    createToast({
+      title: __('Error'),
+      text: __('Please select an existing contact'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
     return
   }
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
-    toast.error(__('Please select an existing organization'))
+    createToast({
+      title: __('Error'),
+      text: __('Please select an existing organization'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
     return
   }
 
@@ -636,19 +652,18 @@ async function convertToDeal() {
     existingOrganization.value = ''
   }
 
-  await triggerConvertToDeal?.(
-    lead.data,
-    deal,
-    () => (showConvertToDealModal.value = false),
-  )
-
   let _deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
     lead: lead.data.name,
     deal,
     existing_contact: existingContact.value,
     existing_organization: existingOrganization.value,
   }).catch((err) => {
-    toast.error(__('Error converting to deal: {0}', [err.messages?.[0]]))
+    createToast({
+      title: __('Error converting to deal'),
+      text: __(err.messages?.[0]),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
   })
   if (_deal) {
     showConvertToDealModal.value = false
@@ -657,7 +672,7 @@ async function convertToDeal() {
     existingContact.value = ''
     existingOrganization.value = ''
     updateOnboardingStep('convert_lead_to_deal', true, false, () => {
-      localStorage.setItem('firstDeal' + user, _deal)
+      localStorage.setItem('firstDeal', _deal)
     })
     capture('convert_lead_to_deal')
     router.push({ name: 'Deal', params: { dealId: _deal } })
@@ -687,10 +702,10 @@ const dealTabs = createResource({
   auto: true,
   transform: (_tabs) => {
     let hasFields = false
-    let parsedTabs = _tabs?.forEach((tab) => {
-      tab.sections?.forEach((section) => {
-        section.columns?.forEach((column) => {
-          column.fields?.forEach((field) => {
+    let parsedTabs = _tabs.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        section.columns.forEach((column) => {
+          column.fields.forEach((field) => {
             hasFields = true
             if (field.fieldname == 'status') {
               field.fieldtype = 'Select'

@@ -101,7 +101,6 @@
             v-model="settings.doc.dropdown_items"
             doctype="CRM Dropdown Item"
             parentDoctype="FCRM Settings"
-            parentFieldname="dropdown_items"
           />
         </div>
       </div>

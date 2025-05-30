@@ -58,21 +58,6 @@
                     class="p-1.5 max-h-[12rem] overflow-y-auto"
                     static
                   >
-                    <div
-                      v-if="!options.length"
-                      class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
-                    >
-                      <FeatherIcon
-                        v-if="fetchContacts"
-                        name="search"
-                        class="h-4"
-                      />
-                      {{
-                        fetchContacts
-                          ? __('No results found')
-                          : __('Type an email address to add')
-                      }}
-                    </div>
                     <ComboboxOption
                       v-for="option in options"
                       :key="option.value"
@@ -152,10 +137,6 @@ const props = defineProps({
     type: Function,
     default: (value) => `${value} is an Invalid value`,
   },
-  fetchContacts: {
-    type: Boolean,
-    default: true,
-  },
 })
 
 const values = defineModel()
@@ -210,19 +191,17 @@ const filterOptions = createResource({
 })
 
 const options = computed(() => {
-  let searchedContacts = props.fetchContacts ? filterOptions.data : []
-  if (!searchedContacts?.length && query.value) {
+  let searchedContacts = filterOptions.data || []
+  if (!searchedContacts.length && query.value) {
     searchedContacts.push({
       label: query.value,
       value: query.value,
     })
   }
-  return searchedContacts || []
+  return searchedContacts
 })
 
 function reload(val) {
-  if (!props.fetchContacts) return
-
   filterOptions.update({
     params: { txt: val },
   })

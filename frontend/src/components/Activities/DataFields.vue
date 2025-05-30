@@ -5,7 +5,7 @@
     <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
       {{ __('Data') }}
       <Badge
-        v-if="document.isDirty"
+        v-if="data.isDirty"
         class="ml-3"
         :label="'Not Saved'"
         theme="orange"
@@ -20,15 +20,15 @@
       </Button>
       <Button
         label="Save"
-        :disabled="!document.isDirty"
+        :disabled="!data.isDirty"
         variant="solid"
-        :loading="document.save.loading"
+        :loading="data.save.loading"
         @click="saveChanges"
       />
     </div>
   </div>
   <div
-    v-if="document.get.loading"
+    v-if="data.get.loading"
     class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
   >
     <LoadingIndicator class="h-6 w-6" />
@@ -38,7 +38,7 @@
     <FieldLayout
       v-if="tabs.data"
       :tabs="tabs.data"
-      :data="document.doc"
+      :data="data.doc"
       :doctype="doctype"
     />
   </div>
@@ -49,7 +49,7 @@
     @reload="
       () => {
         tabs.reload()
-        document.reload()
+        data.reload()
       }
     "
   />
@@ -59,12 +59,12 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DataFieldsModal from '@/components/Modals/DataFieldsModal.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
-import { Badge, createResource } from 'frappe-ui'
+import { Badge, createResource, createDocumentResource } from 'frappe-ui'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
+import { createToast } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { useDocument } from '@/data/document'
 import { isMobileView } from '@/composables/settings'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -76,11 +76,33 @@ const props = defineProps({
     required: true,
   },
 })
+
 const { isManager } = usersStore()
 
 const showDataFieldsModal = ref(false)
 
-const { document } = useDocument(props.doctype, props.docname)
+const data = createDocumentResource({
+  doctype: props.doctype,
+  name: props.docname,
+  setValue: {
+    onSuccess: () => {
+      data.reload()
+      createToast({
+        title: 'Data Updated',
+        icon: 'check',
+        iconClasses: 'text-ink-green-3',
+      })
+    },
+    onError: (err) => {
+      createToast({
+        title: 'Error',
+        text: err.messages[0],
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
+    },
+  },
+})
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -90,22 +112,6 @@ const tabs = createResource({
 })
 
 function saveChanges() {
-  document.save.submit()
+  data.save.submit()
 }
-
-watch(
-  () => document.doc,
-  (newValue, oldValue) => {
-    if (!oldValue) return
-    if (newValue && oldValue) {
-      const isDirty =
-        JSON.stringify(newValue) !== JSON.stringify(document.originalDoc)
-      document.isDirty = isDirty
-      if (isDirty) {
-        document.save.loading = false
-      }
-    }
-  },
-  { deep: true },
-)
 </script>

@@ -106,9 +106,10 @@
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
         <SidePanelLayout
+          v-model="organization.doc"
           :sections="sections.data"
           doctype="CRM Organization"
-          :docname="organization.doc.name"
+          @update="updateField"
           @reload="sections.reload"
         />
       </div>
@@ -159,11 +160,7 @@
       </template>
     </Tabs>
   </div>
-  <ErrorPage
-    v-else-if="errorTitle"
-    :errorTitle="errorTitle"
-    :errorMessage="errorMessage"
-  />
+  <ErrorPage v-else :errorTitle="errorTitle" :errorMessage="errorMessage" />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
@@ -192,7 +189,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate, timeAgo, createToast } from '@/utils'
 import {
   Tooltip,
   Breadcrumbs,
@@ -205,7 +202,6 @@ import {
   createDocumentResource,
   usePageMeta,
   createResource,
-  toast,
 } from 'frappe-ui'
 import { h, computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -249,6 +245,17 @@ const organization = createDocumentResource({
     }
   },
 })
+
+async function updateField(fieldname, value) {
+  await organization.setValue.submit({
+    [fieldname]: value,
+  })
+  createToast({
+    title: __('Organization updated'),
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
+}
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
@@ -338,7 +345,12 @@ function website(url) {
 }
 
 function openWebsite() {
-  if (!organization.doc.website) toast.error(__('No website found'))
+  if (!organization.doc.website)
+    createToast({
+      title: __('Website not found'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
   else window.open(organization.doc.website, '_blank')
 }
 

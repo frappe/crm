@@ -9,7 +9,6 @@
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
-    @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
     <ListHeader
       class="mx-3 sm:mx-5"
@@ -208,7 +207,6 @@ const emit = defineEmits([
   'applyFilter',
   'applyLikeFilter',
   'likeDoc',
-  'selectionsChanged',
 ])
 
 const pageLengthCount = defineModel()

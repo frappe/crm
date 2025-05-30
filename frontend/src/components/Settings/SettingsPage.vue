@@ -42,10 +42,9 @@ import {
   createResource,
   Spinner,
   Badge,
-  toast,
   ErrorMessage,
 } from 'frappe-ui'
-import { getRandom } from '@/utils'
+import { createToast, getRandom } from '@/utils'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -80,10 +79,20 @@ const data = createDocumentResource({
   auto: true,
   setValue: {
     onSuccess: () => {
-      toast.success(__(props.successMessage))
+      createToast({
+        title: __('Success'),
+        text: __(props.successMessage),
+        icon: 'check',
+        iconClasses: 'text-ink-green-3',
+      })
     },
     onError: (err) => {
-      toast.error(err.message + ': ' + err.messages[0])
+      createToast({
+        title: __('Error'),
+        text: err.message + ': ' + err.messages[0],
+        icon: 'x',
+        iconClasses: 'text-ink-red-4',
+      })
     },
   },
 })

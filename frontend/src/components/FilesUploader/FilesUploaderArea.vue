@@ -126,13 +126,8 @@
 import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
-import { formatDate, convertSize } from '@/utils'
-import {
-  FormControl,
-  CircularProgressBar,
-  createResource,
-  toast,
-} from 'frappe-ui'
+import { createToast, formatDate, convertSize } from '@/utils'
+import { FormControl, CircularProgressBar, createResource } from 'frappe-ui'
 import { ref, onMounted, watch, onUnmounted } from 'vue'
 
 const props = defineProps({
@@ -329,18 +324,24 @@ function checkRestrictions(file) {
 
   if (!isCorrectType) {
     console.warn('File skipped because of invalid file type', file)
-    toast.warning(
-      __('File "{0}" was skipped because of invalid file type', [file.name]),
-    )
+    createToast({
+      title: __('File "{0}" was skipped because of invalid file type', [
+        file.name,
+      ]),
+      icon: 'alert-circle',
+      iconClasses: 'text-orange-600',
+    })
   }
   if (!validFileSize) {
     console.warn('File skipped because of invalid file size', file.size, file)
-    toast.warning(
-      __('File "{0}" was skipped because size exceeds {1} MB', [
+    createToast({
+      title: __('File "{0}" was skipped because size exceeds {1} MB', [
         file.name,
         maxFileSize / (1024 * 1024),
       ]),
-    )
+      icon: 'alert-circle',
+      iconClasses: 'text-orange-600',
+    })
   }
 
   return isCorrectType && validFileSize
@@ -362,7 +363,11 @@ function showMaxFilesNumberWarning(file, maxNumberOfFiles) {
     )
   }
 
-  toast.warning(message)
+  createToast({
+    title: message,
+    icon: 'alert-circle',
+    iconClasses: 'text-orange-600',
+  })
 }
 
 function removeFile(name) {

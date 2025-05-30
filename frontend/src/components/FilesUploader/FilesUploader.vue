@@ -104,7 +104,7 @@
 import FilesUploaderArea from '@/components/FilesUploader/FilesUploaderArea.vue'
 import FilesUploadHandler from './filesUploaderHandler'
 import { isMobileView } from '@/composables/settings'
-import { toast } from 'frappe-ui'
+import { createToast } from '@/utils'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -165,7 +165,12 @@ function attachFiles() {
 function uploadViaWebLink() {
   let fileUrl = filesUploaderArea.value.webLink
   if (!fileUrl) {
-    toast.error(__('Please enter a valid URL'))
+    createToast({
+      title: __('Error'),
+      title: __('Please enter a valid URL'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
     return
   }
   fileUrl = decodeURI(fileUrl)

@@ -67,9 +67,10 @@
             class="flex flex-1 flex-col justify-between overflow-hidden"
           >
             <SidePanelLayout
+              v-model="lead.data"
               :sections="sections.data"
               doctype="CRM Lead"
-              :docname="lead.data.name"
+              @update="updateField"
               @reload="sections.reload"
             />
           </div>
@@ -173,7 +174,7 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { setupAssignees, setupCustomizations } from '@/utils'
+import { createToast, setupAssignees, setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -196,7 +197,6 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
-  toast,
 } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -226,9 +226,8 @@ const lead = createResource({
       $dialog,
       $socket,
       router,
-      toast,
       updateField,
-      createToast: toast.create,
+      createToast,
       deleteDoc: deleteLead,
       resource: {
         lead,
@@ -263,11 +262,20 @@ function updateLead(fieldname, value, callback) {
     onSuccess: () => {
       lead.reload()
       reload.value = true
-      toast.success(__('Lead updated successfully'))
+      createToast({
+        title: __('Lead updated'),
+        icon: 'check',
+        iconClasses: 'text-ink-green-3',
+      })
       callback?.()
     },
     onError: (err) => {
-      toast.error(__(err.messages?.[0] || 'Error updating lead'))
+      createToast({
+        title: __('Error updating lead'),
+        text: __(err.messages?.[0]),
+        icon: 'x',
+        iconClasses: 'text-ink-red-4',
+      })
     },
   })
 }
@@ -275,7 +283,12 @@ function updateLead(fieldname, value, callback) {
 function validateRequired(fieldname, value) {
   let meta = lead.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
-    toast.error(__('{0} is a required field', [meta[fieldname].label]))
+    createToast({
+      title: __('Error Updating Lead'),
+      text: __('{0} is a required field', [meta[fieldname].label]),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
     return true
   }
   return false
@@ -421,12 +434,22 @@ const existingOrganization = ref('')
 
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
-    toast.error(__('Please select an existing contact'))
+    createToast({
+      title: __('Error'),
+      text: __('Please select an existing contact'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
     return
   }
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
-    toast.error(__('Please select an existing organization'))
+    createToast({
+      title: __('Error'),
+      text: __('Please select an existing organization'),
+      icon: 'x',
+      iconClasses: 'text-ink-red-4',
+    })
     return
   }
 

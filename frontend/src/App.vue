@@ -1,17 +1,16 @@
 <template>
-  <FrappeUIProvider>
-    <Layout v-if="session().isLoggedIn">
-      <router-view />
-    </Layout>
-    <Dialogs />
-  </FrappeUIProvider>
+  <Layout v-if="session().isLoggedIn">
+    <router-view />
+  </Layout>
+  <Dialogs />
+  <Toasts />
 </template>
 
 <script setup>
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore as session } from '@/stores/session'
 import { setTheme } from '@/stores/theme'
-import { FrappeUIProvider, setConfig } from 'frappe-ui'
+import { Toasts, setConfig } from 'frappe-ui'
 import { computed, defineAsyncComponent, onMounted } from 'vue'
 
 const MobileLayout = defineAsyncComponent(

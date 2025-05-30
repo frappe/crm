@@ -14,7 +14,6 @@
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
-    @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
     <ListHeader
       class="sm:mx-5 mx-3"
@@ -91,7 +90,15 @@
             />
           </div>
           <div v-else-if="column.key === 'mobile_no'">
-            <PhoneIcon class="h-4 w-4" />
+            <PhoneIcon  class="h-4 w-4 cursor-pointer" 
+            @click.stop.prevent="openIframeModal(row.mobile_no, row.name)" />
+          </div>
+          <div v-else-if="column.key === 'phone'">
+            <PhoneIcon 
+              class="h-4 w-4 cursor-pointer" 
+              @click.stop.prevent="openIframeModal(row.phone, row.name)"
+              />
+
           </div>
         </template>
         <template #default="{ label }">
@@ -207,6 +214,31 @@
     @loadMore="emit('loadMore')"
   />
   <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="CRM Lead" />
+
+    <!-- Iframe Modal -->
+    <div v-if="showIframeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 p-4 flex items-end justify-end">
+      <div class="relative bg-white rounded-lg w-[35%] h-full flex flex-col shadow-lg">
+        <div class="flex justify-between items-center p-4 border-b">
+          <!-- <h3 class="text-lg font-medium">Backups</h3> -->
+          <button 
+            @click="closeIframeModal"
+            class="text-gray-500 hover:text-gray-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <iframe 
+          ref="iframeRef" 
+          class="flex-grow border-0"
+          :src="iframeUrl"
+          loading="lazy"
+        ></iframe>
+      </div>
+    </div>
+    
+
 </template>
 
 <script setup>
@@ -228,7 +260,7 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch , nextTick} from 'vue'
 import { useRoute } from 'vue-router'
 
 const props = defineProps({
@@ -251,6 +283,7 @@ const props = defineProps({
     }),
   },
 })
+
 const emit = defineEmits([
   'loadMore',
   'updatePageCount',
@@ -258,10 +291,38 @@ const emit = defineEmits([
   'applyFilter',
   'applyLikeFilter',
   'likeDoc',
-  'selectionsChanged',
 ])
 
 const route = useRoute()
+
+
+//START CUSTOM
+// Iframe Modal Logic
+const showIframeModal = ref(false)
+const iframeRef = ref(null)
+const iframeUrl = ref('')
+const openIframeModal = (phoneNumber, docName) => {
+  localStorage.setItem('curr_dialing', phoneNumber || '');
+  const leadName = docName || '';
+  localStorage.setItem('curr_lead_name', leadName);
+  iframeUrl.value = 'https://crm.sjcomputers.us/app/web-phone';
+  showIframeModal.value = true;
+  nextTick(() => {
+    if (iframeRef.value) {
+      iframeRef.value.focus();
+    }
+  });
+}
+
+
+const closeIframeModal = () => {
+  localStorage.removeItem('curr_dialing');
+  localStorage.removeItem('curr_lead_name');
+  showIframeModal.value = false
+  iframeUrl.value = ''
+}
+
+//END CUSTOM
 
 const pageLengthCount = defineModel()
 const list = defineModel('list')
