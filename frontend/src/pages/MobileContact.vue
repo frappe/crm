@@ -130,9 +130,10 @@
             class="flex flex-1 flex-col justify-between overflow-hidden"
           >
             <SidePanelLayout
+              v-model="contact.data"
               :sections="sections.data"
               doctype="Contact"
-              :docname="contact.data.name"
+              @update="updateField"
               @reload="sections.reload"
             />
           </div>
@@ -169,7 +170,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate, timeAgo, createToast } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { getMeta } from '@/stores/meta'
@@ -189,7 +190,6 @@ import {
   createResource,
   usePageMeta,
   Dropdown,
-  toast,
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -497,7 +497,11 @@ async function setAsPrimary(field, value) {
   })
   if (d) {
     contact.reload()
-    toast.success(___('Contact updated'))
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
   }
 }
 
@@ -510,7 +514,11 @@ async function createNew(field, value) {
   })
   if (d) {
     contact.reload()
-    toast.success(__('Contact updated'))
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
   }
 }
 
@@ -523,7 +531,11 @@ async function editOption(doctype, name, fieldname, value) {
   })
   if (d) {
     contact.reload()
-    toast.success(__('Contact updated'))
+    createToast({
+      title: 'Contact updated',
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
   }
 }
 
@@ -533,7 +545,11 @@ async function deleteOption(doctype, name) {
     name,
   })
   await contact.reload()
-  toast.success(__('Contact updated'))
+  createToast({
+    title: 'Contact updated',
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
 }
 
 async function updateField(fieldname, value) {
@@ -543,7 +559,11 @@ async function updateField(fieldname, value) {
     fieldname,
     value,
   })
-  toast.success(__('Contact updated'))
+  createToast({
+    title: 'Contact updated',
+    icon: 'check',
+    iconClasses: 'text-ink-green-3',
+  })
 
   contact.reload()
 }

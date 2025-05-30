@@ -312,12 +312,11 @@ import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
-import { isEmoji } from '@/utils'
+import { isEmoji, createToast } from '@/utils'
 import {
   Tooltip,
   createResource,
   Dropdown,
-  toast,
   call,
   FeatherIcon,
   usePageMeta,
@@ -546,11 +545,6 @@ function reload() {
 const showExportDialog = ref(false)
 const export_type = ref('Excel')
 const export_all = ref(false)
-const selectedRows = ref([])
-
-function updateSelections(selections) {
-  selectedRows.value = Array.from(selections)
-}
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
@@ -566,15 +560,7 @@ async function exportRows() {
     page_length = list.value.data.total_count
   }
 
-  let url = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${encodeURIComponent(filters)}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
-
-  // Add selected items parameter if rows are selected
-  if (selectedRows.value?.length && !export_all.value) {
-    url += `&selected_items=${JSON.stringify(selectedRows.value)}`
-  }
-
-  window.location.href = url
-
+  window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
   showExportDialog.value = false
   export_all.value = false
   export_type.value = 'Excel'
@@ -728,7 +714,12 @@ const updateQuickFilters = createResource({
 
     quickFilters.update({ params: { doctype: props.doctype, cached: false } })
     quickFilters.reload()
-    toast.success(__('Quick Filters updated successfully'))
+
+    createToast({
+      title: __('Quick Filters updated successfully'),
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
   },
 })
 
@@ -752,7 +743,6 @@ const quickFilterOptions = computed(() => {
   let fields = getFields()
   if (!fields) return []
 
-  let existingQuickFilters = newQuickFilters.value.map((f) => f.fieldname)
   let restrictedFieldtypes = [
     'Tab Break',
     'Section Break',
@@ -767,7 +757,6 @@ const quickFilterOptions = computed(() => {
   ]
   let options = fields
     .filter((f) => f.label && !restrictedFieldtypes.includes(f.fieldtype))
-    .filter((f) => !existingQuickFilters.includes(f.fieldname))
     .map((field) => ({
       label: field.label,
       value: field.fieldname,
@@ -1347,7 +1336,6 @@ defineExpose({
   viewActions,
   viewsDropdownOptions,
   currentView,
-  updateSelections,
 })
 
 // Watchers

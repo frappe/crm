@@ -2,9 +2,17 @@ import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { usersStore } from '@/stores/users'
 import { gemoji } from 'gemoji'
+import { useTimeAgo } from '@vueuse/core'
 import { getMeta } from '@/stores/meta'
-import { toast, dayjsLocal, dayjs, getConfig } from 'frappe-ui'
+import { toast, dayjsLocal, dayjs } from 'frappe-ui'
 import { h } from 'vue'
+
+export function createToast(options) {
+  toast({
+    position: 'bottom-right',
+    ...options,
+  })
+}
 
 export function formatTime(seconds) {
   const days = Math.floor(seconds / (3600 * 24))
@@ -64,85 +72,7 @@ export function getFormat(
 }
 
 export function timeAgo(date) {
-  return prettyDate(date)
-}
-
-function getBrowserTimezone() {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone
-}
-
-export function prettyDate(date, mini = false) {
-  if (!date) return ''
-
-  let systemTimezone = getConfig('systemTimezone')
-  let localTimezone = getConfig('localTimezone') || getBrowserTimezone()
-
-  if (typeof date == 'string') {
-    date = dayjsLocal(date)
-  }
-
-  let nowDatetime = dayjs().tz(localTimezone || systemTimezone)
-  let diff = nowDatetime.diff(date, 'seconds')
-
-  let dayDiff = Math.floor(diff / 86400)
-
-  if (isNaN(dayDiff) || dayDiff < 0) return ''
-
-  if (mini) {
-    // Return short format of time difference
-    if (dayDiff == 0) {
-      if (diff < 60) {
-        return __('now')
-      } else if (diff < 3600) {
-        return __('{0} m', [Math.floor(diff / 60)])
-      } else if (diff < 86400) {
-        return __('{0} h', [Math.floor(diff / 3600)])
-      }
-    } else {
-      if (dayDiff < 7) {
-        return __('{0} d', [dayDiff])
-      } else if (dayDiff < 31) {
-        return __('{0} w', [Math.floor(dayDiff / 7)])
-      } else if (dayDiff < 365) {
-        return __('{0} M', [Math.floor(dayDiff / 30)])
-      } else {
-        return __('{0} y', [Math.floor(dayDiff / 365)])
-      }
-    }
-  } else {
-    // Return long format of time difference
-    if (dayDiff == 0) {
-      if (diff < 60) {
-        return __('just now')
-      } else if (diff < 120) {
-        return __('1 minute ago')
-      } else if (diff < 3600) {
-        return __('{0} minutes ago', [Math.floor(diff / 60)])
-      } else if (diff < 7200) {
-        return __('1 hour ago')
-      } else if (diff < 86400) {
-        return __('{0} hours ago', [Math.floor(diff / 3600)])
-      }
-    } else {
-      if (dayDiff == 1) {
-        return __('yesterday')
-      } else if (dayDiff < 7) {
-        return __('{0} days ago', [dayDiff])
-      } else if (dayDiff < 14) {
-        return __('1 week ago')
-      } else if (dayDiff < 31) {
-        return __('{0} weeks ago', [Math.floor(dayDiff / 7)])
-      } else if (dayDiff < 62) {
-        return __('1 month ago')
-      } else if (dayDiff < 365) {
-        return __('{0} months ago', [Math.floor(dayDiff / 30)])
-      } else if (dayDiff < 730) {
-        return __('1 year ago')
-      } else {
-        return __('{0} years ago', [Math.floor(dayDiff / 365)])
-      }
-    }
-  }
+  return useTimeAgo(date).value
 }
 
 export function taskStatusOptions(action, data) {
@@ -222,7 +152,6 @@ export function setupAssignees(doc) {
 }
 
 async function getFormScript(script, obj) {
-  if (!script.includes('setupForm(')) return {}
   let scriptFn = new Function(script + '\nreturn setupForm')()
   let formScript = await scriptFn(obj)
   return formScript || {}
@@ -279,20 +208,34 @@ export async function setupListCustomizations(data, obj = {}) {
   return { actions, bulkActions }
 }
 
+export function errorMessage(title, message) {
+  createToast({
+    title: title || 'Error',
+    text: message,
+    icon: 'x',
+    iconClasses: 'text-ink-red-4',
+  })
+}
+
 export function copyToClipboard(text) {
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(showSuccessAlert)
+    navigator.clipboard.writeText(text).then(show_success_alert)
   } else {
     let input = document.createElement('textarea')
     document.body.appendChild(input)
     input.value = text
     input.select()
     document.execCommand('copy')
-    showSuccessAlert()
+    show_success_alert()
     document.body.removeChild(input)
   }
-  function showSuccessAlert() {
-    toast.success(__('Copied to clipboard'))
+  function show_success_alert() {
+    createToast({
+      title: 'Copied to clipboard',
+      text: text,
+      icon: 'check',
+      iconClasses: 'text-ink-green-3',
+    })
   }
 }
 
@@ -404,10 +347,4 @@ export function getRandom(len = 4) {
   })
 
   return text
-}
-
-export function runSequentially(functions) {
-  return functions.reduce((promise, fn) => {
-    return promise.then(() => fn())
-  }, Promise.resolve())
 }

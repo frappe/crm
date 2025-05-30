@@ -1,25 +1,34 @@
 <template>
-  <Dialog v-model="show" :options="{
-    size: 'xl',
-    actions: [
-      {
-        label: editMode ? __('Update') : __('Create'),
-        variant: 'solid',
-        onClick: () => updateTask(),
-      },
-    ],
-  }">
+  <Dialog
+    v-model="show"
+    :options="{
+      size: 'xl',
+      actions: [
+        {
+          label: editMode ? __('Update') : __('Create'),
+          variant: 'solid',
+          onClick: () => updateTask(),
+        },
+      ],
+    }"
+  >
     <template #body-title>
       <div class="flex items-center gap-3">
         <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
           {{ editMode ? __('Edit Task') : __('Create Task') }}
         </h3>
-        <Button v-if="task?.reference_docname" size="sm" :label="task.reference_doctype == 'CRM Deal'
-          ? __('Open Deal')
-          : __('Open Lead')
-          " @click="redirect()">
+        <Button
+          v-if="task?.reference_docname"
+          size="sm"
+          :label="
+            task.reference_doctype == 'CRM Deal'
+              ? __('Open Deal')
+              : __('Open Lead')
+          "
+          @click="redirect()"
+        >
           <template #suffix>
-            <ArrowUpRightIcon class="w-4 h-4" />
+            <ArrowUpRightIcon class="h-4 w-4" />
           </template>
         </Button>
       </div>
@@ -27,53 +36,74 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <FormControl ref="title" :label="__('Title')" v-model="_task.title" :placeholder="__('Call with John Doe')"
-            required />
+          <FormControl
+            ref="title"
+            :label="__('Title')"
+            v-model="_task.title"
+            :placeholder="__('Call with John Doe')"
+          />
         </div>
         <div>
           <div class="mb-1.5 text-xs text-ink-gray-5">
             {{ __('Description') }}
           </div>
-          <TextEditor variant="outline" ref="description"
+          <TextEditor
+            variant="outline"
+            ref="description"
             editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
-            :bubbleMenu="true" :content="_task.description" @change="(val) => (_task.description = val)" :placeholder="__('Took a call with John Doe and discussed the new project.')
-              " />
+            :bubbleMenu="true"
+            :content="_task.description"
+            @change="(val) => (_task.description = val)"
+            :placeholder="
+              __('Took a call with John Doe and discussed the new project.')
+            "
+          />
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <Dropdown :options="taskStatusOptions(updateTaskStatus)">
-            <Button :label="_task.status" class="justify-between w-full">
+            <Button :label="_task.status" class="w-full justify-between">
               <template #prefix>
                 <TaskStatusIcon :status="_task.status" />
               </template>
             </Button>
           </Dropdown>
-          <Link class="form-control" :value="getUser(_task.assigned_to).full_name" doctype="User"
-            @change="(option) => (_task.assigned_to = option)" :placeholder="__('John Doe')" :hideMe="true">
-          <template #prefix>
-            <UserAvatar class="mr-2 !h-4 !w-4" :user="_task.assigned_to" />
-          </template>
-          <template #item-prefix="{ option }">
-            <UserAvatar class="mr-2" :user="option.value" size="sm" />
-          </template>
-          <template #item-label="{ option }">
-            <Tooltip :text="option.value">
-              <div class="cursor-pointer text-ink-gray-9">
-                {{ getUser(option.value).full_name }}
-              </div>
-            </Tooltip>
-          </template>
+          <Link
+            class="form-control"
+            :value="getUser(_task.assigned_to).full_name"
+            doctype="User"
+            @change="(option) => (_task.assigned_to = option)"
+            :placeholder="__('John Doe')"
+            :hideMe="true"
+          >
+            <template #prefix>
+              <UserAvatar class="mr-2 !h-4 !w-4" :user="_task.assigned_to" />
+            </template>
+            <template #item-prefix="{ option }">
+              <UserAvatar class="mr-2" :user="option.value" size="sm" />
+            </template>
+            <template #item-label="{ option }">
+              <Tooltip :text="option.value">
+                <div class="cursor-pointer text-ink-gray-9">
+                  {{ getUser(option.value).full_name }}
+                </div>
+              </Tooltip>
+            </template>
           </Link>
-          <DateTimePicker class="datepicker w-36" v-model="_task.due_date" :placeholder="__('01/04/2024 11:30 PM')"
-            :formatter="(date) => getFormat(date, '', true, true)" input-class="border-none" />
+          <DateTimePicker
+            class="datepicker w-36"
+            v-model="_task.due_date"
+            :placeholder="__('01/04/2024 11:30 PM')"
+            :formatter="(date) => getFormat(date, '', true, true)"
+            input-class="border-none"
+          />
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
-            <Button :label="_task.priority" class="justify-between w-full">
+            <Button :label="_task.priority" class="w-full justify-between">
               <template #prefix>
                 <TaskPriorityIcon :priority="_task.priority" />
               </template>
             </Button>
           </Dropdown>
         </div>
-        <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
       </div>
     </template>
   </Dialog>
@@ -117,7 +147,6 @@ const router = useRouter()
 const { getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
-const error = ref(null)
 const title = ref(null)
 const editMode = ref(false)
 const _task = ref({
@@ -171,12 +200,6 @@ async function updateTask() {
         reference_docname: props.doc || null,
         ..._task.value,
       },
-    }, {
-      onError: (err) => {
-        if (err.error.exc_type == 'MandatoryError') {
-          error.value = "Title is mandatory"
-        }
-      }
     })
     if (d.name) {
       updateOnboardingStep('create_first_task')

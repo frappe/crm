@@ -184,7 +184,7 @@ const callActions = computed(() => {
     {
       label: __('Make a Call'),
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
-      onClick: () => makeCall(props.doc.data.mobile_no),
+      onClick: () => makeCall(doc.data.mobile_no),
       condition: () => callEnabled.value,
     },
   ]

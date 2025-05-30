@@ -22,9 +22,9 @@
           variant="subtle"
           :theme="status.color"
         />
-        <Tooltip :text="formatDate(activity.communication_date)">
+        <Tooltip :text="formatDate(activity.creation)">
           <div class="text-sm text-ink-gray-5">
-            {{ __(timeAgo(activity.communication_date)) }}
+            {{ __(timeAgo(activity.creation)) }}
           </div>
         </Tooltip>
         <div class="flex gap-0.5">

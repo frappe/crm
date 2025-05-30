@@ -55,11 +55,7 @@ import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
-import {
-  showSettings,
-  isMobileView,
-  showAboutModal,
-} from '@/composables/settings'
+import { showSettings, isMobileView } from '@/composables/settings'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { Dropdown } from 'frappe-ui'
 import { theme, toggleTheme } from '@/stores/theme'
@@ -135,6 +131,20 @@ function getStandardItem(item) {
       return {
         component: markRaw(Apps),
       }
+    case 'support_link':
+      return {
+        icon: item.icon,
+        label: __(item.label),
+        onClick: () =>
+          window.open(item.route, item.open_in_new_window ? '_blank' : ''),
+      }
+    case 'docs_link':
+      return {
+        icon: item.icon,
+        label: __(item.label),
+        onClick: () =>
+          window.open(item.route, item.open_in_new_window ? '_blank' : ''),
+      }
     case 'toggle_theme':
       return {
         icon: theme.value === 'dark' ? 'sun' : item.icon,
@@ -154,12 +164,6 @@ function getStandardItem(item) {
         label: __(item.label),
         onClick: () => confirmLoginToFrappeCloud(),
         condition: () => !isMobileView.value && window.is_fc_site,
-      }
-    case 'about':
-      return {
-        icon: item.icon,
-        label: __(item.label),
-        onClick: () => (showAboutModal.value = true),
       }
     case 'logout':
       return {
