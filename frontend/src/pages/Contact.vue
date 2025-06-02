@@ -105,7 +105,7 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  @click="deleteContact"
+                  @click="deleteContact()"
                 >
                   <template #prefix>
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
@@ -173,6 +173,13 @@
     :errorMessage="errorMessage"
   />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'Contact'"
+    :docname="contact.data.name"
+    name="Contacts"
+  />
 </template>
 
 <script setup>
@@ -208,7 +215,6 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { errorMessage as _errorMessage } from '../utils'
 
 const { brand } = getSettings()
 const { $dialog, makeCall } = globalStore()
@@ -297,6 +303,11 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
+const showDeleteLinkedDocModal = ref(false)
+
+async function deleteContact() {
+  showDeleteLinkedDocModal.value = true
+}
 
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
@@ -313,28 +324,6 @@ async function changeContactImage(file) {
     value: file?.file_url || '',
   })
   contact.reload()
-}
-
-async function deleteContact() {
-  $dialog({
-    title: __('Delete contact'),
-    message: __('Are you sure you want to delete this contact?'),
-    actions: [
-      {
-        label: __('Delete'),
-        theme: 'red',
-        variant: 'solid',
-        async onClick(close) {
-          await call('frappe.client.delete', {
-            doctype: 'Contact',
-            name: props.contactId,
-          })
-          close()
-          router.push({ name: 'Contacts' })
-        },
-      },
-    ],
-  })
 }
 
 const tabIndex = ref(0)

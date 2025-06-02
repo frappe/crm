@@ -14,6 +14,20 @@
     :doctype="doctype"
     @reload="reload"
   />
+  <DeleteLinkedDocModal
+    v-if="showDeleteDocModal.showLinkedDocsModal"
+    v-model="showDeleteDocModal.showLinkedDocsModal"
+    :doctype="props.doctype"
+    :docname="showDeleteDocModal.docname"
+    :reload="reload"
+  />
+  <BulkDeleteLinkedDocModal
+    v-if="showDeleteDocModal.showDeleteModal"
+    v-model="showDeleteDocModal.showDeleteModal"
+    :doctype="props.doctype"
+    :items="showDeleteDocModal.items"
+    :reload="reload"
+  />
 </template>
 
 <script setup>
@@ -50,7 +64,11 @@ const { $dialog, $socket } = globalStore()
 const showEditModal = ref(false)
 const selectedValues = ref([])
 const unselectAllAction = ref(() => {})
-
+const showDeleteDocModal = ref({
+  showLinkedDocsModal: false,
+  showDeleteModal: false,
+  docname: null,
+})
 function editValues(selections, unselectAll) {
   selectedValues.value = selections
   showEditModal.value = true
@@ -88,33 +106,18 @@ function convertToDeal(selections, unselectAll) {
 }
 
 function deleteValues(selections, unselectAll) {
-  $dialog({
-    title: __('Delete'),
-    message: __('Are you sure you want to delete {0} item(s)?', [
-      selections.size,
-    ]),
-    variant: 'solid',
-    theme: 'red',
-    actions: [
-      {
-        label: __('Delete'),
-        variant: 'solid',
-        theme: 'red',
-        onClick: (close) => {
-          capture('bulk_delete')
-          call('frappe.desk.reportview.delete_items', {
-            items: JSON.stringify(Array.from(selections)),
-            doctype: props.doctype,
-          }).then(() => {
-            toast.success(__('Deleted successfully'))
-            unselectAll()
-            list.value.reload()
-            close()
-          })
-        },
-      },
-    ],
-  })
+  const selectedDocs = Array.from(selections)
+  if (selectedDocs.length == 1) {
+    showDeleteDocModal.value = {
+      showLinkedDocsModal: true,
+      docname: selectedDocs[0],
+    }
+  } else {
+    showDeleteDocModal.value = {
+      showDeleteModal: true,
+      items: selectedDocs,
+    }
+  }
 }
 
 const showAssignmentModal = ref(false)

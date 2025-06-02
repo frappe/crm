@@ -79,7 +79,7 @@ import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { createResource } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 
 const callLogsListView = ref(null)
 const showCallLogModal = ref(false)
@@ -123,4 +123,19 @@ function createCallLog() {
   callLog.value = {}
   showCallLogModal.value = true
 }
+
+const openCallLogFromURL = () => {
+  const searchParams = new URLSearchParams(window.location.search)
+  const callLogName = searchParams.get('open')
+
+  if (callLogName) {
+    showCallLog(callLogName)
+    searchParams.delete('open')
+    window.history.replaceState(null, '', window.location.pathname)
+  }
+}
+
+onMounted(() => {
+  openCallLogFromURL()
+})
 </script>
