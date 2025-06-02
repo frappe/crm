@@ -9,6 +9,7 @@
 **Simplify Sales, Amplify Relationships**
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/crm)](https://github.com/frappe/crm/releases)
+[![CI](https://github.com/frappe/crm/actions/workflows/ci.yml/badge.svg)](https://github.com/frappe/crm/actions/workflows/ci.yml)
 
 <div>
     <picture>
