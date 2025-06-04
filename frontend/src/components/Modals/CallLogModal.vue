@@ -1,12 +1,19 @@
 <template>
   <Dialog v-model="show" :options="dialogOptions">
     <template #body>
+<<<<<<< HEAD
       <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
+=======
+      <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-2">
+>>>>>>> 832323f (fix: handle new document for call log)
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
               {{ __(dialogOptions.title) || __('Untitled') }}
             </h3>
+            <Badge v-if="callLog.isDirty" :label="'Not Saved'" theme="orange" />
           </div>
           <div class="flex items-center gap-1">
             <Button
@@ -15,7 +22,11 @@
               class="w-7"
               @click="openQuickEntryModal"
             >
+<<<<<<< HEAD
               <EditIcon class="h-4 w-4" />
+=======
+              <EditIcon class="w-4 h-4" />
+>>>>>>> 832323f (fix: handle new document for call log)
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
               <FeatherIcon name="x" class="h-4 w-4" />
@@ -25,10 +36,17 @@
         <div v-if="tabs.data">
           <FieldLayout
             :tabs="tabs.data"
+<<<<<<< HEAD
             :data="_callLog"
             doctype="CRM Call Log"
           />
           <ErrorMessage class="mt-2" :message="error" />
+=======
+            :data="callLog.doc"
+            doctype="CRM Call Log"
+          />
+          <ErrorMessage class="mt-8" :message="error" />
+>>>>>>> 832323f (fix: handle new document for call log)
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
@@ -60,7 +78,14 @@ import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { getRandom } from '@/utils'
 import { capture } from '@/telemetry'
-import { FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
+import { useDocument } from '@/data/document'
+import {
+  FeatherIcon,
+  createResource,
+  ErrorMessage,
+  Badge,
+  call,
+} from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 
 const props = defineProps({
@@ -75,26 +100,14 @@ const props = defineProps({
 const { isManager } = usersStore()
 
 const show = defineModel()
-const callLog = defineModel('callLog')
+const _callLog = defineModel('callLog')
 
 const loading = ref(false)
 const error = ref(null)
 const title = ref(null)
 const editMode = ref(false)
 
-let _callLog = ref({
-  name: '',
-  type: '',
-  from: '',
-  to: '',
-  medium: '',
-  duration: '',
-  caller: '',
-  receiver: '',
-  status: '',
-  recording_url: '',
-  telephony_medium: 'Manual',
-})
+const callLog = ref(null)
 
 const dialogOptions = computed(() => {
   let title = !editMode.value ? __('New Call Log') : __('Edit Call Log')
@@ -118,41 +131,28 @@ const tabs = createResource({
   auto: true,
 })
 
-let doc = ref({})
-
-function updateCallLog() {
-  error.value = null
-  const old = { ...doc.value }
-  const newCallLog = { ..._callLog.value }
-
-  const dirty = JSON.stringify(old) !== JSON.stringify(newCallLog)
-
-  if (!dirty) {
-    show.value = false
-    return
-  }
-
-  loading.value = true
-  updateCallLogValues.submit({
-    doctype: 'CRM Call Log',
-    name: _callLog.value.name,
-    fieldname: newCallLog,
-  })
-}
-
-const updateCallLogValues = createResource({
-  url: 'frappe.client.set_value',
-  onSuccess(doc) {
+const callBacks = {
+  onSuccess: (doc) => {
     loading.value = false
-    if (doc.name) {
-      handleCallLogUpdate(doc)
-    }
+    handleCallLogUpdate(doc)
   },
-  onError(err) {
+  onError: (err) => {
     loading.value = false
+    if (err.exc_type == 'MandatoryError') {
+      const errorMessage = err.messages
+        .map((msg) => msg.split('Log:')[1].trim())
+        .join(', ')
+      error.value = `These fields are required: ${errorMessage}`
+      return
+    }
     error.value = err
   },
-})
+}
+
+async function updateCallLog() {
+  loading.value = true
+  await callLog.value.save.submit(null, callBacks)
+}
 
 const createCallLog = createResource({
   url: 'frappe.client.insert',
@@ -162,7 +162,7 @@ const createCallLog = createResource({
         doctype: 'CRM Call Log',
         id: getRandom(6),
         telephony_medium: 'Manual',
-        ..._callLog.value,
+        ...callLog.value.doc,
       },
     }
   },
@@ -174,8 +174,12 @@ const createCallLog = createResource({
     }
   },
   onError(err) {
+<<<<<<< HEAD
     loading.value = false
     error.value = err
+=======
+    callBacks.onError(err)
+>>>>>>> 832323f (fix: handle new document for call log)
   },
 })
 
@@ -189,15 +193,16 @@ watch(
   (value) => {
     if (!value) return
     editMode.value = false
-    nextTick(() => {
-      // TODO: Issue with FormControl
-      // title.value.el.focus()
-      doc.value = callLog.value?.data || {}
-      _callLog.value = { ...doc.value }
-      if (_callLog.value.name) {
-        editMode.value = true
-      }
-    })
+
+    let docname = _callLog.value?.name
+    const { document } = useDocument('CRM Call Log', docname)
+    callLog.value = document
+
+    if (docname) {
+      editMode.value = true
+    } else {
+      callLog.value.doc = { ..._callLog.value }
+    }
   },
 )
 
