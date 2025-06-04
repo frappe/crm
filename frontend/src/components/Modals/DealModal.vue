@@ -50,7 +50,7 @@
             ref="fieldLayoutRef"
             v-if="tabs.data?.length"
             :tabs="tabs.data"
-            :data="deal"
+            :data="deal.doc"
             doctype="CRM Deal"
           />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
@@ -76,9 +76,10 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
+import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { Switch, createResource } from 'frappe-ui'
-import { computed, ref, reactive, onMounted, nextTick, watch } from 'vue'
+import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -92,24 +93,11 @@ const show = defineModel()
 const router = useRouter()
 const error = ref(null)
 
-const deal = reactive({
-  organization: '',
-  organization_name: '',
-  website: '',
-  no_of_employees: '',
-  territory: '',
-  annual_revenue: '',
-  industry: '',
-  contact: '',
-  salutation: '',
-  first_name: '',
-  last_name: '',
-  email: '',
-  mobile_no: '',
-  gender: '',
-  status: '',
-  deal_owner: '',
-})
+const { document: deal } = useDocument('CRM Deal')
+
+if (Object.keys(deal.doc).length != 0) {
+  deal.doc = {}
+}
 
 const hasOrganizationSections = ref(true)
 const hasContactSections = ref(true)
@@ -165,11 +153,11 @@ const tabs = createResource({
             if (field.fieldname == 'status') {
               field.fieldtype = 'Select'
               field.options = dealStatuses.value
-              field.prefix = getDealStatus(deal.status).color
+              field.prefix = getDealStatus(deal.doc.status).color
             }
 
             if (field.fieldtype === 'Table') {
-              deal[field.fieldname] = []
+              deal.doc[field.fieldname] = []
             }
           })
         })
@@ -180,46 +168,49 @@ const tabs = createResource({
 
 const dealStatuses = computed(() => {
   let statuses = statusOptions('deal')
-  if (!deal.status) {
-    deal.status = statuses[0].value
+  if (!deal.doc.status) {
+    deal.doc.status = statuses[0].value
   }
   return statuses
 })
 
 function createDeal() {
-  if (deal.website && !deal.website.startsWith('http')) {
-    deal.website = 'https://' + deal.website
+  if (deal.doc.website && !deal.doc.website.startsWith('http')) {
+    deal.doc.website = 'https://' + deal.doc.website
   }
   if (chooseExistingContact.value) {
-    deal['first_name'] = null
-    deal['last_name'] = null
-    deal['email'] = null
-    deal['mobile_no'] = null
-  } else deal['contact'] = null
+    deal.doc['first_name'] = null
+    deal.doc['last_name'] = null
+    deal.doc['email'] = null
+    deal.doc['mobile_no'] = null
+  } else deal.doc['contact'] = null
 
   createResource({
     url: 'crm.fcrm.doctype.crm_deal.crm_deal.create_deal',
-    params: { args: deal },
+    params: { args: deal.doc },
     auto: true,
     validate() {
       error.value = null
-      if (deal.annual_revenue) {
-        if (typeof deal.annual_revenue === 'string') {
-          deal.annual_revenue = deal.annual_revenue.replace(/,/g, '')
-        } else if (isNaN(deal.annual_revenue)) {
+      if (deal.doc.annual_revenue) {
+        if (typeof deal.doc.annual_revenue === 'string') {
+          deal.doc.annual_revenue = deal.doc.annual_revenue.replace(/,/g, '')
+        } else if (isNaN(deal.doc.annual_revenue)) {
           error.value = __('Annual Revenue should be a number')
           return error.value
         }
       }
-      if (deal.mobile_no && isNaN(deal.mobile_no.replace(/[-+() ]/g, ''))) {
+      if (
+        deal.doc.mobile_no &&
+        isNaN(deal.doc.mobile_no.replace(/[-+() ]/g, ''))
+      ) {
         error.value = __('Mobile No should be a number')
         return error.value
       }
-      if (deal.email && !deal.email.includes('@')) {
+      if (deal.doc.email && !deal.doc.email.includes('@')) {
         error.value = __('Invalid Email')
         return error.value
       }
-      if (!deal.status) {
+      if (!deal.doc.status) {
         error.value = __('Status is required')
         return error.value
       }
@@ -252,12 +243,12 @@ function openQuickEntryModal() {
 }
 
 onMounted(() => {
-  Object.assign(deal, props.defaults)
-  if (!deal.deal_owner) {
-    deal.deal_owner = getUser().name
+  Object.assign(deal.doc, props.defaults)
+  if (!deal.doc.deal_owner) {
+    deal.doc.deal_owner = getUser().name
   }
-  if (!deal.status && dealStatuses.value[0].value) {
-    deal.status = dealStatuses.value[0].value
+  if (!deal.doc.status && dealStatuses.value[0].value) {
+    deal.doc.status = dealStatuses.value[0].value
   }
 })
 </script>

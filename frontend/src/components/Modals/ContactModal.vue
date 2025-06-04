@@ -25,7 +25,7 @@
         <FieldLayout
           v-if="tabs.data?.length"
           :tabs="tabs.data"
-          :data="_contact"
+          :data="_contact.doc"
           doctype="Contact"
         />
       </div>
@@ -49,9 +49,10 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -77,23 +78,27 @@ const show = defineModel()
 
 const loading = ref(false)
 
-let _contact = ref({})
+const { document: _contact } = useDocument('Contact')
+
+if (Object.keys(_contact.doc).length != 0) {
+  _contact.doc = {}
+}
 
 async function createContact() {
-  if (_contact.value.email_id) {
-    _contact.value.email_ids = [{ email_id: _contact.value.email_id }]
-    delete _contact.value.email_id
+  if (_contact.doc.email_id) {
+    _contact.doc.email_ids = [{ email_id: _contact.doc.email_id }]
+    delete _contact.doc.email_id
   }
 
-  if (_contact.value.mobile_no) {
-    _contact.value.phone_nos = [{ phone: _contact.value.mobile_no }]
-    delete _contact.value.mobile_no
+  if (_contact.doc.mobile_no) {
+    _contact.doc.phone_nos = [{ phone: _contact.doc.mobile_no }]
+    delete _contact.doc.mobile_no
   }
 
   const doc = await call('frappe.client.insert', {
     doc: {
       doctype: 'Contact',
-      ..._contact.value,
+      ..._contact.doc,
     },
   })
   if (doc.name) {
@@ -130,7 +135,7 @@ const tabs = createResource({
               field.read_only = false
             } else if (field.fieldname == 'address') {
               field.create = (value, close) => {
-                _contact.value.address = value
+                _contact.doc.address = value
                 emit('openAddressModal')
                 show.value = false
                 close()
@@ -140,7 +145,7 @@ const tabs = createResource({
                 show.value = false
               }
             } else if (field.fieldtype === 'Table') {
-              _contact.value[field.fieldname] = []
+              _contact.doc[field.fieldname] = []
             }
           })
         })
@@ -149,16 +154,9 @@ const tabs = createResource({
   },
 })
 
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    nextTick(() => {
-      _contact.value = { ...props.contact.data }
-    })
-  },
-)
-
+onMounted(() => {
+  Object.assign(_contact.doc, props.contact.data || props.contact || {})
+})
 const showQuickEntryModal = defineModel('showQuickEntryModal')
 
 function openQuickEntryModal() {

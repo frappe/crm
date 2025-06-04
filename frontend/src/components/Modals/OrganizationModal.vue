@@ -15,7 +15,11 @@
               class="w-7"
               @click="openQuickEntryModal"
             >
+<<<<<<< HEAD
               <EditIcon class="h-4 w-4" />
+=======
+              <EditIcon class="w-4 h-4" />
+>>>>>>> c4feed1 (fix: handle new document for lead/deal/contact/organization)
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
               <FeatherIcon name="x" class="h-4 w-4" />
@@ -25,9 +29,16 @@
         <FieldLayout
           v-if="tabs.data?.length"
           :tabs="tabs.data"
+<<<<<<< HEAD
           :data="_organization"
           doctype="CRM Organization"
         />
+=======
+          :data="_organization.doc"
+          doctype="CRM Organization"
+        />
+        <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
+>>>>>>> c4feed1 (fix: handle new document for lead/deal/contact/organization)
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
@@ -49,9 +60,10 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { call, FeatherIcon, createResource } from 'frappe-ui'
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -75,23 +87,35 @@ const organization = defineModel('organization')
 const loading = ref(false)
 const title = ref(null)
 
-let _organization = ref({
-  organization_name: '',
-  website: '',
-  annual_revenue: '',
-  no_of_employees: '1-10',
-  industry: '',
-})
+const { document: _organization } = useDocument('CRM Organization')
+
+if (Object.keys(_organization.doc).length != 0) {
+  _organization.doc = { no_of_employees: '1-10' }
+}
 
 let doc = ref({})
 
 async function createOrganization() {
-  const doc = await call('frappe.client.insert', {
-    doc: {
-      doctype: 'CRM Organization',
-      ..._organization.value,
+  const doc = await call(
+    'frappe.client.insert',
+    {
+      doc: {
+        doctype: 'CRM Organization',
+        ..._organization.doc,
+      },
     },
+<<<<<<< HEAD
   })
+=======
+    {
+      onError: (err) => {
+        if (err.error.exc_type == 'ValidationError') {
+          error.value = err.error?.messages?.[0]
+        }
+      },
+    },
+  )
+>>>>>>> c4feed1 (fix: handle new document for lead/deal/contact/organization)
   loading.value = false
   if (doc.name) {
     capture('organization_created')
@@ -124,7 +148,7 @@ const tabs = createResource({
           column.fields.forEach((field) => {
             if (field.fieldname == 'address') {
               field.create = (value, close) => {
-                _organization.value.address = value
+                _organization.doc.address = value
                 emit('openAddressModal')
                 show.value = false
                 close()
@@ -134,7 +158,7 @@ const tabs = createResource({
                 show.value = false
               }
             } else if (field.fieldtype === 'Table') {
-              _organization.value[field.fieldname] = []
+              _organization.doc[field.fieldname] = []
             }
           })
         })
@@ -143,19 +167,12 @@ const tabs = createResource({
   },
 })
 
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    nextTick(() => {
-      // TODO: Issue with FormControl
-      // title.value.el.focus()
-      doc.value = organization.value?.doc || organization.value || {}
-      _organization.value = { ...doc.value }
-    })
-  },
-)
-
+onMounted(() => {
+  Object.assign(
+    _organization.doc,
+    organization.value?.doc || organization.value || {},
+  )
+})
 const showQuickEntryModal = defineModel('showQuickEntryModal')
 
 function openQuickEntryModal() {
