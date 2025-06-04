@@ -63,14 +63,9 @@
     </div>
   </div>
   <OrganizationModal
+    v-if="showOrganizationModal"
     v-model="showOrganizationModal"
-    v-model:showQuickEntryModal="showQuickEntryModal"
     @openAddressModal="(_address) => openAddressModal(_address)"
-  />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Organization"
   />
   <AddressModal v-model="showAddressModal" v-model:address="address" />
 </template>
@@ -80,7 +75,6 @@ import CustomActions from '@/components/CustomActions.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
@@ -94,7 +88,6 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
-const showQuickEntryModal = ref(false)
 const showAddressModal = ref(false)
 
 // organizations data is loaded in the ViewControls component

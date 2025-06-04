@@ -63,15 +63,10 @@
     </div>
   </div>
   <ContactModal
+    v-if="showContactModal"
     v-model="showContactModal"
-    v-model:showQuickEntryModal="showQuickEntryModal"
     :contact="{}"
     @openAddressModal="(_address) => openAddressModal(_address)"
-  />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Contact"
   />
   <AddressModal v-model="showAddressModal" v-model:address="address" />
 </template>
@@ -82,7 +77,6 @@ import CustomActions from '@/components/CustomActions.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
@@ -97,7 +91,6 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { getOrganization } = organizationsStore()
 
 const showContactModal = ref(false)
-const showQuickEntryModal = ref(false)
 const showAddressModal = ref(false)
 
 const contactsListView = ref(null)

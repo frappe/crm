@@ -48,6 +48,7 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { FeatherIcon, createResource, ErrorMessage, call } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 
@@ -62,7 +63,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['showQuickEntryModal', 'callback'])
+const emit = defineEmits(['callback'])
 
 const { isManager } = usersStore()
 
@@ -139,9 +140,8 @@ watch(
 )
 
 function openQuickEntryModal() {
-  emit('showQuickEntryModal', props.doctype)
-  nextTick(() => {
-    show.value = false
-  })
+  showQuickEntryModal.value = true
+  quickEntryProps.value = { doctype: props.doctype }
+  nextTick(() => (show.value = false))
 }
 </script>

@@ -4,13 +4,12 @@
     v-model="showCreateDocumentModal"
     :doctype="createDocumentDoctype"
     :data="createDocumentData"
-    @showQuickEntryModal="(dt) => openQuickEntryModal(dt)"
     @callback="(data) => createDocumentCallback(data)"
   />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
-    :doctype="quickEntryDoctype"
+    v-bind="quickEntryProps"
   />
   <AboutModal v-model="showAboutModal" />
 </template>
@@ -24,14 +23,9 @@ import {
   createDocumentData,
   createDocumentCallback,
 } from '@/composables/document'
-import { showAboutModal } from '@/composables/modals'
-import { ref } from 'vue'
-
-const showQuickEntryModal = ref(false)
-const quickEntryDoctype = ref('')
-
-function openQuickEntryModal(dt) {
-  showQuickEntryModal.value = true
-  quickEntryDoctype.value = dt
-}
+import {
+  showQuickEntryModal,
+  quickEntryProps,
+  showAboutModal,
+} from '@/composables/modals'
 </script>

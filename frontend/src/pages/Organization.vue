@@ -164,11 +164,6 @@
     :errorTitle="errorTitle"
     :errorMessage="errorMessage"
   />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Organization"
-  />
   <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
@@ -178,7 +173,6 @@ import Resizer from '@/components/Resizer.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
@@ -222,7 +216,6 @@ const { getUser } = usersStore()
 const { $dialog } = globalStore()
 const { getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Organization')
-const showQuickEntryModal = ref(false)
 
 const route = useRoute()
 const router = useRouter()
