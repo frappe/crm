@@ -11,11 +11,17 @@
     v-model="showQuickEntryModal"
     v-bind="quickEntryProps"
   />
+  <AddressModal
+    v-if="showAddressModal"
+    v-model="showAddressModal"
+    v-bind="addressProps"
+  />
   <AboutModal v-model="showAboutModal" />
 </template>
 <script setup>
 import CreateDocumentModal from '@/components/Modals/CreateDocumentModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
+import AddressModal from '@/components/Modals/AddressModal.vue'
 import AboutModal from '@/components/Modals/AboutModal.vue'
 import {
   showCreateDocumentModal,
@@ -26,6 +32,8 @@ import {
 import {
   showQuickEntryModal,
   quickEntryProps,
-  showAboutModal,
+  showAddressModal,
+  addressProps,
+  showAboutModal
 } from '@/composables/modals'
 </script>

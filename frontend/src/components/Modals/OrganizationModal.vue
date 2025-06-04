@@ -50,7 +50,12 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
+import {
+  showQuickEntryModal,
+  quickEntryProps,
+  showAddressModal,
+  addressProps,
+} from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { call, FeatherIcon, createResource } from 'frappe-ui'
@@ -66,8 +71,6 @@ const props = defineProps({
     },
   },
 })
-
-const emit = defineEmits(['openAddressModal'])
 
 const { isManager } = usersStore()
 
@@ -137,14 +140,10 @@ const tabs = createResource({
             if (field.fieldname == 'address') {
               field.create = (value, close) => {
                 _organization.doc.address = value
-                emit('openAddressModal')
-                show.value = false
+                openAddressModal()
                 close()
               }
-              field.edit = (address) => {
-                emit('openAddressModal', address)
-                show.value = false
-              }
+              field.edit = (address) => openAddressModal(address)
             } else if (field.fieldtype === 'Table') {
               _organization.doc[field.fieldname] = []
             }
@@ -165,6 +164,15 @@ onMounted(() => {
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
   quickEntryProps.value = { doctype: 'CRM Organization' }
+  nextTick(() => (show.value = false))
+}
+
+function openAddressModal(_address) {
+  showAddressModal.value = true
+  addressProps.value = {
+    doctype: 'Address',
+    address: _address,
+  }
   nextTick(() => (show.value = false))
 }
 </script>
