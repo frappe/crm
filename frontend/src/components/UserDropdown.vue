@@ -55,11 +55,8 @@ import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
-import {
-  showSettings,
-  isMobileView,
-  showAboutModal,
-} from '@/composables/settings'
+import { showSettings, isMobileView } from '@/composables/settings'
+import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { Dropdown } from 'frappe-ui'
 import { theme, toggleTheme } from '@/stores/theme'
