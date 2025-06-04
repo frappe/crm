@@ -49,6 +49,7 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
@@ -157,10 +158,10 @@ const tabs = createResource({
 onMounted(() => {
   Object.assign(_contact.doc, props.contact.data || props.contact || {})
 })
-const showQuickEntryModal = defineModel('showQuickEntryModal')
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
+  quickEntryProps.value = { doctype: 'Contact' }
   nextTick(() => (show.value = false))
 }
 </script>

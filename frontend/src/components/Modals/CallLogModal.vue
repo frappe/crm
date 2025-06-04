@@ -46,29 +46,18 @@
       </div>
     </template>
   </Dialog>
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Call Log"
-  />
 </template>
 
 <script setup>
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getRandom } from '@/utils'
 import { capture } from '@/telemetry'
 import { useDocument } from '@/data/document'
-import {
-  FeatherIcon,
-  createResource,
-  ErrorMessage,
-  Badge,
-  call,
-} from 'frappe-ui'
+import { FeatherIcon, createResource, ErrorMessage, Badge } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 
 const props = defineProps({
@@ -123,9 +112,9 @@ const callBacks = {
     loading.value = false
     if (err.exc_type == 'MandatoryError') {
       const errorMessage = err.messages
-        .map((msg) => msg.split('Log:')[1].trim())
+        .map((msg) => msg.split(': ')[2].trim())
         .join(', ')
-      error.value = `These fields are required: ${errorMessage}`
+      error.value = __('These fields are required: {0}', [errorMessage])
       return
     }
     error.value = err
@@ -184,12 +173,9 @@ watch(
   },
 )
 
-const showQuickEntryModal = ref(false)
-
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
-  nextTick(() => {
-    show.value = false
-  })
+  quickEntryProps.value = { doctype: 'CRM Call Log' }
+  nextTick(() => (show.value = false))
 }
 </script>

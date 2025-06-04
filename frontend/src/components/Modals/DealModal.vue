@@ -76,6 +76,7 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { Switch, createResource } from 'frappe-ui'
@@ -233,13 +234,10 @@ function createDeal() {
   })
 }
 
-const showQuickEntryModal = defineModel('quickEntry')
-
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
-  nextTick(() => {
-    show.value = false
-  })
+  quickEntryProps.value = { doctype: 'CRM Deal' }
+  nextTick(() => (show.value = false))
 }
 
 onMounted(() => {

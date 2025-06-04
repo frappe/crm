@@ -48,6 +48,7 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
@@ -178,13 +179,10 @@ function createNewLead() {
   })
 }
 
-const showQuickEntryModal = defineModel('quickEntry')
-
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
-  nextTick(() => {
-    show.value = false
-  })
+  quickEntryProps.value = { doctype: 'CRM Lead' }
+  nextTick(() => (show.value = false))
 }
 
 onMounted(() => {
