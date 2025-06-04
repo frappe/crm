@@ -24,7 +24,7 @@ import {
   createDocumentData,
   createDocumentCallback,
 } from '@/composables/document'
-import { showAboutModal } from '@/composables/settings'
+import { showAboutModal } from '@/composables/modals'
 import { ref } from 'vue'
 
 const showQuickEntryModal = ref(false)
