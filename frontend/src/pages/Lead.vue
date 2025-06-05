@@ -13,8 +13,8 @@
         :actions="lead.data._customActions"
       />
       <AssignTo
-        v-model="lead.data._assignedTo"
-        :data="lead.data"
+        v-model="assignees.data"
+        :data="document.doc"
         doctype="CRM Lead"
       />
       <Dropdown
@@ -51,6 +51,7 @@
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
           v-model="lead"
+          @afterSave="reloadAssignees"
         />
       </template>
     </Tabs>
@@ -186,6 +187,7 @@
           doctype="CRM Lead"
           :docname="lead.data.name"
           @reload="sections.reload"
+          @afterFieldChange="reloadAssignees"
         />
       </div>
     </Resizer>
@@ -609,7 +611,10 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 
-const { triggerConvertToDeal } = useDocument('CRM Lead', props.leadId)
+const { triggerConvertToDeal, assignees, document } = useDocument(
+  'CRM Lead',
+  props.leadId,
+)
 
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
@@ -710,5 +715,11 @@ function openQuickEntryModal() {
     onlyRequired: true,
   }
   showConvertToDealModal.value = false
+}
+
+function reloadAssignees(changes) {
+  if (changes?.hasOwnProperty('lead_owner')) {
+    assignees.reload()
+  }
 }
 </script>
