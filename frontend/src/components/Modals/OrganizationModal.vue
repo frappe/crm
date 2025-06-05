@@ -25,7 +25,7 @@
         <FieldLayout
           v-if="tabs.data?.length"
           :tabs="tabs.data"
-          :data="_organization.doc"
+          :data="organization.doc"
           doctype="CRM Organization"
         />
         <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
@@ -63,6 +63,10 @@ import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
+  data: {
+    type: Object,
+    default: () => ({}),
+  },
   options: {
     type: Object,
     default: {
@@ -76,19 +80,11 @@ const { isManager } = usersStore()
 
 const router = useRouter()
 const show = defineModel()
-const organization = defineModel('organization')
 
 const loading = ref(false)
-const title = ref(null)
-
-const { document: _organization } = useDocument('CRM Organization')
-
-if (Object.keys(_organization.doc).length != 0) {
-  _organization.doc = { no_of_employees: '1-10' }
-}
-
-let doc = ref({})
 const error = ref(null)
+
+const { document: organization } = useDocument('CRM Organization')
 
 async function createOrganization() {
   const doc = await call(
@@ -96,7 +92,7 @@ async function createOrganization() {
     {
       doc: {
         doctype: 'CRM Organization',
-        ..._organization.doc,
+        ...organization.doc,
       },
     },
     {
@@ -120,8 +116,6 @@ function handleOrganizationUpdate(doc) {
       name: 'Organization',
       params: { organizationId: doc.name },
     })
-  } else {
-    organization.value?.reload?.()
   }
   show.value = false
   props.options.afterInsert && props.options.afterInsert(doc)
@@ -139,13 +133,13 @@ const tabs = createResource({
           column.fields.forEach((field) => {
             if (field.fieldname == 'address') {
               field.create = (value, close) => {
-                _organization.doc.address = value
+                organization.doc.address = value
                 openAddressModal()
                 close()
               }
               field.edit = (address) => openAddressModal(address)
             } else if (field.fieldtype === 'Table') {
-              _organization.doc[field.fieldname] = []
+              organization.doc[field.fieldname] = []
             }
           })
         })
@@ -155,10 +149,8 @@ const tabs = createResource({
 })
 
 onMounted(() => {
-  Object.assign(
-    _organization.doc,
-    organization.value?.doc || organization.value || {},
-  )
+  organization.doc = { no_of_employees: '1-10' }
+  Object.assign(organization.doc, props.data)
 })
 
 function openQuickEntryModal() {
