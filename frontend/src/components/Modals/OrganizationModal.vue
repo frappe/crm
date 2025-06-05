@@ -1,43 +1,28 @@
 <template>
   <Dialog v-model="show" :options="{ size: 'xl' }">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
+      <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
+        <div class="flex items-center justify-between mb-5">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
               {{ __('New Organization') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              @click="openQuickEntryModal"
-            >
-              <EditIcon class="h-4 w-4" />
+            <Button v-if="isManager() && !isMobileView" variant="ghost" class="w-7" @click="openQuickEntryModal">
+              <EditIcon class="w-4 h-4" />
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
+              <FeatherIcon name="x" class="w-4 h-4" />
             </Button>
           </div>
         </div>
-        <FieldLayout
-          v-if="tabs.data?.length"
-          :tabs="tabs.data"
-          :data="_organization"
-          doctype="CRM Organization"
-        />
+        <FieldLayout v-if="tabs.data?.length" :tabs="tabs.data" :data="_organization" doctype="CRM Organization" />
+        <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
       </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="space-y-2">
-          <Button
-            class="w-full"
-            variant="solid"
-            :label="__('Create')"
-            :loading="loading"
-            @click="createOrganization"
-          />
+          <Button class="w-full" variant="solid" :label="__('Create')" :loading="loading" @click="createOrganization" />
         </div>
       </div>
     </template>
@@ -49,9 +34,16 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import {
+  showQuickEntryModal,
+  quickEntryProps,
+  showAddressModal,
+  addressProps,
+} from '@/composables/modals'
+import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { call, FeatherIcon, createResource } from 'frappe-ui'
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -59,12 +51,10 @@ const props = defineProps({
     type: Object,
     default: {
       redirect: true,
-      afterInsert: () => {},
+      afterInsert: () => { },
     },
   },
 })
-
-const emit = defineEmits(['openAddressModal'])
 
 const { isManager } = usersStore()
 
@@ -75,23 +65,32 @@ const organization = defineModel('organization')
 const loading = ref(false)
 const title = ref(null)
 
-let _organization = ref({
-  organization_name: '',
-  website: '',
-  annual_revenue: '',
-  no_of_employees: '1-10',
-  industry: '',
-})
+const { document: _organization } = useDocument('CRM Organization')
+
+if (Object.keys(_organization.doc).length != 0) {
+  _organization.doc = { no_of_employees: '1-10' }
+}
 
 let doc = ref({})
+const error = ref(null)
 
 async function createOrganization() {
-  const doc = await call('frappe.client.insert', {
-    doc: {
-      doctype: 'CRM Organization',
-      ..._organization.value,
+  const doc = await call(
+    'frappe.client.insert',
+    {
+      doc: {
+        doctype: 'CRM Organization',
+        ..._organization.doc,
+      },
     },
-  })
+    {
+      onError: (err) => {
+        if (err.error.exc_type == 'ValidationError') {
+          error.value = err.error?.messages?.[0]
+        }
+      },
+    },
+  )
   loading.value = false
   if (doc.name) {
     capture('organization_created')
@@ -124,17 +123,13 @@ const tabs = createResource({
           column.fields.forEach((field) => {
             if (field.fieldname == 'address') {
               field.create = (value, close) => {
-                _organization.value.address = value
-                emit('openAddressModal')
-                show.value = false
+                _organization.doc.address = value
+                openAddressModal()
                 close()
               }
-              field.edit = (address) => {
-                emit('openAddressModal', address)
-                show.value = false
-              }
+              field.edit = (address) => openAddressModal(address)
             } else if (field.fieldtype === 'Table') {
-              _organization.value[field.fieldname] = []
+              _organization.doc[field.fieldname] = []
             }
           })
         })
@@ -143,23 +138,25 @@ const tabs = createResource({
   },
 })
 
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    nextTick(() => {
-      // TODO: Issue with FormControl
-      // title.value.el.focus()
-      doc.value = organization.value?.doc || organization.value || {}
-      _organization.value = { ...doc.value }
-    })
-  },
-)
-
-const showQuickEntryModal = defineModel('showQuickEntryModal')
+onMounted(() => {
+  Object.assign(
+    _organization.doc,
+    organization.value?.doc || organization.value || {},
+  )
+})
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
+  quickEntryProps.value = { doctype: 'CRM Organization' }
+  nextTick(() => (show.value = false))
+}
+
+function openAddressModal(_address) {
+  showAddressModal.value = true
+  addressProps.value = {
+    doctype: 'Address',
+    address: _address,
+  }
   nextTick(() => (show.value = false))
 }
 </script>

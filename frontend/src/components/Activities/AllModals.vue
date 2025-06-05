@@ -91,10 +91,8 @@ function createCallLog() {
   let doctype = props.doctype
   let docname = props.doc.data?.name
   callLog.value = {
-    data: {
-      reference_doctype: doctype,
-      reference_docname: docname,
-    },
+    reference_doctype: doctype,
+    reference_docname: docname,
   }
   showCallLogModal.value = true
 }

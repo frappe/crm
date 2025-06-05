@@ -1,6 +1,7 @@
 import { getScript } from '@/data/script'
 import { runSequentially } from '@/utils'
 import { createDocumentResource, toast } from 'frappe-ui'
+import { reactive } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
@@ -10,27 +11,34 @@ export function useDocument(doctype, docname) {
 
   documentsCache[doctype] = documentsCache[doctype] || {}
 
-  if (!documentsCache[doctype][docname]) {
-    documentsCache[doctype][docname] = createDocumentResource({
-      doctype: doctype,
-      name: docname,
-      onSuccess: async () => await setupFormScript(),
-      setValue: {
-        onSuccess: () => {
-          toast.success(__('Document updated successfully'))
+  if (!documentsCache[doctype][docname || '']) {
+    if (docname) {
+      documentsCache[doctype][docname] = createDocumentResource({
+        doctype: doctype,
+        name: docname,
+        onSuccess: async () => await setupFormScript(),
+        setValue: {
+          onSuccess: () => {
+            toast.success(__('Document updated successfully'))
+          },
+          onError: (err) => {
+            toast.error(__('Error updating document'))
+            console.error(err)
+          },
         },
-        onError: (err) => {
-          toast.error(__('Error updating document'))
-          console.error(err)
-        },
-      },
-    })
+      })
+    } else {
+      documentsCache[doctype][''] = reactive({
+        doc: {},
+      })
+      setupFormScript()
+    }
   }
 
   async function setupFormScript() {
     if (
       controllersCache[doctype] &&
-      typeof controllersCache[doctype][docname] === 'object'
+      typeof controllersCache[doctype][docname || ''] === 'object'
     ) {
       return
     }
@@ -39,9 +47,11 @@ export function useDocument(doctype, docname) {
       controllersCache[doctype] = {}
     }
 
-    controllersCache[doctype][docname] = {}
+    controllersCache[doctype][docname || ''] = {}
 
-    const controllersArray = await setupScript(documentsCache[doctype][docname])
+    const controllersArray = await setupScript(
+      documentsCache[doctype][docname || ''],
+    )
 
     if (!controllersArray || controllersArray.length === 0) return
 
@@ -53,14 +63,14 @@ export function useDocument(doctype, docname) {
       }
       organizedControllers[controllerKey].push(controller)
     }
-    controllersCache[doctype][docname] = organizedControllers
+    controllersCache[doctype][docname || ''] = organizedControllers
   }
 
   function getControllers(row = null) {
     const _doctype = row?.doctype || doctype
     const controllerKey = _doctype.replace(/\s+/g, '')
 
-    const docControllers = controllersCache[doctype]?.[docname]
+    const docControllers = controllersCache[doctype]?.[docname || '']
 
     if (
       typeof docControllers === 'object' &&
@@ -86,7 +96,7 @@ export function useDocument(doctype, docname) {
         this.value = row[fieldname]
         this.oldValue = getOldValue(fieldname, row)
       } else {
-        this.value = documentsCache[doctype][docname].doc[fieldname]
+        this.value = documentsCache[doctype][docname || ''].doc[fieldname]
         this.oldValue = getOldValue(fieldname)
       }
       await this[fieldname]?.()
@@ -151,9 +161,9 @@ export function useDocument(doctype, docname) {
   }
 
   function getOldValue(fieldname, row) {
-    if (!documentsCache[doctype][docname]) return ''
+    if (!documentsCache[doctype][docname || '']) return ''
 
-    const document = documentsCache[doctype][docname]
+    const document = documentsCache[doctype][docname || '']
     const oldDoc = document.originalDoc
 
     if (row?.name) {
@@ -166,7 +176,7 @@ export function useDocument(doctype, docname) {
   }
 
   return {
-    document: documentsCache[doctype][docname],
+    document: documentsCache[doctype][docname || ''],
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,

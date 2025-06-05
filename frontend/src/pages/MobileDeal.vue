@@ -222,6 +222,7 @@
     }"
   />
   <ContactModal
+    v-if="showContactModal"
     v-model="showContactModal"
     :contact="_contact"
     :options="{
