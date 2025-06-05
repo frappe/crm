@@ -44,9 +44,13 @@ import { getRandom } from '@/utils'
 import { capture } from '@/telemetry'
 import { useDocument } from '@/data/document'
 import { FeatherIcon, createResource, ErrorMessage, Badge } from 'frappe-ui'
-import { ref, nextTick, watch, computed } from 'vue'
+import { ref, nextTick, computed, onMounted } from 'vue'
 
 const props = defineProps({
+  data: {
+    type: Object,
+    default: () => ({}),
+  },
   options: {
     type: Object,
     default: {
@@ -58,14 +62,15 @@ const props = defineProps({
 const { isManager } = usersStore()
 
 const show = defineModel()
-const _callLog = defineModel('callLog')
 
 const loading = ref(false)
 const error = ref(null)
-const title = ref(null)
 const editMode = ref(false)
 
-const callLog = ref(null)
+const { document: callLog } = useDocument(
+  'CRM Call Log',
+  props.data?.name || '',
+)
 
 const dialogOptions = computed(() => {
   let title = !editMode.value ? __('New Call Log') : __('Edit Call Log')
@@ -109,7 +114,7 @@ const callBacks = {
 
 async function updateCallLog() {
   loading.value = true
-  await callLog.value.save.submit(null, callBacks)
+  await callLog.save.submit(null, callBacks)
 }
 
 const createCallLog = createResource({
@@ -120,7 +125,7 @@ const createCallLog = createResource({
         doctype: 'CRM Call Log',
         id: getRandom(6),
         telephony_medium: 'Manual',
-        ...callLog.value.doc,
+        ...callLog.doc,
       },
     }
   },
@@ -141,23 +146,13 @@ function handleCallLogUpdate(doc) {
   props.options.afterInsert && props.options.afterInsert(doc)
 }
 
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    editMode.value = false
+onMounted(() => {
+  editMode.value = props.data?.name ? true : false
 
-    let docname = _callLog.value?.name
-    const { document } = useDocument('CRM Call Log', docname)
-    callLog.value = document
-
-    if (docname) {
-      editMode.value = true
-    } else {
-      callLog.value.doc = { ..._callLog.value }
-    }
-  },
-)
+  if (!props.data?.name) {
+    callLog.doc = { ...props.data }
+  }
+})
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
