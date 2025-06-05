@@ -293,12 +293,6 @@
       />
     </template>
   </Dialog>
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Deal"
-    :onlyRequired="true"
-  />
   <FilesUploader
     v-if="lead.data?.name"
     v-model="showFilesUploader"
@@ -339,7 +333,6 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
@@ -348,6 +341,7 @@ import {
   setupCustomizations,
   copyToClipboard,
 } from '@/utils'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { sessionStore } from '@/stores/session'
@@ -709,10 +703,12 @@ const dealTabs = createResource({
   },
 })
 
-const showQuickEntryModal = ref(false)
-
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
+  quickEntryProps.value = {
+    doctype: 'CRM Deal',
+    onlyRequired: true,
+  }
   showConvertToDealModal.value = false
 }
 </script>
