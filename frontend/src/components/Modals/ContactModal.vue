@@ -84,10 +84,6 @@ const loading = ref(false)
 
 const { document: _contact } = useDocument('Contact')
 
-if (Object.keys(_contact.doc).length != 0) {
-  _contact.doc = {}
-}
-
 async function createContact() {
   if (_contact.doc.email_id) {
     _contact.doc.email_ids = [{ email_id: _contact.doc.email_id }]
@@ -155,7 +151,8 @@ const tabs = createResource({
 })
 
 onMounted(() => {
-  Object.assign(_contact.doc, props.contact.data || props.contact || {})
+  _contact.doc = {}
+  Object.assign(_contact.doc, props.contact.data || props.contact)
 })
 
 function openQuickEntryModal() {

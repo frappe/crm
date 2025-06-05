@@ -96,10 +96,6 @@ const error = ref(null)
 
 const { document: deal } = useDocument('CRM Deal')
 
-if (Object.keys(deal.doc).length != 0) {
-  deal.doc = {}
-}
-
 const hasOrganizationSections = ref(true)
 const hasContactSections = ref(true)
 
@@ -241,7 +237,9 @@ function openQuickEntryModal() {
 }
 
 onMounted(() => {
+  deal.doc = { no_of_employees: '1-10' }
   Object.assign(deal.doc, props.defaults)
+
   if (!deal.doc.deal_owner) {
     deal.doc.deal_owner = getUser().name
   }

@@ -72,10 +72,6 @@ const isLeadCreating = ref(false)
 
 const { document: lead } = useDocument('CRM Lead')
 
-if (Object.keys(lead.doc).length != 0) {
-  lead.doc = {}
-}
-
 const leadStatuses = computed(() => {
   let statuses = statusOptions('lead')
   if (!lead.doc.status) {
@@ -186,7 +182,9 @@ function openQuickEntryModal() {
 }
 
 onMounted(() => {
+  lead.doc = { no_of_employees: '1-10' }
   Object.assign(lead.doc, props.defaults)
+
   if (!lead.doc?.lead_owner) {
     lead.doc.lead_owner = getUser().name
   }
