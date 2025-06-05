@@ -76,6 +76,9 @@ const props = defineProps({
     required: true,
   },
 })
+
+const emit = defineEmits(['afterSave'])
+
 const { isManager } = usersStore()
 
 const showDataFieldsModal = ref(false)
@@ -90,7 +93,21 @@ const tabs = createResource({
 })
 
 function saveChanges() {
-  document.save.submit()
+  if (!document.isDirty) return
+
+  const updatedDoc = { ...document.doc }
+  const oldDoc = { ...document.originalDoc }
+
+  const changes = Object.keys(updatedDoc).reduce((acc, key) => {
+    if (JSON.stringify(updatedDoc[key]) !== JSON.stringify(oldDoc[key])) {
+      acc[key] = updatedDoc[key]
+    }
+    return acc
+  }, {})
+
+  document.save.submit(null, {
+    onSuccess: () => emit('afterSave', changes),
+  })
 }
 
 watch(
