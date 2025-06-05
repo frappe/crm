@@ -10,3 +10,4 @@ crm/public/frontend
 frontend/yarn.lock
 crm/www/crm.html
 build
+.idea

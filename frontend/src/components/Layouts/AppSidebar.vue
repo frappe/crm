@@ -157,6 +157,7 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import CalenderIcon from '@/components/Icons/CalendarIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
@@ -165,28 +166,26 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
-import {
-  unreadNotificationsCount,
-  notificationsStore,
-} from '@/stores/notifications'
+import { notificationsStore, unreadNotificationsCount } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
-import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { FeatherIcon, call } from 'frappe-ui'
+import { activeSettingsPage, showSettings } from '@/composables/settings'
+import { call, FeatherIcon } from 'frappe-ui'
 import {
+  GettingStartedBanner,
+  HelpModal,
+  IntermediateStepModal,
+  minimize,
+  showHelpModal,
   SignupBanner,
   TrialBanner,
-  HelpModal,
-  GettingStartedBanner,
-  useOnboarding,
-  showHelpModal,
-  minimize,
-  IntermediateStepModal,
+  useOnboarding
 } from 'frappe-ui/frappe'
 import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
-import { ref, reactive, computed, h, markRaw, onMounted } from 'vue'
+import { computed, h, markRaw, onMounted, reactive, ref } from 'vue'
+import DashboardIcon from '@/components/Icons/DashboardIcon.vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -197,6 +196,17 @@ const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
 
 const links = [
+  {
+    label: 'Dashboard',
+    icon: DashboardIcon,
+    to: 'Dashboard',
+    default: true,
+  },
+  {
+    label: 'Calendar',
+    icon: CalenderIcon,
+    to: 'Calendar',
+  },
   {
     label: 'Leads',
     icon: LeadsIcon,
@@ -296,6 +306,8 @@ function getIcon(routeName, icon) {
       return NoteIcon
     case 'Call Logs':
       return PhoneIcon
+    case 'Calender':
+      return CalenderIcon
     default:
       return PinIcon
   }

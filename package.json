@@ -5,7 +5,7 @@
 	"scripts": {
 		"postinstall": "cd frontend && yarn install",
 		"dev": "cd frontend && yarn dev",
-		"build": "cd frontend && yarn build",
+		"build": "cd frontend && NODE_OPTIONS=\"--max-old-space-size=4096\" yarn build",
 		"disable-workspaces": "sed -i '' 's/\"workspaces\"/\"aworkspaces\"/g' package.json",
 		"enable-workspaces": "sed -i '' 's/\"aworkspaces\"/\"workspaces\"/g' package.json && rm -rf node_modules ./frontend/node_modules/ frappe-ui/node_modules/ && yarn install",
 		"upgrade-frappeui": "cd frontend && yarn add frappe-ui@latest && cd ..",
