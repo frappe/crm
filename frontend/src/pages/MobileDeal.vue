@@ -214,8 +214,9 @@
     </Tabs>
   </div>
   <OrganizationModal
+    v-if="showOrganizationModal"
     v-model="showOrganizationModal"
-    v-model:organization="_organization"
+    :data="_organization"
     :options="{
       redirect: false,
       afterInsert: (doc) => updateField('organization', doc.name),
