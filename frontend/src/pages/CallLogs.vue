@@ -63,7 +63,7 @@
   />
   <CallLogModal
     v-model="showCallLogModal"
-    v-model:callLog="callLog"
+    v-model:callLog="callLog.data"
     :options="{ afterInsert: () => callLogs.reload() }"
   />
 </template>

@@ -250,7 +250,7 @@
               </span>
               <span v-if="activity.type">{{ __(activity.type) }}</span>
               <span
-                v-if="activity.data.field_label"
+                v-if="activity.data?.field_label"
                 class="max-w-xs truncate font-medium text-ink-gray-8"
               >
                 {{ __(activity.data.field_label) }}
@@ -307,7 +307,7 @@
             >
               <div class="inline-flex flex-wrap gap-1 text-ink-gray-5">
                 <span
-                  v-if="activity.data.field_label"
+                  v-if="activity.data?.field_label"
                   class="max-w-xs truncate text-ink-gray-5"
                 >
                   {{ __(activity.data.field_label) }}

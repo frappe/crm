@@ -33,7 +33,7 @@ export function getScript(doctype, view = 'Form') {
   }
 
   async function setupScript(document, helpers = {}) {
-    await scripts.promise
+    await scripts.list.promise
 
     let scriptDefs = doctypeScripts[doctype]
     if (!scriptDefs || Object.keys(scriptDefs).length === 0) return null
