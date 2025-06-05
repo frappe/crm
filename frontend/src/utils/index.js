@@ -221,6 +221,15 @@ export function setupAssignees(doc) {
   }))
 }
 
+export function parseAssignees(assignees) {
+  let { getUser } = usersStore()
+  return assignees.map((user) => ({
+    name: user,
+    image: getUser(user).user_image,
+    label: getUser(user).full_name,
+  }))
+}
+
 async function getFormScript(script, obj) {
   if (!script.includes('setupForm(')) return {}
   let scriptFn = new Function(script + '\nreturn setupForm')()
