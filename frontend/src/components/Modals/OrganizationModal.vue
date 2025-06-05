@@ -17,16 +17,12 @@
             </Button>
           </div>
         </div>
-<<<<<<< HEAD
-        <FieldLayout v-if="tabs.data?.length" :tabs="tabs.data" :data="_organization" doctype="CRM Organization" />
-=======
         <FieldLayout
           v-if="tabs.data?.length"
           :tabs="tabs.data"
           :data="organization.doc"
           doctype="CRM Organization"
         />
->>>>>>> 9362997 (refactor: organization modal code refactor)
         <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
       </div>
       <div class="px-4 pt-4 pb-7 sm:px-6">
