@@ -320,7 +320,7 @@
                   {{ startCase(__(activity.type)) }}
                 </span>
                 <span
-                  v-if="activity.data.old_value"
+                  v-if="activity.data?.old_value"
                   class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
@@ -336,7 +336,7 @@
                 </span>
                 <span v-if="activity.to">{{ __('to') }}</span>
                 <span
-                  v-if="activity.data.value"
+                  v-if="activity.data?.value"
                   class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
