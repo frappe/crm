@@ -11,7 +11,13 @@
       <div class="absolute right-0">
         <Dropdown
           :options="
-            statusOptions('lead', updateField, lead.data._customStatuses)
+            statusOptions(
+              'lead',
+              updateField,
+              document.statuses?.length
+                ? document.statuses
+                : lead.data._customStatuses,
+            )
           "
         >
           <template #default="{ open }">
@@ -44,6 +50,10 @@
       <CustomActions
         v-if="lead.data._customActions?.length"
         :actions="lead.data._customActions"
+      />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
       />
       <Button
         :label="__('Convert')"

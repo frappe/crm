@@ -12,13 +12,25 @@
         v-if="deal.data._customActions?.length"
         :actions="deal.data._customActions"
       />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
+      />
       <AssignTo
         v-model="assignees.data"
         :data="document.doc"
         doctype="CRM Deal"
       />
       <Dropdown
-        :options="statusOptions('deal', updateField, deal.data._customStatuses)"
+        :options="
+          statusOptions(
+            'deal',
+            updateField,
+            document.statuses?.length
+              ? document.statuses
+              : deal.data._customStatuses,
+          )
+        "
       >
         <template #default="{ open }">
           <Button :label="deal.data.status">
