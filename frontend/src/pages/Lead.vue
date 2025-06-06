@@ -12,13 +12,25 @@
         v-if="lead.data._customActions?.length"
         :actions="lead.data._customActions"
       />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
+      />
       <AssignTo
         v-model="assignees.data"
         :data="document.doc"
         doctype="CRM Lead"
       />
       <Dropdown
-        :options="statusOptions('lead', updateField, lead.data._customStatuses)"
+        :options="
+          statusOptions(
+            'lead',
+            updateField,
+            document.statuses?.length
+              ? document.statuses
+              : lead.data._customStatuses,
+          )
+        "
       >
         <template #default="{ open }">
           <Button :label="lead.data.status">
