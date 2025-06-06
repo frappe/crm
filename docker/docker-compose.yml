@@ -2,12 +2,12 @@ version: "3.7"
 name: crm
 services:
   mariadb:
-    image: mariadb:10.8
+    image: mariadb:10.6.21-ubi
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
       - --skip-character-set-client-handshake
-      - --skip-innodb-read-only-compressed # Temporary fix for MariaDB 10.6
+      - --skip-innodb-read-only-compressed
     environment:
       MYSQL_ROOT_PASSWORD: 123
     volumes:
@@ -18,14 +18,15 @@ services:
 
   frappe:
     image: frappe/bench:latest
-    command: bash /workspace/init.sh
+    command: bash /home/frappe/init.sh
     environment:
       - SHELL=/bin/bash
     working_dir: /home/frappe
     volumes:
-      - .:/workspace
+      - .:/workspace  # Entire project in /workspace
+      - ./docker:/home/frappe  # Mounts the `docker` folder to /home/frappe
     ports:
-      - 8000:8000
+      - 8001:8000
       - 9000:9000
 
 volumes:
