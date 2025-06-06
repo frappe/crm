@@ -11,7 +11,13 @@
       <div class="absolute right-0">
         <Dropdown
           :options="
-            statusOptions('deal', updateField, deal.data._customStatuses)
+            statusOptions(
+              'deal',
+              updateField,
+              document.statuses?.length
+                ? document.statuses
+                : deal.data._customStatuses,
+            )
           "
         >
           <template #default="{ open }">

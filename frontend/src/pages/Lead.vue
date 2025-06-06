@@ -22,7 +22,15 @@
         doctype="CRM Lead"
       />
       <Dropdown
-        :options="statusOptions('lead', updateField, lead.data._customStatuses)"
+        :options="
+          statusOptions(
+            'lead',
+            updateField,
+            document.statuses?.length
+              ? document.statuses
+              : lead.data._customStatuses,
+          )
+        "
       >
         <template #default="{ open }">
           <Button :label="lead.data.status">

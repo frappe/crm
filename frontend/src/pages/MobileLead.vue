@@ -11,7 +11,13 @@
       <div class="absolute right-0">
         <Dropdown
           :options="
-            statusOptions('lead', updateField, lead.data._customStatuses)
+            statusOptions(
+              'lead',
+              updateField,
+              document.statuses?.length
+                ? document.statuses
+                : lead.data._customStatuses,
+            )
           "
         >
           <template #default="{ open }">
