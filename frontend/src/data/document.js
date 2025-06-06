@@ -19,6 +19,7 @@ export function useDocument(doctype, docname) {
         onSuccess: async () => await setupFormScript(),
         setValue: {
           onSuccess: () => {
+            triggerOnSave()
             toast.success(__('Document updated successfully'))
           },
           onError: (err) => {
@@ -76,7 +77,7 @@ export function useDocument(doctype, docname) {
     }
     controllersCache[doctype][docname || ''] = organizedControllers
 
-    triggerOnload()
+    triggerOnLoad()
   }
 
   function getControllers(row = null) {
@@ -95,9 +96,16 @@ export function useDocument(doctype, docname) {
     return []
   }
 
-  async function triggerOnload() {
+  async function triggerOnLoad() {
     const handler = async function () {
-      await this.onload?.()
+      await this.onLoad?.()
+    }
+    await trigger(handler)
+  }
+
+  async function triggerOnSave() {
+    const handler = async function () {
+      await this.onSave?.()
     }
     await trigger(handler)
   }
@@ -199,11 +207,12 @@ export function useDocument(doctype, docname) {
     document: documentsCache[doctype][docname || ''],
     assignees,
     getControllers,
-    triggerOnload,
+    triggerOnLoad,
+    triggerOnSave,
+    triggerOnRefresh,
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,
-    triggerOnRefresh,
     setupFormScript,
     triggerOnCreateLead,
     triggerConvertToDeal,
