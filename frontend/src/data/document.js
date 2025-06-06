@@ -19,6 +19,7 @@ export function useDocument(doctype, docname) {
         onSuccess: async () => await setupFormScript(),
         setValue: {
           onSuccess: () => {
+            triggerOnSave()
             toast.success(__('Document updated successfully'))
           },
           onError: (err) => {
@@ -38,7 +39,7 @@ export function useDocument(doctype, docname) {
   const assignees = createResource({
     url: 'crm.api.doc.get_assigned_users',
     cache: `assignees:${doctype}:${docname}`,
-    auto: true,
+    auto: docname ? true : false,
     params: {
       doctype: doctype,
       name: docname,
@@ -76,7 +77,7 @@ export function useDocument(doctype, docname) {
     }
     controllersCache[doctype][docname || ''] = organizedControllers
 
-    triggerOnload()
+    triggerOnLoad()
   }
 
   function getControllers(row = null) {
@@ -95,9 +96,16 @@ export function useDocument(doctype, docname) {
     return []
   }
 
-  async function triggerOnload() {
+  async function triggerOnLoad() {
     const handler = async function () {
-      await this.onload?.()
+      await (this.onLoad?.() || this.on_load?.() || this.onload?.())
+    }
+    await trigger(handler)
+  }
+
+  async function triggerOnSave() {
+    const handler = async function () {
+      await (this.onSave?.() || this.on_save?.())
     }
     await trigger(handler)
   }
@@ -156,7 +164,7 @@ export function useDocument(doctype, docname) {
   async function triggerOnCreateLead() {
     const args = Array.from(arguments)
     const handler = async function () {
-      await this.on_create_lead?.(...args)
+      await (this.onCreateLead?.(...args) || this.on_create_lead?.(...args))
     }
     await trigger(handler)
   }
@@ -164,7 +172,8 @@ export function useDocument(doctype, docname) {
   async function triggerConvertToDeal() {
     const args = Array.from(arguments)
     const handler = async function () {
-      await this.convert_to_deal?.(...args)
+      await (this.convertToDeal?.(...args) ||
+        this.on_convert_to_deal?.(...args))
     }
     await trigger(handler)
   }
@@ -199,11 +208,12 @@ export function useDocument(doctype, docname) {
     document: documentsCache[doctype][docname || ''],
     assignees,
     getControllers,
-    triggerOnload,
+    triggerOnLoad,
+    triggerOnSave,
+    triggerOnRefresh,
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,
-    triggerOnRefresh,
     setupFormScript,
     triggerOnCreateLead,
     triggerConvertToDeal,

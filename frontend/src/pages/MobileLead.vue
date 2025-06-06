@@ -10,20 +10,15 @@
       </Breadcrumbs>
       <div class="absolute right-0">
         <Dropdown
-          :options="
-            statusOptions(
-              'lead',
-              updateField,
-              document.statuses?.length
-                ? document.statuses
-                : lead.data._customStatuses,
-            )
-          "
+          v-if="document.doc"
+          :options="statusOptions('lead', document, lead.data._customStatuses)"
         >
           <template #default="{ open }">
-            <Button :label="lead.data.status">
+            <Button :label="document.doc.status">
               <template #prefix>
-                <IndicatorIcon :class="getLeadStatus(lead.data.status).color" />
+                <IndicatorIcon
+                  :class="getLeadStatus(document.doc.status).color"
+                />
               </template>
               <template #suffix>
                 <FeatherIcon
