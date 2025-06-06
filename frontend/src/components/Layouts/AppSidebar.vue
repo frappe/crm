@@ -351,7 +351,7 @@ const steps = reactive([
     onClick: () => {
       minimize.value = true
       showSettings.value = true
-      activeSettingsPage.value = 'Invite Members'
+      activeSettingsPage.value = 'Invite Agent'
     },
     condition: () => isManager(),
   },
@@ -529,7 +529,7 @@ const articles = ref([
       { name: 'profile', title: __('Profile') },
       { name: 'custom-branding', title: __('Custom branding') },
       { name: 'home-actions', title: __('Home actions') },
-      { name: 'invite-members', title: __('Invite members') },
+      { name: 'invite-agent', title: __('Invite agent') },
     ],
   },
   {
