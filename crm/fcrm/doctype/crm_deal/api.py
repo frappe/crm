@@ -13,7 +13,6 @@ def get_deal(name):
 
 	deal["fields_meta"] = get_fields_meta("CRM Deal")
 	deal["_form_script"] = get_form_script("CRM Deal")
-	deal["_assign"] = get_assigned_users("CRM Deal", deal.name)
 	return deal
 
 

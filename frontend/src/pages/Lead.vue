@@ -337,12 +337,7 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import {
-  openWebsite,
-  setupAssignees,
-  setupCustomizations,
-  copyToClipboard,
-} from '@/utils'
+import { openWebsite, setupCustomizations, copyToClipboard } from '@/utils'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -405,7 +400,6 @@ const lead = createResource({
   onSuccess: (data) => {
     errorTitle.value = ''
     errorMessage.value = ''
-    setupAssignees(lead)
     setupCustomizations(lead, {
       doc: data,
       $dialog,
@@ -717,8 +711,8 @@ function openQuickEntryModal() {
   showConvertToDealModal.value = false
 }
 
-function reloadAssignees(changes) {
-  if (changes?.hasOwnProperty('lead_owner')) {
+function reloadAssignees(data) {
+  if (data?.hasOwnProperty('lead_owner')) {
     assignees.reload()
   }
 }

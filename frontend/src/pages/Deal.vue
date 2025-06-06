@@ -334,12 +334,7 @@ import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import {
-  openWebsite,
-  setupAssignees,
-  setupCustomizations,
-  copyToClipboard,
-} from '@/utils'
+import { openWebsite, setupCustomizations, copyToClipboard } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -399,7 +394,6 @@ const deal = createResource({
       organization.fetch()
     }
 
-    setupAssignees(deal)
     setupCustomizations(deal, {
       doc: data,
       $dialog,
@@ -727,8 +721,8 @@ function openEmailBox() {
 
 const { assignees, document } = useDocument('CRM Deal', props.dealId)
 
-function reloadAssignees(changes) {
-  if (changes?.hasOwnProperty('lead_owner')) {
+function reloadAssignees(data) {
+  if (data?.hasOwnProperty('deal_owner')) {
     assignees.reload()
   }
 }
