@@ -10,10 +10,11 @@
       </Breadcrumbs>
       <div class="absolute right-0">
         <Dropdown
+          v-if="document.doc"
           :options="
             statusOptions(
               'lead',
-              updateField,
+              updateStatus,
               document.statuses?.length
                 ? document.statuses
                 : lead.data._customStatuses,
@@ -21,9 +22,11 @@
           "
         >
           <template #default="{ open }">
-            <Button :label="lead.data.status">
+            <Button :label="document.doc.status">
               <template #prefix>
-                <IndicatorIcon :class="getLeadStatus(lead.data.status).color" />
+                <IndicatorIcon
+                  :class="getLeadStatus(document.doc.status).color"
+                />
               </template>
               <template #suffix>
                 <FeatherIcon
@@ -472,5 +475,10 @@ function reloadAssignees(data) {
   if (data?.hasOwnProperty('lead_owner')) {
     assignees.reload()
   }
+}
+
+function updateStatus(value) {
+  document.doc.status = value
+  document.save.submit()
 }
 </script>

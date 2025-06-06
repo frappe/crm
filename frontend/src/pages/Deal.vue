@@ -22,10 +22,11 @@
         doctype="CRM Deal"
       />
       <Dropdown
+        v-if="document.doc"
         :options="
           statusOptions(
             'deal',
-            updateField,
+            updateStatus,
             document.statuses?.length
               ? document.statuses
               : deal.data._customStatuses,
@@ -33,9 +34,11 @@
         "
       >
         <template #default="{ open }">
-          <Button :label="deal.data.status">
+          <Button :label="document.doc.status">
             <template #prefix>
-              <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
+              <IndicatorIcon
+                :class="getDealStatus(document.doc.status).color"
+              />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -737,5 +740,10 @@ function reloadAssignees(data) {
   if (data?.hasOwnProperty('deal_owner')) {
     assignees.reload()
   }
+}
+
+function updateStatus(value) {
+  document.doc.status = value
+  document.save.submit()
 }
 </script>
