@@ -12,13 +12,25 @@
         v-if="lead.data._customActions?.length"
         :actions="lead.data._customActions"
       />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
+      />
       <AssignTo
-        v-model="lead.data._assignedTo"
-        :data="lead.data"
+        v-model="assignees.data"
+        :data="document.doc"
         doctype="CRM Lead"
       />
       <Dropdown
-        :options="statusOptions('lead', updateField, lead.data._customStatuses)"
+        :options="
+          statusOptions(
+            'lead',
+            updateField,
+            document.statuses?.length
+              ? document.statuses
+              : lead.data._customStatuses,
+          )
+        "
       >
         <template #default="{ open }">
           <Button :label="lead.data.status">
@@ -51,6 +63,7 @@
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
           v-model="lead"
+          @afterSave="reloadAssignees"
         />
       </template>
     </Tabs>
@@ -186,6 +199,7 @@
           doctype="CRM Lead"
           :docname="lead.data.name"
           @reload="sections.reload"
+          @afterFieldChange="reloadAssignees"
         />
       </div>
     </Resizer>
@@ -335,12 +349,7 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import {
-  openWebsite,
-  setupAssignees,
-  setupCustomizations,
-  copyToClipboard,
-} from '@/utils'
+import { openWebsite, setupCustomizations, copyToClipboard } from '@/utils'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -403,7 +412,6 @@ const lead = createResource({
   onSuccess: (data) => {
     errorTitle.value = ''
     errorMessage.value = ''
-    setupAssignees(lead)
     setupCustomizations(lead, {
       doc: data,
       $dialog,
@@ -609,7 +617,10 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 
-const { triggerConvertToDeal } = useDocument('CRM Lead', props.leadId)
+const { triggerConvertToDeal, assignees, document } = useDocument(
+  'CRM Lead',
+  props.leadId,
+)
 
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {
@@ -710,5 +721,11 @@ function openQuickEntryModal() {
     onlyRequired: true,
   }
   showConvertToDealModal.value = false
+}
+
+function reloadAssignees(data) {
+  if (data?.hasOwnProperty('lead_owner')) {
+    assignees.reload()
+  }
 }
 </script>

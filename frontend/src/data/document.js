@@ -1,6 +1,6 @@
 import { getScript } from '@/data/script'
-import { runSequentially } from '@/utils'
-import { createDocumentResource, toast } from 'frappe-ui'
+import { runSequentially, parseAssignees } from '@/utils'
+import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { reactive } from 'vue'
 
 const documentsCache = {}
@@ -35,6 +35,17 @@ export function useDocument(doctype, docname) {
     }
   }
 
+  const assignees = createResource({
+    url: 'crm.api.doc.get_assigned_users',
+    cache: `assignees:${doctype}:${docname}`,
+    auto: true,
+    params: {
+      doctype: doctype,
+      name: docname,
+    },
+    transform: (data) => parseAssignees(data),
+  })
+
   async function setupFormScript() {
     if (
       controllersCache[doctype] &&
@@ -64,6 +75,8 @@ export function useDocument(doctype, docname) {
       organizedControllers[controllerKey].push(controller)
     }
     controllersCache[doctype][docname || ''] = organizedControllers
+
+    triggerOnload()
   }
 
   function getControllers(row = null) {
@@ -82,9 +95,16 @@ export function useDocument(doctype, docname) {
     return []
   }
 
+  async function triggerOnload() {
+    const handler = async function () {
+      await this.onload?.()
+    }
+    await trigger(handler)
+  }
+
   async function triggerOnRefresh() {
     const handler = async function () {
-      await this.refresh()
+      await this.refresh?.()
     }
     await trigger(handler)
   }
@@ -177,6 +197,9 @@ export function useDocument(doctype, docname) {
 
   return {
     document: documentsCache[doctype][docname || ''],
+    assignees,
+    getControllers,
+    triggerOnload,
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,

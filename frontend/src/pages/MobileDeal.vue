@@ -11,7 +11,13 @@
       <div class="absolute right-0">
         <Dropdown
           :options="
-            statusOptions('deal', updateField, deal.data._customStatuses)
+            statusOptions(
+              'deal',
+              updateField,
+              document.statuses?.length
+                ? document.statuses
+                : deal.data._customStatuses,
+            )
           "
         >
           <template #default="{ open }">
@@ -36,14 +42,18 @@
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
     <AssignTo
-      v-model="deal.data._assignedTo"
-      :data="deal.data"
+      v-model="assignees.data"
+      :data="document.doc"
       doctype="CRM Deal"
     />
     <div class="flex items-center gap-2">
       <CustomActions
         v-if="deal.data._customActions?.length"
         :actions="deal.data._customActions"
+      />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
       />
     </div>
   </div>
@@ -66,6 +76,7 @@
               doctype="CRM Deal"
               :docname="deal.data.name"
               @reload="sections.reload"
+              @afterFieldChange="reloadAssignees"
             >
               <template #actions="{ section }">
                 <div v-if="section.name == 'contacts_section'" class="pr-2">
@@ -258,12 +269,13 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { setupAssignees, setupCustomizations } from '@/utils'
+import { setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
+import { useDocument } from '@/data/document'
 import {
   whatsappEnabled,
   callEnabled,
@@ -311,7 +323,6 @@ const deal = createResource({
       organization.fetch()
     }
 
-    setupAssignees(deal)
     setupCustomizations(deal, {
       doc: data,
       $dialog,
@@ -604,5 +615,13 @@ async function deleteDeal(name) {
     name,
   })
   router.push({ name: 'Deals' })
+}
+
+const { assignees, document } = useDocument('CRM Deal', props.dealId)
+
+function reloadAssignees(data) {
+  if (data?.hasOwnProperty('deal_owner')) {
+    assignees.reload()
+  }
 }
 </script>

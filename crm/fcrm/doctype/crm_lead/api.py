@@ -13,5 +13,4 @@ def get_lead(name):
 
 	lead["fields_meta"] = get_fields_meta("CRM Lead")
 	lead["_form_script"] = get_form_script("CRM Lead")
-	lead["_assign"] = get_assigned_users("CRM Lead", lead.name)
 	return lead
