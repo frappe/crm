@@ -51,6 +51,10 @@
         v-if="lead.data._customActions?.length"
         :actions="lead.data._customActions"
       />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
+      />
       <Button
         :label="__('Convert')"
         variant="solid"
