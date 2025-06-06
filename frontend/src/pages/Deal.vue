@@ -22,7 +22,15 @@
         doctype="CRM Deal"
       />
       <Dropdown
-        :options="statusOptions('deal', updateField, deal.data._customStatuses)"
+        :options="
+          statusOptions(
+            'deal',
+            updateField,
+            document.statuses?.length
+              ? document.statuses
+              : deal.data._customStatuses,
+          )
+        "
       >
         <template #default="{ open }">
           <Button :label="deal.data.status">
