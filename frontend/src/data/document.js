@@ -75,6 +75,8 @@ export function useDocument(doctype, docname) {
       organizedControllers[controllerKey].push(controller)
     }
     controllersCache[doctype][docname || ''] = organizedControllers
+
+    triggerOnload()
   }
 
   function getControllers(row = null) {
@@ -93,9 +95,16 @@ export function useDocument(doctype, docname) {
     return []
   }
 
+  async function triggerOnload() {
+    const handler = async function () {
+      await this.onload?.()
+    }
+    await trigger(handler)
+  }
+
   async function triggerOnRefresh() {
     const handler = async function () {
-      await this.refresh()
+      await this.refresh?.()
     }
     await trigger(handler)
   }
@@ -189,6 +198,8 @@ export function useDocument(doctype, docname) {
   return {
     document: documentsCache[doctype][docname || ''],
     assignees,
+    getControllers,
+    triggerOnload,
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,
