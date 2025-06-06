@@ -39,7 +39,7 @@ export function useDocument(doctype, docname) {
   const assignees = createResource({
     url: 'crm.api.doc.get_assigned_users',
     cache: `assignees:${doctype}:${docname}`,
-    auto: true,
+    auto: docname ? true : false,
     params: {
       doctype: doctype,
       name: docname,
