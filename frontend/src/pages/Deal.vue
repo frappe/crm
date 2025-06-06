@@ -13,8 +13,8 @@
         :actions="deal.data._customActions"
       />
       <AssignTo
-        v-model="deal.data._assignedTo"
-        :data="deal.data"
+        v-model="assignees.data"
+        :data="document.doc"
         doctype="CRM Deal"
       />
       <Dropdown
@@ -46,6 +46,7 @@
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
           v-model="deal"
+          @afterSave="reloadAssignees"
         />
       </template>
     </Tabs>
@@ -134,6 +135,7 @@
           doctype="CRM Deal"
           :docname="deal.data.name"
           @reload="sections.reload"
+          @afterFieldChange="reloadAssignees"
         >
           <template #actions="{ section }">
             <div v-if="section.name == 'contacts_section'" class="pr-2">
@@ -332,17 +334,13 @@ import Section from '@/components/Section.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import {
-  openWebsite,
-  setupAssignees,
-  setupCustomizations,
-  copyToClipboard,
-} from '@/utils'
+import { openWebsite, setupCustomizations, copyToClipboard } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
+import { useDocument } from '@/data/document'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   createResource,
@@ -396,7 +394,6 @@ const deal = createResource({
       organization.fetch()
     }
 
-    setupAssignees(deal)
     setupCustomizations(deal, {
       doc: data,
       $dialog,
@@ -720,5 +717,13 @@ const activities = ref(null)
 
 function openEmailBox() {
   activities.value.emailBox.show = true
+}
+
+const { assignees, document } = useDocument('CRM Deal', props.dealId)
+
+function reloadAssignees(data) {
+  if (data?.hasOwnProperty('deal_owner')) {
+    assignees.reload()
+  }
 }
 </script>

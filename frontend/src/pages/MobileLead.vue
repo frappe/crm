@@ -36,8 +36,8 @@
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
     <AssignTo
-      v-model="lead.data._assignedTo"
-      :data="lead.data"
+      v-model="assignees.data"
+      :data="document.doc"
       doctype="CRM Lead"
     />
     <div class="flex items-center gap-2">
@@ -71,6 +71,7 @@
               doctype="CRM Lead"
               :docname="lead.data.name"
               @reload="sections.reload"
+              @afterFieldChange="reloadAssignees"
             />
           </div>
         </div>
@@ -173,12 +174,13 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { setupAssignees, setupCustomizations } from '@/utils'
+import { setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
+import { useDocument } from '@/data/document'
 import {
   whatsappEnabled,
   callEnabled,
@@ -220,7 +222,6 @@ const lead = createResource({
   params: { name: props.leadId },
   cache: ['lead', props.leadId],
   onSuccess: (data) => {
-    setupAssignees(lead)
     setupCustomizations(lead, {
       doc: data,
       $dialog,
@@ -452,6 +453,14 @@ async function convertToDeal() {
     existingOrganization.value = ''
     capture('convert_lead_to_deal')
     router.push({ name: 'Deal', params: { dealId: deal } })
+  }
+}
+
+const { assignees, document } = useDocument('CRM Lead', props.leadId)
+
+function reloadAssignees(data) {
+  if (data?.hasOwnProperty('lead_owner')) {
+    assignees.reload()
   }
 }
 </script>

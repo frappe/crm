@@ -1,6 +1,6 @@
 import { getScript } from '@/data/script'
-import { runSequentially } from '@/utils'
-import { createDocumentResource, toast } from 'frappe-ui'
+import { runSequentially, parseAssignees } from '@/utils'
+import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { reactive } from 'vue'
 
 const documentsCache = {}
@@ -34,6 +34,17 @@ export function useDocument(doctype, docname) {
       setupFormScript()
     }
   }
+
+  const assignees = createResource({
+    url: 'crm.api.doc.get_assigned_users',
+    cache: `assignees:${doctype}:${docname}`,
+    auto: true,
+    params: {
+      doctype: doctype,
+      name: docname,
+    },
+    transform: (data) => parseAssignees(data),
+  })
 
   async function setupFormScript() {
     if (
@@ -177,6 +188,7 @@ export function useDocument(doctype, docname) {
 
   return {
     document: documentsCache[doctype][docname || ''],
+    assignees,
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,
