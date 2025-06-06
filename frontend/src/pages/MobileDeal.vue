@@ -51,6 +51,10 @@
         v-if="deal.data._customActions?.length"
         :actions="deal.data._customActions"
       />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
+      />
     </div>
   </div>
   <div v-if="deal.data" class="flex h-full overflow-hidden">
