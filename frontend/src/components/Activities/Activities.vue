@@ -365,7 +365,11 @@
       </div>
     </div>
     <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
-      <DataFields :doctype="doctype" :docname="doc.data.name" />
+      <DataFields
+        :doctype="doctype"
+        :docname="doc.data.name"
+        @afterSave="(data) => emit('afterSave', data)"
+      />
     </div>
     <div
       v-else
@@ -513,6 +517,8 @@ const props = defineProps({
     default: () => [],
   },
 })
+
+const emit = defineEmits(['afterSave'])
 
 const route = useRoute()
 
