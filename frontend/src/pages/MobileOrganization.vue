@@ -13,7 +13,7 @@
   <div v-if="organization.doc" class="flex flex-col h-full overflow-hidden">
     <FileUploader
       @success="changeOrganizationImage"
-      :validateFile="validateFile"
+      :validateFile="validateIsImageFile"
     >
       <template #default="{ openFileSelector, error }">
         <div class="flex flex-col items-start justify-start gap-4 p-4">
@@ -164,7 +164,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate, timeAgo, validateIsImageFile } from '@/utils'
 import {
   Breadcrumbs,
   Avatar,
@@ -250,13 +250,6 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
-
-function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return __('Only PNG and JPG images are allowed')
-  }
-}
 
 async function changeOrganizationImage(file) {
   await call('frappe.client.set_value', {
