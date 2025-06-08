@@ -71,7 +71,7 @@
       </div>
       <FileUploader
         @success="(file) => updateField('image', file.file_url)"
-        :validateFile="validateFile"
+        :validateFile="validateIsImageFile"
       >
         <template #default="{ openFileSelector, error }">
           <div class="flex items-center justify-start gap-5 border-b p-5">
@@ -344,7 +344,7 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { openWebsite, setupCustomizations, copyToClipboard } from '@/utils'
+import { openWebsite, setupCustomizations, copyToClipboard, validateIsImageFile } from '@/utils'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -574,13 +574,6 @@ watch(tabs, (value) => {
     }
   }
 })
-
-function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return __('Only PNG and JPG images are allowed')
-  }
-}
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',

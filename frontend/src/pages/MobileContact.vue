@@ -11,7 +11,7 @@
     </header>
   </LayoutHeader>
   <div v-if="contact.data" class="flex flex-col h-full overflow-hidden">
-    <FileUploader @success="changeContactImage" :validateFile="validateFile">
+    <FileUploader @success="changeContactImage" :validateFile="validateIsImageFile">
       <template #default="{ openFileSelector, error }">
         <div class="flex flex-col items-start justify-start gap-4 p-4">
           <div class="flex gap-4 items-center">
@@ -167,7 +167,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate, timeAgo, validateIsImageFile } from '@/utils'
 import { getView } from '@/utils/view'
 import { showAddressModal, addressProps } from '@/composables/modals'
 import { getSettings } from '@/stores/settings'
@@ -265,13 +265,6 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
-
-function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return __('Only PNG and JPG images are allowed')
-  }
-}
 
 async function changeContactImage(file) {
   await call('frappe.client.set_value', {
