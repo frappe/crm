@@ -97,7 +97,11 @@
       v-model:callLogModal="showCallLogModal"
       v-model:callLog="callLog"
     />
-    <CallLogModal v-model="showCallLogModal" v-model:callLog="callLog" />
+    <CallLogModal
+      v-if="showCallLogModal"
+      v-model="showCallLogModal"
+      :data="callLog.data"
+    />
   </div>
 </template>
 <script setup>

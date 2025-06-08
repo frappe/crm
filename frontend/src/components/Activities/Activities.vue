@@ -250,14 +250,14 @@
               </span>
               <span v-if="activity.type">{{ __(activity.type) }}</span>
               <span
-                v-if="activity.data.field_label"
+                v-if="activity.data?.field_label"
                 class="max-w-xs truncate font-medium text-ink-gray-8"
               >
                 {{ __(activity.data.field_label) }}
               </span>
               <span v-if="activity.value">{{ __(activity.value) }}</span>
               <span
-                v-if="activity.data.old_value"
+                v-if="activity.data?.old_value"
                 class="max-w-xs font-medium text-ink-gray-8"
               >
                 <div
@@ -273,7 +273,7 @@
               </span>
               <span v-if="activity.to">{{ __('to') }}</span>
               <span
-                v-if="activity.data.value"
+                v-if="activity.data?.value"
                 class="max-w-xs font-medium text-ink-gray-8"
               >
                 <div
@@ -307,7 +307,7 @@
             >
               <div class="inline-flex flex-wrap gap-1 text-ink-gray-5">
                 <span
-                  v-if="activity.data.field_label"
+                  v-if="activity.data?.field_label"
                   class="max-w-xs truncate text-ink-gray-5"
                 >
                   {{ __(activity.data.field_label) }}
@@ -320,7 +320,7 @@
                   {{ startCase(__(activity.type)) }}
                 </span>
                 <span
-                  v-if="activity.data.old_value"
+                  v-if="activity.data?.old_value"
                   class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
@@ -336,7 +336,7 @@
                 </span>
                 <span v-if="activity.to">{{ __('to') }}</span>
                 <span
-                  v-if="activity.data.value"
+                  v-if="activity.data?.value"
                   class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
@@ -365,7 +365,11 @@
       </div>
     </div>
     <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
-      <DataFields :doctype="doctype" :docname="doc.data.name" />
+      <DataFields
+        :doctype="doctype"
+        :docname="doc.data.name"
+        @afterSave="(data) => emit('afterSave', data)"
+      />
     </div>
     <div
       v-else
@@ -513,6 +517,8 @@ const props = defineProps({
     default: () => [],
   },
 })
+
+const emit = defineEmits(['afterSave'])
 
 const route = useRoute()
 

@@ -33,7 +33,7 @@ export function getScript(doctype, view = 'Form') {
   }
 
   async function setupScript(document, helpers = {}) {
-    await scripts.promise
+    await scripts.list.promise
 
     let scriptDefs = doctypeScripts[doctype]
     if (!scriptDefs || Object.keys(scriptDefs).length === 0) return null
@@ -116,8 +116,13 @@ export function getScript(doctype, view = 'Form') {
     parentInstance = null,
     isChildDoctype = false,
   ) {
+    document.actions = document.actions || []
+    document.statuses = document.statuses || []
+
     let instance = new FormClass()
 
+    // Store the original document context to be used by properties like 'actions'
+    instance._originalDocumentContext = document
     instance._isChildDoctype = isChildDoctype
 
     for (const key in document) {
@@ -198,6 +203,76 @@ export function getScript(doctype, view = 'Form') {
 
         return createDocProxy(row, this)
       }
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(FormClass.prototype, 'actions')) {
+      Object.defineProperty(FormClass.prototype, 'actions', {
+        configurable: true,
+        enumerable: true,
+        get() {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for actions getter.',
+            )
+            return []
+          }
+
+          return this._originalDocumentContext.actions
+        },
+        set(newValue) {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for actions setter.',
+            )
+            return
+          }
+          if (!Array.isArray(newValue)) {
+            console.warn(
+              'CRM Script: "actions" property must be an array. Value was not set.',
+              newValue,
+            )
+            this._originalDocumentContext.actions = []
+            return
+          }
+          this._originalDocumentContext.actions = newValue
+        },
+      })
+    }
+
+    if (
+      !Object.prototype.hasOwnProperty.call(FormClass.prototype, 'statuses')
+    ) {
+      Object.defineProperty(FormClass.prototype, 'statuses', {
+        configurable: true,
+        enumerable: true,
+        get() {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for statuses getter.',
+            )
+            return []
+          }
+
+          return this._originalDocumentContext.statuses
+        },
+        set(newValue) {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for statuses setter.',
+            )
+            return
+          }
+          if (!Array.isArray(newValue)) {
+            console.warn(
+              'CRM Script: "statuses" property must be an array. Value was not set.',
+              newValue,
+            )
+            this._originalDocumentContext.statuses = []
+            return
+          }
+          this._originalDocumentContext.statuses = newValue
+        },
+      })
     }
   }
 

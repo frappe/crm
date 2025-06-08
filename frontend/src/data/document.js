@@ -1,6 +1,7 @@
 import { getScript } from '@/data/script'
-import { runSequentially } from '@/utils'
-import { createDocumentResource, toast } from 'frappe-ui'
+import { runSequentially, parseAssignees } from '@/utils'
+import { createDocumentResource, createResource, toast } from 'frappe-ui'
+import { reactive } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
@@ -10,27 +11,46 @@ export function useDocument(doctype, docname) {
 
   documentsCache[doctype] = documentsCache[doctype] || {}
 
-  if (!documentsCache[doctype][docname]) {
-    documentsCache[doctype][docname] = createDocumentResource({
+  if (!documentsCache[doctype][docname || '']) {
+    if (docname) {
+      documentsCache[doctype][docname] = createDocumentResource({
+        doctype: doctype,
+        name: docname,
+        onSuccess: async () => await setupFormScript(),
+        setValue: {
+          onSuccess: () => {
+            triggerOnSave()
+            toast.success(__('Document updated successfully'))
+          },
+          onError: (err) => {
+            toast.error(__('Error updating document'))
+            console.error(err)
+          },
+        },
+      })
+    } else {
+      documentsCache[doctype][''] = reactive({
+        doc: {},
+      })
+      setupFormScript()
+    }
+  }
+
+  const assignees = createResource({
+    url: 'crm.api.doc.get_assigned_users',
+    cache: `assignees:${doctype}:${docname}`,
+    auto: docname ? true : false,
+    params: {
       doctype: doctype,
       name: docname,
-      onSuccess: async () => await setupFormScript(),
-      setValue: {
-        onSuccess: () => {
-          toast.success(__('Document updated successfully'))
-        },
-        onError: (err) => {
-          toast.error(__('Error updating document'))
-          console.error(err)
-        },
-      },
-    })
-  }
+    },
+    transform: (data) => parseAssignees(data),
+  })
 
   async function setupFormScript() {
     if (
       controllersCache[doctype] &&
-      typeof controllersCache[doctype][docname] === 'object'
+      typeof controllersCache[doctype][docname || ''] === 'object'
     ) {
       return
     }
@@ -39,9 +59,11 @@ export function useDocument(doctype, docname) {
       controllersCache[doctype] = {}
     }
 
-    controllersCache[doctype][docname] = {}
+    controllersCache[doctype][docname || ''] = {}
 
-    const controllersArray = await setupScript(documentsCache[doctype][docname])
+    const controllersArray = await setupScript(
+      documentsCache[doctype][docname || ''],
+    )
 
     if (!controllersArray || controllersArray.length === 0) return
 
@@ -53,14 +75,16 @@ export function useDocument(doctype, docname) {
       }
       organizedControllers[controllerKey].push(controller)
     }
-    controllersCache[doctype][docname] = organizedControllers
+    controllersCache[doctype][docname || ''] = organizedControllers
+
+    triggerOnLoad()
   }
 
   function getControllers(row = null) {
     const _doctype = row?.doctype || doctype
     const controllerKey = _doctype.replace(/\s+/g, '')
 
-    const docControllers = controllersCache[doctype]?.[docname]
+    const docControllers = controllersCache[doctype]?.[docname || '']
 
     if (
       typeof docControllers === 'object' &&
@@ -72,9 +96,23 @@ export function useDocument(doctype, docname) {
     return []
   }
 
+  async function triggerOnLoad() {
+    const handler = async function () {
+      await (this.onLoad?.() || this.on_load?.() || this.onload?.())
+    }
+    await trigger(handler)
+  }
+
+  async function triggerOnSave() {
+    const handler = async function () {
+      await (this.onSave?.() || this.on_save?.())
+    }
+    await trigger(handler)
+  }
+
   async function triggerOnRefresh() {
     const handler = async function () {
-      await this.refresh()
+      await this.refresh?.()
     }
     await trigger(handler)
   }
@@ -86,7 +124,7 @@ export function useDocument(doctype, docname) {
         this.value = row[fieldname]
         this.oldValue = getOldValue(fieldname, row)
       } else {
-        this.value = documentsCache[doctype][docname].doc[fieldname]
+        this.value = documentsCache[doctype][docname || ''].doc[fieldname]
         this.oldValue = getOldValue(fieldname)
       }
       await this[fieldname]?.()
@@ -126,7 +164,7 @@ export function useDocument(doctype, docname) {
   async function triggerOnCreateLead() {
     const args = Array.from(arguments)
     const handler = async function () {
-      await this.on_create_lead?.(...args)
+      await (this.onCreateLead?.(...args) || this.on_create_lead?.(...args))
     }
     await trigger(handler)
   }
@@ -134,7 +172,8 @@ export function useDocument(doctype, docname) {
   async function triggerConvertToDeal() {
     const args = Array.from(arguments)
     const handler = async function () {
-      await this.convert_to_deal?.(...args)
+      await (this.convertToDeal?.(...args) ||
+        this.on_convert_to_deal?.(...args))
     }
     await trigger(handler)
   }
@@ -151,9 +190,9 @@ export function useDocument(doctype, docname) {
   }
 
   function getOldValue(fieldname, row) {
-    if (!documentsCache[doctype][docname]) return ''
+    if (!documentsCache[doctype][docname || '']) return ''
 
-    const document = documentsCache[doctype][docname]
+    const document = documentsCache[doctype][docname || '']
     const oldDoc = document.originalDoc
 
     if (row?.name) {
@@ -166,11 +205,15 @@ export function useDocument(doctype, docname) {
   }
 
   return {
-    document: documentsCache[doctype][docname],
+    document: documentsCache[doctype][docname || ''],
+    assignees,
+    getControllers,
+    triggerOnLoad,
+    triggerOnSave,
+    triggerOnRefresh,
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,
-    triggerOnRefresh,
     setupFormScript,
     triggerOnCreateLead,
     triggerConvertToDeal,
