@@ -395,6 +395,13 @@ export function isImage(extention) {
   )
 }
 
+export function validateIsImageFile(file) {
+  const extn = file.name.split('.').pop().toLowerCase()
+  if (!isImage(extn)) {
+    return __('Only image files are allowed')
+  }
+}
+
 export function getRandom(len = 4) {
   let text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
