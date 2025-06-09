@@ -10,7 +10,12 @@
             <Badge v-if="callLog.isDirty" :label="'Not Saved'" theme="orange" />
           </div>
           <div class="flex items-center gap-1">
-            <Button v-if="isManager() && !isMobileView" variant="ghost" class="w-7" @click="openQuickEntryModal">
+            <Button
+              v-if="isManager() && !isMobileView"
+              variant="ghost"
+              class="w-7"
+              @click="openQuickEntryModal"
+            >
               <EditIcon class="w-4 h-4" />
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
@@ -19,19 +24,28 @@
           </div>
         </div>
         <div v-if="tabs.data">
-          <FieldLayout :tabs="tabs.data" :data="_callLog" doctype="CRM Call Log" />
+          <FieldLayout
+            :tabs="tabs.data"
+            :data="callLog.doc"
+            doctype="CRM Call Log"
+          />
           <ErrorMessage class="mt-8" :message="error" />
         </div>
       </div>
       <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="space-y-2">
-          <Button class="w-full" v-for="action in dialogOptions.actions" :key="action.label" v-bind="action"
-            :label="__(action.label)" :loading="loading" />
+          <Button
+            class="w-full"
+            v-for="action in dialogOptions.actions"
+            :key="action.label"
+            v-bind="action"
+            :label="__(action.label)"
+            :loading="loading"
+          />
         </div>
       </div>
     </template>
   </Dialog>
-  <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" doctype="CRM Call Log" />
 </template>
 
 <script setup>
@@ -54,7 +68,7 @@ const props = defineProps({
   options: {
     type: Object,
     default: {
-      afterInsert: () => { },
+      afterInsert: () => {},
     },
   },
 })
