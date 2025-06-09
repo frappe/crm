@@ -184,16 +184,8 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { formatDate, timeAgo } from '@/utils'
-import { showAddressModal, addressProps } from '@/composables/modals'
-=======
-import AddressModal from '@/components/Modals/AddressModal.vue'
-=======
->>>>>>> 42285dd9 (fix: unused import due to merge conflict)
 import { formatDate, timeAgo, validateIsImageFile } from '@/utils'
->>>>>>> c6ad1085 (refactor: DRY up validate image file)
+import { showAddressModal, addressProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { getMeta } from '@/stores/meta'

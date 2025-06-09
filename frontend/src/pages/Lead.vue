@@ -344,18 +344,13 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-<<<<<<< HEAD
-import { openWebsite, setupCustomizations, copyToClipboard } from '@/utils'
-import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
-=======
 import {
   openWebsite,
-  setupAssignees,
   setupCustomizations,
   copyToClipboard,
-  validateIsImageFile
+  validateIsImageFile,
 } from '@/utils'
->>>>>>> c6ad1085 (refactor: DRY up validate image file)
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { sessionStore } from '@/stores/session'
