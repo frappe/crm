@@ -9,7 +9,12 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button v-if="isManager() && !isMobileView" variant="ghost" class="w-7" @click="openQuickEntryModal">
+            <Button
+              v-if="isManager() && !isMobileView"
+              variant="ghost"
+              class="w-7"
+              @click="openQuickEntryModal"
+            >
               <EditIcon class="w-4 h-4" />
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
@@ -27,7 +32,13 @@
       </div>
       <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="space-y-2">
-          <Button class="w-full" variant="solid" :label="__('Create')" :loading="loading" @click="createOrganization" />
+          <Button
+            class="w-full"
+            variant="solid"
+            :label="__('Create')"
+            :loading="loading"
+            @click="createOrganization"
+          />
         </div>
       </div>
     </template>
@@ -60,7 +71,7 @@ const props = defineProps({
     type: Object,
     default: {
       redirect: true,
-      afterInsert: () => { },
+      afterInsert: () => {},
     },
   },
 })
