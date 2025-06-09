@@ -998,27 +998,16 @@ msgstr ""
 msgid "Copied to clipboard"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/AddressModal.vue:100
-#: frontend/src/components/Modals/CallLogModal.vue:104
-=======
 #: frontend/src/components/Modals/AddressModal.vue:92
 #: frontend/src/components/Modals/CallLogModal.vue:94
->>>>>>> ed79bf55 (chore: update POT file)
 #: frontend/src/components/Modals/ContactModal.vue:37
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 #: frontend/src/components/Modals/DealModal.vue:63
 #: frontend/src/components/Modals/EmailTemplateModal.vue:9
 #: frontend/src/components/Modals/LeadModal.vue:34
-<<<<<<< HEAD
-#: frontend/src/components/Modals/NoteModal.vue:8
-#: frontend/src/components/Modals/OrganizationModal.vue:37
-#: frontend/src/components/Modals/TaskModal.vue:8
-=======
 #: frontend/src/components/Modals/NoteModal.vue:6
 #: frontend/src/components/Modals/OrganizationModal.vue:38
 #: frontend/src/components/Modals/TaskModal.vue:6
->>>>>>> ed79bf55 (chore: update POT file)
 #: frontend/src/components/Modals/ViewModal.vue:16
 #: frontend/src/pages/CallLogs.vue:11 frontend/src/pages/Contacts.vue:13
 #: frontend/src/pages/Contacts.vue:60 frontend/src/pages/Deals.vue:13
@@ -1486,11 +1475,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/CallLogModal.vue:100
-=======
 #: frontend/src/components/Modals/CallLogModal.vue:90
->>>>>>> ed79bf55 (chore: update POT file)
 msgid "Edit Call Log"
 msgstr ""
 
@@ -2669,11 +2654,7 @@ msgstr ""
 msgid "New Address"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/CallLogModal.vue:100
-=======
 #: frontend/src/components/Modals/CallLogModal.vue:90
->>>>>>> ed79bf55 (chore: update POT file)
 msgid "New Call Log"
 msgstr ""
 
@@ -3623,13 +3604,8 @@ msgstr ""
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:87
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:26
 #: frontend/src/components/DropdownItem.vue:21
-<<<<<<< HEAD
-#: frontend/src/components/Modals/AddressModal.vue:100
-#: frontend/src/components/Modals/CallLogModal.vue:104
-=======
 #: frontend/src/components/Modals/AddressModal.vue:92
 #: frontend/src/components/Modals/CallLogModal.vue:94
->>>>>>> ed79bf55 (chore: update POT file)
 #: frontend/src/components/Modals/DataFieldsModal.vue:26
 #: frontend/src/components/Modals/QuickEntryModal.vue:26
 #: frontend/src/components/Modals/SidePanelModal.vue:26
@@ -4533,11 +4509,7 @@ msgstr ""
 msgid "kanban"
 msgstr ""
 
-<<<<<<< HEAD
-#: crm/api/doc.py:38 crm/api/doc.py:156 crm/api/doc.py:500
-=======
 #: crm/api/doc.py:39 crm/api/doc.py:157 crm/api/doc.py:502
->>>>>>> ed79bf55 (chore: update POT file)
 msgid "label"
 msgstr ""
 
