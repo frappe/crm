@@ -344,7 +344,16 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
+<<<<<<< HEAD
 import { openWebsite, setupCustomizations, copyToClipboard } from '@/utils'
+=======
+import {
+  openWebsite,
+  setupCustomizations,
+  copyToClipboard,
+  validateIsImageFile,
+} from '@/utils'
+>>>>>>> c98beae (fix: resolved conflicts)
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
