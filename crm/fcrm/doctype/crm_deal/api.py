@@ -55,3 +55,26 @@ def get_deal_contacts(name):
 		}
 		deal_contacts.append(_contact)
 	return deal_contacts
+
+@frappe.whitelist()
+def get_linked_quotations(args):
+	"""
+	Get linked quotations for a deal.
+	"""
+	if not args.get("dealId"):
+		return []
+
+	quotations = frappe.get_all(
+		"Quotation",
+		filters={
+      "quotation_to": "CRM Deal",
+      "crm_deal": args.get("dealId")
+      },
+		fields=["*"],
+	)
+
+	# for quotation in quotations:
+	# 	quotation["quotation_to"] = frappe.bold(quotation["quotation_to"])
+	# 	quotation["customer"] = frappe.bold(quotation["customer"])
+
+	return quotations

@@ -2880,7 +2880,7 @@ export default {
         }
       ],
       "base": [
-        "1rem",
+        "0.875rem",
         {
           "lineHeight": "1.5rem"
         }
@@ -2992,7 +2992,9 @@ export default {
       "0.5": "0.125rem",
       "1.5": "0.375rem",
       "2.5": "0.625rem",
-      "3.5": "0.875rem"
+      "3.5": "0.875rem",
+      "7.5": "1.875rem",
+      "10.5": "2.625rem",
     },
     "gradientColorStops": {
       "inherit": "inherit",

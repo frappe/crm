@@ -68,7 +68,7 @@
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate text-ink-gray-9">
-          <Tooltip :text="organization.data?.name || __('Set an organization')">
+          <Tooltip :text="organization.data?.name || __('Set an quotations')">
             <div class="truncate text-2xl font-medium">
               {{ title }}
             </div>
@@ -334,7 +334,7 @@ import {
   openWebsite,
   setupAssignees,
   setupCustomizations,
-  copyToClipboard,
+  copyToClipboard
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -351,7 +351,7 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
-  toast,
+  toast
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
@@ -372,8 +372,8 @@ const router = useRouter()
 const props = defineProps({
   dealId: {
     type: String,
-    required: true,
-  },
+    required: true
+  }
 })
 
 const errorTitle = ref('')
@@ -389,7 +389,7 @@ const deal = createResource({
 
     if (data.organization) {
       organization.update({
-        params: { doctype: 'CRM Organization', name: data.organization },
+        params: { doctype: 'CRM Organization', name: data.organization }
       })
       organization.fetch()
     }
@@ -407,9 +407,9 @@ const deal = createResource({
       resource: {
         deal,
         dealContacts,
-        sections,
+        sections
       },
-      call,
+      call
     })
   },
   onError: (err) => {
@@ -419,12 +419,36 @@ const deal = createResource({
     } else {
       router.push({ name: 'Deals' })
     }
-  },
+  }
 })
+
+const quotations = createResource({
+  url: 'crm.fcrm.doctype.crm_deal.api.get_linked_quotations',
+  params: { args: { dealId: props.dealId } },
+  cache: ['deal', 'quotations', props.dealId],
+  onSuccess: (data) => {
+    errorTitle.value = ''
+    errorMessage.value = ''
+    deal.linked_quotations = data
+
+  },
+  onError: (err) => {
+    if (err.messages?.[0]) {
+      errorTitle.value = __('Not permitted')
+      errorMessage.value = __(err.messages?.[0])
+    } else {
+      router.push({ name: 'Deals' })
+    }
+  }
+})
+
+setTimeout(() =>
+    console.log('returned quotations', [...deal.linked_quotations.map(q => ({...q}))])
+  , 1000);
 
 const organization = createResource({
   url: 'frappe.client.get',
-  onSuccess: (data) => (deal.data._organizationObj = data),
+  onSuccess: (data) => (deal.data._organizationObj = data)
 })
 
 onMounted(() => {
@@ -437,6 +461,7 @@ onMounted(() => {
     return
   }
   deal.fetch()
+  quotations.fetch()
 })
 
 onBeforeUnmount(() => {
@@ -459,7 +484,7 @@ function updateDeal(fieldname, value, callback) {
       doctype: 'CRM Deal',
       name: props.dealId,
       fieldname,
-      value,
+      value
     },
     auto: true,
     onSuccess: () => {
@@ -470,7 +495,7 @@ function updateDeal(fieldname, value, callback) {
     },
     onError: (err) => {
       toast.error(__('Error updating deal: {0}', [err.messages?.[0]]))
-    },
+    }
   })
 }
 
@@ -495,15 +520,15 @@ const breadcrumbs = computed(() => {
         route: {
           name: 'Deals',
           params: { viewType: route.query.viewType },
-          query: { view: route.query.view },
-        },
+          query: { view: route.query.view }
+        }
       })
     }
   }
 
   items.push({
     label: title.value,
-    route: { name: 'Deal', params: { dealId: deal.data.name } },
+    route: { name: 'Deal', params: { dealId: deal.data.name } }
   })
   return items
 })
@@ -516,7 +541,7 @@ const title = computed(() => {
 usePageMeta(() => {
   return {
     title: title.value,
-    icon: brand.favicon,
+    icon: brand.favicon
   }
 })
 
@@ -525,49 +550,54 @@ const tabs = computed(() => {
     {
       name: 'Activity',
       label: __('Activity'),
-      icon: ActivityIcon,
+      icon: ActivityIcon
     },
     {
       name: 'Emails',
       label: __('Emails'),
-      icon: EmailIcon,
+      icon: EmailIcon
     },
     {
       name: 'Comments',
       label: __('Comments'),
-      icon: CommentIcon,
+      icon: CommentIcon
     },
     {
       name: 'Data',
       label: __('Data'),
-      icon: DetailsIcon,
+      icon: DetailsIcon
+    },
+    {
+      name: 'Quotations',
+      label: __('Quotations'),
+      icon: DetailsIcon
     },
     {
       name: 'Calls',
       label: __('Calls'),
-      icon: PhoneIcon,
+      icon: PhoneIcon
     },
     {
       name: 'Tasks',
       label: __('Tasks'),
-      icon: TaskIcon,
+      icon: TaskIcon
     },
     {
       name: 'Notes',
       label: __('Notes'),
-      icon: NoteIcon,
+      icon: NoteIcon
     },
     {
       name: 'Attachments',
       label: __('Attachments'),
-      icon: AttachmentIcon,
+      icon: AttachmentIcon
     },
     {
       name: 'WhatsApp',
       label: __('WhatsApp'),
       icon: WhatsAppIcon,
-      condition: () => whatsappEnabled.value,
-    },
+      condition: () => whatsappEnabled.value
+    }
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
@@ -577,7 +607,7 @@ const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   cache: ['sidePanelSections', 'CRM Deal'],
   params: { doctype: 'CRM Deal' },
-  transform: (data) => getParsedSections(data),
+  transform: (data) => getParsedSections(data)
 })
 
 if (!sections.data) sections.fetch()
@@ -595,7 +625,7 @@ function getParsedSections(_sections) {
         field.link = (org) =>
           router.push({
             name: 'Organization',
-            params: { organizationId: org },
+            params: { organizationId: org }
           })
       }
     })
@@ -611,15 +641,15 @@ function contactOptions(contact) {
     {
       label: __('Remove'),
       icon: 'trash-2',
-      onClick: () => removeContact(contact.name),
-    },
+      onClick: () => removeContact(contact.name)
+    }
   ]
 
   if (!contact.is_primary) {
     options.push({
       label: __('Set as Primary Contact'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
-      onClick: () => setPrimaryContact(contact.name),
+      onClick: () => setPrimaryContact(contact.name)
     })
   }
 
@@ -634,7 +664,7 @@ async function addContact(contact) {
 
   let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.add_contact', {
     deal: props.dealId,
-    contact,
+    contact
   })
   if (d) {
     dealContacts.reload()
@@ -645,7 +675,7 @@ async function addContact(contact) {
 async function removeContact(contact) {
   let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
     deal: props.dealId,
-    contact,
+    contact
   })
   if (d) {
     dealContacts.reload()
@@ -656,7 +686,7 @@ async function removeContact(contact) {
 async function setPrimaryContact(contact) {
   let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
     deal: props.dealId,
-    contact,
+    contact
   })
   if (d) {
     dealContacts.reload()
@@ -673,7 +703,7 @@ const dealContacts = createResource({
       contact.opened = false
     })
     return data
-  },
+  }
 })
 
 if (!dealContacts.data) dealContacts.fetch()
@@ -709,7 +739,7 @@ function updateField(name, value, callback) {
 async function deleteDeal(name) {
   await call('frappe.client.delete', {
     doctype: 'CRM Deal',
-    name,
+    name
   })
   router.push({ name: 'Deals' })
 }

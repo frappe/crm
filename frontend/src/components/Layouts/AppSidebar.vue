@@ -186,6 +186,7 @@ import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { computed, h, markRaw, onMounted, reactive, ref } from 'vue'
 import DashboardIcon from '@/components/Icons/DashboardIcon.vue'
+import QuotationIcon from '@/components/Icons/QuotationIcon.vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -216,6 +217,11 @@ const links = [
     label: 'Deals',
     icon: DealsIcon,
     to: 'Deals',
+  },
+  {
+    label: 'Quotations',
+    icon: QuotationIcon,
+    to: 'Quotations',
   },
   {
     label: 'Contacts',

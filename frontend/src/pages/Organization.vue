@@ -66,14 +66,14 @@
                 </div>
                 <div class="flex flex-col gap-2 truncate">
                   <div class="truncate text-2xl font-medium text-ink-gray-9">
-                    <span>{{ organization.doc.name }}</span>
+                    <span>{{ quotations.doc.name }}</span>
                   </div>
                   <div
                     v-if="organization.doc.website"
                     class="flex items-center gap-1.5 text-base text-ink-gray-8"
                   >
                     <WebsiteIcon class="size-4" />
-                    <span>{{ website(organization.doc.website) }}</span>
+                    <span>{{ website(quotations.doc.website) }}</span>
                   </div>
                   <ErrorMessage :message="__(error)" />
                 </div>
@@ -230,7 +230,7 @@ const router = useRouter()
 const errorTitle = ref('')
 const errorMessage = ref('')
 
-const organization = createDocumentResource({
+const quotations = createDocumentResource({
   doctype: 'CRM Organization',
   name: props.organizationId,
   cache: ['organization', props.organizationId],
@@ -313,8 +313,8 @@ async function changeOrganizationImage(file) {
 
 async function deleteOrganization() {
   $dialog({
-    title: __('Delete organization'),
-    message: __('Are you sure you want to delete this organization?'),
+    title: __('Delete quotations'),
+    message: __('Are you sure you want to delete this quotations?'),
     actions: [
       {
         label: __('Delete'),

@@ -103,6 +103,7 @@ import {computed, h} from 'vue'
 import {mobileSidebarOpened as sidebarOpened} from '@/composables/settings'
 import DashboardIcon from '@/components/Icons/DashboardIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import QuotationIcon from '@/components/Icons/QuotationIcon.vue'
 
 const {getPinnedViews, getPublicViews} = viewsStore()
 
@@ -127,6 +128,11 @@ const links = [
     label: 'Deals',
     icon: DealsIcon,
     to: 'Deals',
+  },
+  {
+    label: 'Quotations',
+    icon: QuotationIcon,
+    to: 'Quotations',
   },
   {
     label: 'Contacts',

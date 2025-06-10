@@ -10,7 +10,7 @@ from pypika import Criterion
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
-
+from crm.config import patch
 
 @frappe.whitelist()
 def sort_options(doctype: str):
@@ -270,6 +270,7 @@ def update_in_standard_filter(fieldname, doctype, value):
 			validate_fields_for_doctype=False,
 		)
 
+patch()
 
 @frappe.whitelist()
 def get_data(

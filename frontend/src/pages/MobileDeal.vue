@@ -327,9 +327,27 @@ const deal = createResource({
       call,
     })
   },
-})
+});
 
-const organization = createResource({
+const quotations = createResource({
+  url: 'crm.fcrm.doctype.crm_deal.api.get_linked_quotations',
+  params: { args: { dealId: props.dealId } },
+  cache: ['deal', 'quotations', props.dealId],
+  onSuccess: (data) => {
+    console.log({data, deal})
+    deal.linked_quotations = data
+
+  },
+  onError: (err) => {
+    console.error({err})
+    if (err.messages?.[0]) {
+    } else {
+      router.push({ name: 'Deals' })
+    }
+  }
+});
+
+const quotations = createResource({
   url: 'frappe.client.get',
   onSuccess: (data) => (deal.data._organizationObj = data),
 })
@@ -337,6 +355,7 @@ const organization = createResource({
 onMounted(() => {
   if (deal.data) return
   deal.fetch()
+  quotations.fetch()
 })
 
 const reload = ref(false)
@@ -442,6 +461,11 @@ const tabs = computed(() => {
       name: 'Data',
       label: __('Data'),
       icon: DetailsIcon,
+    },
+    {
+      name: 'Quotations',
+      label: __('Quotations'),
+      icon: DetailsIcon
     },
     {
       name: 'Calls',

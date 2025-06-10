@@ -189,6 +189,8 @@ declare module 'vue' {
     QuickEntryModal: typeof import('./src/components/Modals/QuickEntryModal.vue')['default']
     QuickFilterField: typeof import('./src/components/QuickFilterField.vue')['default']
     QuickFilterIcon: typeof import('./src/components/Icons/QuickFilterIcon.vue')['default']
+    QuotationIcon: typeof import('./src/components/Icons/QuotationIcon.vue')['default']
+    QuotationsListView: typeof import('./src/components/ListViews/QuotationsListView.vue')['default']
     ReactIcon: typeof import('./src/components/Icons/ReactIcon.vue')['default']
     RefreshIcon: typeof import('./src/components/Icons/RefreshIcon.vue')['default']
     ReloadIcon: typeof import('./src/components/Icons/ReloadIcon.vue')['default']

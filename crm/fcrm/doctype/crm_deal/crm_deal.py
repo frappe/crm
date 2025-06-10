@@ -328,3 +328,4 @@ def create_deal(args):
 
 	deal.insert(ignore_permissions=True)
 	return deal.name
+

@@ -367,6 +367,17 @@
     <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
       <DataFields :doctype="doctype" :docname="doc.data.name" />
     </div>
+    <div v-else-if="title == 'Quotations'" class="h-full flex flex-col px-3 sm:px-10">
+      <QuotationsListView
+        :columns="[
+          { label: __('Quotation'), key: 'name', type: 'Data' },
+          { label: __('Date'), key: 'creation', type: 'Date' },
+          { label: __('Amount'), key: 'grand_total', type: 'Currency' },
+        ]"
+        :rows="doc.linked_quotations"
+      />
+    </div>
+    
     <div
       v-else
       class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
@@ -486,7 +497,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import { capture } from '@/telemetry'
-import { Button, Tooltip, createResource } from 'frappe-ui'
+import { Button, ListView, Tooltip, createResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -499,6 +510,7 @@ import {
   onBeforeUnmount,
 } from 'vue'
 import { useRoute } from 'vue-router'
+import QuotationsListView from '@/components/ListViews/QuotationsListView.vue'
 
 const { makeCall, $socket } = globalStore()
 const { getUser } = usersStore()

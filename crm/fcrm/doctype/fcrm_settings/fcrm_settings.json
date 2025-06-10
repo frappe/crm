@@ -7,6 +7,8 @@
  "field_order": [
   "defaults_tab",
   "restore_defaults",
+  "quotation_section",
+  "quotation_print_format",
   "branding_tab",
   "brand_name",
   "brand_logo",
@@ -56,12 +58,24 @@
    "fieldname": "favicon",
    "fieldtype": "Attach",
    "label": "Favicon"
+  },
+  {
+   "fieldname": "quotation_section",
+   "fieldtype": "Section Break",
+   "label": "Quotation"
+  },
+  {
+   "fieldname": "quotation_print_format",
+   "fieldtype": "Link",
+   "label": "Quotation Print Format",
+   "link_filters": "[[\"Print Format\",\"doc_type\",\"=\",\"Quotation\"]]",
+   "options": "Print Format"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-02-20 12:38:38.088477",
+ "modified": "2025-06-10 01:04:45.967019",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
@@ -95,6 +109,7 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []

@@ -255,7 +255,7 @@
         <div v-else class="mt-2.5 text-base">
           {{
             __(
-              'New organization will be created based on the data in details section',
+              'New quotations will be created based on the data in details section',
             )
           }}
         </div>
@@ -624,7 +624,7 @@ async function convertToDeal() {
   }
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
-    toast.error(__('Please select an existing organization'))
+    toast.error(__('Please select an existing quotations'))
     return
   }
 
