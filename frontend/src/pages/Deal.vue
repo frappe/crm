@@ -23,7 +23,14 @@
       />
       <Dropdown
         v-if="document.doc"
-        :options="statusOptions('deal', document, deal.data._customStatuses)"
+        :options="
+          statusOptions(
+            'deal',
+            document,
+            deal.data._customStatuses,
+            triggerOnChange,
+          )
+        "
       >
         <template #default="{ open }">
           <Button :label="document.doc.status">
@@ -726,7 +733,10 @@ function openEmailBox() {
   activities.value.emailBox.show = true
 }
 
-const { assignees, document } = useDocument('CRM Deal', props.dealId)
+const { assignees, document, triggerOnChange } = useDocument(
+  'CRM Deal',
+  props.dealId,
+)
 
 function reloadAssignees(data) {
   if (data?.hasOwnProperty('deal_owner')) {
