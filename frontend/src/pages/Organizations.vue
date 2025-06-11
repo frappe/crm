@@ -111,7 +111,7 @@ const rows = computed(() => {
     !['list', 'group_by'].includes(organizations.value.data.view_type)
   )
     return []
-  return organizations.value?.data.data.map((quotations) => {
+  return organizations.value?.data.data.map((organization) => {
     let _rows = {}
     organizations.value?.data.rows.forEach((row) => {
       _rows[row] = organization[row]

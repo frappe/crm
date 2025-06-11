@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "organization_name",
+  "custom_gstin",
   "no_of_employees",
   "currency",
   "annual_revenue",
@@ -29,6 +30,11 @@
    "fieldname": "website",
    "fieldtype": "Data",
    "label": "Website"
+  },
+  {
+   "fieldname": "custom_gstin",
+   "fieldtype": "Data",
+   "label": "GSTIN"
   },
   {
    "fieldname": "organization_logo",
