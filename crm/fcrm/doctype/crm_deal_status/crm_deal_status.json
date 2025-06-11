@@ -8,7 +8,8 @@
  "field_order": [
   "deal_status",
   "color",
-  "position"
+  "position",
+  "probability"
  ],
  "fields": [
   {
@@ -32,11 +33,17 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Position"
+  },
+  {
+   "fieldname": "probability",
+   "fieldtype": "Percent",
+   "label": "Probability"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:56:44.552134",
+ "modified": "2025-06-11 13:00:34.518808",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal Status",
@@ -68,6 +75,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
