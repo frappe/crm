@@ -489,9 +489,7 @@ function parsedField(field) {
 async function fieldChange(value, df) {
   if (props.preview) return
 
-  document.doc[df.fieldname] = value
-
-  await triggerOnChange(df.fieldname)
+  await triggerOnChange(df.fieldname, value)
 
   document.save.submit(null, {
     onSuccess: () => {
