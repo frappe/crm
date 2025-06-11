@@ -70,10 +70,10 @@ const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
 
-const { document: lead } = useDocument('CRM Lead')
+const { document: lead, triggerOnChange } = useDocument('CRM Lead')
 
 const leadStatuses = computed(() => {
-  let statuses = statusOptions('lead')
+  let statuses = statusOptions('lead', null, [], triggerOnChange)
   if (!lead.doc.status) {
     lead.doc.status = statuses?.[0]?.value
   }
