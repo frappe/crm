@@ -509,8 +509,7 @@ const deleteRows = () => {
 }
 
 function fieldChange(value, field, row) {
-  row[field.fieldname] = value
-  triggerOnChange(field.fieldname, row)
+  triggerOnChange(field.fieldname, value, row)
 }
 
 function getDefaultValue(defaultValue, fieldtype) {
