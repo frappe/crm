@@ -3,6 +3,7 @@
 
 import frappe
 from frappe import _
+from frappe.custom.doctype.property_setter.property_setter import delete_property_setter, make_property_setter
 from frappe.model.document import Document
 
 from crm.install import after_install
@@ -15,6 +16,7 @@ class FCRMSettings(Document):
 
 	def validate(self):
 		self.do_not_allow_to_delete_if_standard()
+		self.setup_forecasting()
 
 	def do_not_allow_to_delete_if_standard(self):
 		if not self.has_value_changed("dropdown_items"):
@@ -28,6 +30,23 @@ class FCRMSettings(Document):
 			if not deleted_standard_items.intersection(standard_dropdown_items):
 				return
 			frappe.throw(_("Cannot delete standard items {0}").format(", ".join(deleted_standard_items)))
+
+	def setup_forecasting(self):
+		if self.has_value_changed("enable_forecasting"):
+			if not self.enable_forecasting:
+				delete_property_setter(
+					"CRM Deal",
+					"reqd",
+					"close_date",
+				)
+			else:
+				make_property_setter(
+					"CRM Deal",
+					"close_date",
+					"reqd",
+					1 if self.enable_forecasting else 0,
+					"Check",
+				)
 
 
 def get_standard_dropdown_items():
