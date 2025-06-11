@@ -16,9 +16,9 @@ class CRMOrganization(Document):
 					'width': '16rem',
 				},
 				{
-					'label': 'Website',
+					'label': 'GSTIN',
 					'type': 'Data',
-					'key': 'website',
+					'key': 'custom_gstin',
 					'width': '14rem',
 				},
 				{
@@ -43,6 +43,7 @@ class CRMOrganization(Document):
 			]
 			rows = [
 				"name",
+				"custom_gstin",
 				"organization_name",
 				"organization_logo",
 				"website",
