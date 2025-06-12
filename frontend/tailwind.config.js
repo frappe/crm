@@ -10,7 +10,36 @@ export default {
     './node_modules/frappe-ui/frappe/**/*.{vue,js,ts,jsx,tsx}',
     '../node_modules/frappe-ui/frappe/**/*.{vue,js,ts,jsx,tsx}',
   ],
-  safelist: [{ pattern: /!(text|bg)-/, variants: ['hover', 'active'] }],
+  safelist: [...[
+    // Your specific animation classes
+    'fade-enter-active',
+    'fade-leave-active',
+    'fade-enter-from',
+    'fade-leave-to',
+    'slide-up-enter-active',
+    'slide-up-leave-active',
+    'slide-up-enter-from',
+    'slide-up-leave-to',
+    'bounce-enter-active',
+    'spanco-stage-move',
+    'spanco-stage-enter-active',
+    'spanco-stage-leave-active',
+    'spanco-stage-enter-from',
+    'spanco-stage-leave-to',
+    'mobile-stage-move',
+    'mobile-stage-enter-active',
+    'mobile-stage-leave-active',
+    'mobile-stage-enter-from',
+    'mobile-stage-leave-to',
+    'expand-overlay-enter-active',
+    'expand-overlay-leave-active',
+    'expand-overlay-enter-from',
+    'expand-overlay-leave-to',
+    // Or use a pattern to catch all Vue transition classes
+    {
+      pattern: /-(enter|leave|appear)-(active|from|to)$/,
+    },
+  ], {pattern: /!(text|bg)-/, variants: ['hover', 'active']}],
   "theme": {
     "accentColor": {
       "inherit": "inherit",

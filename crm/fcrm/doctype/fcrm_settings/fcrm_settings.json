@@ -14,7 +14,14 @@
   "brand_logo",
   "favicon",
   "dropdown_items_tab",
-  "dropdown_items"
+  "dropdown_items",
+  "tab_4_tab",
+  "suspects",
+  "prospects",
+  "analysis",
+  "negotiation",
+  "closed",
+  "order"
  ],
  "fields": [
   {
@@ -70,12 +77,53 @@
    "label": "Quotation Print Format",
    "link_filters": "[[\"Print Format\",\"doc_type\",\"=\",\"Quotation\"]]",
    "options": "Print Format"
+  },
+  {
+   "fieldname": "tab_4_tab",
+   "fieldtype": "Tab Break",
+   "label": "SPANCO Settings"
+  },
+  {
+   "fieldname": "suspects",
+   "fieldtype": "Link",
+   "label": "Suspects",
+   "options": "CRM View Settings"
+  },
+  {
+   "fieldname": "prospects",
+   "fieldtype": "Link",
+   "label": "Prospects",
+   "options": "CRM View Settings"
+  },
+  {
+   "fieldname": "analysis",
+   "fieldtype": "Link",
+   "label": "Analysis",
+   "options": "CRM View Settings"
+  },
+  {
+   "fieldname": "negotiation",
+   "fieldtype": "Link",
+   "label": "Negotiation",
+   "options": "CRM View Settings"
+  },
+  {
+   "fieldname": "closed",
+   "fieldtype": "Link",
+   "label": "Closed",
+   "options": "CRM View Settings"
+  },
+  {
+   "fieldname": "order",
+   "fieldtype": "Link",
+   "label": "Order",
+   "options": "CRM View Settings"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-10 01:04:45.967019",
+ "modified": "2025-06-12 14:44:09.674099",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

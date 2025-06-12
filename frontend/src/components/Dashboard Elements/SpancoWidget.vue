@@ -1,5 +1,13 @@
 <template>
   <div class="w-full max-w-6xl mx-auto p-3 sm:p-6">
+    <Transition name="fade">
+      <div v-if="fcrmSettings.loading" class="mb-4 text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm">
+          <div class="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+          Loading pipeline settings...
+        </div>
+      </div>
+    </Transition>
     <Transition name="fade" appear>
       <div class="bg-white rounded-lg border shadow-sm">
         <!-- Mobile View: Single Horizontal Line -->
@@ -35,7 +43,8 @@
                   :key="stage.stage"
                   :class="[stage.color, 'mobile-stage-segment']"
                   :style="{ width: `${Math.max(stage.percent * 0.85, 10)}%` }"
-                  @click="toggleStageDetails(stage.stage)"
+                  @click="gotoView(stage.view)"
+                  @touchstart="toggleStageDetails(stage.stage)"
                 >
                   <div class="flex items-center justify-center h-full px-1 text-white">
                     <div class="text-center">
@@ -129,6 +138,7 @@
                     width: `${Math.max(stage.percent * 0.8, 12)}%`,
                     minWidth: index === spancoData.length - 1 ? '100px' : '80px'
                   }"
+                  @click="gotoView(stage.view)"
                 >
                   <!-- Stage Letter with Animation -->
                   <Transition name="bounce" appear>
@@ -187,12 +197,17 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, defineComponent } from 'vue'
+import { computed, ref, onMounted, onUnmounted, defineComponent, watch, nextTick } from 'vue'
 import { TrendingUp } from 'lucide-vue-next'
 import { Transition, TransitionGroup } from 'vue'
+import {createResource} from "frappe-ui";
+import { useRouter } from 'vue-router'
 
+
+const router = useRouter()
 // Expanded stages for mobile view
 const expandedStages = ref([])
+
 
 const toggleStageDetails = (stage) => {
   if (expandedStages.value.includes(stage)) {
@@ -206,55 +221,158 @@ const getStageData = (stageKey) => {
   return spancoData.value.find(stage => stage.stage === stageKey)
 }
 
+const viewResources = ref(new Map())
+
+function getOrCreateViewResource(viewId) {
+  if (!viewId) return null
+  
+  if (!viewResources.value.has(viewId)) {
+    const resource = createResource({
+      url: 'frappe.client.get',
+      params: { doctype: 'CRM View Settings', name: viewId },
+      cache: ['fcrmView', viewId],
+      auto: true,
+      onError: (err) => {
+        console.error(`Failed to load view ${viewId}:`, err)
+      }
+    })
+    viewResources.value.set(viewId, resource)
+  }
+  
+  return viewResources.value.get(viewId)
+}
+
+function parseView(viewId) {
+  const resource = getOrCreateViewResource(viewId)
+  if (!resource?.data) return null
+  
+  const view = resource.data
+  if (!view || !view.route_name) {
+    console.warn(`View ${viewId} not found or invalid`)
+    return null
+  }
+  
+  return {
+    label: view.label,
+    to: {
+      name: view.route_name,
+      params: { viewType: view.type || 'list' },
+      query: { view: view.name },
+    },
+  }
+}
+
+
 // CountUp component for animated number transitions
 const CountUp = defineComponent({
   props: {
-    endVal: {
-      type: Number,
-      required: true
-    },
-    duration: {
-      type: Number,
-      default: 1500
-    },
-    decimals: {
-      type: Number,
-      default: 0
-    },
-    format: {
-      type: Boolean,
-      default: false
-    },
-    prefix: {
-      type: String,
-      default: ''
-    },
-    suffix: {
-      type: String,
-      default: ''
-    }
+    endVal: { type: Number, required: true },
+    duration: { type: Number, default: 1500 },
+    decimals: { type: Number, default: 0 },
+    format: { type: Boolean, default: false },
+    prefix: { type: String, default: '' },
+    suffix: { type: String, default: '' }
   },
   setup(props) {
     const current = ref(0)
+    const isAnimating = ref(false)
+    const animationId = ref(null)
 
-    onMounted(() => {
-      const startTime = Date.now()
-      const endTime = startTime + props.duration
+    const startAnimation = () => {
+      // Prevent multiple animations
+      if (isAnimating.value) return
+      
+      // Cancel any existing animation
+      if (animationId.value) {
+        cancelAnimationFrame(animationId.value)
+      }
+      
+      isAnimating.value = true
+      const startTime = performance.now()
+      const startValue = current.value
+      const targetValue = props.endVal
 
-      const updateValue = () => {
-        const now = Date.now()
-        if (now >= endTime) {
-          current.value = props.endVal
-          return
+      const animate = (currentTime) => {
+        if (!isAnimating.value) return // Safety check
+        
+        const elapsed = currentTime - startTime
+        const progress = Math.min(elapsed / props.duration, 1)
+        
+        // Smooth easing function
+        const easeProgress = 1 - Math.pow(1 - progress, 3)
+        
+        current.value = Math.round(startValue + (targetValue - startValue) * easeProgress)
+
+        if (progress < 1) {
+          animationId.value = requestAnimationFrame(animate)
+        } else {
+          isAnimating.value = false
+          current.value = targetValue
         }
-
-        const elapsed = now - startTime
-        const progress = elapsed / props.duration
-        current.value = Math.round(props.endVal * progress)
-        requestAnimationFrame(updateValue)
       }
 
-      requestAnimationFrame(updateValue)
+      animationId.value = requestAnimationFrame(animate)
+    }
+
+    // Watch for prop changes and restart animation
+    watch(() => props.endVal, (newVal, oldVal) => {
+      if (newVal !== oldVal && newVal > 0) {
+        // Small delay to prevent conflicts with multiple components
+        setTimeout(startAnimation, Math.random() * 100)
+      }
+    }, { immediate: false })
+
+    onMounted(() => {
+      // Multiple fallback strategies for production
+      const strategies = [
+        // Strategy 1: Immediate start
+        () => {
+          if (props.endVal > 0) {
+            setTimeout(startAnimation, 50)
+          }
+        },
+        
+        // Strategy 2: Wait for next tick
+        () => {
+          nextTick(() => {
+            if (props.endVal > 0) {
+              startAnimation()
+            }
+          })
+        },
+        
+        // Strategy 3: Wait for idle callback
+        () => {
+          if (window.requestIdleCallback) {
+            window.requestIdleCallback(() => {
+              if (props.endVal > 0) {
+                startAnimation()
+              }
+            })
+          }
+        },
+        
+        // Strategy 4: Fallback with delay
+        () => {
+          setTimeout(() => {
+            if (current.value === 0 && props.endVal > 0) {
+              current.value = props.endVal // Direct assignment as fallback
+            }
+          }, 2000)
+        }
+      ]
+
+      // Execute all strategies
+      strategies.forEach((strategy, index) => {
+        setTimeout(strategy, index * 100)
+      })
+    })
+
+    onUnmounted(() => {
+      isAnimating.value = false
+      if (animationId.value) {
+        cancelAnimationFrame(animationId.value)
+      }
     })
 
     const formattedValue = computed(() => {
@@ -274,8 +392,60 @@ const CountUp = defineComponent({
   template: `<span>{{ formattedValue }}</span>`
 })
 
+const isNavigating = ref(false)
+
+const fcrmSettings = createResource({
+  url: 'frappe.client.get',
+  params: {doctype: 'FCRM Settings', name: 'FCRM Settings'},
+  cache: ['fcrmSettings'],
+  auto: true, // Auto-fetch on component mount
+  onSuccess: (data) => {
+    console.log('FCRM Settings loaded:', data)
+    // Settings are now available, spancoData will reactively update
+  },
+  onError: (err) => {
+    console.error('Failed to load FCRM Settings:', err)
+    // Could show user notification here
+  }
+})
+
+const isSettingsLoaded = computed(() => {
+  return fcrmSettings.data && !fcrmSettings.loading
+})
+
+const gotoView = async (view) => {
+  if (!view) {
+    // Settings not loaded yet or view not configured
+    if (fcrmSettings.loading) {
+      console.warn('FCRM Settings still loading, please wait...')
+      return
+    } else {
+      console.warn('View not configured in FCRM Settings')
+      return  
+    }
+  }
+  
+  if (isNavigating.value) return // Prevent double-clicks
+  
+  try {
+    isNavigating.value = true
+    await router.push(view?.to)
+  } catch (error) {
+    console.error('Navigation failed:', error)
+  } finally {
+    isNavigating.value = false
+  }
+}
+
+const suspectView = computed(() => parseView(fcrmSettings.data?.suspects || null))
+const prospectView = computed(() => parseView(fcrmSettings.data?.prospects || null))
+const analysisView = computed(() => parseView(fcrmSettings.data?.analysis || null))
+const negotiationView = computed(() => parseView(fcrmSettings.data?.negotiation || null))
+const closureView = computed(() => parseView(fcrmSettings.data?.closed || null))
+const orderView = computed(() => parseView(fcrmSettings.data?.order || null))
+
 // SPANCO data with preserved desktop colors
-const spancoData = ref([
+const spancoData = computed(() => [
   {
     stage: "S",
     fullName: "Suspects",
@@ -284,24 +454,27 @@ const spancoData = ref([
     valuation: 2500000,
     color: "bg-gradient-to-br from-blue-600 to-blue-700 sm:bg-blue-600/95",
     textColor: "text-white",
+    view: suspectView.value
   },
   {
     stage: "P",
-    fullName: "Prospects",
+    fullName: "Prospects", 
     number: 875,
     percent: 70,
     valuation: 1750000,
     color: "bg-gradient-to-br from-indigo-600 to-indigo-700 sm:bg-indigo-600/95",
     textColor: "text-white",
+    view: prospectView.value
   },
   {
     stage: "A",
     fullName: "Analysis",
     number: 525,
-    percent: 42,
+    percent: 42, 
     valuation: 1050000,
     color: "bg-gradient-to-br from-violet-600 to-violet-700 sm:bg-violet-600/95",
     textColor: "text-white",
+    view: analysisView.value
   },
   {
     stage: "N",
@@ -309,8 +482,9 @@ const spancoData = ref([
     number: 315,
     percent: 25,
     valuation: 630000,
-    color: "bg-gradient-to-br from-amber-600 to-amber-700 sm:bg-amber-600/95",
+    color: "bg-gradient-to-br from-amber-600 to-amber-700 sm:bg-amber-600/95", 
     textColor: "text-white",
+    view: negotiationView.value
   },
   {
     stage: "C",
@@ -320,15 +494,17 @@ const spancoData = ref([
     valuation: 376000,
     color: "bg-gradient-to-br from-emerald-600 to-emerald-700 sm:bg-emerald-600/95",
     textColor: "text-white",
+    view: closureView.value
   },
   {
-    stage: "O",
+    stage: "O", 
     fullName: "Order",
     number: 125,
     percent: 10,
     valuation: 250000,
     color: "bg-gradient-to-br from-teal-600 to-teal-700 sm:bg-teal-600/95",
     textColor: "text-white",
+    view: orderView.value
   },
 ])
 
@@ -376,9 +552,16 @@ const overallConversionRate = computed(() => {
 //   }, 8000)
 // }
 //
-// onMounted(() => {
-//   updateData()
-// })
+onMounted(async () => {
+  // Settings will auto-fetch, but we can add retry logic
+  if (!fcrmSettings.data && !fcrmSettings.loading) {
+    try {
+      await fcrmSettings.fetch()
+    } catch (error) {
+      console.error('Failed to fetch FCRM Settings on mount:', error)
+    }
+  }
+})
 </script>
 
 <style scoped>

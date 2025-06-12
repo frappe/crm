@@ -347,7 +347,7 @@ const quotations = createResource({
   }
 });
 
-const quotations = createResource({
+const organization = createResource({
   url: 'frappe.client.get',
   onSuccess: (data) => (deal.data._organizationObj = data),
 })

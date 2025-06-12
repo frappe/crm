@@ -78,4 +78,13 @@ export default defineConfig({
       'lowlight',
     ],
   },
+  build: {
+    cssCodeSplit: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // Keep for debugging
+      },
+    },
+  },
 })

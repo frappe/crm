@@ -188,7 +188,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-20 15:36:55.059065",
+ "modified": "2025-06-12 16:14:53.402349",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
@@ -221,6 +221,8 @@
   }
  ],
  "read_only": 1,
+ "row_format": "Dynamic",
+ "search_fields": "label",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
