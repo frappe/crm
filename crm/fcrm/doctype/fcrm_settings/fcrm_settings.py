@@ -76,3 +76,40 @@ def sync_table(key, hook):
 	crm_settings.set(key, items)
 
 	crm_settings.save()
+
+
+def create_forecasting_script():
+	if not frappe.db.exists("CRM Form Script", "Forecasting Script"):
+		script = get_forecasting_script()
+		frappe.get_doc(
+			{
+				"doctype": "CRM Form Script",
+				"name": "Forecasting Script",
+				"dt": "CRM Deal",
+				"view": "Form",
+				"script": script,
+				"enabled": 1,
+				"is_standard": 1,
+			}
+		).insert()
+
+
+def get_forecasting_script():
+	return (
+"""
+class CRMDeal {
+    async status() {
+        await this.doc.trigger('updateProbability')
+    }
+    async updateProbability() {
+        let status = await call("frappe.client.get_value", {
+            doctype: "CRM Deal Status",
+            fieldname: "probability",
+            filters: { name: this.doc.status },
+        })
+
+        this.doc.probability = status.probability
+    }
+}
+"""
+)
