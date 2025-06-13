@@ -45,32 +45,12 @@ def get_boot():
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
 				or get_system_timezone(),
 			},
-			"app_version": get_app_version(),
 		}
 	)
 
 
 def get_default_route():
 	return "/crm"
-
-
-def get_app_version():
-	app = "crm"
-	branch = run_git_command(f"cd ../apps/{app} && git rev-parse --abbrev-ref HEAD")
-	commit = run_git_command(f"git -C ../apps/{app} rev-parse --short=7 HEAD")
-	tag = run_git_command(f"git -C ../apps/{app} describe --tags --abbrev=0")
-	dirty = run_git_command(f"git -C ../apps/{app} diff --quiet || echo 'dirty'") == "dirty"
-	commit_date = run_git_command(f"git -C ../apps/{app} log -1 --format=%cd")
-	commit_message = run_git_command(f"git -C ../apps/{app} log -1 --pretty=%B")
-
-	return {
-		"branch": branch,
-		"commit": commit,
-		"commit_date": commit_date,
-		"commit_message": commit_message,
-		"tag": tag,
-		"dirty": dirty,
-	}
 
 
 def run_git_command(command):
