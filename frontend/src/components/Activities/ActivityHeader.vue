@@ -73,6 +73,7 @@
         <span>{{ __('New Message') }}</span>
       </Button>
     </div>
+    <div v-else-if="title == 'Quotations'"></div>
     <Dropdown v-else :options="defaultActions" @click.stop>
       <template v-slot="{ open }">
         <Button variant="solid" class="flex items-center gap-1">
