@@ -23,7 +23,14 @@
       />
       <Dropdown
         v-if="document.doc"
-        :options="statusOptions('lead', document, lead.data._customStatuses)"
+        :options="
+          statusOptions(
+            'lead',
+            document,
+            lead.data._customStatuses,
+            triggerOnChange,
+          )
+        "
       >
         <template #default="{ open }">
           <Button :label="document.doc.status">
@@ -610,10 +617,8 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 
-const { triggerConvertToDeal, assignees, document } = useDocument(
-  'CRM Lead',
-  props.leadId,
-)
+const { triggerConvertToDeal, triggerOnChange, assignees, document } =
+  useDocument('CRM Lead', props.leadId)
 
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {

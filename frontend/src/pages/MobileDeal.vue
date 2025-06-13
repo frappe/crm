@@ -11,7 +11,14 @@
       <div class="absolute right-0">
         <Dropdown
           v-if="document.doc"
-          :options="statusOptions('deal', document, deal.data._customStatuses)"
+          :options="
+            statusOptions(
+              'deal',
+              document,
+              deal.data._customStatuses,
+              triggerOnChange,
+            )
+          "
         >
           <template #default="{ open }">
             <Button :label="document.doc.status">
@@ -612,7 +619,10 @@ async function deleteDeal(name) {
   router.push({ name: 'Deals' })
 }
 
-const { assignees, document } = useDocument('CRM Deal', props.dealId)
+const { assignees, document, triggerOnChange } = useDocument(
+  'CRM Deal',
+  props.dealId,
+)
 
 function reloadAssignees(data) {
   if (data?.hasOwnProperty('deal_owner')) {

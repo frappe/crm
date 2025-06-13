@@ -332,12 +332,10 @@ const getPlaceholder = (field) => {
 }
 
 function fieldChange(value, df) {
-  data.value[df.fieldname] = value
-
   if (isGridRow) {
-    triggerOnChange(df.fieldname, data.value)
+    triggerOnChange(df.fieldname, value, data.value)
   } else {
-    triggerOnChange(df.fieldname)
+    triggerOnChange(df.fieldname, value)
   }
 }
 
