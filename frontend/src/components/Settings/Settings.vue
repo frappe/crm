@@ -33,15 +33,7 @@
             </nav>
           </div>
         </div>
-        <div
-          class="relative flex flex-col flex-1 overflow-y-auto bg-surface-modal"
-        >
-          <Button
-            class="absolute right-5 top-5"
-            variant="ghost"
-            icon="x"
-            @click="showSettings = false"
-          />
+        <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
@@ -54,8 +46,9 @@ import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import Agents from '@/components/Settings/Agents.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
-import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
+import InviteAgentPage from '@/components/Settings/InviteAgentPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
@@ -92,15 +85,20 @@ const tabs = computed(() => {
           component: markRaw(ProfileSettings),
         },
         {
+          label: __('Agents'),
+          icon: 'user',
+          component: markRaw(Agents),
+        },
+        {
           label: __('General'),
           icon: 'settings',
           component: markRaw(GeneralSettings),
           condition: () => isManager(),
         },
         {
-          label: __('Invite Members'),
+          label: __('Invite Agent'),
           icon: InviteIcon,
-          component: markRaw(InviteMemberPage),
+          component: markRaw(InviteAgentPage),
           condition: () => isManager(),
         },
         {
