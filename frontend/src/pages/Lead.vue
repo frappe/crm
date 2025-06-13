@@ -23,7 +23,14 @@
       />
       <Dropdown
         v-if="document.doc"
-        :options="statusOptions('lead', document, lead.data._customStatuses)"
+        :options="
+          statusOptions(
+            'lead',
+            document,
+            lead.data._customStatuses,
+            triggerOnChange,
+          )
+        "
       >
         <template #default="{ open }">
           <Button :label="document.doc.status">
@@ -344,7 +351,12 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { openWebsite, setupCustomizations, copyToClipboard, validateIsImageFile } from '@/utils'
+import {
+  openWebsite,
+  setupCustomizations,
+  copyToClipboard,
+  validateIsImageFile,
+} from '@/utils'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -605,10 +617,8 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 
-const { triggerConvertToDeal, assignees, document } = useDocument(
-  'CRM Lead',
-  props.leadId,
-)
+const { triggerConvertToDeal, triggerOnChange, assignees, document } =
+  useDocument('CRM Lead', props.leadId)
 
 async function convertToDeal() {
   if (existingContactChecked.value && !existingContact.value) {

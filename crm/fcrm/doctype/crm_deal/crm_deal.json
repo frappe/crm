@@ -11,11 +11,14 @@
   "naming_series",
   "organization",
   "next_step",
-  "probability",
   "column_break_ijan",
   "status",
-  "close_date",
   "deal_owner",
+  "section_break_jgpm",
+  "probability",
+  "deal_value",
+  "column_break_kpxa",
+  "close_date",
   "contacts_tab",
   "contacts",
   "contact",
@@ -91,7 +94,7 @@
   {
    "fieldname": "close_date",
    "fieldtype": "Date",
-   "label": "Close Date"
+   "label": "Expected Closure Date"
   },
   {
    "fieldname": "next_step",
@@ -374,12 +377,26 @@
    "label": "Net Total",
    "options": "currency",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_jgpm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "deal_value",
+   "fieldtype": "Currency",
+   "label": "Deal Value",
+   "options": "currency"
+  },
+  {
+   "fieldname": "column_break_kpxa",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-12 12:30:55.415282",
+ "modified": "2025-06-11 12:58:22.439045",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

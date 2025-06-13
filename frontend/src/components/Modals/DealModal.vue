@@ -94,7 +94,7 @@ const show = defineModel()
 const router = useRouter()
 const error = ref(null)
 
-const { document: deal } = useDocument('CRM Deal')
+const { document: deal, triggerOnChange } = useDocument('CRM Deal')
 
 const hasOrganizationSections = ref(true)
 const hasContactSections = ref(true)
@@ -164,7 +164,7 @@ const tabs = createResource({
 })
 
 const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
+  let statuses = statusOptions('deal', null, [], triggerOnChange)
   if (!deal.doc.status) {
     deal.doc.status = statuses[0].value
   }
