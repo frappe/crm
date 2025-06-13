@@ -44,18 +44,21 @@
                   >
                     <Tooltip :text="__(field.label)" :hoverDelay="1">
                       <div
-                        class="w-[35%] min-w-20 shrink-0 truncate text-sm text-ink-gray-5"
+                        class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
                       >
-                        {{ __(field.label) }}
-                        <span
+                        <div class="truncate text-sm text-ink-gray-5">
+                          {{ __(field.label) }}
+                        </div>
+                        <div
                           v-if="
                             field.reqd ||
                             (field.mandatory_depends_on &&
                               field.mandatory_via_depends_on)
                           "
                           class="text-ink-red-2"
-                          >*</span
                         >
+                          *
+                        </div>
                       </div>
                     </Tooltip>
                     <div class="flex items-center justify-between w-[65%]">
