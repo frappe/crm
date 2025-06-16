@@ -1320,6 +1320,11 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-heading/-/extension-heading-2.10.3.tgz#bf8efb3a580c75b86dce505a63f1ca7450a9aaea"
   integrity sha512-AlxXXPCWIvw8hQUDFRskasj32iMNB8Sb19VgyFWqwvntGs2/UffNu8VdsVqxD2HpZ0g5rLYCYtSW4wigs9R3og==
 
+"@tiptap/extension-heading@^2.12.0":
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-heading/-/extension-heading-2.14.0.tgz#c5a9dc761712e9c87073ba8446548cbe4d403360"
+  integrity sha512-vM//6G3Ox3mxPv9eilhrDqylELCc8kEP1aQ4xUuOw7vCidjNtGggOa1ERnnpV2dCa2A9E8y4FHtN4Xh29stXQg==
+
 "@tiptap/extension-highlight@^2.0.3":
   version "2.10.3"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-highlight/-/extension-highlight-2.10.3.tgz#d94667d435d9dc556b06e7b764449dc2a6c18743"
@@ -2565,10 +2570,10 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-ui@^0.1.145:
-  version "0.1.145"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.145.tgz#19ec429badf85f3f2c45a85ec13c3c462ec11ee9"
-  integrity sha512-DnnSJREu/EpUAJGNFaXEUF3re0hQMmLBOX/MSW9AsQtnCJwXkO5VbH/dyVHAZjqdb9Do3CNQF33/HB4NibNI8Q==
+frappe-ui@^0.1.154:
+  version "0.1.154"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.154.tgz#caf6f76957ba67b1a5f8f5b0af23720027aca8db"
+  integrity sha512-D8pyZl+pXA9PLG6P78fWmmdTT0g1DRE2HDq78AI8MkN0/3VA6vip8oN9F5smmM3cx4/PQFtiJwpkQtp2zKQHeQ==
   dependencies:
     "@floating-ui/vue" "^1.1.6"
     "@headlessui/vue" "^1.7.14"
@@ -2579,6 +2584,7 @@ frappe-ui@^0.1.145:
     "@tiptap/extension-code-block" "^2.11.9"
     "@tiptap/extension-code-block-lowlight" "^2.11.5"
     "@tiptap/extension-color" "^2.0.3"
+    "@tiptap/extension-heading" "^2.12.0"
     "@tiptap/extension-highlight" "^2.0.3"
     "@tiptap/extension-image" "^2.0.3"
     "@tiptap/extension-link" "^2.0.3"
@@ -2599,6 +2605,7 @@ frappe-ui@^0.1.145:
     dayjs "^1.11.13"
     echarts "^5.6.0"
     feather-icons "^4.28.0"
+    highlight.js "^11.11.1"
     idb-keyval "^6.2.0"
     lowlight "^3.3.0"
     lucide-static "^0.479.0"
@@ -2806,7 +2813,7 @@ hasown@^2.0.1, hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-highlight.js@~11.11.0:
+highlight.js@^11.11.1, highlight.js@~11.11.0:
   version "11.11.1"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.11.1.tgz#fca06fa0e5aeecf6c4d437239135fabc15213585"
   integrity sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==
