@@ -4,7 +4,7 @@
       <ViewBreadcrumbs routeName="Calendar" />
     </template>
     <template #right-header>
-      <Button variant="solid" :label="__('Create')" @click="createEvent">
+      <Button variant="solid" :label="__('Create')" @click="(event) => createEvent(event)">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -23,7 +23,7 @@
         noBorder: !true,
       }"
       :events="events.data"
-      @create="(event) => createEvent(event)"
+      @create="(event) => { console.log({event}); return createEvent(event)}"
       @update="(event) => updateEvent(event)"
       @delete="(eventID) => deleteEvent(eventID)"
     >

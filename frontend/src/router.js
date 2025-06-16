@@ -60,6 +60,18 @@ const routes = [
     props: true,
   },
   {
+    alias: '/visits',
+    path: '/visits/view/:viewType?',
+    name: 'Visits',
+    component: () => import('@/pages/Visits.vue'),
+  },
+  {
+    path: '/visits/:quotationId',
+    name: 'Visit',
+    component: () => import(`@/pages/Visit.vue`),
+    props: true,
+  },
+  {
     alias: '/notes',
     path: '/notes/view/:viewType?',
     name: 'Notes',

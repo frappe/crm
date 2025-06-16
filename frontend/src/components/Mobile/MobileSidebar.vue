@@ -93,6 +93,7 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import MapPinIcon from '@/components/Icons/MapPinIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
@@ -133,6 +134,11 @@ const links = [
     label: 'Quotations',
     icon: QuotationIcon,
     to: 'Quotations',
+  },
+  {
+    label: 'Visits',
+    icon: MapPinIcon,
+    to: 'Visits',
   },
   {
     label: 'Contacts',

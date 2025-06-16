@@ -1,0 +1,488 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-06-14 12:00:00",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_info_section",
+  "naming_series",
+  "visit_date",
+  "visit_type",
+  "status",
+  "priority",
+  "company",
+  "column_break_1",
+  "planned_start_time",
+  "planned_end_time",
+  "amended_from",
+  "reference_section",
+  "reference_type",
+  "reference_name",
+  "reference_title",
+  "column_break_2",
+  "customer_address",
+  "contact_phone",
+  "contact_email",
+  "sales_team_section",
+  "sales_person",
+  "column_break_3",
+  "sales_manager",
+  "location_address_section",
+  "visit_address",
+  "city",
+  "state",
+  "country",
+  "pincode",
+  "column_break_4",
+  "check_in_time",
+  "check_in_location",
+  "check_in_latitude",
+  "check_in_longitude",
+  "location_accuracy",
+  "check_out_section",
+  "check_out_time",
+  "check_out_location",
+  "check_out_latitude",
+  "check_out_longitude",
+  "total_duration",
+  "visit_details_section",
+  "visit_purpose",
+  "column_break_5",
+  "visit_agenda",
+  "visit_summary",
+  "visit_outcome_section",
+  "lead_quality",
+  "feedback",
+  "key_points",
+  "column_break_6",
+  "next_steps",
+  "follow_up_required",
+  "follow_up_date",
+  "business_impact_section",
+  "potential_value",
+  "probability_percentage",
+  "expected_closure_date",
+  "calendar_integration_section",
+  "calendar_event",
+  "sync_with_calendar"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_info_section",
+   "fieldtype": "Section Break",
+   "label": "Basic Information"
+  },
+  {
+   "default": "SV-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "SV-.YYYY.-\nSVT-.YYYY.-",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "visit_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Visit Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "visit_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Visit Type",
+   "options": "Initial Meeting\nDemo/Presentation\nNegotiation\nContract Signing\nFollow-up\nSupport\nOther",
+   "reqd": 1
+  },
+  {
+   "default": "Planned",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Planned\nIn Progress\nCompleted\nCancelled\nPostponed",
+   "reqd": 1
+  },
+  {
+   "default": "Medium",
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority",
+   "options": "Low\nMedium\nHigh\nUrgent"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "planned_start_time",
+   "fieldtype": "Datetime",
+   "label": "Planned Start Time"
+  },
+  {
+   "fieldname": "planned_end_time",
+   "fieldtype": "Datetime",
+   "label": "Planned End Time"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "CRM Site Visit",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "reference_type",
+   "fieldtype": "Select",
+   "label": "Reference Type",
+   "options": "CRM Lead\nCRM Deal\nCustomer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Reference",
+   "options": "reference_type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reference_title",
+   "fieldtype": "Data",
+   "label": "Reference Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_address",
+   "fieldtype": "Link",
+   "label": "Customer Address",
+   "options": "Address"
+  },
+  {
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Contact Phone"
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email"
+  },
+  {
+   "fieldname": "sales_team_section",
+   "fieldtype": "Section Break",
+   "label": "Sales Team"
+  },
+  {
+   "fieldname": "sales_person",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Sales Person",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_manager",
+   "fieldtype": "Link",
+   "label": "Sales Manager",
+   "options": "User"
+  },
+  {
+   "fieldname": "location_address_section",
+   "fieldtype": "Section Break",
+   "label": "Location & Address"
+  },
+  {
+   "fieldname": "visit_address",
+   "fieldtype": "Small Text",
+   "label": "Visit Address"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "pincode",
+   "fieldtype": "Data",
+   "label": "Pincode"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "check_in_time",
+   "fieldtype": "Datetime",
+   "label": "Check-in Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_in_location",
+   "fieldtype": "Data",
+   "label": "Check-in Location",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_in_latitude",
+   "fieldtype": "Float",
+   "label": "Check-in Latitude",
+   "precision": "6",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_in_longitude",
+   "fieldtype": "Float",
+   "label": "Check-in Longitude",
+   "precision": "6",
+   "read_only": 1
+  },
+  {
+   "fieldname": "location_accuracy",
+   "fieldtype": "Data",
+   "label": "Location Accuracy",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out_section",
+   "fieldtype": "Section Break",
+   "label": "Check-out"
+  },
+  {
+   "fieldname": "check_out_time",
+   "fieldtype": "Datetime",
+   "label": "Check-out Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out_location",
+   "fieldtype": "Data",
+   "label": "Check-out Location",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out_latitude",
+   "fieldtype": "Float",
+   "label": "Check-out Latitude",
+   "precision": "6",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out_longitude",
+   "fieldtype": "Float",
+   "label": "Check-out Longitude",
+   "precision": "6",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_duration",
+   "fieldtype": "Int",
+   "label": "Total Duration (seconds)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "visit_details_section",
+   "fieldtype": "Section Break",
+   "label": "Visit Details"
+  },
+  {
+   "fieldname": "visit_purpose",
+   "fieldtype": "Small Text",
+   "label": "Visit Purpose",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "visit_agenda",
+   "fieldtype": "Text",
+   "label": "Visit Agenda"
+  },
+  {
+   "fieldname": "visit_summary",
+   "fieldtype": "Text Editor",
+   "label": "Visit Summary"
+  },
+  {
+   "fieldname": "visit_outcome_section",
+   "fieldtype": "Section Break",
+   "label": "Visit Outcome"
+  },
+  {
+   "fieldname": "lead_quality",
+   "fieldtype": "Select",
+   "label": "Lead Quality",
+   "options": "Hot\nWarm\nCold\nNot Qualified"
+  },
+  {
+   "fieldname": "feedback",
+   "fieldtype": "Text",
+   "label": "Customer Feedback"
+  },
+  {
+   "fieldname": "key_points",
+   "fieldtype": "Text",
+   "label": "Key Points Discussed"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "next_steps",
+   "fieldtype": "Text",
+   "label": "Next Steps"
+  },
+  {
+   "default": "0",
+   "fieldname": "follow_up_required",
+   "fieldtype": "Check",
+   "label": "Follow-up Required"
+  },
+  {
+   "depends_on": "follow_up_required",
+   "fieldname": "follow_up_date",
+   "fieldtype": "Date",
+   "label": "Follow-up Date"
+  },
+  {
+   "fieldname": "business_impact_section",
+   "fieldtype": "Section Break",
+   "label": "Business Impact"
+  },
+  {
+   "fieldname": "potential_value",
+   "fieldtype": "Currency",
+   "label": "Potential Deal Value"
+  },
+  {
+   "fieldname": "probability_percentage",
+   "fieldtype": "Percent",
+   "label": "Success Probability"
+  },
+  {
+   "fieldname": "expected_closure_date",
+   "fieldtype": "Date",
+   "label": "Expected Closure Date"
+  },
+  {
+   "fieldname": "calendar_integration_section",
+   "fieldtype": "Section Break",
+   "label": "Calendar Integration"
+  },
+  {
+   "fieldname": "calendar_event",
+   "fieldtype": "Link",
+   "label": "Calendar Event",
+   "options": "Event",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "sync_with_calendar",
+   "fieldtype": "Check",
+   "label": "Sync with Calendar"
+  }
+ ],
+ "icon": "fa fa-map-marker",
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-06-16 15:26:46.196363",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Site Visit",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "reference_title,sales_person,visit_date,status",
+ "sort_field": "visit_date",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "reference_title",
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
+}

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Visits Calendar</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .calendar-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .visit-item {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+        }
+        .visit-item.completed {
+            border-left-color: #28a745;
+        }
+        .visit-item.in-progress {
+            border-left-color: #007bff;
+        }
+        .visit-item.cancelled {
+            border-left-color: #dc3545;
+        }
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .form-group input, .form-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #ddd;
+            border: 1px solid #ddd;
+        }
+        .calendar-header {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .calendar-day {
+            background: white;
+            min-height: 100px;
+            padding: 5px;
+            border: 1px solid #eee;
+            position: relative;
+        }
+        .calendar-day.other-month {
+            background: #f8f9fa;
+            color: #ccc;
+        }
+        .day-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .day-visits {
+            font-size: 12px;
+        }
+        .visit-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 1px;
+        }
+        .visit-dot.planned { background: #ffc107; }
+        .visit-dot.in-progress { background: #007bff; }
+        .visit-dot.completed { background: #28a745; }
+        .visit-dot.cancelled { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📅 Site Visits Calendar</h1>
+        <p>Manage and view all your site visits in calendar format</p>
+    </div>
+
+    <div class="stats-row" id="statsRow">
+        <!-- Stats will be loaded here -->
+    </div>
+
+    <div class="controls">
+        <div class="filter-section">
+            <div class="form-group">
+                <label for="monthSelect">Month</label>
+                <input type="month" id="monthSelect" />
+            </div>
+            <div class="form-group">
+                <label for="salesPersonSelect">Sales Person</label>
+                <select id="salesPersonSelect">
+                    <option value="">All Sales Persons</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="statusSelect">Status</label>
+                <select id="statusSelect">
+                    <option value="">All Status</option>
+                    <option value="Planned">Planned</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div style="align-self: end;">
+                <button class="btn btn-primary" onclick="loadCalendarData()">🔍 Filter</button>
+                <button class="btn btn-success" onclick="syncAllEvents()">🔄 Sync All</button>
+                <a href="/app/crm-site-visit/new" class="btn btn-secondary">➕ New Visit</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="calendar-container">
+        <div id="calendarView">
+            <!-- Calendar will be loaded here -->
+        </div>
+        
+        <div id="listView" style="display: none;">
+            <!-- List view will be loaded here -->
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="toggleView()">📅 Toggle Calendar/List View</button>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'calendar';
+        let currentMonth = new Date().toISOString().substr(0, 7);
+        let visitsData = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+        });
+        
+        function initializePage() {
+            // Set current month
+            document.getElementById('monthSelect').value = currentMonth;
+            
+            // Load sales persons
+            loadSalesPersons();
+            
+            // Load initial data
+            loadStats();
+            loadCalendarData();
+        }
+        
+        function loadSalesPersons() {
+            frappe.call({
+                method: 'frappe.client.get_list',
+                args: {
+                    doctype: 'User',
+                    filters: {
+                        'enabled': 1,
+                        'user_type': 'System User'
+                    },
+                    fields: ['name', 'full_name'],
+                    limit_page_length: 50
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        const select = document.getElementById('salesPersonSelect');
+                        r.message.forEach(user => {
+                            const option = document.createElement('option');
+                            option.value = user.name;
+                            option.textContent = user.full_name || user.name;
+                            select.appendChild(option);
+                        });
+                    }
+                }
+            });
+        }
+        
+        function loadStats() {
+            const month = document.getElementById('monthSelect').value;
+            const salesPerson = document.getElementById('salesPersonSelect').value;
+            
+            // Calculate date range for selected month
+            const startDate = month + '-01';
+            const endDate = new Date(month + '-01');
+            endDate.setMonth(endDate.getMonth() + 1);
+            endDate.setDate(0);
+            const endDateStr = endDate.toISOString().split('T')[0];
+            
+            frappe.call({
+                method: 'crm.api.site_visit_analytics.get_site_visit_analytics',
+                args: {
+                    from_date: startDate,
+                    to_date: endDateStr,
+                    sales_person: salesPerson
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        displayStats(r.message.summary);
+                    }
+                }
+            });
+        }
+        
+        function displayStats(stats) {
+            const statsRow = document.getElementById('statsRow');
+            statsRow.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_visits}</div>
+                    <div class="stat-label">Total Visits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.completed_visits}</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.completion_rate.toFixed(1)}%</div>
+                    <div class="stat-label">Completion Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.hot_leads}</div>
+                    <div class="stat-label">Hot Leads</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_duration_hours.toFixed(1)}h</div>
+                    <div class="stat-label">Total Duration</div>
+                </div>
+            `;
+        }
+        
+        function loadCalendarData() {
+            const month = document.getElementById('monthSelect').value;
+            const salesPerson = document.getElementById('salesPersonSelect').value;
+            const status = document.getElementById('statusSelect').value;
+            
+            // Calculate date range for selected month
+            const startDate = month + '-01';
+            const endDate = new Date(month + '-01');
+            endDate.setMonth(endDate.getMonth() + 1);
+            endDate.setDate(0);
+            const endDateStr = endDate.toISOString().split('T')[0];
+            
+            let filters = {
+                visit_date: ['between', [startDate, endDateStr]]
+            };
+            
+            if (salesPerson) filters.sales_person = salesPerson;
+            if (status) filters.status = status;
+            
+            frappe.call({
+                method: 'frappe.client.get_list',
+                args: {
+                    doctype: 'CRM Site Visit',
+                    filters: filters,
+                    fields: [
+                        'name', 'visit_date', 'reference_title', 'visit_type',
+                        'status', 'sales_person', 'planned_start_time', 'calendar_event'
+                    ],
+                    limit_page_length: 1000
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        visitsData = r.message;
+                        if (currentView === 'calendar') {
+                            renderCalendar();
+                        } else {
+                            renderListView();
+                        }
+                    }
+                }
+            });
+            
+            // Reload stats
+            loadStats();
+        }
+        
+        function renderCalendar() {
+            const calendarView = document.getElementById('calendarView');
+            const month = document.getElementById('monthSelect').value;
+            const monthDate = new Date(month + '-01');
+            
+            // Get first day of month and last day
+            const firstDay = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+            const lastDay = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+            
+            // Get first day of calendar (might be from previous month)
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            // Get last day of calendar (might be from next month)
+            const endDate = new Date(lastDay);
+            endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()));
+            
+            let calendarHTML = `
+                <h3>${monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
+                <div class="calendar-grid">
+                    <div class="calendar-header">Sun</div>
+                    <div class="calendar-header">Mon</div>
+                    <div class="calendar-header">Tue</div>
+                    <div class="calendar-header">Wed</div>
+                    <div class="calendar-header">Thu</div>
+                    <div class="calendar-header">Fri</div>
+                    <div class="calendar-header">Sat</div>
+            `;
+            
+            const currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const isCurrentMonth = currentDate.getMonth() === monthDate.getMonth();
+                const dayVisits = visitsData.filter(visit => visit.visit_date === dateStr);
+                
+                calendarHTML += `
+                    <div class="calendar-day ${!isCurrentMonth ? 'other-month' : ''}" onclick="showDayVisits('${dateStr}')">
+                        <div class="day-number">${currentDate.getDate()}</div>
+                        <div class="day-visits">
+                            ${dayVisits.map(visit => 
+                                `<span class="visit-dot ${visit.status.toLowerCase().replace(' ', '-')}" 
+                                 title="${visit.reference_title} - ${visit.status}"></span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            calendarHTML += '</div>';
+            calendarView.innerHTML = calendarHTML;
+        }
+        
+        function renderListView() {
+            const listView = document.getElementById('listView');
+            
+            if (visitsData.length === 0) {
+                listView.innerHTML = '<p style="text-align: center; color: #666;">No visits found for the selected criteria.</p>';
+                return;
+            }
+            
+            // Group visits by date
+            const visitsByDate = {};
+            visitsData.forEach(visit => {
+                if (!visitsByDate[visit.visit_date]) {
+                    visitsByDate[visit.visit_date] = [];
+                }
+                visitsByDate[visit.visit_date].push(visit);
+            });
+            
+            let listHTML = '';
+            Object.keys(visitsByDate).sort().forEach(date => {
+                const dateObj = new Date(date);
+                listHTML += `
+                    <h4>${dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h4>
+                `;
+                
+                visitsByDate[date].forEach(visit => {
+                    listHTML += `
+                        <div class="visit-item ${visit.status.toLowerCase().replace(' ', '-')}" onclick="openVisit('${visit.name}')">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>${visit.reference_title}</strong><br>
+                                    <small>${visit.visit_type} • ${visit.status}</small>
+                                    ${visit.planned_start_time ? `<br><small>⏰ ${new Date(visit.planned_start_time).toLocaleTimeString()}</small>` : ''}
+                                </div>
+                                <div>
+                                    ${visit.calendar_event ? '📅' : ''}
+                                    <span style="background: ${getStatusColor(visit.status)}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
+                                        ${visit.status}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+            
+            listView.innerHTML = listHTML;
+        }
+        
+        function showDayVisits(date) {
+            const dayVisits = visitsData.filter(visit => visit.visit_date === date);
+            
+            if (dayVisits.length === 0) {
+                alert('No visits scheduled for this day.');
+                return;
+            }
+            
+            let message = `Visits for ${new Date(date).toLocaleDateString()}:\n\n`;
+            dayVisits.forEach(visit => {
+                message += `• ${visit.reference_title} (${visit.status})\n`;
+            });
+            
+            if (confirm(message + '\nWould you like to view the visits?')) {
+                currentView = 'list';
+                document.getElementById('calendarView').style.display = 'none';
+                document.getElementById('listView').style.display = 'block';
+                renderListView();
+            }
+        }
+        
+        function openVisit(visitName) {
+            window.open(`/app/crm-site-visit/${visitName}`, '_blank');
+        }
+        
+        function toggleView() {
+            if (currentView === 'calendar') {
+                currentView = 'list';
+                document.getElementById('calendarView').style.display = 'none';
+                document.getElementById('listView').style.display = 'block';
+                renderListView();
+            } else {
+                currentView = 'calendar';
+                document.getElementById('calendarView').style.display = 'block';
+                document.getElementById('listView').style.display = 'none';
+                renderCalendar();
+            }
+        }
+        
+        function syncAllEvents() {
+            if (!confirm('This will sync all site visits with calendar events. Continue?')) {
+                return;
+            }
+            
+            frappe.call({
+                method: 'crm.api.site_visit_calendar.create_event_for_existing_visits',
+                callback: function(r) {
+                    if (r.message) {
+                        alert(r.message.message);
+                        loadCalendarData();
+                    }
+                }
+            });
+        }
+        
+        function getStatusColor(status) {
+            const colors = {
+                'Planned': '#ffc107',
+                'In Progress': '#007bff',
+                'Completed': '#28a745',
+                'Cancelled': '#dc3545',
+                'Postponed': '#fd7e14'
+            };
+            return colors[status] || '#6c757d';
+        }
+        
+        // Auto-refresh every 5 minutes
+        setInterval(loadCalendarData, 300000);
+    </script>
+</body>
+</html>

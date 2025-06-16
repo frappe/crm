@@ -158,6 +158,19 @@ doc_events = {
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
 		],
 	},
+	"CRM Site Visit": {
+		"on_update": [
+			"crm.fcrm.doctype.crm_site_visit.crm_site_visit.update_lead_score_from_visit"
+		],
+	},
+	"Event": {
+		"on_update": [
+			"crm.api.calendar_integration.update_visit_from_calendar_event"
+		],
+		"on_trash": [
+			"crm.api.calendar_integration.delete_visit_calendar_event_link"
+		],
+	},
 	"User": {
 		"before_validate": ["crm.api.demo.validate_user"],
 		"validate_reset_password": ["crm.api.demo.validate_reset_password"],
@@ -167,23 +180,11 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# "all": [
-# "crm.tasks.all"
-# ],
-# "daily": [
-# "crm.tasks.daily"
-# ],
-# "hourly": [
-# "crm.tasks.hourly"
-# ],
-# "weekly": [
-# "crm.tasks.weekly"
-# ],
-# "monthly": [
-# "crm.tasks.monthly"
-# ],
-# }
+scheduler_events = {
+	"daily": [
+		"crm.fcrm.doctype.crm_site_visit.crm_site_visit.send_visit_reminders"
+	],
+}
 
 # Testing
 # -------

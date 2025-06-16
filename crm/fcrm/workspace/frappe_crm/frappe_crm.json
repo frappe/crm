@@ -127,6 +127,21 @@
    "link_to": "CRM Industry",
    "stats_filter": "[]",
    "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Site Visits",
+   "link_to": "CRM Site Visit",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Site Visits Calendar",
+   "type": "URL",
+   "url": "/site_visit_calendar"
   }
  ],
  "title": "Frappe CRM"

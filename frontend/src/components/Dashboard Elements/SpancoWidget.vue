@@ -44,7 +44,7 @@
                   :class="[stage.color, 'mobile-stage-segment']"
                   :style="{ width: `${Math.max(stage.percent * 0.85, 10)}%` }"
                   @click="gotoView(stage.view)"
-                  @touchstart="toggleStageDetails(stage.stage)"
+                  @touch="gotoView(stage.view)"
                 >
                   <div class="flex items-center justify-center h-full px-1 text-white">
                     <div class="text-center">
