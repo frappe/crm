@@ -248,6 +248,7 @@
                             "
                             :placeholder="field.placeholder"
                             placement="left-start"
+                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -261,6 +262,7 @@
                             :formatter="(date) => getFormat(date, '', true)"
                             :placeholder="field.placeholder"
                             placement="left-start"
+                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
