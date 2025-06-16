@@ -15,10 +15,14 @@
               class="w-7"
               @click="openQuickEntryModal"
             >
-              <EditIcon class="h-4 w-4" />
+              <template #icon>
+                <EditIcon />
+              </template>
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
+              <template #icon>
+                <FeatherIcon name="x" class="size-4" />
+              </template>
             </Button>
           </div>
         </div>
@@ -70,10 +74,10 @@ const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
 
-const { document: lead } = useDocument('CRM Lead')
+const { document: lead, triggerOnChange } = useDocument('CRM Lead')
 
 const leadStatuses = computed(() => {
-  let statuses = statusOptions('lead')
+  let statuses = statusOptions('lead', null, [], triggerOnChange)
   if (!lead.doc.status) {
     lead.doc.status = statuses?.[0]?.value
   }

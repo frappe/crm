@@ -46,6 +46,11 @@ export function getScript(doctype, view = 'Form') {
     helpers.router = router
     helpers.call = call
 
+    helpers.throwError = (message) => {
+      toast.error(message || __('An error occurred'))
+      throw new Error(message || __('An error occurred'))
+    }
+
     helpers.crm = {
       makePhoneCall: makeCall,
     }

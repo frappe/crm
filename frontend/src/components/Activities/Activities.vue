@@ -806,5 +806,5 @@ const callActions = computed(() => {
   )
 })
 
-defineExpose({ emailBox, all_activities })
+defineExpose({ emailBox, all_activities, changeTabTo })
 </script>

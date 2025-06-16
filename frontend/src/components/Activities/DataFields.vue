@@ -16,7 +16,9 @@
         v-if="isManager() && !isMobileView"
         @click="showDataFieldsModal = true"
       >
-        <EditIcon class="h-4 w-4" />
+        <template #icon>
+          <EditIcon />
+        </template>
       </Button>
       <Button
         label="Save"

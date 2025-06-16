@@ -359,5 +359,8 @@ def add_standard_dropdown_items():
 
 
 def add_default_scripts():
+	from crm.fcrm.doctype.fcrm_settings.fcrm_settings import create_forecasting_script
+
 	for doctype in ["CRM Lead", "CRM Deal"]:
 		create_product_details_script(doctype)
+	create_forecasting_script()

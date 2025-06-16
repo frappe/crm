@@ -24,6 +24,7 @@ class CRMDeal(Document):
 			self.assign_agent(self.deal_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
+		self.update_close_date()
 
 	def after_insert(self):
 		if self.deal_owner:
@@ -132,6 +133,13 @@ class CRMDeal(Document):
 		sla = frappe.get_last_doc("CRM Service Level Agreement", {"name": self.sla})
 		if sla:
 			sla.apply(self)
+
+	def update_close_date(self):
+		"""
+		Update the close date based on the "Won" status.
+		"""
+		if self.status == "Won" and not self.close_date:
+			self.close_date = frappe.utils.nowdate()
 
 	@staticmethod
 	def default_list_data():

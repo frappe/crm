@@ -23,7 +23,14 @@ export function useDocument(doctype, docname) {
             toast.success(__('Document updated successfully'))
           },
           onError: (err) => {
-            toast.error(__('Error updating document'))
+            let errorMessage = __('Error updating document')
+            if (err.exc_type == 'MandatoryError') {
+              const fieldName = err.messages
+                .map((msg) => msg.split(': ')[2].trim())
+                .join(', ')
+              errorMessage = __('Mandatory field error: {0}', [fieldName])
+            }
+            toast.error(errorMessage)
             console.error(err)
           },
         },
@@ -117,20 +124,26 @@ export function useDocument(doctype, docname) {
     await trigger(handler)
   }
 
-  async function triggerOnChange(fieldname, row) {
+  async function triggerOnChange(fieldname, value, row) {
+    const oldValue = documentsCache[doctype][docname || ''].doc[fieldname]
+    documentsCache[doctype][docname || ''].doc[fieldname] = value
+
     const handler = async function () {
+      this.value = value
+      this.oldValue = oldValue
       if (row) {
         this.currentRowIdx = row.idx
-        this.value = row[fieldname]
-        this.oldValue = getOldValue(fieldname, row)
-      } else {
-        this.value = documentsCache[doctype][docname || ''].doc[fieldname]
-        this.oldValue = getOldValue(fieldname)
       }
       await this[fieldname]?.()
     }
 
-    await trigger(handler, row)
+    try {
+      await trigger(handler, row)
+    } catch (error) {
+      documentsCache[doctype][docname || ''].doc[fieldname] = oldValue
+      console.error(handler)
+      throw error
+    }
   }
 
   async function triggerOnRowAdd(row) {

@@ -112,7 +112,7 @@ const tabs = computed(() => {
       ],
     },
     {
-      label: __('Integrations'),
+      label: __('Integrations', null, 'FCRM'),
       items: [
         {
           label: __('Telephony'),

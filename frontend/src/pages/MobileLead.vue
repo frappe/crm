@@ -11,7 +11,14 @@
       <div class="absolute right-0">
         <Dropdown
           v-if="document.doc"
-          :options="statusOptions('lead', document, lead.data._customStatuses)"
+          :options="
+            statusOptions(
+              'lead',
+              document,
+              lead.data._customStatuses,
+              triggerOnChange,
+            )
+          "
         >
           <template #default="{ open }">
             <Button :label="document.doc.status">
@@ -461,7 +468,10 @@ async function convertToDeal() {
   }
 }
 
-const { assignees, document } = useDocument('CRM Lead', props.leadId)
+const { assignees, document, triggerOnChange } = useDocument(
+  'CRM Lead',
+  props.leadId,
+)
 
 function reloadAssignees(data) {
   if (data?.hasOwnProperty('lead_owner')) {
