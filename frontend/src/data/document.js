@@ -23,7 +23,14 @@ export function useDocument(doctype, docname) {
             toast.success(__('Document updated successfully'))
           },
           onError: (err) => {
-            toast.error(__('Error updating document'))
+            let errorMessage = __('Error updating document')
+            if (err.exc_type == 'MandatoryError') {
+              const fieldName = err.messages
+                .map((msg) => msg.split(': ')[2].trim())
+                .join(', ')
+              errorMessage = __('Mandatory field error: {0}', [fieldName])
+            }
+            toast.error(errorMessage)
             console.error(err)
           },
         },
