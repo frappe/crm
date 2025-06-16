@@ -25,7 +25,9 @@
                   class="w-7 mr-2"
                   @click="showSidePanelModal = true"
                 >
-                  <EditIcon class="h-4 w-4" />
+                  <template #icon>
+                    <EditIcon />
+                  </template>
                 </Button>
               </slot>
             </template>

@@ -92,42 +92,50 @@
             <Tooltip v-if="callEnabled" :text="__('Make a call')">
               <div>
                 <Button class="h-7 w-7" @click="triggerCall">
-                  <PhoneIcon class="h-4 w-4" />
+                  <template #icon>
+                    <PhoneIcon />
+                  </template>
                 </Button>
               </div>
             </Tooltip>
             <Tooltip :text="__('Send an email')">
               <div>
-                <Button class="h-7 w-7">
-                  <Email2Icon
-                    class="h-4 w-4"
-                    @click="
-                      deal.data.email
-                        ? openEmailBox()
-                        : toast.error(__('No email set'))
-                    "
-                  />
+                <Button
+                  class="h-7 w-7"
+                  @click="
+                    deal.data.email
+                      ? openEmailBox()
+                      : toast.error(__('No email set'))
+                  "
+                >
+                  <template #icon>
+                    <Email2Icon />
+                  </template>
                 </Button>
               </div>
             </Tooltip>
             <Tooltip :text="__('Go to website')">
               <div>
-                <Button class="h-7 w-7">
-                  <LinkIcon
-                    class="h-4 w-4"
-                    @click="
-                      deal.data.website
-                        ? openWebsite(deal.data.website)
-                        : toast.error(__('No website set'))
-                    "
-                  />
+                <Button
+                  class="h-7 w-7"
+                  @click="
+                    deal.data.website
+                      ? openWebsite(deal.data.website)
+                      : toast.error(__('No website set'))
+                  "
+                >
+                  <template #icon>
+                    <LinkIcon />
+                  </template>
                 </Button>
               </div>
             </Tooltip>
             <Tooltip :text="__('Attach a file')">
               <div>
                 <Button class="size-7" @click="showFilesUploader = true">
-                  <AttachmentIcon class="size-4" />
+                  <template #icon>
+                    <AttachmentIcon />
+                  </template>
                 </Button>
               </div>
             </Tooltip>
@@ -239,14 +247,18 @@
                               })
                             "
                           >
-                            <ArrowUpRightIcon class="h-4 w-4" />
+                            <template #icon>
+                              <ArrowUpRightIcon class="h-4 w-4" />
+                            </template>
                           </Button>
                           <Button variant="ghost" @click="toggle()">
-                            <FeatherIcon
-                              name="chevron-right"
-                              class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
-                              :class="{ 'rotate-90': opened }"
-                            />
+                            <template #icon>
+                              <FeatherIcon
+                                name="chevron-right"
+                                class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+                                :class="{ 'rotate-90': opened }"
+                              />
+                            </template>
                           </Button>
                         </div>
                       </div>
@@ -368,7 +380,7 @@ import {
   toast,
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
-import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, h, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
@@ -730,7 +742,11 @@ async function deleteDeal(name) {
 const activities = ref(null)
 
 function openEmailBox() {
-  activities.value.emailBox.show = true
+  let currentTab = tabs.value[tabIndex.value]
+  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
+    activities.value.changeTabTo('emails')
+  }
+  nextTick(() => (activities.value.emailBox.show = true))
 }
 
 const { assignees, document, triggerOnChange } = useDocument(
