@@ -142,42 +142,50 @@
                             : toast.error(__('No phone number set'))
                       "
                     >
-                      <PhoneIcon class="h-4 w-4" />
+                      <template #icon>
+                        <PhoneIcon />
+                      </template>
                     </Button>
                   </div>
                 </Tooltip>
                 <Tooltip :text="__('Send an email')">
                   <div>
-                    <Button class="h-7 w-7">
-                      <Email2Icon
-                        class="h-4 w-4"
-                        @click="
-                          lead.data.email
-                            ? openEmailBox()
-                            : toast.error(__('No email set'))
-                        "
-                      />
+                    <Button
+                      class="h-7 w-7"
+                      @click="
+                        lead.data.email
+                          ? openEmailBox()
+                          : toast.error(__('No email set'))
+                      "
+                    >
+                      <template #icon>
+                        <Email2Icon />
+                      </template>
                     </Button>
                   </div>
                 </Tooltip>
                 <Tooltip :text="__('Go to website')">
                   <div>
-                    <Button class="h-7 w-7">
-                      <LinkIcon
-                        class="h-4 w-4"
-                        @click="
-                          lead.data.website
-                            ? openWebsite(lead.data.website)
-                            : toast.error(__('No website set'))
-                        "
-                      />
+                    <Button
+                      class="h-7 w-7"
+                      @click="
+                        lead.data.website
+                          ? openWebsite(lead.data.website)
+                          : toast.error(__('No website set'))
+                      "
+                    >
+                      <template #icon>
+                        <LinkIcon />
+                      </template>
                     </Button>
                   </div>
                 </Tooltip>
                 <Tooltip :text="__('Attach a file')">
                   <div>
                     <Button class="h-7 w-7" @click="showFilesUploader = true">
-                      <AttachmentIcon class="h-4 w-4" />
+                      <template #icon>
+                        <AttachmentIcon />
+                      </template>
                     </Button>
                   </div>
                 </Tooltip>
@@ -238,14 +246,18 @@
             class="w-7"
             @click="openQuickEntryModal"
           >
-            <EditIcon class="h-4 w-4" />
+            <template #icon>
+              <EditIcon class="h-4 w-4" />
+            </template>
           </Button>
           <Button
             variant="ghost"
             class="w-7"
             @click="showConvertToDealModal = false"
           >
-            <FeatherIcon name="x" class="h-4 w-4" />
+            <template #icon>
+              <FeatherIcon name="x" class="h-4 w-4" />
+            </template>
           </Button>
         </div>
       </div>
@@ -386,7 +398,7 @@ import {
   toast,
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
@@ -670,7 +682,11 @@ async function convertToDeal() {
 const activities = ref(null)
 
 function openEmailBox() {
-  activities.value.emailBox.show = true
+  let currentTab = tabs.value[tabIndex.value]
+  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
+    activities.value.changeTabTo('emails')
+  }
+  nextTick(() => (activities.value.emailBox.show = true))
 }
 
 const deal = reactive({})
