@@ -94,7 +94,7 @@
   {
    "fieldname": "close_date",
    "fieldtype": "Date",
-   "label": "Expected Closure Date"
+   "label": "Close Date"
   },
   {
    "fieldname": "next_step",
@@ -396,7 +396,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-11 12:58:22.439045",
+ "modified": "2025-06-16 11:42:49.413483",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
