@@ -29,8 +29,9 @@
           v-model="role"
           :label="__('Invite as')"
           :options="[
-            { label: __('Regular Access'), value: 'Sales User' },
-            { label: __('Manager Access'), value: 'Sales Manager' },
+            { label: __('Sales User'), value: 'Sales User' },
+            { label: __('Manager'), value: 'Sales Manager' },
+            { label: __('Admin'), value: 'System Manager' },
           ]"
           :description="description"
         />
@@ -108,6 +109,8 @@ const error = ref(null)
 
 const description = computed(() => {
   return {
+    'System Manager':
+      'Can manage all aspects of the CRM, including user management, customizations and settings.',
     'Sales Manager':
       'Can manage and invite new agents, and create public & private views (reports).',
     'Sales User':
@@ -116,8 +119,9 @@ const description = computed(() => {
 })
 
 const roleMap = {
-  'Sales User': __('Regular Access'),
-  'Sales Manager': __('Manager Access'),
+  'Sales User': __('Sales User'),
+  'Sales Manager': __('Manager'),
+  'System Manager': __('Admin'),
 }
 
 const inviteByEmail = createResource({
