@@ -23,13 +23,16 @@ def get_users():
 		if frappe.session.user == user.name:
 			user.session_user = True
 
-		user.is_manager = "Sales Manager" in frappe.get_roles(user.name) or user.name == "Administrator"
+		user.is_manager = "Sales Manager" in frappe.get_roles(user.name)
+		user.is_admin = user.name == "Administrator"
 
 		user.roles = frappe.get_roles(user.name)
 
 		user.role = ""
 
-		if "Sales Manager" in user.roles:
+		if "System Manager" in user.roles:
+			user.role = "System Manager"
+		elif "Sales Manager" in user.roles:
 			user.role = "Sales Manager"
 		elif "Sales User" in user.roles:
 			user.role = "Sales User"
