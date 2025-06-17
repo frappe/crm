@@ -70,7 +70,7 @@
                       {{
                         fetchContacts
                           ? __('No results found')
-                          : __('Type an email address to add')
+                          : __('Type an email address to invite')
                       }}
                     </div>
                     <ComboboxOption
