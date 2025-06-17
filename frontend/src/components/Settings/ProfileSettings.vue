@@ -16,8 +16,13 @@
           </div>
         </div>
         <Button
-          :label="__('Edit profile photo')"
-          @click="showEditProfilePhotoModal = true"
+          :label="__('Change Password')"
+          icon-left="lock"
+          @click="showChangePasswordModal = true"
+        />
+        <ChangePasswordModal
+          v-if="showChangePasswordModal"
+          v-model="showChangePasswordModal"
         />
         <Dialog
           :options="{ title: __('Edit profile photo') }"
@@ -50,19 +55,6 @@
             v-model="profile.last_name"
           />
         </div>
-        <div class="flex justify-between gap-4">
-          <FormControl
-            class="w-full"
-            label="Email"
-            v-model="profile.email"
-            :disabled="true"
-          />
-          <Password
-            class="w-full"
-            label="Set new password"
-            v-model="profile.new_password"
-          />
-        </div>
       </div>
     </div>
     <div class="flex justify-between flex-row-reverse">
@@ -77,7 +69,7 @@
   </div>
 </template>
 <script setup>
-import Password from '@/components/Controls/Password.vue'
+import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import ProfileImageEditor from '@/components/Settings/ProfileImageEditor.vue'
 import { usersStore } from '@/stores/users'
 import { Dialog, Avatar, createResource, ErrorMessage, toast } from 'frappe-ui'
@@ -90,6 +82,7 @@ const { updateOnboardingStep } = useOnboarding('frappecrm')
 const user = computed(() => getUser() || {})
 
 const showEditProfilePhotoModal = ref(false)
+const showChangePasswordModal = ref(false)
 
 const profile = ref({})
 const loading = ref(false)
