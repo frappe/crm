@@ -46,9 +46,9 @@ import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
-import Agents from '@/components/Settings/Agents.vue'
+import Users from '@/components/Settings/Users.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
-import InviteAgentPage from '@/components/Settings/InviteAgentPage.vue'
+import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
@@ -85,20 +85,20 @@ const tabs = computed(() => {
           component: markRaw(ProfileSettings),
         },
         {
-          label: __('Users'),
-          icon: 'user',
-          component: markRaw(Agents),
-        },
-        {
           label: __('General'),
           icon: 'settings',
           component: markRaw(GeneralSettings),
           condition: () => isManager(),
         },
         {
+          label: __('Users'),
+          icon: 'user',
+          component: markRaw(Users),
+        },
+        {
           label: __('Invite User'),
           icon: InviteIcon,
-          component: markRaw(InviteAgentPage),
+          component: markRaw(InviteUserPage),
           condition: () => isManager(),
         },
         {
