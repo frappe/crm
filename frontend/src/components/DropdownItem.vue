@@ -31,7 +31,9 @@
               class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
               @click="option.onClick"
             >
-              <SuccessIcon />
+              <template #icon>
+                <SuccessIcon />
+              </template>
             </Button>
           </div>
         </Tooltip>
@@ -43,7 +45,9 @@
               class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
               @click="toggleEditMode"
             >
-              <EditIcon />
+              <template #icon>
+                <EditIcon />
+              </template>
             </Button>
           </div>
         </Tooltip>

@@ -4,19 +4,24 @@
     v-model="showCreateDocumentModal"
     :doctype="createDocumentDoctype"
     :data="createDocumentData"
-    @showQuickEntryModal="(dt) => openQuickEntryModal(dt)"
     @callback="(data) => createDocumentCallback(data)"
   />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
-    :doctype="quickEntryDoctype"
+    v-bind="quickEntryProps"
+  />
+  <AddressModal
+    v-if="showAddressModal"
+    v-model="showAddressModal"
+    v-bind="addressProps"
   />
   <AboutModal v-model="showAboutModal" />
 </template>
 <script setup>
 import CreateDocumentModal from '@/components/Modals/CreateDocumentModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
+import AddressModal from '@/components/Modals/AddressModal.vue'
 import AboutModal from '@/components/Modals/AboutModal.vue'
 import {
   showCreateDocumentModal,
@@ -24,14 +29,11 @@ import {
   createDocumentData,
   createDocumentCallback,
 } from '@/composables/document'
-import { showAboutModal } from '@/composables/settings'
-import { ref } from 'vue'
-
-const showQuickEntryModal = ref(false)
-const quickEntryDoctype = ref('')
-
-function openQuickEntryModal(dt) {
-  showQuickEntryModal.value = true
-  quickEntryDoctype.value = dt
-}
+import {
+  showQuickEntryModal,
+  quickEntryProps,
+  showAddressModal,
+  addressProps,
+  showAboutModal
+} from '@/composables/modals'
 </script>

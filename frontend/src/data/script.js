@@ -20,15 +20,23 @@ export function getScript(doctype, view = 'Form') {
         doctypeScripts[doctype][script.name] = script || {}
       }
     },
+    onError: (err) => {
+      console.error(
+        `Error loading CRM Form Scripts for ${doctype} (view: ${view}):`,
+        err,
+      )
+    },
   })
 
   if (!doctypeScripts[doctype] && !scripts.loading) {
     scripts.fetch()
   }
 
-  function setupScript(document, helpers = {}) {
-    let scripts = doctypeScripts[doctype]
-    if (!scripts) return null
+  async function setupScript(document, helpers = {}) {
+    await scripts.list.promise
+
+    let scriptDefs = doctypeScripts[doctype]
+    if (!scriptDefs || Object.keys(scriptDefs).length === 0) return null
 
     const { $dialog, $socket, makeCall } = globalStore()
 
@@ -38,11 +46,16 @@ export function getScript(doctype, view = 'Form') {
     helpers.router = router
     helpers.call = call
 
+    helpers.throwError = (message) => {
+      toast.error(message || __('An error occurred'))
+      throw new Error(message || __('An error occurred'))
+    }
+
     helpers.crm = {
       makePhoneCall: makeCall,
     }
 
-    return setupMultipleFormControllers(scripts, document, helpers)
+    return setupMultipleFormControllers(scriptDefs, document, helpers)
   }
 
   function setupMultipleFormControllers(scriptStrings, document, helpers) {
@@ -108,8 +121,13 @@ export function getScript(doctype, view = 'Form') {
     parentInstance = null,
     isChildDoctype = false,
   ) {
+    document.actions = document.actions || []
+    document.statuses = document.statuses || []
+
     let instance = new FormClass()
 
+    // Store the original document context to be used by properties like 'actions'
+    instance._originalDocumentContext = document
     instance._isChildDoctype = isChildDoctype
 
     for (const key in document) {
@@ -126,10 +144,10 @@ export function getScript(doctype, view = 'Form') {
       return meta[doctype]
     }
 
-    setupHelperMethods(FormClass, document)
+    const getDoc = () => document.doc
 
     if (isChildDoctype) {
-      instance.doc = createDocProxy(document.doc, parentInstance, instance)
+      instance.doc = createDocProxy(getDoc, parentInstance, instance)
 
       if (!parentInstance._childInstances) {
         parentInstance._childInstances = []
@@ -137,22 +155,21 @@ export function getScript(doctype, view = 'Form') {
 
       parentInstance._childInstances.push(instance)
     } else {
-      instance.doc = createDocProxy(document.doc, instance)
+      instance.doc = createDocProxy(getDoc, instance)
     }
 
     return instance
   }
 
-  function setupHelperMethods(FormClass, document) {
+  function setupHelperMethods(FormClass) {
     if (typeof FormClass.prototype.getRow !== 'function') {
       FormClass.prototype.getRow = function (parentField, idx) {
-        let data = document.doc
         idx = idx || this.currentRowIdx
 
         let dt = null
 
         if (this instanceof Array) {
-          const { getFields } = getMeta(data.doctype)
+          const { getFields } = getMeta(this.doc.doctype)
           let fields = getFields()
           let field = fields.find((f) => f.fieldname === parentField)
           dt = field?.options?.replace(/\s+/g, '')
@@ -162,13 +179,13 @@ export function getScript(doctype, view = 'Form') {
           }
         }
 
-        if (!data[parentField]) {
+        if (!this.doc[parentField]) {
           console.warn(
             __('⚠️ No data found for parent field: {0}', [parentField]),
           )
           return null
         }
-        const row = data[parentField].find((r) => r.idx === idx)
+        const row = this.doc[parentField].find((r) => r.idx === idx)
 
         if (!row) {
           console.warn(
@@ -180,7 +197,7 @@ export function getScript(doctype, view = 'Form') {
           return null
         }
 
-        row.parent = row.parent || data.name
+        row.parent = row.parent || this.doc.name
 
         if (this instanceof Array && dt) {
           return createDocProxy(
@@ -191,6 +208,76 @@ export function getScript(doctype, view = 'Form') {
 
         return createDocProxy(row, this)
       }
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(FormClass.prototype, 'actions')) {
+      Object.defineProperty(FormClass.prototype, 'actions', {
+        configurable: true,
+        enumerable: true,
+        get() {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for actions getter.',
+            )
+            return []
+          }
+
+          return this._originalDocumentContext.actions
+        },
+        set(newValue) {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for actions setter.',
+            )
+            return
+          }
+          if (!Array.isArray(newValue)) {
+            console.warn(
+              'CRM Script: "actions" property must be an array. Value was not set.',
+              newValue,
+            )
+            this._originalDocumentContext.actions = []
+            return
+          }
+          this._originalDocumentContext.actions = newValue
+        },
+      })
+    }
+
+    if (
+      !Object.prototype.hasOwnProperty.call(FormClass.prototype, 'statuses')
+    ) {
+      Object.defineProperty(FormClass.prototype, 'statuses', {
+        configurable: true,
+        enumerable: true,
+        get() {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for statuses getter.',
+            )
+            return []
+          }
+
+          return this._originalDocumentContext.statuses
+        },
+        set(newValue) {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for statuses setter.',
+            )
+            return
+          }
+          if (!Array.isArray(newValue)) {
+            console.warn(
+              'CRM Script: "statuses" property must be an array. Value was not set.',
+              newValue,
+            )
+            this._originalDocumentContext.statuses = []
+            return
+          }
+          this._originalDocumentContext.statuses = newValue
+        },
+      })
     }
   }
 
@@ -220,46 +307,76 @@ export function getScript(doctype, view = 'Form') {
     const FormClass = new Function(...helperKeys, wrappedScript)(
       ...helperValues,
     )
+
+    setupHelperMethods(FormClass)
+
     return FormClass
   }
 
-  function createDocProxy(data, instance, childInstance = null) {
-    return new Proxy(data, {
-      get(target, prop) {
-        if (prop === 'trigger') {
-          if ('trigger' in data) {
-            console.warn(
-              __(
-                '⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.',
-              ),
+  function createDocProxy(source, instance, childInstance = null) {
+    const isFunction = typeof source === 'function'
+    const getCurrentData = () => (isFunction ? source() : source)
+
+    return new Proxy(
+      {},
+      {
+        get(target, prop) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return undefined
+
+          if (prop === 'trigger') {
+            if (currentDocData && 'trigger' in currentDocData) {
+              console.warn(
+                __(
+                  '⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.',
+                ),
+              )
+            }
+
+            return (methodName, ...args) => {
+              const method = instance[methodName]
+              if (typeof method === 'function') {
+                return method.apply(instance, args)
+              } else {
+                console.warn(
+                  __('⚠️ Method "{0}" not found in class.', [methodName]),
+                )
+              }
+            }
+          }
+
+          if (prop === 'getRow') {
+            return instance.getRow.bind(
+              childInstance || instance._childInstances || instance,
             )
           }
 
-          return (methodName, ...args) => {
-            const method = instance[methodName]
-            if (typeof method === 'function') {
-              return method.apply(instance, args)
-            } else {
-              console.warn(
-                __('⚠️ Method "{0}" not found in class.', [methodName]),
-              )
-            }
-          }
-        }
+          return currentDocData[prop]
+        },
+        set(target, prop, value) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return false
 
-        if (prop === 'getRow') {
-          return instance.getRow.bind(
-            childInstance || instance._childInstances || instance,
-          )
-        }
-
-        return target[prop]
+          currentDocData[prop] = value
+          return true
+        },
+        has(target, prop) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return false
+          return prop in currentDocData
+        },
+        ownKeys(target) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return []
+          return Reflect.ownKeys(currentDocData)
+        },
+        getOwnPropertyDescriptor(target, prop) {
+          const currentDocData = getCurrentData()
+          if (!currentDocData) return undefined
+          return Reflect.getOwnPropertyDescriptor(currentDocData, prop)
+        },
       },
-      set(target, prop, value) {
-        target[prop] = value
-        return true
-      },
-    })
+    )
   }
 
   return {

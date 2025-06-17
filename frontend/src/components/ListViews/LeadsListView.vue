@@ -72,15 +72,6 @@
               size="sm"
             />
           </div>
-          <div v-else-if="column.key === 'organization'">
-            <Avatar
-              v-if="item"
-              class="flex items-center"
-              :image="item"
-              :label="item"
-              size="sm"
-            />
-          </div>
           <div v-else-if="column.key === 'lead_owner'">
             <Avatar
               v-if="item.full_name"

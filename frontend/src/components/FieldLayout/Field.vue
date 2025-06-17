@@ -206,7 +206,7 @@
       v-else
       type="text"
       :placeholder="getPlaceholder(field)"
-      :value="data[field.fieldname]"
+      :value="getDataValue(data[field.fieldname], field)"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -332,13 +332,18 @@ const getPlaceholder = (field) => {
 }
 
 function fieldChange(value, df) {
-  data.value[df.fieldname] = value
-
   if (isGridRow) {
-    triggerOnChange(df.fieldname, data.value)
+    triggerOnChange(df.fieldname, value, data.value)
   } else {
-    triggerOnChange(df.fieldname)
+    triggerOnChange(df.fieldname, value)
   }
+}
+
+function getDataValue(value, field) {
+  if (field.fieldtype === 'Duration') {
+    return value || 0
+  }
+  return value
 }
 </script>
 <style scoped>

@@ -1,6 +1,7 @@
 import { getScript } from '@/data/script'
-import { runSequentially } from '@/utils'
-import { createDocumentResource, toast } from 'frappe-ui'
+import { runSequentially, parseAssignees } from '@/utils'
+import { createDocumentResource, createResource, toast } from 'frappe-ui'
+import { reactive } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
@@ -10,63 +11,139 @@ export function useDocument(doctype, docname) {
 
   documentsCache[doctype] = documentsCache[doctype] || {}
 
-  if (!documentsCache[doctype][docname]) {
-    documentsCache[doctype][docname] = createDocumentResource({
-      doctype: doctype,
-      name: docname,
-      onSuccess: () => setupFormScript(),
-      setValue: {
-        onSuccess: () => {
-          toast.success(__('Document updated successfully'))
+  if (!documentsCache[doctype][docname || '']) {
+    if (docname) {
+      documentsCache[doctype][docname] = createDocumentResource({
+        doctype: doctype,
+        name: docname,
+        onSuccess: async () => await setupFormScript(),
+        setValue: {
+          onSuccess: () => {
+            triggerOnSave()
+            toast.success(__('Document updated successfully'))
+          },
+          onError: (err) => {
+            let errorMessage = __('Error updating document')
+            if (err.exc_type == 'MandatoryError') {
+              const fieldName = err.messages
+                .map((msg) => msg.split(': ')[2].trim())
+                .join(', ')
+              errorMessage = __('Mandatory field error: {0}', [fieldName])
+            }
+            toast.error(errorMessage)
+            console.error(err)
+          },
         },
-        onError: (err) => {
-          toast.error(__('Error updating document'))
-          console.error(err)
-        },
-      },
-    })
+      })
+    } else {
+      documentsCache[doctype][''] = reactive({
+        doc: {},
+      })
+      setupFormScript()
+    }
   }
 
-  function setupFormScript() {
-    if (controllersCache[doctype]?.[docname]) return
+  const assignees = createResource({
+    url: 'crm.api.doc.get_assigned_users',
+    cache: `assignees:${doctype}:${docname}`,
+    auto: docname ? true : false,
+    params: {
+      doctype: doctype,
+      name: docname,
+    },
+    transform: (data) => parseAssignees(data),
+  })
+
+  async function setupFormScript() {
+    if (
+      controllersCache[doctype] &&
+      typeof controllersCache[doctype][docname || ''] === 'object'
+    ) {
+      return
+    }
 
     if (!controllersCache[doctype]) {
       controllersCache[doctype] = {}
     }
 
-    controllersCache[doctype][docname] = setupScript(
-      documentsCache[doctype][docname],
+    controllersCache[doctype][docname || ''] = {}
+
+    const controllersArray = await setupScript(
+      documentsCache[doctype][docname || ''],
     )
+
+    if (!controllersArray || controllersArray.length === 0) return
+
+    const organizedControllers = {}
+    for (const controller of controllersArray) {
+      const controllerKey = controller.constructor.name // e.g., "CRMLead", "CRMProducts"
+      if (!organizedControllers[controllerKey]) {
+        organizedControllers[controllerKey] = []
+      }
+      organizedControllers[controllerKey].push(controller)
+    }
+    controllersCache[doctype][docname || ''] = organizedControllers
+
+    triggerOnLoad()
   }
 
   function getControllers(row = null) {
     const _doctype = row?.doctype || doctype
-    return (controllersCache[doctype]?.[docname] || []).filter(
-      (c) => c.constructor.name === _doctype.replace(/\s+/g, ''),
-    )
+    const controllerKey = _doctype.replace(/\s+/g, '')
+
+    const docControllers = controllersCache[doctype]?.[docname || '']
+
+    if (
+      typeof docControllers === 'object' &&
+      docControllers !== null &&
+      !Array.isArray(docControllers)
+    ) {
+      return docControllers[controllerKey] || []
+    }
+    return []
   }
 
-  async function triggerOnRefresh() {
+  async function triggerOnLoad() {
     const handler = async function () {
-      await this.refresh()
+      await (this.onLoad?.() || this.on_load?.() || this.onload?.())
     }
     await trigger(handler)
   }
 
-  async function triggerOnChange(fieldname, row) {
+  async function triggerOnSave() {
     const handler = async function () {
+      await (this.onSave?.() || this.on_save?.())
+    }
+    await trigger(handler)
+  }
+
+  async function triggerOnRefresh() {
+    const handler = async function () {
+      await this.refresh?.()
+    }
+    await trigger(handler)
+  }
+
+  async function triggerOnChange(fieldname, value, row) {
+    const oldValue = documentsCache[doctype][docname || ''].doc[fieldname]
+    documentsCache[doctype][docname || ''].doc[fieldname] = value
+
+    const handler = async function () {
+      this.value = value
+      this.oldValue = oldValue
       if (row) {
         this.currentRowIdx = row.idx
-        this.value = row[fieldname]
-        this.oldValue = getOldValue(fieldname, row)
-      } else {
-        this.value = documentsCache[doctype][docname].doc[fieldname]
-        this.oldValue = getOldValue(fieldname)
       }
       await this[fieldname]?.()
     }
 
-    await trigger(handler, row)
+    try {
+      await trigger(handler, row)
+    } catch (error) {
+      documentsCache[doctype][docname || ''].doc[fieldname] = oldValue
+      console.error(handler)
+      throw error
+    }
   }
 
   async function triggerOnRowAdd(row) {
@@ -97,6 +174,23 @@ export function useDocument(doctype, docname) {
     await trigger(handler, rows[0])
   }
 
+  async function triggerOnCreateLead() {
+    const args = Array.from(arguments)
+    const handler = async function () {
+      await (this.onCreateLead?.(...args) || this.on_create_lead?.(...args))
+    }
+    await trigger(handler)
+  }
+
+  async function triggerConvertToDeal() {
+    const args = Array.from(arguments)
+    const handler = async function () {
+      await (this.convertToDeal?.(...args) ||
+        this.on_convert_to_deal?.(...args))
+    }
+    await trigger(handler)
+  }
+
   async function trigger(taskFn, row = null) {
     const controllers = getControllers(row)
     if (!controllers.length) return
@@ -109,9 +203,9 @@ export function useDocument(doctype, docname) {
   }
 
   function getOldValue(fieldname, row) {
-    if (!documentsCache[doctype][docname]) return ''
+    if (!documentsCache[doctype][docname || '']) return ''
 
-    const document = documentsCache[doctype][docname]
+    const document = documentsCache[doctype][docname || '']
     const oldDoc = document.originalDoc
 
     if (row?.name) {
@@ -124,11 +218,17 @@ export function useDocument(doctype, docname) {
   }
 
   return {
-    document: documentsCache[doctype][docname],
+    document: documentsCache[doctype][docname || ''],
+    assignees,
+    getControllers,
+    triggerOnLoad,
+    triggerOnSave,
+    triggerOnRefresh,
     triggerOnChange,
     triggerOnRowAdd,
     triggerOnRowRemove,
-    triggerOnRefresh,
     setupFormScript,
+    triggerOnCreateLead,
+    triggerConvertToDeal,
   }
 }
