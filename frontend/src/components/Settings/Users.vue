@@ -127,10 +127,16 @@
       </div>
     </ul>
   </div>
+  <AddExistingUserModal
+    v-if="showAddExistingModal"
+    v-model="showAddExistingModal"
+    :users="users"
+  />
 </template>
 
 <script setup>
 import LucideCheck from '~icons/lucide/check'
+import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import {
