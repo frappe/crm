@@ -130,7 +130,7 @@ import {
 } from 'frappe-ui'
 import { ref, h, watch, onMounted } from 'vue'
 
-const { users: usersResource, getUserRole } = usersStore()
+const { users: usersResource, getUserRole, isAdmin, isManager } = usersStore()
 
 const users = createListResource({
   doctype: 'CRM User',
@@ -170,7 +170,7 @@ function getMoreOptions(user) {
 
 function getDropdownOptions(user) {
   const userRole = getUserRole(user.name)
-  return [
+  let options = [
     {
       label: __('Admin'),
       component: (props) =>
@@ -180,6 +180,7 @@ function getDropdownOptions(user) {
           selected: userRole === 'System Manager',
           onClick: () => updateRole(user, 'System Manager'),
         }),
+      condition: () => isAdmin(),
     },
     {
       label: __('Manager'),
@@ -190,6 +191,7 @@ function getDropdownOptions(user) {
           selected: userRole === 'Sales Manager',
           onClick: () => updateRole(user, 'Sales Manager'),
         }),
+      condition: () => isManager(),
     },
     {
       label: __('Sales User'),
@@ -202,6 +204,8 @@ function getDropdownOptions(user) {
         }),
     },
   ]
+
+  return options.filter((option) => option.condition?.() || true)
 }
 
 function RoleOption({ active, role, onClick, selected }) {
