@@ -156,6 +156,7 @@ declare module 'vue' {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     LucideInfo: typeof import('~icons/lucide/info')['default']
 >>>>>>> fad7c598 (refactor: profile page)
@@ -163,6 +164,9 @@ declare module 'vue' {
 =======
 >>>>>>> dd122930 (fix: updated components.d.ts)
 =======
+=======
+    LucideCalendar: typeof import('~icons/lucide/calendar')['default']
+>>>>>>> efd03141 (chore: resolved conflict)
     LucideInfo: typeof import('~icons/lucide/info')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
     LucideSearch: typeof import('~icons/lucide/search')['default']
