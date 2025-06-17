@@ -22,6 +22,26 @@ class CRMUser(Document):
 
 
 @frappe.whitelist()
+def add_existing_users(users, role='Sales User'):
+	"""
+	Add existing users to the CRM User doctype.
+	:param users: List of user names to be added
+	"""
+	frappe.only_for(["System Manager", "Sales Manager"])
+	users = frappe.parse_json(users)
+
+	for user in users:
+		if not frappe.db.exists("CRM User", {"user": user}):
+			new_user = frappe.new_doc("CRM User")
+			new_user.user = user
+			new_user.save(ignore_permissions=True)
+
+			update_user_role(user, role)
+		else:
+			frappe.throw(f"User {user} already exists")
+
+
+@frappe.whitelist()
 def update_user_role(user, new_role):
 	"""
 	Update the role of the user to Sales Manager, Sales User, or System Manager.
@@ -29,7 +49,7 @@ def update_user_role(user, new_role):
 	:param new_role: The new role to assign (Sales Manager or Sales User)
 	"""
 
-	frappe.only_for(["System Manager", "System Manager"])
+	frappe.only_for(["System Manager", "Sales Manager"])
 
 	if new_role not in ["System Manager", "Sales Manager", "Sales User"]:
 		frappe.throw("Cannot assign this role")
@@ -55,6 +75,6 @@ def update_user_status(user, status):
 	:param user: The name of the user
 	:param status: The status to set (1 for active, 0 for inactive)
 	"""
-	frappe.only_for("Sales Manager")
+	frappe.only_for(["System Manager", "Sales Manager"])
 
 	frappe.db.set_value("CRM User", user, "is_active", status)
