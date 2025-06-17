@@ -35,7 +35,7 @@ class CRMInvitation(Document):
 
 	@frappe.whitelist()
 	def accept_invitation(self):
-		frappe.only_for("System Manager")
+		frappe.only_for(["System Manager", "Sales Manager"])
 		self.accept()
 
 	def accept(self):
@@ -51,6 +51,14 @@ class CRMInvitation(Document):
 		self.status = "Accepted"
 		self.accepted_at = frappe.utils.now()
 		self.save(ignore_permissions=True)
+
+		# create CRM User record
+		if not frappe.db.exists("CRM User", {"user": user.name}):
+			crm_user = frappe.get_doc(
+				doctype="CRM User",
+				user=user.name,
+			)
+			crm_user.insert(ignore_permissions=True)
 
 	def update_module_in_user(self, user, module):
 		block_modules = frappe.get_all(
