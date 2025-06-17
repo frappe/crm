@@ -29,19 +29,21 @@ def update_agent_role(user, new_role):
 	:param new_role: The new role to assign (Sales Manager or Sales User)
 	"""
 
-	frappe.only_for("Sales Manager")
+	frappe.only_for(["System Manager", "System Manager"])
 
-	if new_role not in ["Sales Manager", "Sales User"]:
+	if new_role not in ["System Manager", "Sales Manager", "Sales User"]:
 		frappe.throw("Cannot assign this role")
 
 	user_doc = frappe.get_doc("User", user)
 
+	if new_role == "System Manager":
+		user_doc.append_roles("System Manager")
 	if new_role == "Sales Manager":
-		user_doc.append_roles("Sales Manager", "System Manager")
+		user_doc.append_roles("Sales Manager")
+		user_doc.remove_roles("System Manager")
 	if new_role == "Sales User":
 		user_doc.append_roles("Sales User")
-		if "Sales Manager" in frappe.get_roles(user_doc.name):
-			user_doc.remove_roles("Sales Manager", "System Manager")
+		user_doc.remove_roles("Sales Manager", "System Manager")
 
 	user_doc.save()
 

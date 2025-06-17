@@ -5,7 +5,7 @@
       <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
         {{ __('Users') }}
       </h2>
-      <div class="flex item-center space-x-2 mr-2">
+      <div class="flex item-center space-x-2">
         <FormControl
           v-model="search"
           :placeholder="'Search'"
@@ -16,6 +16,23 @@
             <LucideSearch class="h-4 w-4 text-ink-gray-4" />
           </template>
         </FormControl>
+        <FormControl
+          type="select"
+          :value="currentStatus"
+          :options="[
+            { label: __('All'), value: 'All' },
+            { label: __('Active'), value: 'Active' },
+            { label: __('Inactive'), value: 'Inactive' },
+          ]"
+          @change="(e) => changeStatus(e.target.value)"
+        >
+        </FormControl>
+        <Button
+          :label="__('Add User')"
+          icon-left="plus"
+          variant="solid"
+          @click="$emit('add-agent')"
+        />
       </div>
     </div>
 
@@ -43,7 +60,7 @@
       class="divide-y overflow-auto"
     >
       <li
-        class="flex items-center justify-between p-2"
+        class="flex items-center justify-between py-2"
         v-for="agent in agents.data"
         :key="agent.name"
       >
@@ -65,12 +82,11 @@
             </div>
           </div>
         </div>
-        <div class="flex gap-1 items-center flex-row-reverse">
+        <div class="flex gap-2 items-center flex-row-reverse">
           <Dropdown
             :options="getMoreOptions(agent)"
             :button="{
               icon: 'more-horizontal',
-              variant: 'ghost',
             }"
             placement="right"
           />
@@ -79,16 +95,17 @@
             :button="{
               label: roleMap[getUserRole(agent.name)],
               iconRight: 'chevron-down',
-              variant: 'ghost',
             }"
             placement="right"
           />
         </div>
       </li>
       <!-- Load More Button -->
-      <div class="flex justify-center">
+      <div
+        v-if="!agents.loading && agents.hasNextPage"
+        class="flex justify-center"
+      >
         <Button
-          v-if="!agents.loading && agents.hasNextPage"
           class="mt-3.5 p-2"
           @click="() => agents.next()"
           :loading="agents.loading"
@@ -111,7 +128,7 @@ import {
   toast,
   call,
 } from 'frappe-ui'
-import { ref, h, watch } from 'vue'
+import { ref, h, watch, onMounted } from 'vue'
 
 const { users, getUserRole } = usersStore()
 
@@ -119,6 +136,7 @@ const agents = createListResource({
   doctype: 'CRM Agent',
   cache: 'CRM Agents',
   fields: ['name', 'image', 'is_active', 'agent_name'],
+  filters: { is_active: ['=', 1] },
   auto: true,
   start: 0,
   pageLength: 20,
@@ -126,8 +144,9 @@ const agents = createListResource({
 })
 
 const roleMap = {
-  'Sales Manager': __('Manager Access'),
-  'Sales User': __('Regular Access'),
+  'System Manager': __('Admin'),
+  'Sales Manager': __('Manager'),
+  'Sales User': __('Sales User'),
 }
 
 function getMoreOptions(agent) {
@@ -153,20 +172,30 @@ function getDropdownOptions(agent) {
   const agentRole = getUserRole(agent.name)
   return [
     {
-      label: __('Manager Access'),
+      label: __('Admin'),
       component: (props) =>
         RoleOption({
-          role: __('Manager Access'),
+          role: __('Admin'),
+          active: props.active,
+          selected: agentRole === 'System Manager',
+          onClick: () => updateRole(agent, 'System Manager'),
+        }),
+    },
+    {
+      label: __('Manager'),
+      component: (props) =>
+        RoleOption({
+          role: __('Manager'),
           active: props.active,
           selected: agentRole === 'Sales Manager',
           onClick: () => updateRole(agent, 'Sales Manager'),
         }),
     },
     {
-      label: __('Regular Access'),
+      label: __('Sales User'),
       component: (props) =>
         RoleOption({
-          role: __('Regular Access'),
+          role: __('Sales User'),
           active: props.active,
           selected: agentRole === 'Sales User',
           onClick: () => updateRole(agent, 'Sales User'),
@@ -206,7 +235,10 @@ function updateRole(agent, newRole) {
     new_role: newRole,
   }).then(() => {
     toast.success(
-      __('{0} has been granted {1}', [agent.agent_name, roleMap[newRole]]),
+      __('{0} has been granted {1} access', [
+        agent.agent_name,
+        roleMap[newRole],
+      ]),
     )
     users.reload()
     agents.reload()
@@ -230,6 +262,27 @@ function updateStatus(agent, status) {
     agents.reload()
   })
 }
+
+const currentStatus = ref('Active')
+
+function changeStatus(status) {
+  currentStatus.value = status
+  updateFilters()
+}
+
+function updateFilters() {
+  const status = currentStatus.value || 'Active'
+
+  agents.filters = {}
+  if (status === 'Active') {
+    agents.filters.is_active = ['=', 1]
+  } else if (status === 'Inactive') {
+    agents.filters.is_active = ['=', 0]
+  }
+  agents.reload()
+}
+
+onMounted(() => updateFilters())
 
 const search = ref('')
 watch(search, (newValue) => {
