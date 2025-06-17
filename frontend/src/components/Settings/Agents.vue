@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-        {{ __('Agents') }}
+        {{ __('Users') }}
       </h2>
       <div class="flex item-center space-x-2 mr-2">
         <FormControl
