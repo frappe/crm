@@ -28,7 +28,7 @@
                     ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
                     : 'hover:bg-surface-gray-3'
                 "
-                @click="activeTab = i"
+                @click="activeSettingsPage = i.label"
               />
             </nav>
           </div>
