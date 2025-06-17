@@ -31,15 +31,15 @@
           :label="__('Add User')"
           icon-left="plus"
           variant="solid"
-          @click="$emit('add-agent')"
+          @click="$emit('add-user')"
         />
       </div>
     </div>
 
     <!-- loading state -->
-    <div v-if="agents.loading" class="flex mt-28 justify-between w-full h-full">
+    <div v-if="users.loading" class="flex mt-28 justify-between w-full h-full">
       <Button
-        :loading="agents.loading"
+        :loading="users.loading"
         variant="ghost"
         class="w-full"
         size="2xl"
@@ -47,30 +47,30 @@
     </div>
     <!-- Empty State -->
     <div
-      v-if="!agents.loading && !agents.data?.length"
+      v-if="!users.loading && !users.data?.length"
       class="flex mt-28 justify-between w-full h-full"
     >
       <p class="text-sm text-gray-500 w-full flex justify-center">
-        {{ __('No agents found') }}
+        {{ __('No users found') }}
       </p>
     </div>
-    <!-- Agents List -->
+    <!-- Users List -->
     <ul
-      v-if="!agents.loading && Boolean(agents.data?.length)"
+      v-if="!users.loading && Boolean(users.data?.length)"
       class="divide-y overflow-auto"
     >
       <li
         class="flex items-center justify-between py-2"
-        v-for="agent in agents.data"
-        :key="agent.name"
+        v-for="user in users.data"
+        :key="user.name"
       >
         <div class="flex items-center">
-          <Avatar :image="agent.image" :label="agent.agent_name" size="xl" />
+          <Avatar :image="user.image" :label="user.user_name" size="xl" />
           <div class="flex flex-col gap-1 ml-3">
             <div class="flex items-center gap-2 text-base text-ink-gray-9 h-4">
-              {{ agent.agent_name }}
+              {{ user.user_name }}
               <Badge
-                v-if="!agent.is_active"
+                v-if="!user.is_active"
                 variant="subtle"
                 theme="gray"
                 size="sm"
@@ -78,22 +78,22 @@
               />
             </div>
             <div class="text-base text-ink-gray-5">
-              {{ agent.name }}
+              {{ user.name }}
             </div>
           </div>
         </div>
         <div class="flex gap-2 items-center flex-row-reverse">
           <Dropdown
-            :options="getMoreOptions(agent)"
+            :options="getMoreOptions(user)"
             :button="{
               icon: 'more-horizontal',
             }"
             placement="right"
           />
           <Dropdown
-            :options="getDropdownOptions(agent)"
+            :options="getDropdownOptions(user)"
             :button="{
-              label: roleMap[getUserRole(agent.name)],
+              label: roleMap[getUserRole(user.name)],
               iconRight: 'chevron-down',
             }"
             placement="right"
@@ -102,13 +102,13 @@
       </li>
       <!-- Load More Button -->
       <div
-        v-if="!agents.loading && agents.hasNextPage"
+        v-if="!users.loading && users.hasNextPage"
         class="flex justify-center"
       >
         <Button
           class="mt-3.5 p-2"
-          @click="() => agents.next()"
-          :loading="agents.loading"
+          @click="() => users.next()"
+          :loading="users.loading"
           :label="__('Load More')"
           icon-left="refresh-cw"
         />
@@ -130,12 +130,12 @@ import {
 } from 'frappe-ui'
 import { ref, h, watch, onMounted } from 'vue'
 
-const { users, getUserRole } = usersStore()
+const { users: usersResource, getUserRole } = usersStore()
 
-const agents = createListResource({
-  doctype: 'CRM Agent',
-  cache: 'CRM Agents',
-  fields: ['name', 'image', 'is_active', 'agent_name'],
+const users = createListResource({
+  doctype: 'CRM User',
+  cache: 'CRM Users',
+  fields: ['name', 'image', 'is_active', 'user_name'],
   filters: { is_active: ['=', 1] },
   auto: true,
   start: 0,
@@ -149,27 +149,27 @@ const roleMap = {
   'Sales User': __('Sales User'),
 }
 
-function getMoreOptions(agent) {
+function getMoreOptions(user) {
   let options = [
     {
       label: __('Activate'),
       icon: 'check-circle',
-      onClick: () => updateStatus(agent, true),
-      condition: () => !agent.is_active,
+      onClick: () => updateStatus(user, true),
+      condition: () => !user.is_active,
     },
     {
       label: __('Deactivate'),
       icon: 'x-circle',
-      onClick: () => updateStatus(agent, false),
-      condition: () => agent.is_active,
+      onClick: () => updateStatus(user, false),
+      condition: () => user.is_active,
     },
   ]
 
   return options.filter((option) => option.condition())
 }
 
-function getDropdownOptions(agent) {
-  const agentRole = getUserRole(agent.name)
+function getDropdownOptions(user) {
+  const userRole = getUserRole(user.name)
   return [
     {
       label: __('Admin'),
@@ -177,8 +177,8 @@ function getDropdownOptions(agent) {
         RoleOption({
           role: __('Admin'),
           active: props.active,
-          selected: agentRole === 'System Manager',
-          onClick: () => updateRole(agent, 'System Manager'),
+          selected: userRole === 'System Manager',
+          onClick: () => updateRole(user, 'System Manager'),
         }),
     },
     {
@@ -187,8 +187,8 @@ function getDropdownOptions(agent) {
         RoleOption({
           role: __('Manager'),
           active: props.active,
-          selected: agentRole === 'Sales Manager',
-          onClick: () => updateRole(agent, 'Sales Manager'),
+          selected: userRole === 'Sales Manager',
+          onClick: () => updateRole(user, 'Sales Manager'),
         }),
     },
     {
@@ -197,8 +197,8 @@ function getDropdownOptions(agent) {
         RoleOption({
           role: __('Sales User'),
           active: props.active,
-          selected: agentRole === 'Sales User',
-          onClick: () => updateRole(agent, 'Sales User'),
+          selected: userRole === 'Sales User',
+          onClick: () => updateRole(user, 'Sales User'),
         }),
     },
   ]
@@ -226,40 +226,37 @@ function RoleOption({ active, role, onClick, selected }) {
   )
 }
 
-function updateRole(agent, newRole) {
-  const currentRole = getUserRole(agent.name)
+function updateRole(user, newRole) {
+  const currentRole = getUserRole(user.name)
   if (currentRole === newRole) return
 
-  call('crm.fcrm.doctype.crm_agent.crm_agent.update_agent_role', {
-    user: agent.name,
+  call('crm.fcrm.doctype.crm_user.crm_user.update_user_role', {
+    user: user.name,
     new_role: newRole,
   }).then(() => {
     toast.success(
-      __('{0} has been granted {1} access', [
-        agent.agent_name,
-        roleMap[newRole],
-      ]),
+      __('{0} has been granted {1} access', [user.user_name, roleMap[newRole]]),
     )
+    usersResource.reload()
     users.reload()
-    agents.reload()
   })
 }
 
-function updateStatus(agent, status) {
-  const currentStatus = agent.is_active
+function updateStatus(user, status) {
+  const currentStatus = user.is_active
   if (currentStatus === status) return
 
-  call('crm.fcrm.doctype.crm_agent.crm_agent.update_agent_status', {
-    agent: agent.name,
+  call('crm.fcrm.doctype.crm_user.crm_user.update_user_status', {
+    user: user.name,
     status,
   }).then(() => {
     toast.success(
       __('{0} has been {1}', [
-        agent.agent_name,
+        user.user_name,
         status ? 'activated' : 'deactivated',
       ]),
     )
-    agents.reload()
+    users.reload()
   })
 }
 
@@ -273,30 +270,30 @@ function changeStatus(status) {
 function updateFilters() {
   const status = currentStatus.value || 'Active'
 
-  agents.filters = {}
+  users.filters = {}
   if (status === 'Active') {
-    agents.filters.is_active = ['=', 1]
+    users.filters.is_active = ['=', 1]
   } else if (status === 'Inactive') {
-    agents.filters.is_active = ['=', 0]
+    users.filters.is_active = ['=', 0]
   }
-  agents.reload()
+  users.reload()
 }
 
 onMounted(() => updateFilters())
 
 const search = ref('')
 watch(search, (newValue) => {
-  agents.filters = {
+  users.filters = {
     is_active: ['=', 1],
-    agent_name: ['like', `%${newValue}%`],
+    user_name: ['like', `%${newValue}%`],
   }
   if (!newValue) {
-    agents.filters = {
+    users.filters = {
       is_active: ['=', 1],
     }
-    agents.start = 0
-    agents.pageLength = 10
+    users.start = 0
+    users.pageLength = 10
   }
-  agents.reload()
+  users.reload()
 })
 </script>

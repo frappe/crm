@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 
-class CRMAgent(Document):
+class CRMUser(Document):
 	def validate(self):
 		if self.user:
 			user = frappe.get_doc("User", self.user)
@@ -15,16 +15,16 @@ class CRMAgent(Document):
 				self.middle_name = user.middle_name
 			if not self.last_name:
 				self.last_name = user.last_name
-			if not self.agent_name:
-				self.agent_name = user.full_name
+			if not self.user_name:
+				self.user_name = user.full_name
 			if not self.image:
 				self.image = user.user_image
 
 
 @frappe.whitelist()
-def update_agent_role(user, new_role):
+def update_user_role(user, new_role):
 	"""
-	Update the role of the user to Agent
+	Update the role of the user to Sales Manager, Sales User, or System Manager.
 	:param user: The name of the user
 	:param new_role: The new role to assign (Sales Manager or Sales User)
 	"""
@@ -49,12 +49,12 @@ def update_agent_role(user, new_role):
 
 
 @frappe.whitelist()
-def update_agent_status(agent, status):
+def update_user_status(user, status):
 	"""
-	Activate or deactivate the agent
-	:param agent: The name of the agent
+	Activate or deactivate the user
+	:param user: The name of the user
 	:param status: The status to set (1 for active, 0 for inactive)
 	"""
 	frappe.only_for("Sales Manager")
 
-	frappe.db.set_value("CRM Agent", agent, "is_active", status)
+	frappe.db.set_value("CRM User", user, "is_active", status)
