@@ -15,7 +15,6 @@ declare module 'vue' {
     AddExistingUserModal: typeof import('./src/components/Modals/AddExistingUserModal.vue')['default']
     AddressIcon: typeof import('./src/components/Icons/AddressIcon.vue')['default']
     AddressModal: typeof import('./src/components/Modals/AddressModal.vue')['default']
-    Agents: typeof import('./src/components/Settings/Agents.vue')['default']
     AllModals: typeof import('./src/components/Activities/AllModals.vue')['default']
     AppHeader: typeof import('./src/components/Layouts/AppHeader.vue')['default']
     Apps: typeof import('./src/components/Apps.vue')['default']
@@ -138,7 +137,6 @@ declare module 'vue' {
     InboundCallIcon: typeof import('./src/components/Icons/InboundCallIcon.vue')['default']
     InboxIcon: typeof import('./src/components/Icons/InboxIcon.vue')['default']
     IndicatorIcon: typeof import('./src/components/Icons/IndicatorIcon.vue')['default']
-    InviteAgentPage: typeof import('./src/components/Settings/InviteAgentPage.vue')['default']
     InviteIcon: typeof import('./src/components/Icons/InviteIcon.vue')['default']
     InviteUserPage: typeof import('./src/components/Settings/InviteUserPage.vue')['default']
     KanbanIcon: typeof import('./src/components/Icons/KanbanIcon.vue')['default']
@@ -155,6 +153,10 @@ declare module 'vue' {
     ListIcon: typeof import('./src/components/Icons/ListIcon.vue')['default']
     ListRows: typeof import('./src/components/ListViews/ListRows.vue')['default']
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
+<<<<<<< HEAD
+=======
+    LucideInfo: typeof import('~icons/lucide/info')['default']
+>>>>>>> fad7c598 (refactor: profile page)
     LucidePlus: typeof import('~icons/lucide/plus')['default']
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
@@ -187,7 +189,6 @@ declare module 'vue' {
     PlaybackSpeedOption: typeof import('./src/components/Activities/PlaybackSpeedOption.vue')['default']
     PlayIcon: typeof import('./src/components/Icons/PlayIcon.vue')['default']
     Popover: typeof import('./src/components/frappe-ui/Popover.vue')['default']
-    ProfileImageEditor: typeof import('./src/components/Settings/ProfileImageEditor.vue')['default']
     ProfileSettings: typeof import('./src/components/Settings/ProfileSettings.vue')['default']
     QuickEntryModal: typeof import('./src/components/Modals/QuickEntryModal.vue')['default']
     QuickFilterField: typeof import('./src/components/QuickFilterField.vue')['default']
