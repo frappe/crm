@@ -27,11 +27,23 @@
           @change="(e) => changeStatus(e.target.value)"
         >
         </FormControl>
-        <Button
-          :label="__('Add User')"
-          icon-left="plus"
-          variant="solid"
-          @click="$emit('add-user')"
+        <Dropdown
+          :options="[
+            {
+              label: __('Add Existing User'),
+              onClick: () => (showAddExistingModal = true),
+            },
+            {
+              label: __('Invite New User'),
+              onClick: () => (activeSettingsPage = 'Invite User'),
+            },
+          ]"
+          :button="{
+            label: __('New'),
+            iconLeft: 'plus',
+            variant: 'solid',
+          }"
+          placement="right"
         />
       </div>
     </div>
@@ -119,6 +131,7 @@
 
 <script setup>
 import LucideCheck from '~icons/lucide/check'
+import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import {
   Avatar,
@@ -131,6 +144,8 @@ import {
 import { ref, h, watch, onMounted } from 'vue'
 
 const { users: usersResource, getUserRole, isAdmin, isManager } = usersStore()
+
+const showAddExistingModal = ref(false)
 
 const users = createListResource({
   doctype: 'CRM User',

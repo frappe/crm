@@ -351,7 +351,7 @@ const steps = reactive([
     onClick: () => {
       minimize.value = true
       showSettings.value = true
-      activeSettingsPage.value = 'Invite Agent'
+      activeSettingsPage.value = 'Invite User'
     },
     condition: () => isManager(),
   },
