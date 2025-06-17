@@ -4,7 +4,7 @@
       <div v-if="profile" class="flex w-full items-center justify-between">
         <FileUploader
           @success="(file) => updateImage(file.file_url)"
-          :validateFile="validateFile"
+          :validateFile="validateIsImageFile"
         >
           <template #default="{ openFileSelector, error: _error }">
             <div class="flex items-center gap-4">
@@ -104,6 +104,7 @@
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import { usersStore } from '@/stores/users'
+import { validateIsImageFile } from '@/utils'
 import {
   Dropdown,
   FileUploader,
@@ -160,11 +161,4 @@ function updateImage(fileUrl = '') {
 onMounted(() => {
   profile.value = { ...user.value }
 })
-
-function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return __('Only PNG and JPG images are allowed')
-  }
-}
 </script>
