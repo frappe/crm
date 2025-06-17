@@ -1,7 +1,11 @@
 <template>
   <FileUploader
     @success="(file) => setUserImage(file.file_url)"
+<<<<<<< HEAD
     :validateFile="validateIsImageFile"
+=======
+    :validateFile="validateFile"
+>>>>>>> 675bcb54 (Discard changes to frontend/src/components/Settings/ProfileImageEditor.vue)
   >
     <template v-slot="{ file, progress, error, uploading, openFileSelector }">
       <div class="flex flex-col items-center">
@@ -48,11 +52,24 @@
 </template>
 <script setup>
 import { FileUploader } from 'frappe-ui'
+<<<<<<< HEAD
 import { validateIsImageFile } from '@/utils';
+=======
+>>>>>>> 675bcb54 (Discard changes to frontend/src/components/Settings/ProfileImageEditor.vue)
 
 const profile = defineModel()
 
 function setUserImage(url) {
   profile.value.user_image = url
 }
+<<<<<<< HEAD
+=======
+
+function validateFile(file) {
+  let extn = file.name.split('.').pop().toLowerCase()
+  if (!['png', 'jpg'].includes(extn)) {
+    return 'Only PNG and JPG images are allowed'
+  }
+}
+>>>>>>> 675bcb54 (Discard changes to frontend/src/components/Settings/ProfileImageEditor.vue)
 </script>
