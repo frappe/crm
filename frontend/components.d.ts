@@ -154,10 +154,13 @@ declare module 'vue' {
     ListRows: typeof import('./src/components/ListViews/ListRows.vue')['default']
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     LucideInfo: typeof import('~icons/lucide/info')['default']
 >>>>>>> fad7c598 (refactor: profile page)
     LucidePlus: typeof import('~icons/lucide/plus')['default']
+=======
+>>>>>>> dd122930 (fix: updated components.d.ts)
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
     MenuIcon: typeof import('./src/components/Icons/MenuIcon.vue')['default']
