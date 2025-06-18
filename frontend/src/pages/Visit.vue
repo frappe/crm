@@ -226,7 +226,7 @@ const errorMessage = ref('')
 
 
 const visit = createResource({
-  url: 'crm.fcrm.doctype.crm_deal.api.get_visit',
+  url: 'crm.fcrm.doctype.crm_site_visit.api.get_visit',
   params: { name: props.visitId },
   cache: ['visit', props.visitId],
   auto: true,
