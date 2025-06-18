@@ -402,10 +402,10 @@ const props = defineProps({
 const errorTitle = ref('')
 const errorMessage = ref('')
 
-const lead = createResource({
-  url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
-  params: { name: props.leadId },
-  cache: ['lead', props.leadId],
+const visit = createResource({
+  url: 'frappe.client.get',
+  params: { doctype: "CRM Site Visit", name: props.visitId },
+  cache: ['visit', props.visitId],
   onSuccess: (data) => {
     errorTitle.value = ''
     errorMessage.value = ''

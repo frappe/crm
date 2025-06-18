@@ -80,6 +80,7 @@ export default defineConfig({
   },
   build: {
     cssCodeSplit: false,
+    target: "es2017",
     minify: 'terser',
     terserOptions: {
       compress: {
