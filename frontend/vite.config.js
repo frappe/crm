@@ -77,15 +77,5 @@ export default defineConfig({
       'prosemirror-view',
       'lowlight',
     ],
-  },
-  build: {
-    cssCodeSplit: false,
-    target: "es2017",
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: false, // Keep for debugging
-      },
-    },
-  },
+  }
 })

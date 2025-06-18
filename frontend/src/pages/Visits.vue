@@ -8,6 +8,13 @@
         v-if="visitsListView?.customListActions"
         :actions="visitsListView.customListActions"
       />
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        @click="showVisitModal = true"
+      >
+        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      </Button>
     </template>
   </LayoutHeader>
   <ViewControls
@@ -16,7 +23,6 @@
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
-    :filters="defaultFilter"
     doctype="CRM Site Visit"
   />
   <VisitListView
@@ -49,52 +55,51 @@
     <div
       class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
     >
-      <QuotationIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('CRM Site Visits')]) }}</span>
-      <Button :label="__('Create')" @click="showQuotationModal = true">
+      <VisitsIcon class="h-10 w-10" />
+      <span>{{ __('No {0} Found', [__('Visits')]) }}</span>
+      <Button :label="__('Create')" @click="showVisitModal = true">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </div>
   </div>
-
+  <VisitModal
+    v-if="showVisitModal"
+    v-model="showVisitModal"
+    v-model:quickEntry="showQuickEntryModal"
+  />
   <QuickEntryModal
     v-if="showQuickEntryModal"
     v-model="showQuickEntryModal"
     doctype="CRM Site Visit"
   />
-  <AddressModal v-model="showAddressModal" v-model:address="address" />
 </template>
+
 <script setup>
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import VisitsIcon from '@/components/Icons/VisitsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import VisitModal from '@/components/Modals/VisitModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
+import VisitListView from '@/components/ListViews/VisitListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
 import { formatDate, timeAgo } from '@/utils'
-import { computed, ref } from 'vue'
-import QuotationIcon from '@/components/Icons/QuotationIcon.vue'
-import VisitListView from '../components/ListViews/VisitListView.vue'
-import { filter } from 'lodash'
+import { ref, computed } from 'vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Site Visit')
 
-const defaultFilter = {docstatus: ["!=", 2]};
 const visitsListView = ref(null)
-const showQuotationModal = ref(false)
+const showVisitModal = ref(false)
 const showQuickEntryModal = ref(false)
-const showAddressModal = ref(false)
 
-// Quotations data is loaded in the ViewControls component
+// visits data is loaded in the ViewControls component
 const visits = ref({})
-const address = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
-
 
 const rows = computed(() => {
   if (
@@ -108,7 +113,7 @@ const rows = computed(() => {
       _rows[row] = visit[row]
 
       let fieldType = visits.value?.data.columns?.find(
-        (col) => (col.key || col.value) === row,
+        (col) => (col.key || col.value) == row,
       )?.type
 
       if (
@@ -120,19 +125,19 @@ const rows = computed(() => {
           visit[row],
           '',
           true,
-          fieldType === 'Datetime',
+          fieldType == 'Datetime',
         )
       }
 
-      if (fieldType && fieldType === 'Currency') {
+      if (fieldType && fieldType == 'Currency') {
         _rows[row] = getFormattedCurrency(row, visit)
       }
 
-      if (fieldType && fieldType === 'Float') {
+      if (fieldType && fieldType == 'Float') {
         _rows[row] = getFormattedFloat(row, visit)
       }
 
-      if (fieldType && fieldType === 'Percent') {
+      if (fieldType && fieldType == 'Percent') {
         _rows[row] = getFormattedPercent(row, visit)
       }
 
@@ -146,5 +151,4 @@ const rows = computed(() => {
     return _rows
   })
 })
-
 </script>
