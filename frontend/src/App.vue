@@ -1,9 +1,11 @@
 <template>
   <FrappeUIProvider>
-    <Layout v-if="session().isLoggedIn">
-      <router-view />
-    </Layout>
-    <Dialogs />
+    <ToastProvider>
+      <Layout v-if="session().isLoggedIn">
+        <router-view />
+      </Layout>
+      <Dialogs />
+    </ToastProvider>
   </FrappeUIProvider>
 </template>
 
@@ -13,6 +15,7 @@ import { sessionStore as session } from '@/stores/session'
 import { setTheme } from '@/stores/theme'
 import { FrappeUIProvider, setConfig } from 'frappe-ui'
 import { computed, defineAsyncComponent, onMounted } from 'vue'
+import ToastProvider from 'frappe-ui/src/components/Toast/ToastProvider.vue'
 
 const MobileLayout = defineAsyncComponent(
   () => import('./components/Layouts/MobileLayout.vue'),

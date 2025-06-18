@@ -153,6 +153,7 @@ declare module 'vue' {
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
     LucideInfo: typeof import('~icons/lucide/info')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
+    MapView: typeof import('./src/components/MapView.vue')['default']
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
     MenuIcon: typeof import('./src/components/Icons/MenuIcon.vue')['default']

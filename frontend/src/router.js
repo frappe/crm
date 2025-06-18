@@ -68,7 +68,7 @@ const routes = [
   {
     path: '/visits/:visitId',
     name: 'Visit',
-    component: () => import(`@/pages/Visit.vue`),
+    component: () => import(`@/pages/${handleMobileView('Visit')}.vue`),
     props: true,
   },
   {

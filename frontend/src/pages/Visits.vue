@@ -23,6 +23,7 @@
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
+    :filters="default_filters"
     doctype="CRM Site Visit"
   />
   <VisitListView
@@ -93,6 +94,7 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const visitsListView = ref(null)
 const showVisitModal = ref(false)
 const showQuickEntryModal = ref(false)
+const default_filters = {docstatus: ["!=", 2]}
 
 // visits data is loaded in the ViewControls component
 const visits = ref({})
