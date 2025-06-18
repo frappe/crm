@@ -6,7 +6,7 @@
     :options="{
       getRowRoute: (row) => ({
         name: 'Visit',
-        params: { VisitId: row.name },
+        params: { visitId: row.name },
         query: { view: route.query.view, viewType: route.params.viewType },
       }),
       selectable: options.selectable,

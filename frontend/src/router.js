@@ -66,7 +66,7 @@ const routes = [
     component: () => import('@/pages/Visits.vue'),
   },
   {
-    path: '/visits/:quotationId',
+    path: '/visits/:visitId',
     name: 'Visit',
     component: () => import(`@/pages/Visit.vue`),
     props: true,

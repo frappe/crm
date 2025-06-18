@@ -198,13 +198,13 @@ import {
   Tabs,
   Breadcrumbs,
   call,
+  Button,
   usePageMeta,
   toast,
 } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
-import { createRef } from 'react'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -224,9 +224,8 @@ const props = defineProps({
 const errorTitle = ref('')
 const errorMessage = ref('')
 
-let visit = ref(null)
 
-visit = createDocumentResource({
+const visit = createDocumentResource({
   doctype: 'CRM Site Visit',
   name: props.visitId,
   cache: ['visit', props.visitId],
@@ -262,7 +261,7 @@ visit = createDocumentResource({
 
 onMounted(() => {
   if (visit?.data) return
-  visit.fetch()
+  visit.reload()
   console.log("Visit mounted, fetching data for ID:", props.visitId);
   
 })
