@@ -16,6 +16,17 @@ def get_deal(name):
 	deal["_assign"] = get_assigned_users("CRM Deal", deal.name)
 	return deal
 
+@frappe.whitelist()
+def get_visit(name):
+	visit = frappe.get_doc("CRM Site Visit", name)
+	visit.check_permission("read")
+
+	visit = visit.as_dict()
+
+	visit["fields_meta"] = get_fields_meta("CRM Site Visit")
+	visit["_form_script"] = get_form_script("CRM Site Visit")
+	visit["_assign"] = get_assigned_users("CRM Site Visit", visit.name)
+	return visit
 
 @frappe.whitelist()
 def get_deal_contacts(name):

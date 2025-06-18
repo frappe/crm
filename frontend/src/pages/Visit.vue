@@ -225,11 +225,10 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 
 
-const visit = createDocumentResource({
-  doctype: 'CRM Site Visit',
-  name: props.visitId,
+const visit = createResource({
+  url: 'crm.fcrm.doctype.crm_deal.api.get_visit',
+  params: { name: props.visitId },
   cache: ['visit', props.visitId],
-  fields: ['*'],
   auto: true,
   onSuccess: (data) => {
     console.log("Visit data fetched successfully:", data);
@@ -261,7 +260,7 @@ const visit = createDocumentResource({
 
 onMounted(() => {
   if (visit?.data) return
-  visit.reload()
+  visit.fetch()
   console.log("Visit mounted, fetching data for ID:", props.visitId);
   
 })
