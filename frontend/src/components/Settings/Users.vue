@@ -69,7 +69,7 @@
     <!-- Users List -->
     <ul
       v-if="!users.loading && Boolean(users.data?.length)"
-      class="divide-y overflow-auto"
+      class="divide-y divide-outline-gray-modals overflow-auto"
     >
       <li
         class="flex items-center justify-between py-2"
