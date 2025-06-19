@@ -66,10 +66,6 @@
           icon-left="lock"
           @click="showChangePasswordModal = true"
         />
-        <ChangePasswordModal
-          v-if="showChangePasswordModal"
-          v-model="showChangePasswordModal"
-        />
       </div>
       <div class="flex flex-col gap-4">
         <div class="flex justify-between gap-4">
@@ -102,9 +98,9 @@
 </template>
 <script setup>
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
-import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import { usersStore } from '@/stores/users'
 import { validateIsImageFile } from '@/utils'
+import { showChangePasswordModal } from '@/composables/modals'
 import {
   Dropdown,
   FileUploader,
@@ -117,8 +113,6 @@ import { ref, computed, onMounted } from 'vue'
 const { getUser, users } = usersStore()
 
 const user = computed(() => getUser() || {})
-
-const showChangePasswordModal = ref(false)
 
 const profile = ref({})
 const error = ref('')
