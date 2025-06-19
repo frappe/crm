@@ -172,6 +172,7 @@ import {
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
+import { showChangePasswordModal } from '@/composables/modals'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
   SignupBanner,
@@ -329,8 +330,7 @@ const steps = reactive([
     completed: false,
     onClick: () => {
       minimize.value = true
-      showSettings.value = true
-      activeSettingsPage.value = 'Profile'
+      showChangePasswordModal.value = true
     },
   },
   {
