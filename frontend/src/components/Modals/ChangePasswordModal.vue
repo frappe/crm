@@ -102,23 +102,26 @@ function isStrongPassword(password) {
   return regex.test(password)
 }
 
-watch(newPassword, () => {
+watch([newPassword, confirmPassword], () => {
+  confirmPasswordMessage.value = ''
   newPasswordMessage.value = ''
+
   if (newPassword.value.length < 8) {
     newPasswordMessage.value = 'Password must be at least 8 characters'
   } else if (!isStrongPassword(newPassword.value)) {
     newPasswordMessage.value =
       'Password must contain uppercase, lowercase, number, and symbol'
   }
-})
 
-watch(confirmPassword, () => {
-  confirmPasswordMessage.value = ''
-  if (newPassword.value !== confirmPassword.value) {
+  if (
+    confirmPassword.value.length &&
+    newPassword.value !== confirmPassword.value
+  ) {
     confirmPasswordMessage.value = 'Passwords do not match'
   } else if (
     newPassword.value === confirmPassword.value &&
-    newPassword.value.length
+    newPassword.value.length &&
+    confirmPassword.value.length
   ) {
     confirmPasswordMessage.value = 'Passwords match'
   }

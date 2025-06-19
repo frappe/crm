@@ -142,6 +142,7 @@ declare module 'vue' {
     KanbanIcon: typeof import('./src/components/Icons/KanbanIcon.vue')['default']
     KanbanSettings: typeof import('./src/components/Kanban/KanbanSettings.vue')['default']
     KanbanView: typeof import('./src/components/Kanban/KanbanView.vue')['default']
+    KeyboardShortcut: typeof import('./src/components/KeyboardShortcut.vue')['default']
     LayoutHeader: typeof import('./src/components/LayoutHeader.vue')['default']
     LeadModal: typeof import('./src/components/Modals/LeadModal.vue')['default']
     LeadsIcon: typeof import('./src/components/Icons/LeadsIcon.vue')['default']
