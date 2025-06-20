@@ -1,32 +1,20 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-8 text-ink-gray-9">
+  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-9">
     <!-- Header -->
-    <div class="flex items-center justify-between">
-      <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-        {{ __('Users') }}
-      </h2>
-      <div class="flex item-center space-x-2">
-        <FormControl
-          v-model="search"
-          :placeholder="'Search'"
-          type="text"
-          :debounce="300"
-        >
-          <template #prefix>
-            <LucideSearch class="h-4 w-4 text-ink-gray-4" />
-          </template>
-        </FormControl>
-        <FormControl
-          type="select"
-          :value="currentStatus"
-          :options="[
-            { label: __('All'), value: 'All' },
-            { label: __('Active'), value: 'Active' },
-            { label: __('Inactive'), value: 'Inactive' },
-          ]"
-          @change="(e) => changeStatus(e.target.value)"
-        >
-        </FormControl>
+    <div class="flex justify-between">
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+          {{ __('Users') }}
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{
+            __(
+              'Manage users who can access CRM. Assign roles to control their access. Add/Remove existing users or invite new ones.',
+            )
+          }}
+        </p>
+      </div>
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Dropdown
           :options="[
             {
@@ -48,70 +36,50 @@
       </div>
     </div>
 
-    <!-- loading state -->
-    <div v-if="users.loading" class="flex mt-28 justify-between w-full h-full">
-      <Button
-        :loading="users.loading"
-        variant="ghost"
-        class="w-full"
-        size="2xl"
-      />
-    </div>
-    <!-- Empty State -->
-    <div
-      v-if="!users.loading && !users.data?.length"
-      class="flex mt-28 justify-between w-full h-full"
-    >
-      <p class="text-sm text-gray-500 w-full flex justify-center">
-        {{ __('No users found') }}
-      </p>
-    </div>
     <!-- Users List -->
     <ul
-      v-if="!users.loading && Boolean(users.data?.length)"
+      v-if="!users.loading && Boolean(users.data?.crmUsers?.length)"
       class="divide-y divide-outline-gray-modals overflow-auto"
     >
-      <li
-        class="flex items-center justify-between py-2"
-        v-for="user in users.data"
-        :key="user.name"
-      >
-        <div class="flex items-center">
-          <Avatar :image="user.image" :label="user.user_name" size="xl" />
-          <div class="flex flex-col gap-1 ml-3">
-            <div class="flex items-center gap-2 text-base text-ink-gray-9 h-4">
-              {{ user.user_name }}
-              <Badge
-                v-if="!user.is_active"
-                variant="subtle"
-                theme="gray"
-                size="sm"
-                label="Inactive"
-              />
-            </div>
-            <div class="text-base text-ink-gray-5">
-              {{ user.name }}
+      <template v-for="user in users.data?.crmUsers" :key="user.name">
+        <li
+          v-if="user.name !== 'Administrator'"
+          class="flex items-center justify-between py-2"
+        >
+          <div class="flex items-center">
+            <Avatar
+              :image="user.user_image"
+              :label="user.full_name"
+              size="xl"
+            />
+            <div class="flex flex-col gap-1 ml-3">
+              <div class="flex items-center text-base text-ink-gray-9 h-4">
+                {{ user.full_name }}
+              </div>
+              <div class="text-base text-ink-gray-5">
+                {{ user.name }}
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex gap-2 items-center flex-row-reverse">
-          <Dropdown
-            :options="getMoreOptions(user)"
-            :button="{
-              icon: 'more-horizontal',
-            }"
-            placement="right"
-          />
-          <Dropdown
-            :options="getDropdownOptions(user)"
-            :button="{
-              label: roleMap[getUserRole(user.name)],
-              iconRight: 'chevron-down',
-            }"
-            placement="right"
-          />
-        </div>
-      </li>
+          <div class="flex gap-2 items-center flex-row-reverse">
+            <Dropdown
+              :options="getMoreOptions(user)"
+              :button="{
+                icon: 'more-horizontal',
+              }"
+              placement="right"
+            />
+            <Dropdown
+              :options="getDropdownOptions(user)"
+              :button="{
+                label: roleMap[getUserRole(user.name)],
+                iconRight: 'chevron-down',
+              }"
+              placement="right"
+            />
+          </div>
+        </li>
+      </template>
       <!-- Load More Button -->
       <div
         v-if="!users.loading && users.hasNextPage"
@@ -126,11 +94,30 @@
         />
       </div>
     </ul>
+
+    <!-- loading state -->
+    <div v-if="users.loading" class="flex mt-28 justify-between w-full h-full">
+      <Button
+        :loading="users.loading"
+        variant="ghost"
+        class="w-full"
+        size="2xl"
+      />
+    </div>
+
+    <!-- Empty State -->
+    <div
+      v-if="!users.loading && !users.data?.crmUsers?.length"
+      class="flex mt-28 justify-between w-full h-full"
+    >
+      <p class="text-sm text-gray-500 w-full flex justify-center">
+        {{ __('No users found') }}
+      </p>
+    </div>
   </div>
   <AddExistingUserModal
     v-if="showAddExistingModal"
     v-model="showAddExistingModal"
-    :users="users"
   />
 </template>
 
@@ -139,30 +126,12 @@ import LucideCheck from '~icons/lucide/check'
 import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
-import {
-  Avatar,
-  Badge,
-  createListResource,
-  FormControl,
-  toast,
-  call,
-} from 'frappe-ui'
-import { ref, h, watch, onMounted } from 'vue'
+import { Avatar, toast, call } from 'frappe-ui'
+import { ref, h } from 'vue'
 
-const { users: usersResource, getUserRole, isAdmin, isManager } = usersStore()
+const { users, getUserRole, isAdmin, isManager } = usersStore()
 
 const showAddExistingModal = ref(false)
-
-const users = createListResource({
-  doctype: 'CRM User',
-  cache: 'CRM Users',
-  fields: ['name', 'image', 'is_active', 'user_name'],
-  filters: { is_active: ['=', 1] },
-  auto: true,
-  start: 0,
-  pageLength: 20,
-  orderBy: 'creation desc',
-})
 
 const roleMap = {
   'System Manager': __('Admin'),
@@ -173,20 +142,13 @@ const roleMap = {
 function getMoreOptions(user) {
   let options = [
     {
-      label: __('Activate'),
-      icon: 'check-circle',
-      onClick: () => updateStatus(user, true),
-      condition: () => !user.is_active,
-    },
-    {
-      label: __('Deactivate'),
-      icon: 'x-circle',
-      onClick: () => updateStatus(user, false),
-      condition: () => user.is_active,
+      label: __('Remove'),
+      icon: 'trash-2',
+      onClick: () => removeUser(user, true),
     },
   ]
 
-  return options.filter((option) => option.condition())
+  return options.filter((option) => option.condition?.() || true)
 }
 
 function getDropdownOptions(user) {
@@ -252,73 +214,25 @@ function RoleOption({ active, role, onClick, selected }) {
 }
 
 function updateRole(user, newRole) {
-  const currentRole = getUserRole(user.name)
-  if (currentRole === newRole) return
+  if (user.role === newRole) return
 
-  call('crm.fcrm.doctype.crm_user.crm_user.update_user_role', {
+  call('crm.api.user.update_user_role', {
     user: user.name,
     new_role: newRole,
   }).then(() => {
     toast.success(
-      __('{0} has been granted {1} access', [user.user_name, roleMap[newRole]]),
+      __('{0} has been granted {1} access', [user.full_name, roleMap[newRole]]),
     )
-    usersResource.reload()
     users.reload()
   })
 }
 
-function updateStatus(user, status) {
-  const currentStatus = user.is_active
-  if (currentStatus === status) return
-
-  call('crm.fcrm.doctype.crm_user.crm_user.update_user_status', {
+function removeUser(user) {
+  call('crm.api.user.remove_user', {
     user: user.name,
-    status,
   }).then(() => {
-    toast.success(
-      __('{0} has been {1}', [
-        user.user_name,
-        status ? 'activated' : 'deactivated',
-      ]),
-    )
+    toast.success(__('User {0} has been removed', [user.full_name]))
     users.reload()
   })
 }
-
-const currentStatus = ref('Active')
-
-function changeStatus(status) {
-  currentStatus.value = status
-  updateFilters()
-}
-
-function updateFilters() {
-  const status = currentStatus.value || 'Active'
-
-  users.filters = {}
-  if (status === 'Active') {
-    users.filters.is_active = ['=', 1]
-  } else if (status === 'Inactive') {
-    users.filters.is_active = ['=', 0]
-  }
-  users.reload()
-}
-
-onMounted(() => updateFilters())
-
-const search = ref('')
-watch(search, (newValue) => {
-  users.filters = {
-    is_active: ['=', 1],
-    user_name: ['like', `%${newValue}%`],
-  }
-  if (!newValue) {
-    users.filters = {
-      is_active: ['=', 1],
-    }
-    users.start = 0
-    users.pageLength = 10
-  }
-  users.reload()
-})
 </script>
