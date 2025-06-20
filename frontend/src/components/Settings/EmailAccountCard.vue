@@ -6,7 +6,7 @@
     <div class="flex items-center justify-between gap-2">
       <EmailProviderIcon :logo="emailIcon[emailAccount.service]" />
       <div>
-        <p class="text-sm font-semibold text-ink-gray-9">
+        <p class="text-sm font-semibold text-ink-gray-8">
           {{ emailAccount.email_account_name }}
         </p>
         <div class="text-sm text-ink-gray-4">{{ emailAccount.email_id }}</div>

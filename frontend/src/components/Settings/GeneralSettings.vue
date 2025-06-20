@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-9">
+  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
     <div class="flex justify-between">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
@@ -38,7 +38,7 @@
       <!-- logo -->
 
       <div class="flex flex-col justify-between gap-4">
-        <span class="text-base font-semibold text-ink-gray-9">
+        <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Logo') }}
         </span>
         <div class="flex flex-1 gap-5">
@@ -73,7 +73,7 @@
       <!-- favicon -->
 
       <div class="flex flex-col justify-between gap-4">
-        <span class="text-base font-semibold text-ink-gray-9">
+        <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Favicon') }}
         </span>
         <div class="flex flex-1 gap-5">
@@ -108,7 +108,7 @@
       <!-- Home actions -->
 
       <div class="flex flex-col justify-between gap-4">
-        <span class="text-base font-semibold text-ink-gray-9">
+        <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Home actions') }}
         </span>
         <div class="flex flex-1">

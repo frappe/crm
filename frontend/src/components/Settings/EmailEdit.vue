@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
-      <h2 class="text-xl font-semibold text-ink-gray-9">
+      <h2 class="text-xl font-semibold text-ink-gray-8">
         {{ __('Edit Email') }}
       </h2>
     </div>
