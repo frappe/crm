@@ -380,9 +380,9 @@ const props = defineProps({
   },
 })
 
-const triggerOnChange = inject('triggerOnChange')
-const triggerOnRowAdd = inject('triggerOnRowAdd')
-const triggerOnRowRemove = inject('triggerOnRowRemove')
+const triggerOnChange = inject('triggerOnChange', () => {})
+const triggerOnRowAdd = inject('triggerOnRowAdd', () => {})
+const triggerOnRowRemove = inject('triggerOnRowRemove', () => {})
 
 const {
   getGridViewSettings,
