@@ -36,6 +36,32 @@
       </div>
     </div>
 
+    <!-- loading state -->
+    <div v-if="users.loading" class="flex mt-28 justify-between w-full h-full">
+      <Button
+        :loading="users.loading"
+        variant="ghost"
+        class="w-full"
+        size="2xl"
+      />
+    </div>
+
+    <!-- Empty State -->
+    <div
+      v-if="
+        !users.loading &&
+        users.data?.crmUsers?.length === 1 &&
+        users.data?.crmUsers[0].name == 'Administrator'
+      "
+      class="flex justify-between w-full h-full"
+    >
+      <div
+        class="text-ink-gray-4 border border-dashed rounded w-full flex items-center justify-center"
+      >
+        {{ __('No users found') }}
+      </div>
+    </div>
+
     <!-- Users List -->
     <ul
       v-if="!users.loading && Boolean(users.data?.crmUsers?.length)"
@@ -94,26 +120,6 @@
         />
       </div>
     </ul>
-
-    <!-- loading state -->
-    <div v-if="users.loading" class="flex mt-28 justify-between w-full h-full">
-      <Button
-        :loading="users.loading"
-        variant="ghost"
-        class="w-full"
-        size="2xl"
-      />
-    </div>
-
-    <!-- Empty State -->
-    <div
-      v-if="!users.loading && !users.data?.crmUsers?.length"
-      class="flex mt-28 justify-between w-full h-full"
-    >
-      <p class="text-sm text-gray-500 w-full flex justify-center">
-        {{ __('No users found') }}
-      </p>
-    </div>
   </div>
   <AddExistingUserModal
     v-if="showAddExistingModal"
