@@ -12,17 +12,17 @@ export const usersStore = defineStore('crm-users', () => {
 
   const users = createResource({
     url: 'crm.api.session.get_users',
-    cache: 'Users',
+    cache: 'crm-users',
     initialData: [],
     auto: true,
-    transform(users) {
-      for (let user of users) {
+    transform([allUsers, crmUsers]) {
+      for (let user of allUsers) {
         usersByName[user.name] = user
         if (user.name === 'Administrator') {
           usersByName[user.email] = user
         }
       }
-      return users
+      return { allUsers, crmUsers }
     },
     onError(error) {
       if (error && error.exc_type === 'AuthenticationError') {

@@ -44,7 +44,14 @@ def get_users():
 
 		user.is_agent = frappe.db.exists("CRM Telephony Agent", {"user": user.name})
 
-	return users
+	crm_users = []
+
+	# crm users are users with role Sales User or Sales Manager
+	for user in users:
+		if "Sales User" in user.roles or "Sales Manager" in user.roles:
+			crm_users.append(user)
+
+	return users, crm_users
 
 
 @frappe.whitelist()
