@@ -21,13 +21,16 @@
       </label>
 
       <div class="p-2 group bg-surface-gray-2 hover:bg-surface-gray-3 rounded">
-        <MultiSelectEmailInput
+        <MultiSelectUserInput
+          v-if="users?.data?.crmUsers.length"
           class="flex-1"
           inputClass="!bg-surface-gray-2 hover:!bg-surface-gray-3 group-hover:!bg-surface-gray-3"
           :placeholder="__('john@doe.com')"
           v-model="newUsers"
           :validate="validateEmail"
-          :existingEmails="props.users.data.map((user) => user.name)"
+          :existingEmails="
+            users.data.crmUsers.map((user) => user.name) + ['admin@example.com']
+          "
           :error-message="
             (value) => __('{0} is an invalid email address', [value])
           "
@@ -57,19 +60,15 @@
 </template>
 
 <script setup>
-import MultiSelectEmailInput from '@/components/Controls/MultiSelectEmailInput.vue'
+import MultiSelectUserInput from '@/components/Controls/MultiSelectUserInput.vue'
 import { validateEmail } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { createResource, toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
-const { users: usersResource, isAdmin, isManager } = usersStore()
+const { users, isAdmin, isManager } = usersStore()
 
 const show = defineModel()
-
-const props = defineProps({
-  users: Object,
-})
 
 const newUsers = ref([])
 const role = ref('Sales User')
@@ -94,7 +93,7 @@ const roleOptions = computed(() => {
 })
 
 const addNewUser = createResource({
-  url: 'crm.fcrm.doctype.crm_user.crm_user.add_existing_users',
+  url: 'crm.api.user.add_existing_users',
   makeParams: () => ({
     users: JSON.stringify(newUsers.value),
     role: role.value,
@@ -103,8 +102,7 @@ const addNewUser = createResource({
     toast.success(__('Users added successfully'))
     newUsers.value = []
     show.value = false
-    usersResource.reload()
-    props.users.list.reload()
+    users.reload()
   },
   onError: (error) => {
     toast.error(error.messages[0] || __('Failed to add users'))
