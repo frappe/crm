@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-9">
+  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
     <div class="flex-1 flex flex-col gap-6 mt-2 overflow-y-auto">
       <div v-if="profile" class="flex w-full items-center justify-between">
         <FileUploader
@@ -50,7 +50,7 @@
                 </component>
               </div>
               <div class="flex flex-col gap-1">
-                <span class="text-2xl font-semibold text-ink-gray-9">
+                <span class="text-2xl font-semibold text-ink-gray-8">
                   {{ profile.full_name }}
                 </span>
                 <span class="text-base text-ink-gray-7">

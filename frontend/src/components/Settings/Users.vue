@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-9">
+  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
     <!-- Header -->
     <div class="flex justify-between">
       <div class="flex flex-col gap-1 w-9/12">
@@ -53,7 +53,7 @@
               size="xl"
             />
             <div class="flex flex-col gap-1 ml-3">
-              <div class="flex items-center text-base text-ink-gray-9 h-4">
+              <div class="flex items-center text-base text-ink-gray-8 h-4">
                 {{ user.full_name }}
               </div>
               <div class="text-base text-ink-gray-5">
@@ -196,7 +196,7 @@ function RoleOption({ active, role, onClick, selected }) {
     'button',
     {
       class: [
-        active ? 'bg-surface-gray-2' : 'text-ink-gray-9',
+        active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
         'group flex w-full justify-between items-center rounded-md px-2 py-2 text-sm',
       ],
       onClick: !selected ? onClick : null,

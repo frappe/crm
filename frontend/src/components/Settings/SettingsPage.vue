@@ -3,7 +3,7 @@
     <div class="flex justify-between">
       <div class="flex flex-col gap-1 w-9/12">
         <h2
-          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-9"
+          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
         >
           {{ title || __(doctype) }}
           <Badge

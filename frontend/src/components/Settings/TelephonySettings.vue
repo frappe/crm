@@ -3,7 +3,7 @@
     <div class="flex justify-between">
       <div class="flex flex-col gap-1 w-9/12">
         <h2
-          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-9"
+          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
         >
           {{ __('Telephony settings') }}
           <Badge
@@ -46,7 +46,7 @@
 
       <!-- Twilio -->
       <div v-if="isManager()" class="flex flex-col justify-between gap-4">
-        <span class="text-base font-semibold text-ink-gray-9">
+        <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Twilio') }}
         </span>
         <FieldLayout
@@ -59,7 +59,7 @@
 
       <!-- Exotel -->
       <div v-if="isManager()" class="flex flex-col justify-between gap-4">
-        <span class="text-base font-semibold text-ink-gray-9">
+        <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Exotel') }}
         </span>
         <FieldLayout
