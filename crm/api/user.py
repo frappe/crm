@@ -31,14 +31,16 @@ def update_user_role(user, new_role):
 
 	if new_role == "System Manager":
 		user_doc.append_roles("System Manager", "Sales Manager", "Sales User")
+		user_doc.set("block_modules", [])
 	if new_role == "Sales Manager":
 		user_doc.append_roles("Sales Manager", "Sales User")
 		user_doc.remove_roles("System Manager")
 	if new_role == "Sales User":
 		user_doc.append_roles("Sales User")
 		user_doc.remove_roles("Sales Manager", "System Manager")
+		update_module_in_user(user_doc, "FCRM")
 
-	user_doc.save()
+	user_doc.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
@@ -61,8 +63,9 @@ def add_user(user, role):
 		user_doc.append_roles("Sales Manager", "Sales User")
 	elif role == "Sales User":
 		user_doc.append_roles("Sales User")
+		update_module_in_user(user_doc, "FCRM")
 
-	user_doc.save()
+	user_doc.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
@@ -81,5 +84,16 @@ def remove_user(user):
 	if "Sales Manager" in roles:
 		user_doc.remove_roles("Sales Manager")
 
-	user_doc.save()
+	user_doc.save(ignore_permissions=True)
 	frappe.msgprint(f"User {user} has been removed from CRM roles.")
+
+
+def update_module_in_user(user, module):
+	block_modules = frappe.get_all(
+		"Module Def",
+		fields=["name as module"],
+		filters={"name": ["!=", module]},
+	)
+
+	if block_modules:
+		user.set("block_modules", block_modules)
