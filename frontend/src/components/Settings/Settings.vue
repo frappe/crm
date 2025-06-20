@@ -60,7 +60,7 @@ import {
   showSettings,
   activeSettingsPage,
 } from '@/composables/settings'
-import { Dialog, Button, Avatar } from 'frappe-ui'
+import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 
 const { isManager, isAgent, getUser } = usersStore()
