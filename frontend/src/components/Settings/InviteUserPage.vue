@@ -1,8 +1,28 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-8 text-ink-gray-9">
-    <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-      {{ __('Send Invites To') }}
-    </h2>
+  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-9">
+    <div class="flex justify-between">
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+          {{ __('Send invites to') }}
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{
+            __(
+              'Invite users to access CRM. Specify their roles to control access and permissions',
+            )
+          }}
+        </p>
+      </div>
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <Button
+          :label="__('Send Invites')"
+          variant="solid"
+          :disabled="!invitees.length"
+          @click="inviteByEmail.submit()"
+          :loading="inviteByEmail.loading"
+        />
+      </div>
+    </div>
     <div class="flex-1 flex flex-col gap-8 overflow-y-auto">
       <div>
         <label class="block text-xs text-ink-gray-5 mb-1.5">
@@ -79,16 +99,7 @@
         </div>
       </template>
     </div>
-    <div class="flex justify-between items-center gap-2">
-      <div><ErrorMessage v-if="error" :message="error" /></div>
-      <Button
-        :label="__('Send Invites')"
-        variant="solid"
-        :disabled="!invitees.length"
-        @click="inviteByEmail.submit()"
-        :loading="inviteByEmail.loading"
-      />
-    </div>
+    <ErrorMessage :message="error" />
   </div>
 </template>
 <script setup>

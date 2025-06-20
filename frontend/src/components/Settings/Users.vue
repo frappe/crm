@@ -9,7 +9,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Manage users who can access CRM. Assign roles to control their access. Add/Remove existing users or invite new ones.',
+              'Manage CRM users by adding or inviting them, and assign roles to control their access and permissions',
             )
           }}
         </p>

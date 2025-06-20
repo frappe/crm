@@ -1,14 +1,29 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-8 text-ink-gray-9">
-    <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-      {{ __('General') }}
-      <Badge
-        v-if="settings.isDirty"
-        :label="__('Not Saved')"
-        variant="subtle"
-        theme="orange"
-      />
-    </h2>
+  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-9">
+    <div class="flex justify-between">
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+          {{ __('General') }}
+          <Badge
+            v-if="settings.isDirty"
+            :label="__('Not Saved')"
+            variant="subtle"
+            theme="orange"
+          />
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{ __('Configure general settings for your CRM') }}
+        </p>
+      </div>
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <Button
+          variant="solid"
+          :label="__('Update')"
+          :disabled="!settings.isDirty"
+          @click="updateSettings"
+        />
+      </div>
+    </div>
 
     <div v-if="settings.doc" class="flex-1 flex flex-col gap-8 overflow-y-auto">
       <div class="flex w-full">
@@ -16,7 +31,7 @@
           type="text"
           class="w-1/2"
           v-model="settings.doc.brand_name"
-          :label="__('Brand Name')"
+          :label="__('Brand name')"
         />
       </div>
 
@@ -107,15 +122,7 @@
       </div>
     </div>
 
-    <div class="flex justify-between flex-row-reverse">
-      <Button
-        variant="solid"
-        :label="__('Update')"
-        :disabled="!settings.isDirty"
-        @click="updateSettings"
-      />
-      <ErrorMessage :message="settings.save.error" />
-    </div>
+    <ErrorMessage :message="settings.save.error" />
   </div>
 </template>
 <script setup>
