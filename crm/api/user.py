@@ -50,22 +50,7 @@ def add_user(user, role):
 	:param user: The name of the user to be added
 	:param role: The role to be assigned (Sales User or Sales Manager)
 	"""
-	frappe.only_for(["System Manager", "Sales Manager"])
-
-	if role not in ["System Manager", "Sales Manager", "Sales User"]:
-		frappe.throw("Cannot assign this role")
-
-	user_doc = frappe.get_doc("User", user)
-
-	if role == "System Manager":
-		user_doc.append_roles("System Manager", "Sales Manager", "Sales User")
-	elif role == "Sales Manager":
-		user_doc.append_roles("Sales Manager", "Sales User")
-	elif role == "Sales User":
-		user_doc.append_roles("Sales User")
-		update_module_in_user(user_doc, "FCRM")
-
-	user_doc.save(ignore_permissions=True)
+	update_user_role(user, role)
 
 
 @frappe.whitelist()
