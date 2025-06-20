@@ -260,7 +260,7 @@ if (!isGridRow) {
   provide('triggerOnRowAdd', triggerOnRowAdd)
   provide('triggerOnRowRemove', triggerOnRowRemove)
 } else {
-  triggerOnChange = inject('triggerOnChange')
+  triggerOnChange = inject('triggerOnChange', () => {})
   parentDoc = inject('parentDoc')
 }
 
