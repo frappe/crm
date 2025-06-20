@@ -190,6 +190,7 @@ declare module 'vue' {
     MultiActionButton: typeof import('./src/components/MultiActionButton.vue')['default']
     MultipleAvatar: typeof import('./src/components/MultipleAvatar.vue')['default']
     MultiSelectEmailInput: typeof import('./src/components/Controls/MultiSelectEmailInput.vue')['default']
+    MultiSelectUserInput: typeof import('./src/components/Controls/MultiSelectUserInput.vue')['default']
     MuteIcon: typeof import('./src/components/Icons/MuteIcon.vue')['default']
     NestedPopover: typeof import('./src/components/NestedPopover.vue')['default']
     NoteArea: typeof import('./src/components/Activities/NoteArea.vue')['default']
