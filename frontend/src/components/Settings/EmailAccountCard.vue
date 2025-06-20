@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-between p-1 py-3 border-b border-gray-200 dark:border-gray-700 cursor-pointer"
+    class="flex items-center justify-between p-1 py-3 border-b border-outline-gray-modals cursor-pointer"
   >
     <!-- avatar and name -->
     <div class="flex items-center justify-between gap-2">
@@ -9,11 +9,11 @@
         <p class="text-sm font-semibold text-ink-gray-9">
           {{ emailAccount.email_account_name }}
         </p>
-        <div class="text-sm text-gray-500">{{ emailAccount.email_id }}</div>
+        <div class="text-sm text-ink-gray-4">{{ emailAccount.email_id }}</div>
       </div>
     </div>
     <div>
-      <Badge variant="subtle" :label="badgeTitle" :theme="gray" />
+      <Badge variant="subtle" :label="badgeTitle" theme="gray" />
     </div>
     <!-- email id -->
   </div>

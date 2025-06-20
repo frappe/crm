@@ -1,6 +1,6 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-8 text-ink-gray-9">
-    <div class="flex-1 flex flex-col gap-8 mt-2 overflow-y-auto">
+  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-9">
+    <div class="flex-1 flex flex-col gap-6 mt-2 overflow-y-auto">
       <div v-if="profile" class="flex w-full items-center justify-between">
         <FileUploader
           @success="(file) => updateImage(file.file_url)"

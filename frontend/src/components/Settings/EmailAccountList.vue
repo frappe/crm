@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- header -->
-    <div class="flex justify-between">
+    <div class="flex justify-between text-ink-gray-9">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
           {{ __('Email accounts') }}
@@ -38,7 +38,7 @@
       </div>
     </div>
     <!-- fallback if no email accounts -->
-    <div v-else class="flex items-center justify-center h-64 text-gray-500">
+    <div v-else class="flex items-center justify-center h-64 text-ink-gray-4">
       {{ __('Please add an email account to continue.') }}
     </div>
   </div>
