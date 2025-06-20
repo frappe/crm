@@ -28,9 +28,10 @@
           :placeholder="__('john@doe.com')"
           v-model="newUsers"
           :validate="validateEmail"
-          :existingEmails="
-            users.data.crmUsers.map((user) => user.name) + ['admin@example.com']
-          "
+          :existingEmails="[
+            ...users.data.crmUsers.map((user) => user.name),
+            'admin@example.com',
+          ]"
           :error-message="
             (value) => __('{0} is an invalid email address', [value])
           "
