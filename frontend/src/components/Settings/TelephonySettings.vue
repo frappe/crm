@@ -1,16 +1,31 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-8">
-    <h2
-      class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-9"
-    >
-      <div>{{ __('Telephony Settings') }}</div>
-      <Badge
-        v-if="twilio.isDirty || exotel.isDirty || mediumChanged"
-        :label="__('Not Saved')"
-        variant="subtle"
-        theme="orange"
-      />
-    </h2>
+  <div class="flex h-full flex-col gap-6 p-8">
+    <div class="flex justify-between">
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2
+          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-9"
+        >
+          {{ __('Telephony settings') }}
+          <Badge
+            v-if="twilio.isDirty || exotel.isDirty || mediumChanged"
+            :label="__('Not Saved')"
+            variant="subtle"
+            theme="orange"
+          />
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{ __('Configure telephony settings for your CRM') }}
+        </p>
+      </div>
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <Button
+          :loading="twilio.save.loading || exotel.save.loading"
+          :label="__('Update')"
+          variant="solid"
+          @click="update"
+        />
+      </div>
+    </div>
     <div
       v-if="!twilio.get.loading || !exotel.get.loading"
       class="flex-1 flex flex-col gap-8 overflow-y-auto"
@@ -58,20 +73,7 @@
     <div v-else class="flex flex-1 items-center justify-center">
       <Spinner class="size-8" />
     </div>
-    <div class="flex justify-between gap-2">
-      <div>
-        <ErrorMessage
-          class="mt-2"
-          :message="twilio.save.error || exotel.save.error || error"
-        />
-      </div>
-      <Button
-        :loading="twilio.save.loading || exotel.save.loading"
-        :label="__('Update')"
-        variant="solid"
-        @click="update"
-      />
-    </div>
+    <ErrorMessage :message="twilio.save.error || exotel.save.error || error" />
   </div>
 </template>
 <script setup>
