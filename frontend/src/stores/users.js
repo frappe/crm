@@ -12,17 +12,17 @@ export const usersStore = defineStore('crm-users', () => {
 
   const users = createResource({
     url: 'crm.api.session.get_users',
-    cache: 'Users',
+    cache: 'crm-users',
     initialData: [],
     auto: true,
-    transform(users) {
-      for (let user of users) {
+    transform([allUsers, crmUsers]) {
+      for (let user of allUsers) {
         usersByName[user.name] = user
         if (user.name === 'Administrator') {
           usersByName[user.email] = user
         }
       }
-      return users
+      return { allUsers, crmUsers }
     },
     onError(error) {
       if (error && error.exc_type === 'AuthenticationError') {
@@ -49,6 +49,10 @@ export const usersStore = defineStore('crm-users', () => {
     return usersByName[email]
   }
 
+  function isAdmin(email) {
+    return getUser(email).is_admin
+  }
+
   function isManager(email) {
     return getUser(email).is_manager
   }
@@ -57,10 +61,20 @@ export const usersStore = defineStore('crm-users', () => {
     return getUser(email).is_agent
   }
 
+  function getUserRole(email) {
+    const user = getUser(email)
+    if (user && user.role) {
+      return user.role
+    }
+    return null
+  }
+
   return {
     users,
     getUser,
+    isAdmin,
     isManager,
     isAgent,
+    getUserRole,
   }
 })

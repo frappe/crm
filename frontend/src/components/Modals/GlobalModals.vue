@@ -16,9 +16,14 @@
     v-model="showAddressModal"
     v-bind="addressProps"
   />
+  <ChangePasswordModal
+    v-if="showChangePasswordModal"
+    v-model="showChangePasswordModal"
+  />
   <AboutModal v-model="showAboutModal" />
 </template>
 <script setup>
+import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import CreateDocumentModal from '@/components/Modals/CreateDocumentModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AddressModal from '@/components/Modals/AddressModal.vue'
@@ -34,6 +39,7 @@ import {
   quickEntryProps,
   showAddressModal,
   addressProps,
-  showAboutModal
+  showAboutModal,
+  showChangePasswordModal,
 } from '@/composables/modals'
 </script>

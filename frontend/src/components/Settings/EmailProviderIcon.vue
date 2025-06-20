@@ -1,14 +1,11 @@
 <template>
   <div
-    class="flex items-center justify-center w-8 h-8 bg-gray-100 cursor-pointer rounded-xl hover:bg-gray-200"
-    :class="{ 'ring-2 ring-gray-500 dark:ring-gray-100': selected }"
+    class="flex items-center justify-center w-8 h-8 bg-surface-gray-2 cursor-pointer rounded-xl hover:bg-surface-gray-3"
+    :class="{ 'ring-2 ring-outline-gray-4': selected }"
   >
     <img :src="logo" class="w-4 h-4" />
   </div>
-  <p
-    v-if="serviceName"
-    class="text-xs text-center text-gray-700 dark:text-gray-500 mt-2"
-  >
+  <p v-if="serviceName" class="text-xs text-center text-ink-gray-6 mt-2">
     {{ serviceName }}
   </p>
 </template>
@@ -29,5 +26,3 @@ defineProps({
   },
 })
 </script>
-
-<style scoped></style>

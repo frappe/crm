@@ -27,7 +27,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Role",
-   "options": "\nSales User\nSales Manager",
+   "options": "\nSales User\nSales Manager\nSystem Manager",
    "reqd": 1
   },
   {
@@ -66,7 +66,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-03 14:59:29.450018",
+ "modified": "2025-06-17 17:20:18.935395",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Invitation",
@@ -106,6 +106,7 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []

@@ -429,7 +429,7 @@ const emit = defineEmits(['afterFieldChange', 'reload'])
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(props.doctype)
 
-const { isManager, getUser } = usersStore()
+const { users, isManager, getUser } = usersStore()
 
 const showSidePanelModal = ref(false)
 
@@ -471,8 +471,11 @@ function parsedField(field) {
   }
 
   if (field.fieldtype === 'Link' && field.options === 'User') {
-    field.options = field.options
     field.fieldtype = 'User'
+    field.link_filters = JSON.stringify({
+      ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
+      name: ['in', users.data?.crmUsers?.map((user) => user.name)],
+    })
   }
 
   let _field = {

@@ -7,7 +7,7 @@
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
         <div class="flex flex-col p-2 w-52 shrink-0 bg-surface-gray-2">
-          <h1 class="px-2 pt-2 mb-3 text-lg font-semibold text-ink-gray-9">
+          <h1 class="px-2 pt-2 mb-3 text-lg font-semibold text-ink-gray-8">
             {{ __('Settings') }}
           </h1>
           <div v-for="tab in tabs">
@@ -28,20 +28,12 @@
                     ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
                     : 'hover:bg-surface-gray-3'
                 "
-                @click="activeTab = i"
+                @click="activeSettingsPage = i.label"
               />
             </nav>
           </div>
         </div>
-        <div
-          class="relative flex flex-col flex-1 overflow-y-auto bg-surface-modal"
-        >
-          <Button
-            class="absolute right-5 top-5"
-            variant="ghost"
-            icon="x"
-            @click="showSettings = false"
-          />
+        <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
@@ -52,10 +44,10 @@
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import Users from '@/components/Settings/Users.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
-import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
+import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
@@ -68,7 +60,7 @@ import {
   showSettings,
   activeSettingsPage,
 } from '@/composables/settings'
-import { Dialog, Button, Avatar } from 'frappe-ui'
+import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 
 const { isManager, isAgent, getUser } = usersStore()
@@ -98,9 +90,15 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('Invite Members'),
-          icon: InviteIcon,
-          component: markRaw(InviteMemberPage),
+          label: __('Users'),
+          icon: 'user',
+          component: markRaw(Users),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Invite User'),
+          icon: 'user-plus',
+          component: markRaw(InviteUserPage),
           condition: () => isManager(),
         },
         {

@@ -31,7 +31,7 @@
   </div>
   <div
     v-if="document.get.loading"
-    class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
+    class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-6"
   >
     <LoadingIndicator class="h-6 w-6" />
     <span>{{ __('Loading...') }}</span>
