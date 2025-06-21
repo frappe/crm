@@ -26,6 +26,7 @@
   "lead_name",
   "organization_details_section",
   "organization_name",
+   "organization_gstin",
   "website",
   "no_of_employees",
   "job_title",
@@ -374,12 +375,18 @@
    "label": "Net Total",
    "options": "currency",
    "read_only": 1
+  },
+   {
+     "fieldname": "organization_gstin",
+     "fieldtype": "Autocomplete",
+     "label": "Organization GSTIN",
+     "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-12 12:30:55.415282",
+  "modified": "2025-06-21 16:50:52.087557",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

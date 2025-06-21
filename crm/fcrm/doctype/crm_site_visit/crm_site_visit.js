@@ -1,403 +1,227 @@
 // Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
+/**
+ * Simplified CRM Site Visit Client-Side Script
+ * Delegates most functionality to server-side APIs for better performance and security
+ */
+
 frappe.ui.form.on('CRM Site Visit', {
     refresh: function(frm) {
-        // Add custom buttons based on status
-        add_geolocation_buttons(frm);
-        
-        // Update title display
-        if (frm.doc.reference_title) {
-            frm.set_df_property('reference_title', 'description', 
-                `Visit for: ${frm.doc.reference_title}`);
-        }
-        
-        // Show map button if coordinates exist
-        if (frm.doc.check_in_latitude && frm.doc.check_in_longitude) {
-            frm.add_custom_button(__('View on Map'), function() {
-                show_location_on_map(frm);
-            }, __('Location'));
-        }
-        
-        // Add follow-up creation button
-        if (frm.doc.follow_up_required && frm.doc.follow_up_date && !frm.is_new()) {
-            frm.add_custom_button(__('Create Follow-up Task'), function() {
-                create_follow_up_task(frm);
-            }, __('Actions'));
-        }
-        
-        // Add calendar-related buttons
-        if (!frm.is_new()) {
-            // View calendar event button
-            if (frm.doc.calendar_event) {
-                frm.add_custom_button(__('View Calendar Event'), function() {
-                    frappe.set_route('Form', 'Event', frm.doc.calendar_event);
-                }, __('Calendar'));
-            }
-            
-            // Sync with calendar button
-            frm.add_custom_button(__('Sync with Calendar'), function() {
-                sync_with_calendar(frm);
-            }, __('Calendar'));
-            
-            // Create calendar event manually
-            if (!frm.doc.calendar_event) {
-                frm.add_custom_button(__('Create Calendar Event'), function() {
-                    create_calendar_event_manually(frm);
-                }, __('Calendar'));
-            }
-        }
+        // Get server-side metadata and render form accordingly
+        load_form_metadata(frm);
+    },
 
-        // Set up mobile interface if on mobile
-        if (frappe.utils.is_mobile()) {
-            setup_mobile_interface(frm);
-        }
+    onload: function (frm) {
+        // Setup form based on device and user context
+        setup_form_context(frm);
     },
     
     reference_type: function(frm) {
-        // Clear reference when type changes
-        frm.set_value('reference_name', '');
-        frm.set_value('reference_title', '');
+        // Handle server-side field change
+        handle_server_field_change(frm, 'reference_type', frm.doc.reference_type);
     },
     
     reference_name: function(frm) {
-        if (frm.doc.reference_name && frm.doc.reference_type) {
-            // Auto-populate reference details
-            frappe.call({
-                method: 'frappe.client.get',
-                args: {
-                    doctype: frm.doc.reference_type,
-                    name: frm.doc.reference_name
-                },
-                callback: function(r) {
-                    if (r.message) {
-                        update_reference_details(frm, r.message);
-                    }
-                }
-            });
-        }
+        // Handle server-side field change
+        handle_server_field_change(frm, 'reference_name', frm.doc.reference_name);
+    },
+
+    customer_address: function (frm) {
+        // Handle server-side field change
+        handle_server_field_change(frm, 'customer_address', frm.doc.customer_address);
     },
     
     organization: function(frm) {
-        if (frm.doc.reference_name && frm.doc.reference_type) {
-            // Auto-populate reference details
-            frappe.call({
-                method: 'frappe.client.get',
-                args: {
-                    doctype: frm.doc.reference_type,
-                    name: frm.doc.reference_name
-                },
-                callback: function(r) {
-                    if (r.message) {
-                        update_reference_details(frm, r.message);
-                    }
-                }
-            });
-        }
+        // Handle server-side field change
+        handle_server_field_change(frm, 'organization', frm.doc.organization);
     },
-    
-    customer_address: function(frm) {
-        if (frm.doc.customer_address) {
-            // Auto-populate address fields
-            frappe.call({
-                method: 'frappe.client.get',
-                args: {
-                    doctype: 'Address',
-                    name: frm.doc.customer_address
-                },
-                callback: function(r) {
-                    if (r.message) {
-                        const addr = r.message;
-                        frm.set_value('visit_address', addr.address_line1 + 
-                            (addr.address_line2 ? '\n' + addr.address_line2 : ''));
-                        frm.set_value('city', addr.city);
-                        frm.set_value('state', addr.state);
-                        frm.set_value('country', addr.country);
-                        frm.set_value('pincode', addr.pincode);
-                    }
-                }
-            });
-        }
+
+    follow_up_required: function (frm) {
+        // Handle server-side field change
+        handle_server_field_change(frm, 'follow_up_required', frm.doc.follow_up_required);
     },
-    
-    follow_up_required: function(frm) {
-        if (frm.doc.follow_up_required && !frm.doc.follow_up_date) {
-            // Auto-set follow-up date to next week
-            let nextWeek = frappe.datetime.add_days(frm.doc.visit_date, 7);
-            frm.set_value('follow_up_date', nextWeek);
-        }
+
+    visit_type: function (frm) {
+        // Handle server-side field change
+        handle_server_field_change(frm, 'visit_type', frm.doc.visit_type);
+    },
+
+    visit_date: function (frm) {
+        // Handle server-side field change
+        handle_server_field_change(frm, 'visit_date', frm.doc.visit_date);
     }
 });
 
-// Geolocation Functions
-function add_geolocation_buttons(frm) {
-    // Check-in button
-    if (frm.doc.status === 'Planned' && !frm.doc.check_in_time) {
-        frm.add_custom_button(__('Check In'), function() {
-            check_in(frm);
-        }, __('Location')).addClass('btn-primary');
-    }
-    
-    // Check-out button
-    if (frm.doc.check_in_time && !frm.doc.check_out_time && frm.doc.status === 'In Progress') {
-        frm.add_custom_button(__('Check Out'), function() {
-            check_out(frm);
-        }, __('Location')).addClass('btn-success');
-    }
-    
-    // Manual location button
-    if (!frm.doc.check_in_time) {
-        frm.add_custom_button(__('Set Manual Location'), function() {
-            set_manual_location(frm);
-        }, __('Location'));
-    }
-}
-
-function check_in(frm) {
-    if (!navigator.geolocation) {
-        frappe.msgprint(__('Geolocation is not supported by this browser.'));
-        return;
-    }
-    
-    frappe.show_alert({
-        message: __('Getting your location...'),
-        indicator: 'blue'
-    });
-    
-    navigator.geolocation.getCurrentPosition(
-        function(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
-            
-            // Validate location accuracy
-            if (accuracy > 100) {
-                frappe.confirm(
-                    __('Location accuracy is low ({0}m). Continue anyway?', [Math.round(accuracy)]),
-                    function() {
-                        process_checkin(frm, latitude, longitude, accuracy);
-                    }
-                );
-            } else {
-                process_checkin(frm, latitude, longitude, accuracy);
-            }
-        },
-        function(error) {
-            handle_geolocation_error(error);
-        },
-        {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
-        }
-    );
-}
-
-function process_checkin(frm, latitude, longitude, accuracy) {
-    // Get address from coordinates
-    get_address_from_coords(latitude, longitude, function(address) {
-        frm.set_value('check_in_time', frappe.datetime.now_datetime());
-        frm.set_value('check_in_latitude', latitude);
-        frm.set_value('check_in_longitude', longitude);
-        frm.set_value('check_in_location', address);
-        frm.set_value('location_accuracy', Math.round(accuracy) + ' meters');
-        frm.set_value('status', 'In Progress');
-        
-        frm.save().then(() => {
-            frappe.show_alert({
-                message: __('Check-in successful! Location: {0}', [address]),
-                indicator: 'green'
-            });
-            frm.refresh();
-        });
-    });
-}
-
-function check_out(frm) {
-    if (!navigator.geolocation) {
-        frappe.msgprint(__('Geolocation is not supported by this browser.'));
-        return;
-    }
-    
-    navigator.geolocation.getCurrentPosition(
-        function(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            
-            get_address_from_coords(latitude, longitude, function(address) {
-                // Calculate duration
-                const check_in_time = moment(frm.doc.check_in_time);
-                const check_out_time = moment();
-                const duration = check_out_time.diff(check_in_time, 'seconds');
-                
-                frm.set_value('check_out_time', frappe.datetime.now_datetime());
-                frm.set_value('check_out_latitude', latitude);
-                frm.set_value('check_out_longitude', longitude);
-                frm.set_value('check_out_location', address);
-                frm.set_value('total_duration', duration);
-                frm.set_value('status', 'Completed');
-                
-                frm.save().then(() => {
-                    frappe.show_alert({
-                        message: __('Check-out successful! Duration: {0}', 
-                            [format_duration(duration)]),
-                        indicator: 'green'
-                    });
-                    frm.refresh();
-                });
-            });
-        },
-        function(error) {
-            handle_geolocation_error(error);
-        }
-    );
-}
-
-function set_manual_location(frm) {
-    let d = new frappe.ui.Dialog({
-        title: __('Set Manual Location'),
-        fields: [
-            {
-                fieldtype: 'Data',
-                fieldname: 'location_name',
-                label: __('Location Name'),
-                reqd: 1
-            },
-            {
-                fieldtype: 'Float',
-                fieldname: 'latitude',
-                label: __('Latitude'),
-                precision: 6
-            },
-            {
-                fieldtype: 'Float',
-                fieldname: 'longitude',
-                label: __('Longitude'),
-                precision: 6
-            },
-            {
-                fieldtype: 'Small Text',
-                fieldname: 'reason',
-                label: __('Reason for Manual Entry'),
-                reqd: 1
-            }
-        ],
-        primary_action: function() {
-            let values = d.get_values();
-            frm.set_value('check_in_time', frappe.datetime.now_datetime());
-            frm.set_value('check_in_location', values.location_name);
-            frm.set_value('check_in_latitude', values.latitude || 0);
-            frm.set_value('check_in_longitude', values.longitude || 0);
-            frm.set_value('location_accuracy', 'Manual Entry: ' + values.reason);
-            frm.set_value('status', 'In Progress');
-            
-            frm.save();
-            d.hide();
-            frappe.show_alert({
-                message: __('Manual location set successfully'),
-                indicator: 'green'
-            });
-        },
-        primary_action_label: __('Set Location')
-    });
-    d.show();
-}
-
-// Utility Functions
-function get_address_from_coords(lat, lng, callback) {
-    // Using Nominatim (OpenStreetMap) reverse geocoding - free alternative
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.display_name) {
-                callback(data.display_name);
-            } else {
-                callback(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-            }
-        })
-        .catch(error => {
-            console.log('Geocoding error:', error);
-            callback(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-        });
-}
-
-function update_reference_details(frm, doc) {
-    if (frm.doc.reference_type === 'CRM Lead') {
-        frm.set_value('reference_title', (doc.lead_name || doc.organization || 'Unknown'));
-        if (doc.mobile_no) frm.set_value('contact_phone', doc.mobile_no);
-        if (doc.phone && !frm.doc.contact_phone) frm.set_value('contact_phone', doc.phone);
-        if (doc.email) frm.set_value('contact_email', doc.email);
-        
-        // Set address if available
-        if (doc.city) frm.set_value('city', doc.city);
-        if (doc.state) frm.set_value('state', doc.state);
-        if (doc.country) frm.set_value('country', doc.country);
-        
-    } else if (frm.doc.reference_type === 'CRM Deal') {
-        frm.set_value('reference_title', (doc.organization || doc.name || 'Unknown'));
-        // Add deal-specific field mapping here
-        
-    } else if (frm.doc.reference_type === 'Customer') {
-        frm.set_value('reference_title', doc.customer_name || 'Unknown');
-    }
-}
-
-function show_location_on_map(frm) {
-    const lat = frm.doc.check_in_latitude;
-    const lng = frm.doc.check_in_longitude;
-    
-    if (!lat || !lng) {
-        frappe.msgprint(__('No location coordinates available'));
-        return;
-    }
-    
-    // Open in different map applications based on user preference
-    frappe.confirm(
-        __('Open location in which map application?'),
-        function() {
-            // Google Maps
-            window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
-        },
-        function() {
-            // OpenStreetMap
-            window.open(`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}&zoom=16`, '_blank');
-        },
-        __('Google Maps'),
-        __('OpenStreetMap')
-    );
-}
-
-function create_follow_up_task(frm) {
+/**
+ * Load form metadata from server and setup UI accordingly
+ */
+function load_form_metadata(frm) {
     frappe.call({
-        method: 'frappe.client.insert',
+        method: 'crm.api.site_visit_workflow.get_form_metadata',
         args: {
-            doc: {
-                doctype: 'ToDo',
-                description: `Follow-up for Site Visit: ${frm.doc.name}\nCustomer: ${frm.doc.reference_title}`,
-                date: frm.doc.follow_up_date,
-                assigned_by: frappe.session.user,
-                owner: frm.doc.sales_person,
-                reference_type: 'CRM Site Visit',
-                reference_name: frm.doc.name,
-                priority: 'Medium',
-                status: 'Open'
-            }
+            docname: frm.doc.name,
+            reference_type: frm.doc.reference_type,
+            reference_name: frm.doc.reference_name
         },
-        callback: function(r) {
-            if (r.message) {
-                frappe.show_alert({
-                    message: __('Follow-up task created: {0}', [r.message.name]),
-                    indicator: 'green'
-                });
+        callback: function (r) {
+            if (r.message && r.message.success) {
+                render_form_ui(frm, r.message.metadata);
             }
         }
     });
 }
 
-function handle_geolocation_error(error) {
-    let message = __('Location access denied');
-    
-    switch(error.code) {
+/**
+ * Setup form context based on device and user agent
+ */
+function setup_form_context(frm) {
+    const user_agent = navigator.userAgent;
+
+    frappe.call({
+        method: 'crm.api.form_controller.get_field_properties',
+        args: {
+            docname: frm.doc.name,
+            user_agent: user_agent,
+            form_data: frm.doc
+        },
+        callback: function (r) {
+            if (r.message && r.message.success) {
+                apply_field_properties(frm, r.message.field_properties);
+
+                // Setup mobile interface if detected
+                if (r.message.is_mobile) {
+                    setup_mobile_interface(frm);
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Render form UI based on server metadata
+ */
+function render_form_ui(frm, metadata) {
+    // Clear existing custom buttons
+    frm.clear_custom_buttons();
+
+    // Add workflow buttons based on server response
+    if (metadata.available_actions && metadata.available_actions.length > 0) {
+        metadata.available_actions.forEach(action => {
+            const button = frm.add_custom_button(action.label, function () {
+                perform_workflow_action(frm, action);
+            });
+
+            // Apply button styling
+            if (action.primary) {
+                button.addClass('btn-primary');
+            }
+            if (action.button_class) {
+                button.addClass(action.button_class);
+            }
+
+            // Add to appropriate group
+            if (action.action.includes('checkin') || action.action.includes('checkout')) {
+                button.parent().appendTo(frm.page.add_menu_item(__('Location'), null, true));
+            } else if (action.action.includes('submit')) {
+                button.parent().appendTo(frm.page.add_menu_item(__('Workflow'), null, true));
+            }
+        });
+    }
+
+    // Show workflow guidance
+    if (metadata.form_guidance && metadata.form_guidance.message) {
+        const guidance_type = metadata.form_guidance.type || 'info';
+        frm.dashboard.set_headline(metadata.form_guidance.message);
+
+        // Add workflow progress indicator
+        if (metadata.workflow_state && metadata.workflow_state.progress_percentage !== undefined) {
+            show_workflow_progress(frm, metadata.workflow_state.progress_percentage);
+        }
+    }
+
+    // Apply reference auto-population if available
+    if (metadata.reference_data && metadata.reference_data.auto_populate_data) {
+        apply_auto_populate_data(frm, metadata.reference_data.auto_populate_data);
+    }
+
+    // Apply field properties
+    if (metadata.field_properties) {
+        apply_field_properties(frm, metadata.field_properties);
+    }
+}
+
+/**
+ * Perform workflow action via server API
+ */
+function perform_workflow_action(frm, action) {
+    if ((action.action === 'checkin' || action.action === 'checkout') && action.requires_location) {
+        // Handle location-based actions
+        handle_location_action(frm, action);
+    } else if (action.action === 'submit' && action.requires_confirmation) {
+        // Handle submission with confirmation
+        handle_submission_action(frm, action);
+    } else if (action.action === 'quick_submit') {
+        // Handle quick submission with dialog
+        handle_quick_submission(frm, action);
+    } else {
+        // Standard server-side action
+        call_workflow_action(frm, action.action, {});
+    }
+}
+
+/**
+ * Handle location-based actions (check-in/check-out)
+ */
+function handle_location_action(frm, action) {
+    if (navigator.geolocation) {
+        frappe.show_alert({
+            message: __('Getting your location...'),
+            indicator: 'blue'
+        });
+
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                const args = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy
+                };
+
+                // Validate location accuracy
+                if (position.coords.accuracy > 100) {
+                    frappe.confirm(
+                        __('Location accuracy is low ({0}m). Continue anyway?', [Math.round(position.coords.accuracy)]),
+                        function () {
+                            call_workflow_action(frm, action.action, args);
+                        }
+                    );
+                } else {
+                    call_workflow_action(frm, action.action, args);
+                }
+            },
+            function (error) {
+                handle_location_error(frm, action, error);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        frappe.msgprint(__('Geolocation is not supported by this browser.'));
+        offer_manual_location(frm, action);
+    }
+}
+
+/**
+ * Handle location errors and offer alternatives
+ */
+function handle_location_error(frm, action, error) {
+    let message = __('Location access failed');
+
+    switch (error.code) {
         case error.PERMISSION_DENIED:
             message = __('Location access denied by user');
             break;
@@ -408,179 +232,374 @@ function handle_geolocation_error(error) {
             message = __('Location request timeout');
             break;
     }
-    
+
     frappe.msgprint({
-        title: __('Geolocation Error'),
-        message: message + '<br><br>' + __('You can use Manual Location option instead.'),
-        indicator: 'red'
-    });
-}
-
-function format_duration(seconds) {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    if (hours > 0) {
-        return `${hours}h ${minutes}m`;
-    } else if (minutes > 0) {
-        return `${minutes}m ${secs}s`;
-    } else {
-        return `${secs}s`;
-    }
-}
-
-function sync_with_calendar(frm) {
-    frappe.call({
-        method: 'crm.api.site_visit_calendar.sync_visit_with_calendar_event',
-        args: {
-            visit_name: frm.doc.name
-        },
-        callback: function(r) {
-            if (r.message && r.message.success) {
-                frappe.show_alert({
-                    message: r.message.message,
-                    indicator: 'green'
-                });
-                frm.reload_doc();
-            } else {
-                frappe.msgprint({
-                    title: __('Sync Failed'),
-                    message: r.message ? r.message.message : 'Unknown error occurred',
-                    indicator: 'red'
-                });
+        title: __('Location Error'),
+        message: message + '<br><br>' + __('Would you like to enter location manually?'),
+        primary_action: {
+            label: __('Manual Location'),
+            action: function () {
+                offer_manual_location(frm, action);
             }
         }
     });
 }
 
-function create_calendar_event_manually(frm) {
-    frappe.confirm(
-        __('This will create a calendar event for this site visit. Continue?'),
-        function() {
-            // Temporarily enable sync to create event
-            frm.set_value('sync_with_calendar', 1);
-            frm.save().then(() => {
-                frappe.show_alert({
-                    message: __('Calendar event will be created on save'),
-                    indicator: 'blue'
-                });
-            });
-        }
-    );
-}
-
-function create_recurring_visits(frm) {
-    let d = new frappe.ui.Dialog({
-        title: __('Create Recurring Visits'),
+/**
+ * Offer manual location entry
+ */
+function offer_manual_location(frm, action) {
+    const dialog = new frappe.ui.Dialog({
+        title: __('Manual Location Entry'),
         fields: [
             {
-                fieldtype: 'Select',
-                fieldname: 'frequency',
-                label: __('Frequency'),
-                options: 'Weekly\nBi-weekly\nMonthly\nQuarterly',
+                fieldtype: 'Data',
+                fieldname: 'location_name',
+                label: __('Location Name'),
+                reqd: 1
+            },
+            {
+                fieldtype: 'Float',
+                fieldname: 'latitude',
+                label: __('Latitude (Optional)'),
+                precision: 6
+            },
+            {
+                fieldtype: 'Float',
+                fieldname: 'longitude',
+                label: __('Longitude (Optional)'),
+                precision: 6
+            },
+            {
+                fieldtype: 'Small Text',
+                fieldname: 'reason',
+                label: __('Reason for Manual Entry'),
                 reqd: 1,
-                default: 'Weekly'
-            },
-            {
-                fieldtype: 'Date',
-                fieldname: 'end_date',
-                label: __('End Date'),
-                reqd: 1,
-                default: frappe.datetime.add_months(frm.doc.visit_date, 3)
-            },
-            {
-                fieldtype: 'Int',
-                fieldname: 'max_count',
-                label: __('Maximum Visits'),
-                default: 12,
-                description: 'Maximum number of visits to create (safety limit)'
-            },
-            {
-                fieldtype: 'HTML',
-                fieldname: 'preview',
-                label: __('Preview')
+                default: 'GPS not available'
             }
         ],
         primary_action: function() {
-            let values = d.get_values();
-            
-            frappe.call({
-                method: 'crm.api.calendar_integration.create_recurring_visit_series',
-                args: {
-                    visit_name: frm.doc.name,
-                    frequency: values.frequency,
-                    end_date: values.end_date,
-                    count: values.max_count
-                },
-                callback: function(r) {
-                    if (r.message && r.message.success) {
+            const values = dialog.get_values();
+            const args = {
+                manual_location: values
+            };
+
+            call_workflow_action(frm, 'manual_' + action.action, args);
+            dialog.hide();
+        },
+        primary_action_label: __('Continue')
+    });
+
+    dialog.show();
+}
+
+/**
+ * Handle submission actions with validation
+ */
+function handle_submission_action(frm, action) {
+    // Check if visit summary exists
+    if (!frm.doc.visit_summary) {
+        frappe.confirm(
+            __('No visit summary added. Submit anyway?'),
+            function () {
+                call_workflow_action(frm, action.action, {});
+            },
+            function () {
+                frappe.msgprint(__('Please add a visit summary before submitting.'));
+                frm.scroll_to_field('visit_summary');
+            }
+        );
+    } else {
+        call_workflow_action(frm, action.action, {});
+    }
+}
+
+/**
+ * Handle quick submission with summary dialog
+ */
+function handle_quick_submission(frm, action) {
+    const dialog = new frappe.ui.Dialog({
+        title: __('Complete & Submit Visit'),
+        fields: [
+            {
+                fieldtype: 'Text Editor',
+                fieldname: 'visit_summary',
+                label: __('Visit Summary'),
+                default: frm.doc.visit_summary || '',
+                reqd: 1
+            },
+            {
+                fieldtype: 'Select',
+                fieldname: 'lead_quality',
+                label: __('Lead Quality'),
+                options: 'Hot\nWarm\nCold\nNot Qualified',
+                default: frm.doc.lead_quality
+            },
+            {
+                fieldtype: 'Text',
+                fieldname: 'next_steps',
+                label: __('Next Steps'),
+                default: frm.doc.next_steps || ''
+            },
+            {
+                fieldtype: 'Check',
+                fieldname: 'follow_up_required',
+                label: __('Follow-up Required'),
+                default: frm.doc.follow_up_required
+            },
+            {
+                fieldtype: 'Date',
+                fieldname: 'follow_up_date',
+                label: __('Follow-up Date'),
+                depends_on: 'follow_up_required',
+                default: frm.doc.follow_up_date
+            }
+        ],
+        primary_action: function () {
+            const values = dialog.get_values();
+            call_workflow_action(frm, 'quick_submit', values);
+            dialog.hide();
+        },
+        primary_action_label: __('Submit Visit')
+    });
+
+    dialog.show();
+}
+
+/**
+ * Call server-side workflow action
+ */
+function call_workflow_action(frm, action, args) {
+    frappe.call({
+        method: 'crm.api.site_visit_workflow.perform_workflow_action',
+        args: {
+            docname: frm.doc.name,
+            action: action,
+            ...args
+        },
+        callback: function(r) {
+            if (r.message) {
+                if (r.message.success) {
+                    // Show success message
+                    frappe.show_alert({
+                        message: r.message.message,
+                        indicator: 'green'
+                    });
+
+                    // Reload form to reflect changes
+                    frm.reload_doc();
+
+                    // Handle special cases
+                    if (action === 'checkout' && r.message.prompt_submission) {
+                        setTimeout(() => {
+                            show_post_checkout_options(frm);
+                        }, 2000);
+                    }
+                } else {
+                    // Show error message
+                    frappe.msgprint({
+                        title: __('Action Failed'),
+                        message: r.message.message || 'Unknown error occurred',
+                        indicator: 'red'
+                    });
+                }
+
+                // Show warnings if any
+                if (r.message.warning) {
+                    frappe.msgprint({
+                        title: __('Warning'),
+                        message: r.message.warning,
+                        indicator: 'orange'
+                    });
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Handle server-side field changes
+ */
+function handle_server_field_change(frm, fieldname, value) {
+    frappe.call({
+        method: 'crm.api.form_controller.handle_field_change',
+        args: {
+            docname: frm.doc.name,
+            fieldname: fieldname,
+            value: value,
+            form_data: frm.doc
+        },
+        callback: function(r) {
+            if (r.message && r.message.success) {
+                // Apply server-side field updates
+                if (r.message.field_updates) {
+                    Object.keys(r.message.field_updates).forEach(field => {
+                        frm.set_value(field, r.message.field_updates[field]);
+                    });
+                }
+
+                // Apply field property changes
+                if (r.message.field_properties) {
+                    apply_field_properties(frm, r.message.field_properties);
+                }
+
+                // Show messages
+                if (r.message.messages && r.message.messages.length > 0) {
+                    r.message.messages.forEach(msg => {
                         frappe.show_alert({
-                            message: r.message.message,
-                            indicator: 'green'
+                            message: msg,
+                            indicator: 'blue'
                         });
-                        d.hide();
-                    } else {
+                    });
+                }
+
+                // Show validation errors
+                if (r.message.validations && r.message.validations.length > 0) {
+                    r.message.validations.forEach(error => {
                         frappe.msgprint({
-                            title: __('Error'),
-                            message: r.message ? r.message.message : 'Failed to create recurring visits',
+                            title: __('Validation Error'),
+                            message: error,
                             indicator: 'red'
                         });
-                    }
+                    });
                 }
+            }
+        }
+    });
+}
+
+/**
+ * Apply field properties from server
+ */
+function apply_field_properties(frm, properties) {
+    Object.keys(properties).forEach(fieldname => {
+        const props = properties[fieldname];
+
+        if (props.hidden !== undefined) {
+            frm.set_df_property(fieldname, 'hidden', props.hidden);
+        }
+        if (props.required !== undefined) {
+            frm.set_df_property(fieldname, 'reqd', props.required);
+        }
+        if (props.readonly !== undefined) {
+            frm.set_df_property(fieldname, 'read_only', props.readonly);
+        }
+        if (props.description) {
+            frm.set_df_property(fieldname, 'description', props.description);
+        }
+        if (props.highlight) {
+            frm.get_field(fieldname).$wrapper.addClass('highlight-field');
+        }
+        if (props.bold) {
+            frm.get_field(fieldname).$wrapper.addClass('bold-field');
+        }
+    });
+}
+
+/**
+ * Apply auto-populate data from server
+ */
+function apply_auto_populate_data(frm, data) {
+    Object.keys(data).forEach(fieldname => {
+        if (!frm.doc[fieldname] && data[fieldname]) {
+            frm.set_value(fieldname, data[fieldname]);
+        }
+    });
+}
+
+/**
+ * Setup mobile-specific interface
+ */
+function setup_mobile_interface(frm) {
+    // Add mobile CSS class
+    frm.page.wrapper.addClass('mobile-site-visit-form');
+
+    // Add quick action button at top for mobile
+    if (frm.doc.status === 'Planned' && !frm.doc.check_in_time) {
+        add_mobile_quick_button(frm, 'Check In', 'checkin', 'btn-primary');
+    } else if (frm.doc.status === 'In Progress' && !frm.doc.check_out_time) {
+        add_mobile_quick_button(frm, 'Check Out', 'checkout', 'btn-success');
+    }
+}
+
+/**
+ * Add mobile quick action button
+ */
+function add_mobile_quick_button(frm, label, action, btn_class) {
+    const button = $(`<button class="btn ${btn_class} btn-lg btn-block mobile-quick-action" style="margin: 10px 0;">${label}</button>`);
+    button.insertAfter(frm.fields_dict.visit_date.$wrapper);
+
+    button.click(function () {
+        const action_config = {
+            action: action,
+            label: label,
+            requires_location: true,
+            primary: true
+        };
+        perform_workflow_action(frm, action_config);
+    });
+}
+
+/**
+ * Show workflow progress indicator
+ */
+function show_workflow_progress(frm, percentage) {
+    const progress_html = `
+        <div class="progress" style="margin: 10px 0;">
+            <div class="progress-bar" role="progressbar" style="width: ${percentage}%;" 
+                 aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">
+                ${percentage}%
+            </div>
+        </div>
+    `;
+
+    frm.dashboard.add_section(progress_html, __('Workflow Progress'));
+}
+
+/**
+ * Show post-checkout options
+ */
+function show_post_checkout_options(frm) {
+    frappe.confirm(
+        __('Visit completed successfully! Would you like to submit this visit now to finalize the record?'),
+        function () {
+            // Quick submit
+            handle_quick_submission(frm, {action: 'quick_submit'});
+        },
+        function() {
+            // Submit later
+            frappe.show_alert({
+                message: __('You can submit this visit later using the Submit button.'),
+                indicator: 'blue'
             });
         },
-        primary_action_label: __('Create Visits')
-    });
-    
-    // Update preview when frequency or end date changes
-    d.fields_dict.frequency.$input.on('change', update_preview);
-    d.fields_dict.end_date.$input.on('change', update_preview);
-    
-    function update_preview() {
-        let frequency = d.get_value('frequency');
-        let end_date = d.get_value('end_date');
-        
-        if (frequency && end_date) {
-            let preview_html = `<p>This will create visits every <strong>${frequency.toLowerCase()}</strong> until <strong>${frappe.datetime.str_to_user(end_date)}</strong></p>`;
-            d.fields_dict.preview.$wrapper.html(preview_html);
-        }
-    }
-    
-    d.show();
-    update_preview();
+        __('Submit Now'),
+        __('Submit Later')
+    );
 }
 
-function view_calendar_events(frm) {
-    frappe.route_options = {
-        'reference_type': 'CRM Site Visit',
-        'reference_name': frm.doc.name
-    };
-    frappe.set_route('List', 'Event');
-}
-
-function setup_mobile_interface(frm) {
-    // Hide non-essential fields on mobile
-    const mobile_hide_fields = [
-        'planned_start_time', 'planned_end_time', 'location_accuracy',
-        'check_in_latitude', 'check_in_longitude', 
-        'check_out_latitude', 'check_out_longitude'
-    ];
-    
-    mobile_hide_fields.forEach(field => {
-        frm.set_df_property(field, 'hidden', 1);
-    });
-    
-    // Make essential fields more prominent
-    frm.set_df_property('visit_type', 'reqd', 1);
-    frm.set_df_property('visit_purpose', 'reqd', 1);
-    
-    // Add quick check-in button at top
-    if (frm.doc.status === 'Planned') {
-        $('<button class="btn btn-primary btn-lg btn-block" style="margin: 10px 0;">🔍 Quick Check-In</button>')
-            .insertAfter(frm.fields_dict.visit_date.$wrapper)
-            .click(function() {
-                check_in(frm);
-            });
-    }
-}
+// Add custom CSS for mobile interface
+frappe.ready(function () {
+    $('head').append(`
+        <style>
+            .mobile-site-visit-form .form-section {
+                margin-bottom: 15px;
+            }
+            .mobile-site-visit-form .frappe-control {
+                margin-bottom: 10px;
+            }
+            .mobile-quick-action {
+                font-size: 16px !important;
+                padding: 12px !important;
+            }
+            .highlight-field {
+                background-color: #fff3cd !important;
+                border-left: 4px solid #ffc107;
+                padding-left: 10px;
+            }
+            .bold-field .control-label {
+                font-weight: bold !important;
+            }
+        </style>
+    `);
+});

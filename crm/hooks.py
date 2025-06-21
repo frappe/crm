@@ -159,8 +159,18 @@ doc_events = {
 		],
 	},
 	"CRM Site Visit": {
+		"before_save": [
+			"crm.fcrm.doctype.crm_site_visit.crm_site_visit.before_save_server_side_processing"
+		],
 		"on_update": [
-			"crm.fcrm.doctype.crm_site_visit.crm_site_visit.update_lead_score_from_visit"
+			"crm.fcrm.doctype.crm_site_visit.crm_site_visit.update_lead_score_from_visit",
+			"crm.fcrm.doctype.crm_site_visit.crm_site_visit.update_workflow_state"
+		],
+		"on_submit": [
+			"crm.fcrm.doctype.crm_site_visit.crm_site_visit.on_submit_enhancements"
+		],
+		"after_insert": [
+			"crm.fcrm.doctype.crm_site_visit.crm_site_visit.after_insert_calendar_sync"
 		],
 	},
 	"Event": {
@@ -182,9 +192,51 @@ doc_events = {
 
 scheduler_events = {
 	"daily": [
-		"crm.fcrm.doctype.crm_site_visit.crm_site_visit.send_visit_reminders"
+		"crm.fcrm.doctype.crm_site_visit.crm_site_visit.send_visit_reminders",
+		"crm.api.site_visit_analytics.cleanup_old_analytics_cache"
+	],
+	"hourly": [
+		"crm.api.mobile_interface.sync_mobile_dashboard_cache"
 	],
 }
+
+# Whitelisted API Methods
+# -----------------------
+# Server-side APIs for enhanced site visit functionality
+
+whitelisted_methods = [
+	# Site Visit Workflow APIs
+	"crm.api.site_visit_workflow.get_form_metadata",
+	"crm.api.site_visit_workflow.perform_workflow_action",
+	"crm.api.site_visit_workflow.get_workflow_info",
+
+	# Form Controller APIs
+	"crm.api.form_controller.get_field_properties",
+	"crm.api.form_controller.handle_field_change",
+	"crm.api.form_controller.auto_populate_form_data",
+	"crm.api.form_controller.get_dynamic_options",
+	"crm.api.form_controller.validate_form_data",
+
+	# Mobile Interface APIs
+	"crm.api.mobile_interface.get_mobile_dashboard_data",
+	"crm.api.mobile_interface.get_mobile_visit_form",
+	"crm.api.mobile_interface.create_quick_visit_mobile",
+	"crm.api.mobile_interface.mobile_quick_checkin",
+	"crm.api.mobile_interface.mobile_quick_checkout",
+	"crm.api.mobile_interface.get_mobile_navigation_data",
+
+	# Enhanced Analytics APIs
+	"crm.api.site_visit_analytics.get_site_visit_analytics",
+	"crm.api.site_visit_analytics.get_visit_heatmap_data",
+	"crm.api.site_visit_analytics.get_location_analytics",
+	"crm.api.site_visit_analytics.export_visit_data",
+
+	# Legacy API compatibility
+	"crm.fcrm.doctype.crm_site_visit.crm_site_visit.mobile_checkin",
+	"crm.fcrm.doctype.crm_site_visit.crm_site_visit.mobile_checkout",
+	"crm.fcrm.doctype.crm_site_visit.crm_site_visit.submit_visit",
+	"crm.fcrm.doctype.crm_site_visit.crm_site_visit.get_my_visits",
+]
 
 # Testing
 # -------
