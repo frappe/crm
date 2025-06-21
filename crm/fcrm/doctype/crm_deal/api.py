@@ -16,7 +16,6 @@ def get_deal(name):
 	deal["_assign"] = get_assigned_users("CRM Deal", deal.name)
 	return deal
 
-
 @frappe.whitelist()
 def get_deal_contacts(name):
 	contacts = frappe.get_all(

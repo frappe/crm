@@ -6,7 +6,7 @@
     :options="{
       getRowRoute: (row) => ({
         name: 'Visit',
-        params: { quotationId: row.name },
+        params: { visitId: row.name },
         query: { view: route.query.view, viewType: route.params.viewType },
       }),
       selectable: options.selectable,
@@ -72,7 +72,15 @@
               size="sm"
             />
           </div>
-          <div v-else-if="column.key === 'deal_owner'">
+          <div v-else-if="column.key === 'visit_to'">
+            <Avatar
+              v-if="item?.label"
+              class="flex items-center"
+              :label="item?.label"
+              size="sm"
+            />
+          </div>
+          <div v-else-if="column.key === 'sales_person'">
             <Avatar
               v-if="item.full_name"
               class="flex items-center"
@@ -81,7 +89,7 @@
               size="sm"
             />
           </div>
-          <div v-else-if="column.key === 'mobile_no'">
+          <div v-else-if="column.key === 'contact_phone'">
             <PhoneIcon class="h-4 w-4" />
           </div>
           <div v-else-if="column.key === '_liked_by'">
@@ -103,9 +111,9 @@
               [
                 'modified',
                 'creation',
-                'first_response_time',
-                'first_responded_on',
-                'response_by',
+                'visit_date',
+                'check_in_time',
+                'check_out_time',
               ].includes(column.key)
             "
             class="truncate text-base"
@@ -121,30 +129,8 @@
             "
           >
             <Tooltip :text="item.label">
-              <div>{{ item.timeAgo }}</div>
+              <div>{{ item.timeAgo || item.label }}</div>
             </Tooltip>
-          </div>
-          <div
-            v-else-if="column.key === 'sla_status'"
-            class="truncate text-base"
-          >
-            <Badge
-              v-if="item.value"
-              :variant="'subtle'"
-              :theme="item.color"
-              size="md"
-              :label="item.value"
-              @click="
-                (event) =>
-                  emit('applyFilter', {
-                    event,
-                    idx,
-                    column,
-                    item,
-                    firstColumn: columns[0],
-                  })
-              "
-            />
           </div>
           <div v-else-if="column.type === 'Check'">
             <FormControl
@@ -193,7 +179,7 @@
     }"
     @loadMore="emit('loadMore')"
   />
-  <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="Quotation" />
+  <ListBulkActions ref="listBulkActionsRef" v-model="list" doctype="CRM Site Visit" />
 </template>
 
 <script setup>

@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build --base=/assets/crm/frontend/ && yarn copy-html-entry",
     "copy-html-entry": "cp ../crm/public/frontend/index.html ../crm/www/crm.html",
     "serve": "vite preview"
@@ -25,7 +25,8 @@
     "vue": "^3.5.13",
     "vue-router": "^4.2.2",
     "vuedraggable": "^4.1.0",
-    "chatnext-ui": "0.22.30"
+    "chatnext-ui": "0.22.30",
+    "leaflet": "^1.9.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

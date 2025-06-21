@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-1.5 p-[2px] -m-[2px]">
+  <div class="space-y-1.5 p-[2px] -m-[2px]" :class="{ 'pointer-events-none': disabled }">
     <label class="block" :class="labelClasses" v-if="attrs.label">
       {{ __(attrs.label) }}
     </label>
@@ -8,12 +8,13 @@
       :options="options.data"
       v-model="value"
       :size="attrs.size || 'sm'"
+      :disabled="disabled"
       :variant="attrs.variant"
       :placeholder="attrs.placeholder"
       :filterable="false"
     >
       <template #target="{ open, togglePopover }">
-        <slot name="target" v-bind="{ open, togglePopover }" />
+        <slot name="target" v-bind="{ open: disabled ? undefined : open , togglePopover: disabled ? undefined : togglePopover, disabled}" />
       </template>
 
       <template #prefix>
@@ -80,6 +81,10 @@ const props = defineProps({
   doctype: {
     type: String,
     required: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
   filters: {
     type: [Array, Object, String],

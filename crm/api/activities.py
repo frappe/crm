@@ -15,6 +15,8 @@ def get_activities(name):
 		return get_deal_activities(name)
 	elif frappe.db.exists("CRM Lead", name):
 		return get_lead_activities(name)
+	elif frappe.db.exists("CRM Site Visit", name):
+		return get_visit_activities(name)
 	else:
 		frappe.throw(_("Document not found"), frappe.DoesNotExistError)
 
@@ -295,6 +297,137 @@ def get_lead_activities(name):
 
 	return activities, calls, notes, tasks, attachments
 
+def get_visit_activities(name):
+	get_docinfo("", "CRM Site Visit", name)
+	docinfo = frappe.response["docinfo"]
+	visit_meta = frappe.get_meta("CRM Site Visit")
+	visit_fields = {
+		field.fieldname: {"label": field.label, "options": field.options} for field in visit_meta.fields
+	}
+	avoid_fields = [
+		"check_in_location_accuracy",
+		"check_out_location_accuracy",
+		"visit_duration",
+		"location_accuracy",
+		"geocoded_address",
+		"follow_up_created",
+		"calendar_event",
+	]
+
+	doc = frappe.db.get_values("CRM Site Visit", name, ["creation", "owner"])[0]
+	activities = [
+		{
+			"activity_type": "creation",
+			"creation": doc[0],
+			"owner": doc[1],
+			"data": "created this visit",
+			"is_visit": True,
+		}
+	]
+
+	docinfo.versions.reverse()
+
+	for version in docinfo.versions:
+		data = json.loads(version.data)
+		if not data.get("changed"):
+			continue
+
+		if change := data.get("changed")[0]:
+			field = visit_fields.get(change[0], None)
+
+			if not field or change[0] in avoid_fields or (not change[1] and not change[2]):
+				continue
+
+			field_label = field.get("label") or change[0]
+			field_option = field.get("options") or None
+
+			activity_type = "changed"
+			data = {
+				"field": change[0],
+				"field_label": field_label,
+				"old_value": change[1],
+				"value": change[2],
+			}
+
+			if not change[1] and change[2]:
+				activity_type = "added"
+				data = {
+					"field": change[0],
+					"field_label": field_label,
+					"value": change[2],
+				}
+			elif change[1] and not change[2]:
+				activity_type = "removed"
+				data = {
+					"field": change[0],
+					"field_label": field_label,
+					"value": change[1],
+				}
+
+		activity = {
+			"activity_type": activity_type,
+			"creation": version.creation,
+			"owner": version.owner,
+			"data": data,
+			"is_visit": True,
+			"options": field_option,
+		}
+		activities.append(activity)
+
+	for comment in docinfo.comments:
+		activity = {
+			"name": comment.name,
+			"activity_type": "comment",
+			"creation": comment.creation,
+			"owner": comment.owner,
+			"content": comment.content,
+			"attachments": get_attachments("Comment", comment.name),
+			"is_visit": True,
+		}
+		activities.append(activity)
+
+	for communication in docinfo.communications + docinfo.automated_messages:
+		activity = {
+			"activity_type": "communication",
+			"communication_type": communication.communication_type,
+			"communication_date": communication.communication_date or communication.creation,
+			"creation": communication.creation,
+			"data": {
+				"subject": communication.subject,
+				"content": communication.content,
+				"sender_full_name": communication.sender_full_name,
+				"sender": communication.sender,
+				"recipients": communication.recipients,
+				"cc": communication.cc,
+				"bcc": communication.bcc,
+				"attachments": get_attachments("Communication", communication.name),
+				"read_by_recipient": communication.read_by_recipient,
+				"delivery_status": communication.delivery_status,
+			},
+			"is_visit": True,
+		}
+		activities.append(activity)
+
+	for attachment_log in docinfo.attachment_logs:
+		activity = {
+			"name": attachment_log.name,
+			"activity_type": "attachment_log",
+			"creation": attachment_log.creation,
+			"owner": attachment_log.owner,
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"is_visit": True,
+		}
+		activities.append(activity)
+
+	calls = get_linked_calls(name).get("calls", [])
+	notes = get_linked_notes(name) + get_linked_calls(name).get("notes", [])
+	tasks = get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
+	attachments = get_attachments("CRM Site Visit", name)
+
+	activities.sort(key=lambda x: x["creation"], reverse=True)
+	activities = handle_multiple_versions(activities)
+
+	return activities, calls, notes, tasks, attachments
 
 def get_attachments(doctype, name):
 	return (
