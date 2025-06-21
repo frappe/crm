@@ -13,7 +13,7 @@
     </div>
     <FormControl
       v-if="
-        field.read_only &&
+        (field.read_only || field.docstatus==1) &&
         !['Int', 'Float', 'Currency', 'Percent', 'Check'].includes(
           field.fieldtype,
         )
@@ -38,6 +38,7 @@
       class="form-control"
       :class="field.prefix ? 'prefix' : ''"
       :options="field.options"
+      :disabled="Boolean(field.read_only||data.docstatus==1)"
       v-model="data[field.fieldname]"
       @change="(e) => fieldChange(e.target.value, field)"
       :placeholder="getPlaceholder(field)"
@@ -53,7 +54,7 @@
         type="checkbox"
         v-model="data[field.fieldname]"
         @change="(e) => fieldChange(e.target.checked, field)"
-        :disabled="Boolean(field.read_only)"
+        :disabled="Boolean(field.read_only || data.docstatus==1)"
         :description="field.description"
       />
       <label
@@ -78,8 +79,9 @@
         class="form-control flex-1 truncate"
         :value="data[field.fieldname]"
         :doctype="
-          field.fieldtype == 'Link' ? field.options : data[field.options]
+          field.fieldtype === 'Link' ? field.options : data[field.options]
         "
+        :disabled="Boolean(field.read_only || data.docstatus===1)"
         :filters="field.filters"
         @change="(v) => fieldChange(v, field)"
         :placeholder="getPlaceholder(field)"
@@ -110,6 +112,7 @@
       :value="data[field.fieldname] && getUser(data[field.fieldname]).full_name"
       :doctype="field.options"
       :filters="field.filters"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       @change="(v) => fieldChange(v, field)"
       :placeholder="getPlaceholder(field)"
       :hideMe="true"
@@ -138,6 +141,7 @@
       :value="data[field.fieldname]"
       :formatter="(date) => getFormat(date, '', true, true)"
       :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
@@ -146,6 +150,7 @@
       :value="data[field.fieldname]"
       :formatter="(date) => getFormat(date, '', true)"
       :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
@@ -155,6 +160,7 @@
       "
       type="textarea"
       :value="data[field.fieldname]"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       :placeholder="getPlaceholder(field)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -163,6 +169,7 @@
       v-else-if="field.fieldtype === 'Password'"
       :value="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
@@ -171,7 +178,7 @@
       type="text"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname] || '0'"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
@@ -180,7 +187,7 @@
       type="text"
       :value="getFormattedPercent(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
@@ -189,7 +196,7 @@
       type="text"
       :value="getFormattedFloat(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
@@ -198,7 +205,7 @@
       type="text"
       :value="getFormattedCurrency(field.fieldname, data, parentDoc)"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
@@ -207,7 +214,7 @@
       type="text"
       :placeholder="getPlaceholder(field)"
       :value="getDataValue(data[field.fieldname], field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.read_only || data.docstatus===1)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />

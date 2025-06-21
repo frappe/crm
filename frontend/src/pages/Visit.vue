@@ -449,7 +449,7 @@ function openEmailBox() {
 function openLocation() {
   if (visit.data.latitude && visit.data.longitude) {
     const url = `https://www.google.com/maps?q=${visit.data.latitude},${visit.data.longitude}`
-    window.open(url, '_blank')
+    window.openWindow(url, '_blank')
   }
 }
 </script>

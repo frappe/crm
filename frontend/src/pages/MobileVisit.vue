@@ -1,8 +1,6 @@
 <template>
   <LayoutHeader v-if="visit.data">
-    <header
-      class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2"
-    >
+    <header class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2">
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">
           <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
@@ -16,10 +14,7 @@
                 <IndicatorIcon :class="getStatusColor(visit.data.status)" />
               </template>
               <template #suffix>
-                <FeatherIcon
-                  :name="open ? 'chevron-up' : 'chevron-down'"
-                  class="h-4"
-                />
+                <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4" />
               </template>
             </Button>
           </template>
@@ -27,35 +22,17 @@
       </div>
     </header>
   </LayoutHeader>
-  <div
-    v-if="visit.data"
-    class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
-  >
-    <AssignTo
-      v-model="visit.data._assignedTo"
-      :data="visit.data"
-      doctype="CRM Site Visit"
-    />
+  <div v-if="visit.data" class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5">
+    <AssignTo v-model="visit.data._assignedTo" :data="visit.data" doctype="CRM Site Visit" />
     <div class="flex items-center gap-2">
-      <CustomActions
-        v-if="visit.data._customActions?.length"
-        :actions="visit.data._customActions"
-      />
+      <CustomActions v-if="visit.data._customActions?.length" :actions="visit.data._customActions" />
       <!-- Check-in/Check-out buttons -->
-      <Button
-        v-if="visit.data.status === 'Planned' && isApp"
-        :label="__('Check In')"
-        variant="solid"
-        size="sm"
-        @click="checkIn"
-      />
-      <Button
-        v-else-if="visit.data.status === 'In Progress' && isApp"
-        :label="__('Check Out')"
-        variant="solid"
-        size="sm"
-        @click="checkOut"
-      />
+      <Button v-if="visit.data.status === 'Planned' && isApp" :label="__('Check In')" variant="solid" size="sm"
+        @click="checkIn" />
+      <Button v-else-if="visit.data.status === 'In Progress' && isApp" :label="__('Check Out')" variant="solid"
+        size="sm" @click="checkOut" />
+      <Button v-else-if="visit.data.status === 'Completed' && visit.data.docstatus == 0" :label="__('Submit')"
+        variant="solid" size="sm" @click="submit" />
     </div>
   </div>
   <div v-if="visit.data" class="flex h-full overflow-hidden">
@@ -69,23 +46,15 @@
             <div class="bg-gray-50 rounded-lg p-3">
               <h3 class="text-sm font-medium text-gray-700 mb-2">{{ __('Quick Actions') }}</h3>
               <div class="grid grid-cols-2 gap-2">
-                <Button
-                  v-if="visit.data.contact_phone"
-                  size="sm"
-                  variant="outline"
-                  @click="makeCall(visit.data.contact_phone)"
-                >
+                <Button v-if="visit.data.contact_phone" size="sm" variant="outline"
+                  @click="makeCall(visit.data.contact_phone)">
                   <template #prefix>
                     <PhoneIcon class="h-4 w-4" />
                   </template>
                   {{ __('Call') }}
                 </Button>
-                <Button
-                  v-if="visit.data.latitude && visit.data.longitude"
-                  size="sm"
-                  variant="outline"
-                  @click="openLocation"
-                >
+                <Button v-if="(visit.data.latitude && visit.data.longitude) || (visit.data.visit_address)" size="sm" variant="outline"
+                  @click="openLocation">
                   <template #prefix>
                     <LinkIcon class="h-4 w-4" />
                   </template>
@@ -98,10 +67,7 @@
             <div class="bg-white border rounded-lg p-3">
               <div class="flex items-center justify-between mb-2">
                 <h3 class="text-sm font-medium text-gray-700">{{ __('Visit Status') }}</h3>
-                <span 
-                  class="px-2 py-1 text-xs rounded-full"
-                  :class="getStatusBadgeClass(visit.data.status)"
-                >
+                <span class="px-2 py-1 text-xs rounded-full" :class="getStatusBadgeClass(visit.data.status)">
                   {{ visit.data.status || 'Planned' }}
                 </span>
               </div>
@@ -121,28 +87,15 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Standard side panel layout -->
-          <div
-            v-if="sections.data"
-            class="flex flex-1 flex-col justify-between overflow-hidden"
-          >
-            <SidePanelLayout
-              :sections="sections.data"
-              doctype="CRM Site Visit"
-              :docname="visit.data.name"
-              @reload="sections.reload"
-            />
+          <div v-if="sections.data" class="flex flex-1 flex-col justify-between overflow-hidden">
+            <SidePanelLayout :sections="sections.data" doctype="CRM Site Visit" :docname="visit.data.name"
+              @reload="sections.reload" />
           </div>
         </div>
-        <Activities
-          v-else
-          doctype="CRM Site Visit"
-          :tabs="tabs"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
-          v-model="visit"
-        />
+        <Activities v-else doctype="CRM Site Visit" :tabs="tabs" v-model:reload="reload" v-model:tabIndex="tabIndex"
+          v-model="visit" />
       </TabPanel>
     </Tabs>
   </div>
@@ -202,7 +155,7 @@ const props = defineProps({
 })
 
 const visit = createResource({
-  url: 'crm.fcrm.doctype.crm_deal.api.get_visit',
+  url: 'crm.fcrm.doctype.crm_site_visit.api.get_visit',
   params: { name: props.visitId },
   cache: ['visit', props.visitId],
   auto: true,
@@ -427,12 +380,18 @@ function formatDateTime(dateTime) {
 function openLocation() {
   if (visit.data.latitude && visit.data.longitude) {
     const url = `https://www.google.com/maps?q=${visit.data.latitude},${visit.data.longitude}`
-    window.open(url, '_blank')
+    window.openWindow(url, '_blank')
+  } else if (visit.data.visit_address) {
+    const address = encodeURIComponent(visit.data.visit_address)
+    const url = `https://www.google.com/maps/search/?api=1&query=${address}`
+    window.openWindow(url, '_blank')
+  } else {
+    toast.error(__('No location available for this visit.'))
   }
 }
 
 // Mobile-optimized check-in/check-out functions
-async function checkIn() {  
+async function checkIn() {
   try {
     if (window.isApp && typeof nativeInterface !== 'undefined' && nativeInterface.execute) {
       // Call native interface to get location
@@ -452,22 +411,20 @@ async function checkIn() {
       });
       visit.reload()
       toast.success(__('Checked in successfully!'))
-      // For debugging purposes
-      alert(JSON.stringify(location,null,2));
     }
     // // Get current location
     // else if (navigator.geolocation) {
     //   navigator.geolocation.getCurrentPosition(
     //     async (position) => {
     //       const { latitude, longitude, accuracy } = position.coords
-          
+
     //       await call('crm.api.site_visit.quick_checkin', {
     //         visit_id: props.visitId,
     //         latitude,
     //         longitude,
     //         accuracy,
     //       })
-          
+
     //       visit.reload()
     //       toast.success(__('Checked in successfully!'))
     //     },
@@ -483,7 +440,7 @@ async function checkIn() {
     //   )
     // } 
     else {
-      
+
       toast.error(__('Geolocation is not supported by this device.'))
     }
   } catch (error) {
@@ -503,7 +460,7 @@ async function checkOut() {
       if (mocked) {
         toast.error(__('Location appears to be mocked. Please disable mock location services.'));
       }
-      
+
       await call('crm.api.site_visit.quick_checkout', {
         visit_id: props.visitId,
         latitude,
@@ -511,25 +468,23 @@ async function checkOut() {
         visit_summary: '', // Could add a quick summary modal
         lead_quality: '', // Placeholder for lead quality
       });
-      
+
       visit.reload()
       toast.success(__('Checked out successfully!'))
-      // For debugging purposes
-      alert(JSON.stringify(location,null,2));
     }
     // // Get current location
     // if (navigator.geolocation) {
     //   navigator.geolocation.getCurrentPosition(
     //     async (position) => {
     //       const { latitude, longitude } = position.coords
-          
+
     //       await call('crm.api.site_visit.quick_checkout', {
     //         visit_id: props.visitId,
     //         latitude,
     //         longitude,
     //         visit_summary: '', // Could add a quick summary modal
     //       })
-          
+
     //       visit.reload()
     //       toast.success(__('Checked out successfully!'))
     //     },
@@ -548,6 +503,16 @@ async function checkOut() {
     }
   } catch (error) {
     toast.error(__('Check-out failed: {0}', [error.message]))
+  }
+}
+
+async function submit() {
+  try {
+    await call('crm.fcrm.doctype.crm_site_visit.crm_site_visit.submit_visit', {visit_id: props.visitId})
+    visit.reload()
+    toast.success(__('Visit submitted successfully!'))
+  } catch (error) {
+    toast.error(__('Failed to submit visit: {0}', [error.message]))
   }
 }
 </script>
