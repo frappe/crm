@@ -98,15 +98,11 @@ def accept_invitation(key: str | None = None):
 
 @frappe.whitelist()
 def invite_by_email(emails: str, role: str):
-<<<<<<< HEAD
-	frappe.only_for("Sales Manager")
-=======
 	frappe.only_for(["Sales Manager", "System Manager"])
 
 	if role not in ["System Manager", "Sales Manager", "Sales User"]:
 		frappe.throw("Cannot invite for this role")
 
->>>>>>> 03abe0b5 (fix: create crm user on accepting invite)
 	if not emails:
 		return
 	email_string = validate_email_address(emails, throw=False)
