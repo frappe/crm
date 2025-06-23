@@ -105,7 +105,7 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  @click="deleteContact"
+                  @click="deleteContact()"
                 >
                   <template #prefix>
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
@@ -171,6 +171,13 @@
     v-else-if="errorTitle"
     :errorTitle="errorTitle"
     :errorMessage="errorMessage"
+  />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'Contact'"
+    :docname="contact.data.name"
+    name="Contacts"
   />
 </template>
 
@@ -293,6 +300,11 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
+const showDeleteLinkedDocModal = ref(false)
+
+async function deleteContact() {
+  showDeleteLinkedDocModal.value = true
+}
 
 async function changeContactImage(file) {
   await call('frappe.client.set_value', {
@@ -302,28 +314,6 @@ async function changeContactImage(file) {
     value: file?.file_url || '',
   })
   contact.reload()
-}
-
-async function deleteContact() {
-  $dialog({
-    title: __('Delete contact'),
-    message: __('Are you sure you want to delete this contact?'),
-    actions: [
-      {
-        label: __('Delete'),
-        theme: 'red',
-        variant: 'solid',
-        async onClick(close) {
-          await call('frappe.client.delete', {
-            doctype: 'Contact',
-            name: props.contactId,
-          })
-          close()
-          router.push({ name: 'Contacts' })
-        },
-      },
-    ],
-  })
 }
 
 const tabIndex = ref(0)
