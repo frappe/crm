@@ -4,7 +4,7 @@ import frappe
 @frappe.whitelist()
 def add_existing_users(users, role="Sales User"):
 	"""
-	Add existing users to the CRM User doctype.
+	Add existing users to the CRM by assigning them a role (Sales User or Sales Manager).
 	:param users: List of user names to be added
 	"""
 	frappe.only_for(["System Manager", "Sales Manager"])

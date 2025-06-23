@@ -101,7 +101,7 @@
   </div>
 </template>
 <script setup>
-import ChangePasswordModal from '@/components/Settings/ChangePasswordModal.vue'
+import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import { usersStore } from '@/stores/users'
 import { validateIsImageFile } from '@/utils'

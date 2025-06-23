@@ -529,7 +529,7 @@ const articles = ref([
       { name: 'profile', title: __('Profile') },
       { name: 'custom-branding', title: __('Custom branding') },
       { name: 'home-actions', title: __('Home actions') },
-      { name: 'invite-agent', title: __('Invite agent') },
+      { name: 'invite-users', title: __('Invite users') },
     ],
   },
   {
