@@ -48,11 +48,7 @@
 
     <!-- Empty State -->
     <div
-      v-if="
-        !users.loading &&
-        users.data?.crmUsers?.length === 1 &&
-        users.data?.crmUsers[0].name == 'Administrator'
-      "
+      v-if="!users.loading && users.data?.crmUsers?.length == 1"
       class="flex justify-between w-full h-full"
     >
       <div
@@ -63,63 +59,82 @@
     </div>
 
     <!-- Users List -->
-    <ul
-      v-if="!users.loading && Boolean(users.data?.crmUsers?.length)"
-      class="divide-y divide-outline-gray-modals overflow-auto"
-    >
-      <template v-for="user in users.data?.crmUsers" :key="user.name">
-        <li
-          v-if="user.name !== 'Administrator'"
-          class="flex items-center justify-between py-2"
+    <div v-if="!users.loading && users.data?.crmUsers?.length > 1">
+      <div class="flex items-center justify-between mb-4">
+        <TextInput
+          ref="searchRef"
+          v-model="search"
+          :placeholder="__('Search user')"
+          class="w-1/3"
+          :debounce="300"
         >
-          <div class="flex items-center">
-            <Avatar
-              :image="user.user_image"
-              :label="user.full_name"
-              size="xl"
-            />
-            <div class="flex flex-col gap-1 ml-3">
-              <div class="flex items-center text-base text-ink-gray-8 h-4">
-                {{ user.full_name }}
-              </div>
-              <div class="text-base text-ink-gray-5">
-                {{ user.name }}
-              </div>
-            </div>
-          </div>
-          <div class="flex gap-2 items-center flex-row-reverse">
-            <Dropdown
-              :options="getMoreOptions(user)"
-              :button="{
-                icon: 'more-horizontal',
-              }"
-              placement="right"
-            />
-            <Dropdown
-              :options="getDropdownOptions(user)"
-              :button="{
-                label: roleMap[getUserRole(user.name)],
-                iconRight: 'chevron-down',
-              }"
-              placement="right"
-            />
-          </div>
-        </li>
-      </template>
-      <!-- Load More Button -->
-      <div
-        v-if="!users.loading && users.hasNextPage"
-        class="flex justify-center"
-      >
-        <Button
-          class="mt-3.5 p-2"
-          @click="() => users.next()"
-          :loading="users.loading"
-          :label="__('Load More')"
-          icon-left="refresh-cw"
+          <template #prefix>
+            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
+          </template>
+        </TextInput>
+        <FormControl
+          type="select"
+          v-model="currentRole"
+          :options="[
+            { label: __('All'), value: 'All' },
+            { label: __('Admin'), value: 'System Manager' },
+            { label: __('Manager'), value: 'Sales Manager' },
+            { label: __('Sales User'), value: 'Sales User' },
+          ]"
         />
       </div>
-    </ul>
+      <ul class="divide-y divide-outline-gray-modals overflow-auto">
+        <template v-for="user in usersList" :key="user.name">
+          <li class="flex items-center justify-between py-2">
+            <div class="flex items-center">
+              <Avatar
+                :image="user.user_image"
+                :label="user.full_name"
+                size="xl"
+              />
+              <div class="flex flex-col gap-1 ml-3">
+                <div class="flex items-center text-base text-ink-gray-8 h-4">
+                  {{ user.full_name }}
+                </div>
+                <div class="text-base text-ink-gray-5">
+                  {{ user.name }}
+                </div>
+              </div>
+            </div>
+            <div class="flex gap-2 items-center flex-row-reverse">
+              <Dropdown
+                :options="getMoreOptions(user)"
+                :button="{
+                  icon: 'more-horizontal',
+                }"
+                placement="right"
+              />
+              <Dropdown
+                :options="getDropdownOptions(user)"
+                :button="{
+                  label: roleMap[user.role],
+                  iconRight: 'chevron-down',
+                }"
+                placement="right"
+              />
+            </div>
+          </li>
+        </template>
+        <!-- Load More Button -->
+        <div
+          v-if="!users.loading && users.hasNextPage"
+          class="flex justify-center"
+        >
+          <Button
+            class="mt-3.5 p-2"
+            @click="() => users.next()"
+            :loading="users.loading"
+            :label="__('Load More')"
+            icon-left="refresh-cw"
+          />
+        </div>
+      </ul>
+    </div>
   </div>
   <AddExistingUserModal
     v-if="showAddExistingModal"
@@ -132,18 +147,37 @@ import LucideCheck from '~icons/lucide/check'
 import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
-import { Avatar, toast, call } from 'frappe-ui'
-import { ref, h } from 'vue'
+import { Avatar, TextInput, toast, call } from 'frappe-ui'
+import { ref, computed, h, onMounted } from 'vue'
 
 const { users, getUserRole, isAdmin, isManager } = usersStore()
 
 const showAddExistingModal = ref(false)
+const searchRef = ref(null)
+const search = ref('')
+const currentRole = ref('All')
 
 const roleMap = {
   'System Manager': __('Admin'),
   'Sales Manager': __('Manager'),
   'Sales User': __('Sales User'),
 }
+
+const usersList = computed(() => {
+  let filteredUsers =
+    users.data?.crmUsers?.filter((user) => user.name !== 'Administrator') || []
+
+  return filteredUsers
+    .filter(
+      (user) =>
+        user.name?.includes(search.value) ||
+        user.full_name?.includes(search.value),
+    )
+    .filter((user) => {
+      if (currentRole.value === 'All') return true
+      return user.role === currentRole.value
+    })
+})
 
 function getMoreOptions(user) {
   let options = [
@@ -158,7 +192,6 @@ function getMoreOptions(user) {
 }
 
 function getDropdownOptions(user) {
-  const userRole = getUserRole(user.name)
   let options = [
     {
       label: __('Admin'),
@@ -166,7 +199,7 @@ function getDropdownOptions(user) {
         RoleOption({
           role: __('Admin'),
           active: props.active,
-          selected: userRole === 'System Manager',
+          selected: user.role === 'System Manager',
           onClick: () => updateRole(user, 'System Manager'),
         }),
       condition: () => isAdmin(),
@@ -177,7 +210,7 @@ function getDropdownOptions(user) {
         RoleOption({
           role: __('Manager'),
           active: props.active,
-          selected: userRole === 'Sales Manager',
+          selected: user.role === 'Sales Manager',
           onClick: () => updateRole(user, 'Sales Manager'),
         }),
       condition: () => isManager(),
@@ -188,7 +221,7 @@ function getDropdownOptions(user) {
         RoleOption({
           role: __('Sales User'),
           active: props.active,
-          selected: userRole === 'Sales User',
+          selected: user.role === 'Sales User',
           onClick: () => updateRole(user, 'Sales User'),
         }),
     },
@@ -241,4 +274,10 @@ function removeUser(user) {
     users.reload()
   })
 }
+
+onMounted(() => {
+  if (searchRef.value) {
+    searchRef.value.el.focus()
+  }
+})
 </script>
