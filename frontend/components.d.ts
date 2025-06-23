@@ -154,30 +154,9 @@ declare module 'vue' {
     ListIcon: typeof import('./src/components/Icons/ListIcon.vue')['default']
     ListRows: typeof import('./src/components/ListViews/ListRows.vue')['default']
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    LucideInfo: typeof import('~icons/lucide/info')['default']
->>>>>>> fad7c598 (refactor: profile page)
-    LucidePlus: typeof import('~icons/lucide/plus')['default']
-=======
->>>>>>> dd122930 (fix: updated components.d.ts)
-=======
-=======
-    LucideCalendar: typeof import('~icons/lucide/calendar')['default']
->>>>>>> efd03141 (chore: resolved conflict)
     LucideInfo: typeof import('~icons/lucide/info')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
     LucideSearch: typeof import('~icons/lucide/search')['default']
->>>>>>> 56425254 (fix: updated components.d.ts)
-=======
-    LucideInfo: typeof import('~icons/lucide/info')['default']
-    LucidePlus: typeof import('~icons/lucide/plus')['default']
-    LucideSearch: typeof import('~icons/lucide/search')['default']
->>>>>>> 4c7269e3 (fix: updated components.d.ts)
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
     MenuIcon: typeof import('./src/components/Icons/MenuIcon.vue')['default']
