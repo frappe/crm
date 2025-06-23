@@ -15,15 +15,19 @@
               class="w-7"
               @click="openQuickEntryModal"
             >
-              <EditIcon class="h-4 w-4" />
+              <template #icon>
+                <EditIcon />
+              </template>
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
+              <template #icon>
+                <FeatherIcon name="x" class="size-4" />
+              </template>
             </Button>
           </div>
         </div>
         <div>
-          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead" />
+          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
@@ -48,10 +52,12 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
-import { computed, onMounted, ref, reactive, nextTick } from 'vue'
+import { useDocument } from '@/data/document'
+import { computed, onMounted, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -68,6 +74,16 @@ const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
 
+const { document: lead, triggerOnChange } = useDocument('CRM Lead')
+
+const leadStatuses = computed(() => {
+  let statuses = statusOptions('lead', null, [], triggerOnChange)
+  if (!lead.doc.status) {
+    lead.doc.status = statuses?.[0]?.value
+  }
+  return statuses
+})
+
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['QuickEntry', 'CRM Lead'],
@@ -81,34 +97,17 @@ const tabs = createResource({
             if (field.fieldname == 'status') {
               field.fieldtype = 'Select'
               field.options = leadStatuses.value
-              field.prefix = getLeadStatus(lead.status).color
+              field.prefix = getLeadStatus(lead.doc.status).color
             }
 
             if (field.fieldtype === 'Table') {
-              lead[field.fieldname] = []
+              lead.doc[field.fieldname] = []
             }
           })
         })
       })
     })
   },
-})
-
-const lead = reactive({
-  salutation: '',
-  first_name: '',
-  last_name: '',
-  email: '',
-  mobile_no: '',
-  gender: '',
-  organization: '',
-  website: '',
-  no_of_employees: '',
-  territory: '',
-  annual_revenue: '',
-  industry: '',
-  status: '',
-  lead_owner: '',
 })
 
 const createLead = createResource({
@@ -123,43 +122,38 @@ const createLead = createResource({
   },
 })
 
-const leadStatuses = computed(() => {
-  let statuses = statusOptions('lead')
-  if (!lead.status) {
-    lead.status = statuses?.[0]?.value
-  }
-  return statuses
-})
-
 function createNewLead() {
-  if (lead.website && !lead.website.startsWith('http')) {
-    lead.website = 'https://' + lead.website
+  if (lead.doc.website && !lead.doc.website.startsWith('http')) {
+    lead.doc.website = 'https://' + lead.doc.website
   }
 
-  createLead.submit(lead, {
+  createLead.submit(lead.doc, {
     validate() {
       error.value = null
-      if (!lead.first_name) {
+      if (!lead.doc.first_name) {
         error.value = __('First Name is mandatory')
         return error.value
       }
-      if (lead.annual_revenue) {
-        if (typeof lead.annual_revenue === 'string') {
-          lead.annual_revenue = lead.annual_revenue.replace(/,/g, '')
-        } else if (isNaN(lead.annual_revenue)) {
+      if (lead.doc.annual_revenue) {
+        if (typeof lead.doc.annual_revenue === 'string') {
+          lead.doc.annual_revenue = lead.doc.annual_revenue.replace(/,/g, '')
+        } else if (isNaN(lead.doc.annual_revenue)) {
           error.value = __('Annual Revenue should be a number')
           return error.value
         }
       }
-      if (lead.mobile_no && isNaN(lead.mobile_no.replace(/[-+() ]/g, ''))) {
+      if (
+        lead.doc.mobile_no &&
+        isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))
+      ) {
         error.value = __('Mobile No should be a number')
         return error.value
       }
-      if (lead.email && !lead.email.includes('@')) {
+      if (lead.doc.email && !lead.doc.email.includes('@')) {
         error.value = __('Invalid Email')
         return error.value
       }
-      if (!lead.status) {
+      if (!lead.doc.status) {
         error.value = __('Status is required')
         return error.value
       }
@@ -185,22 +179,21 @@ function createNewLead() {
   })
 }
 
-const showQuickEntryModal = defineModel('quickEntry')
-
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
-  nextTick(() => {
-    show.value = false
-  })
+  quickEntryProps.value = { doctype: 'CRM Lead' }
+  nextTick(() => (show.value = false))
 }
 
 onMounted(() => {
-  Object.assign(lead, props.defaults)
-  if (!lead.lead_owner) {
-    lead.lead_owner = getUser().name
+  lead.doc = { no_of_employees: '1-10' }
+  Object.assign(lead.doc, props.defaults)
+
+  if (!lead.doc?.lead_owner) {
+    lead.doc.lead_owner = getUser().name
   }
-  if (!lead.status && leadStatuses.value[0]?.value) {
-    lead.status = leadStatuses.value[0].value
+  if (!lead.doc?.status && leadStatuses.value[0]?.value) {
+    lead.doc.status = leadStatuses.value[0].value
   }
 })
 </script>

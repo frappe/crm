@@ -15,10 +15,14 @@
               class="w-7"
               @click="openQuickEntryModal"
             >
-              <EditIcon class="h-4 w-4" />
+              <template #icon>
+                <EditIcon />
+              </template>
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
+              <template #icon>
+                <FeatherIcon name="x" class="size-4" />
+              </template>
             </Button>
           </div>
         </div>
@@ -48,6 +52,7 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { FeatherIcon, createResource, ErrorMessage, call } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 
@@ -62,7 +67,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['showQuickEntryModal', 'callback'])
+const emit = defineEmits(['callback'])
 
 const { isManager } = usersStore()
 
@@ -139,9 +144,8 @@ watch(
 )
 
 function openQuickEntryModal() {
-  emit('showQuickEntryModal', props.doctype)
-  nextTick(() => {
-    show.value = false
-  })
+  showQuickEntryModal.value = true
+  quickEntryProps.value = { doctype: props.doctype }
+  nextTick(() => (show.value = false))
 }
 </script>

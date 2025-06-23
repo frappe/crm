@@ -63,17 +63,10 @@
     </div>
   </div>
   <ContactModal
+    v-if="showContactModal"
     v-model="showContactModal"
-    v-model:showQuickEntryModal="showQuickEntryModal"
     :contact="{}"
-    @openAddressModal="(_address) => openAddressModal(_address)"
   />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Contact"
-  />
-  <AddressModal v-model="showAddressModal" v-model:address="address" />
 </template>
 
 <script setup>
@@ -82,14 +75,11 @@ import CustomActions from '@/components/CustomActions.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
 import { organizationsStore } from '@/stores/organizations.js'
 import { formatDate, timeAgo } from '@/utils'
-import { call } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
@@ -97,14 +87,11 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { getOrganization } = organizationsStore()
 
 const showContactModal = ref(false)
-const showQuickEntryModal = ref(false)
-const showAddressModal = ref(false)
 
 const contactsListView = ref(null)
 
 // contacts data is loaded in the ViewControls component
 const contacts = ref({})
-const address = ref({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
@@ -166,15 +153,4 @@ const rows = computed(() => {
     return _rows
   })
 })
-
-async function openAddressModal(_address) {
-  if (_address) {
-    _address = await call('frappe.client.get', {
-      doctype: 'Address',
-      name: _address,
-    })
-  }
-  showAddressModal.value = true
-  address.value = _address || {}
-}
 </script>

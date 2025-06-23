@@ -10,14 +10,22 @@
       </Breadcrumbs>
       <div class="absolute right-0">
         <Dropdown
+          v-if="document.doc"
           :options="
-            statusOptions('deal', updateField, deal.data._customStatuses)
+            statusOptions(
+              'deal',
+              document,
+              deal.data._customStatuses,
+              triggerOnChange,
+            )
           "
         >
           <template #default="{ open }">
-            <Button :label="deal.data.status">
+            <Button :label="document.doc.status">
               <template #prefix>
-                <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
+                <IndicatorIcon
+                  :class="getDealStatus(document.doc.status).color"
+                />
               </template>
               <template #suffix>
                 <FeatherIcon
@@ -36,14 +44,18 @@
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
     <AssignTo
-      v-model="deal.data._assignedTo"
-      :data="deal.data"
+      v-model="assignees.data"
+      :data="document.doc"
       doctype="CRM Deal"
     />
     <div class="flex items-center gap-2">
       <CustomActions
         v-if="deal.data._customActions?.length"
         :actions="deal.data._customActions"
+      />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
       />
     </div>
   </div>
@@ -66,6 +78,7 @@
               doctype="CRM Deal"
               :docname="deal.data.name"
               @reload="sections.reload"
+              @afterFieldChange="reloadAssignees"
             >
               <template #actions="{ section }">
                 <div v-if="section.name == 'contacts_section'" class="pr-2">
@@ -214,14 +227,16 @@
     </Tabs>
   </div>
   <OrganizationModal
+    v-if="showOrganizationModal"
     v-model="showOrganizationModal"
-    v-model:organization="_organization"
+    :data="_organization"
     :options="{
       redirect: false,
       afterInsert: (doc) => updateField('organization', doc.name),
     }"
   />
   <ContactModal
+    v-if="showContactModal"
     v-model="showContactModal"
     :contact="_contact"
     :options="{
@@ -256,12 +271,13 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { setupAssignees, setupCustomizations } from '@/utils'
+import { setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
+import { useDocument } from '@/data/document'
 import {
   whatsappEnabled,
   callEnabled,
@@ -309,7 +325,6 @@ const deal = createResource({
       organization.fetch()
     }
 
-    setupAssignees(deal)
     setupCustomizations(deal, {
       doc: data,
       $dialog,
@@ -602,5 +617,16 @@ async function deleteDeal(name) {
     name,
   })
   router.push({ name: 'Deals' })
+}
+
+const { assignees, document, triggerOnChange } = useDocument(
+  'CRM Deal',
+  props.dealId,
+)
+
+function reloadAssignees(data) {
+  if (data?.hasOwnProperty('deal_owner')) {
+    assignees.reload()
+  }
 }
 </script>

@@ -15,17 +15,21 @@
               class="w-7"
               @click="openQuickEntryModal"
             >
-              <EditIcon class="h-4 w-4" />
+              <template #icon>
+                <EditIcon />
+              </template>
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
+              <template #icon>
+                <FeatherIcon name="x" class="size-4" />
+              </template>
             </Button>
           </div>
         </div>
         <FieldLayout
           v-if="tabs.data?.length"
           :tabs="tabs.data"
-          :data="_contact"
+          :data="_contact.doc"
           doctype="Contact"
         />
       </div>
@@ -49,9 +53,16 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import {
+  showQuickEntryModal,
+  quickEntryProps,
+  showAddressModal,
+  addressProps,
+} from '@/composables/modals'
+import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { call, createResource } from 'frappe-ui'
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -68,8 +79,6 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['openAddressModal'])
-
 const { isManager } = usersStore()
 
 const router = useRouter()
@@ -77,23 +86,23 @@ const show = defineModel()
 
 const loading = ref(false)
 
-let _contact = ref({})
+const { document: _contact } = useDocument('Contact')
 
 async function createContact() {
-  if (_contact.value.email_id) {
-    _contact.value.email_ids = [{ email_id: _contact.value.email_id }]
-    delete _contact.value.email_id
+  if (_contact.doc.email_id) {
+    _contact.doc.email_ids = [{ email_id: _contact.doc.email_id }]
+    delete _contact.doc.email_id
   }
 
-  if (_contact.value.mobile_no) {
-    _contact.value.phone_nos = [{ phone: _contact.value.mobile_no }]
-    delete _contact.value.mobile_no
+  if (_contact.doc.mobile_no) {
+    _contact.doc.phone_nos = [{ phone: _contact.doc.mobile_no }]
+    delete _contact.doc.mobile_no
   }
 
   const doc = await call('frappe.client.insert', {
     doc: {
       doctype: 'Contact',
-      ..._contact.value,
+      ..._contact.doc,
     },
   })
   if (doc.name) {
@@ -130,17 +139,13 @@ const tabs = createResource({
               field.read_only = false
             } else if (field.fieldname == 'address') {
               field.create = (value, close) => {
-                _contact.value.address = value
-                emit('openAddressModal')
-                show.value = false
+                _contact.doc.address = value
+                openAddressModal()
                 close()
               }
-              field.edit = (address) => {
-                emit('openAddressModal', address)
-                show.value = false
-              }
+              field.edit = (address) => openAddressModal(address)
             } else if (field.fieldtype === 'Table') {
-              _contact.value[field.fieldname] = []
+              _contact.doc[field.fieldname] = []
             }
           })
         })
@@ -149,20 +154,23 @@ const tabs = createResource({
   },
 })
 
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    nextTick(() => {
-      _contact.value = { ...props.contact.data }
-    })
-  },
-)
-
-const showQuickEntryModal = defineModel('showQuickEntryModal')
+onMounted(() => {
+  _contact.doc = {}
+  Object.assign(_contact.doc, props.contact.data || props.contact)
+})
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
+  quickEntryProps.value = { doctype: 'Contact' }
+  nextTick(() => (show.value = false))
+}
+
+function openAddressModal(_address) {
+  showAddressModal.value = true
+  addressProps.value = {
+    doctype: 'Address',
+    address: _address,
+  }
   nextTick(() => (show.value = false))
 }
 </script>

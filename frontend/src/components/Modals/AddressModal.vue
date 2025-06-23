@@ -15,15 +15,23 @@
               class="w-7"
               @click="openQuickEntryModal"
             >
-              <EditIcon class="h-4 w-4" />
+              <template #icon>
+                <EditIcon />
+              </template>
             </Button>
             <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
+              <template #icon>
+                <FeatherIcon name="x" class="size-4" />
+              </template>
             </Button>
           </div>
         </div>
-        <div v-if="tabs.data">
-          <FieldLayout :tabs="tabs.data" :data="_address" doctype="Address" />
+        <div v-if="tabs.data && _address.doc">
+          <FieldLayout
+            :tabs="tabs.data"
+            :data="_address.doc"
+            doctype="Address"
+          />
           <ErrorMessage class="mt-2" :message="error" />
         </div>
       </div>
@@ -41,24 +49,24 @@
       </div>
     </template>
   </Dialog>
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Address"
-  />
 </template>
 
 <script setup>
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
+import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
-import { ref, nextTick, watch, computed } from 'vue'
+import { ref, nextTick, computed, onMounted } from 'vue'
 
 const props = defineProps({
+  address: {
+    type: String,
+    default: '',
+  },
   options: {
     type: Object,
     default: {
@@ -70,30 +78,18 @@ const props = defineProps({
 const { isManager } = usersStore()
 
 const show = defineModel()
-const address = defineModel('address')
 
 const loading = ref(false)
 const error = ref(null)
 const title = ref(null)
 const editMode = ref(false)
 
-let _address = ref({
-  name: '',
-  address_title: '',
-  address_type: 'Billing',
-  address_line1: '',
-  address_line2: '',
-  city: '',
-  county: '',
-  state: '',
-  country: '',
-  pincode: '',
-})
+const { document: _address } = useDocument('Address', props.address || '')
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
     ? __('New Address')
-    : __(_address.value.address_title)
+    : __(_address.doc?.address_title)
   let size = 'xl'
   let actions = [
     {
@@ -114,42 +110,28 @@ const tabs = createResource({
   auto: true,
 })
 
-let doc = ref({})
-
-function updateAddress() {
-  error.value = null
-  const old = { ...doc.value }
-  const newAddress = { ..._address.value }
-
-  const dirty = JSON.stringify(old) !== JSON.stringify(newAddress)
-  const values = newAddress
-
-  if (!dirty) {
-    show.value = false
-    return
-  }
-
-  loading.value = true
-  updateAddressValues.submit({
-    doctype: 'Address',
-    name: _address.value.name,
-    fieldname: values,
-  })
-}
-
-const updateAddressValues = createResource({
-  url: 'frappe.client.set_value',
-  onSuccess(doc) {
+const callBacks = {
+  onSuccess: (doc) => {
     loading.value = false
-    if (doc.name) {
-      handleAddressUpdate(doc)
-    }
+    handleAddressUpdate(doc)
   },
-  onError(err) {
+  onError: (err) => {
     loading.value = false
+    if (err.exc_type == 'MandatoryError') {
+      const errorMessage = err.messages
+        .map((msg) => msg.split(': ')[2].trim())
+        .join(', ')
+      error.value = __('These fields are required: {0}', [errorMessage])
+      return
+    }
     error.value = err
   },
-})
+}
+
+async function updateAddress() {
+  loading.value = true
+  await _address.save.submit(null, callBacks)
+}
 
 const createAddress = createResource({
   url: 'frappe.client.insert',
@@ -157,7 +139,7 @@ const createAddress = createResource({
     return {
       doc: {
         doctype: 'Address',
-        ..._address.value,
+        ..._address.doc,
       },
     }
   },
@@ -179,27 +161,17 @@ function handleAddressUpdate(doc) {
   props.options.afterInsert && props.options.afterInsert(doc)
 }
 
-watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    editMode.value = false
-    nextTick(() => {
-      // TODO: Issue with FormControl
-      // title.value.el.focus()
-      doc.value = address.value?.doc || address.value || {}
-      _address.value = { ...doc.value }
-      if (_address.value.name) {
-        editMode.value = true
-      }
-    })
-  },
-)
+onMounted(() => {
+  editMode.value = props.address ? true : false
 
-const showQuickEntryModal = ref(false)
+  if (!props.address) {
+    _address.doc = { address_type: 'Billing' }
+  }
+})
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
+  quickEntryProps.value = { doctype: 'Address' }
   nextTick(() => {
     show.value = false
   })

@@ -13,7 +13,7 @@
   <div v-if="organization.doc" class="flex flex-col h-full overflow-hidden">
     <FileUploader
       @success="changeOrganizationImage"
-      :validateFile="validateFile"
+      :validateFile="validateIsImageFile"
     >
       <template #default="{ openFileSelector, error }">
         <div class="flex flex-col items-start justify-start gap-4 p-4">
@@ -145,27 +145,26 @@
       </TabPanel>
     </Tabs>
   </div>
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import { showAddressModal, addressProps } from '@/composables/modals'
 import { getSettings } from '@/stores/settings'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate, timeAgo, validateIsImageFile } from '@/utils'
 import {
   Breadcrumbs,
   Avatar,
@@ -252,13 +251,6 @@ usePageMeta(() => {
   }
 })
 
-function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return __('Only PNG and JPG images are allowed')
-  }
-}
-
 async function changeOrganizationImage(file) {
   await call('frappe.client.set_value', {
     doctype: 'CRM Organization',
@@ -296,9 +288,7 @@ function openWebsite() {
   else window.open(organization.doc.website, '_blank')
 }
 
-const showAddressModal = ref(false)
 const _organization = ref({})
-const _address = ref({})
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
@@ -317,17 +307,10 @@ function getParsedSections(_sections) {
             ...field,
             create: (value, close) => {
               _organization.value.address = value
-              _address.value = {}
-              showAddressModal.value = true
+              openAddressModal()
               close()
             },
-            edit: async (addr) => {
-              _address.value = await call('frappe.client.get', {
-                doctype: 'Address',
-                name: addr,
-              })
-              showAddressModal.value = true
-            },
+            edit: (address) => openAddressModal(address),
           }
         } else {
           return field
@@ -533,4 +516,12 @@ const contactColumns = [
     width: '8rem',
   },
 ]
+
+function openAddressModal(_address) {
+  showAddressModal.value = true
+  addressProps.value = {
+    doctype: 'Address',
+    address: _address,
+  }
+}
 </script>

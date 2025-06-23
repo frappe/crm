@@ -11,7 +11,7 @@
     </header>
   </LayoutHeader>
   <div v-if="contact.data" class="flex flex-col h-full overflow-hidden">
-    <FileUploader @success="changeContactImage" :validateFile="validateFile">
+    <FileUploader @success="changeContactImage" :validateFile="validateIsImageFile">
       <template #default="{ openFileSelector, error }">
         <div class="flex flex-col items-start justify-start gap-4 p-4">
           <div class="flex gap-4 items-center">
@@ -156,7 +156,6 @@
       </TabPanel>
     </Tabs>
   </div>
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
 </template>
 
 <script setup>
@@ -168,9 +167,9 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate, timeAgo, validateIsImageFile } from '@/utils'
 import { getView } from '@/utils/view'
+import { showAddressModal, addressProps } from '@/composables/modals'
 import { getSettings } from '@/stores/settings'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global.js'
@@ -212,9 +211,7 @@ const props = defineProps({
 const route = useRoute()
 const router = useRouter()
 
-const showAddressModal = ref(false)
 const _contact = ref({})
-const _address = ref({})
 
 const contact = createResource({
   url: 'crm.api.contact.get_contact',
@@ -268,13 +265,6 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
-
-function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return __('Only PNG and JPG images are allowed')
-  }
-}
 
 async function changeContactImage(file) {
   await call('frappe.client.set_value', {
@@ -467,17 +457,10 @@ function getParsedSections(_sections) {
             ...field,
             create: (value, close) => {
               _contact.value.address = value
-              _address.value = {}
-              showAddressModal.value = true
+              openAddressModal()
               close()
             },
-            edit: async (addr) => {
-              _address.value = await call('frappe.client.get', {
-                doctype: 'Address',
-                name: addr,
-              })
-              showAddressModal.value = true
-            },
+            edit: (address) => openAddressModal(address),
           }
         } else {
           return field
@@ -534,18 +517,6 @@ async function deleteOption(doctype, name) {
   })
   await contact.reload()
   toast.success(__('Contact updated'))
-}
-
-async function updateField(fieldname, value) {
-  await call('frappe.client.set_value', {
-    doctype: 'Contact',
-    name: props.contactId,
-    fieldname,
-    value,
-  })
-  toast.success(__('Contact updated'))
-
-  contact.reload()
 }
 
 const { getFormattedCurrency } = getMeta('CRM Deal')
@@ -615,4 +586,12 @@ const dealColumns = [
     width: '8rem',
   },
 ]
+
+function openAddressModal(_address) {
+  showAddressModal.value = true
+  addressProps.value = {
+    doctype: 'Address',
+    address: _address,
+  }
+}
 </script>

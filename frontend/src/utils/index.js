@@ -86,11 +86,32 @@ export function prettyDate(date, mini = false) {
 
   let dayDiff = Math.floor(diff / 86400)
 
-  if (isNaN(dayDiff) || dayDiff < 0) return ''
+  if (isNaN(dayDiff)) return ''
 
   if (mini) {
     // Return short format of time difference
-    if (dayDiff == 0) {
+    if (dayDiff < 0) {
+      if (Math.abs(dayDiff) < 1) {
+        if (diff < 60) {
+          return __('now')
+        } else if (diff < 3600) {
+          return __('in {0} m', [Math.floor(diff / 60)])
+        } else if (diff < 86400) {
+          return __('in {0} h', [Math.floor(diff / 3600)])
+        }
+      }
+      if (Math.abs(dayDiff) == 1) {
+        return __('tomorrow')
+      } else if (Math.abs(dayDiff) < 7) {
+        return __('in {0} d', [Math.abs(dayDiff)])
+      } else if (Math.abs(dayDiff) < 31) {
+        return __('in {0} w', [Math.floor(Math.abs(dayDiff) / 7)])
+      } else if (Math.abs(dayDiff) < 365) {
+        return __('in {0} M', [Math.floor(Math.abs(dayDiff) / 30)])
+      } else {
+        return __('in {0} y', [Math.floor(Math.abs(dayDiff) / 365)])
+      }
+    } else if (dayDiff == 0) {
       if (diff < 60) {
         return __('now')
       } else if (diff < 3600) {
@@ -111,7 +132,34 @@ export function prettyDate(date, mini = false) {
     }
   } else {
     // Return long format of time difference
-    if (dayDiff == 0) {
+    if (dayDiff < 0) {
+      if (Math.abs(dayDiff) < 1) {
+        if (diff < 60) {
+          return __('just now')
+        } else if (diff < 120) {
+          return __('in 1 minute')
+        } else if (diff < 3600) {
+          return __('in {0} minutes', [Math.floor(diff / 60)])
+        } else if (diff < 7200) {
+          return __('in 1 hour')
+        } else if (diff < 86400) {
+          return __('in {0} hours', [Math.floor(diff / 3600)])
+        }
+      }
+      if (Math.abs(dayDiff) == 1) {
+        return __('tomorrow')
+      } else if (Math.abs(dayDiff) < 7) {
+        return __('in {0} days', [Math.abs(dayDiff)])
+      } else if (Math.abs(dayDiff) < 31) {
+        return __('in {0} weeks', [Math.floor(Math.abs(dayDiff) / 7)])
+      } else if (Math.abs(dayDiff) < 365) {
+        return __('in {0} months', [Math.floor(Math.abs(dayDiff) / 30)])
+      } else if (Math.abs(dayDiff) < 730) {
+        return __('in 1 year')
+      } else {
+        return __('in {0} years', [Math.floor(Math.abs(dayDiff) / 365)])
+      }
+    } else if (dayDiff == 0) {
       if (diff < 60) {
         return __('just now')
       } else if (diff < 120) {
@@ -211,10 +259,9 @@ export function validateEmail(email) {
   return regExp.test(email)
 }
 
-export function setupAssignees(doc) {
+export function parseAssignees(assignees) {
   let { getUser } = usersStore()
-  let assignees = doc.data?._assign || []
-  doc.data._assignedTo = assignees.map((user) => ({
+  return assignees.map((user) => ({
     name: user,
     image: getUser(user).user_image,
     label: getUser(user).full_name,
@@ -393,6 +440,13 @@ export function isImage(extention) {
   return ['png', 'jpg', 'jpeg', 'gif', 'svg', 'bmp', 'webp'].includes(
     extention.toLowerCase(),
   )
+}
+
+export function validateIsImageFile(file) {
+  const extn = file.name.split('.').pop().toLowerCase()
+  if (!isImage(extn)) {
+    return __('Only image files are allowed')
+  }
 }
 
 export function getRandom(len = 4) {

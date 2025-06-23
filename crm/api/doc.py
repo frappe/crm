@@ -3,6 +3,7 @@ import json
 import frappe
 from frappe import _
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
+from frappe.desk.form.assign_to import set_status
 from frappe.model import no_value_fields
 from frappe.model.document import get_controller
 from frappe.utils import make_filter_tuple
@@ -660,6 +661,24 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False, only_re
 	return fields_meta
 
 
+@frappe.whitelist()
+def remove_assignments(doctype, name, assignees, ignore_permissions=False):
+	assignees = json.loads(assignees)
+
+	if not assignees:
+		return
+
+	for assign_to in assignees:
+		set_status(
+			doctype,
+			name,
+			todo=None,
+			assign_to=assign_to,
+			status="Cancelled",
+			ignore_permissions=ignore_permissions,
+		)
+
+@frappe.whitelist()
 def get_assigned_users(doctype, name, default_assigned_to=None):
 	assigned_users = frappe.get_all(
 		"ToDo",

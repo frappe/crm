@@ -5,9 +5,11 @@
       <MobileAppHeader />
       <slot />
     </div>
+    <GlobalModals />
   </div>
 </template>
 <script setup>
 import MobileSidebar from '@/components/Mobile/MobileSidebar.vue'
 import MobileAppHeader from '@/components/Mobile/MobileAppHeader.vue'
+import GlobalModals from '@/components/Modals/GlobalModals.vue'
 </script>
