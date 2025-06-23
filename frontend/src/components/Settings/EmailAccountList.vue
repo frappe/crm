@@ -1,22 +1,30 @@
 <template>
   <div>
     <!-- header -->
-    <div class="flex items-center justify-between text-ink-gray-9">
-      <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-        {{ __('Email Accounts') }}
-      </h2>
-      <Button
-        :label="__('Add Account')"
-        theme="gray"
-        variant="solid"
-        @click="emit('update:step', 'email-add')"
-        class="mr-8"
-      >
-        <template #prefix>
-          <LucidePlus class="w-4 h-4" />
-        </template>
-      </Button>
+    <div class="flex justify-between text-ink-gray-8">
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+          {{ __('Email accounts') }}
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{
+            __(
+              'Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails.',
+            )
+          }}
+        </p>
+      </div>
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <Button
+          :label="__('Add Account')"
+          theme="gray"
+          variant="solid"
+          icon-left="plus"
+          @click="emit('update:step', 'email-add')"
+        />
+      </div>
     </div>
+
     <!-- list accounts -->
     <div
       v-if="!emailAccounts.loading && Boolean(emailAccounts.data?.length)"
@@ -30,7 +38,7 @@
       </div>
     </div>
     <!-- fallback if no email accounts -->
-    <div v-else class="flex items-center justify-center h-64 text-gray-500">
+    <div v-else class="flex items-center justify-center h-64 text-ink-gray-4">
       {{ __('Please add an email account to continue.') }}
     </div>
   </div>

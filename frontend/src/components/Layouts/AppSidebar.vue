@@ -172,6 +172,7 @@ import {
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
+import { showChangePasswordModal } from '@/composables/modals'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
   SignupBanner,
@@ -329,8 +330,7 @@ const steps = reactive([
     completed: false,
     onClick: () => {
       minimize.value = true
-      showSettings.value = true
-      activeSettingsPage.value = 'Profile'
+      showChangePasswordModal.value = true
     },
   },
   {
@@ -351,7 +351,7 @@ const steps = reactive([
     onClick: () => {
       minimize.value = true
       showSettings.value = true
-      activeSettingsPage.value = 'Invite Members'
+      activeSettingsPage.value = 'Invite User'
     },
     condition: () => isManager(),
   },
@@ -529,7 +529,7 @@ const articles = ref([
       { name: 'profile', title: __('Profile') },
       { name: 'custom-branding', title: __('Custom branding') },
       { name: 'home-actions', title: __('Home actions') },
-      { name: 'invite-members', title: __('Invite members') },
+      { name: 'invite-users', title: __('Invite users') },
     ],
   },
   {

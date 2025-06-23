@@ -2,10 +2,10 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex flex-col gap-1">
-      <h2 class="text-xl font-semibold text-ink-gray-9">
+      <h2 class="text-xl font-semibold text-ink-gray-8">
         {{ __('Setup Email') }}
       </h2>
-      <p class="text-sm text-gray-600">
+      <p class="text-sm text-ink-gray-5">
         {{ __('Choose the email service provider you want to configure.') }}
       </p>
     </div>
@@ -27,14 +27,15 @@
     <div v-if="selectedService" class="flex flex-col gap-4">
       <!-- email service provider info -->
       <div
-        class="flex items-center gap-2 p-2 rounded-md ring-1 ring-gray-400 dark:ring-gray-700 text-gray-700 dark:text-gray-500"
+        class="flex items-center gap-2 p-2 rounded-md ring-1 ring-outline-gray-3 text-ink-gray-6"
       >
         <CircleAlert class="w-5 h-6 w-min-5 w-max-5 min-h-5 max-w-5" />
         <div class="text-xs text-wrap">
           {{ selectedService.info }}
-          <a :href="selectedService.link" target="_blank" class="underline"
-            >here</a
-          >.
+          <a :href="selectedService.link" target="_blank" class="underline">
+            {{ __('here') }}
+          </a>
+          .
         </div>
       </div>
       <!-- service provider fields -->
@@ -66,23 +67,22 @@
               :name="field.name"
               :type="field.type"
             />
-            <p class="text-gray-500 text-p-sm">{{ field.description }}</p>
+            <p class="text-ink-gray-4 text-p-sm">{{ field.description }}</p>
           </div>
         </div>
-        <ErrorMessage v-if="error" class="ml-1" :message="error" />
+        <ErrorMessage class="ml-1" :message="error" />
       </div>
     </div>
     <!-- action button -->
     <div v-if="selectedService" class="flex justify-between mt-auto">
       <Button
-        label="Back"
-        theme="gray"
+        :label="__('Back')"
         variant="outline"
         :disabled="addEmailRes.loading"
         @click="emit('update:step', 'email-list')"
       />
       <Button
-        label="Create"
+        :label="__('Create')"
         variant="solid"
         :loading="addEmailRes.loading"
         @click="createEmailAccount"
