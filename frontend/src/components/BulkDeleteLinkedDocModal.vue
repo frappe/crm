@@ -149,10 +149,10 @@ const confirmUnlink = () => {
 }
 
 const deleteDocs = () => {
-  call('crm.api.doc.deleteBulkDocs', {
+  call('crm.api.doc.delete_bulk_docs', {
     items: props.items,
     doctype: props.doctype,
-    deleteLinked: confirmDeleteInfo.value.delete,
+    delete_linked: confirmDeleteInfo.value.delete,
   }).then(() => {
     confirmDeleteInfo.value = {
       show: false,

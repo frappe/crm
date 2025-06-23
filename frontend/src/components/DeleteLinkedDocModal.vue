@@ -5,7 +5,11 @@
         <div class="mb-6 flex items-center justify-between">
           <div>
             <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
-              {{ __('Delete') }}
+              {{
+                linkedDocs?.length == 0
+                  ? __('Delete')
+                  : __('Delete or unlink linked documents')
+              }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -32,7 +36,7 @@
                   key: 'title',
                 },
                 {
-                  label: 'Doctype',
+                  label: 'Master',
                   key: 'reference_doctype',
                   width: '30%',
                 },
@@ -65,7 +69,7 @@
             <div class="flex gap-1">
               <FeatherIcon name="trash" class="h-4 w-4" />
               <span>
-                {{ __('Delete and unlink') }}
+                {{ __('Delete') }}
                 {{
                   viewControls?.selections?.length == 0
                     ? __('all')
@@ -76,7 +80,8 @@
           </Button>
           <Button
             v-if="linkedDocs?.length > 0"
-            variant="solid"
+            variant="subtle"
+            theme="gray"
             @click="confirmUnlink()"
           >
             <div class="flex gap-1">
@@ -172,7 +177,7 @@ const confirmDeleteInfo = ref({
 })
 
 const linkedDocsResource = createResource({
-  url: 'crm.api.doc.getLinkedDocs',
+  url: 'crm.api.doc.get_linked_docs_of_document',
   params: {
     doctype: props.doctype,
     docname: props.docname,
@@ -211,9 +216,9 @@ const unlinkLinkedDoc = (doc) => {
     }))
   }
 
-  call('crm.api.doc.removeLinkedDocReference', {
+  call('crm.api.doc.remove_linked_doc_reference', {
     items: selectedDocs,
-    removeContact: props.doctype == 'Contact',
+    remove_contact: props.doctype == 'Contact',
     delete: doc.delete,
   }).then(() => {
     linkedDocsResource.reload()
@@ -231,7 +236,7 @@ const confirmDelete = () => {
       : viewControls.value.selections.length
   confirmDeleteInfo.value = {
     show: true,
-    title: __('Delete'),
+    title: __('Delete linked item'),
     message: __('Are you sure you want to delete {0} linked item(s)?', [items]),
     delete: true,
   }
@@ -244,7 +249,7 @@ const confirmUnlink = () => {
       : viewControls.value.selections.length
   confirmDeleteInfo.value = {
     show: true,
-    title: __('Unlink'),
+    title: __('Unlink linked item'),
     message: __('Are you sure you want to unlink {0} linked item(s)?', [items]),
     delete: false,
   }
@@ -256,6 +261,7 @@ const removeDocLinks = () => {
     reference_docname: props.docname,
     delete: confirmDeleteInfo.value.delete,
   })
+  viewControls.value.updateSelections([])
 }
 
 const deleteDoc = async () => {
