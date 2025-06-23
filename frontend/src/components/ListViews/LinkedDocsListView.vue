@@ -19,15 +19,6 @@
         :item="column"
         @columnWidthUpdated="emit('columnWidthUpdated', column)"
       >
-        <Button
-          v-if="column.key == 'reference_docname'"
-          variant="ghosted"
-          class="!h-4"
-          :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
-          @click="() => emit('applyLikeFilter')"
-        >
-          <HeartIcon class="h-4 w-4" />
-        </Button>
       </ListHeaderItem>
     </ListHeader>
     <div class="*:mx-0 *:sm:mx-0">
@@ -50,6 +41,12 @@
                 @click.stop="viewLinkedDoc(row)"
               />
             </div>
+            <span
+              v-if="column.key === 'reference_doctype'"
+              class="truncate text-base flex gap-2"
+            >
+              {{ getDoctypeName(row.reference_doctype) }}
+            </span>
           </template>
         </ListRowItem>
       </ListRows>
@@ -58,7 +55,6 @@
 </template>
 
 <script setup>
-import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
 import { ListView, ListHeader, ListHeaderItem, ListRowItem } from 'frappe-ui'
 import { ref } from 'vue'
@@ -123,7 +119,7 @@ const viewLinkedDoc = (doc) => {
       page = 'contacts'
       id = doc.reference_docname
       break
-    case 'Organization':
+    case 'CRM Organization':
       page = 'organizations'
       id = doc.reference_docname
       break
@@ -135,5 +131,24 @@ const viewLinkedDoc = (doc) => {
       break
   }
   window.open(`/crm/${page}/${id}`)
+}
+
+const getDoctypeName = (doctype) => {
+  switch (doctype) {
+    case 'CRM Lead':
+      return 'Lead'
+    case 'CRM Call Log':
+      return 'Call Log'
+    case 'CRM Task':
+      return 'Task'
+    case 'Contact':
+      return 'Contact'
+    case 'CRM Organization':
+      return 'Organization'
+    case 'FCRM Note':
+      return 'Note'
+    default:
+      return doctype
+  }
 }
 </script>
