@@ -134,21 +134,6 @@ const viewLinkedDoc = (doc) => {
 }
 
 const getDoctypeName = (doctype) => {
-  switch (doctype) {
-    case 'CRM Lead':
-      return 'Lead'
-    case 'CRM Call Log':
-      return 'Call Log'
-    case 'CRM Task':
-      return 'Task'
-    case 'Contact':
-      return 'Contact'
-    case 'CRM Organization':
-      return 'Organization'
-    case 'FCRM Note':
-      return 'Note'
-    default:
-      return doctype
-  }
+  return doctype.replace(/^(CRM|FCRM)\s*/, '')
 }
 </script>
