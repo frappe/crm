@@ -124,7 +124,7 @@
         <div class="text-ink-gray-5 text-base">
           {{ confirmDeleteInfo.message }}
         </div>
-        <div class="flex flex-row-reverse gap-2 mt-6">
+        <div class="flex justify-end gap-2 mt-6">
           <Button variant="ghost" @click="cancel()">
             {{ __('Cancel') }}
           </Button>
