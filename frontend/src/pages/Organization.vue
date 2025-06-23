@@ -164,12 +164,6 @@
     :errorTitle="errorTitle"
     :errorMessage="errorMessage"
   />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Organization"
-  />
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
   <DeleteLinkedDocModal
     v-if="showDeleteLinkedDocModal"
     v-model="showDeleteLinkedDocModal"
@@ -304,13 +298,6 @@ usePageMeta(() => {
 
 async function deleteOrganization() {
   showDeleteLinkedDocModal.value = true
-}
-
-function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return __('Only PNG and JPG images are allowed')
-  }
 }
 
 async function changeOrganizationImage(file) {

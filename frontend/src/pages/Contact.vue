@@ -172,7 +172,6 @@
     :errorTitle="errorTitle"
     :errorMessage="errorMessage"
   />
-  <AddressModal v-model="showAddressModal" v-model:address="_address" />
   <DeleteLinkedDocModal
     v-if="showDeleteLinkedDocModal"
     v-model="showDeleteLinkedDocModal"

@@ -2,7 +2,7 @@
   <Dialog v-model="show" :options="{ size: 'xl' }">
     <template #body v-if="!confirmDeleteInfo.show">
       <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-6 flex items-center justify-between">
+        <div class="mb-4 flex items-center justify-between">
           <div>
             <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
               {{
@@ -20,7 +20,7 @@
         </div>
         <div>
           <div v-if="linkedDocs?.length > 0">
-            <span class="text-ink-gray-5">
+            <span class="text-ink-gray-5 text-base">
               {{
                 __(
                   'Delete or unlink these linked documents before deleting this document',
@@ -48,7 +48,7 @@
               :unlinkLinkedDoc="unlinkLinkedDoc"
             />
           </div>
-          <div v-if="linkedDocs?.length == 0" class="text-ink-gray-5">
+          <div v-if="linkedDocs?.length == 0" class="text-ink-gray-5 text-base">
             {{
               __('Are you sure you want to delete {0} - {1}?', [
                 props.doctype,
@@ -121,11 +121,11 @@
             </Button>
           </div>
         </div>
-        <div class="text-ink-gray-5">
+        <div class="text-ink-gray-5 text-base">
           {{ confirmDeleteInfo.message }}
         </div>
         <div class="flex flex-row-reverse gap-2 mt-6">
-          <Button variant="ghost" @click="confirmDeleteInfo.show = false">
+          <Button variant="ghost" @click="cancel()">
             {{ __('Cancel') }}
           </Button>
           <Button
@@ -198,6 +198,11 @@ const linkedDocs = computed(() => {
     })) || []
   )
 })
+
+const cancel = () => {
+  confirmDeleteInfo.value.show = false
+  viewControls.value.updateSelections([])
+}
 
 const unlinkLinkedDoc = (doc) => {
   let selectedDocs = []
