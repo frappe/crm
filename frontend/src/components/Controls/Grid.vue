@@ -380,9 +380,9 @@ const props = defineProps({
   },
 })
 
-const triggerOnChange = inject('triggerOnChange')
-const triggerOnRowAdd = inject('triggerOnRowAdd')
-const triggerOnRowRemove = inject('triggerOnRowRemove')
+const triggerOnChange = inject('triggerOnChange', () => {})
+const triggerOnRowAdd = inject('triggerOnRowAdd', () => {})
+const triggerOnRowRemove = inject('triggerOnRowRemove', () => {})
 
 const {
   getGridViewSettings,
@@ -393,7 +393,7 @@ const {
   getGridSettings,
 } = getMeta(props.doctype)
 getMeta(props.parentDoctype)
-const { getUser } = usersStore()
+const { users, getUser } = usersStore()
 
 const rows = defineModel()
 const parentDoc = defineModel('parent')
@@ -436,6 +436,14 @@ function getFieldObj(field) {
         createDocument(field.options, value, close, callback)
       }
     }
+  }
+
+  if (field.fieldtype === 'Link' && field.options === 'User') {
+    field.fieldtype = 'User'
+    field.link_filters = JSON.stringify({
+      ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
+      name: ['in', users.data.crmUsers?.map((user) => user.name)],
+    })
   }
 
   return {

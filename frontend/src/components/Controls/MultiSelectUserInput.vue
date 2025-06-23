@@ -63,12 +63,12 @@
                       class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
                     >
                       <FeatherIcon
-                        v-if="fetchContacts"
+                        v-if="fetchUsers"
                         name="search"
                         class="h-4"
                       />
                       {{
-                        fetchContacts
+                        fetchUsers
                           ? __('No results found')
                           : __('Type an email address to invite')
                       }}
@@ -127,9 +127,8 @@ import {
 } from '@headlessui/vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Popover from '@/components/frappe-ui/Popover.vue'
-import { createResource } from 'frappe-ui'
+import { usersStore } from '@/stores/users'
 import { ref, computed, nextTick } from 'vue'
-import { watchDebounced } from '@vueuse/core'
 
 const props = defineProps({
   validate: {
@@ -152,7 +151,7 @@ const props = defineProps({
     type: Function,
     default: (value) => `${value} is an Invalid value`,
   },
-  fetchContacts: {
+  fetchUsers: {
     type: Boolean,
     default: true,
   },
@@ -164,12 +163,13 @@ const props = defineProps({
 
 const values = defineModel()
 
+const { users } = usersStore()
+
 const emails = ref([])
 const search = ref(null)
 const error = ref(null)
 const info = ref(null)
 const query = ref('')
-const text = ref('')
 const showOptions = ref(false)
 
 const selectedValue = computed({
@@ -183,63 +183,37 @@ const selectedValue = computed({
   },
 })
 
-watchDebounced(
-  query,
-  (val) => {
-    val = val || ''
-    if (text.value === val && options.value?.length) return
-    text.value = val
-    reload(val)
-  },
-  { debounce: 300, immediate: true },
-)
+const options = computed(() => {
+  let userEmails = props.fetchUsers ? users?.data?.allUsers : []
 
-const filterOptions = createResource({
-  url: 'crm.api.contact.search_emails',
-  method: 'POST',
-  cache: [text.value, 'Contact'],
-  params: { txt: text.value },
-  transform: (data) => {
-    let allData = data.map((option) => {
-      let fullName = option[0]
-      let email = option[1]
-      let name = option[2]
-      return {
-        label: fullName || name || email,
-        value: email,
-      }
-    })
+  if (props.fetchUsers) {
+    userEmails = userEmails.map((user) => ({
+      label: user.full_name || user.name || user.email,
+      value: user.email,
+    }))
 
-    // Filter out existing emails
     if (props.existingEmails?.length) {
-      allData = allData.filter((option) => {
+      userEmails = userEmails.filter((option) => {
         return !props.existingEmails.includes(option.value)
       })
     }
 
-    return allData
-  },
-})
-
-const options = computed(() => {
-  let searchedContacts = props.fetchContacts ? filterOptions.data : []
-  if (!searchedContacts?.length && query.value) {
-    searchedContacts.push({
+    if (query.value) {
+      userEmails = userEmails.filter(
+        (option) =>
+          option.label.toLowerCase().includes(query.value.toLowerCase()) ||
+          option.value.toLowerCase().includes(query.value.toLowerCase()),
+      )
+    }
+  } else if (!userEmails?.length && query.value) {
+    userEmails.push({
       label: query.value,
       value: query.value,
     })
   }
-  return searchedContacts || []
+
+  return userEmails || []
 })
-
-function reload(val) {
-  if (!props.fetchContacts) return
-
-  filterOptions.update({
-    params: { txt: val },
-  })
-  filterOptions.reload()
-}
 
 const addValue = (value) => {
   error.value = null
