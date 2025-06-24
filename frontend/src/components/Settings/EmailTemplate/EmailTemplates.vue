@@ -197,7 +197,14 @@ function toggleEmailTemplate(template) {
 
 function deleteTemplate(template) {
   confirmDelete.value = false
-  templates.delete.submit(template.name)
+  templates.delete.submit(template.name, {
+    onSuccess: () => {
+      toast.success(__('Template deleted successfully'))
+    },
+    onError: (error) => {
+      toast.error(error.messages[0] || __('Failed to delete template'))
+    },
+  })
 }
 
 function getDropdownOptions(template) {
@@ -209,9 +216,7 @@ function getDropdownOptions(template) {
           option: __('Edit'),
           icon: 'edit-2',
           active: props.active,
-          onClick: () => {
-            emit('updateStep', 'edit-template', { ...template })
-          },
+          onClick: () => emit('updateStep', 'edit-template', { ...template }),
         }),
     },
     {
@@ -221,7 +226,7 @@ function getDropdownOptions(template) {
           option: __('Duplicate'),
           icon: 'copy',
           active: props.active,
-          onClick: () => {},
+          onClick: () => emit('updateStep', 'new-template', { ...template }),
         }),
     },
     {

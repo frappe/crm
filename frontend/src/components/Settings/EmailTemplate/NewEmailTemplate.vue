@@ -10,12 +10,16 @@
           @click="() => emit('updateStep', 'template-list')"
         >
           <FeatherIcon name="chevron-left" class="size-5" />
-          <span class="text-xl font-semibold">{{ __('New Template') }}</span>
+          <span class="text-xl font-semibold">
+            {{
+              templateData?.name ? __('Duplicate template') : __('New template')
+            }}
+          </span>
         </div>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
-          :label="__('Create')"
+          :label="templateData?.name ? __('Duplicate') : __('Create')"
           icon-left="plus"
           variant="solid"
           @click="createTemplate"
@@ -126,7 +130,14 @@
 </template>
 <script setup>
 import { TextEditor, FormControl, Switch, toast } from 'frappe-ui'
-import { inject, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
+
+const props = defineProps({
+  templateData: {
+    type: Object,
+    default: () => ({}),
+  },
+})
 
 const emit = defineEmits(['updateStep'])
 const errorMessage = ref('')
@@ -176,4 +187,12 @@ const createTemplate = () => {
     },
   )
 }
+
+onMounted(() => {
+  if (props.templateData) {
+    Object.assign(template.value, props.templateData)
+    template.value.name = template.value.name + ' - Copy'
+    template.value.enabled = false // Default to disabled for new templates
+  }
+})
 </script>
