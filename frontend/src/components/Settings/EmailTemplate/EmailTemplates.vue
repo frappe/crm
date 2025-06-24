@@ -143,6 +143,7 @@ import {
   Switch,
   Dropdown,
   FeatherIcon,
+  toast,
 } from 'frappe-ui'
 import { ref, computed, inject, h } from 'vue'
 
@@ -172,10 +173,26 @@ const templatesList = computed(() => {
 })
 
 function toggleEmailTemplate(template) {
-  templates.setValue.submit({
-    name: template.name,
-    enabled: template.enabled ? 1 : 0,
-  })
+  templates.setValue.submit(
+    {
+      name: template.name,
+      enabled: template.enabled ? 1 : 0,
+    },
+    {
+      onSuccess: () => {
+        toast.success(
+          template.enabled
+            ? __('Template enabled successfully')
+            : __('Template disabled successfully'),
+        )
+      },
+      onError: (error) => {
+        toast.error(error.messages[0] || __('Failed to update template'))
+        // Revert the change if there was an error
+        template.enabled = !template.enabled
+      },
+    },
+  )
 }
 
 function deleteTemplate(template) {
