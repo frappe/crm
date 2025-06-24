@@ -41,7 +41,9 @@
                 variant="ghost"
                 @click="section.editingLabel = true"
               >
-                <EditIcon class="h-3.5" />
+                <template #icon>
+                  <EditIcon class="h-3.5" />
+                </template>
               </Button>
               <Button
                 v-if="section.editable !== false"

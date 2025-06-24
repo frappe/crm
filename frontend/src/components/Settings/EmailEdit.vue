@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
-      <h2 class="text-xl font-semibold text-ink-gray-9">
+      <h2 class="text-xl font-semibold text-ink-gray-8">
         {{ __('Edit Email') }}
       </h2>
     </div>
@@ -14,16 +14,16 @@
     </div>
     <!-- banner for setting up email account -->
     <div
-      class="flex items-center gap-2 p-2 rounded-md ring-1 ring-gray-400 dark:ring-gray-700"
+      class="flex items-center gap-2 p-2 rounded-md ring-1 ring-outline-gray-3"
     >
       <CircleAlert
-        class="size-6 text-gray-500 w-min-5 w-max-5 min-h-5 max-w-5"
+        class="size-6 text-ink-gray-4 w-min-5 w-max-5 min-h-5 max-w-5"
       />
-      <div class="text-xs text-gray-700 dark:text-gray-500 text-wrap">
+      <div class="text-xs text-ink-gray-6 text-wrap">
         {{ info.description }}
-        <a :href="info.link" target="_blank" class="underline">{{
-          __('here')
-        }}</a>
+        <a :href="info.link" target="_blank" class="underline">
+          {{ __('here') }}
+        </a>
         .
       </div>
     </div>
@@ -56,7 +56,7 @@
             :name="field.name"
             :type="field.type"
           />
-          <p class="text-gray-500 text-p-sm">{{ field.description }}</p>
+          <p class="text-ink-gray-4 text-p-sm">{{ field.description }}</p>
         </div>
       </div>
       <ErrorMessage v-if="error" class="ml-1" :message="error" />

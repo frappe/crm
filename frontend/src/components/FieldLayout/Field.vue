@@ -243,7 +243,7 @@ const isGridRow = inject('isGridRow')
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(doctype)
 
-const { getUser } = usersStore()
+const { users, getUser } = usersStore()
 
 let triggerOnChange
 let parentDoc
@@ -260,7 +260,7 @@ if (!isGridRow) {
   provide('triggerOnRowAdd', triggerOnRowAdd)
   provide('triggerOnRowRemove', triggerOnRowRemove)
 } else {
-  triggerOnChange = inject('triggerOnChange')
+  triggerOnChange = inject('triggerOnChange', () => {})
   parentDoc = inject('parentDoc')
 }
 
@@ -278,6 +278,10 @@ const field = computed(() => {
 
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
+    field.link_filters = JSON.stringify({
+      ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
+      name: ['in', users.data.crmUsers?.map((user) => user.name)],
+    })
   }
 
   if (field.fieldtype === 'Link' && field.options !== 'User') {
@@ -332,12 +336,10 @@ const getPlaceholder = (field) => {
 }
 
 function fieldChange(value, df) {
-  data.value[df.fieldname] = value
-
   if (isGridRow) {
-    triggerOnChange(df.fieldname, data.value)
+    triggerOnChange(df.fieldname, value, data.value)
   } else {
-    triggerOnChange(df.fieldname)
+    triggerOnChange(df.fieldname, value)
   }
 }
 

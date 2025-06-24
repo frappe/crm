@@ -7,3 +7,5 @@ export const showAddressModal = ref(false);
 export const addressProps = ref({});
 
 export const showAboutModal = ref(false);
+
+export const showChangePasswordModal = ref(false);

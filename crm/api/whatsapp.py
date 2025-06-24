@@ -335,5 +335,5 @@ def get_from_name(message):
 		else:
 			from_name = doc.get("lead_name")
 	else:
-		from_name = doc.get("first_name") + " " + doc.get("last_name")
+		from_name = " ".join(filter(None, [doc.get("first_name"), doc.get("last_name")]))
 	return from_name

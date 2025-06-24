@@ -25,7 +25,9 @@
                   class="w-7 mr-2"
                   @click="showSidePanelModal = true"
                 >
-                  <EditIcon class="h-4 w-4" />
+                  <template #icon>
+                    <EditIcon />
+                  </template>
                 </Button>
               </slot>
             </template>
@@ -44,18 +46,21 @@
                   >
                     <Tooltip :text="__(field.label)" :hoverDelay="1">
                       <div
-                        class="w-[35%] min-w-20 shrink-0 truncate text-sm text-ink-gray-5"
+                        class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
                       >
-                        {{ __(field.label) }}
-                        <span
+                        <div class="truncate text-sm text-ink-gray-5">
+                          {{ __(field.label) }}
+                        </div>
+                        <div
                           v-if="
                             field.reqd ||
                             (field.mandatory_depends_on &&
                               field.mandatory_via_depends_on)
                           "
                           class="text-ink-red-2"
-                          >*</span
                         >
+                          *
+                        </div>
                       </div>
                     </Tooltip>
                     <div class="flex items-center justify-between w-[65%]">
@@ -245,6 +250,7 @@
                             "
                             :placeholder="field.placeholder"
                             placement="left-start"
+                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -258,6 +264,7 @@
                             :formatter="(date) => getFormat(date, '', true)"
                             :placeholder="field.placeholder"
                             placement="left-start"
+                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -422,7 +429,7 @@ const emit = defineEmits(['afterFieldChange', 'reload'])
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(props.doctype)
 
-const { isManager, getUser } = usersStore()
+const { users, isManager, getUser } = usersStore()
 
 const showSidePanelModal = ref(false)
 
@@ -464,8 +471,11 @@ function parsedField(field) {
   }
 
   if (field.fieldtype === 'Link' && field.options === 'User') {
-    field.options = field.options
     field.fieldtype = 'User'
+    field.link_filters = JSON.stringify({
+      ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
+      name: ['in', users.data?.crmUsers?.map((user) => user.name)],
+    })
   }
 
   let _field = {
@@ -489,9 +499,7 @@ function parsedField(field) {
 async function fieldChange(value, df) {
   if (props.preview) return
 
-  document.doc[df.fieldname] = value
-
-  await triggerOnChange(df.fieldname)
+  await triggerOnChange(df.fieldname, value)
 
   document.save.submit(null, {
     onSuccess: () => {
