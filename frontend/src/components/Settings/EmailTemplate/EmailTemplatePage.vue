@@ -6,7 +6,7 @@
   />
   <EditEmailTemplate
     v-else-if="step === 'edit-template'"
-    :data="templateData"
+    :templateData="template"
     @updateStep="updateStep"
   />
 </template>
@@ -19,7 +19,7 @@ import { createListResource } from 'frappe-ui'
 import { provide, ref } from 'vue'
 
 const step = ref('template-list')
-const templateData = ref(null)
+const template = ref(null)
 
 const templates = createListResource({
   type: 'list',
@@ -46,6 +46,6 @@ provide('templates', templates)
 
 function updateStep(newStep, data) {
   step.value = newStep
-  templateData.value = data
+  template.value = data
 }
 </script>
