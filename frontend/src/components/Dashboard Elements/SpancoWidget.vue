@@ -18,7 +18,7 @@
         <div class="block sm:hidden">
           <!-- Compact Header with Summary -->
           <div
-            class="flex items-center justify-between p-3 border-b border-gray-100"
+            class="flex items-center justify-between p-3 border@vishalrathore8oct, thanks for the contribution, but we do not accept pull requests on a stable branch. Please raise PR on develop branch.-b border-gray-100"
           >
             <div class="flex items-center gap-2">
               <TrendingUp class="w-4 h-4 text-blue-600" />
@@ -226,41 +226,6 @@
                 </div>
               </TransitionGroup>
             </div>
-
-            <!-- Desktop Summary Information (Preserved) -->
-            <Transition name="slide-up" appear>
-              <div class="mt-4 bg-gray-50 rounded-lg p-3">
-                <div
-                  class="flex justify-between items-center text-sm text-gray-600"
-                >
-                  <div class="flex items-center gap-4 lg:gap-6">
-                    <div>
-                      <span class="font-medium">Total Pipeline:</span>
-                      <CountUp
-                        :end-val="totalPipelineValue"
-                        :format="true"
-                        :prefix="'₹'"
-                      />
-                    </div>
-                    <div>
-                      <span class="font-medium">Conversion Rate:</span>
-                      <CountUp
-                        :end-val="parseFloat(overallConversionRate)"
-                        :decimals="1"
-                        :suffix="'%'"
-                      />
-                    </div>
-                    <div>
-                      <span class="font-medium">Total Suspects:</span>
-                      <CountUp :end-val="spancoData[0].number" :format="true" />
-                    </div>
-                  </div>
-                  <div class="text-xs text-gray-500 hidden lg:block">
-                    S-P-A-N-C-O Pipeline
-                  </div>
-                </div>
-              </div>
-            </Transition>
           </div>
         </div>
       </div>
@@ -286,9 +251,6 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 // Expanded stages for mobile view
 const expandedStages = ref([])
-
-const leads = ref([])
-const deals = ref([])
 
 const leadsResource = createResource({
   url: 'crm.fcrm.doctype.crm_lead.crm_lead.get_leads_data',
