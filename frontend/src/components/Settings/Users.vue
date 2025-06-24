@@ -63,7 +63,10 @@
       class="flex flex-col overflow-hidden"
       v-if="!users.loading && users.data?.crmUsers?.length > 1"
     >
-      <div class="flex items-center justify-between mb-4">
+      <div
+        v-if="users.data?.crmUsers?.length > 10"
+        class="flex items-center justify-between mb-4"
+      >
         <TextInput
           ref="searchRef"
           v-model="search"
