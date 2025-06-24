@@ -59,7 +59,10 @@
     </div>
 
     <!-- Users List -->
-    <div v-if="!users.loading && users.data?.crmUsers?.length > 1">
+    <div
+      class="flex flex-col overflow-hidden"
+      v-if="!users.loading && users.data?.crmUsers?.length > 1"
+    >
       <div class="flex items-center justify-between mb-4">
         <TextInput
           ref="searchRef"
@@ -83,7 +86,7 @@
           ]"
         />
       </div>
-      <ul class="divide-y divide-outline-gray-modals overflow-auto">
+      <ul class="divide-y divide-outline-gray-modals overflow-y-auto">
         <template v-for="user in usersList" :key="user.name">
           <li class="flex items-center justify-between py-2">
             <div class="flex items-center">
