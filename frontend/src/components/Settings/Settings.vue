@@ -51,6 +51,7 @@ import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
+import EmailTemplates from '@/components/Settings/EmailTemplate/EmailTemplates.vue'
 import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
@@ -106,6 +107,11 @@ const tabs = computed(() => {
           icon: Email2Icon,
           component: markRaw(EmailConfig),
           condition: () => isManager(),
+        },
+        {
+          label: __('Email Templates'),
+          icon: Email2Icon,
+          component: markRaw(EmailTemplates),
         },
       ],
     },

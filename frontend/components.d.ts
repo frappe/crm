@@ -96,6 +96,7 @@ declare module 'vue' {
     EmailIcon: typeof import('./src/components/Icons/EmailIcon.vue')['default']
     EmailProviderIcon: typeof import('./src/components/Settings/EmailProviderIcon.vue')['default']
     EmailTemplateModal: typeof import('./src/components/Modals/EmailTemplateModal.vue')['default']
+    EmailTemplates: typeof import('./src/components/Settings/EmailTemplate/EmailTemplates.vue')['default']
     EmailTemplateSelectorModal: typeof import('./src/components/Modals/EmailTemplateSelectorModal.vue')['default']
     EmailTemplatesListView: typeof import('./src/components/ListViews/EmailTemplatesListView.vue')['default']
     ERPNextIcon: typeof import('./src/components/Icons/ERPNextIcon.vue')['default']
