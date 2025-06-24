@@ -15,7 +15,12 @@
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
-        <Button :label="__('New')" icon-left="plus" variant="solid" />
+        <Button
+          :label="__('New')"
+          icon-left="plus"
+          variant="solid"
+          @click="emit('updateStep', 'new-template')"
+        />
       </div>
     </div>
 
@@ -100,27 +105,15 @@
                 @update:model-value="toggleEmailTemplate(template)"
               />
               <Dropdown
-                :options="[
-                  {
-                    label: __('Edit'),
-                    icon: 'edit-2',
-                    onClick: () => {},
-                  },
-                  {
-                    label: __('Duplicate'),
-                    icon: 'copy',
-                    onClick: () => {},
-                  },
-                  {
-                    label: __('Delete'),
-                    icon: 'trash-2',
-                    onClick: () => {},
-                  },
-                ]"
+                :options="getDropdownOptions(template)"
                 placement="right"
                 :button="{
                   icon: 'more-horizontal',
                   variant: 'ghost',
+                  onblur: (e) => {
+                    e.stopPropagation()
+                    confirmDelete = false
+                  },
                 }"
               />
             </div>
@@ -148,34 +141,18 @@ import {
   TextInput,
   FormControl,
   Switch,
-  createListResource,
   Dropdown,
+  FeatherIcon,
 } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { ref, computed, inject, h } from 'vue'
 
-const templates = createListResource({
-  type: 'list',
-  doctype: 'Email Template',
-  cache: 'emailTemplates',
-  fields: [
-    'name',
-    'enabled',
-    'use_html',
-    'reference_doctype',
-    'subject',
-    'response',
-    'response_html',
-    'modified',
-    'owner',
-  ],
-  auto: true,
-  filters: { reference_doctype: ['in', ['CRM Lead', 'CRM Deal']] },
-  orderBy: 'modified desc',
-  pageLength: 20,
-})
+const emit = defineEmits(['updateStep'])
+
+const templates = inject('templates')
 
 const search = ref('')
 const currentDoctype = ref('All')
+const confirmDelete = ref(false)
 
 const templatesList = computed(() => {
   let list = templates.data || []
@@ -199,5 +176,90 @@ function toggleEmailTemplate(template) {
     name: template.name,
     enabled: template.enabled ? 1 : 0,
   })
+}
+
+function deleteTemplate(template) {
+  confirmDelete.value = false
+  templates.delete.submit(template.name)
+}
+
+function getDropdownOptions(template) {
+  let options = [
+    {
+      label: __('Edit'),
+      component: (props) =>
+        TemplateOption({
+          option: __('Edit'),
+          icon: 'edit-2',
+          active: props.active,
+          onClick: () => {
+            emit('updateStep', 'edit-template', { ...template })
+          },
+        }),
+    },
+    {
+      label: __('Duplicate'),
+      component: (props) =>
+        TemplateOption({
+          option: __('Duplicate'),
+          icon: 'copy',
+          active: props.active,
+          onClick: () => {},
+        }),
+    },
+    {
+      label: __('Delete'),
+      component: (props) =>
+        TemplateOption({
+          option: __('Delete'),
+          icon: 'trash-2',
+          active: props.active,
+          onClick: (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            confirmDelete.value = true
+          },
+        }),
+      condition: () => !confirmDelete.value,
+    },
+    {
+      label: __('Confirm Delete'),
+      component: (props) =>
+        TemplateOption({
+          option: __('Confirm Delete'),
+          icon: 'trash-2',
+          active: props.active,
+          variant: 'danger',
+          onClick: () => deleteTemplate(template),
+        }),
+      condition: () => confirmDelete.value,
+    },
+  ]
+
+  return options.filter((option) => option.condition?.() || true)
+}
+
+function TemplateOption({ active, option, variant, icon, onClick }) {
+  return h(
+    'button',
+    {
+      class: [
+        active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
+        'group flex w-full gap-2 items-center rounded-md px-2 py-2 text-sm',
+        variant == 'danger' ? 'text-ink-red-3 hover:bg-ink-red-1' : '',
+      ],
+      onClick: onClick,
+    },
+    [
+      icon
+        ? h(FeatherIcon, {
+            name: icon,
+            class: ['h-4 w-4 shrink-0'],
+            'aria-hidden': true,
+          })
+        : null,
+      h('span', { class: 'whitespace-nowrap' }, option),
+    ],
+  )
 }
 </script>
