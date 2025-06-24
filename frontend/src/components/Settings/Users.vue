@@ -150,7 +150,7 @@ import { usersStore } from '@/stores/users'
 import { Avatar, TextInput, toast, call } from 'frappe-ui'
 import { ref, computed, h, onMounted } from 'vue'
 
-const { users, getUserRole, isAdmin, isManager } = usersStore()
+const { users, isAdmin, isManager } = usersStore()
 
 const showAddExistingModal = ref(false)
 const searchRef = ref(null)
