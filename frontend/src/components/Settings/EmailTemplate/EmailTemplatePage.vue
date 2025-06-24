@@ -1,5 +1,9 @@
 <template>
-  <NewEmailTemplate v-if="step === 'new-template'" @updateStep="updateStep" />
+  <NewEmailTemplate
+    v-if="step === 'new-template'"
+    :templateData="template"
+    @updateStep="updateStep"
+  />
   <EmailTemplates
     v-else-if="step === 'template-list'"
     @updateStep="updateStep"
