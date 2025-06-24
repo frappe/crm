@@ -329,3 +329,12 @@ def create_deal(args):
 	deal.insert(ignore_permissions=True)
 	return deal.name
 
+import frappe
+
+@frappe.whitelist()
+def get_deals_data():
+    return frappe.get_all(
+        "CRM Deal",
+        fields=["status", "annual_revenue"],
+        filters={}
+    )

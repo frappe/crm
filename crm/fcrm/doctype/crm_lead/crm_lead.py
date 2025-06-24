@@ -417,3 +417,12 @@ def convert_to_deal(lead, doc=None, deal=None, existing_contact=None, existing_o
 	organization = lead.create_organization(existing_organization)
 	_deal = lead.create_deal(contact, organization, deal)
 	return _deal
+
+@frappe.whitelist()
+def get_leads_data():
+    return frappe.get_all(
+        "CRM Lead",
+        fields=["status", "annual_revenue"],
+        filters={}
+    )
+
