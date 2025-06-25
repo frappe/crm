@@ -79,14 +79,18 @@
           ]"
         />
       </div>
-      <div class="flex items-center p-2 text-sm border-b text-ink-gray-5">
+      <div class="flex items-center p-2 text-sm text-ink-gray-5">
         <div class="w-4/6">{{ __('Template name') }}</div>
         <div class="w-1/6">{{ __('For') }}</div>
         <div class="w-1/6">{{ __('Enabled') }}</div>
       </div>
-      <ul class="divide-y divide-outline-gray-modals overflow-y-auto">
-        <template v-for="template in templatesList" :key="template.name">
-          <li class="flex items-center justify-between px-2 py-3">
+      <div class="h-px border-t mx-2 border-outline-gray-1" />
+      <ul class="overflow-y-auto">
+        <template v-for="(template, i) in templatesList" :key="template.name">
+          <li
+            class="flex items-center justify-between px-2 py-3 cursor-pointer hover:bg-surface-gray-2 rounded"
+            @click="() => emit('updateStep', 'edit-template', { ...template })"
+          >
             <div class="flex flex-col w-4/6 pr-5">
               <div class="text-base font-medium text-ink-gray-7">
                 {{ template.name }}
@@ -103,6 +107,7 @@
                 size="sm"
                 v-model="template.enabled"
                 @update:model-value="toggleEmailTemplate(template)"
+                @click.stop
               />
               <Dropdown
                 :options="getDropdownOptions(template)"
@@ -115,9 +120,14 @@
                     confirmDelete = false
                   },
                 }"
+                @click.stop
               />
             </div>
           </li>
+          <div
+            v-if="templatesList.length !== i + 1"
+            class="h-px border-t mx-2 border-outline-gray-1"
+          />
         </template>
         <!-- Load More Button -->
         <div
@@ -209,16 +219,6 @@ function deleteTemplate(template) {
 
 function getDropdownOptions(template) {
   let options = [
-    {
-      label: __('Edit'),
-      component: (props) =>
-        TemplateOption({
-          option: __('Edit'),
-          icon: 'edit-2',
-          active: props.active,
-          onClick: () => emit('updateStep', 'edit-template', { ...template }),
-        }),
-    },
     {
       label: __('Duplicate'),
       component: (props) =>
