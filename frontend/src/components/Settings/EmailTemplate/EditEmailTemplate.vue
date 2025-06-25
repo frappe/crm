@@ -2,16 +2,15 @@
   <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
     <!-- Header -->
     <div class="flex justify-between">
-      <div class="flex gap-1 w-9/12">
-        <div
-          class="flex text-ink-gray-7 gap-2 cursor-pointer"
-          :tabindex="0"
-          @keydown.enter="() => emit('updateStep', 'template-list')"
+      <div class="flex gap-1 -ml-4 w-9/12">
+        <Button
+          variant="ghost"
+          icon-left="chevron-left"
+          :label="__(template.name)"
+          size="md"
           @click="() => emit('updateStep', 'template-list')"
-        >
-          <FeatherIcon name="chevron-left" class="size-5" />
-          <span class="text-xl font-semibold">{{ __(template.name) }}</span>
-        </div>
+          class="text-xl !h-7 font-semibold hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5"
+        />
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
@@ -108,7 +107,7 @@
           </div>
           <TextEditor
             ref="content"
-            editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
+            editor-class="!prose-sm max-w-full overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="template.response"
             @change="(val) => (template.response = val)"
