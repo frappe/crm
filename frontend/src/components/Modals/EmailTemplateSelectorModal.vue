@@ -4,19 +4,33 @@
     :options="{ title: __('Email Templates'), size: '4xl' }"
   >
     <template #body-content>
-      <TextInput
-        ref="searchInput"
-        v-model="search"
-        type="text"
-        :placeholder="__('Payment Reminder')"
-      >
-        <template #prefix>
-          <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
-        </template>
-      </TextInput>
+      <div class="flex items-center gap-2">
+        <TextInput
+          class="w-full"
+          ref="searchInput"
+          v-model="search"
+          type="text"
+          :placeholder="__('Payment Reminder')"
+        >
+          <template #prefix>
+            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
+          </template>
+        </TextInput>
+        <Button
+          :label="__('Create')"
+          icon-left="plus"
+          @click="
+            () => {
+              show = false
+              showSettings = true
+              activeSettingsPage = 'Email Templates'
+            }
+          "
+        />
+      </div>
       <div
         v-if="filteredTemplates.length"
-        class="mt-2 grid max-h-[560px] sm:grid-cols-3 gris-cols-1 gap-2 overflow-y-auto"
+        class="mt-4 grid max-h-[560px] sm:grid-cols-3 gris-cols-1 gap-2 overflow-y-auto"
       >
         <div
           v-for="template in filteredTemplates"
@@ -57,11 +71,8 @@
             @click="
               () => {
                 show = false
-                emailTemplate = {
-                  reference_doctype: props.doctype,
-                  enabled: 1,
-                }
-                showEmailTemplateModal = true
+                showSettings = true
+                activeSettingsPage = 'Email Templates'
               }
             "
           />
@@ -69,14 +80,10 @@
       </div>
     </template>
   </Dialog>
-  <EmailTemplateModal
-    v-model="showEmailTemplateModal"
-    :emailTemplate="emailTemplate"
-  />
 </template>
 
 <script setup>
-import EmailTemplateModal from '@/components/Modals/EmailTemplateModal.vue'
+import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
@@ -89,9 +96,6 @@ const props = defineProps({
 
 const show = defineModel()
 const searchInput = ref('')
-const showEmailTemplateModal = ref(false)
-
-const emailTemplate = ref({})
 
 const emit = defineEmits(['apply'])
 
