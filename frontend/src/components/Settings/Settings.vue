@@ -45,6 +45,7 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import Users from '@/components/Settings/Users.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
@@ -110,7 +111,7 @@ const tabs = computed(() => {
         },
         {
           label: __('Email Templates'),
-          icon: Email2Icon,
+          icon: EmailTemplateIcon,
           component: markRaw(EmailTemplatePage),
         },
       ],
