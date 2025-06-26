@@ -119,7 +119,14 @@
                 }"
                 placement="right"
               />
+              <Tooltip
+                v-if="isManager() && user.role == 'System Manager'"
+                :text="__('Cannot change role of user with Admin access')"
+              >
+                <Button :label="__('Admin')" icon-left="shield" />
+              </Tooltip>
               <Dropdown
+                v-else
                 :options="getDropdownOptions(user)"
                 :button="{
                   label: roleMap[user.role],
@@ -163,7 +170,7 @@ import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import { TemplateOption, DropdownOption } from '@/utils'
-import { Avatar, TextInput, toast, call, FeatherIcon } from 'frappe-ui'
+import { Avatar, TextInput, toast, call, FeatherIcon, Tooltip } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 
 const { users, isAdmin, isManager } = usersStore()
