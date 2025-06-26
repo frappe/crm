@@ -13,9 +13,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
-            </Button>
+            <Button variant="ghost" icon="x" @click="show = false" />
           </div>
         </div>
         <div>
@@ -62,43 +60,32 @@
         <div class="flex flex-row-reverse gap-2">
           <Button
             v-if="linkedDocs?.length > 0"
+            :label="
+              viewControls?.selections?.length == 0
+                ? __('Delete all')
+                : __('Delete {0} item(s)', [viewControls?.selections?.length])
+            "
             theme="red"
             variant="solid"
+            icon-left="trash-2"
             @click="confirmDelete()"
-          >
-            <div class="flex gap-1">
-              <FeatherIcon name="trash" class="h-4 w-4" />
-              <span>
-                {{ __('Delete') }}
-                {{
-                  viewControls?.selections?.length == 0
-                    ? __('all')
-                    : `${viewControls?.selections?.length} item(s)`
-                }}
-              </span>
-            </div>
-          </Button>
+          />
           <Button
             v-if="linkedDocs?.length > 0"
+            :label="
+              viewControls?.selections?.length == 0
+                ? __('Unlink all')
+                : __('Unlink {0} item(s)', [viewControls?.selections?.length])
+            "
             variant="subtle"
             theme="gray"
+            icon-left="unlock"
             @click="confirmUnlink()"
-          >
-            <div class="flex gap-1">
-              <FeatherIcon name="unlock" class="h-4 w-4" />
-              <span>
-                {{ __('Unlink') }}
-                {{
-                  viewControls?.selections?.length == 0
-                    ? __('all')
-                    : `${viewControls?.selections?.length} item(s)`
-                }}
-              </span>
-            </div>
-          </Button>
+          />
           <Button
             v-if="linkedDocs?.length == 0"
             variant="solid"
+            icon-left="trash-2"
             :label="__('Delete')"
             :loading="isDealCreating"
             @click="deleteDoc()"
@@ -116,9 +103,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
-            </Button>
+            <Button variant="ghost" icon="x" @click="show = false" />
           </div>
         </div>
         <div class="text-ink-gray-5 text-base">

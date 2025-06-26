@@ -37,7 +37,7 @@
               </span>
               <FeatherIcon
                 name="external-link"
-                class="h-4 w-4"
+                class="h-4 w-4 cursor-pointer"
                 @click.stop="viewLinkedDoc(row)"
               />
             </div>
