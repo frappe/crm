@@ -1,7 +1,7 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
+  <div class="flex h-full flex-col gap-6 p-6 text-ink-gray-8">
     <!-- Header -->
-    <div class="flex justify-between">
+    <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
           {{ __('Email templates') }}
@@ -56,7 +56,7 @@
     >
       <div
         v-if="templates.data?.length > 10"
-        class="flex items-center justify-between mb-4"
+        class="flex items-center justify-between mb-4 px-2 pt-0.5"
       >
         <TextInput
           ref="searchRef"
@@ -79,20 +79,20 @@
           ]"
         />
       </div>
-      <div class="flex items-center p-2 text-sm text-ink-gray-5">
+      <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
         <div class="w-4/6">{{ __('Template name') }}</div>
         <div class="w-1/6">{{ __('For') }}</div>
         <div class="w-1/6">{{ __('Enabled') }}</div>
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-1" />
-      <ul class="overflow-y-auto">
+      <div class="h-px border-t mx-4 border-outline-gray-modals" />
+      <ul class="overflow-y-auto px-2">
         <template v-for="(template, i) in templatesList" :key="template.name">
           <li
-            class="flex items-center justify-between px-2 py-3 cursor-pointer hover:bg-surface-gray-2 rounded"
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
             @click="() => emit('updateStep', 'edit-template', { ...template })"
           >
             <div class="flex flex-col w-4/6 pr-5">
-              <div class="text-base font-medium text-ink-gray-7">
+              <div class="text-base font-medium text-ink-gray-7 truncate">
                 {{ template.name }}
               </div>
               <div class="text-p-base text-ink-gray-5 truncate">
@@ -110,6 +110,7 @@
                 @click.stop
               />
               <Dropdown
+                class=""
                 :options="getDropdownOptions(template)"
                 placement="right"
                 :button="{
@@ -126,7 +127,7 @@
           </li>
           <div
             v-if="templatesList.length !== i + 1"
-            class="h-px border-t mx-2 border-outline-gray-1"
+            class="h-px border-t mx-2 border-outline-gray-modals"
           />
         </template>
         <!-- Load More Button -->
@@ -147,6 +148,7 @@
   </div>
 </template>
 <script setup>
+import { TemplateOption } from '@/utils'
 import {
   TextInput,
   FormControl,
@@ -155,7 +157,7 @@ import {
   FeatherIcon,
   toast,
 } from 'frappe-ui'
-import { ref, computed, inject, h } from 'vue'
+import { ref, computed, inject } from 'vue'
 
 const emit = defineEmits(['updateStep'])
 
@@ -251,7 +253,7 @@ function getDropdownOptions(template) {
           option: __('Confirm Delete'),
           icon: 'trash-2',
           active: props.active,
-          variant: 'danger',
+          theme: 'danger',
           onClick: () => deleteTemplate(template),
         }),
       condition: () => confirmDelete.value,
@@ -259,29 +261,5 @@ function getDropdownOptions(template) {
   ]
 
   return options.filter((option) => option.condition?.() || true)
-}
-
-function TemplateOption({ active, option, variant, icon, onClick }) {
-  return h(
-    'button',
-    {
-      class: [
-        active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
-        'group flex w-full gap-2 items-center rounded-md px-2 py-2 text-sm',
-        variant == 'danger' ? 'text-ink-red-3 hover:bg-ink-red-1' : '',
-      ],
-      onClick: onClick,
-    },
-    [
-      icon
-        ? h(FeatherIcon, {
-            name: icon,
-            class: ['h-4 w-4 shrink-0'],
-            'aria-hidden': true,
-          })
-        : null,
-      h('span', { class: 'whitespace-nowrap' }, option),
-    ],
-  )
 }
 </script>
