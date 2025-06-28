@@ -9,6 +9,13 @@
     <div class="flex-1 overflow-y-auto">
       <div class="mb-3 flex flex-col">
         <SidebarLink
+          :label="__('Dashboard')"
+          :icon="LucideLayoutDashboard"
+          :to="'Dashboard'"
+          :isCollapsed="isSidebarCollapsed"
+          class="mx-2 my-0.5"
+        />
+        <SidebarLink
           id="notifications-btn"
           :label="__('Notifications')"
           :icon="NotificationsIcon"
@@ -187,6 +194,7 @@ import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { ref, reactive, computed, h, markRaw, onMounted } from 'vue'
+import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
