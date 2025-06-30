@@ -45,12 +45,14 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import Users from '@/components/Settings/Users.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
+import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
@@ -106,6 +108,11 @@ const tabs = computed(() => {
           icon: Email2Icon,
           component: markRaw(EmailConfig),
           condition: () => isManager(),
+        },
+        {
+          label: __('Email Templates'),
+          icon: EmailTemplateIcon,
+          component: markRaw(EmailTemplatePage),
         },
       ],
     },

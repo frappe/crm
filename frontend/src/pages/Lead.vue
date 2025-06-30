@@ -134,7 +134,6 @@
                 <Tooltip v-if="callEnabled" :text="__('Make a call')">
                   <div>
                     <Button
-                      class="h-7 w-7"
                       @click="
                         () =>
                           lead.data.mobile_no
@@ -151,7 +150,6 @@
                 <Tooltip :text="__('Send an email')">
                   <div>
                     <Button
-                      class="h-7 w-7"
                       @click="
                         lead.data.email
                           ? openEmailBox()
@@ -167,7 +165,6 @@
                 <Tooltip :text="__('Go to website')">
                   <div>
                     <Button
-                      class="h-7 w-7"
                       @click="
                         lead.data.website
                           ? openWebsite(lead.data.website)
@@ -182,7 +179,7 @@
                 </Tooltip>
                 <Tooltip :text="__('Attach a file')">
                   <div>
-                    <Button class="h-7 w-7" @click="showFilesUploader = true">
+                    <Button @click="showFilesUploader = true">
                       <template #icon>
                         <AttachmentIcon />
                       </template>
@@ -333,6 +330,13 @@
       }
     "
   />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'CRM Lead'"
+    :docname="props.leadId"
+    name="Leads"
+  />
 </template>
 <script setup>
 import ErrorPage from '@/components/ErrorPage.vue'
@@ -423,6 +427,7 @@ const props = defineProps({
 
 const errorTitle = ref('')
 const errorMessage = ref('')
+const showDeleteLinkedDocModal = ref(false)
 
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
@@ -619,6 +624,10 @@ async function deleteLead(name) {
     name,
   })
   router.push({ name: 'Leads' })
+}
+
+async function deleteLeadWithModal(name) {
+  showDeleteLinkedDocModal.value = true
 }
 
 // Convert to Deal

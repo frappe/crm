@@ -211,7 +211,7 @@ import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { formatDate, timeAgo } from '@/utils'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
@@ -246,6 +246,7 @@ const rows = computed(() => {
     return getKanbanRows(tasks.value.data.data, tasks.value.data.fields)
   }
 
+  openTaskFromURL()
   return parseRows(tasks.value?.data.data, tasks.value?.data.columns)
 })
 
@@ -390,5 +391,16 @@ function redirect(doctype, docname) {
     params = { dealId: docname }
   }
   router.push({ name: name, params: params })
+}
+
+const openTaskFromURL = () => {
+  const searchParams = new URLSearchParams(window.location.search)
+  const taskName = searchParams.get('open')
+
+  if (taskName && rows.value?.length) {
+    showTask(parseInt(taskName))
+    searchParams.delete('open')
+    window.history.replaceState(null, '', window.location.pathname)
+  }
 }
 </script>
