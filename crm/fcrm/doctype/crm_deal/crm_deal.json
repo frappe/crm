@@ -14,6 +14,7 @@
   "column_break_ijan",
   "status",
   "deal_owner",
+  "lost_reason",
   "section_break_jgpm",
   "probability",
   "deal_value",
@@ -391,12 +392,18 @@
   {
    "fieldname": "column_break_kpxa",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lost_reason",
+   "fieldtype": "Link",
+   "label": "Lost Reason",
+   "options": "CRM Lost Reason"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-16 11:42:49.413483",
+ "modified": "2025-06-30 17:40:28.673539",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
