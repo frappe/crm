@@ -134,7 +134,6 @@
                 <Tooltip v-if="callEnabled" :text="__('Make a call')">
                   <div>
                     <Button
-                      class="h-7 w-7"
                       @click="
                         () =>
                           lead.data.mobile_no
@@ -151,7 +150,6 @@
                 <Tooltip :text="__('Send an email')">
                   <div>
                     <Button
-                      class="h-7 w-7"
                       @click="
                         lead.data.email
                           ? openEmailBox()
@@ -167,7 +165,6 @@
                 <Tooltip :text="__('Go to website')">
                   <div>
                     <Button
-                      class="h-7 w-7"
                       @click="
                         lead.data.website
                           ? openWebsite(lead.data.website)
@@ -182,22 +179,10 @@
                 </Tooltip>
                 <Tooltip :text="__('Attach a file')">
                   <div>
-                    <Button class="h-7 w-7" @click="showFilesUploader = true">
+                    <Button @click="showFilesUploader = true">
                       <template #icon>
                         <AttachmentIcon />
                       </template>
-                    </Button>
-                  </div>
-                </Tooltip>
-                <Tooltip :text="__('Delete')">
-                  <div>
-                    <Button
-                      class="h-7 w-7"
-                      @click="deleteLeadWithModal(lead.data.name)"
-                      variant="subtle"
-                      theme="red"
-                    >
-                      <FeatherIcon name="trash" class="h-4 w-4" />
                     </Button>
                   </div>
                 </Tooltip>

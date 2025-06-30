@@ -9,9 +9,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
-            </Button>
+            <Button variant="ghost" icon="x" @click="show = false" />
           </div>
         </div>
         <div>
@@ -26,22 +24,19 @@
       </div>
       <div class="px-4 pb-7 pt-0 sm:px-6">
         <div class="flex flex-row-reverse gap-2">
-          <Button theme="red" variant="solid" @click="confirmDelete()">
-            <div class="flex gap-1">
-              <FeatherIcon name="trash" class="h-4 w-4" />
-              <span>
-                {{ __('Delete {0} items', [props.items.length]) }}
-              </span>
-            </div>
-          </Button>
-          <Button variant="solid" @click="confirmUnlink()">
-            <div class="flex gap-1">
-              <FeatherIcon name="unlock" class="h-4 w-4" />
-              <span>
-                {{ __('Unlink and delete {0} items', [props.items.length]) }}
-              </span>
-            </div>
-          </Button>
+          <Button
+            :label="__('Delete {0} items', [props.items.length])"
+            icon-left="trash-2"
+            variant="solid"
+            theme="red"
+            @click="confirmDelete()"
+          />
+          <Button
+            :label="__('Unlink and delete {0} items', [props.items.length])"
+            icon-left="unlock"
+            variant="solid"
+            @click="confirmUnlink()"
+          />
         </div>
       </div>
     </template>
@@ -54,9 +49,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" class="w-7" @click="show = false">
-              <FeatherIcon name="x" class="h-4 w-4" />
-            </Button>
+            <Button variant="ghost" icon="x" @click="show = false" />
           </div>
         </div>
         <div>
@@ -75,24 +68,20 @@
       </div>
       <div class="px-4 pb-7 pt-0 sm:px-6">
         <div class="flex flex-row-reverse gap-2">
-          <Button variant="solid" theme="red" @click="deleteDocs()">
-            <div class="flex gap-1">
-              <span>
-                {{
-                  confirmDeleteInfo.delete
-                    ? __('Delete')
-                    : __('Unlink and delete')
-                }}
-              </span>
-            </div>
-          </Button>
-          <Button variant="subtle" @click="confirmDeleteInfo.show = false">
-            <div class="flex gap-1">
-              <span>
-                {{ __('Cancel') }}
-              </span>
-            </div>
-          </Button>
+          <Button
+            :label="
+              confirmDeleteInfo.delete ? __('Delete') : __('Unlink and delete')
+            "
+            :icon-left="confirmDeleteInfo.delete ? 'trash-2' : 'unlock'"
+            variant="solid"
+            theme="red"
+            @click="deleteDocs()"
+          />
+          <Button
+            :label="__('Cancel')"
+            variant="subtle"
+            @click="confirmDeleteInfo.show = false"
+          />
         </div>
       </div>
     </template>

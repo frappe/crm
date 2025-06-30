@@ -44,6 +44,10 @@ class CRMInvitation(Document):
 
 		user = self.create_user_if_not_exists()
 		user.append_roles(self.role)
+		if self.role == "System Manager":
+			user.append_roles("Sales Manager", "Sales User")
+		elif self.role == "Sales Manager":
+			user.append_roles("Sales User")
 		if self.role == "Sales User":
 			self.update_module_in_user(user, "FCRM")
 		user.save(ignore_permissions=True)

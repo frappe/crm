@@ -1,7 +1,7 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
+  <div class="flex h-full flex-col gap-6 p-6 text-ink-gray-8">
     <!-- Header -->
-    <div class="flex justify-between">
+    <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
           {{ __('Users') }}
@@ -63,7 +63,10 @@
       class="flex flex-col overflow-hidden"
       v-if="!users.loading && users.data?.crmUsers?.length > 1"
     >
-      <div class="flex items-center justify-between mb-4">
+      <div
+        v-if="users.data?.crmUsers?.length > 10"
+        class="flex items-center justify-between mb-4 px-2 pt-0.5"
+      >
         <TextInput
           ref="searchRef"
           v-model="search"
@@ -86,7 +89,7 @@
           ]"
         />
       </div>
-      <ul class="divide-y divide-outline-gray-modals overflow-y-auto">
+      <ul class="divide-y divide-outline-gray-modals overflow-y-auto px-2">
         <template v-for="user in usersList" :key="user.name">
           <li class="flex items-center justify-between py-2">
             <div class="flex items-center">
@@ -109,14 +112,31 @@
                 :options="getMoreOptions(user)"
                 :button="{
                   icon: 'more-horizontal',
+                  onblur: (e) => {
+                    e.stopPropagation()
+                    confirmRemove = false
+                  },
                 }"
                 placement="right"
               />
+              <Tooltip
+                v-if="isManager() && user.role == 'System Manager'"
+                :text="__('Cannot change role of user with Admin access')"
+              >
+                <Button :label="__('Admin')" icon-left="shield" />
+              </Tooltip>
               <Dropdown
+                v-else
                 :options="getDropdownOptions(user)"
                 :button="{
                   label: roleMap[user.role],
                   iconRight: 'chevron-down',
+                  iconLeft:
+                    user.role === 'System Manager'
+                      ? 'shield'
+                      : user.role === 'Sales Manager'
+                        ? 'briefcase'
+                        : 'user-check',
                 }"
                 placement="right"
               />
@@ -146,12 +166,12 @@
 </template>
 
 <script setup>
-import LucideCheck from '~icons/lucide/check'
 import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
-import { Avatar, TextInput, toast, call } from 'frappe-ui'
-import { ref, computed, h, onMounted } from 'vue'
+import { TemplateOption, DropdownOption } from '@/utils'
+import { Avatar, TextInput, toast, call, FeatherIcon, Tooltip } from 'frappe-ui'
+import { ref, computed, onMounted } from 'vue'
 
 const { users, isAdmin, isManager } = usersStore()
 
@@ -182,12 +202,36 @@ const usersList = computed(() => {
     })
 })
 
+const confirmRemove = ref(false)
+
 function getMoreOptions(user) {
   let options = [
     {
       label: __('Remove'),
-      icon: 'trash-2',
-      onClick: () => removeUser(user, true),
+      component: (props) =>
+        TemplateOption({
+          option: __('Remove'),
+          icon: 'trash-2',
+          active: props.active,
+          onClick: (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            confirmRemove.value = true
+          },
+        }),
+      condition: () => !confirmRemove.value,
+    },
+    {
+      label: __('Confirm Remove'),
+      component: (props) =>
+        TemplateOption({
+          option: __('Confirm Remove'),
+          icon: 'trash-2',
+          active: props.active,
+          theme: 'danger',
+          onClick: () => removeUser(user, true),
+        }),
+      condition: () => confirmRemove.value,
     },
   ]
 
@@ -199,8 +243,9 @@ function getDropdownOptions(user) {
     {
       label: __('Admin'),
       component: (props) =>
-        RoleOption({
-          role: __('Admin'),
+        DropdownOption({
+          option: __('Admin'),
+          icon: 'shield',
           active: props.active,
           selected: user.role === 'System Manager',
           onClick: () => updateRole(user, 'System Manager'),
@@ -210,8 +255,9 @@ function getDropdownOptions(user) {
     {
       label: __('Manager'),
       component: (props) =>
-        RoleOption({
-          role: __('Manager'),
+        DropdownOption({
+          option: __('Manager'),
+          icon: 'briefcase',
           active: props.active,
           selected: user.role === 'Sales Manager',
           onClick: () => updateRole(user, 'Sales Manager'),
@@ -221,8 +267,9 @@ function getDropdownOptions(user) {
     {
       label: __('Sales User'),
       component: (props) =>
-        RoleOption({
-          role: __('Sales User'),
+        DropdownOption({
+          option: __('Sales User'),
+          icon: 'user-check',
           active: props.active,
           selected: user.role === 'Sales User',
           onClick: () => updateRole(user, 'Sales User'),
@@ -231,28 +278,6 @@ function getDropdownOptions(user) {
   ]
 
   return options.filter((option) => option.condition?.() || true)
-}
-
-function RoleOption({ active, role, onClick, selected }) {
-  return h(
-    'button',
-    {
-      class: [
-        active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
-        'group flex w-full justify-between items-center rounded-md px-2 py-2 text-sm',
-      ],
-      onClick: !selected ? onClick : null,
-    },
-    [
-      h('span', { class: 'whitespace-nowrap' }, role),
-      selected
-        ? h(LucideCheck, {
-            class: ['h-4 w-4 shrink-0 text-ink-gray-7'],
-            'aria-hidden': true,
-          })
-        : null,
-    ],
-  )
 }
 
 function updateRole(user, newRole) {
