@@ -85,7 +85,7 @@ const loading = ref(false)
 const error = ref(null)
 const editMode = ref(false)
 
-const { document: callLog } = useDocument(
+const { document: callLog, triggerOnBeforeCreate } = useDocument(
   'CRM Call Log',
   props.data?.name || '',
 )
@@ -97,8 +97,7 @@ const dialogOptions = computed(() => {
     {
       label: editMode.value ? __('Save') : __('Create'),
       variant: 'solid',
-      onClick: () =>
-        editMode.value ? updateCallLog() : createCallLog.submit(),
+      onClick: () => (editMode.value ? updateCallLog() : createCallLog()),
     },
   ]
 
@@ -135,18 +134,21 @@ async function updateCallLog() {
   await callLog.save.submit(null, callBacks)
 }
 
-const createCallLog = createResource({
+async function createCallLog() {
+  Object.assign(callLog.doc, {
+    doctype: 'CRM Call Log',
+    id: getRandom(6),
+    telephony_medium: 'Manual',
+  })
+
+  await triggerOnBeforeCreate?.()
+  await _createCallLog.submit({
+    doc: callLog.doc,
+  })
+}
+
+const _createCallLog = createResource({
   url: 'frappe.client.insert',
-  makeParams() {
-    return {
-      doc: {
-        doctype: 'CRM Call Log',
-        id: getRandom(6),
-        telephony_medium: 'Manual',
-        ...callLog.doc,
-      },
-    }
-  },
   onSuccess(doc) {
     loading.value = false
     if (doc.name) {
