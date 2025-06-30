@@ -84,7 +84,10 @@ const error = ref(null)
 const title = ref(null)
 const editMode = ref(false)
 
-const { document: _address } = useDocument('Address', props.address || '')
+const { document: _address, triggerOnBeforeCreate } = useDocument(
+  'Address',
+  props.address || '',
+)
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
@@ -95,8 +98,7 @@ const dialogOptions = computed(() => {
     {
       label: editMode.value ? __('Save') : __('Create'),
       variant: 'solid',
-      onClick: () =>
-        editMode.value ? updateAddress() : createAddress.submit(),
+      onClick: () => (editMode.value ? updateAddress() : createAddress()),
     },
   ]
 
@@ -133,16 +135,22 @@ async function updateAddress() {
   await _address.save.submit(null, callBacks)
 }
 
-const createAddress = createResource({
+async function createAddress() {
+  loading.value = true
+  error.value = null
+
+  await triggerOnBeforeCreate?.()
+
+  await _createAddress.submit({
+    doc: {
+      doctype: 'Address',
+      ..._address.doc,
+    },
+  })
+}
+
+const _createAddress = createResource({
   url: 'frappe.client.insert',
-  makeParams() {
-    return {
-      doc: {
-        doctype: 'Address',
-        ..._address.doc,
-      },
-    }
-  },
   onSuccess(doc) {
     loading.value = false
     if (doc.name) {

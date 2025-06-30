@@ -86,7 +86,7 @@ const show = defineModel()
 
 const loading = ref(false)
 
-const { document: _contact } = useDocument('Contact')
+const { document: _contact, triggerOnBeforeCreate } = useDocument('Contact')
 
 async function createContact() {
   if (_contact.doc.email_id) {
@@ -98,6 +98,8 @@ async function createContact() {
     _contact.doc.phone_nos = [{ phone: _contact.doc.mobile_no }]
     delete _contact.doc.mobile_no
   }
+
+  await triggerOnBeforeCreate?.()
 
   const doc = await call('frappe.client.insert', {
     doc: {
