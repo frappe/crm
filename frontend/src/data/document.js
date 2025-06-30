@@ -110,6 +110,14 @@ export function useDocument(doctype, docname) {
     await trigger(handler)
   }
 
+  async function triggerOnBeforeCreate() {
+    const args = Array.from(arguments)
+    const handler = async function () {
+      await (this.onBeforeCreate?.(...args) || this.on_before_create?.(...args))
+    }
+    await trigger(handler)
+  }
+
   async function triggerOnSave() {
     const handler = async function () {
       await (this.onSave?.() || this.on_save?.())
@@ -202,26 +210,12 @@ export function useDocument(doctype, docname) {
     await runSequentially(tasks)
   }
 
-  function getOldValue(fieldname, row) {
-    if (!documentsCache[doctype][docname || '']) return ''
-
-    const document = documentsCache[doctype][docname || '']
-    const oldDoc = document.originalDoc
-
-    if (row?.name) {
-      return oldDoc?.[row.parentfield]?.find((r) => r.name === row.name)?.[
-        fieldname
-      ]
-    }
-
-    return oldDoc?.[fieldname] || document.doc[fieldname]
-  }
-
   return {
     document: documentsCache[doctype][docname || ''],
     assignees,
     getControllers,
     triggerOnLoad,
+    triggerOnBeforeCreate,
     triggerOnSave,
     triggerOnRefresh,
     triggerOnChange,
