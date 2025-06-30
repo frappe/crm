@@ -20,13 +20,8 @@ msgstr ""
 msgid " (New)"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/TaskModal.vue:95
-#: frontend/src/components/Telephony/TaskPanel.vue:67
-=======
 #: frontend/src/components/Modals/TaskModal.vue:99
 #: frontend/src/components/Telephony/TaskPanel.vue:70
->>>>>>> cc411f03 (chore: update POT file)
 msgid "01/04/2024 11:30 PM"
 msgstr ""
 
@@ -733,11 +728,7 @@ msgstr ""
 msgid "Call using {0}"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/NoteModal.vue:43
-=======
 #: frontend/src/components/Modals/NoteModal.vue:30
->>>>>>> cc411f03 (chore: update POT file)
 #: frontend/src/components/Modals/TaskModal.vue:43
 msgid "Call with John Doe"
 msgstr ""
@@ -1041,17 +1032,11 @@ msgstr ""
 
 #. Label of the content (Text Editor) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
-<<<<<<< HEAD
-#: frontend/src/components/Modals/EmailTemplateModal.vue:61
-#: frontend/src/components/Modals/EmailTemplateModal.vue:74
-#: frontend/src/components/Modals/NoteModal.vue:47
-=======
 #: frontend/src/components/Modals/NoteModal.vue:34
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:92
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:105
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:92
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:105
->>>>>>> cc411f03 (chore: update POT file)
 msgid "Content"
 msgstr ""
 
@@ -1435,11 +1420,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
-<<<<<<< HEAD
-#: frontend/src/components/Modals/TaskModal.vue:48
-=======
 #: frontend/src/components/Modals/TaskModal.vue:49
->>>>>>> cc411f03 (chore: update POT file)
 msgid "Description"
 msgstr ""
 
@@ -2454,11 +2435,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:75 frontend/src/components/Filter.vue:108
 #: frontend/src/components/Modals/AssignmentModal.vue:35
-<<<<<<< HEAD
-#: frontend/src/components/Modals/TaskModal.vue:75
-=======
 #: frontend/src/components/Modals/TaskModal.vue:76
->>>>>>> cc411f03 (chore: update POT file)
 #: frontend/src/components/Telephony/TaskPanel.vue:47
 msgid "John Doe"
 msgstr ""
@@ -3217,20 +3194,12 @@ msgstr ""
 msgid "Only one {0} can be set as primary."
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/NoteModal.vue:25
-=======
 #: frontend/src/components/Modals/NoteModal.vue:18
->>>>>>> cc411f03 (chore: update POT file)
 #: frontend/src/components/Modals/TaskModal.vue:25
 msgid "Open Deal"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/NoteModal.vue:26
-=======
 #: frontend/src/components/Modals/NoteModal.vue:19
->>>>>>> cc411f03 (chore: update POT file)
 #: frontend/src/components/Modals/TaskModal.vue:26
 msgid "Open Lead"
 msgstr ""
@@ -4377,11 +4346,7 @@ msgstr ""
 #. Label of the title (Data) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
-<<<<<<< HEAD
-#: frontend/src/components/Modals/NoteModal.vue:41
-=======
 #: frontend/src/components/Modals/NoteModal.vue:30
->>>>>>> cc411f03 (chore: update POT file)
 #: frontend/src/components/Modals/TaskModal.vue:41
 msgid "Title"
 msgstr ""
@@ -4433,13 +4398,8 @@ msgstr ""
 msgid "Tomorrow"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/NoteModal.vue:56
-#: frontend/src/components/Modals/TaskModal.vue:58
-=======
 #: frontend/src/components/Modals/NoteModal.vue:37
 #: frontend/src/components/Modals/TaskModal.vue:59
->>>>>>> cc411f03 (chore: update POT file)
 msgid "Took a call with John Doe and discussed the new project."
 msgstr ""
 
