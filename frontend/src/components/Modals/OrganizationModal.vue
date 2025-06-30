@@ -88,9 +88,15 @@ const show = defineModel()
 const loading = ref(false)
 const error = ref(null)
 
-const { document: organization } = useDocument('CRM Organization')
+const { document: organization, triggerOnBeforeCreate } =
+  useDocument('CRM Organization')
 
 async function createOrganization() {
+  loading.value = true
+  error.value = null
+
+  await triggerOnBeforeCreate?.()
+
   const doc = await call(
     'frappe.client.insert',
     {

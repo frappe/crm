@@ -74,7 +74,11 @@ const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
 
-const { document: lead, triggerOnChange } = useDocument('CRM Lead')
+const {
+  document: lead,
+  triggerOnChange,
+  triggerOnBeforeCreate,
+} = useDocument('CRM Lead')
 
 const leadStatuses = computed(() => {
   let statuses = statusOptions('lead', null, [], triggerOnChange)
@@ -112,71 +116,73 @@ const tabs = createResource({
 
 const createLead = createResource({
   url: 'frappe.client.insert',
-  makeParams(values) {
-    return {
-      doc: {
-        doctype: 'CRM Lead',
-        ...values,
-      },
-    }
-  },
 })
 
-function createNewLead() {
+async function createNewLead() {
   if (lead.doc.website && !lead.doc.website.startsWith('http')) {
     lead.doc.website = 'https://' + lead.doc.website
   }
 
-  createLead.submit(lead.doc, {
-    validate() {
-      error.value = null
-      if (!lead.doc.first_name) {
-        error.value = __('First Name is mandatory')
-        return error.value
-      }
-      if (lead.doc.annual_revenue) {
-        if (typeof lead.doc.annual_revenue === 'string') {
-          lead.doc.annual_revenue = lead.doc.annual_revenue.replace(/,/g, '')
-        } else if (isNaN(lead.doc.annual_revenue)) {
-          error.value = __('Annual Revenue should be a number')
+  await triggerOnBeforeCreate?.()
+
+  createLead.submit(
+    {
+      doc: {
+        doctype: 'CRM Lead',
+        ...lead.doc,
+      },
+    },
+    {
+      validate() {
+        error.value = null
+        if (!lead.doc.first_name) {
+          error.value = __('First Name is mandatory')
           return error.value
         }
-      }
-      if (
-        lead.doc.mobile_no &&
-        isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))
-      ) {
-        error.value = __('Mobile No should be a number')
-        return error.value
-      }
-      if (lead.doc.email && !lead.doc.email.includes('@')) {
-        error.value = __('Invalid Email')
-        return error.value
-      }
-      if (!lead.doc.status) {
-        error.value = __('Status is required')
-        return error.value
-      }
-      isLeadCreating.value = true
+        if (lead.doc.annual_revenue) {
+          if (typeof lead.doc.annual_revenue === 'string') {
+            lead.doc.annual_revenue = lead.doc.annual_revenue.replace(/,/g, '')
+          } else if (isNaN(lead.doc.annual_revenue)) {
+            error.value = __('Annual Revenue should be a number')
+            return error.value
+          }
+        }
+        if (
+          lead.doc.mobile_no &&
+          isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))
+        ) {
+          error.value = __('Mobile No should be a number')
+          return error.value
+        }
+        if (lead.doc.email && !lead.doc.email.includes('@')) {
+          error.value = __('Invalid Email')
+          return error.value
+        }
+        if (!lead.doc.status) {
+          error.value = __('Status is required')
+          return error.value
+        }
+        isLeadCreating.value = true
+      },
+      onSuccess(data) {
+        capture('lead_created')
+        isLeadCreating.value = false
+        show.value = false
+        router.push({ name: 'Lead', params: { leadId: data.name } })
+        updateOnboardingStep('create_first_lead', true, false, () => {
+          localStorage.setItem('firstLead' + user, data.name)
+        })
+      },
+      onError(err) {
+        isLeadCreating.value = false
+        if (!err.messages) {
+          error.value = err.message
+          return
+        }
+        error.value = err.messages.join('\n')
+      },
     },
-    onSuccess(data) {
-      capture('lead_created')
-      isLeadCreating.value = false
-      show.value = false
-      router.push({ name: 'Lead', params: { leadId: data.name } })
-      updateOnboardingStep('create_first_lead', true, false, () => {
-        localStorage.setItem('firstLead' + user, data.name)
-      })
-    },
-    onError(err) {
-      isLeadCreating.value = false
-      if (!err.messages) {
-        error.value = err.message
-        return
-      }
-      error.value = err.messages.join('\n')
-    },
-  })
+  )
 }
 
 function openQuickEntryModal() {
