@@ -1,10 +1,9 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col h-full overflow-hidden">
     <LayoutHeader>
       <template #left-header>
-        <div class="text-lg font-medium text-gray-900">Dashboard</div>
+        <ViewBreadcrumbs routeName="Dashboard" />
       </template>
-      <template #right-header> </template>
     </LayoutHeader>
 
     <div class="p-5 w-full overflow-y-scroll">
@@ -47,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { AxisChart, DonutChart, NumberChart, usePageMeta } from 'frappe-ui'
 
