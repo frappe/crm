@@ -186,19 +186,6 @@
                     </Button>
                   </div>
                 </Tooltip>
-<<<<<<< HEAD
-=======
-                <Tooltip :text="__('Delete')">
-                  <div>
-                    <Button
-                      @click="deleteLeadWithModal(lead.data.name)"
-                      variant="subtle"
-                      theme="red"
-                      icon="trash-2"
-                    />
-                  </div>
-                </Tooltip>
->>>>>>> 65435cf2 (fix: delete icon issue & more cleanup)
               </div>
               <ErrorMessage :message="__(error)" />
             </div>
@@ -343,6 +330,13 @@
       }
     "
   />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'CRM Lead'"
+    :docname="props.leadId"
+    name="Leads"
+  />
 </template>
 <script setup>
 import ErrorPage from '@/components/ErrorPage.vue'
@@ -433,6 +427,7 @@ const props = defineProps({
 
 const errorTitle = ref('')
 const errorMessage = ref('')
+const showDeleteLinkedDocModal = ref(false)
 
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
@@ -629,6 +624,10 @@ async function deleteLead(name) {
     name,
   })
   router.push({ name: 'Leads' })
+}
+
+async function deleteLeadWithModal(name) {
+  showDeleteLinkedDocModal.value = true
 }
 
 // Convert to Deal

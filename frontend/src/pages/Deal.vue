@@ -129,19 +129,6 @@
                 </Button>
               </div>
             </Tooltip>
-<<<<<<< HEAD
-=======
-            <Tooltip :text="__('Delete')">
-              <div>
-                <Button
-                  @click="deleteDealWithModal(deal.data.name)"
-                  variant="subtle"
-                  icon="trash-2"
-                  theme="red"
-                />
-              </div>
-            </Tooltip>
->>>>>>> 65435cf2 (fix: delete icon issue & more cleanup)
           </div>
         </div>
       </div>
@@ -332,6 +319,13 @@
       }
     "
   />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'CRM Deal'"
+    :docname="props.dealId"
+    name="Deals"
+  />
 </template>
 <script setup>
 import ErrorPage from '@/components/ErrorPage.vue'
@@ -475,7 +469,11 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const showFilesUploader = ref(false)
 const _organization = ref({})
+const showDeleteLinkedDocModal = ref(false)
 
+async function deleteDealWithModal() {
+  showDeleteLinkedDocModal.value = true
+}
 function updateDeal(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? '' : value
 

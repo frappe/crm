@@ -105,7 +105,7 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  @click="deleteContact"
+                  @click="deleteContact()"
                 >
                   <template #prefix>
                     <FeatherIcon name="trash-2" class="h-4 w-4" />
@@ -171,6 +171,13 @@
     v-else-if="errorTitle"
     :errorTitle="errorTitle"
     :errorMessage="errorMessage"
+  />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'Contact'"
+    :docname="contact.data.name"
+    name="Contacts"
   />
 </template>
 
@@ -293,6 +300,11 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
+const showDeleteLinkedDocModal = ref(false)
+
+async function deleteContact() {
+  showDeleteLinkedDocModal.value = true
+}
 
 async function changeContactImage(file) {
   await call('frappe.client.set_value', {
@@ -302,28 +314,6 @@ async function changeContactImage(file) {
     value: file?.file_url || '',
   })
   contact.reload()
-}
-
-async function deleteContact() {
-  $dialog({
-    title: __('Delete contact'),
-    message: __('Are you sure you want to delete this contact?'),
-    actions: [
-      {
-        label: __('Delete'),
-        theme: 'red',
-        variant: 'solid',
-        async onClick(close) {
-          await call('frappe.client.delete', {
-            doctype: 'Contact',
-            name: props.contactId,
-          })
-          close()
-          router.push({ name: 'Contacts' })
-        },
-      },
-    ],
-  })
 }
 
 const tabIndex = ref(0)
@@ -389,13 +379,13 @@ function getParsedSections(_sections) {
                         'Contact Email',
                         option.name,
                         'email_id',
-                        option.value,
+                        option.value
                       )
                     }
                   },
                   onDelete: async (option, isNew) => {
                     contact.data.email_ids = contact.data.email_ids.filter(
-                      (email) => email.name !== option.name,
+                      (email) => email.name !== option.name
                     )
                     !isNew && (await deleteOption('Contact Email', option.name))
                     if (_contact.value.email_id === option.value) {
@@ -403,7 +393,7 @@ function getParsedSections(_sections) {
                         _contact.value.email_id = ''
                       } else {
                         _contact.value.email_id = contact.data.email_ids.find(
-                          (email) => email.is_primary,
+                          (email) => email.is_primary
                         )?.email_id
                       }
                     }
@@ -446,13 +436,13 @@ function getParsedSections(_sections) {
                         'Contact Phone',
                         option.name,
                         'phone',
-                        option.value,
+                        option.value
                       )
                     }
                   },
                   onDelete: async (option, isNew) => {
                     contact.data.phone_nos = contact.data.phone_nos.filter(
-                      (phone) => phone.name !== option.name,
+                      (phone) => phone.name !== option.name
                     )
                     !isNew && (await deleteOption('Contact Phone', option.name))
                     if (_contact.value.actual_mobile_no === option.value) {
@@ -461,7 +451,7 @@ function getParsedSections(_sections) {
                       } else {
                         _contact.value.actual_mobile_no =
                           contact.data.phone_nos.find(
-                            (phone) => phone.is_primary_mobile_no,
+                            (phone) => phone.is_primary_mobile_no
                           )?.phone
                       }
                     }

@@ -127,6 +127,7 @@ const viewControls = ref(null)
 watch(
   () => notes.value?.data?.page_length_count,
   (val, old_value) => {
+    openNoteFromURL()
     if (!val || val === old_value) return
     updatedPageCount.value = val
   },
@@ -151,5 +152,21 @@ async function deleteNote(name) {
     name,
   })
   notes.value.reload()
+}
+
+const openNoteFromURL = () => {
+  const searchParams = new URLSearchParams(window.location.search)
+  const noteName = searchParams.get('open')
+
+  if (noteName && notes.value?.data?.data) {
+    const foundNote = notes.value.data.data.find(
+      (note) => note.name === noteName,
+    )
+    if (foundNote) {
+      editNote(foundNote)
+    }
+    searchParams.delete('open')
+    window.history.replaceState(null, '', window.location.pathname)
+  }
 }
 </script>
