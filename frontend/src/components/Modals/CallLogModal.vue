@@ -69,6 +69,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  referenceDoc: {
+    type: Object,
+    default: () => ({}),
+  },
   options: {
     type: Object,
     default: {
@@ -141,7 +145,7 @@ async function createCallLog() {
     telephony_medium: 'Manual',
   })
 
-  await triggerOnBeforeCreate?.()
+  await triggerOnBeforeCreate?.(props.referenceDoc)
   await _createCallLog.submit({
     doc: callLog.doc,
   })
