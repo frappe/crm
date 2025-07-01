@@ -60,7 +60,7 @@
   },
   {
    "default": "0",
-   "description": "It will make deal's \"Expected Closure Date\" mandatory to get accurate forecasting insights",
+   "description": "It will make deal's \"Close Date\" & \"Deal Value\" mandatory to get accurate forecasting insights",
    "fieldname": "enable_forecasting",
    "fieldtype": "Check",
    "label": "Enable Forecasting"
@@ -69,7 +69,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-11 19:12:16.762499",
+ "modified": "2025-07-01 13:20:48.757603",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

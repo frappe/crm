@@ -68,30 +68,37 @@ def add_default_deal_statuses():
 	statuses = {
 		"Qualification": {
 			"color": "gray",
+			"probability": 10,
 			"position": 1,
 		},
 		"Demo/Making": {
 			"color": "orange",
+			"probability": 25,
 			"position": 2,
 		},
 		"Proposal/Quotation": {
 			"color": "blue",
+			"probability": 50,
 			"position": 3,
 		},
 		"Negotiation": {
 			"color": "yellow",
+			"probability": 70,
 			"position": 4,
 		},
 		"Ready to Close": {
 			"color": "purple",
+			"probability": 90,
 			"position": 5,
 		},
 		"Won": {
 			"color": "green",
+			"probability": 100,
 			"position": 6,
 		},
 		"Lost": {
 			"color": "red",
+			"probability": 0,
 			"position": 7,
 		},
 	}
@@ -103,6 +110,7 @@ def add_default_deal_statuses():
 		doc = frappe.new_doc("CRM Deal Status")
 		doc.deal_status = status
 		doc.color = statuses[status]["color"]
+		doc.probability = statuses[status]["probability"]
 		doc.position = statuses[status]["position"]
 		doc.insert()
 

@@ -26,7 +26,10 @@ export function useDocument(doctype, docname) {
             let errorMessage = __('Error updating document')
             if (err.exc_type == 'MandatoryError') {
               const fieldName = err.messages
-                .map((msg) => msg.split(': ')[2].trim())
+                .map((msg) => {
+                  let arr = msg.split(': ')
+                  return arr[arr.length - 1].trim()
+                })
                 .join(', ')
               errorMessage = __('Mandatory field error: {0}', [fieldName])
             }
@@ -193,8 +196,7 @@ export function useDocument(doctype, docname) {
   async function triggerConvertToDeal() {
     const args = Array.from(arguments)
     const handler = async function () {
-      await (this.convertToDeal?.(...args) ||
-        this.on_convert_to_deal?.(...args))
+      await (this.convertToDeal?.(...args) || this.convert_to_deal?.(...args))
     }
     await trigger(handler)
   }
