@@ -104,7 +104,7 @@ export function prettyDate(date, mini = false) {
       if (Math.abs(dayDiff) >= 1 && Math.abs(dayDiff) < 1.5) {
         return __('tomorrow')
       } else if (Math.abs(dayDiff) < 7) {
-        return __('in {0} d', [Math.abs(dayDiff)])
+        return __('in {0} d', [Math.floor(Math.abs(dayDiff))])
       } else if (Math.abs(dayDiff) < 31) {
         return __('in {0} w', [Math.floor(Math.abs(dayDiff) / 7)])
       } else if (Math.abs(dayDiff) < 365) {
@@ -121,6 +121,7 @@ export function prettyDate(date, mini = false) {
         return __('{0} h', [Math.floor(diff / 3600)])
       }
     } else {
+      dayDiff = Math.floor(dayDiff)
       if (dayDiff < 7) {
         return __('{0} d', [dayDiff])
       } else if (dayDiff < 31) {
@@ -150,7 +151,7 @@ export function prettyDate(date, mini = false) {
       if (Math.abs(dayDiff) >= 1 && Math.abs(dayDiff) < 1.5) {
         return __('tomorrow')
       } else if (Math.abs(dayDiff) < 7) {
-        return __('in {0} days', [Math.abs(dayDiff)])
+        return __('in {0} days', [Math.floor(Math.abs(dayDiff))])
       } else if (Math.abs(dayDiff) < 31) {
         return __('in {0} weeks', [Math.floor(Math.abs(dayDiff) / 7)])
       } else if (Math.abs(dayDiff) < 365) {
@@ -173,6 +174,7 @@ export function prettyDate(date, mini = false) {
         return __('{0} hours ago', [Math.floor(diff / 3600)])
       }
     } else {
+      dayDiff = Math.floor(dayDiff)
       if (dayDiff == 1) {
         return __('yesterday')
       } else if (dayDiff < 7) {
