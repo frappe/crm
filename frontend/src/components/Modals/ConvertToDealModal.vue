@@ -90,6 +90,7 @@
         :data="deal.doc"
         doctype="CRM Deal"
       />
+      <ErrorMessage class="mt-4" :message="error" />
     </template>
   </Dialog>
 </template>
@@ -107,7 +108,7 @@ import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { capture } from '@/telemetry'
 import { useOnboarding } from 'frappe-ui/frappe'
-import { Switch, Dialog, toast, createResource, call } from 'frappe-ui'
+import { Switch, Dialog, createResource, call } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -132,18 +133,21 @@ const existingOrganizationChecked = ref(false)
 
 const existingContact = ref('')
 const existingOrganization = ref('')
+const error = ref('')
 
 const { triggerConvertToDeal } = useDocument('CRM Lead', props.lead.name)
 const { document: deal } = useDocument('CRM Deal')
 
 async function convertToDeal() {
+  error.value = ''
+
   if (existingContactChecked.value && !existingContact.value) {
-    toast.error(__('Please select an existing contact'))
+    error.value = __('Please select an existing contact')
     return
   }
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
-    toast.error(__('Please select an existing organization'))
+    error.value = __('Please select an existing organization')
     return
   }
 
@@ -163,7 +167,22 @@ async function convertToDeal() {
     existing_contact: existingContact.value,
     existing_organization: existingOrganization.value,
   }).catch((err) => {
-    toast.error(__('Error converting to deal: {0}', [err.messages?.[0]]))
+    if (err.exc_type == 'MandatoryError') {
+      const errorMessage = err.messages
+        .map((msg) => {
+          let arr = msg.split(': ')
+          return arr[arr.length - 1].trim()
+        })
+        .join(', ')
+
+      if (errorMessage.toLowerCase().includes('required')) {
+        error.value = __(errorMessage)
+      } else {
+        error.value = __('{0} is required', [errorMessage])
+      }
+      return
+    }
+    error.value = __('Error converting to deal: {0}', [err.messages?.[0]])
   })
   if (_deal) {
     show.value = false
@@ -171,6 +190,7 @@ async function convertToDeal() {
     existingOrganizationChecked.value = false
     existingContact.value = ''
     existingOrganization.value = ''
+    error.value = ''
     updateOnboardingStep('convert_lead_to_deal', true, false, () => {
       localStorage.setItem('firstDeal' + user, _deal)
     })
