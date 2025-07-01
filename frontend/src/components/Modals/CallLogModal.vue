@@ -124,7 +124,10 @@ const callBacks = {
     loading.value = false
     if (err.exc_type == 'MandatoryError') {
       const errorMessage = err.messages
-        .map((msg) => msg.split(': ')[2].trim())
+        .map((msg) => {
+          let arr = msg.split(': ')
+          return arr[arr.length - 1].trim()
+        })
         .join(', ')
       error.value = __('These fields are required: {0}', [errorMessage])
       return
