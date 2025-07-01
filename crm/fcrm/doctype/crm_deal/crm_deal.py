@@ -25,6 +25,7 @@ class CRMDeal(Document):
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
 		self.validate_forcasting_fields()
+		self.validate_lost_reason()
 
 	def after_insert(self):
 		if self.deal_owner:
@@ -148,6 +149,16 @@ class CRMDeal(Document):
 				frappe.throw(_("Deal Value is required."), frappe.MandatoryError)
 			if not self.close_date:
 				frappe.throw(_("Close Date is required."), frappe.MandatoryError)
+
+	def validate_lost_reason(self):
+		"""
+		Validate the lost reason if the status is set to "Lost".
+		"""
+		if self.status == "Lost":
+			if not self.lost_reason:
+				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
+			elif self.lost_reason == "Other" and not self.other_lost_reason:
+				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
 
 	@staticmethod
 	def default_list_data():
