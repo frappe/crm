@@ -24,7 +24,7 @@ class CRMDeal(Document):
 			self.assign_agent(self.deal_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
-		self.update_close_date()
+		self.validate_forcasting_fields()
 
 	def after_insert(self):
 		if self.deal_owner:
@@ -140,6 +140,14 @@ class CRMDeal(Document):
 		"""
 		if self.status == "Won" and not self.close_date:
 			self.close_date = frappe.utils.nowdate()
+
+	def validate_forcasting_fields(self):
+		self.update_close_date()
+		if frappe.db.get_single_value("FCRM Settings", "enable_forecasting"):
+			if not self.deal_value or self.deal_value == 0:
+				frappe.throw(_("Deal Value is required."), frappe.MandatoryError)
+			if not self.close_date:
+				frappe.throw(_("Close Date is required."), frappe.MandatoryError)
 
 	@staticmethod
 	def default_list_data():
