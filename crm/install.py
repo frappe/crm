@@ -98,6 +98,7 @@ def add_default_deal_statuses():
 		},
 		"Lost": {
 			"color": "red",
+			"probability": 0,
 			"position": 7,
 		},
 	}
