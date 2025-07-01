@@ -193,8 +193,7 @@ export function useDocument(doctype, docname) {
   async function triggerConvertToDeal() {
     const args = Array.from(arguments)
     const handler = async function () {
-      await (this.convertToDeal?.(...args) ||
-        this.on_convert_to_deal?.(...args))
+      await (this.convertToDeal?.(...args) || this.convert_to_deal?.(...args))
     }
     await trigger(handler)
   }
