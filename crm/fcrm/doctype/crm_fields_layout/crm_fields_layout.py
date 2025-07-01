@@ -116,6 +116,8 @@ def get_sidepanel_sections(doctype):
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
 
+	add_forecasting_section(layout, doctype)
+
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
 		for column in section.get("columns") if section.get("columns") else []:
@@ -131,6 +133,38 @@ def get_sidepanel_sections(doctype):
 		fields_meta[field.fieldname] = field
 
 	return layout
+
+
+def add_forecasting_section(layout, doctype):
+	if (
+		doctype == "CRM Deal"
+		and frappe.db.get_single_value("FCRM Settings", "enable_forecasting")
+		and not any(section.get("name") == "forecasted_sales_section" for section in layout)
+	):
+		contacts_section_index = next(
+			(
+				i
+				for i, section in enumerate(layout)
+				if section.get("name") == "contacts_section" or section.get("label") == "Contacts"
+			),
+			None,
+		)
+
+		if contacts_section_index is not None:
+			layout.insert(
+				contacts_section_index + 1,
+				{
+					"name": "forecasted_sales_section",
+					"label": "Forecasted Sales",
+					"opened": True,
+					"columns": [
+						{
+							"name": "column_" + str(random_string(4)),
+							"fields": ["close_date", "probability", "deal_value"],
+						}
+					],
+				},
+			)
 
 
 def handle_perm_level_restrictions(field, doctype, parent_doctype=None):
