@@ -56,6 +56,7 @@ declare module 'vue' {
     ContactsIcon: typeof import('./src/components/Icons/ContactsIcon.vue')['default']
     ContactsListView: typeof import('./src/components/ListViews/ContactsListView.vue')['default']
     ConvertIcon: typeof import('./src/components/Icons/ConvertIcon.vue')['default']
+    ConvertToDealModal: typeof import('./src/components/Modals/ConvertToDealModal.vue')['default']
     CountUpTimer: typeof import('./src/components/CountUpTimer.vue')['default']
     CreateDocumentModal: typeof import('./src/components/Modals/CreateDocumentModal.vue')['default']
     CRMLogo: typeof import('./src/components/Icons/CRMLogo.vue')['default']
