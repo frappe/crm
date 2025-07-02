@@ -162,11 +162,7 @@ declare module 'vue' {
     ListIcon: typeof import('./src/components/Icons/ListIcon.vue')['default']
     ListRows: typeof import('./src/components/ListViews/ListRows.vue')['default']
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
-<<<<<<< HEAD
-    LucideCalendar: typeof import('~icons/lucide/calendar')['default']
-=======
     LostReasonModal: typeof import('./src/components/Modals/LostReasonModal.vue')['default']
->>>>>>> d89c304b (fix: show lost reason modal if status changed to lost)
     LucideInfo: typeof import('~icons/lucide/info')['default']
     LucideMoreHorizontal: typeof import('~icons/lucide/more-horizontal')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
