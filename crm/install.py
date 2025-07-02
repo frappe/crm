@@ -20,6 +20,7 @@ def after_install(force=False):
 	add_email_template_custom_fields()
 	add_default_industries()
 	add_default_lead_sources()
+	add_default_lost_reasons()
 	add_standard_dropdown_items()
 	add_default_scripts()
 	frappe.db.commit()
@@ -348,6 +349,44 @@ def add_default_lead_sources():
 
 		doc = frappe.new_doc("CRM Lead Source")
 		doc.source_name = source
+		doc.insert()
+
+
+def add_default_lost_reasons():
+	lost_reasons = [
+		{
+			"reason": "Pricing",
+			"description": "The prospect found the pricing to be too high or not competitive.",
+		},
+		{"reason": "Competition", "description": "The prospect chose a competitor's product or service."},
+		{
+			"reason": "Budget Constraints",
+			"description": "The prospect did not have the budget to proceed with the purchase.",
+		},
+		{
+			"reason": "Missing Features",
+			"description": "The prospect felt that the product or service was missing key features they needed.",
+		},
+		{
+			"reason": "Long Sales Cycle",
+			"description": "The sales process took too long, leading to loss of interest.",
+		},
+		{
+			"reason": "No Decision-Maker",
+			"description": "The prospect was not the decision-maker and could not proceed.",
+		},
+		{"reason": "Unresponsive Prospect", "description": "The prospect did not respond to follow-ups."},
+		{"reason": "Poor Fit", "description": "The prospect was not a good fit for the product or service."},
+		{"reason": "Other", "description": ""},
+	]
+
+	for reason in lost_reasons:
+		if frappe.db.exists("CRM Lost Reason", reason):
+			continue
+
+		doc = frappe.new_doc("CRM Lost Reason")
+		doc.lost_reason = reason["reason"]
+		doc.description = reason["description"]
 		doc.insert()
 
 
