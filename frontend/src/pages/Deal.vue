@@ -327,6 +327,11 @@
     :docname="props.dealId"
     name="Deals"
   />
+  <LostReasonModal
+    v-if="showLostReasonModal"
+    v-model="showLostReasonModal"
+    :deal="document"
+  />
 </template>
 <script setup>
 import ErrorPage from '@/components/ErrorPage.vue'
@@ -350,6 +355,7 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
@@ -758,7 +764,22 @@ const { assignees, document, triggerOnChange } = useDocument(
 
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
-  document.save.submit()
+  setLostReason()
+}
+
+const showLostReasonModal = ref(false)
+
+function setLostReason() {
+  if (
+    document.doc.status !== 'Lost' ||
+    (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
+    (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
+  ) {
+    document.save.submit()
+    return
+  }
+
+  showLostReasonModal.value = true
 }
 
 function reloadAssignees(data) {
