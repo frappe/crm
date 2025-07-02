@@ -381,7 +381,7 @@ def add_default_lost_reasons():
 	]
 
 	for reason in lost_reasons:
-		if frappe.db.exists("CRM Lost Reason", reason):
+		if frappe.db.exists("CRM Lost Reason", reason["reason"]):
 			continue
 
 		doc = frappe.new_doc("CRM Lost Reason")
