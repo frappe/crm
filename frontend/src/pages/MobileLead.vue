@@ -14,9 +14,10 @@
           :options="
             statusOptions(
               'lead',
-              document,
-              lead.data._customStatuses,
-              triggerOnChange,
+              document.statuses?.length
+                ? document.statuses
+                : lead.data._customStatuses,
+              triggerStatusChange,
             )
           "
         >
@@ -472,6 +473,11 @@ const { assignees, document, triggerOnChange } = useDocument(
   'CRM Lead',
   props.leadId,
 )
+
+async function triggerStatusChange(value) {
+  await triggerOnChange('status', value)
+  document.save.submit()
+}
 
 function reloadAssignees(data) {
   if (data?.hasOwnProperty('lead_owner')) {

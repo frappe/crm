@@ -26,9 +26,10 @@
         :options="
           statusOptions(
             'deal',
-            document,
-            deal.data._customStatuses,
-            triggerOnChange,
+            document.statuses?.length
+              ? document.statuses
+              : deal.data._customStatuses,
+            triggerStatusChange,
           )
         "
       >
@@ -764,6 +765,11 @@ const { assignees, document, triggerOnChange } = useDocument(
   'CRM Deal',
   props.dealId,
 )
+
+async function triggerStatusChange(value) {
+  await triggerOnChange('status', value)
+  document.save.submit()
+}
 
 function reloadAssignees(data) {
   if (data?.hasOwnProperty('deal_owner')) {
