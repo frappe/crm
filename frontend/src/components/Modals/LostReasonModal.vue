@@ -61,8 +61,8 @@ const props = defineProps({
 
 const show = defineModel()
 
-const lostReason = ref('')
-const lostNotes = ref('')
+const lostReason = ref(props.deal.doc.lost_reason || '')
+const lostNotes = ref(props.deal.doc.lost_notes || '')
 const error = ref('')
 
 function cancel() {
