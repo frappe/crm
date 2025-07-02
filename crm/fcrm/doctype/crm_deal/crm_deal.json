@@ -15,7 +15,7 @@
   "status",
   "deal_owner",
   "lost_reason",
-  "other_lost_reason",
+  "lost_notes",
   "section_break_jgpm",
   "probability",
   "deal_value",
@@ -402,17 +402,16 @@
    "options": "CRM Lost Reason"
   },
   {
-   "depends_on": "eval: doc.lost_reason == \"Other\"",
-   "fieldname": "other_lost_reason",
-   "fieldtype": "Data",
-   "label": "Specify Other Reason",
+   "fieldname": "lost_notes",
+   "fieldtype": "Text",
+   "label": "Lost Notes",
    "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-30 17:53:23.408301",
+ "modified": "2025-07-02 11:07:50.192089",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
