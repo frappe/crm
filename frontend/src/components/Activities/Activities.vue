@@ -368,6 +368,7 @@
       <DataFields
         :doctype="doctype"
         :docname="doc.data.name"
+        @beforeSave="(data) => emit('beforeSave', data)"
         @afterSave="(data) => emit('afterSave', data)"
       />
     </div>
@@ -518,7 +519,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['afterSave'])
+const emit = defineEmits(['beforeSave', 'afterSave'])
 
 const route = useRoute()
 
