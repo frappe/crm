@@ -49,6 +49,7 @@
 </template>
 <script setup>
 import Link from '@/components/Controls/Link.vue'
+import { createDocument } from '@/composables/document'
 import { Dialog } from 'frappe-ui'
 import { ref } from 'vue'
 
@@ -91,9 +92,7 @@ function save() {
   props.deal.save.submit()
 }
 
-function onCreate() {
-  // This function can be used to handle the creation of a new lost reason
-  // For now, we just close the modal after creating a new reason
-  show.value = false
+function onCreate(value, close) {
+  createDocument('CRM Lost Reason', value, close)
 }
 </script>
