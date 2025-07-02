@@ -77,18 +77,9 @@ export const statusesStore = defineStore('crm-statuses', () => {
     return communicationStatuses[name]
   }
 
-  function statusOptions(
-    doctype,
-    document,
-    statuses = [],
-    triggerOnChange = null,
-  ) {
+  function statusOptions(doctype, statuses = [], triggerStatusChange = null) {
     let statusesByName =
       doctype == 'deal' ? dealStatusesByName : leadStatusesByName
-
-    if (document?.statuses?.length) {
-      statuses = document.statuses
-    }
 
     if (statuses?.length) {
       statusesByName = statuses.reduce((acc, status) => {
@@ -104,11 +95,8 @@ export const statusesStore = defineStore('crm-statuses', () => {
         value: statusesByName[status]?.name,
         icon: () => h(IndicatorIcon, { class: statusesByName[status]?.color }),
         onClick: async () => {
+          await triggerStatusChange?.(statusesByName[status]?.name)
           capture('status_changed', { doctype, status })
-          if (document) {
-            await triggerOnChange?.('status', statusesByName[status]?.name)
-            document.save.submit()
-          }
         },
       })
     }
