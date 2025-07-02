@@ -136,8 +136,14 @@ export function useDocument(doctype, docname) {
   }
 
   async function triggerOnChange(fieldname, value, row) {
-    const oldValue = documentsCache[doctype][docname || ''].doc[fieldname]
-    documentsCache[doctype][docname || ''].doc[fieldname] = value
+    let oldValue = null
+    if (row) {
+      oldValue = row[fieldname]
+      row[fieldname] = value
+    } else {
+      oldValue = documentsCache[doctype][docname || ''].doc[fieldname]
+      documentsCache[doctype][docname || ''].doc[fieldname] = value
+    }
 
     const handler = async function () {
       this.value = value
@@ -151,7 +157,11 @@ export function useDocument(doctype, docname) {
     try {
       await trigger(handler, row)
     } catch (error) {
-      documentsCache[doctype][docname || ''].doc[fieldname] = oldValue
+      if (row) {
+        row[fieldname] = oldValue
+      } else {
+        documentsCache[doctype][docname || ''].doc[fieldname] = oldValue
+      }
       console.error(handler)
       throw error
     }
