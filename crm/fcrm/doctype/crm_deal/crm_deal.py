@@ -157,7 +157,7 @@ class CRMDeal(Document):
 		if self.status == "Lost":
 			if not self.lost_reason:
 				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
-			elif self.lost_reason == "Other" and not self.other_lost_reason:
+			elif self.lost_reason == "Other" and not self.lost_notes:
 				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
 
 	@staticmethod
