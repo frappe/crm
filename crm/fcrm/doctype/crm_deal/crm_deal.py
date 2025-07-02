@@ -25,6 +25,7 @@ class CRMDeal(Document):
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
 		self.validate_forcasting_fields()
+		self.validate_lost_reason()
 
 	def after_insert(self):
 		if self.deal_owner:
@@ -141,13 +142,31 @@ class CRMDeal(Document):
 		if self.status == "Won" and not self.close_date:
 			self.close_date = frappe.utils.nowdate()
 
+	def update_default_probability(self):
+		"""
+		Update the default probability based on the status.
+		"""
+		if not self.probability or self.probability == 0:
+			self.probability = frappe.db.get_value("CRM Deal Status", self.status, "probability") or 0
+
 	def validate_forcasting_fields(self):
 		self.update_close_date()
+		self.update_default_probability()
 		if frappe.db.get_single_value("FCRM Settings", "enable_forecasting"):
 			if not self.deal_value or self.deal_value == 0:
 				frappe.throw(_("Deal Value is required."), frappe.MandatoryError)
 			if not self.close_date:
 				frappe.throw(_("Close Date is required."), frappe.MandatoryError)
+
+	def validate_lost_reason(self):
+		"""
+		Validate the lost reason if the status is set to "Lost".
+		"""
+		if self.status == "Lost":
+			if not self.lost_reason:
+				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
+			elif self.lost_reason == "Other" and not self.lost_notes:
+				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
 
 	@staticmethod
 	def default_list_data():
