@@ -26,9 +26,10 @@
         :options="
           statusOptions(
             'lead',
-            document,
-            lead.data._customStatuses,
-            triggerOnChange,
+            document.statuses?.length
+              ? document.statuses
+              : lead.data._customStatuses,
+            triggerStatusChange,
           )
         "
       >
@@ -216,108 +217,11 @@
     :errorTitle="errorTitle"
     :errorMessage="errorMessage"
   />
-  <Dialog
+  <ConvertToDealModal
+    v-if="showConvertToDealModal"
     v-model="showConvertToDealModal"
-    :options="{
-      size: 'xl',
-      actions: [
-        {
-          label: __('Convert'),
-          variant: 'solid',
-          onClick: convertToDeal,
-        },
-      ],
-    }"
-  >
-    <template #body-header>
-      <div class="mb-6 flex items-center justify-between">
-        <div>
-          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-            {{ __('Convert to Deal') }}
-          </h3>
-        </div>
-        <div class="flex items-center gap-1">
-          <Button
-            v-if="isManager() && !isMobileView"
-            variant="ghost"
-            class="w-7"
-            @click="openQuickEntryModal"
-          >
-            <template #icon>
-              <EditIcon class="h-4 w-4" />
-            </template>
-          </Button>
-          <Button
-            variant="ghost"
-            class="w-7"
-            @click="showConvertToDealModal = false"
-          >
-            <template #icon>
-              <FeatherIcon name="x" class="h-4 w-4" />
-            </template>
-          </Button>
-        </div>
-      </div>
-    </template>
-    <template #body-content>
-      <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
-        <OrganizationsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Organization') }}</label>
-      </div>
-      <div class="ml-6 text-ink-gray-9">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingOrganizationChecked" />
-        </div>
-        <Link
-          v-if="existingOrganizationChecked"
-          class="form-control mt-2.5"
-          size="md"
-          :value="existingOrganization"
-          doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{
-            __(
-              'New organization will be created based on the data in details section',
-            )
-          }}
-        </div>
-      </div>
-
-      <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
-        <ContactsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Contact') }}</label>
-      </div>
-      <div class="ml-6 text-ink-gray-9">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingContactChecked" />
-        </div>
-        <Link
-          v-if="existingContactChecked"
-          class="form-control mt-2.5"
-          size="md"
-          :value="existingContact"
-          doctype="Contact"
-          @change="(data) => (existingContact = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{ __("New contact will be created based on the person's details") }}
-        </div>
-      </div>
-
-      <div v-if="dealTabs.data?.length" class="h-px w-full border-t my-6" />
-
-      <FieldLayout
-        v-if="dealTabs.data?.length"
-        :tabs="dealTabs.data"
-        :data="deal"
-        doctype="CRM Deal"
-      />
-    </template>
-  </Dialog>
+    :lead="lead.data"
+  />
   <FilesUploader
     v-if="lead.data?.name"
     v-model="showFilesUploader"
@@ -354,40 +258,28 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
-import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 import {
   openWebsite,
   setupCustomizations,
   copyToClipboard,
   validateIsImageFile,
 } from '@/utils'
-import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
-import { sessionStore } from '@/stores/session'
-import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import {
-  whatsappEnabled,
-  callEnabled,
-  isMobileView,
-} from '@/composables/settings'
-import { capture } from '@/telemetry'
+import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import {
   createResource,
   FileUploader,
@@ -395,25 +287,19 @@ import {
   Tooltip,
   Avatar,
   Tabs,
-  Switch,
   Breadcrumbs,
   call,
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
-import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
 const { brand } = getSettings()
-const { user } = sessionStore()
-const { isManager } = usersStore()
 const { $dialog, $socket, makeCall } = globalStore()
-const { statusOptions, getLeadStatus, getDealStatus } = statusesStore()
+const { statusOptions, getLeadStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
-
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const route = useRoute()
 const router = useRouter()
@@ -428,6 +314,17 @@ const props = defineProps({
 const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
+const showConvertToDealModal = ref(false)
+
+const { triggerOnChange, assignees, document } = useDocument(
+  'CRM Lead',
+  props.leadId,
+)
+
+async function triggerStatusChange(value) {
+  await triggerOnChange('status', value)
+  document.save.submit()
+}
 
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
@@ -630,64 +527,6 @@ async function deleteLeadWithModal(name) {
   showDeleteLinkedDocModal.value = true
 }
 
-// Convert to Deal
-const showConvertToDealModal = ref(false)
-const existingContactChecked = ref(false)
-const existingOrganizationChecked = ref(false)
-
-const existingContact = ref('')
-const existingOrganization = ref('')
-
-const { triggerConvertToDeal, triggerOnChange, assignees, document } =
-  useDocument('CRM Lead', props.leadId)
-
-async function convertToDeal() {
-  if (existingContactChecked.value && !existingContact.value) {
-    toast.error(__('Please select an existing contact'))
-    return
-  }
-
-  if (existingOrganizationChecked.value && !existingOrganization.value) {
-    toast.error(__('Please select an existing organization'))
-    return
-  }
-
-  if (!existingContactChecked.value && existingContact.value) {
-    existingContact.value = ''
-  }
-
-  if (!existingOrganizationChecked.value && existingOrganization.value) {
-    existingOrganization.value = ''
-  }
-
-  await triggerConvertToDeal?.(
-    lead.data,
-    deal,
-    () => (showConvertToDealModal.value = false),
-  )
-
-  let _deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
-    lead: lead.data.name,
-    deal,
-    existing_contact: existingContact.value,
-    existing_organization: existingOrganization.value,
-  }).catch((err) => {
-    toast.error(__('Error converting to deal: {0}', [err.messages?.[0]]))
-  })
-  if (_deal) {
-    showConvertToDealModal.value = false
-    existingContactChecked.value = false
-    existingOrganizationChecked.value = false
-    existingContact.value = ''
-    existingOrganization.value = ''
-    updateOnboardingStep('convert_lead_to_deal', true, false, () => {
-      localStorage.setItem('firstDeal' + user, _deal)
-    })
-    capture('convert_lead_to_deal')
-    router.push({ name: 'Deal', params: { dealId: _deal } })
-  }
-}
-
 const activities = ref(null)
 
 function openEmailBox() {
@@ -696,54 +535,6 @@ function openEmailBox() {
     activities.value.changeTabTo('emails')
   }
   nextTick(() => (activities.value.emailBox.show = true))
-}
-
-const deal = reactive({})
-
-const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
-  if (!deal.status) {
-    deal.status = statuses[0].value
-  }
-  return statuses
-})
-
-const dealTabs = createResource({
-  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['RequiredFields', 'CRM Deal'],
-  params: { doctype: 'CRM Deal', type: 'Required Fields' },
-  auto: true,
-  transform: (_tabs) => {
-    let hasFields = false
-    let parsedTabs = _tabs?.forEach((tab) => {
-      tab.sections?.forEach((section) => {
-        section.columns?.forEach((column) => {
-          column.fields?.forEach((field) => {
-            hasFields = true
-            if (field.fieldname == 'status') {
-              field.fieldtype = 'Select'
-              field.options = dealStatuses.value
-              field.prefix = getDealStatus(deal.status).color
-            }
-
-            if (field.fieldtype === 'Table') {
-              deal[field.fieldname] = []
-            }
-          })
-        })
-      })
-    })
-    return hasFields ? parsedTabs : []
-  },
-})
-
-function openQuickEntryModal() {
-  showQuickEntryModal.value = true
-  quickEntryProps.value = {
-    doctype: 'CRM Deal',
-    onlyRequired: true,
-  }
-  showConvertToDealModal.value = false
 }
 
 function reloadAssignees(data) {

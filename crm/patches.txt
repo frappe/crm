@@ -13,3 +13,4 @@ crm.patches.v1_0.update_deal_quick_entry_layout
 crm.patches.v1_0.update_layouts_to_new_format
 crm.patches.v1_0.move_twilio_agent_to_telephony_agent
 crm.patches.v1_0.create_default_scripts # 13-06-2025
+crm.patches.v1_0.update_deal_status_probabilities

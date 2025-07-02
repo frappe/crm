@@ -85,7 +85,7 @@ export function prettyDate(date, mini = false) {
   let nowDatetime = dayjs().tz(localTimezone || systemTimezone)
   let diff = nowDatetime.diff(date, 'seconds')
 
-  let dayDiff = Math.floor(diff / 86400)
+  let dayDiff = diff / 86400
 
   if (isNaN(dayDiff)) return ''
 
@@ -93,18 +93,18 @@ export function prettyDate(date, mini = false) {
     // Return short format of time difference
     if (dayDiff < 0) {
       if (Math.abs(dayDiff) < 1) {
-        if (diff < 60) {
+        if (Math.abs(diff) < 60) {
           return __('now')
-        } else if (diff < 3600) {
-          return __('in {0} m', [Math.floor(diff / 60)])
-        } else if (diff < 86400) {
-          return __('in {0} h', [Math.floor(diff / 3600)])
+        } else if (Math.abs(diff) < 3600) {
+          return __('in {0} m', [Math.floor(Math.abs(diff) / 60)])
+        } else if (Math.abs(diff) < 86400) {
+          return __('in {0} h', [Math.floor(Math.abs(diff) / 3600)])
         }
       }
-      if (Math.abs(dayDiff) == 1) {
+      if (Math.abs(dayDiff) >= 1 && Math.abs(dayDiff) < 1.5) {
         return __('tomorrow')
       } else if (Math.abs(dayDiff) < 7) {
-        return __('in {0} d', [Math.abs(dayDiff)])
+        return __('in {0} d', [Math.floor(Math.abs(dayDiff))])
       } else if (Math.abs(dayDiff) < 31) {
         return __('in {0} w', [Math.floor(Math.abs(dayDiff) / 7)])
       } else if (Math.abs(dayDiff) < 365) {
@@ -112,7 +112,7 @@ export function prettyDate(date, mini = false) {
       } else {
         return __('in {0} y', [Math.floor(Math.abs(dayDiff) / 365)])
       }
-    } else if (dayDiff == 0) {
+    } else if (dayDiff >= 0 && dayDiff < 1) {
       if (diff < 60) {
         return __('now')
       } else if (diff < 3600) {
@@ -121,6 +121,7 @@ export function prettyDate(date, mini = false) {
         return __('{0} h', [Math.floor(diff / 3600)])
       }
     } else {
+      dayDiff = Math.floor(dayDiff)
       if (dayDiff < 7) {
         return __('{0} d', [dayDiff])
       } else if (dayDiff < 31) {
@@ -135,22 +136,22 @@ export function prettyDate(date, mini = false) {
     // Return long format of time difference
     if (dayDiff < 0) {
       if (Math.abs(dayDiff) < 1) {
-        if (diff < 60) {
+        if (Math.abs(diff) < 60) {
           return __('just now')
-        } else if (diff < 120) {
+        } else if (Math.abs(diff) < 120) {
           return __('in 1 minute')
-        } else if (diff < 3600) {
-          return __('in {0} minutes', [Math.floor(diff / 60)])
-        } else if (diff < 7200) {
+        } else if (Math.abs(diff) < 3600) {
+          return __('in {0} minutes', [Math.floor(Math.abs(diff) / 60)])
+        } else if (Math.abs(diff) < 7200) {
           return __('in 1 hour')
-        } else if (diff < 86400) {
-          return __('in {0} hours', [Math.floor(diff / 3600)])
+        } else if (Math.abs(diff) < 86400) {
+          return __('in {0} hours', [Math.floor(Math.abs(diff) / 3600)])
         }
       }
-      if (Math.abs(dayDiff) == 1) {
+      if (Math.abs(dayDiff) >= 1 && Math.abs(dayDiff) < 1.5) {
         return __('tomorrow')
       } else if (Math.abs(dayDiff) < 7) {
-        return __('in {0} days', [Math.abs(dayDiff)])
+        return __('in {0} days', [Math.floor(Math.abs(dayDiff))])
       } else if (Math.abs(dayDiff) < 31) {
         return __('in {0} weeks', [Math.floor(Math.abs(dayDiff) / 7)])
       } else if (Math.abs(dayDiff) < 365) {
@@ -160,7 +161,7 @@ export function prettyDate(date, mini = false) {
       } else {
         return __('in {0} years', [Math.floor(Math.abs(dayDiff) / 365)])
       }
-    } else if (dayDiff == 0) {
+    } else if (dayDiff >= 0 && dayDiff < 1) {
       if (diff < 60) {
         return __('just now')
       } else if (diff < 120) {
@@ -173,6 +174,7 @@ export function prettyDate(date, mini = false) {
         return __('{0} hours ago', [Math.floor(diff / 3600)])
       }
     } else {
+      dayDiff = Math.floor(dayDiff)
       if (dayDiff == 1) {
         return __('yesterday')
       } else if (dayDiff < 7) {

@@ -26,7 +26,10 @@ export function useDocument(doctype, docname) {
             let errorMessage = __('Error updating document')
             if (err.exc_type == 'MandatoryError') {
               const fieldName = err.messages
-                .map((msg) => msg.split(': ')[2].trim())
+                .map((msg) => {
+                  let arr = msg.split(': ')
+                  return arr[arr.length - 1].trim()
+                })
                 .join(', ')
               errorMessage = __('Mandatory field error: {0}', [fieldName])
             }
@@ -133,8 +136,14 @@ export function useDocument(doctype, docname) {
   }
 
   async function triggerOnChange(fieldname, value, row) {
-    const oldValue = documentsCache[doctype][docname || ''].doc[fieldname]
-    documentsCache[doctype][docname || ''].doc[fieldname] = value
+    let oldValue = null
+    if (row) {
+      oldValue = row[fieldname]
+      row[fieldname] = value
+    } else {
+      oldValue = documentsCache[doctype][docname || ''].doc[fieldname]
+      documentsCache[doctype][docname || ''].doc[fieldname] = value
+    }
 
     const handler = async function () {
       this.value = value
@@ -148,7 +157,11 @@ export function useDocument(doctype, docname) {
     try {
       await trigger(handler, row)
     } catch (error) {
-      documentsCache[doctype][docname || ''].doc[fieldname] = oldValue
+      if (row) {
+        row[fieldname] = oldValue
+      } else {
+        documentsCache[doctype][docname || ''].doc[fieldname] = oldValue
+      }
       console.error(handler)
       throw error
     }
@@ -193,8 +206,7 @@ export function useDocument(doctype, docname) {
   async function triggerConvertToDeal() {
     const args = Array.from(arguments)
     const handler = async function () {
-      await (this.convertToDeal?.(...args) ||
-        this.on_convert_to_deal?.(...args))
+      await (this.convertToDeal?.(...args) || this.convert_to_deal?.(...args))
     }
     await trigger(handler)
   }
