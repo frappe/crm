@@ -7,17 +7,20 @@
     </LayoutHeader>
 
     <div class="p-5 w-full overflow-y-scroll">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div
+        v-if="!numberCards.loading"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+      >
         <NumberChart
-          v-for="(config, index) in numberCards"
+          v-for="(config, index) in numberCards.data"
           :key="index"
           class="border rounded-md"
           :config="config"
         />
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-        <div class="border rounded-md min-h-80">
-          <AxisChart :config="trendConfig" />
+        <div v-if="salesTrend.data" class="border rounded-md min-h-80">
+          <AxisChart :config="salesTrend.data" />
         </div>
         <div class="border rounded-md min-h-80">
           <AxisChart :config="forecastedRevenueConfig" />
@@ -25,20 +28,20 @@
         <div class="border rounded-md min-h-80">
           <AxisChart :config="funnelConversionConfig" />
         </div>
-        <div class="border rounded-md">
-          <AxisChart :config="dealsBySalespersonConfig" />
+        <div v-if="dealsBySalesperson.data" class="border rounded-md">
+          <AxisChart :config="dealsBySalesperson.data" />
         </div>
-        <div class="border rounded-md">
-          <AxisChart :config="territoriesBreakdownConfig" />
+        <div v-if="dealsByTerritory.data" class="border rounded-md">
+          <AxisChart :config="dealsByTerritory.data" />
         </div>
         <div class="border rounded-md">
           <AxisChart :config="lostDealReasonsConfig" />
         </div>
-        <div class="border rounded-md">
-          <DonutChart :config="dealsByStage" />
+        <div v-if="dealsByStage.data" class="border rounded-md">
+          <DonutChart :config="dealsByStage.data" />
         </div>
-        <div class="border rounded-md">
-          <DonutChart :config="leadsBySource" />
+        <div v-if="leadsBySource.data" class="border rounded-md">
+          <DonutChart :config="leadsBySource.data" />
         </div>
       </div>
     </div>
@@ -48,9 +51,21 @@
 <script setup lang="ts">
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import { AxisChart, DonutChart, NumberChart, usePageMeta } from 'frappe-ui'
+import {
+  AxisChart,
+  DonutChart,
+  NumberChart,
+  usePageMeta,
+  createResource,
+} from 'frappe-ui'
 
-const numberCards = [
+const numberCards = createResource({
+  url: 'crm.api.dashboard.get_number_card_data',
+  cache: ['Analytics', 'NumberCards'],
+  auto: true,
+})
+
+const numberCardss = [
   {
     title: 'Total Leads',
     value: 1234,
@@ -86,6 +101,33 @@ const numberCards = [
     negativeIsBetter: true,
   },
 ]
+
+const salesTrend = createResource({
+  url: 'crm.api.dashboard.get_sales_trend_data',
+  cache: ['Analytics', 'SalesTrend'],
+  auto: true,
+  transform(data = []) {
+    return {
+      data: data,
+      title: 'Sales Trend',
+      subtitle: 'Daily performance of leads, deals, and wins',
+      xAxis: {
+        title: 'Date',
+        key: 'date',
+        type: 'time' as const,
+        timeGrain: 'day' as const,
+      },
+      yAxis: {
+        title: 'Count',
+      },
+      series: [
+        { name: 'leads', type: 'line' as const, showDataPoints: true },
+        { name: 'deals', type: 'line' as const, showDataPoints: true },
+        { name: 'won_deals', type: 'line' as const, showDataPoints: true },
+      ],
+    }
+  },
+})
 
 const trendConfig = {
   data: [
@@ -155,6 +197,39 @@ const funnelConversionConfig = {
   ],
 }
 
+const dealsBySalesperson = createResource({
+  url: 'crm.api.dashboard.get_deals_by_salesperson',
+  cache: ['Analytics', 'DealsBySalesperson'],
+  auto: true,
+  transform(data = []) {
+    return {
+      data: data,
+      title: 'Deals by Salesperson',
+      subtitle: 'Number of deals and total value per salesperson',
+      xAxis: {
+        key: 'salesperson',
+        type: 'category' as const,
+        title: 'Salesperson',
+      },
+      yAxis: {
+        title: 'Number of Deals',
+      },
+      y2Axis: {
+        title: 'Deal Value ($)',
+      },
+      series: [
+        { name: 'deals', type: 'bar' as const },
+        {
+          name: 'value',
+          type: 'line' as const,
+          showDataPoints: true,
+          axis: 'y2' as const,
+        },
+      ],
+    }
+  },
+})
+
 const dealsBySalespersonConfig = {
   data: [
     { salesperson: 'John Smith', deals: 45, value: 2300000 },
@@ -187,6 +262,39 @@ const dealsBySalespersonConfig = {
     },
   ],
 }
+
+const dealsByTerritory = createResource({
+  url: 'crm.api.dashboard.get_deals_by_territory',
+  cache: ['Analytics', 'DealsByTerritory'],
+  auto: true,
+  transform(data = []) {
+    return {
+      data: data,
+      title: 'Deals by Territory',
+      subtitle: 'Geographic distribution of deals and revenue',
+      xAxis: {
+        key: 'territory',
+        type: 'category' as const,
+        title: 'Territory',
+      },
+      yAxis: {
+        title: 'Number of Deals',
+      },
+      y2Axis: {
+        title: 'Deal Value ($)',
+      },
+      series: [
+        { name: 'deals', type: 'bar' as const },
+        {
+          name: 'value',
+          type: 'line' as const,
+          showDataPoints: true,
+          axis: 'y2' as const,
+        },
+      ],
+    }
+  },
+})
 
 const territoriesBreakdownConfig = {
   data: [
@@ -270,7 +378,22 @@ const forecastedRevenueConfig = {
   ],
 }
 
-const dealsByStage = {
+const dealsByStage = createResource({
+  url: 'crm.api.dashboard.get_deals_by_stage',
+  cache: ['Analytics', 'DealsByStage'],
+  auto: true,
+  transform(data = []) {
+    return {
+      data: data,
+      title: 'Deals by Stage',
+      subtitle: 'Current pipeline distribution',
+      categoryColumn: 'stage',
+      valueColumn: 'count',
+    }
+  },
+})
+
+const dealsByStages = {
   data: [
     { stage: 'Qualification', count: 145 },
     { stage: 'Needs Analysis', count: 98 },
@@ -285,7 +408,22 @@ const dealsByStage = {
   valueColumn: 'count',
 }
 
-const leadsBySource = {
+const leadsBySource = createResource({
+  url: 'crm.api.dashboard.get_leads_by_source',
+  cache: ['Analytics', 'LeadsBySource'],
+  auto: true,
+  transform(data = []) {
+    return {
+      data: data,
+      title: 'Leads by Source',
+      subtitle: 'Lead generation channel analysis',
+      categoryColumn: 'source',
+      valueColumn: 'count',
+    }
+  },
+})
+
+const leadsBySources = {
   data: [
     { source: 'Website', count: 456 },
     { source: 'Referral', count: 298 },
