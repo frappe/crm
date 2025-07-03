@@ -39,10 +39,22 @@ class FCRMSettings(Document):
 					"reqd",
 					"close_date",
 				)
+				delete_property_setter(
+					"CRM Deal",
+					"reqd",
+					"deal_value",
+				)
 			else:
 				make_property_setter(
 					"CRM Deal",
 					"close_date",
+					"reqd",
+					1 if self.enable_forecasting else 0,
+					"Check",
+				)
+				make_property_setter(
+					"CRM Deal",
+					"deal_value",
 					"reqd",
 					1 if self.enable_forecasting else 0,
 					"Check",

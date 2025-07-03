@@ -26,9 +26,10 @@
         :options="
           statusOptions(
             'deal',
-            document,
-            deal.data._customStatuses,
-            triggerOnChange,
+            document.statuses?.length
+              ? document.statuses
+              : deal.data._customStatuses,
+            triggerStatusChange,
           )
         "
       >
@@ -60,6 +61,7 @@
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
           v-model="deal"
+          @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
       </template>
@@ -157,6 +159,7 @@
           doctype="CRM Deal"
           :docname="deal.data.name"
           @reload="sections.reload"
+          @beforeFieldChange="beforeStatusChange"
           @afterFieldChange="reloadAssignees"
         >
           <template #actions="{ section }">
@@ -336,6 +339,11 @@
     :docname="props.dealId"
     name="Deals"
   />
+  <LostReasonModal
+    v-if="showLostReasonModal"
+    v-model="showLostReasonModal"
+    :deal="document"
+  />
 </template>
 <script setup>
 import ErrorPage from '@/components/ErrorPage.vue'
@@ -359,6 +367,7 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
@@ -764,6 +773,36 @@ const { assignees, document, triggerOnChange } = useDocument(
   'CRM Deal',
   props.dealId,
 )
+
+async function triggerStatusChange(value) {
+  await triggerOnChange('status', value)
+  setLostReason()
+}
+
+const showLostReasonModal = ref(false)
+
+function setLostReason() {
+  if (
+    document.doc.status !== 'Lost' ||
+    (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
+    (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
+  ) {
+    document.save.submit()
+    return
+  }
+
+  showLostReasonModal.value = true
+}
+
+function beforeStatusChange(data) {
+  if (data?.hasOwnProperty('status') && data.status == 'Lost') {
+    setLostReason()
+  } else {
+    document.save.submit(null, {
+      onSuccess: () => reloadAssignees(data),
+    })
+  }
+}
 
 function reloadAssignees(data) {
   if (data?.hasOwnProperty('deal_owner')) {

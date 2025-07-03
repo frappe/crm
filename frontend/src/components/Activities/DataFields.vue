@@ -66,7 +66,7 @@ import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 import { isMobileView } from '@/composables/settings'
-import { ref, watch } from 'vue'
+import { ref, watch, getCurrentInstance } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -79,9 +79,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['afterSave'])
+const emit = defineEmits(['beforeSave', 'afterSave'])
 
 const { isManager } = usersStore()
+
+const instance = getCurrentInstance()
+const attrs = instance?.vnode?.props ?? {}
 
 const showDataFieldsModal = ref(false)
 
@@ -107,9 +110,15 @@ function saveChanges() {
     return acc
   }, {})
 
-  document.save.submit(null, {
-    onSuccess: () => emit('afterSave', changes),
-  })
+  const hasListener = attrs['onBeforeSave'] !== undefined
+
+  if (hasListener) {
+    emit('beforeSave', changes)
+  } else {
+    document.save.submit(null, {
+      onSuccess: () => emit('afterSave', changes),
+    })
+  }
 }
 
 watch(

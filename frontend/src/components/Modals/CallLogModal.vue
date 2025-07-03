@@ -69,6 +69,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  referenceDoc: {
+    type: Object,
+    default: () => ({}),
+  },
   options: {
     type: Object,
     default: {
@@ -85,7 +89,7 @@ const loading = ref(false)
 const error = ref(null)
 const editMode = ref(false)
 
-const { document: callLog } = useDocument(
+const { document: callLog, triggerOnBeforeCreate } = useDocument(
   'CRM Call Log',
   props.data?.name || '',
 )
@@ -97,8 +101,7 @@ const dialogOptions = computed(() => {
     {
       label: editMode.value ? __('Save') : __('Create'),
       variant: 'solid',
-      onClick: () =>
-        editMode.value ? updateCallLog() : createCallLog.submit(),
+      onClick: () => (editMode.value ? updateCallLog() : createCallLog()),
     },
   ]
 
@@ -121,7 +124,10 @@ const callBacks = {
     loading.value = false
     if (err.exc_type == 'MandatoryError') {
       const errorMessage = err.messages
-        .map((msg) => msg.split(': ')[2].trim())
+        .map((msg) => {
+          let arr = msg.split(': ')
+          return arr[arr.length - 1].trim()
+        })
         .join(', ')
       error.value = __('These fields are required: {0}', [errorMessage])
       return
@@ -135,18 +141,21 @@ async function updateCallLog() {
   await callLog.save.submit(null, callBacks)
 }
 
-const createCallLog = createResource({
+async function createCallLog() {
+  Object.assign(callLog.doc, {
+    doctype: 'CRM Call Log',
+    id: getRandom(6),
+    telephony_medium: 'Manual',
+  })
+
+  await triggerOnBeforeCreate?.(props.referenceDoc)
+  await _createCallLog.submit({
+    doc: callLog.doc,
+  })
+}
+
+const _createCallLog = createResource({
   url: 'frappe.client.insert',
-  makeParams() {
-    return {
-      doc: {
-        doctype: 'CRM Call Log',
-        id: getRandom(6),
-        telephony_medium: 'Manual',
-        ...callLog.doc,
-      },
-    }
-  },
   onSuccess(doc) {
     loading.value = false
     if (doc.name) {

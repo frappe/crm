@@ -400,7 +400,7 @@ import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
-import { ref, computed } from 'vue'
+import { ref, computed, getCurrentInstance } from 'vue'
 
 const props = defineProps({
   sections: {
@@ -424,7 +424,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['afterFieldChange', 'reload'])
+const emit = defineEmits(['beforeFieldChange', 'afterFieldChange', 'reload'])
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(props.doctype)
@@ -496,18 +496,23 @@ function parsedField(field) {
   return _field
 }
 
+const instance = getCurrentInstance()
+const attrs = instance?.vnode?.props ?? {}
+
 async function fieldChange(value, df) {
   if (props.preview) return
 
   await triggerOnChange(df.fieldname, value)
 
-  document.save.submit(null, {
-    onSuccess: () => {
-      emit('afterFieldChange', {
-        [df.fieldname]: value,
-      })
-    },
-  })
+  const hasListener = attrs['onBeforeFieldChange'] !== undefined
+
+  if (hasListener) {
+    emit('beforeFieldChange', { [df.fieldname]: value })
+  } else {
+    document.save.submit(null, {
+      onSuccess: () => emit('afterFieldChange', { [df.fieldname]: value }),
+    })
+  }
 }
 
 function parsedSection(section, editButtonAdded) {

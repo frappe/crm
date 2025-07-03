@@ -37,13 +37,14 @@
   {
    "fieldname": "probability",
    "fieldtype": "Percent",
+   "in_list_view": 1,
    "label": "Probability"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-11 13:00:34.518808",
+ "modified": "2025-07-01 12:06:42.937440",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal Status",
