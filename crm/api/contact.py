@@ -27,19 +27,6 @@ def update_deals_email_mobile_no(doc):
 
 
 @frappe.whitelist()
-def get_contact(name):
-	contact = frappe.get_doc("Contact", name)
-	contact.check_permission("read")
-
-	contact = contact.as_dict()
-
-	if not len(contact):
-		frappe.throw(_("Contact not found"), frappe.DoesNotExistError)
-
-	return contact
-
-
-@frappe.whitelist()
 def get_linked_deals(contact):
 	"""Get linked deals for a contact"""
 

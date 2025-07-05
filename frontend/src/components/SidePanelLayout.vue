@@ -125,7 +125,7 @@
                                   />
                                   <div v-else>
                                     <div
-                                      class="p-1.5 px-7 text-base text-ink-gray-4"
+                                      class="p-1.5 pl-3 pr-4 text-base text-ink-gray-4"
                                     >
                                       {{
                                         __('No {0} Available', [field.label])
