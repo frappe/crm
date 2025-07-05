@@ -14,11 +14,16 @@ def update_deals_email_mobile_no(doc):
 	)
 
 	for linked_deal in linked_deals:
-		deal = frappe.get_cached_doc("CRM Deal", linked_deal.parent)
+		deal = frappe.db.get_values("CRM Deal", linked_deal.parent, ["email", "mobile_no"], as_dict=True)[0]
 		if deal.email != doc.email_id or deal.mobile_no != doc.mobile_no:
-			deal.email = doc.email_id
-			deal.mobile_no = doc.mobile_no
-			deal.save(ignore_permissions=True)
+			frappe.db.set_value(
+				"CRM Deal",
+				linked_deal.parent,
+				{
+					"email": doc.email_id,
+					"mobile_no": doc.mobile_no,
+				},
+			)
 
 
 @frappe.whitelist()
