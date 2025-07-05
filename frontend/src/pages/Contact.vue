@@ -348,26 +348,10 @@ function getParsedSections(_sections) {
                     }
                   },
                   onDelete: async (option, isNew) => {
-<<<<<<< HEAD
-                    contact.data.email_ids = contact.data.email_ids.filter(
-                      (email) => email.name !== option.name
-                    )
-                    !isNew && (await deleteOption('Contact Email', option.name))
-                    if (_contact.value.email_id === option.value) {
-                      if (contact.data.email_ids.length === 0) {
-                        _contact.value.email_id = ''
-                      } else {
-                        _contact.value.email_id = contact.data.email_ids.find(
-                          (email) => email.is_primary
-                        )?.email_id
-                      }
-                    }
-=======
                     contact.doc.email_ids = contact.doc.email_ids.filter(
                       (email) => email.name !== option.name,
                     )
                     !isNew && (await deleteOption('Contact Email', option.name))
->>>>>>> 42ea1ad1 (fix: useDocument in contact page)
                   },
                 }
               }) || [],
@@ -407,27 +391,10 @@ function getParsedSections(_sections) {
                     }
                   },
                   onDelete: async (option, isNew) => {
-<<<<<<< HEAD
-                    contact.data.phone_nos = contact.data.phone_nos.filter(
-                      (phone) => phone.name !== option.name
-                    )
-                    !isNew && (await deleteOption('Contact Phone', option.name))
-                    if (_contact.value.actual_mobile_no === option.value) {
-                      if (contact.data.phone_nos.length === 0) {
-                        _contact.value.actual_mobile_no = ''
-                      } else {
-                        _contact.value.actual_mobile_no =
-                          contact.data.phone_nos.find(
-                            (phone) => phone.is_primary_mobile_no
-                          )?.phone
-                      }
-                    }
-=======
                     contact.doc.phone_nos = contact.doc.phone_nos.filter(
                       (phone) => phone.name !== option.name,
                     )
                     !isNew && (await deleteOption('Contact Phone', option.name))
->>>>>>> 42ea1ad1 (fix: useDocument in contact page)
                   },
                 }
               }) || [],
