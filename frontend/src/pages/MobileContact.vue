@@ -10,11 +10,7 @@
       </Breadcrumbs>
     </header>
   </LayoutHeader>
-<<<<<<< HEAD
-  <div v-if="contact.data" class="flex flex-col h-full overflow-hidden">
-=======
   <div v-if="contact.doc" class="flex flex-col h-full overflow-hidden">
->>>>>>> 42ea1ad1 (fix: useDocument in contact page)
     <FileUploader
       @success="changeContactImage"
       :validateFile="validateIsImageFile"
