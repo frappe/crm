@@ -131,14 +131,16 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
-   "label": "Email",
-   "options": "Email"
+   "label": "Primary Email",
+   "options": "Email",
+   "read_only": 1
   },
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
-   "label": "Mobile No",
-   "options": "Phone"
+   "label": "Primary Mobile No",
+   "options": "Phone",
+   "read_only": 1
   },
   {
    "default": "Qualification",
@@ -251,8 +253,9 @@
   {
    "fieldname": "phone",
    "fieldtype": "Data",
-   "label": "Phone",
-   "options": "Phone"
+   "label": "Primary Phone",
+   "options": "Phone",
+   "read_only": 1
   },
   {
    "fieldname": "log_tab",
