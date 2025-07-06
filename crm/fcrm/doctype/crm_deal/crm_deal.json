@@ -21,6 +21,7 @@
   "deal_value",
   "column_break_kpxa",
   "close_date",
+  "closed_on",
   "contacts_tab",
   "contacts",
   "contact",
@@ -409,12 +410,21 @@
    "fieldtype": "Text",
    "label": "Lost Notes",
    "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
+  },
+  {
+   "fieldname": "closed_on",
+   "fieldtype": "Datetime",
+   "label": "Closed On"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2025-07-05 12:25:05.927806",
+=======
+ "modified": "2025-07-06 15:16:37.673699",
+>>>>>>> 6450b69a (fix: capture closed on datetime when deal marked as Won)
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
