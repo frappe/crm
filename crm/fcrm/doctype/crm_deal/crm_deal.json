@@ -21,6 +21,7 @@
   "deal_value",
   "column_break_kpxa",
   "close_date",
+  "closed_on",
   "contacts_tab",
   "contacts",
   "contact",
@@ -406,12 +407,17 @@
    "fieldtype": "Text",
    "label": "Lost Notes",
    "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
+  },
+  {
+   "fieldname": "closed_on",
+   "fieldtype": "Datetime",
+   "label": "Closed On"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-02 11:07:50.192089",
+ "modified": "2025-07-06 15:16:37.673699",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
