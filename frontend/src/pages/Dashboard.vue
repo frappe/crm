@@ -22,20 +22,20 @@
         <div v-if="salesTrend.data" class="border rounded-md min-h-80">
           <AxisChart :config="salesTrend.data" />
         </div>
-        <div class="border rounded-md min-h-80">
-          <AxisChart :config="forecastedRevenueConfig" />
+        <div v-if="forecastedRevenue.data" class="border rounded-md min-h-80">
+          <AxisChart :config="forecastedRevenue.data" />
         </div>
-        <div class="border rounded-md min-h-80">
-          <AxisChart :config="funnelConversionConfig" />
+        <div v-if="funnelConversion.data" class="border rounded-md min-h-80">
+          <AxisChart :config="funnelConversion.data" />
         </div>
-        <div v-if="dealsBySalesperson.data" class="border rounded-md">
-          <AxisChart :config="dealsBySalesperson.data" />
+        <div v-if="lostDealReasons.data" class="border rounded-md">
+          <AxisChart :config="lostDealReasons.data" />
         </div>
         <div v-if="dealsByTerritory.data" class="border rounded-md">
           <AxisChart :config="dealsByTerritory.data" />
         </div>
-        <div class="border rounded-md">
-          <AxisChart :config="lostDealReasonsConfig" />
+        <div v-if="dealsBySalesperson.data" class="border rounded-md">
+          <AxisChart :config="dealsBySalesperson.data" />
         </div>
         <div v-if="dealsByStage.data" class="border rounded-md">
           <DonutChart :config="dealsByStage.data" />
@@ -166,6 +166,37 @@ const trendConfig = {
     { name: 'won_deals', type: 'line' as const, showDataPoints: true },
   ],
 }
+
+const funnelConversion = createResource({
+  url: 'crm.api.dashboard.get_funnel_conversion_data',
+  cache: ['Analytics', 'FunnelConversion'],
+  auto: true,
+  transform(data = []) {
+    return {
+      data: data,
+      title: 'Funnel Conversion',
+      subtitle: 'Lead to deal conversion pipeline',
+      xAxis: {
+        title: 'Stage',
+        key: 'stage',
+        type: 'category' as const,
+      },
+      yAxis: {
+        title: 'Count',
+      },
+      swapXY: true,
+      series: [
+        {
+          name: 'count',
+          type: 'bar' as const,
+          echartOptions: {
+            colorBy: 'data',
+          },
+        },
+      ],
+    }
+  },
+})
 
 const funnelConversionConfig = {
   data: [
@@ -328,6 +359,31 @@ const territoriesBreakdownConfig = {
   ],
 }
 
+const lostDealReasons = createResource({
+  url: 'crm.api.dashboard.get_lost_deal_reasons',
+  cache: ['Analytics', 'LostDealReasons'],
+  auto: true,
+  transform(data = []) {
+    return {
+      data: data,
+      title: 'Lost Deal Reasons',
+      subtitle: 'Common reasons for losing deals',
+      // categoryColumn: 'reason',
+      // valueColumn: 'count',
+      xAxis: {
+        key: 'reason',
+        type: 'category' as const,
+        title: 'Reason',
+      },
+      yAxis: {
+        title: 'Count',
+      },
+      swapXY: true,
+      series: [{ name: 'count', type: 'bar' as const }],
+    }
+  },
+})
+
 const lostDealReasonsConfig = {
   data: [
     { reason: 'Price', count: 45 },
@@ -350,6 +406,32 @@ const lostDealReasonsConfig = {
   },
   series: [{ name: 'count', type: 'bar' as const }],
 }
+
+const forecastedRevenue = createResource({
+  url: 'crm.api.dashboard.get_forecasted_revenue',
+  cache: ['Analytics', 'ForecastedRevenue'],
+  auto: true,
+  transform(data = []) {
+    return {
+      data: data,
+      title: 'Revenue Forecast',
+      subtitle: 'Projected vs actual revenue based on deal probability',
+      xAxis: {
+        key: 'month',
+        type: 'time' as const,
+        title: 'Month',
+        timeGrain: 'month' as const,
+      },
+      yAxis: {
+        title: 'Revenue ($)',
+      },
+      series: [
+        { name: 'forecasted', type: 'line' as const, showDataPoints: true },
+        { name: 'actual', type: 'line' as const, showDataPoints: true },
+      ],
+    }
+  },
+})
 
 const forecastedRevenueConfig = {
   data: [
