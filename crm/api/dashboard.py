@@ -12,12 +12,14 @@ def get_number_card_data(from_date="", to_date="", lead_conds="", deal_conds="")
 	deal_chart_data = get_deal_count(from_date, to_date, deal_conds)
 	get_won_deal_count_data = get_won_deal_count(from_date, to_date, deal_conds)
 	get_average_deal_value_data = get_average_deal_value(from_date, to_date, deal_conds)
+	get_average_time_to_close_data = get_average_time_to_close(from_date, to_date, deal_conds)
 
 	return [
 		lead_chart_data,
 		deal_chart_data,
 		get_won_deal_count_data,
 		get_average_deal_value_data,
+		get_average_time_to_close_data,
 	]
 
 
@@ -250,6 +252,61 @@ def get_average_deal_value(from_date, to_date, conds="", return_result=False):
 		# "suffix": "K",
 		"delta": delta,
 		"deltaSuffix": "%",
+	}
+
+
+def get_average_time_to_close(from_date, to_date, conds="", return_result=False):
+	"""
+	Get average time to close deals for the dashboard.
+	"""
+
+	if not from_date or not to_date:
+		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
+		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
+
+	diff = frappe.utils.date_diff(to_date, from_date)
+	if diff == 0:
+		diff = 1
+
+	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_to_date = from_date
+
+	result = frappe.db.sql(
+		f"""
+		SELECT
+			AVG(CASE WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as current_avg,
+			AVG(CASE WHEN d.creation >= %(prev_from_date)s AND d.creation < %(prev_to_date)s
+				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as prev_avg
+		FROM `tabCRM Deal` d
+		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
+		WHERE d.status = 'Won' AND d.closed_on IS NOT NULL
+			{conds}
+		""",
+		{
+			"from_date": from_date,
+			"to_date": to_date,
+			"prev_from_date": prev_from_date,
+			"prev_to_date": prev_to_date,
+		},
+		as_dict=1,
+	)
+
+	if return_result:
+		return result
+
+	current_avg = result[0].current_avg or 0
+	prev_avg = result[0].prev_avg or 0
+	delta = current_avg - prev_avg if prev_avg else 0
+
+	return {
+		"title": "Avg Time to Close",
+		"value": current_avg,
+		"tooltip": "Average time taken to close deals",
+		"suffix": " days",
+		"delta": delta,
+		"deltaSuffix": " days",
+		"negativeIsBetter": True,
 	}
 
 
