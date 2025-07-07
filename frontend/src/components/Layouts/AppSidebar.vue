@@ -9,13 +9,6 @@
     <div class="flex-1 overflow-y-auto">
       <div class="mb-3 flex flex-col">
         <SidebarLink
-          :label="__('Dashboard')"
-          :icon="LucideLayoutDashboard"
-          :to="'Dashboard'"
-          :isCollapsed="isSidebarCollapsed"
-          class="mx-2 my-0.5"
-        />
-        <SidebarLink
           id="notifications-btn"
           :label="__('Notifications')"
           :icon="NotificationsIcon"
@@ -205,6 +198,11 @@ const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
 
 const links = [
+  {
+    label: 'Dashboard',
+    icon: LucideLayoutDashboard,
+    to: 'Dashboard',
+  },
   {
     label: 'Leads',
     icon: LeadsIcon,
