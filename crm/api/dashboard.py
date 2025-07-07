@@ -274,9 +274,9 @@ def get_average_time_to_close(from_date, to_date, conds="", return_result=False)
 	result = frappe.db.sql(
 		f"""
 		SELECT
-			AVG(CASE WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+			AVG(CASE WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
 				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as current_avg,
-			AVG(CASE WHEN d.creation >= %(prev_from_date)s AND d.creation < %(prev_to_date)s
+			AVG(CASE WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(prev_to_date)s
 				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as prev_avg
 		FROM `tabCRM Deal` d
 		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
