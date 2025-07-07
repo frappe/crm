@@ -1,6 +1,6 @@
 import frappe
 
-from crm.api.doc import get_assigned_users, get_fields_meta
+from crm.api.doc import get_fields_meta
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 
 
