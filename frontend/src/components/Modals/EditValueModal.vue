@@ -37,7 +37,13 @@
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { capture } from '@/telemetry'
-import { FormControl, call, createResource, TextEditor, DatePicker } from 'frappe-ui'
+import {
+  FormControl,
+  call,
+  createResource,
+  TextEditor,
+  DatePicker,
+} from 'frappe-ui'
 import { ref, computed, onMounted, h } from 'vue'
 
 const typeCheck = ['Check']
@@ -70,7 +76,7 @@ const fields = createResource({
   },
   transform: (data) => {
     return data.filter((f) => f.hidden == 0 && f.read_only == 0)
-  }
+  },
 })
 
 onMounted(() => {
@@ -103,7 +109,7 @@ function updateValues() {
       docnames: Array.from(props.selectedValues),
       action: 'update',
       data: {
-        [field.value.value]: fieldVal || null,
+        [field.value.fieldname]: fieldVal || null,
       },
     }
   ).then(() => {
