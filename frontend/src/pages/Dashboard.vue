@@ -52,6 +52,7 @@
         </template>
       </DateRangePicker>
       <Link
+        v-if="isAdmin() || isManager()"
         class="form-control w-48"
         variant="outline"
         :value="filters.user && getUser(filters.user).full_name"
@@ -145,7 +146,7 @@ import {
 } from 'frappe-ui'
 import { ref, reactive, computed } from 'vue'
 
-const { users, getUser } = usersStore()
+const { users, getUser, isManager, isAdmin } = usersStore()
 
 const showDatePicker = ref(false)
 const datePickerRef = ref(null)

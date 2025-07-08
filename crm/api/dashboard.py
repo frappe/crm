@@ -1,8 +1,11 @@
 import frappe
 from frappe import _
 
+from crm.utils import sales_user_only
+
 
 @frappe.whitelist()
+@sales_user_only
 def get_number_card_data(from_date="", to_date="", user="", lead_conds="", deal_conds=""):
 	"""
 	Get number card data for the dashboard.
@@ -10,6 +13,10 @@ def get_number_card_data(from_date="", to_date="", user="", lead_conds="", deal_
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
+
+	is_sales_user = "Sales User" in frappe.get_roles(frappe.session.user)
+	if is_sales_user and not user:
+		user = frappe.session.user
 
 	lead_chart_data = get_lead_count(from_date, to_date, user, lead_conds)
 	deal_chart_data = get_deal_count(from_date, to_date, user, deal_conds)
