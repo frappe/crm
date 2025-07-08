@@ -93,7 +93,7 @@ import { toast } from 'frappe-ui'
 import { getRandom } from '@/utils'
 import { ref, computed, watch } from 'vue'
 
-const { isManager, isAgent } = usersStore()
+const { isManager, isTelephonyAgent } = usersStore()
 
 const twilioFields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -283,7 +283,7 @@ async function updateMedium() {
 const error = ref('')
 
 function validateIfDefaultMediumIsEnabled() {
-  if (isAgent() && !isManager()) return true
+  if (isTelephonyAgent() && !isManager()) return true
 
   if (defaultCallingMedium.value === 'Twilio' && !twilio.doc.enabled) {
     error.value = __('Twilio is not enabled')

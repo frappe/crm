@@ -65,7 +65,7 @@ import {
 import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 
-const { isManager, isAgent, getUser } = usersStore()
+const { isManager, isTelephonyAgent, getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
@@ -123,7 +123,7 @@ const tabs = computed(() => {
           label: __('Telephony'),
           icon: PhoneIcon,
           component: markRaw(TelephonySettings),
-          condition: () => isManager() || isAgent(),
+          condition: () => isManager() || isTelephonyAgent(),
         },
         {
           label: __('WhatsApp'),
@@ -138,7 +138,7 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
       ],
-      condition: () => isManager() || isAgent(),
+      condition: () => isManager() || isTelephonyAgent(),
     },
   ]
 

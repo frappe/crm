@@ -163,6 +163,7 @@ declare module 'vue' {
     ListRows: typeof import('./src/components/ListViews/ListRows.vue')['default']
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
     LostReasonModal: typeof import('./src/components/Modals/LostReasonModal.vue')['default']
+    LucideCalendar: typeof import('~icons/lucide/calendar')['default']
     LucideInfo: typeof import('~icons/lucide/info')['default']
     LucideMoreHorizontal: typeof import('~icons/lucide/more-horizontal')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
