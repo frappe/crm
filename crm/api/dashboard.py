@@ -3,16 +3,19 @@ from frappe import _
 
 
 @frappe.whitelist()
-def get_number_card_data(from_date="", to_date="", lead_conds="", deal_conds=""):
+def get_number_card_data(from_date="", to_date="", user="", lead_conds="", deal_conds=""):
 	"""
 	Get number card data for the dashboard.
 	"""
+	if not from_date or not to_date:
+		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
+		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
-	lead_chart_data = get_lead_count(from_date, to_date, lead_conds)
-	deal_chart_data = get_deal_count(from_date, to_date, deal_conds)
-	get_won_deal_count_data = get_won_deal_count(from_date, to_date, deal_conds)
-	get_average_deal_value_data = get_average_deal_value(from_date, to_date, deal_conds)
-	get_average_time_to_close_data = get_average_time_to_close(from_date, to_date, deal_conds)
+	lead_chart_data = get_lead_count(from_date, to_date, user, lead_conds)
+	deal_chart_data = get_deal_count(from_date, to_date, user, deal_conds)
+	get_won_deal_count_data = get_won_deal_count(from_date, to_date, user, deal_conds)
+	get_average_deal_value_data = get_average_deal_value(from_date, to_date, user, deal_conds)
+	get_average_time_to_close_data = get_average_time_to_close(from_date, to_date, user, deal_conds)
 
 	return [
 		lead_chart_data,
@@ -23,18 +26,17 @@ def get_number_card_data(from_date="", to_date="", lead_conds="", deal_conds="")
 	]
 
 
-def get_lead_count(from_date, to_date, conds="", return_result=False):
+def get_lead_count(from_date, to_date, user="", conds="", return_result=False):
 	"""
 	Get lead count for the dashboard.
 	"""
 
-	if not from_date or not to_date:
-		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
-		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
-
 	diff = frappe.utils.date_diff(to_date, from_date)
 	if diff == 0:
 		diff = 1
+
+	if user:
+		conds += f" AND lead_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""
@@ -73,27 +75,26 @@ def get_lead_count(from_date, to_date, conds="", return_result=False):
 	)
 
 	return {
-		"title": "Total Leads",
+		"title": _("Total Leads"),
 		"value": current_month_leads,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
 		"negativeIsBetter": False,
-		"tooltip": "Total number of leads created",
+		"tooltip": _("Total number of leads created"),
 	}
 
 
-def get_deal_count(from_date, to_date, conds="", return_result=False):
+def get_deal_count(from_date, to_date, user="", conds="", return_result=False):
 	"""
 	Get deal count for the dashboard.
 	"""
 
-	if not from_date or not to_date:
-		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
-		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
-
 	diff = frappe.utils.date_diff(to_date, from_date)
 	if diff == 0:
 		diff = 1
+
+	if user:
+		conds += f" AND deal_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""
@@ -132,27 +133,26 @@ def get_deal_count(from_date, to_date, conds="", return_result=False):
 	)
 
 	return {
-		"title": "Total Deals",
+		"title": _("Total Deals"),
 		"value": current_month_deals,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
 		"negativeIsBetter": False,
-		"tooltip": "Total number of deals created",
+		"tooltip": _("Total number of deals created"),
 	}
 
 
-def get_won_deal_count(from_date, to_date, conds="", return_result=False):
+def get_won_deal_count(from_date, to_date, user="", conds="", return_result=False):
 	"""
 	Get won deal count for the dashboard.
 	"""
 
-	if not from_date or not to_date:
-		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
-		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
-
 	diff = frappe.utils.date_diff(to_date, from_date)
 	if diff == 0:
 		diff = 1
+
+	if user:
+		conds += f" AND deal_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""
@@ -191,27 +191,26 @@ def get_won_deal_count(from_date, to_date, conds="", return_result=False):
 	)
 
 	return {
-		"title": "Won Deals",
+		"title": _("Won Deals"),
 		"value": current_month_deals,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
 		"negativeIsBetter": False,
-		"tooltip": "Total number of deals created",
+		"tooltip": _("Total number of deals created"),
 	}
 
 
-def get_average_deal_value(from_date, to_date, conds="", return_result=False):
+def get_average_deal_value(from_date, to_date, user="", conds="", return_result=False):
 	"""
 	Get average deal value for the dashboard.
 	"""
 
-	if not from_date or not to_date:
-		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
-		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
-
 	diff = frappe.utils.date_diff(to_date, from_date)
 	if diff == 0:
 		diff = 1
+
+	if user:
+		conds += f" AND deal_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""
@@ -245,9 +244,9 @@ def get_average_deal_value(from_date, to_date, conds="", return_result=False):
 	delta = current_month_avg - prev_month_avg if prev_month_avg else 0
 
 	return {
-		"title": "Avg Deal Value",
+		"title": _("Avg Deal Value"),
 		"value": current_month_avg,
-		"tooltip": "Average value of deals created",
+		"tooltip": _("Average value of deals created"),
 		# "prefix": "$",
 		# "suffix": "K",
 		"delta": delta,
@@ -255,18 +254,17 @@ def get_average_deal_value(from_date, to_date, conds="", return_result=False):
 	}
 
 
-def get_average_time_to_close(from_date, to_date, conds="", return_result=False):
+def get_average_time_to_close(from_date, to_date, user="", conds="", return_result=False):
 	"""
 	Get average time to close deals for the dashboard.
 	"""
 
-	if not from_date or not to_date:
-		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
-		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
-
 	diff = frappe.utils.date_diff(to_date, from_date)
 	if diff == 0:
 		diff = 1
+
+	if user:
+		conds += f" AND d.deal_owner = '{user}'"
 
 	prev_from_date = frappe.utils.add_days(from_date, -diff)
 	prev_to_date = from_date
@@ -300,9 +298,9 @@ def get_average_time_to_close(from_date, to_date, conds="", return_result=False)
 	delta = current_avg - prev_avg if prev_avg else 0
 
 	return {
-		"title": "Avg Time to Close",
+		"title": _("Avg Time to Close"),
 		"value": current_avg,
-		"tooltip": "Average time taken to close deals",
+		"tooltip": _("Average time taken to close deals"),
 		"suffix": " days",
 		"delta": delta,
 		"deltaSuffix": " days",
@@ -311,7 +309,7 @@ def get_average_time_to_close(from_date, to_date, conds="", return_result=False)
 
 
 @frappe.whitelist()
-def get_sales_trend_data(from_date="", to_date="", lead_conds="", deal_conds=""):
+def get_sales_trend_data(from_date="", to_date="", user="", lead_conds="", deal_conds=""):
 	"""
 	Get sales trend data for the dashboard.
 	[
@@ -325,8 +323,12 @@ def get_sales_trend_data(from_date="", to_date="", lead_conds="", deal_conds="")
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	if user:
+		lead_conds += f" AND lead_owner = '{user}'"
+		deal_conds += f" AND deal_owner = '{user}'"
+
 	result = frappe.db.sql(
-		"""
+		f"""
 		SELECT
 			DATE_FORMAT(date, '%%Y-%%m-%%d') AS date,
 			SUM(leads) AS leads,
@@ -340,7 +342,7 @@ def get_sales_trend_data(from_date="", to_date="", lead_conds="", deal_conds="")
 				0 AS won_deals
 			FROM `tabCRM Lead`
 			WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
-			%(lead_conds)s
+			{lead_conds}
 			GROUP BY DATE(creation)
 
 			UNION ALL
@@ -352,13 +354,13 @@ def get_sales_trend_data(from_date="", to_date="", lead_conds="", deal_conds="")
 				SUM(CASE WHEN status = 'Won' THEN 1 ELSE 0 END) AS won_deals
 			FROM `tabCRM Deal`
 			WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
-			%(deal_conds)s
+			{deal_conds}
 			GROUP BY DATE(creation)
 		) AS daily
 		GROUP BY date
 		ORDER BY date
 		""",
-		{"from": from_date, "to": to_date, "lead_conds": lead_conds, "deal_conds": deal_conds},
+		{"from": from_date, "to": to_date},
 		as_dict=True,
 	)
 
@@ -374,7 +376,7 @@ def get_sales_trend_data(from_date="", to_date="", lead_conds="", deal_conds="")
 
 
 @frappe.whitelist()
-def get_deals_by_salesperson(from_date="", to_date="", deal_conds=""):
+def get_deals_by_salesperson(from_date="", to_date="", user="", deal_conds=""):
 	"""
 	Get deal data by salesperson for the dashboard.
 	[
@@ -388,8 +390,11 @@ def get_deals_by_salesperson(from_date="", to_date="", deal_conds=""):
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	if user:
+		deal_conds += f" AND d.deal_owner = '{user}'"
+
 	result = frappe.db.sql(
-		"""
+		f"""
 		SELECT
 			IFNULL(u.full_name, d.deal_owner) AS salesperson,
 			COUNT(*)                           AS deals,
@@ -397,11 +402,11 @@ def get_deals_by_salesperson(from_date="", to_date="", deal_conds=""):
 		FROM `tabCRM Deal` AS d
 		LEFT JOIN `tabUser` AS u ON u.name = d.deal_owner
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
-		%(deal_conds)s
+		{deal_conds}
 		GROUP BY d.deal_owner
 		ORDER BY value DESC
 		""",
-		{"from": from_date, "to": to_date, "deal_conds": deal_conds},
+		{"from": from_date, "to": to_date},
 		as_dict=True,
 	)
 
@@ -409,7 +414,7 @@ def get_deals_by_salesperson(from_date="", to_date="", deal_conds=""):
 
 
 @frappe.whitelist()
-def get_deals_by_territory(from_date="", to_date="", deal_conds=""):
+def get_deals_by_territory(from_date="", to_date="", user="", deal_conds=""):
 	"""
 	Get deal data by territory for the dashboard.
 	[
@@ -423,19 +428,22 @@ def get_deals_by_territory(from_date="", to_date="", deal_conds=""):
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	if user:
+		deal_conds += f" AND d.deal_owner = '{user}'"
+
 	result = frappe.db.sql(
-		"""
+		f"""
 		SELECT
 			IFNULL(d.territory, 'Empty') AS territory,
 			COUNT(*) AS deals,
 			SUM(COALESCE(d.deal_value, 0)) AS value
 		FROM `tabCRM Deal` AS d
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
-		%(deal_conds)s
+		{deal_conds}
 		GROUP BY d.territory
 		ORDER BY value DESC
 		""",
-		{"from": from_date, "to": to_date, "deal_conds": deal_conds},
+		{"from": from_date, "to": to_date},
 		as_dict=True,
 	)
 
@@ -443,7 +451,7 @@ def get_deals_by_territory(from_date="", to_date="", deal_conds=""):
 
 
 @frappe.whitelist()
-def get_lost_deal_reasons(from_date="", to_date="", deal_conds=""):
+def get_lost_deal_reasons(from_date="", to_date="", user="", deal_conds=""):
 	"""
 	Get lost deal reasons for the dashboard.
 	[
@@ -452,23 +460,27 @@ def get_lost_deal_reasons(from_date="", to_date="", deal_conds=""):
 		...
 	]
 	"""
+
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	if user:
+		deal_conds += f" AND d.deal_owner = '{user}'"
+
 	result = frappe.db.sql(
-		"""
+		f"""
 		SELECT
 			d.lost_reason AS reason,
 			COUNT(*) AS count
 		FROM `tabCRM Deal` AS d
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s AND d.status = 'Lost'
-		%(deal_conds)s
+		{deal_conds}
 		GROUP BY d.lost_reason
 		HAVING reason IS NOT NULL AND reason != ''
 		ORDER BY count DESC
 		""",
-		{"from": from_date, "to": to_date, "deal_conds": deal_conds},
+		{"from": from_date, "to": to_date},
 		as_dict=True,
 	)
 
@@ -476,7 +488,7 @@ def get_lost_deal_reasons(from_date="", to_date="", deal_conds=""):
 
 
 @frappe.whitelist()
-def get_forecasted_revenue(deal_conds=""):
+def get_forecasted_revenue(user="", deal_conds=""):
 	"""
 	Get forecasted revenue for the dashboard.
 	[
@@ -487,6 +499,9 @@ def get_forecasted_revenue(deal_conds=""):
 		...
 	]
 	"""
+
+	if user:
+		deal_conds += f" AND deal_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""
@@ -523,7 +538,7 @@ def get_forecasted_revenue(deal_conds=""):
 
 
 @frappe.whitelist()
-def get_funnel_conversion_data(from_date="", to_date="", lead_conds="", deal_conds=""):
+def get_funnel_conversion_data(from_date="", to_date="", user="", lead_conds="", deal_conds=""):
 	"""
 	Get funnel conversion data for the dashboard.
 	[
@@ -540,16 +555,20 @@ def get_funnel_conversion_data(from_date="", to_date="", lead_conds="", deal_con
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	if user:
+		lead_conds += f" AND lead_owner = '{user}'"
+		deal_conds += f" AND deal_owner = '{user}'"
+
 	result = []
 
 	# Get total leads
 	total_leads = frappe.db.sql(
-		"""		SELECT COUNT(*) AS count
+		f"""		SELECT COUNT(*) AS count
 			FROM `tabCRM Lead`
 			WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
-			%(lead_conds)s
+			{lead_conds}
 		""",
-		{"from": from_date, "to": to_date, "lead_conds": lead_conds},
+		{"from": from_date, "to": to_date},
 		as_dict=True,
 	)
 	total_leads_count = total_leads[0].count if total_leads else 0
@@ -580,7 +599,7 @@ def get_funnel_conversion_data(from_date="", to_date="", lead_conds="", deal_con
 
 
 @frappe.whitelist()
-def get_deals_by_stage(from_date="", to_date="", deal_conds=""):
+def get_deals_by_stage(from_date="", to_date="", user="", deal_conds=""):
 	"""
 	Get deal data by stage for the dashboard.
 	[
@@ -594,18 +613,21 @@ def get_deals_by_stage(from_date="", to_date="", deal_conds=""):
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	if user:
+		deal_conds += f" AND d.deal_owner = '{user}'"
+
 	result = frappe.db.sql(
-		"""
+		f"""
 		SELECT
 			d.status AS stage,
 			COUNT(*) AS count
 		FROM `tabCRM Deal` AS d
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
-		%(deal_conds)s
+		{deal_conds}
 		GROUP BY d.status
 		ORDER BY count DESC
 		""",
-		{"from": from_date, "to": to_date, "deal_conds": deal_conds},
+		{"from": from_date, "to": to_date},
 		as_dict=True,
 	)
 
@@ -613,7 +635,7 @@ def get_deals_by_stage(from_date="", to_date="", deal_conds=""):
 
 
 @frappe.whitelist()
-def get_leads_by_source(from_date="", to_date="", lead_conds=""):
+def get_leads_by_source(from_date="", to_date="", user="", lead_conds=""):
 	"""
 	Get lead data by source for the dashboard.
 	[
@@ -627,18 +649,21 @@ def get_leads_by_source(from_date="", to_date="", lead_conds=""):
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	if user:
+		lead_conds += f" AND lead_owner = '{user}'"
+
 	result = frappe.db.sql(
-		"""
+		f"""
 		SELECT
 			IFNULL(source, 'Empty') AS source,
 			COUNT(*) AS count
 		FROM `tabCRM Lead`
 		WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
-		%(lead_conds)s
+		{lead_conds}
 		GROUP BY source
 		ORDER BY count DESC
 		""",
-		{"from": from_date, "to": to_date, "lead_conds": lead_conds},
+		{"from": from_date, "to": to_date},
 		as_dict=True,
 	)
 
