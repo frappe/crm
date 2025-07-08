@@ -14,7 +14,7 @@
         >
           <div class="w-full">
             <button
-              class="relative flex h-7 w-full items-center justify-between gap-2 rounded bg-surface-gray-2 px-2 py-1 transition-colors hover:bg-surface-gray-3 border border-transparent focus:border-outline-gray-4 focus:outline-none focus:ring-2 focus:ring-outline-gray-3"
+              class="relative flex h-7 w-full items-center justify-between gap-2 rounded px-2 py-1 transition-colors"
               :class="inputClasses"
               @click="() => togglePopover()"
             >
