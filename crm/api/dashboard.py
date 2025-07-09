@@ -87,7 +87,7 @@ def get_lead_count(from_date, to_date, user="", conds="", return_result=False):
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
 		"negativeIsBetter": False,
-		"tooltip": _("Total number of leads created"),
+		"tooltip": _("Total number of leads"),
 	}
 
 
@@ -145,7 +145,7 @@ def get_deal_count(from_date, to_date, user="", conds="", return_result=False):
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
 		"negativeIsBetter": False,
-		"tooltip": _("Total number of deals created"),
+		"tooltip": _("Total number of deals"),
 	}
 
 
@@ -203,7 +203,7 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
 		"negativeIsBetter": False,
-		"tooltip": _("Total number of deals created"),
+		"tooltip": _("Total number of won deals"),
 	}
 
 
@@ -254,7 +254,7 @@ def get_average_deal_value(from_date, to_date, user="", conds="", return_result=
 	return {
 		"title": _("Avg Deal Value"),
 		"value": current_month_avg,
-		"tooltip": _("Average value of deals created (converted to base currency)"),
+		"tooltip": _("Average deal value of ongoing & won deals"),
 		"prefix": get_base_currency_symbol(),
 		# "suffix": "K",
 		"delta": delta,

@@ -89,12 +89,16 @@
           v-if="!numberCards.loading"
           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
         >
-          <NumberChart
+          <Tooltip
             v-for="(config, index) in numberCards.data"
-            :key="index"
-            class="border rounded-md"
-            :config="config"
-          />
+            :text="config.tooltip"
+          >
+            <NumberChart
+              :key="index"
+              class="border rounded-md"
+              :config="config"
+            />
+          </Tooltip>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
           <div v-if="salesTrend.data" class="border rounded-md min-h-80">
