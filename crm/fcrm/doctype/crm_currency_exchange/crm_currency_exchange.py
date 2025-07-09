@@ -24,7 +24,7 @@ class CRMCurrencyExchange(Document):
 	@frappe.whitelist()
 	def update_exchange_rate(self):
 		exchange_rate = get_exchange_rate(self.from_currency, self.to_currency)
-		self.db_set("exchange_rate", exchange_rate)
+		self.db_set({"exchange_rate": exchange_rate, "date": frappe.utils.now()})
 		return exchange_rate
 
 
