@@ -4,32 +4,23 @@
 import frappe
 from frappe.model.document import Document
 
+from crm.utils import get_historical_exchange_rate
+
 
 class CRMOrganization(Document):
 	def validate(self):
-		self.update_currency_exchange()
+		self.update_exchange_rate()
 
-	def update_currency_exchange(self):
-		if self.has_value_changed("currency") or not self.currency_exchange:
-			system_currency = frappe.db.get_single_value("System Settings", "currency")
-			currency_exchange = None
+	def update_exchange_rate(self):
+		if self.has_value_changed("currency") or not self.exchange_rate:
+			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
+			exchange_rate = 1
 			if self.currency and self.currency != system_currency:
-				if not frappe.db.exists(
-					"CRM Currency Exchange", {"from_currency": self.currency, "to_currency": system_currency}
-				):
-					new_er = frappe.new_doc("CRM Currency Exchange")
-					new_er.from_currency = self.currency
-					new_er.to_currency = system_currency
-					new_er.insert(ignore_permissions=True)
-					currency_exchange = new_er.name
-				else:
-					currency_exchange = frappe.db.get_value(
-						"CRM Currency Exchange",
-						{"from_currency": self.currency, "to_currency": system_currency},
-						"name",
-					)
+				exchange_rate = get_historical_exchange_rate(
+					frappe.utils.nowdate(), self.currency, system_currency
+				)
 
-			currency_exchange and self.db_set("currency_exchange", currency_exchange)
+			self.db_set("exchange_rate", exchange_rate)
 
 	@staticmethod
 	def default_list_data():

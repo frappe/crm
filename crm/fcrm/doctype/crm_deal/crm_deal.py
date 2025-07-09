@@ -10,6 +10,7 @@ from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
+from crm.utils import get_historical_exchange_rate
 
 
 class CRMDeal(Document):
@@ -28,7 +29,7 @@ class CRMDeal(Document):
 				self.closed_on = frappe.utils.now_datetime()
 		self.validate_forcasting_fields()
 		self.validate_lost_reason()
-		self.update_currency_exchange()
+		self.update_exchange_rate()
 
 	def after_insert(self):
 		if self.deal_owner:
@@ -171,27 +172,16 @@ class CRMDeal(Document):
 			elif self.lost_reason == "Other" and not self.lost_notes:
 				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
 
-	def update_currency_exchange(self):
-		if self.has_value_changed("currency") or not self.currency_exchange:
-			system_currency = frappe.db.get_single_value("System Settings", "currency")
-			currency_exchange = None
+	def update_exchange_rate(self):
+		if self.has_value_changed("currency") or not self.exchange_rate:
+			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
+			exchange_rate = 1
 			if self.currency and self.currency != system_currency:
-				if not frappe.db.exists(
-					"CRM Currency Exchange", {"from_currency": self.currency, "to_currency": system_currency}
-				):
-					new_er = frappe.new_doc("CRM Currency Exchange")
-					new_er.from_currency = self.currency
-					new_er.to_currency = system_currency
-					new_er.insert(ignore_permissions=True)
-					currency_exchange = new_er.name
-				else:
-					currency_exchange = frappe.db.get_value(
-						"CRM Currency Exchange",
-						{"from_currency": self.currency, "to_currency": system_currency},
-						"name",
-					)
+				exchange_rate = get_historical_exchange_rate(
+					frappe.utils.nowdate(), self.currency, system_currency
+				)
 
-			currency_exchange and self.db_set("currency_exchange", currency_exchange)
+			self.db_set("exchange_rate", exchange_rate)
 
 	@staticmethod
 	def default_list_data():

@@ -38,7 +38,7 @@
   "column_break_xbyf",
   "territory",
   "currency",
-  "currency_exchange",
+  "exchange_rate",
   "annual_revenue",
   "industry",
   "person_section",
@@ -418,15 +418,17 @@
    "label": "Closed On"
   },
   {
-   "fieldname": "currency_exchange",
-   "fieldtype": "Link",
-   "label": "Currency Exchange",
-   "options": "CRM Currency Exchange"
+   "default": "1",
+   "description": "The rate used to convert the deal\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
+   "fieldname": "exchange_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
  "modified": "2025-07-05 12:25:05.927806",
@@ -436,6 +438,9 @@
 =======
  "modified": "2025-07-09 14:26:53.986118",
 >>>>>>> 0be73791 (fix: store currency exchange in deal & organization)
+=======
+ "modified": "2025-07-09 17:58:55.956639",
+>>>>>>> d7ba5a5f (fix: store current day exchange rate when currency is updated in deal & organization)
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
