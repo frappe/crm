@@ -331,9 +331,9 @@ const dealsBySalesperson = createResource({
     }
   },
   auto: true,
-  transform(data = []) {
+  transform(r = { data: [], currency_symbol: '$' }) {
     return {
-      data: data,
+      data: r.data || [],
       title: __('Deals by Salesperson'),
       subtitle: 'Number of deals and total value per salesperson',
       xAxis: {
@@ -345,7 +345,7 @@ const dealsBySalesperson = createResource({
         title: __('Number of Deals'),
       },
       y2Axis: {
-        title: __('Deal Value ($)'),
+        title: __('Deal Value') + ` (${r.currency_symbol})`,
       },
       series: [
         { name: 'deals', type: 'bar' as const },
@@ -371,9 +371,9 @@ const dealsByTerritory = createResource({
     }
   },
   auto: true,
-  transform(data = []) {
+  transform(r = { data: [], currency_symbol: '$' }) {
     return {
-      data: data,
+      data: r.data || [],
       title: __('Deals by Territory'),
       subtitle: __('Geographic distribution of deals and revenue'),
       xAxis: {
@@ -385,7 +385,7 @@ const dealsByTerritory = createResource({
         title: __('Number of Deals'),
       },
       y2Axis: {
-        title: __('Deal Value ($)'),
+        title: __('Deal Value') + ` (${r.currency_symbol})`,
       },
       series: [
         { name: 'deals', type: 'bar' as const },
@@ -437,9 +437,9 @@ const forecastedRevenue = createResource({
     return { user: filters.user }
   },
   auto: true,
-  transform(data = []) {
+  transform(r = { data: [], currency_symbol: '$' }) {
     return {
-      data: data,
+      data: r.data || [],
       title: __('Revenue Forecast'),
       subtitle: __('Projected vs actual revenue based on deal probability'),
       xAxis: {
@@ -449,7 +449,7 @@ const forecastedRevenue = createResource({
         timeGrain: 'month' as const,
       },
       yAxis: {
-        title: __('Revenue ($)'),
+        title: __('Revenue') + ` (${r.currency_symbol})`,
       },
       series: [
         { name: 'forecasted', type: 'line' as const, showDataPoints: true },
