@@ -38,6 +38,7 @@
   "column_break_xbyf",
   "territory",
   "currency",
+  "currency_exchange",
   "annual_revenue",
   "industry",
   "person_section",
@@ -415,12 +416,18 @@
    "fieldname": "closed_on",
    "fieldtype": "Datetime",
    "label": "Closed On"
+  },
+  {
+   "fieldname": "currency_exchange",
+   "fieldtype": "Link",
+   "label": "Currency Exchange",
+   "options": "CRM Currency Exchange"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-06 15:16:37.673699",
+ "modified": "2025-07-09 14:26:53.986118",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

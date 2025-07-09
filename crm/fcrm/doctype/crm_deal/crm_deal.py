@@ -28,6 +28,7 @@ class CRMDeal(Document):
 				self.closed_on = frappe.utils.now_datetime()
 		self.validate_forcasting_fields()
 		self.validate_lost_reason()
+		self.update_currency_exchange()
 
 	def after_insert(self):
 		if self.deal_owner:
@@ -169,6 +170,28 @@ class CRMDeal(Document):
 				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
 			elif self.lost_reason == "Other" and not self.lost_notes:
 				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
+
+	def update_currency_exchange(self):
+		if self.has_value_changed("currency") or not self.currency_exchange:
+			system_currency = frappe.db.get_single_value("System Settings", "currency")
+			currency_exchange = None
+			if self.currency and self.currency != system_currency:
+				if not frappe.db.exists(
+					"CRM Currency Exchange", {"from_currency": self.currency, "to_currency": system_currency}
+				):
+					new_er = frappe.new_doc("CRM Currency Exchange")
+					new_er.from_currency = self.currency
+					new_er.to_currency = system_currency
+					new_er.insert(ignore_permissions=True)
+					currency_exchange = new_er.name
+				else:
+					currency_exchange = frappe.db.get_value(
+						"CRM Currency Exchange",
+						{"from_currency": self.currency, "to_currency": system_currency},
+						"name",
+					)
+
+			currency_exchange and self.db_set("currency_exchange", currency_exchange)
 
 	@staticmethod
 	def default_list_data():
