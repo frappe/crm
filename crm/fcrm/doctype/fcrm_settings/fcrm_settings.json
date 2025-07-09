@@ -8,6 +8,7 @@
   "defaults_tab",
   "restore_defaults",
   "enable_forecasting",
+  "currency",
   "branding_tab",
   "brand_name",
   "brand_logo",
@@ -64,12 +65,20 @@
    "fieldname": "enable_forecasting",
    "fieldtype": "Check",
    "label": "Enable Forecasting"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-01 13:20:48.757603",
+ "modified": "2025-07-09 17:49:18.705465",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
