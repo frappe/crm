@@ -225,18 +225,17 @@ def get_average_deal_value(from_date, to_date, user="", conds="", return_result=
 			AVG(CASE
 				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY) AND d.status != 'Lost'
 				{conds}
-				THEN d.deal_value * IFNULL(e.exchange_rate, 1)
+				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
 				ELSE NULL
 			END) as current_month_avg,
 
 			AVG(CASE
 				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s AND d.status != 'Lost'
 				{conds}
-				THEN d.deal_value * IFNULL(e.exchange_rate, 1)
+				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
 				ELSE NULL
 			END) as prev_month_avg
-		FROM `tabCRM Deal` d
-		LEFT JOIN `tabCRM Currency Exchange` e ON d.currency_exchange = e.name
+		FROM `tabCRM Deal` AS d
 		""",
 		{
 			"from_date": from_date,
@@ -284,7 +283,7 @@ def get_average_time_to_close(from_date, to_date, user="", conds="", return_resu
 				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as current_avg,
 			AVG(CASE WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(prev_to_date)s
 				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as prev_avg
-		FROM `tabCRM Deal` d
+		FROM `tabCRM Deal` AS d
 		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE d.status = 'Won' AND d.closed_on IS NOT NULL
 			{conds}
@@ -406,10 +405,9 @@ def get_deals_by_salesperson(from_date="", to_date="", user="", deal_conds=""):
 		SELECT
 			IFNULL(u.full_name, d.deal_owner) AS salesperson,
 			COUNT(*)                           AS deals,
-			SUM(COALESCE(d.deal_value, 0) * IFNULL(e.exchange_rate, 1)) AS value
+			SUM(COALESCE(d.deal_value, 0) * IFNULL(d.exchange_rate, 1)) AS value
 		FROM `tabCRM Deal` AS d
 		LEFT JOIN `tabUser` AS u ON u.name = d.deal_owner
-		LEFT JOIN `tabCRM Currency Exchange` AS e ON d.currency_exchange = e.name
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
 		{deal_conds}
 		GROUP BY d.deal_owner
@@ -448,9 +446,8 @@ def get_deals_by_territory(from_date="", to_date="", user="", deal_conds=""):
 		SELECT
 			IFNULL(d.territory, 'Empty') AS territory,
 			COUNT(*) AS deals,
-			SUM(COALESCE(d.deal_value, 0) * IFNULL(e.exchange_rate, 1)) AS value
+			SUM(COALESCE(d.deal_value, 0) * IFNULL(d.exchange_rate, 1)) AS value
 		FROM `tabCRM Deal` AS d
-		LEFT JOIN `tabCRM Currency Exchange` AS e ON d.currency_exchange = e.name
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
 		{deal_conds}
 		GROUP BY d.territory
@@ -525,18 +522,17 @@ def get_forecasted_revenue(user="", deal_conds=""):
 			DATE_FORMAT(d.close_date, '%Y-%m')                        AS month,
 			SUM(
 				CASE
-					WHEN d.status = 'Lost' THEN d.deal_value * IFNULL(e.exchange_rate, 1)
-					ELSE d.deal_value * IFNULL(d.probability, 0) / 100 * IFNULL(e.exchange_rate, 1)  -- forecasted
+					WHEN d.status = 'Lost' THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+					ELSE d.deal_value * IFNULL(d.probability, 0) / 100 * IFNULL(d.exchange_rate, 1)  -- forecasted
 				END
 			)                                                       AS forecasted,
 			SUM(
 				CASE
-					WHEN d.status = 'Won' THEN d.deal_value * IFNULL(e.exchange_rate, 1)            -- actual
+					WHEN d.status = 'Won' THEN d.deal_value * IFNULL(d.exchange_rate, 1)            -- actual
 					ELSE 0
 				END
 			)                                                       AS actual
 		FROM `tabCRM Deal` AS d
-		LEFT JOIN `tabCRM Currency Exchange` AS e ON d.currency_exchange = e.name
 		WHERE d.close_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
 		{deal_conds}
 		GROUP BY DATE_FORMAT(d.close_date, '%Y-%m')
@@ -695,5 +691,5 @@ def get_base_currency_symbol():
 	"""
 	Get the base currency symbol from the system settings.
 	"""
-	base_currency = frappe.db.get_single_value("System Settings", "currency") or "USD"
+	base_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
 	return frappe.db.get_value("Currency", base_currency, "symbol") or ""
