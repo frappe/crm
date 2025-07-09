@@ -7,10 +7,10 @@
  "engine": "InnoDB",
  "field_order": [
   "from_currency",
+  "exchange_rate",
   "column_break_knzx",
   "to_currency",
-  "section_break_nsen",
-  "exchange_rate"
+  "date"
  ],
  "fields": [
   {
@@ -39,14 +39,16 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "section_break_nsen",
-   "fieldtype": "Section Break"
+   "description": "Date at which exchange rate was fetched",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-09 14:36:54.390864",
+ "modified": "2025-07-09 14:48:14.486500",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Currency Exchange",
