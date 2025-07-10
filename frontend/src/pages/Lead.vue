@@ -66,6 +66,7 @@
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
           v-model="lead"
+          @beforeSave="saveChanges"
           @afterSave="reloadAssignees"
         />
       </template>
@@ -545,6 +546,12 @@ function openEmailBox() {
     activities.value.changeTabTo('emails')
   }
   nextTick(() => (activities.value.emailBox.show = true))
+}
+
+function saveChanges(data) {
+  document.save.submit(null, {
+    onSuccess: () => reloadAssignees(data),
+  })
 }
 
 function reloadAssignees(data) {
