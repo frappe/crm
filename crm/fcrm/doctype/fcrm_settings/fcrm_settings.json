@@ -71,14 +71,13 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Currency",
-   "options": "Currency",
-   "reqd": 1
+   "options": "Currency"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-09 17:49:18.705465",
+ "modified": "2025-07-10 16:35:25.030011",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
