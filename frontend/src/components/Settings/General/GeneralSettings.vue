@@ -58,7 +58,7 @@
             doctype="Currency"
             @change="(v) => setCurrency(v)"
             :placeholder="__('Select currency')"
-            :disabled="settings.doc.currency ? true : false"
+            :disabled="settings.doc.currency"
             placement="bottom-end"
           />
         </div>
