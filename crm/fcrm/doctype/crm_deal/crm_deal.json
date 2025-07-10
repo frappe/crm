@@ -21,6 +21,7 @@
   "deal_value",
   "column_break_kpxa",
   "close_date",
+  "closed_on",
   "contacts_tab",
   "contacts",
   "contact",
@@ -37,6 +38,7 @@
   "column_break_xbyf",
   "territory",
   "currency",
+  "exchange_rate",
   "annual_revenue",
   "industry",
   "person_section",
@@ -409,12 +411,24 @@
    "fieldtype": "Text",
    "label": "Lost Notes",
    "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
+  },
+  {
+   "fieldname": "closed_on",
+   "fieldtype": "Datetime",
+   "label": "Closed On"
+  },
+  {
+   "default": "1",
+   "description": "The rate used to convert the deal\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
+   "fieldname": "exchange_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-05 12:25:05.927806",
+ "modified": "2025-07-09 17:58:55.956639",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

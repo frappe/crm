@@ -17,6 +17,7 @@ class FCRMSettings(Document):
 	def validate(self):
 		self.do_not_allow_to_delete_if_standard()
 		self.setup_forecasting()
+		self.make_currency_read_only()
 
 	def do_not_allow_to_delete_if_standard(self):
 		if not self.has_value_changed("dropdown_items"):
@@ -59,6 +60,16 @@ class FCRMSettings(Document):
 					1 if self.enable_forecasting else 0,
 					"Check",
 				)
+
+	def make_currency_read_only(self):
+		if self.currency and self.has_value_changed("currency"):
+			make_property_setter(
+				"FCRM Settings",
+				"currency",
+				"read_only",
+				1,
+				"Check",
+			)
 
 
 def get_standard_dropdown_items():

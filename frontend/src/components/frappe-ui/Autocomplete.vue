@@ -1,6 +1,6 @@
 <template>
   <Combobox v-model="selectedValue" nullable v-slot="{ open: isComboboxOpen }">
-    <Popover class="w-full" v-model:show="showOptions">
+    <Popover class="w-full" v-model:show="showOptions" :placement="placement">
       <template #target="{ open: openPopover, togglePopover }">
         <slot
           name="target"
@@ -14,9 +14,9 @@
         >
           <div class="w-full">
             <button
-              class="relative flex h-7 w-full items-center justify-between gap-2 rounded bg-surface-gray-2 px-2 py-1 transition-colors hover:bg-surface-gray-3 border border-transparent focus:border-outline-gray-4 focus:outline-none focus:ring-2 focus:ring-outline-gray-3"
+              class="relative flex h-7 w-full items-center justify-between gap-2 rounded px-2 py-1 transition-colors"
               :class="inputClasses"
-              @click="() => togglePopover()"
+              @click="() => !disabled && togglePopover()"
             >
               <div
                 v-if="selectedValue"
@@ -34,6 +34,7 @@
                 {{ placeholder || '' }}
               </div>
               <FeatherIcon
+                v-if="!disabled"
                 name="chevron-down"
                 class="absolute h-4 w-4 text-ink-gray-5 right-2"
                 aria-hidden="true"
@@ -142,7 +143,7 @@ import {
   ComboboxOptions,
   ComboboxOption,
 } from '@headlessui/vue'
-import { Popover, Button, FeatherIcon } from 'frappe-ui'
+import { Popover, FeatherIcon } from 'frappe-ui'
 import { ref, computed, useAttrs, useSlots, watch, nextTick } from 'vue'
 
 const props = defineProps({
@@ -173,6 +174,10 @@ const props = defineProps({
   filterable: {
     type: Boolean,
     default: true,
+  },
+  placement: {
+    type: String,
+    default: 'bottom-start',
   },
 })
 const emit = defineEmits(['update:modelValue', 'update:query', 'change'])
