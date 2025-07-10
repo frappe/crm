@@ -14,11 +14,11 @@
         class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
         @click="toggleForecasting()"
       >
-        <div class="flex flex-col gap-0.5">
-          <div class="text-base font-medium text-ink-gray-7 truncate">
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
             {{ __('Enable forecasting') }}
           </div>
-          <div class="text-base text-ink-gray-5 truncate">
+          <div class="text-p-sm text-ink-gray-5 truncate">
             {{
               __(
                 "It will make deal's `Close Date` & `Deal Value` mandatory to get accurate forecasting insights",
@@ -38,11 +38,11 @@
       <div
         class="flex items-center justify-between gap-8 p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
       >
-        <div class="flex flex-col gap-0.5">
-          <div class="text-base font-medium text-ink-gray-7 truncate">
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
             {{ __('Currency') }}
           </div>
-          <div class="text-base text-ink-gray-5">
+          <div class="text-p-sm text-ink-gray-5">
             {{
               __(
                 'Set your CRM’s main currency. All monetary values will use this. This can’t be changed later.',
@@ -58,7 +58,7 @@
             doctype="Currency"
             @change="(v) => setCurrency(v)"
             :placeholder="__('Select currency')"
-            :disabled="settings.doc.currency"
+            :disabled="settings.doc.currency ? true : false"
             placement="bottom-end"
           />
         </div>
@@ -69,11 +69,11 @@
           class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
           @click="() => emit('updateStep', setting.name)"
         >
-          <div class="flex flex-col gap-0.5">
-            <div class="text-base font-medium text-ink-gray-7 truncate">
+          <div class="flex flex-col">
+            <div class="text-p-base font-medium text-ink-gray-7 truncate">
               {{ __(setting.label) }}
             </div>
-            <div class="text-base text-ink-gray-5 truncate">
+            <div class="text-p-sm text-ink-gray-5 truncate">
               {{ __(setting.description) }}
             </div>
           </div>
@@ -82,7 +82,7 @@
           </div>
         </li>
         <div
-          v-if="settingsList !== i + 1"
+          v-if="settingsList.length !== i + 1"
           class="h-px border-t mx-2 border-outline-gray-modals"
         />
       </template>
