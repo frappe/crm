@@ -269,21 +269,12 @@ def sales_user_only(fn):
 	return wrapper
 
 
-def get_exchange_rate(from_currency, to_currency):
-	url = f"https://api.frankfurter.app/latest?from={from_currency}&to={to_currency}"
-	response = requests.get(url)
+def get_exchange_rate(from_currency, to_currency, date=None):
+	if not date:
+		date = "latest"
 
-	if response.status_code == 200:
-		data = response.json()
-		rate = data["rates"].get(to_currency)
-		return rate
-	else:
-		frappe.throw(_("Failed to fetch exchange rate from external API. Please try again later."))
-		return None
-
-
-def get_historical_exchange_rate(date, from_currency, to_currency):
 	url = f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}"
+
 	response = requests.get(url)
 
 	if response.status_code == 200:
