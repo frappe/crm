@@ -14,7 +14,8 @@ def get_number_card_data(from_date="", to_date="", user="", lead_conds="", deal_
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
-	is_sales_user = "Sales User" in frappe.get_roles(frappe.session.user)
+	roles = frappe.get_roles(frappe.session.user)
+	is_sales_user = "Sales User" in roles and "Sales Manager" not in roles and "System Manager" not in roles
 	if is_sales_user and not user:
 		user = frappe.session.user
 
