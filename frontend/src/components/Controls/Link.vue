@@ -10,6 +10,8 @@
       :size="attrs.size || 'sm'"
       :variant="attrs.variant"
       :placeholder="attrs.placeholder"
+      :disabled="attrs.disabled"
+      :placement="attrs.placement"
       :filterable="false"
     >
       <template #target="{ open, togglePopover }">
