@@ -10,7 +10,7 @@ from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
-from crm.utils import get_historical_exchange_rate
+from crm.utils import get_exchange_rate
 
 
 class CRMDeal(Document):
@@ -177,9 +177,7 @@ class CRMDeal(Document):
 			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
 			exchange_rate = 1
 			if self.currency and self.currency != system_currency:
-				exchange_rate = get_historical_exchange_rate(
-					frappe.utils.nowdate(), self.currency, system_currency
-				)
+				exchange_rate = get_exchange_rate(self.currency, system_currency, frappe.utils.nowdate())
 
 			self.db_set("exchange_rate", exchange_rate)
 
