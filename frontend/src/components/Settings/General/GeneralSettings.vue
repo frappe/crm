@@ -21,7 +21,7 @@
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
               __(
-                "It will make deal's `Close Date` & `Deal Value` mandatory to get accurate forecasting insights",
+                'Makes "Close Date" and "Deal Value" mandatory for deal value forecasting',
               )
             }}
           </div>
@@ -45,20 +45,22 @@
           <div class="text-p-sm text-ink-gray-5">
             {{
               __(
-                'Set your CRM’s main currency. All monetary values will use this. This can’t be changed later.',
+                'CRM currency for all monetary values. Once set, cannot be edited.',
               )
             }}
           </div>
         </div>
         <div>
+          <div v-if="settings.doc.currency" class="text-base text-ink-gray-8">
+            {{ settings.doc.currency }}
+          </div>
           <Link
-            class="form-control flex-1 truncate"
-            :class="settings.doc.currency ? '' : 'w-40'"
-            :value="settings.doc.currency || ''"
+            v-else
+            class="form-control flex-1 truncate w-40"
+            :value="settings.doc.currency"
             doctype="Currency"
             @change="(v) => setCurrency(v)"
             :placeholder="__('Select currency')"
-            :disabled="settings.doc.currency ? true : false"
             placement="bottom-end"
           />
         </div>

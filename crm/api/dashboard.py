@@ -307,7 +307,7 @@ def get_average_time_to_close(from_date, to_date, user="", conds="", return_resu
 	return {
 		"title": _("Avg Time to Close"),
 		"value": current_avg,
-		"tooltip": _("Average time taken to close deals"),
+		"tooltip": _("Average time taken from lead creation to deal closure"),
 		"suffix": " days",
 		"delta": delta,
 		"deltaSuffix": " days",
