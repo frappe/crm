@@ -47,7 +47,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import Users from '@/components/Settings/Users.vue'
-import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
+import GeneralSettingsPage from '@/components/Settings/General/GeneralSettingsPage.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
@@ -88,7 +88,7 @@ const tabs = computed(() => {
         {
           label: __('General'),
           icon: 'settings',
-          component: markRaw(GeneralSettings),
+          component: markRaw(GeneralSettingsPage),
           condition: () => isManager(),
         },
         {
