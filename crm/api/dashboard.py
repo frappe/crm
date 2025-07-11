@@ -160,26 +160,29 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 		diff = 1
 
 	if user:
-		conds += f" AND deal_owner = '{user}'"
+		conds += f" AND d.deal_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
-            COUNT(CASE
-                WHEN creation >= %(from_date)s AND creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY) AND status = 'Won'
-                {conds}
-                THEN name
-                ELSE NULL
-            END) as current_month_deals,
+			COUNT(CASE
+				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+					AND s.type = 'Won'
+					{conds}
+				THEN d.name
+				ELSE NULL
+			END) as current_month_deals,
 
-            COUNT(CASE
-                WHEN creation >= %(prev_from_date)s AND creation < %(from_date)s AND status = 'Won'
-                {conds}
-                THEN name
-                ELSE NULL
-            END) as prev_month_deals
-		FROM `tabCRM Deal`
-    """,
+			COUNT(CASE
+				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s
+					AND s.type = 'Won'
+					{conds}
+				THEN d.name
+				ELSE NULL
+			END) as prev_month_deals
+		FROM `tabCRM Deal` d
+		JOIN `tabCRM Deal Status` s ON d.status = s.name
+		""",
 		{
 			"from_date": from_date,
 			"to_date": to_date,
@@ -218,25 +221,28 @@ def get_average_deal_value(from_date, to_date, user="", conds="", return_result=
 		diff = 1
 
 	if user:
-		conds += f" AND deal_owner = '{user}'"
+		conds += f" AND d.deal_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
 			AVG(CASE
-				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY) AND d.status != 'Lost'
-				{conds}
+				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+					AND s.type != 'Lost'
+					{conds}
 				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
 				ELSE NULL
 			END) as current_month_avg,
 
 			AVG(CASE
-				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s AND d.status != 'Lost'
-				{conds}
+				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s
+					AND s.type != 'Lost'
+					{conds}
 				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
 				ELSE NULL
 			END) as prev_month_avg
 		FROM `tabCRM Deal` AS d
+		JOIN `tabCRM Deal Status` s ON d.status = s.name
 		""",
 		{
 			"from_date": from_date,
@@ -281,12 +287,15 @@ def get_average_time_to_close(from_date, to_date, user="", conds="", return_resu
 		f"""
 		SELECT
 			AVG(CASE WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				AND s.type = 'Won'
 				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as current_avg,
 			AVG(CASE WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(prev_to_date)s
+				AND s.type = 'Won'
 				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as prev_avg
 		FROM `tabCRM Deal` AS d
+		JOIN `tabCRM Deal Status` s ON d.status = s.name
 		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
-		WHERE d.status = 'Won' AND d.closed_on IS NOT NULL
+		WHERE d.closed_on IS NOT NULL
 			{conds}
 		""",
 		{
@@ -356,14 +365,15 @@ def get_sales_trend_data(from_date="", to_date="", user="", lead_conds="", deal_
 			UNION ALL
 
 			SELECT
-				DATE(creation) AS date,
+				DATE(d.creation) AS date,
 				0 AS leads,
 				COUNT(*) AS deals,
-				SUM(CASE WHEN status = 'Won' THEN 1 ELSE 0 END) AS won_deals
-			FROM `tabCRM Deal`
-			WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
+				SUM(CASE WHEN s.type = 'Won' THEN 1 ELSE 0 END) AS won_deals
+			FROM `tabCRM Deal` d
+			JOIN `tabCRM Deal Status` s ON d.status = s.name
+			WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
 			{deal_conds}
-			GROUP BY DATE(creation)
+			GROUP BY DATE(d.creation)
 		) AS daily
 		GROUP BY date
 		ORDER BY date
@@ -488,7 +498,8 @@ def get_lost_deal_reasons(from_date="", to_date="", user="", deal_conds=""):
 			d.lost_reason AS reason,
 			COUNT(*) AS count
 		FROM `tabCRM Deal` AS d
-		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s AND d.status = 'Lost'
+		JOIN `tabCRM Deal Status` s ON d.status = s.name
+		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s AND s.type = 'Lost'
 		{deal_conds}
 		GROUP BY d.lost_reason
 		HAVING reason IS NOT NULL AND reason != ''
@@ -595,7 +606,7 @@ def get_funnel_conversion_data(from_date="", to_date="", user="", lead_conds="",
 
 	# Get deal stages
 	all_deal_stages = frappe.get_all(
-		"CRM Deal Status", filters={"name": ["!=", "Lost"]}, order_by="position", pluck="name"
+		"CRM Deal Status", filters={"type": ["!=", "Lost"]}, order_by="position", pluck="name"
 	)
 
 	# Get deal counts for each stage
