@@ -87,14 +87,13 @@ def get_lead_count(from_date, to_date, user="", conds="", return_result=False):
 		"value": current_month_leads,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
-		"negativeIsBetter": False,
 		"tooltip": _("Total number of leads"),
 	}
 
 
 def get_deal_count(from_date, to_date, user="", conds="", return_result=False):
 	"""
-	Get deal count for the dashboard.
+	Get ongoing deal count for the dashboard.
 	"""
 
 	diff = frappe.utils.date_diff(to_date, from_date)
@@ -102,25 +101,28 @@ def get_deal_count(from_date, to_date, user="", conds="", return_result=False):
 		diff = 1
 
 	if user:
-		conds += f" AND deal_owner = '{user}'"
+		conds += f" AND d.deal_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
-            COUNT(CASE
-                WHEN creation >= %(from_date)s AND creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-                {conds}
-                THEN name
-                ELSE NULL
-            END) as current_month_deals,
+			COUNT(CASE
+				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+					AND s.type NOT IN ('Won', 'Lost')
+					{conds}
+				THEN d.name
+				ELSE NULL
+			END) as current_month_deals,
 
-            COUNT(CASE
-                WHEN creation >= %(prev_from_date)s AND creation < %(from_date)s
-                {conds}
-                THEN name
-                ELSE NULL
-            END) as prev_month_deals
-		FROM `tabCRM Deal`
+			COUNT(CASE
+				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s
+					AND s.type NOT IN ('Won', 'Lost')
+					{conds}
+				THEN d.name
+				ELSE NULL
+			END) as prev_month_deals
+		FROM `tabCRM Deal` d
+		JOIN `tabCRM Deal Status` s ON d.status = s.name
     """,
 		{
 			"from_date": from_date,
@@ -141,12 +143,11 @@ def get_deal_count(from_date, to_date, user="", conds="", return_result=False):
 	)
 
 	return {
-		"title": _("Total Deals"),
+		"title": _("Ongoing Deals"),
 		"value": current_month_deals,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
-		"negativeIsBetter": False,
-		"tooltip": _("Total number of deals"),
+		"tooltip": _("Total number of ongoing deals"),
 	}
 
 
@@ -166,7 +167,7 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 		f"""
 		SELECT
 			COUNT(CASE
-				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
 					AND s.type = 'Won'
 					{conds}
 				THEN d.name
@@ -174,7 +175,7 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 			END) as current_month_deals,
 
 			COUNT(CASE
-				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s
+				WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(from_date)s
 					AND s.type = 'Won'
 					{conds}
 				THEN d.name
@@ -206,7 +207,6 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 		"value": current_month_deals,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
-		"negativeIsBetter": False,
 		"tooltip": _("Total number of won deals"),
 	}
 
