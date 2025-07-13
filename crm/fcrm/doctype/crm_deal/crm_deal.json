@@ -18,10 +18,11 @@
   "lost_notes",
   "section_break_jgpm",
   "probability",
+  "expected_deal_value",
   "deal_value",
   "column_break_kpxa",
-  "close_date",
-  "closed_on",
+  "expected_closure_date",
+  "closed_date",
   "contacts_tab",
   "contacts",
   "contact",
@@ -94,11 +95,6 @@
    "fieldname": "website",
    "fieldtype": "Data",
    "label": "Website"
-  },
-  {
-   "fieldname": "close_date",
-   "fieldtype": "Date",
-   "label": "Close Date"
   },
   {
    "fieldname": "next_step",
@@ -413,22 +409,33 @@
    "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
   },
   {
-   "fieldname": "closed_on",
-   "fieldtype": "Datetime",
-   "label": "Closed On"
-  },
-  {
    "default": "1",
    "description": "The rate used to convert the deal\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
    "fieldname": "exchange_rate",
    "fieldtype": "Float",
    "label": "Exchange Rate"
+  },
+  {
+   "fieldname": "expected_deal_value",
+   "fieldtype": "Currency",
+   "label": "Expected Deal Value",
+   "options": "currency"
+  },
+  {
+   "fieldname": "expected_closure_date",
+   "fieldtype": "Date",
+   "label": "Expected Closure Date"
+  },
+  {
+   "fieldname": "closed_date",
+   "fieldtype": "Date",
+   "label": "Closed Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-09 17:58:55.956639",
+ "modified": "2025-07-13 11:54:20.608489",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
