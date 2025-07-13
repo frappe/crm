@@ -19,22 +19,24 @@ def get_number_card_data(from_date="", to_date="", user="", lead_conds="", deal_
 	if is_sales_user and not user:
 		user = frappe.session.user
 
-	lead_count_data = get_lead_count(from_date, to_date, user, lead_conds)
-	ongoing_deal_count_data = get_ongoing_deal_count(from_date, to_date, user, deal_conds)[0]
-	average_ongoing_deal_value_data = get_ongoing_deal_count(from_date, to_date, user, deal_conds)[1]
-	won_deal_count_data = get_won_deal_count(from_date, to_date, user, deal_conds)[0]
-	average_won_deal_value_data = get_won_deal_count(from_date, to_date, user, deal_conds)[1]
-	average_deal_value_data = get_average_deal_value(from_date, to_date, user, deal_conds)
-	average_time_to_close_data = get_average_time_to_close(from_date, to_date, user, deal_conds)
+	lead_count = get_lead_count(from_date, to_date, user, lead_conds)
+	ongoing_deal_count = get_ongoing_deal_count(from_date, to_date, user, deal_conds)["count"]
+	average_ongoing_deal_value = get_ongoing_deal_count(from_date, to_date, user, deal_conds)["average"]
+	won_deal_count = get_won_deal_count(from_date, to_date, user, deal_conds)["count"]
+	average_won_deal_value = get_won_deal_count(from_date, to_date, user, deal_conds)["average"]
+	average_deal_value = get_average_deal_value(from_date, to_date, user, deal_conds)
+	average_time_to_close_a_lead = get_average_time_to_close(from_date, to_date, user, deal_conds)["lead"]
+	average_time_to_close_a_deal = get_average_time_to_close(from_date, to_date, user, deal_conds)["deal"]
 
 	return [
-		lead_count_data,
-		ongoing_deal_count_data,
-		average_ongoing_deal_value_data,
-		won_deal_count_data,
-		average_won_deal_value_data,
-		average_deal_value_data,
-		average_time_to_close_data,
+		lead_count,
+		ongoing_deal_count,
+		average_ongoing_deal_value,
+		won_deal_count,
+		average_won_deal_value,
+		average_deal_value,
+		average_time_to_close_a_lead,
+		average_time_to_close_a_deal,
 	]
 
 
@@ -87,7 +89,7 @@ def get_lead_count(from_date, to_date, user="", conds="", return_result=False):
 	)
 
 	return {
-		"title": _("Total Leads"),
+		"title": _("Total leads"),
 		"value": current_month_leads,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
@@ -165,23 +167,23 @@ def get_ongoing_deal_count(from_date, to_date, user="", conds="", return_result=
 	)
 	avg_value_delta = current_month_avg_value - prev_month_avg_value if prev_month_avg_value else 0
 
-	return [
-		{
-			"title": _("Ongoing Deals"),
+	return {
+		"count": {
+			"title": _("Ongoing deals"),
 			"value": current_month_deals,
 			"delta": delta_in_percentage,
 			"deltaSuffix": "%",
 			"tooltip": _("Total number of ongoing deals"),
 		},
-		{
-			"title": _("Avg Ongoing Deal Value"),
+		"average": {
+			"title": _("Avg ongoing deal value"),
 			"value": current_month_avg_value,
 			"delta": avg_value_delta,
 			"prefix": get_base_currency_symbol(),
 			# "suffix": "K",
 			"tooltip": _("Average deal value of ongoing deals"),
 		},
-	]
+	}
 
 
 def get_won_deal_count(from_date, to_date, user="", conds="", return_result=False):
@@ -254,23 +256,23 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 	)
 	avg_value_delta = current_month_avg_value - prev_month_avg_value if prev_month_avg_value else 0
 
-	return [
-		{
-			"title": _("Won Deals"),
+	return {
+		"count": {
+			"title": _("Won deals"),
 			"value": current_month_deals,
 			"delta": delta_in_percentage,
 			"deltaSuffix": "%",
 			"tooltip": _("Total number of won deals based on its closure date"),
 		},
-		{
-			"title": _("Avg Won Deal Value"),
+		"average": {
+			"title": _("Avg won deal value"),
 			"value": current_month_avg_value,
 			"delta": avg_value_delta,
 			"prefix": get_base_currency_symbol(),
 			# "suffix": "K",
 			"tooltip": _("Average deal value of won deals"),
 		},
-	]
+	}
 
 
 def get_average_deal_value(from_date, to_date, user="", conds="", return_result=False):
@@ -320,7 +322,7 @@ def get_average_deal_value(from_date, to_date, user="", conds="", return_result=
 	delta = current_month_avg - prev_month_avg if prev_month_avg else 0
 
 	return {
-		"title": _("Avg Deal Value"),
+		"title": _("Avg deal value"),
 		"value": current_month_avg,
 		"tooltip": _("Average deal value of ongoing & won deals"),
 		"prefix": get_base_currency_symbol(),
@@ -333,6 +335,9 @@ def get_average_deal_value(from_date, to_date, user="", conds="", return_result=
 def get_average_time_to_close(from_date, to_date, user="", conds="", return_result=False):
 	"""
 	Get average time to close deals for the dashboard.
+	Returns both:
+	- Average time from lead creation to deal closure
+	- Average time from deal creation to deal closure
 	"""
 
 	diff = frappe.utils.date_diff(to_date, from_date)
@@ -349,15 +354,17 @@ def get_average_time_to_close(from_date, to_date, user="", conds="", return_resu
 		f"""
 		SELECT
 			AVG(CASE WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-				AND s.type = 'Won'
-				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as current_avg,
+				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as current_avg_lead,
 			AVG(CASE WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(prev_to_date)s
-				AND s.type = 'Won'
-				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as prev_avg
+				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as prev_avg_lead,
+			AVG(CASE WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				THEN TIMESTAMPDIFF(DAY, d.creation, d.closed_on) END) as current_avg_deal,
+			AVG(CASE WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(prev_to_date)s
+				THEN TIMESTAMPDIFF(DAY, d.creation, d.closed_on) END) as prev_avg_deal
 		FROM `tabCRM Deal` AS d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
 		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
-		WHERE d.closed_on IS NOT NULL
+		WHERE d.closed_on IS NOT NULL AND s.type = 'Won'
 			{conds}
 		""",
 		{
@@ -372,18 +379,33 @@ def get_average_time_to_close(from_date, to_date, user="", conds="", return_resu
 	if return_result:
 		return result
 
-	current_avg = result[0].current_avg or 0
-	prev_avg = result[0].prev_avg or 0
-	delta = current_avg - prev_avg if prev_avg else 0
+	current_avg_lead = result[0].current_avg_lead or 0
+	prev_avg_lead = result[0].prev_avg_lead or 0
+	delta_lead = current_avg_lead - prev_avg_lead if prev_avg_lead else 0
+
+	current_avg_deal = result[0].current_avg_deal or 0
+	prev_avg_deal = result[0].prev_avg_deal or 0
+	delta_deal = current_avg_deal - prev_avg_deal if prev_avg_deal else 0
 
 	return {
-		"title": _("Avg Time to Close"),
-		"value": current_avg,
-		"tooltip": _("Average time taken from lead creation to deal closure"),
-		"suffix": " days",
-		"delta": delta,
-		"deltaSuffix": " days",
-		"negativeIsBetter": True,
+		"lead": {
+			"title": _("Avg time to close a lead"),
+			"value": current_avg_lead,
+			"tooltip": _("Average time taken from lead creation to deal closure"),
+			"suffix": " days",
+			"delta": delta_lead,
+			"deltaSuffix": " days",
+			"negativeIsBetter": True,
+		},
+		"deal": {
+			"title": _("Avg time to close a deal"),
+			"value": current_avg_deal,
+			"tooltip": _("Average time taken from deal creation to deal closure"),
+			"suffix": " days",
+			"delta": delta_deal,
+			"deltaSuffix": " days",
+			"negativeIsBetter": True,
+		},
 	}
 
 
