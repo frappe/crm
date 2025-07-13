@@ -734,8 +734,10 @@ def get_deals_by_stage(from_date="", to_date="", user="", deal_conds=""):
 		f"""
 		SELECT
 			d.status AS stage,
-			COUNT(*) AS count
+			COUNT(*) AS count,
+			s.type AS status_type
 		FROM `tabCRM Deal` AS d
+		JOIN `tabCRM Deal Status` s ON d.status = s.name
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
 		{deal_conds}
 		GROUP BY d.status
