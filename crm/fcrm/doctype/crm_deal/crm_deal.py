@@ -25,8 +25,8 @@ class CRMDeal(Document):
 			self.assign_agent(self.deal_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
-			if self.status == "Won":
-				self.closed_on = frappe.utils.now_datetime()
+			if frappe.db.get_value("CRM Deal Status", self.status, "type") == "Won":
+				self.closed_date = frappe.utils.nowdate()
 		self.validate_forcasting_fields()
 		self.validate_lost_reason()
 		self.update_exchange_rate()
@@ -166,7 +166,7 @@ class CRMDeal(Document):
 		"""
 		Validate the lost reason if the status is set to "Lost".
 		"""
-		if self.status == "Lost":
+		if self.status and frappe.get_cached_value("CRM Deal Status", self.status, "type") == "Lost":
 			if not self.lost_reason:
 				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
 			elif self.lost_reason == "Other" and not self.lost_notes:
