@@ -339,7 +339,7 @@ const dealsBySalesperson = createResource({
     return {
       data: r.data || [],
       title: __('Deals by Salesperson'),
-      subtitle: 'Number of deals and total value per salesperson',
+      subtitle: __('Number of deals and total value per salesperson'),
       xAxis: {
         title: __('Salesperson'),
         key: 'salesperson',

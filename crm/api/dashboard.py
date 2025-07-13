@@ -19,18 +19,22 @@ def get_number_card_data(from_date="", to_date="", user="", lead_conds="", deal_
 	if is_sales_user and not user:
 		user = frappe.session.user
 
-	lead_chart_data = get_lead_count(from_date, to_date, user, lead_conds)
-	deal_chart_data = get_deal_count(from_date, to_date, user, deal_conds)
-	get_won_deal_count_data = get_won_deal_count(from_date, to_date, user, deal_conds)
-	get_average_deal_value_data = get_average_deal_value(from_date, to_date, user, deal_conds)
-	get_average_time_to_close_data = get_average_time_to_close(from_date, to_date, user, deal_conds)
+	lead_count_data = get_lead_count(from_date, to_date, user, lead_conds)
+	ongoing_deal_count_data = get_ongoing_deal_count(from_date, to_date, user, deal_conds)[0]
+	average_ongoing_deal_value_data = get_ongoing_deal_count(from_date, to_date, user, deal_conds)[1]
+	won_deal_count_data = get_won_deal_count(from_date, to_date, user, deal_conds)[0]
+	average_won_deal_value_data = get_won_deal_count(from_date, to_date, user, deal_conds)[1]
+	average_deal_value_data = get_average_deal_value(from_date, to_date, user, deal_conds)
+	average_time_to_close_data = get_average_time_to_close(from_date, to_date, user, deal_conds)
 
 	return [
-		lead_chart_data,
-		deal_chart_data,
-		get_won_deal_count_data,
-		get_average_deal_value_data,
-		get_average_time_to_close_data,
+		lead_count_data,
+		ongoing_deal_count_data,
+		average_ongoing_deal_value_data,
+		won_deal_count_data,
+		average_won_deal_value_data,
+		average_deal_value_data,
+		average_time_to_close_data,
 	]
 
 
@@ -91,9 +95,9 @@ def get_lead_count(from_date, to_date, user="", conds="", return_result=False):
 	}
 
 
-def get_deal_count(from_date, to_date, user="", conds="", return_result=False):
+def get_ongoing_deal_count(from_date, to_date, user="", conds="", return_result=False):
 	"""
-	Get ongoing deal count for the dashboard.
+	Get ongoing deal count for the dashboard, and also calculate average deal value for ongoing deals.
 	"""
 
 	diff = frappe.utils.date_diff(to_date, from_date)
@@ -120,7 +124,23 @@ def get_deal_count(from_date, to_date, user="", conds="", return_result=False):
 					{conds}
 				THEN d.name
 				ELSE NULL
-			END) as prev_month_deals
+			END) as prev_month_deals,
+
+			AVG(CASE
+				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+					AND s.type NOT IN ('Won', 'Lost')
+					{conds}
+				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+				ELSE NULL
+			END) as current_month_avg_value,
+
+			AVG(CASE
+				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s
+					AND s.type NOT IN ('Won', 'Lost')
+					{conds}
+				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+				ELSE NULL
+			END) as prev_month_avg_value
 		FROM `tabCRM Deal` d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
     """,
@@ -137,23 +157,36 @@ def get_deal_count(from_date, to_date, user="", conds="", return_result=False):
 
 	current_month_deals = result[0].current_month_deals or 0
 	prev_month_deals = result[0].prev_month_deals or 0
+	current_month_avg_value = result[0].current_month_avg_value or 0
+	prev_month_avg_value = result[0].prev_month_avg_value or 0
 
 	delta_in_percentage = (
 		(current_month_deals - prev_month_deals) / prev_month_deals * 100 if prev_month_deals else 0
 	)
+	avg_value_delta = current_month_avg_value - prev_month_avg_value if prev_month_avg_value else 0
 
-	return {
-		"title": _("Ongoing Deals"),
-		"value": current_month_deals,
-		"delta": delta_in_percentage,
-		"deltaSuffix": "%",
-		"tooltip": _("Total number of ongoing deals"),
-	}
+	return [
+		{
+			"title": _("Ongoing Deals"),
+			"value": current_month_deals,
+			"delta": delta_in_percentage,
+			"deltaSuffix": "%",
+			"tooltip": _("Total number of ongoing deals"),
+		},
+		{
+			"title": _("Avg Ongoing Deal Value"),
+			"value": current_month_avg_value,
+			"delta": avg_value_delta,
+			"prefix": get_base_currency_symbol(),
+			# "suffix": "K",
+			"tooltip": _("Average deal value of ongoing deals"),
+		},
+	]
 
 
 def get_won_deal_count(from_date, to_date, user="", conds="", return_result=False):
 	"""
-	Get won deal count for the dashboard.
+	Get won deal count for the dashboard, and also calculate average deal value for won deals.
 	"""
 
 	diff = frappe.utils.date_diff(to_date, from_date)
@@ -180,7 +213,23 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 					{conds}
 				THEN d.name
 				ELSE NULL
-			END) as prev_month_deals
+			END) as prev_month_deals,
+
+			AVG(CASE
+				WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+					AND s.type = 'Won'
+					{conds}
+				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+				ELSE NULL
+			END) as current_month_avg_value,
+
+			AVG(CASE
+				WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(from_date)s
+					AND s.type = 'Won'
+					{conds}
+				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+				ELSE NULL
+			END) as prev_month_avg_value
 		FROM `tabCRM Deal` d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
 		""",
@@ -197,18 +246,31 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 
 	current_month_deals = result[0].current_month_deals or 0
 	prev_month_deals = result[0].prev_month_deals or 0
+	current_month_avg_value = result[0].current_month_avg_value or 0
+	prev_month_avg_value = result[0].prev_month_avg_value or 0
 
 	delta_in_percentage = (
 		(current_month_deals - prev_month_deals) / prev_month_deals * 100 if prev_month_deals else 0
 	)
+	avg_value_delta = current_month_avg_value - prev_month_avg_value if prev_month_avg_value else 0
 
-	return {
-		"title": _("Won Deals"),
-		"value": current_month_deals,
-		"delta": delta_in_percentage,
-		"deltaSuffix": "%",
-		"tooltip": _("Total number of won deals"),
-	}
+	return [
+		{
+			"title": _("Won Deals"),
+			"value": current_month_deals,
+			"delta": delta_in_percentage,
+			"deltaSuffix": "%",
+			"tooltip": _("Total number of won deals based on its closure date"),
+		},
+		{
+			"title": _("Avg Won Deal Value"),
+			"value": current_month_avg_value,
+			"delta": avg_value_delta,
+			"prefix": get_base_currency_symbol(),
+			# "suffix": "K",
+			"tooltip": _("Average deal value of won deals"),
+		},
+	]
 
 
 def get_average_deal_value(from_date, to_date, user="", conds="", return_result=False):
