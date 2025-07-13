@@ -160,7 +160,7 @@ def add_forecasting_section(layout, doctype):
 					"columns": [
 						{
 							"name": "column_" + str(random_string(4)),
-							"fields": ["close_date", "probability", "deal_value"],
+							"fields": ["expected_closure_date", "probability", "expected_deal_value"],
 						}
 					],
 				},
