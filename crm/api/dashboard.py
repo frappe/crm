@@ -202,7 +202,7 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 		f"""
 		SELECT
 			COUNT(CASE
-				WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				WHEN d.closed_date >= %(from_date)s AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
 					AND s.type = 'Won'
 					{conds}
 				THEN d.name
@@ -210,7 +210,7 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 			END) as current_month_deals,
 
 			COUNT(CASE
-				WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(from_date)s
+				WHEN d.closed_date >= %(prev_from_date)s AND d.closed_date < %(from_date)s
 					AND s.type = 'Won'
 					{conds}
 				THEN d.name
@@ -218,7 +218,7 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 			END) as prev_month_deals,
 
 			AVG(CASE
-				WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				WHEN d.closed_date >= %(from_date)s AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
 					AND s.type = 'Won'
 					{conds}
 				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
@@ -226,7 +226,7 @@ def get_won_deal_count(from_date, to_date, user="", conds="", return_result=Fals
 			END) as current_month_avg_value,
 
 			AVG(CASE
-				WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(from_date)s
+				WHEN d.closed_date >= %(prev_from_date)s AND d.closed_date < %(from_date)s
 					AND s.type = 'Won'
 					{conds}
 				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
@@ -353,18 +353,18 @@ def get_average_time_to_close(from_date, to_date, user="", conds="", return_resu
 	result = frappe.db.sql(
 		f"""
 		SELECT
-			AVG(CASE WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as current_avg_lead,
-			AVG(CASE WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(prev_to_date)s
-				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_on) END) as prev_avg_lead,
-			AVG(CASE WHEN d.closed_on >= %(from_date)s AND d.closed_on < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-				THEN TIMESTAMPDIFF(DAY, d.creation, d.closed_on) END) as current_avg_deal,
-			AVG(CASE WHEN d.closed_on >= %(prev_from_date)s AND d.closed_on < %(prev_to_date)s
-				THEN TIMESTAMPDIFF(DAY, d.creation, d.closed_on) END) as prev_avg_deal
+			AVG(CASE WHEN d.closed_date >= %(from_date)s AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_date) END) as current_avg_lead,
+			AVG(CASE WHEN d.closed_date >= %(prev_from_date)s AND d.closed_date < %(prev_to_date)s
+				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_date) END) as prev_avg_lead,
+			AVG(CASE WHEN d.closed_date >= %(from_date)s AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				THEN TIMESTAMPDIFF(DAY, d.creation, d.closed_date) END) as current_avg_deal,
+			AVG(CASE WHEN d.closed_date >= %(prev_from_date)s AND d.closed_date < %(prev_to_date)s
+				THEN TIMESTAMPDIFF(DAY, d.creation, d.closed_date) END) as prev_avg_deal
 		FROM `tabCRM Deal` AS d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
 		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
-		WHERE d.closed_on IS NOT NULL AND s.type = 'Won'
+		WHERE d.closed_date IS NOT NULL AND s.type = 'Won'
 			{conds}
 		""",
 		{
