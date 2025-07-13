@@ -677,7 +677,8 @@ def get_funnel_conversion_data(from_date="", to_date="", user="", lead_conds="",
 
 	# Get total leads
 	total_leads = frappe.db.sql(
-		f"""		SELECT COUNT(*) AS count
+		f"""
+			SELECT COUNT(*) AS count
 			FROM `tabCRM Lead`
 			WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
 			{lead_conds}
@@ -689,25 +690,7 @@ def get_funnel_conversion_data(from_date="", to_date="", user="", lead_conds="",
 
 	result.append({"stage": "Leads", "count": total_leads_count})
 
-	# Get deal stages
-	all_deal_stages = frappe.get_all(
-		"CRM Deal Status", filters={"type": ["!=", "Lost"]}, order_by="position", pluck="name"
-	)
-
-	# Get deal counts for each stage
-	for i, stage in enumerate(all_deal_stages):
-		stages_to_count = all_deal_stages[i:]
-		placeholders = ", ".join(["%s"] * len(stages_to_count))
-		query = f"""
-			SELECT COUNT(*) as count
-			FROM `tabCRM Deal`
-			WHERE DATE(creation) BETWEEN %s AND %s
-			AND status IN ({placeholders})
-			{deal_conds}
-		"""
-		params = [from_date, to_date, *stages_to_count]
-		row = frappe.db.sql(query, params, as_dict=True)
-		result.append({"stage": stage, "count": row[0]["count"] if row else 0})
+	result += get_deal_status_change_counts(from_date, to_date, deal_conds)
 
 	return result or []
 
@@ -792,3 +775,44 @@ def get_base_currency_symbol():
 	"""
 	base_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
 	return frappe.db.get_value("Currency", base_currency, "symbol") or ""
+
+
+def get_deal_status_change_counts(from_date, to_date, deal_conds=""):
+	"""
+	Get count of each status change (to) for each deal, excluding deals with current status type 'Lost'.
+	Order results by status position.
+	Returns:
+	[
+	  {"status": "Qualification", "count": 120},
+	  {"status": "Negotiation", "count": 85},
+	  ...
+	]
+	"""
+	result = frappe.db.sql(
+		f"""
+		SELECT
+			scl.to AS stage,
+			COUNT(*) AS count
+		FROM
+			`tabCRM Status Change Log` scl
+		JOIN
+			`tabCRM Deal` d ON scl.parent = d.name
+		JOIN
+			`tabCRM Deal Status` s ON d.status = s.name
+		JOIN
+			`tabCRM Deal Status` st ON scl.to = st.name
+		WHERE
+			scl.to IS NOT NULL
+			AND scl.to != ''
+			AND s.type != 'Lost'
+			AND DATE(d.creation) BETWEEN %(from)s AND %(to)s
+			{deal_conds}
+		GROUP BY
+			scl.to, st.position
+		ORDER BY
+			st.position ASC
+		""",
+		{"from": from_date, "to": to_date},
+		as_dict=True,
+	)
+	return result or []
