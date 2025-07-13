@@ -615,23 +615,24 @@ def get_forecasted_revenue(user="", deal_conds=""):
 	result = frappe.db.sql(
 		f"""
 		SELECT
-			DATE_FORMAT(d.close_date, '%Y-%m')                        AS month,
+			DATE_FORMAT(d.expected_closure_date, '%Y-%m')                        AS month,
 			SUM(
 				CASE
-					WHEN d.status = 'Lost' THEN d.deal_value * IFNULL(d.exchange_rate, 1)
-					ELSE d.deal_value * IFNULL(d.probability, 0) / 100 * IFNULL(d.exchange_rate, 1)  -- forecasted
+					WHEN s.type = 'Lost' THEN d.expected_deal_value * IFNULL(d.exchange_rate, 1)
+					ELSE d.expected_deal_value * IFNULL(d.probability, 0) / 100 * IFNULL(d.exchange_rate, 1)  -- forecasted
 				END
 			)                                                       AS forecasted,
 			SUM(
 				CASE
-					WHEN d.status = 'Won' THEN d.deal_value * IFNULL(d.exchange_rate, 1)            -- actual
+					WHEN s.type = 'Won' THEN d.deal_value * IFNULL(d.exchange_rate, 1)            -- actual
 					ELSE 0
 				END
 			)                                                       AS actual
 		FROM `tabCRM Deal` AS d
-		WHERE d.close_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+		JOIN `tabCRM Deal Status` s ON d.status = s.name
+		WHERE d.expected_closure_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
 		{deal_conds}
-		GROUP BY DATE_FORMAT(d.close_date, '%Y-%m')
+		GROUP BY DATE_FORMAT(d.expected_closure_date, '%Y-%m')
 		ORDER BY month
 		""",
 		as_dict=True,
