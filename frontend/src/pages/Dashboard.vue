@@ -59,7 +59,7 @@
         doctype="User"
         :filters="{ name: ['in', users.data.crmUsers?.map((u) => u.name)] }"
         @change="(v) => updateFilter('user', v)"
-        :placeholder="__('Sales User')"
+        :placeholder="__('Sales user')"
         :hideMe="true"
       >
         <template #prefix>
@@ -110,8 +110,14 @@
           <div v-if="funnelConversion.data" class="border rounded-md min-h-80">
             <AxisChart :config="funnelConversion.data" />
           </div>
-          <div v-if="lostDealReasons.data" class="border rounded-md">
-            <AxisChart :config="lostDealReasons.data" />
+          <div v-if="dealsByStage.data" class="border rounded-md">
+            <AxisChart :config="dealsByStage.data.bar" />
+          </div>
+          <div v-if="dealsByStage.data" class="border rounded-md">
+            <DonutChart :config="dealsByStage.data.donut" />
+          </div>
+          <div v-if="leadsBySource.data" class="border rounded-md">
+            <DonutChart :config="leadsBySource.data" />
           </div>
           <div v-if="dealsByTerritory.data" class="border rounded-md">
             <AxisChart :config="dealsByTerritory.data" />
@@ -119,11 +125,8 @@
           <div v-if="dealsBySalesperson.data" class="border rounded-md">
             <AxisChart :config="dealsBySalesperson.data" />
           </div>
-          <div v-if="dealsByStage.data" class="border rounded-md">
-            <DonutChart :config="dealsByStage.data" />
-          </div>
-          <div v-if="leadsBySource.data" class="border rounded-md">
-            <DonutChart :config="leadsBySource.data" />
+          <div v-if="lostDealReasons.data" class="border rounded-md">
+            <AxisChart :config="lostDealReasons.data" />
           </div>
         </div>
       </div>
@@ -266,7 +269,7 @@ const salesTrend = createResource({
   transform(data = []) {
     return {
       data: data,
-      title: __('Sales Trend'),
+      title: __('Sales trend'),
       subtitle: __('Daily performance of leads, deals, and wins'),
       xAxis: {
         title: __('Date'),
@@ -300,7 +303,7 @@ const funnelConversion = createResource({
   transform(data = []) {
     return {
       data: data,
-      title: __('Funnel Conversion'),
+      title: __('Funnel conversion'),
       subtitle: __('Lead to deal conversion pipeline'),
       xAxis: {
         title: __('Stage'),
@@ -338,7 +341,7 @@ const dealsBySalesperson = createResource({
   transform(r = { data: [], currency_symbol: '$' }) {
     return {
       data: r.data || [],
-      title: __('Deals by Salesperson'),
+      title: __('Deals by salesperson'),
       subtitle: __('Number of deals and total value per salesperson'),
       xAxis: {
         title: __('Salesperson'),
@@ -346,10 +349,10 @@ const dealsBySalesperson = createResource({
         type: 'category' as const,
       },
       yAxis: {
-        title: __('Number of Deals'),
+        title: __('Number of deals'),
       },
       y2Axis: {
-        title: __('Deal Value') + ` (${r.currency_symbol})`,
+        title: __('Deal value') + ` (${r.currency_symbol})`,
       },
       series: [
         { name: 'deals', type: 'bar' as const },
@@ -378,7 +381,7 @@ const dealsByTerritory = createResource({
   transform(r = { data: [], currency_symbol: '$' }) {
     return {
       data: r.data || [],
-      title: __('Deals by Territory'),
+      title: __('Deals by territory'),
       subtitle: __('Geographic distribution of deals and revenue'),
       xAxis: {
         title: __('Territory'),
@@ -386,10 +389,10 @@ const dealsByTerritory = createResource({
         type: 'category' as const,
       },
       yAxis: {
-        title: __('Number of Deals'),
+        title: __('Number of deals'),
       },
       y2Axis: {
-        title: __('Deal Value') + ` (${r.currency_symbol})`,
+        title: __('Deal value') + ` (${r.currency_symbol})`,
       },
       series: [
         { name: 'deals', type: 'bar' as const },
@@ -418,7 +421,7 @@ const lostDealReasons = createResource({
   transform(data = []) {
     return {
       data: data,
-      title: __('Lost Deal Reasons'),
+      title: __('Lost deal reasons'),
       subtitle: __('Common reasons for losing deals'),
       xAxis: {
         title: __('Reason'),
@@ -444,7 +447,7 @@ const forecastedRevenue = createResource({
   transform(r = { data: [], currency_symbol: '$' }) {
     return {
       data: r.data || [],
-      title: __('Revenue Forecast'),
+      title: __('Revenue forecast'),
       subtitle: __('Projected vs actual revenue based on deal probability'),
       xAxis: {
         title: __('Month'),
@@ -476,11 +479,26 @@ const dealsByStage = createResource({
   auto: true,
   transform(data = []) {
     return {
-      data: data,
-      title: __('Deals by Stage'),
-      subtitle: __('Current pipeline distribution'),
-      categoryColumn: 'stage',
-      valueColumn: 'count',
+      donut: {
+        data: data,
+        title: __('Deals by stage'),
+        subtitle: __('Current pipeline distribution'),
+        categoryColumn: 'stage',
+        valueColumn: 'count',
+      },
+      bar: {
+        data: data.filter((d) => d.status_type != 'Lost'),
+        title: __('Deals by ongoing & won stage'),
+        xAxis: {
+          title: __('Stage'),
+          key: 'stage',
+          type: 'category' as const,
+        },
+        yAxis: {
+          title: __('Count'),
+        },
+        series: [{ name: 'count', type: 'bar' as const }],
+      },
     }
   },
 })
@@ -499,7 +517,7 @@ const leadsBySource = createResource({
   transform(data = []) {
     return {
       data: data,
-      title: __('Leads by Source'),
+      title: __('Leads by source'),
       subtitle: __('Lead generation channel analysis'),
       categoryColumn: 'source',
       valueColumn: 'count',
