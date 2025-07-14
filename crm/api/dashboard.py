@@ -919,7 +919,7 @@ def get_deals_by_source(from_date="", to_date="", user=""):
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
 	if user:
-		deal_conds += f" AND lead_owner = '{user}'"
+		deal_conds += f" AND deal_owner = '{user}'"
 
 	result = frappe.db.sql(
 		f"""

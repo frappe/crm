@@ -14,7 +14,11 @@
             <LucideRefreshCcw class="size-4" />
           </template>
         </Button>
-        <Button v-if="!editing" :label="__('Edit')" @click="editing = true">
+        <Button
+          v-if="!editing && (isManager() || isAdmin())"
+          :label="__('Edit')"
+          @click="editing = true"
+        >
           <template #prefix>
             <LucidePenLine class="size-4" />
           </template>
