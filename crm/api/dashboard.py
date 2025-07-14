@@ -85,6 +85,7 @@ def get_total_leads(from_date, to_date, user=""):
 
 	return {
 		"title": _("Total leads"),
+		"tooltip": _("Total number of leads"),
 		"value": current_month_leads,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
@@ -124,7 +125,7 @@ def get_ongoing_deals(from_date, to_date, user=""):
 			END) as prev_month_deals
 		FROM `tabCRM Deal` d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
-    """,
+	""",
 		{
 			"from_date": from_date,
 			"to_date": to_date,
@@ -142,6 +143,7 @@ def get_ongoing_deals(from_date, to_date, user=""):
 
 	return {
 		"title": _("Ongoing deals"),
+		"tooltip": _("Total number of non won/lost deals"),
 		"value": current_month_deals,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
@@ -197,10 +199,10 @@ def get_average_ongoing_deal_value(from_date, to_date, user=""):
 
 	return {
 		"title": _("Avg ongoing deal value"),
+		"tooltip": _("Average deal value of non won/lost deals"),
 		"value": current_month_avg_value,
 		"delta": avg_value_delta,
 		"prefix": get_base_currency_symbol(),
-		"tooltip": _("Average deal value of ongoing deals"),
 	}
 
 
@@ -256,10 +258,10 @@ def get_won_deals(from_date, to_date, user=""):
 
 	return {
 		"title": _("Won deals"),
+		"tooltip": _("Total number of won deals based on its closure date"),
 		"value": current_month_deals,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
-		"tooltip": _("Total number of won deals based on its closure date"),
 	}
 
 
@@ -313,10 +315,10 @@ def get_average_won_deal_value(from_date, to_date, user=""):
 
 	return {
 		"title": _("Avg won deal value"),
+		"tooltip": _("Average deal value of won deals"),
 		"value": current_month_avg_value,
 		"delta": avg_value_delta,
 		"prefix": get_base_currency_symbol(),
-		"tooltip": _("Average deal value of won deals"),
 	}
 
 
@@ -370,10 +372,9 @@ def get_average_deal_value(from_date, to_date, user=""):
 
 	return {
 		"title": _("Avg deal value"),
-		"value": current_month_avg,
 		"tooltip": _("Average deal value of ongoing & won deals"),
+		"value": current_month_avg,
 		"prefix": get_base_currency_symbol(),
-		# "suffix": "K",
 		"delta": delta,
 		"deltaSuffix": "%",
 	}
@@ -424,8 +425,8 @@ def get_average_time_to_close_a_lead(from_date, to_date, user=""):
 
 	return {
 		"title": _("Avg time to close a lead"),
-		"value": current_avg_lead,
 		"tooltip": _("Average time taken from lead creation to deal closure"),
+		"value": current_avg_lead,
 		"suffix": " days",
 		"delta": delta_lead,
 		"deltaSuffix": " days",
@@ -478,8 +479,8 @@ def get_average_time_to_close_a_deal(from_date, to_date, user=""):
 
 	return {
 		"title": _("Avg time to close a deal"),
-		"value": current_avg_deal,
 		"tooltip": _("Average time taken from deal creation to deal closure"),
+		"value": current_avg_deal,
 		"suffix": " days",
 		"delta": delta_deal,
 		"deltaSuffix": " days",
