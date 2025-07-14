@@ -25,6 +25,13 @@
         </Button>
         <Button
           v-if="editing"
+          :label="__('Add chart')"
+          icon-left="plus"
+          @click="showAddChartModal = true"
+        />
+        <Button v-if="editing" :label="__('Cancel')" @click="cancel" />
+        <Button
+          v-if="editing"
           variant="solid"
           :label="__('Save')"
           @click="save"
@@ -117,9 +124,14 @@
       />
     </div>
   </div>
+  <AddChartModal
+    v-model="showAddChartModal"
+    v-model:items="dashboardItems.data"
+  />
 </template>
 
 <script setup lang="ts">
+import AddChartModal from '@/components/Dashboard/AddChartModal.vue'
 import LucideRefreshCcw from '~icons/lucide/refresh-ccw'
 import LucidePenLine from '~icons/lucide/pen-line'
 import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
@@ -136,7 +148,7 @@ import {
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, provide } from 'vue'
 
 const { users, getUser, isManager, isAdmin } = usersStore()
 
@@ -145,6 +157,7 @@ const editing = ref(false)
 const showDatePicker = ref(false)
 const datePickerRef = ref(null)
 const preset = ref('Last 30 Days')
+const showAddChartModal = ref(false)
 
 const filters = reactive({
   period: getLastXDays(),
@@ -230,10 +243,9 @@ const dashboardItems = createResource({
   auto: true,
 })
 
-function save() {
-  // Implement save logic here
-  editing.value = false
-}
+provide('fromDate', fromDate)
+provide('toDate', toDate)
+provide('filters', filters)
 
 function cancel() {
   editing.value = false
