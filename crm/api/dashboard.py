@@ -6,6 +6,291 @@ from crm.utils import sales_user_only
 
 @frappe.whitelist()
 @sales_user_only
+def get_dashboard_items(from_date="", to_date="", user="", lead_conds="", deal_conds=""):
+	"""
+	Get dashboard items for the CRM dashboard.
+	Returns a list of number cards with lead and deal statistics.
+	"""
+
+	number_cards = get_number_card_data(from_date, to_date, user, lead_conds, deal_conds)
+	sales_trend = get_sales_trend_data(from_date, to_date, user, lead_conds, deal_conds)
+	forecasted_revenue = get_forecasted_revenue(user, deal_conds)
+	funnel_conversion = get_funnel_conversion_data(from_date, to_date, user, lead_conds, deal_conds)
+	deals_by_stage = get_deals_by_stage(from_date, to_date, user, deal_conds)
+	deals_by_stage_axis = (
+		[d for d in deals_by_stage if d.get("status_type") != "Lost"] if deals_by_stage else []
+	)
+	leads_by_source = get_leads_by_source(from_date, to_date, user, lead_conds)
+	deals_by_source = get_deals_by_source(from_date, to_date, user, deal_conds)
+	deals_by_territory = get_deals_by_territory(from_date, to_date, user, deal_conds)
+	deals_by_salesperson = get_deals_by_salesperson(from_date, to_date, user, deal_conds)
+	lost_deal_reasons = get_lost_deal_reasons(from_date, to_date, user, deal_conds)
+
+	return [
+		{
+			"id": "total-leads",
+			"type": "number-card",
+			"tooltip": _("Total number of leads"),
+			"data": number_cards.get("total_leads"),
+			"layout": {"x": 0, "y": 0, "w": 4, "h": 2, "i": "0"},
+		},
+		{
+			"id": "ongoing-deals",
+			"type": "number-card",
+			"tooltip": _("Total number of ongoing deals"),
+			"data": number_cards.get("ongoing_deals"),
+			"layout": {"x": 4, "y": 0, "w": 4, "h": 2, "i": "1"},
+		},
+		{
+			"id": "average-ongoing-deal-value",
+			"type": "number-card",
+			"tooltip": _("Average value of ongoing deals"),
+			"data": number_cards.get("average_ongoing_deal_value"),
+			"layout": {"x": 8, "y": 0, "w": 4, "h": 2, "i": "2"},
+		},
+		{
+			"id": "won-deals",
+			"type": "number-card",
+			"tooltip": _("Total number of won deals"),
+			"data": number_cards.get("won_deal_count"),
+			"layout": {"x": 12, "y": 0, "w": 4, "h": 2, "i": "3"},
+		},
+		{
+			"id": "average-won-deal-value",
+			"type": "number-card",
+			"tooltip": _("Average value of won deals"),
+			"data": number_cards.get("average_won_deal_value"),
+			"layout": {"x": 16, "y": 0, "w": 4, "h": 2, "i": "4"},
+		},
+		{
+			"id": "average-deal-value",
+			"type": "number-card",
+			"tooltip": _("Average deal value of ongoing and won deals"),
+			"data": number_cards.get("average_deal_value"),
+			"layout": {"x": 0, "y": 2, "w": 4, "h": 2, "i": "5"},
+		},
+		{
+			"id": "average-time-to-close-a-lead",
+			"type": "number-card",
+			"tooltip": _("Average time taken to close a lead"),
+			"data": number_cards.get("average_time_to_close_a_lead"),
+			"layout": {"x": 4, "y": 4, "w": 4, "h": 2, "i": "6"},
+		},
+		{
+			"id": "average-time-to-close-a-deal",
+			"type": "number-card",
+			"tooltip": _("Average time taken to close a deal"),
+			"data": number_cards.get("average_time_to_close_a_deal"),
+			"layout": {"x": 8, "y": 4, "w": 4, "h": 2, "i": "7"},
+		},
+		{
+			"id": "blank-card-1",
+			"type": "blank-card",
+			"layout": {"x": 12, "y": 4, "w": 8, "h": 2, "i": "8"},
+		},
+		{
+			"id": "sales-trend",
+			"type": "axis-card",
+			"data": {
+				"data": sales_trend,
+				"title": _("Sales trend"),
+				"subtitle": _("Daily performance of leads, deals, and wins"),
+				"xAxis": {
+					"title": _("Date"),
+					"key": "date",
+					"type": "time",
+					"timeGrain": "day",
+				},
+				"yAxis": {
+					"title": _("Count"),
+				},
+				"series": [
+					{"name": "leads", "type": "line", "showDataPoints": True},
+					{"name": "deals", "type": "line", "showDataPoints": True},
+					{"name": "won_deals", "type": "line", "showDataPoints": True},
+				],
+			},
+			"layout": {"x": 0, "y": 6, "w": 10, "h": 7, "i": "9"},
+		},
+		{
+			"id": "forecasted-revenue",
+			"type": "axis-card",
+			"data": {
+				"data": forecasted_revenue or [],
+				"title": _("Forecasted Revenue"),
+				"subtitle": _("Projected vs actual revenue based on deal probability"),
+				"xAxis": {
+					"title": _("Month"),
+					"key": "month",
+					"type": "time",
+					"timeGrain": "month",
+				},
+				"yAxis": {
+					"title": _("Revenue") + f" ({get_base_currency_symbol()})",
+				},
+				"series": [
+					{"name": "forecasted", "type": "line", "showDataPoints": True},
+					{"name": "actual", "type": "line", "showDataPoints": True},
+				],
+			},
+			"layout": {"x": 10, "y": 6, "w": 10, "h": 7, "i": "10"},
+		},
+		{
+			"id": "funnel-conversion",
+			"type": "axis-card",
+			"data": {
+				"data": funnel_conversion or [],
+				"title": _("Funnel Conversion"),
+				"subtitle": _("Lead to deal conversion pipeline"),
+				"xAxis": {
+					"title": _("Stage"),
+					"key": "stage",
+					"type": "category",
+				},
+				"yAxis": {
+					"title": _("Count"),
+				},
+				"swapXY": True,
+				"series": [
+					{
+						"name": "count",
+						"type": "bar",
+						"echartOptions": {
+							"colorBy": "data",
+						},
+					},
+				],
+			},
+			"layout": {"x": 0, "y": 14, "w": 10, "h": 7, "i": "11"},
+		},
+		{
+			"id": "deals-by-stage-axis",
+			"type": "axis-card",
+			"data": {
+				"data": deals_by_stage_axis,
+				"title": _("Deals by ongoing & won stage"),
+				"xAxis": {
+					"title": _("Stage"),
+					"key": "stage",
+					"type": "category",
+				},
+				"yAxis": {"title": _("Count")},
+				"series": [
+					{"name": "count", "type": "bar"},
+				],
+			},
+			"layout": {"x": 10, "y": 14, "w": 10, "h": 7, "i": "12"},
+		},
+		{
+			"id": "deals-by-stage-donut",
+			"type": "donut-card",
+			"data": {
+				"data": deals_by_stage,
+				"title": _("Deals by stage"),
+				"subtitle": _("Current pipeline distribution"),
+				"categoryColumn": "stage",
+				"valueColumn": "count",
+			},
+			"layout": {"x": 0, "y": 22, "w": 10, "h": 7, "i": "13"},
+		},
+		{
+			"id": "lost-deal-reasons",
+			"type": "axis-card",
+			"data": {
+				"data": lost_deal_reasons,
+				"title": _("Lost deal reasons"),
+				"subtitle": _("Common reasons for losing deals"),
+				"xAxis": {
+					"title": _("Reason"),
+					"key": "reason",
+					"type": "category",
+				},
+				"yAxis": {
+					"title": _("Count"),
+				},
+				"series": [
+					{"name": "count", "type": "bar"},
+				],
+			},
+			"layout": {"x": 10, "y": 22, "w": 10, "h": 7, "i": "14"},
+		},
+		{
+			"id": "leads-by-source",
+			"type": "donut-card",
+			"data": {
+				"data": leads_by_source,
+				"title": _("Leads by source"),
+				"subtitle": _("Lead generation channel analysis"),
+				"categoryColumn": "source",
+				"valueColumn": "count",
+			},
+			"layout": {"x": 0, "y": 30, "w": 10, "h": 7, "i": "15"},
+		},
+		{
+			"id": "deals-by-source",
+			"type": "donut-card",
+			"data": {
+				"data": deals_by_source,
+				"title": _("Deals by source"),
+				"subtitle": _("Deal generation channel analysis"),
+				"categoryColumn": "source",
+				"valueColumn": "count",
+			},
+			"layout": {"x": 10, "y": 30, "w": 10, "h": 7, "i": "16"},
+		},
+		{
+			"id": "deals-by-territory",
+			"type": "axis-card",
+			"data": {
+				"data": deals_by_territory,
+				"title": _("Deals by territory"),
+				"subtitle": _("Geographic distribution of deals and revenue"),
+				"xAxis": {
+					"title": _("Territory"),
+					"key": "territory",
+					"type": "category",
+				},
+				"yAxis": {
+					"title": _("Number of deals"),
+				},
+				"y2Axis": {
+					"title": _("Deal value") + f" ({get_base_currency_symbol()})",
+				},
+				"series": [
+					{"name": "deals", "type": "bar"},
+					{"name": "value", "type": "line", "showDataPoints": True, "axis": "y2"},
+				],
+			},
+			"layout": {"x": 0, "y": 38, "w": 10, "h": 7, "i": "17"},
+		},
+		{
+			"id": "deals-by-salesperson",
+			"type": "axis-card",
+			"data": {
+				"data": deals_by_salesperson,
+				"title": _("Deals by salesperson"),
+				"subtitle": _("Number of deals and total value per salesperson"),
+				"xAxis": {
+					"title": _("Salesperson"),
+					"key": "salesperson",
+					"type": "category",
+				},
+				"yAxis": {
+					"title": _("Number of deals"),
+				},
+				"y2Axis": {
+					"title": _("Deal value") + f" ({get_base_currency_symbol()})",
+				},
+				"series": [
+					{"name": "deals", "type": "bar"},
+					{"name": "value", "type": "line", "showDataPoints": True, "axis": "y2"},
+				],
+			},
+			"layout": {"x": 10, "y": 38, "w": 10, "h": 7, "i": "18"},
+		},
+	]
+
+
 def get_number_card_data(from_date="", to_date="", user="", lead_conds="", deal_conds=""):
 	"""
 	Get number card data for the dashboard.
@@ -19,25 +304,16 @@ def get_number_card_data(from_date="", to_date="", user="", lead_conds="", deal_
 	if is_sales_user and not user:
 		user = frappe.session.user
 
-	lead_count = get_lead_count(from_date, to_date, user, lead_conds)
-	ongoing_deal_count = get_ongoing_deal_count(from_date, to_date, user, deal_conds)["count"]
-	average_ongoing_deal_value = get_ongoing_deal_count(from_date, to_date, user, deal_conds)["average"]
-	won_deal_count = get_won_deal_count(from_date, to_date, user, deal_conds)["count"]
-	average_won_deal_value = get_won_deal_count(from_date, to_date, user, deal_conds)["average"]
-	average_deal_value = get_average_deal_value(from_date, to_date, user, deal_conds)
-	average_time_to_close_a_lead = get_average_time_to_close(from_date, to_date, user, deal_conds)["lead"]
-	average_time_to_close_a_deal = get_average_time_to_close(from_date, to_date, user, deal_conds)["deal"]
-
-	return [
-		lead_count,
-		ongoing_deal_count,
-		average_ongoing_deal_value,
-		won_deal_count,
-		average_won_deal_value,
-		average_deal_value,
-		average_time_to_close_a_lead,
-		average_time_to_close_a_deal,
-	]
+	return {
+		"total_leads": get_lead_count(from_date, to_date, user, lead_conds),
+		"ongoing_deals": get_ongoing_deal_count(from_date, to_date, user, deal_conds)["count"],
+		"average_ongoing_deal_value": get_ongoing_deal_count(from_date, to_date, user, deal_conds)["average"],
+		"won_deal_count": get_won_deal_count(from_date, to_date, user, deal_conds)["count"],
+		"average_won_deal_value": get_won_deal_count(from_date, to_date, user, deal_conds)["average"],
+		"average_deal_value": get_average_deal_value(from_date, to_date, user, deal_conds),
+		"average_time_to_close_a_lead": get_average_time_to_close(from_date, to_date, user, deal_conds)["lead"],
+		"average_time_to_close_a_deal": get_average_time_to_close(from_date, to_date, user, deal_conds)["deal"],
+	}
 
 
 def get_lead_count(from_date, to_date, user="", conds="", return_result=False):
@@ -93,7 +369,6 @@ def get_lead_count(from_date, to_date, user="", conds="", return_result=False):
 		"value": current_month_leads,
 		"delta": delta_in_percentage,
 		"deltaSuffix": "%",
-		"tooltip": _("Total number of leads"),
 	}
 
 
@@ -173,7 +448,6 @@ def get_ongoing_deal_count(from_date, to_date, user="", conds="", return_result=
 			"value": current_month_deals,
 			"delta": delta_in_percentage,
 			"deltaSuffix": "%",
-			"tooltip": _("Total number of ongoing deals"),
 		},
 		"average": {
 			"title": _("Avg ongoing deal value"),
@@ -409,7 +683,6 @@ def get_average_time_to_close(from_date, to_date, user="", conds="", return_resu
 	}
 
 
-@frappe.whitelist()
 def get_sales_trend_data(from_date="", to_date="", user="", lead_conds="", deal_conds=""):
 	"""
 	Get sales trend data for the dashboard.
@@ -477,7 +750,6 @@ def get_sales_trend_data(from_date="", to_date="", user="", lead_conds="", deal_
 	]
 
 
-@frappe.whitelist()
 def get_deals_by_salesperson(from_date="", to_date="", user="", deal_conds=""):
 	"""
 	Get deal data by salesperson for the dashboard.
@@ -512,13 +784,9 @@ def get_deals_by_salesperson(from_date="", to_date="", user="", deal_conds=""):
 		as_dict=True,
 	)
 
-	return {
-		"data": result or [],
-		"currency_symbol": get_base_currency_symbol(),
-	}
+	return result or []
 
 
-@frappe.whitelist()
 def get_deals_by_territory(from_date="", to_date="", user="", deal_conds=""):
 	"""
 	Get deal data by territory for the dashboard.
@@ -552,13 +820,9 @@ def get_deals_by_territory(from_date="", to_date="", user="", deal_conds=""):
 		as_dict=True,
 	)
 
-	return {
-		"data": result or [],
-		"currency_symbol": get_base_currency_symbol(),
-	}
+	return result or []
 
 
-@frappe.whitelist()
 def get_lost_deal_reasons(from_date="", to_date="", user="", deal_conds=""):
 	"""
 	Get lost deal reasons for the dashboard.
@@ -596,7 +860,6 @@ def get_lost_deal_reasons(from_date="", to_date="", user="", deal_conds=""):
 	return result or []
 
 
-@frappe.whitelist()
 def get_forecasted_revenue(user="", deal_conds=""):
 	"""
 	Get forecasted revenue for the dashboard.
@@ -645,13 +908,9 @@ def get_forecasted_revenue(user="", deal_conds=""):
 		row["forecasted"] = row["forecasted"] or ""
 		row["actual"] = row["actual"] or ""
 
-	return {
-		"data": result or [],
-		"currency_symbol": get_base_currency_symbol(),
-	}
+	return result or []
 
 
-@frappe.whitelist()
 def get_funnel_conversion_data(from_date="", to_date="", user="", lead_conds="", deal_conds=""):
 	"""
 	Get funnel conversion data for the dashboard.
@@ -695,7 +954,6 @@ def get_funnel_conversion_data(from_date="", to_date="", user="", lead_conds="",
 	return result or []
 
 
-@frappe.whitelist()
 def get_deals_by_stage(from_date="", to_date="", user="", deal_conds=""):
 	"""
 	Get deal data by stage for the dashboard.
@@ -733,7 +991,6 @@ def get_deals_by_stage(from_date="", to_date="", user="", deal_conds=""):
 	return result or []
 
 
-@frappe.whitelist()
 def get_leads_by_source(from_date="", to_date="", user="", lead_conds=""):
 	"""
 	Get lead data by source for the dashboard.
@@ -759,6 +1016,41 @@ def get_leads_by_source(from_date="", to_date="", user="", lead_conds=""):
 		FROM `tabCRM Lead`
 		WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
 		{lead_conds}
+		GROUP BY source
+		ORDER BY count DESC
+		""",
+		{"from": from_date, "to": to_date},
+		as_dict=True,
+	)
+
+	return result or []
+
+
+def get_deals_by_source(from_date="", to_date="", user="", deal_conds=""):
+	"""
+	Get deal data by source for the dashboard.
+	[
+		{ source: 'Website', count: 120 },
+		{ source: 'Referral', count: 45 },
+		...
+	]
+	"""
+
+	if not from_date or not to_date:
+		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
+		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
+
+	if user:
+		deal_conds += f" AND lead_owner = '{user}'"
+
+	result = frappe.db.sql(
+		f"""
+		SELECT
+			IFNULL(source, 'Empty') AS source,
+			COUNT(*) AS count
+		FROM `tabCRM Deal`
+		WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
+		{deal_conds}
 		GROUP BY source
 		ORDER BY count DESC
 		""",
