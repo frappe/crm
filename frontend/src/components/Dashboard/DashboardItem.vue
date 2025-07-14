@@ -4,7 +4,7 @@
       v-if="item.type == 'number_chart'"
       class="rounded shadow overflow-hidden cursor-pointer"
     >
-      <Tooltip :text="item.data.tooltip">
+      <Tooltip :text="__(item.data.tooltip)">
         <NumberChart v-if="item.data" :key="index" :config="item.data" />
       </Tooltip>
     </div>
