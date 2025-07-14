@@ -3,6 +3,7 @@ import json
 import frappe
 from frappe import _
 
+from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.utils import sales_user_only
 
 
@@ -22,9 +23,15 @@ def get_dashboard(from_date="", to_date="", user=""):
 	if is_sales_user and not user:
 		user = frappe.session.user
 
-	dashboard = frappe.get_cached_doc("CRM Dashboard", "Manager Dashboard", fields=["layout"])
+	dashboard = frappe.db.exists("CRM Dashboard", "Manager Dashboard")
 
-	layout = json.loads(dashboard.layout) if dashboard and dashboard.layout else []
+	layout = []
+
+	if not dashboard:
+		layout = json.loads(create_default_manager_dashboard())
+		frappe.db.commit()
+	else:
+		layout = json.loads(frappe.db.get_value("CRM Dashboard", "Manager Dashboard", "layout") or "[]")
 
 	for l in layout:
 		method_name = f"get_{l['name']}"
@@ -652,7 +659,7 @@ def get_forecasted_revenue(from_date="", to_date="", user=""):
 
 	return {
 		"data": result or [],
-		"title": _("Forecasted Revenue"),
+		"title": _("Forecasted revenue"),
 		"subtitle": _("Projected vs actual revenue based on deal probability"),
 		"xAxis": {
 			"title": _("Month"),
@@ -714,7 +721,7 @@ def get_funnel_conversion(from_date="", to_date="", user=""):
 
 	return {
 		"data": result or [],
-		"title": _("Funnel Conversion"),
+		"title": _("Funnel conversion"),
 		"subtitle": _("Lead to deal conversion pipeline"),
 		"xAxis": {
 			"title": _("Stage"),
