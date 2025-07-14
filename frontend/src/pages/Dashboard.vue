@@ -19,7 +19,6 @@
             <LucidePenLine class="size-4" />
           </template>
         </Button>
-        <Button v-if="editing" :label="__('Cancel')" @click="cancel" />
         <Button
           v-if="editing"
           variant="solid"
@@ -215,8 +214,8 @@ const options = computed(() => [
 ])
 
 const dashboardItems = createResource({
-  url: 'crm.api.dashboard.get_dashboard_items',
-  cache: ['Analytics', 'DashboardItems'],
+  url: 'crm.api.dashboard.get_dashboard',
+  cache: ['Analytics', 'ManagerDashboard'],
   makeParams() {
     return {
       from_date: fromDate.value,
