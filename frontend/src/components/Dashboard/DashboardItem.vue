@@ -1,7 +1,7 @@
 <template>
   <div class="h-full w-full">
     <div
-      v-if="item.type == 'number_card'"
+      v-if="item.type == 'number_chart'"
       class="rounded shadow overflow-hidden cursor-pointer"
     >
       <Tooltip :text="item.data.tooltip">
@@ -16,13 +16,13 @@
       {{ editing ? __('Blank card') : '' }}
     </div>
     <div
-      v-else-if="item.type == 'axis_card'"
+      v-else-if="item.type == 'axis_chart'"
       class="h-full w-full rounded-md bg-surface-white shadow"
     >
       <AxisChart v-if="item.data" :config="item.data" />
     </div>
     <div
-      v-else-if="item.type == 'donut_card'"
+      v-else-if="item.type == 'donut_chart'"
       class="h-full w-full rounded-md bg-surface-white shadow overflow-hidden"
     >
       <DonutChart v-if="item.data" :config="item.data" />
