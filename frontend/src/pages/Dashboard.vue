@@ -17,7 +17,7 @@
         <Button
           v-if="!editing && (isManager() || isAdmin())"
           :label="__('Edit')"
-          @click="editing = true"
+          @click="enableEditing"
         >
           <template #prefix>
             <LucidePenLine class="size-4" />
@@ -34,6 +34,7 @@
           v-if="editing"
           variant="solid"
           :label="__('Save')"
+          :disabled="!dirty"
           :loading="saveDashboard.loading"
           @click="save"
         />
@@ -244,13 +245,25 @@ const dashboardItems = createResource({
   auto: true,
 })
 
+const dirty = computed(() => {
+  if (!editing.value) return false
+  return JSON.stringify(dashboardItems.data) !== JSON.stringify(oldItems.value)
+})
+
+const oldItems = ref([])
+
 provide('fromDate', fromDate)
 provide('toDate', toDate)
 provide('filters', filters)
 
+function enableEditing() {
+  editing.value = true
+  oldItems.value = JSON.parse(JSON.stringify(dashboardItems.data))
+}
+
 function cancel() {
   editing.value = false
-  dashboardItems.reload()
+  dashboardItems.data = JSON.parse(JSON.stringify(oldItems.value))
 }
 
 const saveDashboard = createResource({
@@ -264,9 +277,11 @@ const saveDashboard = createResource({
 
 function save() {
   const dashboardItemsCopy = JSON.parse(JSON.stringify(dashboardItems.data))
+
   dashboardItemsCopy.forEach((item: any) => {
     delete item.data
   })
+
   saveDashboard.submit({
     doctype: 'CRM Dashboard',
     name: 'Manager Dashboard',
