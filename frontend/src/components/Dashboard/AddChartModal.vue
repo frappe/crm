@@ -63,9 +63,9 @@ const fromDate = inject('fromDate', ref(''))
 const toDate = inject('toDate', ref(''))
 const filters = inject('filters', reactive({ period: '', user: '' }))
 
-const chartType = ref('blank_card')
+const chartType = ref('spacer')
 const chartTypes = [
-  { label: __('Blank card'), value: 'blank_card' },
+  { label: __('Spacer'), value: 'spacer' },
   { label: __('Number chart'), value: 'number_chart' },
   { label: __('Axis chart'), value: 'axis_chart' },
   { label: __('Donut chart'), value: 'donut_chart' },
@@ -109,11 +109,11 @@ const donutCharts = [
 
 async function addChart() {
   show.value = false
-  if (chartType.value == 'blank_card') {
+  if (chartType.value == 'spacer') {
     items.value.push({
-      name: 'blank_card',
-      type: 'blank_card',
-      layout: { x: 0, y: 0, w: 4, h: 2, i: 'blank_card_' + getRandom(4) },
+      name: 'spacer',
+      type: 'spacer',
+      layout: { x: 0, y: 0, w: 4, h: 2, i: 'spacer_' + getRandom(4) },
     })
   } else {
     await getChart(chartType.value)

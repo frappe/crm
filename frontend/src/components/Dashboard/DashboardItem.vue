@@ -9,11 +9,11 @@
       </Tooltip>
     </div>
     <div
-      v-else-if="item.type == 'blank_card'"
+      v-else-if="item.type == 'spacer'"
       class="rounded bg-surface-white h-full overflow-hidden text-ink-gray-5 flex items-center justify-center"
       :class="editing ? 'border border-dashed border-outline-gray-2' : ''"
     >
-      {{ editing ? __('Blank card') : '' }}
+      {{ editing ? __('Spacer') : '' }}
     </div>
     <div
       v-else-if="item.type == 'axis_chart'"
