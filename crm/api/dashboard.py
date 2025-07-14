@@ -27,7 +27,7 @@ def get_dashboard(from_date="", to_date="", user=""):
 	layout = json.loads(dashboard.layout) if dashboard and dashboard.layout else []
 
 	for l in layout:
-		method_name = f"get_{l['id']}"
+		method_name = f"get_{l['name']}"
 		if hasattr(frappe.get_attr("crm.api.dashboard"), method_name):
 			method = getattr(frappe.get_attr("crm.api.dashboard"), method_name)
 			l["data"] = method(from_date, to_date, user)
@@ -35,6 +35,29 @@ def get_dashboard(from_date="", to_date="", user=""):
 			l["data"] = None
 
 	return layout
+
+
+@frappe.whitelist()
+@sales_user_only
+def get_chart(name, type, from_date="", to_date="", user=""):
+	"""
+	Get number chart data for the dashboard.
+	"""
+	if not from_date or not to_date:
+		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
+		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
+
+	roles = frappe.get_roles(frappe.session.user)
+	is_sales_user = "Sales User" in roles and "Sales Manager" not in roles and "System Manager" not in roles
+	if is_sales_user and not user:
+		user = frappe.session.user
+
+	method_name = f"get_{name}"
+	if hasattr(frappe.get_attr("crm.api.dashboard"), method_name):
+		method = getattr(frappe.get_attr("crm.api.dashboard"), method_name)
+		return method(from_date, to_date, user)
+	else:
+		return {"error": _("Invalid chart name")}
 
 
 def get_total_leads(from_date, to_date, user=""):
