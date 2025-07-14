@@ -34,6 +34,7 @@
           v-if="editing"
           variant="solid"
           :label="__('Save')"
+          :loading="saveDashboard.loading"
           @click="save"
         />
       </template>
@@ -250,6 +251,28 @@ provide('filters', filters)
 function cancel() {
   editing.value = false
   dashboardItems.reload()
+}
+
+const saveDashboard = createResource({
+  url: 'frappe.client.set_value',
+  method: 'POST',
+  onSuccess: () => {
+    dashboardItems.reload()
+    editing.value = false
+  },
+})
+
+function save() {
+  const dashboardItemsCopy = JSON.parse(JSON.stringify(dashboardItems.data))
+  dashboardItemsCopy.forEach((item: any) => {
+    delete item.data
+  })
+  saveDashboard.submit({
+    doctype: 'CRM Dashboard',
+    name: 'Manager Dashboard',
+    fieldname: 'layout',
+    value: JSON.stringify(dashboardItemsCopy),
+  })
 }
 
 usePageMeta(() => {
