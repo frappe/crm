@@ -228,7 +228,7 @@ def get_average_ongoing_deal_value(from_date, to_date, user=""):
 	avg_value_delta = current_month_avg_value - prev_month_avg_value if prev_month_avg_value else 0
 
 	return {
-		"title": _("Avg ongoing deal value"),
+		"title": _("Avg. ongoing deal value"),
 		"tooltip": _("Average deal value of non won/lost deals"),
 		"value": current_month_avg_value,
 		"delta": avg_value_delta,
@@ -344,7 +344,7 @@ def get_average_won_deal_value(from_date, to_date, user=""):
 	avg_value_delta = current_month_avg_value - prev_month_avg_value if prev_month_avg_value else 0
 
 	return {
-		"title": _("Avg won deal value"),
+		"title": _("Avg. won deal value"),
 		"tooltip": _("Average deal value of won deals"),
 		"value": current_month_avg_value,
 		"delta": avg_value_delta,
@@ -401,7 +401,7 @@ def get_average_deal_value(from_date, to_date, user=""):
 	delta = current_month_avg - prev_month_avg if prev_month_avg else 0
 
 	return {
-		"title": _("Avg deal value"),
+		"title": _("Avg. deal value"),
 		"tooltip": _("Average deal value of ongoing & won deals"),
 		"value": current_month_avg,
 		"prefix": get_base_currency_symbol(),
@@ -454,7 +454,7 @@ def get_average_time_to_close_a_lead(from_date, to_date, user=""):
 	delta_lead = current_avg_lead - prev_avg_lead if prev_avg_lead else 0
 
 	return {
-		"title": _("Avg time to close a lead"),
+		"title": _("Avg. time to close a lead"),
 		"tooltip": _("Average time taken from lead creation to deal closure"),
 		"value": current_avg_lead,
 		"suffix": " days",
@@ -508,7 +508,7 @@ def get_average_time_to_close_a_deal(from_date, to_date, user=""):
 	delta_deal = current_avg_deal - prev_avg_deal if prev_avg_deal else 0
 
 	return {
-		"title": _("Avg time to close a deal"),
+		"title": _("Avg. time to close a deal"),
 		"tooltip": _("Average time taken from deal creation to deal closure"),
 		"value": current_avg_deal,
 		"suffix": " days",
