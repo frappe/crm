@@ -41,7 +41,7 @@
       </template>
     </LayoutHeader>
 
-    <div class="p-5 pb-0 flex items-center gap-4">
+    <div class="p-5 pb-2 flex items-center gap-4">
       <Dropdown
         v-if="!showDatePicker"
         :options="options"
@@ -120,6 +120,7 @@
 
     <div class="w-full overflow-y-scroll">
       <DashboardGrid
+        class="pt-1"
         v-if="!dashboardItems.loading && dashboardItems.data"
         v-model="dashboardItems.data"
         :editing="editing"
