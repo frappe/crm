@@ -24,7 +24,7 @@ def after_install(force=False):
 	add_default_lost_reasons()
 	add_standard_dropdown_items()
 	add_default_scripts()
-	create_default_manager_dashboard()
+	create_default_manager_dashboard(force)
 	frappe.db.commit()
 
 
