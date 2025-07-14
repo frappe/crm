@@ -127,6 +127,7 @@
     </div>
   </div>
   <AddChartModal
+    v-if="showAddChartModal"
     v-model="showAddChartModal"
     v-model:items="dashboardItems.data"
   />
@@ -142,6 +143,7 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
+import { copy } from '@/utils'
 import { getLastXDays, formatter, formatRange } from '@/utils/dashboard'
 import {
   usePageMeta,
@@ -258,12 +260,12 @@ provide('filters', filters)
 
 function enableEditing() {
   editing.value = true
-  oldItems.value = JSON.parse(JSON.stringify(dashboardItems.data))
+  oldItems.value = copy(dashboardItems.data)
 }
 
 function cancel() {
   editing.value = false
-  dashboardItems.data = JSON.parse(JSON.stringify(oldItems.value))
+  dashboardItems.data = copy(oldItems.value)
 }
 
 const saveDashboard = createResource({
@@ -276,7 +278,7 @@ const saveDashboard = createResource({
 })
 
 function save() {
-  const dashboardItemsCopy = JSON.parse(JSON.stringify(dashboardItems.data))
+  const dashboardItemsCopy = copy(dashboardItems.data)
 
   dashboardItemsCopy.forEach((item: any) => {
     delete item.data
