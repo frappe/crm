@@ -1,0 +1,50 @@
+<template>
+  <div class="flex-1 overflow-y-auto p-3">
+    <GridLayout
+      v-if="items.length > 0"
+      class="h-fit w-full"
+      :class="[editing ? 'mb-[20rem] !select-none' : '']"
+      :cols="20"
+      :disabled="!editing"
+      :modelValue="items.map((item) => item.layout)"
+      @update:modelValue="
+        (newLayout) => {
+          items.forEach((item, idx) => {
+            item.layout = newLayout[idx]
+          })
+        }
+      "
+    >
+      <template #item="{ index }">
+        <div class="group relative flex h-full w-full p-2 text-ink-gray-8">
+          <div
+            class="flex h-full w-full items-center justify-center"
+            :class="
+              editing
+                ? 'pointer-events-none  [&>div:first-child]:rounded [&>div:first-child]:group-hover:ring-2 [&>div:first-child]:group-hover:ring-outline-gray-2'
+                : ''
+            "
+          >
+            <DashboardItem
+              :index="index"
+              :item="items[index]"
+              :editing="editing"
+            />
+          </div>
+        </div>
+      </template>
+    </GridLayout>
+  </div>
+</template>
+<script setup>
+import { GridLayout } from 'frappe-ui'
+
+const props = defineProps({
+  editing: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const items = defineModel()
+</script>
