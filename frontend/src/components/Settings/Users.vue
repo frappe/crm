@@ -98,11 +98,11 @@
                 :label="user.full_name"
                 size="xl"
               />
-              <div class="flex flex-col gap-1 ml-3">
-                <div class="flex items-center text-base text-ink-gray-8 h-4">
+              <div class="flex flex-col ml-3">
+                <div class="flex items-center text-p-base text-ink-gray-8">
                   {{ user.full_name }}
                 </div>
-                <div class="text-base text-ink-gray-5">
+                <div class="text-p-sm text-ink-gray-5">
                   {{ user.name }}
                 </div>
               </div>

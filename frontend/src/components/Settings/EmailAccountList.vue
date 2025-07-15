@@ -30,10 +30,17 @@
       v-if="!emailAccounts.loading && Boolean(emailAccounts.data?.length)"
       class="mt-4"
     >
-      <div v-for="emailAccount in emailAccounts.data" :key="emailAccount.name">
+      <div
+        v-for="(emailAccount, i) in emailAccounts.data"
+        :key="emailAccount.name"
+      >
         <EmailAccountCard
           :emailAccount="emailAccount"
           @click="emit('update:step', 'email-edit', emailAccount)"
+        />
+        <div
+          v-if="emailAccounts.data.length !== i + 1"
+          class="h-px border-t mx-2 border-outline-gray-modals"
         />
       </div>
     </div>

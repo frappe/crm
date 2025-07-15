@@ -92,10 +92,10 @@
             @click="() => emit('updateStep', 'edit-template', { ...template })"
           >
             <div class="flex flex-col w-4/6 pr-5">
-              <div class="text-base font-medium text-ink-gray-7 truncate">
+              <div class="text-p-base font-medium text-ink-gray-7 truncate">
                 {{ template.name }}
               </div>
-              <div class="text-p-base text-ink-gray-5 truncate">
+              <div class="text-p-sm text-ink-gray-5 truncate">
                 {{ template.subject }}
               </div>
             </div>

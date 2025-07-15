@@ -1,10 +1,14 @@
-from frappe import frappe
+import functools
+
+import frappe
 import phonenumbers
+import requests
+from frappe import _
+from frappe.model.docstatus import DocStatus
+from frappe.model.dynamic_links import get_dynamic_link_map
 from frappe.utils import floor
 from phonenumbers import NumberParseException
 from phonenumbers import PhoneNumberFormat as PNF
-from frappe.model.docstatus import DocStatus
-from frappe.model.dynamic_links import get_dynamic_link_map
 
 
 def parse_phone_number(phone_number, default_country="IN"):
@@ -97,6 +101,7 @@ def seconds_to_duration(seconds):
 	else:
 		return "0s"
 
+
 # Extracted from frappe core frappe/model/delete_doc.py/check_if_doc_is_linked
 def get_linked_docs(doc, method="Delete"):
 	from frappe.model.rename_doc import get_link_fields
@@ -161,6 +166,7 @@ def get_linked_docs(doc, method="Delete"):
 				)
 	return docs
 
+
 # Extracted from frappe core frappe/model/delete_doc.py/check_if_doc_is_dynamically_linked
 def get_dynamic_linked_docs(doc, method="Delete"):
 	docs = []
@@ -222,3 +228,59 @@ def get_dynamic_linked_docs(doc, method="Delete"):
 						}
 					)
 	return docs
+
+
+def is_admin(user: str | None = None) -> bool:
+	"""
+	Check whether `user` is an admin
+
+	:param user: User to check against, defaults to current user
+	:return: Whether `user` is an admin
+	"""
+	user = user or frappe.session.user
+	return user == "Administrator"
+
+
+def is_sales_user(user: str | None = None) -> bool:
+	"""
+	Check whether `user` is an agent
+
+	:param user: User to check against, defaults to current user
+	:return: Whether `user` is an agent
+	"""
+	user = user or frappe.session.user
+	return is_admin() or "Sales Manager" in frappe.get_roles(user) or "Sales User" in frappe.get_roles(user)
+
+
+def sales_user_only(fn):
+	"""Decorator to validate if user is an agent."""
+
+	@functools.wraps(fn)
+	def wrapper(*args, **kwargs):
+		if not is_sales_user():
+			frappe.throw(
+				msg=_("You are not permitted to access this resource."),
+				title=_("Not Allowed"),
+				exc=frappe.PermissionError,
+			)
+
+		return fn(*args, **kwargs)
+
+	return wrapper
+
+
+def get_exchange_rate(from_currency, to_currency, date=None):
+	if not date:
+		date = "latest"
+
+	url = f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}"
+
+	response = requests.get(url)
+
+	if response.status_code == 200:
+		data = response.json()
+		rate = data["rates"].get(to_currency)
+		return rate
+	else:
+		frappe.throw(_("Failed to fetch historical exchange rate from external API. Please try again later."))
+		return None

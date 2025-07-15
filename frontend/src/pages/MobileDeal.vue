@@ -643,7 +643,7 @@ const showLostReasonModal = ref(false)
 
 function setLostReason() {
   if (
-    document.doc.status !== 'Lost' ||
+    getDealStatus(document.doc.status).type !== 'Lost' ||
     (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
     (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
   ) {
@@ -655,7 +655,7 @@ function setLostReason() {
 }
 
 function beforeStatusChange(data) {
-  if (data?.hasOwnProperty('status') && data.status == 'Lost') {
+  if (data?.hasOwnProperty('status') && getDealStatus(data.status).type == 'Lost') {
     setLostReason()
   } else {
     document.save.submit(null, {

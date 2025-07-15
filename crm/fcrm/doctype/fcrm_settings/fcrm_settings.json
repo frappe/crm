@@ -8,6 +8,7 @@
   "defaults_tab",
   "restore_defaults",
   "enable_forecasting",
+  "currency",
   "branding_tab",
   "brand_name",
   "brand_logo",
@@ -60,16 +61,23 @@
   },
   {
    "default": "0",
-   "description": "It will make deal's \"Close Date\" & \"Deal Value\" mandatory to get accurate forecasting insights",
+   "description": "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights",
    "fieldname": "enable_forecasting",
    "fieldtype": "Check",
    "label": "Enable Forecasting"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Currency",
+   "options": "Currency"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-01 13:20:48.757603",
+ "modified": "2025-07-13 11:58:34.857638",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

@@ -10,6 +10,7 @@ from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
+from crm.utils import get_exchange_rate
 
 
 class CRMDeal(Document):
@@ -24,8 +25,11 @@ class CRMDeal(Document):
 			self.assign_agent(self.deal_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
+			if frappe.db.get_value("CRM Deal Status", self.status, "type") == "Won":
+				self.closed_date = frappe.utils.nowdate()
 		self.validate_forcasting_fields()
 		self.validate_lost_reason()
+		self.update_exchange_rate()
 
 	def after_insert(self):
 		if self.deal_owner:
@@ -162,11 +166,20 @@ class CRMDeal(Document):
 		"""
 		Validate the lost reason if the status is set to "Lost".
 		"""
-		if self.status == "Lost":
+		if self.status and frappe.get_cached_value("CRM Deal Status", self.status, "type") == "Lost":
 			if not self.lost_reason:
 				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
 			elif self.lost_reason == "Other" and not self.lost_notes:
 				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
+
+	def update_exchange_rate(self):
+		if self.has_value_changed("currency") or not self.exchange_rate:
+			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
+			exchange_rate = 1
+			if self.currency and self.currency != system_currency:
+				exchange_rate = get_exchange_rate(self.currency, system_currency, frappe.utils.nowdate())
+
+			self.db_set("exchange_rate", exchange_rate)
 
 	@staticmethod
 	def default_list_data():

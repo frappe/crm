@@ -4,6 +4,7 @@ import click
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
+from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.fcrm.doctype.crm_products.crm_products import create_product_details_script
 
 
@@ -23,6 +24,7 @@ def after_install(force=False):
 	add_default_lost_reasons()
 	add_standard_dropdown_items()
 	add_default_scripts()
+	create_default_manager_dashboard(force)
 	frappe.db.commit()
 
 
@@ -69,36 +71,43 @@ def add_default_deal_statuses():
 	statuses = {
 		"Qualification": {
 			"color": "gray",
+			"type": "Open",
 			"probability": 10,
 			"position": 1,
 		},
 		"Demo/Making": {
 			"color": "orange",
+			"type": "Ongoing",
 			"probability": 25,
 			"position": 2,
 		},
 		"Proposal/Quotation": {
 			"color": "blue",
+			"type": "Ongoing",
 			"probability": 50,
 			"position": 3,
 		},
 		"Negotiation": {
 			"color": "yellow",
+			"type": "Ongoing",
 			"probability": 70,
 			"position": 4,
 		},
 		"Ready to Close": {
 			"color": "purple",
+			"type": "Ongoing",
 			"probability": 90,
 			"position": 5,
 		},
 		"Won": {
 			"color": "green",
+			"type": "Won",
 			"probability": 100,
 			"position": 6,
 		},
 		"Lost": {
 			"color": "red",
+			"type": "Lost",
 			"probability": 0,
 			"position": 7,
 		},
@@ -111,6 +120,7 @@ def add_default_deal_statuses():
 		doc = frappe.new_doc("CRM Deal Status")
 		doc.deal_status = status
 		doc.color = statuses[status]["color"]
+		doc.type = statuses[status]["type"]
 		doc.probability = statuses[status]["probability"]
 		doc.position = statuses[status]["position"]
 		doc.insert()

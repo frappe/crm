@@ -531,3 +531,8 @@ export function TemplateOption({ active, option, theme, icon, onClick }) {
     ],
   )
 }
+
+export function copy(obj) {
+  if (!obj) return obj
+  return JSON.parse(JSON.stringify(obj))
+}
