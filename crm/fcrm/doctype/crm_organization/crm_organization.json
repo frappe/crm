@@ -10,7 +10,7 @@
   "organization_name",
   "no_of_employees",
   "currency",
-  "currency_exchange",
+  "exchange_rate",
   "annual_revenue",
   "organization_logo",
   "column_break_pnpp",
@@ -77,16 +77,16 @@
    "options": "Address"
   },
   {
-   "fieldname": "currency_exchange",
-   "fieldtype": "Link",
-   "label": "Currency Exchange",
-   "options": "CRM Currency Exchange"
+   "description": "The rate used to convert the organization\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
+   "fieldname": "exchange_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-09 14:32:23.893267",
+ "modified": "2025-07-15 11:40:12.175598",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
