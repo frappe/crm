@@ -649,8 +649,6 @@ def get_forecasted_revenue(from_date="", to_date="", user=""):
 		""",
 		as_dict=True,
 	)
-	if not result:
-		return []
 
 	for row in result:
 		row["month"] = frappe.utils.get_datetime(row["month"]).strftime("%Y-%m-01")
