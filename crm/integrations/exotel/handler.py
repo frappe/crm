@@ -242,19 +242,18 @@ def get_call_log_status(call_payload, direction="inbound"):
 		elif status == "failed":
 			return "Failed"
 
-	status = call_payload.get("DialCallStatus")
 	call_type = call_payload.get("CallType")
-	dial_call_status = call_payload.get("DialCallStatus")
+	status = call_payload.get("DialCallStatus") or call_payload.get("Status")
 
-	if call_type == "incomplete" and dial_call_status == "no-answer":
+	if call_type == "incomplete" and status == "no-answer":
 		status = "No Answer"
-	elif call_type == "client-hangup" and dial_call_status == "canceled":
+	elif call_type == "client-hangup" and status == "canceled":
 		status = "Canceled"
-	elif call_type == "incomplete" and dial_call_status == "failed":
+	elif call_type == "incomplete" and status == "failed":
 		status = "Failed"
 	elif call_type == "completed":
 		status = "Completed"
-	elif dial_call_status == "busy":
+	elif status == "busy":
 		status = "Ringing"
 
 	return status
