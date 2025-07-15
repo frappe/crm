@@ -33,7 +33,7 @@ def add_status_change_log(doc):
 				"status_change_log",
 				{
 					"from": previous_status,
-					"from_type": previous_status_type,
+					"from_type": previous_status_type or "",
 					"to": "",
 					"to_type": "",
 					"from_date": now_minus_one_minute,
@@ -41,10 +41,10 @@ def add_status_change_log(doc):
 					"log_owner": frappe.session.user,
 				},
 			)
-		to_status_type = frappe.db.get_value("CRM Deal Status", doc.status, "type")
+		to_status_type = frappe.db.get_value("CRM Deal Status", doc.status, "type") if doc.status else None
 		last_status_change = doc.status_change_log[-1]
 		last_status_change.to = doc.status
-		last_status_change.to_type = to_status_type
+		last_status_change.to_type = to_status_type or ""
 		last_status_change.to_date = datetime.now()
 		last_status_change.log_owner = frappe.session.user
 		last_status_change.duration = get_duration(last_status_change.from_date, last_status_change.to_date)
@@ -53,7 +53,7 @@ def add_status_change_log(doc):
 		"status_change_log",
 		{
 			"from": doc.status,
-			"from_type": to_status_type,
+			"from_type": to_status_type or "",
 			"to": "",
 			"to_type": "",
 			"from_date": datetime.now(),
