@@ -5,6 +5,7 @@
       class="h-fit w-full"
       :class="[editing ? 'mb-[20rem] !select-none' : '']"
       :cols="20"
+      :rowHeight="42"
       :disabled="!editing"
       :modelValue="items.map((item) => item.layout)"
       @update:modelValue="
