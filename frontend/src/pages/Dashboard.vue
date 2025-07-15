@@ -4,9 +4,44 @@
       <template #left-header>
         <ViewBreadcrumbs routeName="Dashboard" />
       </template>
+      <template #right-header>
+        <Button
+          v-if="!editing"
+          :label="__('Refresh')"
+          @click="dashboardItems.reload"
+        >
+          <template #prefix>
+            <LucideRefreshCcw class="size-4" />
+          </template>
+        </Button>
+        <Button
+          v-if="!editing && (isManager() || isAdmin())"
+          :label="__('Edit')"
+          @click="enableEditing"
+        >
+          <template #prefix>
+            <LucidePenLine class="size-4" />
+          </template>
+        </Button>
+        <Button
+          v-if="editing"
+          :label="__('Chart')"
+          icon-left="plus"
+          @click="showAddChartModal = true"
+        />
+        <Button v-if="editing" :label="__('Cancel')" @click="cancel" />
+        <Button
+          v-if="editing"
+          variant="solid"
+          :label="__('Save')"
+          :disabled="!dirty"
+          :loading="saveDashboard.loading"
+          @click="save"
+        />
+      </template>
     </LayoutHeader>
 
-    <div class="p-5 pb-3 flex items-center gap-4">
+    <div class="p-5 pb-2 flex items-center gap-4">
       <Dropdown
         v-if="!showDatePicker"
         :options="options"
@@ -83,81 +118,51 @@
       </Link>
     </div>
 
-    <div class="p-5 pt-2 w-full overflow-y-scroll">
-      <div class="transition-all animate-fade-in duration-300">
-        <div
-          v-if="!numberCards.loading"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
-        >
-          <Tooltip
-            v-for="(config, index) in numberCards.data"
-            :text="config.tooltip"
-          >
-            <NumberChart
-              :key="index"
-              class="border rounded-md"
-              :config="config"
-            />
-          </Tooltip>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-          <div v-if="salesTrend.data" class="border rounded-md min-h-80">
-            <AxisChart :config="salesTrend.data" />
-          </div>
-          <div v-if="forecastedRevenue.data" class="border rounded-md min-h-80">
-            <AxisChart :config="forecastedRevenue.data" />
-          </div>
-          <div v-if="funnelConversion.data" class="border rounded-md min-h-80">
-            <AxisChart :config="funnelConversion.data" />
-          </div>
-          <div v-if="dealsByStage.data" class="border rounded-md">
-            <AxisChart :config="dealsByStage.data.bar" />
-          </div>
-          <div v-if="dealsByStage.data" class="border rounded-md">
-            <DonutChart :config="dealsByStage.data.donut" />
-          </div>
-          <div v-if="leadsBySource.data" class="border rounded-md">
-            <DonutChart :config="leadsBySource.data" />
-          </div>
-          <div v-if="dealsByTerritory.data" class="border rounded-md">
-            <AxisChart :config="dealsByTerritory.data" />
-          </div>
-          <div v-if="dealsBySalesperson.data" class="border rounded-md">
-            <AxisChart :config="dealsBySalesperson.data" />
-          </div>
-          <div v-if="lostDealReasons.data" class="border rounded-md">
-            <AxisChart :config="lostDealReasons.data" />
-          </div>
-        </div>
-      </div>
+    <div class="w-full overflow-y-scroll">
+      <DashboardGrid
+        class="pt-1"
+        v-if="!dashboardItems.loading && dashboardItems.data"
+        v-model="dashboardItems.data"
+        :editing="editing"
+      />
     </div>
   </div>
+  <AddChartModal
+    v-if="showAddChartModal"
+    v-model="showAddChartModal"
+    v-model:items="dashboardItems.data"
+  />
 </template>
 
 <script setup lang="ts">
+import AddChartModal from '@/components/Dashboard/AddChartModal.vue'
+import LucideRefreshCcw from '~icons/lucide/refresh-ccw'
+import LucidePenLine from '~icons/lucide/pen-line'
+import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
+import { copy } from '@/utils'
 import { getLastXDays, formatter, formatRange } from '@/utils/dashboard'
 import {
-  AxisChart,
-  DonutChart,
-  NumberChart,
   usePageMeta,
   createResource,
   DateRangePicker,
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, provide } from 'vue'
 
 const { users, getUser, isManager, isAdmin } = usersStore()
+
+const editing = ref(false)
 
 const showDatePicker = ref(false)
 const datePickerRef = ref(null)
 const preset = ref('Last 30 Days')
+const showAddChartModal = ref(false)
 
 const filters = reactive({
   period: getLastXDays(),
@@ -177,19 +182,7 @@ const toDate = computed(() => {
 function updateFilter(key: string, value: any, callback?: () => void) {
   filters[key] = value
   callback?.()
-  reload()
-}
-
-function reload() {
-  numberCards.reload()
-  salesTrend.reload()
-  funnelConversion.reload()
-  dealsBySalesperson.reload()
-  dealsByTerritory.reload()
-  lostDealReasons.reload()
-  forecastedRevenue.reload()
-  dealsByStage.reload()
-  leadsBySource.reload()
+  dashboardItems.reload()
 }
 
 const options = computed(() => [
@@ -202,7 +195,7 @@ const options = computed(() => [
         onClick: () => {
           preset.value = 'Last 7 Days'
           filters.period = getLastXDays(7)
-          reload()
+          dashboardItems.reload()
         },
       },
       {
@@ -210,7 +203,7 @@ const options = computed(() => [
         onClick: () => {
           preset.value = 'Last 30 Days'
           filters.period = getLastXDays(30)
-          reload()
+          dashboardItems.reload()
         },
       },
       {
@@ -218,7 +211,7 @@ const options = computed(() => [
         onClick: () => {
           preset.value = 'Last 60 Days'
           filters.period = getLastXDays(60)
-          reload()
+          dashboardItems.reload()
         },
       },
       {
@@ -226,7 +219,7 @@ const options = computed(() => [
         onClick: () => {
           preset.value = 'Last 90 Days'
           filters.period = getLastXDays(90)
-          reload()
+          dashboardItems.reload()
         },
       },
     ],
@@ -242,9 +235,9 @@ const options = computed(() => [
   },
 ])
 
-const numberCards = createResource({
-  url: 'crm.api.dashboard.get_number_card_data',
-  cache: ['Analytics', 'NumberCards'],
+const dashboardItems = createResource({
+  url: 'crm.api.dashboard.get_dashboard',
+  cache: ['Analytics', 'ManagerDashboard'],
   makeParams() {
     return {
       from_date: fromDate.value,
@@ -255,275 +248,50 @@ const numberCards = createResource({
   auto: true,
 })
 
-const salesTrend = createResource({
-  url: 'crm.api.dashboard.get_sales_trend_data',
-  cache: ['Analytics', 'SalesTrend'],
-  makeParams() {
-    return {
-      from_date: fromDate.value,
-      to_date: toDate.value,
-      user: filters.user,
-    }
-  },
-  auto: true,
-  transform(data = []) {
-    return {
-      data: data,
-      title: __('Sales trend'),
-      subtitle: __('Daily performance of leads, deals, and wins'),
-      xAxis: {
-        title: __('Date'),
-        key: 'date',
-        type: 'time' as const,
-        timeGrain: 'day' as const,
-      },
-      yAxis: {
-        title: __('Count'),
-      },
-      series: [
-        { name: 'leads', type: 'line' as const, showDataPoints: true },
-        { name: 'deals', type: 'line' as const, showDataPoints: true },
-        { name: 'won_deals', type: 'line' as const, showDataPoints: true },
-      ],
-    }
+const dirty = computed(() => {
+  if (!editing.value) return false
+  return JSON.stringify(dashboardItems.data) !== JSON.stringify(oldItems.value)
+})
+
+const oldItems = ref([])
+
+provide('fromDate', fromDate)
+provide('toDate', toDate)
+provide('filters', filters)
+
+function enableEditing() {
+  editing.value = true
+  oldItems.value = copy(dashboardItems.data)
+}
+
+function cancel() {
+  editing.value = false
+  dashboardItems.data = copy(oldItems.value)
+}
+
+const saveDashboard = createResource({
+  url: 'frappe.client.set_value',
+  method: 'POST',
+  onSuccess: () => {
+    dashboardItems.reload()
+    editing.value = false
   },
 })
 
-const funnelConversion = createResource({
-  url: 'crm.api.dashboard.get_funnel_conversion_data',
-  cache: ['Analytics', 'FunnelConversion'],
-  makeParams() {
-    return {
-      from_date: fromDate.value,
-      to_date: toDate.value,
-      user: filters.user,
-    }
-  },
-  auto: true,
-  transform(data = []) {
-    return {
-      data: data,
-      title: __('Funnel conversion'),
-      subtitle: __('Lead to deal conversion pipeline'),
-      xAxis: {
-        title: __('Stage'),
-        key: 'stage',
-        type: 'category' as const,
-      },
-      yAxis: {
-        title: __('Count'),
-      },
-      swapXY: true,
-      series: [
-        {
-          name: 'count',
-          type: 'bar' as const,
-          echartOptions: {
-            colorBy: 'data',
-          },
-        },
-      ],
-    }
-  },
-})
+function save() {
+  const dashboardItemsCopy = copy(dashboardItems.data)
 
-const dealsBySalesperson = createResource({
-  url: 'crm.api.dashboard.get_deals_by_salesperson',
-  cache: ['Analytics', 'DealsBySalesperson'],
-  makeParams() {
-    return {
-      from_date: fromDate.value,
-      to_date: toDate.value,
-      user: filters.user,
-    }
-  },
-  auto: true,
-  transform(r = { data: [], currency_symbol: '$' }) {
-    return {
-      data: r.data || [],
-      title: __('Deals by salesperson'),
-      subtitle: __('Number of deals and total value per salesperson'),
-      xAxis: {
-        title: __('Salesperson'),
-        key: 'salesperson',
-        type: 'category' as const,
-      },
-      yAxis: {
-        title: __('Number of deals'),
-      },
-      y2Axis: {
-        title: __('Deal value') + ` (${r.currency_symbol})`,
-      },
-      series: [
-        { name: 'deals', type: 'bar' as const },
-        {
-          name: 'value',
-          type: 'line' as const,
-          showDataPoints: true,
-          axis: 'y2' as const,
-        },
-      ],
-    }
-  },
-})
+  dashboardItemsCopy.forEach((item: any) => {
+    delete item.data
+  })
 
-const dealsByTerritory = createResource({
-  url: 'crm.api.dashboard.get_deals_by_territory',
-  cache: ['Analytics', 'DealsByTerritory'],
-  makeParams() {
-    return {
-      from_date: fromDate.value,
-      to_date: toDate.value,
-      user: filters.user,
-    }
-  },
-  auto: true,
-  transform(r = { data: [], currency_symbol: '$' }) {
-    return {
-      data: r.data || [],
-      title: __('Deals by territory'),
-      subtitle: __('Geographic distribution of deals and revenue'),
-      xAxis: {
-        title: __('Territory'),
-        key: 'territory',
-        type: 'category' as const,
-      },
-      yAxis: {
-        title: __('Number of deals'),
-      },
-      y2Axis: {
-        title: __('Deal value') + ` (${r.currency_symbol})`,
-      },
-      series: [
-        { name: 'deals', type: 'bar' as const },
-        {
-          name: 'value',
-          type: 'line' as const,
-          showDataPoints: true,
-          axis: 'y2' as const,
-        },
-      ],
-    }
-  },
-})
-
-const lostDealReasons = createResource({
-  url: 'crm.api.dashboard.get_lost_deal_reasons',
-  cache: ['Analytics', 'LostDealReasons'],
-  makeParams() {
-    return {
-      from_date: fromDate.value,
-      to_date: toDate.value,
-      user: filters.user,
-    }
-  },
-  auto: true,
-  transform(data = []) {
-    return {
-      data: data,
-      title: __('Lost deal reasons'),
-      subtitle: __('Common reasons for losing deals'),
-      xAxis: {
-        title: __('Reason'),
-        key: 'reason',
-        type: 'category' as const,
-      },
-      yAxis: {
-        title: __('Count'),
-      },
-      swapXY: true,
-      series: [{ name: 'count', type: 'bar' as const }],
-    }
-  },
-})
-
-const forecastedRevenue = createResource({
-  url: 'crm.api.dashboard.get_forecasted_revenue',
-  cache: ['Analytics', 'ForecastedRevenue'],
-  makeParams() {
-    return { user: filters.user }
-  },
-  auto: true,
-  transform(r = { data: [], currency_symbol: '$' }) {
-    return {
-      data: r.data || [],
-      title: __('Revenue forecast'),
-      subtitle: __('Projected vs actual revenue based on deal probability'),
-      xAxis: {
-        title: __('Month'),
-        key: 'month',
-        type: 'time' as const,
-        timeGrain: 'month' as const,
-      },
-      yAxis: {
-        title: __('Revenue') + ` (${r.currency_symbol})`,
-      },
-      series: [
-        { name: 'forecasted', type: 'line' as const, showDataPoints: true },
-        { name: 'actual', type: 'line' as const, showDataPoints: true },
-      ],
-    }
-  },
-})
-
-const dealsByStage = createResource({
-  url: 'crm.api.dashboard.get_deals_by_stage',
-  cache: ['Analytics', 'DealsByStage'],
-  makeParams() {
-    return {
-      from_date: fromDate.value,
-      to_date: toDate.value,
-      user: filters.user,
-    }
-  },
-  auto: true,
-  transform(data = []) {
-    return {
-      donut: {
-        data: data,
-        title: __('Deals by stage'),
-        subtitle: __('Current pipeline distribution'),
-        categoryColumn: 'stage',
-        valueColumn: 'count',
-      },
-      bar: {
-        data: data.filter((d) => d.status_type != 'Lost'),
-        title: __('Deals by ongoing & won stage'),
-        xAxis: {
-          title: __('Stage'),
-          key: 'stage',
-          type: 'category' as const,
-        },
-        yAxis: {
-          title: __('Count'),
-        },
-        series: [{ name: 'count', type: 'bar' as const }],
-      },
-    }
-  },
-})
-
-const leadsBySource = createResource({
-  url: 'crm.api.dashboard.get_leads_by_source',
-  cache: ['Analytics', 'LeadsBySource'],
-  makeParams() {
-    return {
-      from_date: fromDate.value,
-      to_date: toDate.value,
-      user: filters.user,
-    }
-  },
-  auto: true,
-  transform(data = []) {
-    return {
-      data: data,
-      title: __('Leads by source'),
-      subtitle: __('Lead generation channel analysis'),
-      categoryColumn: 'source',
-      valueColumn: 'count',
-    }
-  },
-})
+  saveDashboard.submit({
+    doctype: 'CRM Dashboard',
+    name: 'Manager Dashboard',
+    fieldname: 'layout',
+    value: JSON.stringify(dashboardItemsCopy),
+  })
+}
 
 usePageMeta(() => {
   return { title: __('CRM Dashboard') }
