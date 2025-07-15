@@ -25,7 +25,7 @@
         </Button>
         <Button
           v-if="editing"
-          :label="__('Add chart')"
+          :label="__('Chart')"
           icon-left="plus"
           @click="showAddChartModal = true"
         />

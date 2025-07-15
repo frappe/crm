@@ -34,11 +34,13 @@
           </div>
           <div
             v-if="editing"
-            class="absolute right-0 top-0 bg-surface-red-4 border border-outline-red-2 rounded cursor-pointer opacity-0 group-hover:opacity-100"
-            @click="items.splice(index, 1)"
+            class="flex absolute right-0 top-0 bg-surface-gray-6 rounded cursor-pointer opacity-0 group-hover:opacity-100"
           >
-            <div class="rounded p-1 hover:bg-surface-red-3">
-              <FeatherIcon name="trash-2" class="size-3 text-ink-red-4" />
+            <div
+              class="rounded p-1 hover:bg-surface-gray-5"
+              @click="items.splice(index, 1)"
+            >
+              <FeatherIcon name="trash-2" class="size-3 text-ink-white" />
             </div>
           </div>
         </div>
