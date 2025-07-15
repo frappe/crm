@@ -27,7 +27,7 @@ def execute():
 	]
 
 	for status in deal_statuses:
-		if status.type is None or status.type == "":
+		if not status.type or status.type is None or status.type == "Open":
 			if status.deal_status in openStatuses:
 				type = "Open"
 			elif status.deal_status in ongoingStatuses:
