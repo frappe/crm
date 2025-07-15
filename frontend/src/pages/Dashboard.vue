@@ -15,7 +15,7 @@
           </template>
         </Button>
         <Button
-          v-if="!editing && (isManager() || isAdmin())"
+          v-if="!editing && isAdmin()"
           :label="__('Edit')"
           @click="enableEditing"
         >
