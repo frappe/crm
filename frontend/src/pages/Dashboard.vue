@@ -29,6 +29,15 @@
           icon-left="plus"
           @click="showAddChartModal = true"
         />
+        <Button
+          v-if="editing && isAdmin()"
+          :label="__('Reset to default')"
+          @click="resetToDefault"
+        >
+          <template #prefix>
+            <LucideUndo2 class="size-4" />
+          </template>
+        </Button>
         <Button v-if="editing" :label="__('Cancel')" @click="cancel" />
         <Button
           v-if="editing"
@@ -137,6 +146,7 @@
 <script setup lang="ts">
 import AddChartModal from '@/components/Dashboard/AddChartModal.vue'
 import LucideRefreshCcw from '~icons/lucide/refresh-ccw'
+import LucideUndo2 from '~icons/lucide/undo-2'
 import LucidePenLine from '~icons/lucide/pen-line'
 import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -290,6 +300,17 @@ function save() {
     name: 'Manager Dashboard',
     fieldname: 'layout',
     value: JSON.stringify(dashboardItemsCopy),
+  })
+}
+
+function resetToDefault() {
+  createResource({
+    url: 'crm.api.dashboard.reset_to_default',
+    auto: true,
+    onSuccess: () => {
+      dashboardItems.reload()
+      editing.value = false
+    },
   })
 }
 

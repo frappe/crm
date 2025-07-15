@@ -8,6 +8,12 @@ from crm.utils import sales_user_only
 
 
 @frappe.whitelist()
+def reset_to_default():
+	frappe.only_for("System Manager")
+	create_default_manager_dashboard(force=True)
+
+
+@frappe.whitelist()
 @sales_user_only
 def get_dashboard(from_date="", to_date="", user=""):
 	"""
