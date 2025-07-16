@@ -143,8 +143,8 @@ class CRMDeal(Document):
 		"""
 		Update the close date based on the "Won" status.
 		"""
-		if self.status == "Won" and not self.close_date:
-			self.close_date = frappe.utils.nowdate()
+		if self.status == "Won" and not self.closed_date:
+			self.closed_date = frappe.utils.nowdate()
 
 	def update_default_probability(self):
 		"""
