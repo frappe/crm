@@ -166,8 +166,8 @@ class CRMDeal(Document):
             if not self.deal_value or self.deal_value == 0:
                 frappe.throw(_("Deal Value is required."),
                              frappe.MandatoryError)
-            if not self.closed_date:
-                frappe.throw(_("Close Date is required."),
+            if not self.expected_closure_date:
+                frappe.throw(_("Expected Closure Date is required."),
                              frappe.MandatoryError)
 
     def validate_lost_reason(self):
@@ -256,6 +256,9 @@ class CRMDeal(Document):
             "first_responded_on",
             "modified",
             "_assign",
+            "expected_closure_date",
+            "closed_date",
+            "deal_value",
         ]
         return {"columns": columns, "rows": rows}
 
