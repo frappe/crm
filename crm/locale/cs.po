@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-22 05:21\n"
+"PO-Revision-Date: 2025-07-23 05:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -180,7 +180,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
-msgstr ""
+msgstr "Název účtu"
 
 #. Label of the account_sid (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the account_sid (Data) field in DocType 'CRM Twilio Settings'
@@ -207,7 +207,7 @@ msgstr ""
 #: frontend/src/components/Dashboard/AddChartModal.vue:41
 #: frontend/src/components/Modals/AddExistingUserModal.vue:53
 msgid "Add"
-msgstr ""
+msgstr "Přidat"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
@@ -889,7 +889,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:485
 msgid "Change"
-msgstr ""
+msgstr "Změnit"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:2
 #: frontend/src/components/Settings/ProfileSettings.vue:65
@@ -1627,7 +1627,7 @@ msgstr ""
 #. Label of the disabled (Check) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Disabled"
-msgstr ""
+msgstr "Zakázáno"
 
 #: frontend/src/components/CommentBox.vue:76
 #: frontend/src/components/EmailEditor.vue:158
@@ -2370,7 +2370,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:93
 msgid "Help"
-msgstr ""
+msgstr "Pomoc"
 
 #: frontend/src/components/CommunicationArea.vue:62
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
@@ -2543,12 +2543,12 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:120
 msgctxt "FCRM"
 msgid "Integrations"
-msgstr ""
+msgstr "Integrace"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:524
 #: frontend/src/components/Layouts/AppSidebar.vue:527
 msgid "Introduction"
-msgstr ""
+msgstr "Úvod"
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:33
 msgid "Invalid Account SID or Auth Token."
@@ -3010,7 +3010,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:256
 #: frontend/src/components/Settings/Users.vue:259
 msgid "Manager"
-msgstr ""
+msgstr "Manažer"
 
 #: frontend/src/data/document.js:34
 msgid "Mandatory field error: {0}"
@@ -3241,7 +3241,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:89
 msgid "New {0}"
-msgstr ""
+msgstr "Nový {0}"
 
 #: frontend/src/components/Filter.vue:668
 msgid "Next 6 Months"
@@ -3376,7 +3376,7 @@ msgstr ""
 
 #: crm/utils/__init__.py:263
 msgid "Not Allowed"
-msgstr ""
+msgstr "Nepovoleno"
 
 #: frontend/src/components/Filter.vue:273
 #: frontend/src/components/Filter.vue:294
@@ -3527,7 +3527,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Open"
-msgstr ""
+msgstr "Otevřít"
 
 #: frontend/src/components/Modals/NoteModal.vue:18
 #: frontend/src/components/Modals/TaskModal.vue:25
@@ -3645,7 +3645,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:64
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: crm/api/demo.py:21 crm/api/demo.py:29
 msgid "Password cannot be reset by Demo User {}"
@@ -4497,7 +4497,7 @@ msgstr ""
 
 #: crm/api/dashboard.py:731 crm/api/dashboard.py:790
 msgid "Stage"
-msgstr ""
+msgstr "Fáze"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:15
 msgid "Standard Form Scripts can not be modified, duplicate the Form Script instead."
@@ -4847,7 +4847,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Total"
-msgstr ""
+msgstr "Celkem"
 
 #. Label of the total_holidays (Int) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -5076,7 +5076,7 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:95
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
-msgstr ""
+msgstr "Uživatelé"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:103
 msgid "Users added successfully"
@@ -5471,7 +5471,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:105 frontend/src/utils/index.js:152
 msgid "tomorrow"
-msgstr ""
+msgstr "zítra"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -5489,7 +5489,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:179
 msgid "yesterday"
-msgstr ""
+msgstr "včera"
 
 #: frontend/src/utils/index.js:130
 msgid "{0} M"
