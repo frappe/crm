@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-22 05:22\n"
+"PO-Revision-Date: 2025-07-23 05:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -146,7 +146,7 @@ msgstr "API Ključ"
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "API Key is required"
-msgstr ""
+msgstr "API Ključ je obavezan"
 
 #. Label of the api_secret (Password) field in DocType 'CRM Twilio Settings'
 #. Label of the api_secret (Password) field in DocType 'ERPNext CRM Settings'
@@ -191,7 +191,7 @@ msgstr "SID Računa"
 
 #: frontend/src/components/Settings/emailConfig.js:165
 msgid "Account name is required"
-msgstr ""
+msgstr "Naziv računa je obavezan"
 
 #: frontend/src/components/CustomActions.vue:73
 #: frontend/src/components/ViewControls.vue:683
@@ -211,7 +211,7 @@ msgstr "Dodaj"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
-msgstr ""
+msgstr "Dodaj Račun"
 
 #: frontend/src/components/ColumnSettings.vue:69
 #: frontend/src/components/Kanban/KanbanView.vue:157
@@ -221,7 +221,7 @@ msgstr "Dodaj Stupac"
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
 #: frontend/src/components/Settings/Users.vue:21
 msgid "Add Existing User"
-msgstr ""
+msgstr "Dodaj Postojećeg Korisnika"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:58
 #: frontend/src/components/FieldLayoutEditor.vue:173
@@ -259,7 +259,7 @@ msgstr "Dodaj Tjedne Praznike"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add chart"
-msgstr ""
+msgstr "Dodaj grafikon"
 
 #: frontend/src/components/FieldLayoutEditor.vue:426
 msgid "Add column"
@@ -526,43 +526,43 @@ msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:81
 msgid "Avg deal value"
-msgstr ""
+msgstr "Prosječna vrijednost posla"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:78
 msgid "Avg ongoing deal value"
-msgstr ""
+msgstr "Prosječna vrijednost tekućeg posla"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:87
 msgid "Avg time to close a deal"
-msgstr ""
+msgstr "Prosječno vrijeme potrebno za sklapanje posla"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:83
 msgid "Avg time to close a lead"
-msgstr ""
+msgstr "Prosječno vrijeme potrebno za zatvaranje potencijalnog klijenta"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:80
 msgid "Avg won deal value"
-msgstr ""
+msgstr "Prosječna vrijednost dobivenog posla"
 
 #: crm/api/dashboard.py:410
 msgid "Avg. deal value"
-msgstr ""
+msgstr "Prosječna vrijednost posla"
 
 #: crm/api/dashboard.py:237
 msgid "Avg. ongoing deal value"
-msgstr ""
+msgstr "Prosječna vrijednost tekućeg posla"
 
 #: crm/api/dashboard.py:517
 msgid "Avg. time to close a deal"
-msgstr ""
+msgstr "Prosječno vrijeme potrebno za sklapanje posla"
 
 #: crm/api/dashboard.py:463
 msgid "Avg. time to close a lead"
-msgstr ""
+msgstr "Prosječno vrijeme potrebno za zatvaranje potencijalnog klijenta"
 
 #: crm/api/dashboard.py:353
 msgid "Avg. won deal value"
-msgstr ""
+msgstr "Prosječna vrijednost dobivenog posla"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:26
 #: frontend/src/components/Dashboard/AddChartModal.vue:70
@@ -641,7 +641,7 @@ msgstr "Kontakti"
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
 #: frontend/src/pages/Dashboard.vue:318
 msgid "CRM Dashboard"
-msgstr ""
+msgstr "Nadzorna Ploča"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -716,7 +716,7 @@ msgstr "Status Potencijalnog Klijenta"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json
 msgid "CRM Lost Reason"
-msgstr ""
+msgstr "Razlog Gubitka"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -817,7 +817,7 @@ msgstr "Trajanje poziva u sekundama"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:551
 msgid "Call log"
-msgstr ""
+msgstr "Zapisnik poziva"
 
 #: frontend/src/components/Telephony/CallUI.vue:10
 msgid "Call using {0}"
@@ -1198,7 +1198,7 @@ msgstr "Uspješno Pretvoreno"
 
 #: frontend/src/utils/index.js:345
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Kopirano u međuspremnik"
 
 #: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
 #: crm/api/dashboard.py:891
@@ -1637,7 +1637,7 @@ msgstr "Odbaci"
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
-msgstr ""
+msgstr "Popust %"
 
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -5471,7 +5471,7 @@ msgstr "do"
 
 #: frontend/src/utils/index.js:105 frontend/src/utils/index.js:152
 msgid "tomorrow"
-msgstr ""
+msgstr "sutra"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'

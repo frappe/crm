@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-22 05:22\n"
+"PO-Revision-Date: 2025-07-23 05:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -146,7 +146,7 @@ msgstr "API Nyckel"
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "API Key is required"
-msgstr ""
+msgstr "API Nyckel Erfordras"
 
 #. Label of the api_secret (Password) field in DocType 'CRM Twilio Settings'
 #. Label of the api_secret (Password) field in DocType 'ERPNext CRM Settings'
@@ -191,7 +191,7 @@ msgstr "Konto SID"
 
 #: frontend/src/components/Settings/emailConfig.js:165
 msgid "Account name is required"
-msgstr ""
+msgstr "Konto namn erfordras"
 
 #: frontend/src/components/CustomActions.vue:73
 #: frontend/src/components/ViewControls.vue:683
@@ -211,7 +211,7 @@ msgstr "Lägg till"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
-msgstr ""
+msgstr "Lägg till konto"
 
 #: frontend/src/components/ColumnSettings.vue:69
 #: frontend/src/components/Kanban/KanbanView.vue:157
@@ -221,7 +221,7 @@ msgstr "Lägg till Kolumn"
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
 #: frontend/src/components/Settings/Users.vue:21
 msgid "Add Existing User"
-msgstr ""
+msgstr "Lägg till Befintlig Användare"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:58
 #: frontend/src/components/FieldLayoutEditor.vue:173
@@ -259,7 +259,7 @@ msgstr "Lägg till Helg Dagar"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add chart"
-msgstr ""
+msgstr "Lägg till diagram"
 
 #: frontend/src/components/FieldLayoutEditor.vue:426
 msgid "Add column"
@@ -271,7 +271,7 @@ msgstr "Lägg till beskrivning..."
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
-msgstr ""
+msgstr "Lägg till befintliga system användare. Tilldela dem roll för att ge åtkomst med deras nuvarande autentisering uppgifter."
 
 #: frontend/src/components/ViewControls.vue:104
 msgid "Add filter"
@@ -283,7 +283,7 @@ msgstr "Lägg till anteckning"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add sample data"
-msgstr ""
+msgstr "Lägg till exempel data"
 
 #. Description of the 'Icon' (Code) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -301,11 +301,11 @@ msgstr "Lägg till Helg Dagar"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:434
 msgid "Add your first comment"
-msgstr ""
+msgstr "Lägg till första kommentar"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:11
 msgid "Add, edit, and manage email templates for various CRM communications"
-msgstr ""
+msgstr "Lägg till, redigera och hantera e-post mallar för olika Säljstöd kommunikationer"
 
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
@@ -352,11 +352,11 @@ msgstr "Belopp"
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Amount after discount"
-msgstr ""
+msgstr "Belopp efter rabatt"
 
 #: frontend/src/data/script.js:50 frontend/src/data/script.js:51
 msgid "An error occurred"
-msgstr ""
+msgstr "Ett fel uppstod"
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -431,7 +431,7 @@ msgstr "Är du säker på att du vill ta bort denna uppgift?"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:230
 msgid "Are you sure you want to delete {0} linked item(s)?"
-msgstr ""
+msgstr "Är du säker att du vill ta bort {0} länkad artikel(ar)?"
 
 #: frontend/src/composables/frappecloud.js:24
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
@@ -443,11 +443,11 @@ msgstr "Är du säker på att du vill återställa 'Skapa Offert från Säljstö
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:137
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
-msgstr ""
+msgstr "Är du säker på att du vill ange valuta som {0}? Detta kan inte ändras senare."
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:243
 msgid "Are you sure you want to unlink {0} linked item(s)?"
-msgstr ""
+msgstr "Är du säker på att du vill ta bort länk till {0} länkade artikel(ar)?"
 
 #: frontend/src/components/ListBulkActions.vue:184
 #: frontend/src/components/Modals/AssignmentModal.vue:5
@@ -479,7 +479,7 @@ msgstr "Tilldelning Rensad"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:577
 msgid "Assignment rule"
-msgstr ""
+msgstr "Tilldelningsregel"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:176
 msgid "At least one field is required"
@@ -506,68 +506,68 @@ msgstr "Auth Token"
 
 #: crm/api/dashboard.py:238
 msgid "Average deal value of non won/lost deals"
-msgstr ""
+msgstr "Genomsnittlig affärsvärde för ej vunna/förlorade affärer"
 
 #: crm/api/dashboard.py:411
 msgid "Average deal value of ongoing & won deals"
-msgstr ""
+msgstr "Genomsnittlig affärsvärde för pågående och vunna affärer"
 
 #: crm/api/dashboard.py:354
 msgid "Average deal value of won deals"
-msgstr ""
+msgstr "Genomsnittlig affärsvärde för vunna affärer"
 
 #: crm/api/dashboard.py:518
 msgid "Average time taken from deal creation to deal closure"
-msgstr ""
+msgstr "Genomsnittlig tid från det att affären skapades till att den slutfördes"
 
 #: crm/api/dashboard.py:464
 msgid "Average time taken from lead creation to deal closure"
-msgstr ""
+msgstr "Genomsnittlig tidsåtgång från skapande av potentiell kund till affär avslut"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:81
 msgid "Avg deal value"
-msgstr ""
+msgstr "Genomsnittlig Affärsvärde"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:78
 msgid "Avg ongoing deal value"
-msgstr ""
+msgstr "Genomsnittlig Pågående Affärsvärde"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:87
 msgid "Avg time to close a deal"
-msgstr ""
+msgstr "Genomsnittlig tid för att slutföra affär"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:83
 msgid "Avg time to close a lead"
-msgstr ""
+msgstr "Genomsnittlig tid för potentiell kund avslut"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:80
 msgid "Avg won deal value"
-msgstr ""
+msgstr "Genomsnittlig värde för vunnen affär"
 
 #: crm/api/dashboard.py:410
 msgid "Avg. deal value"
-msgstr ""
+msgstr "Genomsnittlig Affärsvärde"
 
 #: crm/api/dashboard.py:237
 msgid "Avg. ongoing deal value"
-msgstr ""
+msgstr "Genomsnittlig värde för pågående affär"
 
 #: crm/api/dashboard.py:517
 msgid "Avg. time to close a deal"
-msgstr ""
+msgstr "Genomsnittlig tid för att slutföra affär"
 
 #: crm/api/dashboard.py:463
 msgid "Avg. time to close a lead"
-msgstr ""
+msgstr "Genomsnittlig tid för potentiell kund avslut"
 
 #: crm/api/dashboard.py:353
 msgid "Avg. won deal value"
-msgstr ""
+msgstr "Genomsnittlig värde för vunnen affär"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:26
 #: frontend/src/components/Dashboard/AddChartModal.vue:70
 msgid "Axis chart"
-msgstr ""
+msgstr "Axel Diagram"
 
 #: frontend/src/components/Activities/EmailArea.vue:72
 #: frontend/src/components/EmailEditor.vue:44
@@ -596,11 +596,11 @@ msgstr "Mellan"
 
 #: frontend/src/components/Settings/General/BrandSettings.vue:40
 msgid "Brand name"
-msgstr ""
+msgstr "Varumärke"
 
 #: frontend/src/components/Settings/General/BrandSettings.vue:9
 msgid "Brand settings"
-msgstr ""
+msgstr "Varumärke Inställningar"
 
 #. Label of the branding_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -641,7 +641,7 @@ msgstr "Kontakter"
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
 #: frontend/src/pages/Dashboard.vue:318
 msgid "CRM Dashboard"
-msgstr ""
+msgstr "Översikt Panel"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -716,7 +716,7 @@ msgstr "Potentiell Kund Status"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json
 msgid "CRM Lost Reason"
-msgstr ""
+msgstr "Förlorad Anledning"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -736,12 +736,12 @@ msgstr "Portal"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "CRM Product"
-msgstr ""
+msgstr "Artikel"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "CRM Products"
-msgstr ""
+msgstr "Artiklar"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
@@ -795,7 +795,7 @@ msgstr "Visa Inställningar"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:47
 msgid "CRM currency for all monetary values. Once set, cannot be edited."
-msgstr ""
+msgstr "Valuta för alla monetära värden. Kan inte redigeras när den väl är angiven."
 
 #: frontend/src/components/ViewControls.vue:272
 msgid "CSV"
@@ -817,7 +817,7 @@ msgstr "Samtalslängd i sekunder"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:551
 msgid "Call log"
-msgstr ""
+msgstr "Samtalslogg"
 
 #: frontend/src/components/Telephony/CallUI.vue:10
 msgid "Call using {0}"
@@ -873,7 +873,7 @@ msgstr "Annullerad"
 
 #: frontend/src/components/Settings/Users.vue:124
 msgid "Cannot change role of user with Admin access"
-msgstr ""
+msgstr "Kan inte ändra roll för användare med Administratör behörighet"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:33
 msgid "Cannot delete standard items {0}"
@@ -885,7 +885,7 @@ msgstr "Fånga"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:556
 msgid "Capturing leads"
-msgstr ""
+msgstr "Hämta in Potentiella Kunder"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:485
 msgid "Change"
@@ -903,7 +903,7 @@ msgstr "Ändra Status"
 #: frontend/src/components/Layouts/AppSidebar.vue:476
 #: frontend/src/components/Layouts/AppSidebar.vue:484
 msgid "Change deal status"
-msgstr ""
+msgstr "Ändra affär status"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 #: frontend/src/pages/Contact.vue:41 frontend/src/pages/Lead.vue:103
@@ -937,7 +937,7 @@ msgstr "Välj Befintlig Organisation"
 
 #: frontend/src/components/Settings/EmailAdd.vue:9
 msgid "Choose the email service provider you want to configure."
-msgstr ""
+msgstr "Välj e-post tjänst leverantör som ska konfigureras."
 
 #: frontend/src/components/Controls/Link.vue:62
 msgid "Clear"
@@ -968,12 +968,12 @@ msgstr "Stäng"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:163
 msgid "Close Date is required."
-msgstr ""
+msgstr "Stängning Datum erfordras."
 
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
-msgstr ""
+msgstr "Avslutad Datum"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:107
 msgid "Collapse"
@@ -1021,7 +1021,7 @@ msgstr "Kommentarer"
 
 #: crm/api/dashboard.py:884
 msgid "Common reasons for losing deals"
-msgstr ""
+msgstr "Vanliga anledningar till att affärer går förlorade"
 
 #. Label of the communication_status (Link) field in DocType 'CRM Deal'
 #. Label of the communication_status (Link) field in DocType 'CRM Lead'
@@ -1057,11 +1057,11 @@ msgstr "Villkor"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:8
 msgid "Configure general settings for your CRM"
-msgstr ""
+msgstr "Konfigurera allmänna inställningar för Säljstöd"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:17
 msgid "Configure telephony settings for your CRM"
-msgstr ""
+msgstr "Konfigurera telefoni inställningar för Säljstöd"
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
@@ -1070,7 +1070,7 @@ msgstr "Bekräfta"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:250
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:253
 msgid "Confirm Delete"
-msgstr ""
+msgstr "Bekräfta Borttagning"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:18
 msgid "Confirm Password"
@@ -1079,11 +1079,11 @@ msgstr "Bekräfta Lösenord"
 #: frontend/src/components/Settings/Users.vue:225
 #: frontend/src/components/Settings/Users.vue:228
 msgid "Confirm Remove"
-msgstr ""
+msgstr "Bekräfta Borttagning"
 
 #: frontend/src/pages/Welcome.vue:35
 msgid "Connect your email"
-msgstr ""
+msgstr "Anslut din e-post"
 
 #. Label of the contact (Link) field in DocType 'CRM Contacts'
 #. Label of the contact (Link) field in DocType 'CRM Deal'
@@ -1101,7 +1101,7 @@ msgstr "Kontakt Finns Redan"
 
 #: frontend/src/components/Modals/AboutModal.vue:77
 msgid "Contact Support"
-msgstr ""
+msgstr "Kontakt Support"
 
 #: frontend/src/components/Modals/EditValueModal.vue:20
 msgid "Contact Us"
@@ -1121,7 +1121,7 @@ msgstr "Kontakt finns redan med {0}"
 
 #: frontend/src/pages/Contact.vue:282 frontend/src/pages/MobileContact.vue:255
 msgid "Contact image updated"
-msgstr ""
+msgstr "Kontakt bild uppdaterad"
 
 #: frontend/src/pages/Deal.vue:697 frontend/src/pages/MobileDeal.vue:578
 msgid "Contact removed"
@@ -1134,7 +1134,7 @@ msgstr "Kontakt borttagen"
 #: frontend/src/pages/MobileContact.vue:461
 #: frontend/src/pages/MobileContact.vue:471
 msgid "Contact updated"
-msgstr ""
+msgstr "Kontakt uppdaterad"
 
 #. Label of the contacts_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the contacts (Table) field in DocType 'CRM Deal'
@@ -1166,7 +1166,7 @@ msgstr "Innehållstyp"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:165
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:169
 msgid "Content is required"
-msgstr ""
+msgstr "Innehåll erfordras"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:375
 #: frontend/src/components/ListBulkActions.vue:88
@@ -1178,7 +1178,7 @@ msgstr "Konvertera"
 #: frontend/src/components/Layouts/AppSidebar.vue:366
 #: frontend/src/components/Layouts/AppSidebar.vue:374
 msgid "Convert lead to deal"
-msgstr ""
+msgstr "Konvertera Potentiell Kund till Affär"
 
 #: frontend/src/components/ListBulkActions.vue:80
 #: frontend/src/components/ListBulkActions.vue:195
@@ -1198,7 +1198,7 @@ msgstr "Konverterad"
 
 #: frontend/src/utils/index.js:345
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Kopierad till urklipp"
 
 #: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
 #: crm/api/dashboard.py:891
@@ -1232,7 +1232,7 @@ msgstr "Skapa"
 #: frontend/src/components/Activities/ActivityHeader.vue:137
 #: frontend/src/components/Activities/ActivityHeader.vue:180
 msgid "Create Call Log"
-msgstr ""
+msgstr "Skapa Samtalslogg"
 
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
@@ -1276,15 +1276,15 @@ msgstr "Skapa Potentiell Kund"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:344
 msgid "Create your first lead"
-msgstr ""
+msgstr "Skapa Potentiell Kund"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:414
 msgid "Create your first note"
-msgstr ""
+msgstr "Skapa första anteckning"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:394
 msgid "Create your first task"
-msgstr ""
+msgstr "Skapa första uppgift"
 
 #. Label of the currency (Link) field in DocType 'CRM Deal'
 #. Label of the currency (Link) field in DocType 'CRM Organization'
@@ -1298,31 +1298,31 @@ msgstr "Valuta"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:151
 msgid "Currency set as {0} successfully"
-msgstr ""
+msgstr "Valuta angiven som {0}"
 
 #: crm/api/dashboard.py:839
 msgid "Current pipeline distribution"
-msgstr ""
+msgstr "Nuvarande pipeline distribution"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:586
 msgid "Custom actions"
-msgstr ""
+msgstr "Anpassade åtgärder"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:536
 msgid "Custom branding"
-msgstr ""
+msgstr "Anpassad varumärkesprofilering"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:585
 msgid "Custom fields"
-msgstr ""
+msgstr "Anpassade fält"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:588
 msgid "Custom list actions"
-msgstr ""
+msgstr "Anpassad lista åtgärder"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Custom statuses"
-msgstr ""
+msgstr "Anpassade status"
 
 #: frontend/src/pages/Deal.vue:473
 msgid "Customer created successfully"
@@ -1338,7 +1338,7 @@ msgstr "Anpassa snabbfilter"
 
 #: crm/api/dashboard.py:599
 msgid "Daily performance of leads, deals, and wins"
-msgstr ""
+msgstr "Daglig resultat för potentiella kunder, affärer och vinster"
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:575
@@ -1386,15 +1386,15 @@ msgstr "Affär Status"
 #. Label of the deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Deal Value"
-msgstr ""
+msgstr "Affärsvärde"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:161
 msgid "Deal Value is required."
-msgstr ""
+msgstr "Affärsvärde erfordras."
 
 #: crm/api/dashboard.py:977
 msgid "Deal generation channel analysis"
-msgstr ""
+msgstr "Affär generering kanal analys"
 
 #: frontend/src/pages/Contact.vue:533 frontend/src/pages/MobileContact.vue:531
 #: frontend/src/pages/MobileOrganization.vue:475
@@ -1408,7 +1408,7 @@ msgstr "Affär uppdaterad"
 
 #: crm/api/dashboard.py:1030 crm/api/dashboard.py:1087
 msgid "Deal value"
-msgstr ""
+msgstr "Affärsvärde"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -1421,27 +1421,27 @@ msgstr "Affärer"
 #: crm/api/dashboard.py:788
 #: frontend/src/components/Dashboard/AddChartModal.vue:97
 msgid "Deals by ongoing & won stage"
-msgstr ""
+msgstr "Affärer per pågående och vunna steg"
 
 #: crm/api/dashboard.py:1076
 #: frontend/src/components/Dashboard/AddChartModal.vue:100
 msgid "Deals by salesperson"
-msgstr ""
+msgstr "Affärer per säljare"
 
 #: crm/api/dashboard.py:976
 #: frontend/src/components/Dashboard/AddChartModal.vue:107
 msgid "Deals by source"
-msgstr ""
+msgstr "Affärer per källa"
 
 #: crm/api/dashboard.py:838
 #: frontend/src/components/Dashboard/AddChartModal.vue:105
 msgid "Deals by stage"
-msgstr ""
+msgstr "Affärer per steg"
 
 #: crm/api/dashboard.py:1019
 #: frontend/src/components/Dashboard/AddChartModal.vue:99
 msgid "Deals by territory"
-msgstr ""
+msgstr "Affärer per distrikt"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:115
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:115
@@ -1494,7 +1494,7 @@ msgstr "Standard samtal medium för inloggad användare"
 
 #: frontend/src/components/Telephony/CallUI.vue:112
 msgid "Default calling medium set successfully to {0}"
-msgstr ""
+msgstr "Standard Samtal medium angiven till {0}"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:280
 msgid "Default calling medium updated successfully"
@@ -1552,7 +1552,7 @@ msgstr "Ta bort Vy"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:65
 msgid "Delete all"
-msgstr ""
+msgstr "Ta bort alla"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:60
 #: frontend/src/components/Activities/AttachmentArea.vue:131
@@ -1565,15 +1565,15 @@ msgstr "Ta bort kontakt"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:229
 msgid "Delete linked item"
-msgstr ""
+msgstr "Ta bort länkad artikel"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:11
 msgid "Delete or unlink linked documents"
-msgstr ""
+msgstr "Ta bort eller ta bort länkade dokument"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:23
 msgid "Delete or unlink these linked documents before deleting this document"
-msgstr ""
+msgstr "Ta bort eller ta bort länk till länkade dokument innan dokument tas bort"
 
 #: frontend/src/pages/MobileOrganization.vue:263
 msgid "Delete organization"
@@ -1581,11 +1581,11 @@ msgstr "Ta bort organisation"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:66
 msgid "Delete {0} item(s)"
-msgstr ""
+msgstr "Ta bort {0} artikel(ar)"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:28
 msgid "Delete {0} items"
-msgstr ""
+msgstr "Ta bort {0} artikel"
 
 #. Label of the description (Text Editor) field in DocType 'CRM Holiday'
 #. Label of the description (Text Editor) field in DocType 'CRM Lost Reason'
@@ -1637,7 +1637,7 @@ msgstr "Ångra"
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
-msgstr ""
+msgstr "Rabatt %"
 
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -1664,7 +1664,7 @@ msgstr "Dokument hittades inte"
 
 #: frontend/src/data/document.js:23
 msgid "Document updated successfully"
-msgstr ""
+msgstr "Dokument uppdaterad"
 
 #: frontend/src/components/Modals/AboutModal.vue:62
 msgid "Documentation"
@@ -1678,7 +1678,7 @@ msgstr "Klar"
 #: frontend/src/components/Dashboard/AddChartModal.vue:33
 #: frontend/src/components/Dashboard/AddChartModal.vue:71
 msgid "Donut chart"
-msgstr ""
+msgstr "Ring Diagram"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:166
 #: frontend/src/components/ViewControls.vue:254
@@ -1717,7 +1717,7 @@ msgstr "Duplicera Vy"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 msgid "Duplicate template"
-msgstr ""
+msgstr "Duplicera mall"
 
 #. Label of the duration (Duration) field in DocType 'CRM Call Log'
 #. Label of the duration (Duration) field in DocType 'CRM Status Change Log'
@@ -1758,11 +1758,11 @@ msgstr "Affärssystem är inte integrerat med Säljstöd"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "ERPNext settings"
-msgstr ""
+msgstr "Affärssystem Inställningar"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext settings updated"
-msgstr ""
+msgstr "Affärssystem Inställningar uppdaterade"
 
 #: frontend/src/components/FieldLayout/Field.vue:91
 #: frontend/src/components/FieldLayoutEditor.vue:319
@@ -1783,7 +1783,7 @@ msgstr "Redigera Datafält Upplägg"
 
 #: frontend/src/components/Settings/EmailEdit.vue:6
 msgid "Edit Email"
-msgstr ""
+msgstr "Redigera E-post"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:7
 msgid "Edit Field Layout"
@@ -1841,11 +1841,11 @@ msgstr "E-post"
 
 #: frontend/src/components/Settings/Settings.vue:107
 msgid "Email Accounts"
-msgstr ""
+msgstr "E-post Konton"
 
 #: frontend/src/components/Settings/emailConfig.js:168
 msgid "Email ID is required"
-msgstr ""
+msgstr "E-post erfordras"
 
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -1859,19 +1859,19 @@ msgstr "E-Post Mallar"
 
 #: frontend/src/components/Settings/EmailAdd.vue:141
 msgid "Email account created successfully"
-msgstr ""
+msgstr "E-post konto skapad"
 
 #: frontend/src/components/Settings/EmailEdit.vue:208
 msgid "Email account updated successfully"
-msgstr ""
+msgstr "E-post konto uppdaterad"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:7
 msgid "Email accounts"
-msgstr ""
+msgstr "E-post Konton"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:573
 msgid "Email communication"
-msgstr ""
+msgstr "E-post kommunikation"
 
 #: frontend/src/components/EmailEditor.vue:206
 msgid "Email from Lead"
@@ -1879,11 +1879,11 @@ msgstr "E-post från Potentiell Kund"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:552
 msgid "Email template"
-msgstr ""
+msgstr "E-post mall"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:7
 msgid "Email templates"
-msgstr ""
+msgstr "E-post mallar"
 
 #: frontend/src/pages/Deal.vue:577 frontend/src/pages/Lead.vue:459
 #: frontend/src/pages/MobileDeal.vue:458 frontend/src/pages/MobileLead.vue:352
@@ -1909,7 +1909,7 @@ msgstr "Aktivera"
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Enable Forecasting"
-msgstr ""
+msgstr "Aktivera Prognoser"
 
 #: frontend/src/components/Settings/emailConfig.js:28
 msgid "Enable Incoming"
@@ -1921,7 +1921,7 @@ msgstr "Aktivera Utgående"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:19
 msgid "Enable forecasting"
-msgstr ""
+msgstr "Aktivera Prognoser"
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -1967,7 +1967,7 @@ msgstr "Lika"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:185
 msgid "Error converting to deal: {0}"
-msgstr ""
+msgstr "Fel vid konvertering till affär: {0}"
 
 #: frontend/src/pages/MobileDeal.vue:392
 msgid "Error updating deal"
@@ -1975,11 +1975,11 @@ msgstr "Fel vid Uuppdatering av Affär"
 
 #: frontend/src/pages/Deal.vue:517
 msgid "Error updating deal: {0}"
-msgstr ""
+msgstr "Fel vid uppdatering av affär: {0}"
 
 #: frontend/src/data/document.js:26
 msgid "Error updating document"
-msgstr ""
+msgstr "Fel vid uppdatering av dokument"
 
 #: frontend/src/pages/Lead.vue:399
 msgid "Error updating lead"
@@ -2053,12 +2053,12 @@ msgstr "Expandera"
 #. Label of the expected_closure_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Closure Date"
-msgstr ""
+msgstr "Förväntad Stängning Datum"
 
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Deal Value"
-msgstr ""
+msgstr "Förväntad Affärsvärde"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2099,7 +2099,7 @@ msgstr "Misslyckad"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:109
 msgid "Failed to add users"
-msgstr ""
+msgstr "Misslyckades med att lägga till användare"
 
 #: crm/integrations/twilio/api.py:130
 msgid "Failed to capture Twilio recording"
@@ -2107,27 +2107,27 @@ msgstr "Misslyckades med att spara Twilio Inspelning"
 
 #: frontend/src/components/Settings/EmailAdd.vue:145
 msgid "Failed to create email account, Invalid credentials"
-msgstr ""
+msgstr "Misslyckades med att skapa e-post konto, ogiltiga inloggningsuppgifter"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:182
 msgid "Failed to create template"
-msgstr ""
+msgstr "Misslyckades med att skapa mall"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:217
 msgid "Failed to delete template"
-msgstr ""
+msgstr "Misslyckades med att ta bort mall"
 
 #: crm/utils/__init__.py:285
 msgid "Failed to fetch historical exchange rate from external API. Please try again later."
-msgstr ""
+msgstr "Misslyckades med att hämta historik för växelkurs från externt API. Försök igen senare."
 
 #: frontend/src/data/script.js:110
 msgid "Failed to load form controller: {0}"
-msgstr ""
+msgstr "Misslyckades med att ladda formulär kontroll: {0}"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:246
 msgid "Failed to rename template"
-msgstr ""
+msgstr "Misslyckades med att ändra namn på mall"
 
 #: crm/integrations/twilio/api.py:152
 msgid "Failed to update Twilio call status"
@@ -2135,20 +2135,20 @@ msgstr "Misslyckades med att uppdatera Twilio Samtal Status"
 
 #: frontend/src/components/Settings/EmailEdit.vue:213
 msgid "Failed to update email account, Invalid credentials"
-msgstr ""
+msgstr "Misslyckades med att uppdatera e-post konto, ogiltiga inloggningsuppgifter"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:95
 msgid "Failed to update password"
-msgstr ""
+msgstr "Misslyckades med att uppdatera lösenord"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:151
 msgid "Failed to update profile"
-msgstr ""
+msgstr "Misslyckades med att uppdatera profil"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:212
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:202
 msgid "Failed to update template"
-msgstr ""
+msgstr "Misslyckades med att uppdatera mall"
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2243,15 +2243,15 @@ msgstr "För"
 #: crm/api/dashboard.py:666
 #: frontend/src/components/Dashboard/AddChartModal.vue:95
 msgid "Forecasted revenue"
-msgstr ""
+msgstr "Prognostiserad intäkt"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:128
 msgid "Forecasting disabled successfully"
-msgstr ""
+msgstr "Prognostisering inaktiverad"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:127
 msgid "Forecasting enabled successfully"
-msgstr ""
+msgstr "Prognostisering aktiverad"
 
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -2269,7 +2269,7 @@ msgstr "Säljstöd"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:603
 msgid "Frappe CRM mobile"
-msgstr ""
+msgstr "Mobil App"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -2295,7 +2295,7 @@ msgstr "Från Datum"
 #. Label of the from_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "From Type"
-msgstr ""
+msgstr "Från Typ"
 
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -2319,7 +2319,7 @@ msgstr "Fullständig Namn"
 #: crm/api/dashboard.py:728
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Funnel conversion"
-msgstr ""
+msgstr "Säljtratt konvertering"
 
 #. Label of the gender (Link) field in DocType 'CRM Contacts'
 #. Label of the gender (Link) field in DocType 'CRM Deal'
@@ -2337,11 +2337,11 @@ msgstr "Allmän"
 
 #: crm/api/dashboard.py:1020
 msgid "Geographic distribution of deals and revenue"
-msgstr ""
+msgstr "Geografisk spridning av affärer och intäkter"
 
 #: frontend/src/components/Modals/AboutModal.vue:57
 msgid "GitHub Repository"
-msgstr ""
+msgstr "GitHub Arkiv"
 
 #: frontend/src/pages/Deal.vue:114 frontend/src/pages/Lead.vue:167
 msgid "Go to website"
@@ -2387,7 +2387,7 @@ msgstr "Dölj"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Hide Password"
-msgstr ""
+msgstr "Dölj Lösenord"
 
 #: frontend/src/components/Activities/CallArea.vue:74
 msgid "Hide Recording"
@@ -2450,19 +2450,19 @@ msgstr "Ikon"
 
 #: frontend/src/components/Settings/emailConfig.js:55
 msgid "If enabled, all outgoing emails will be sent from this account. Note: Only one account can be default outgoing."
-msgstr ""
+msgstr "Om aktiverad skickas alla utgående e-post meddelande från detta konto. Obs! Endast ett konto kan vara standard utgående."
 
 #: frontend/src/components/Settings/emailConfig.js:47
 msgid "If enabled, all replies to your company (eg: replies@yourcomany.com) will come to this account. Note: Only one account can be default incoming."
-msgstr ""
+msgstr "Om aktiverad kommer alla svar till bolag (t.ex.: svar@bolag.se) att skickas till detta konto. Obs: Endast ett konto kan vara standard inkommande."
 
 #: frontend/src/components/Settings/emailConfig.js:39
 msgid "If enabled, outgoing emails can be sent from this account."
-msgstr ""
+msgstr "Om aktiverad kan utgående e-post meddelande skickas från detta konto."
 
 #: frontend/src/components/Settings/emailConfig.js:31
 msgid "If enabled, records can be created from the incoming emails on this account."
-msgstr ""
+msgstr "Om aktiverad kan poster skapas från inkommande e-post meddelande på detta konto."
 
 #. Label of the image (Attach Image) field in DocType 'CRM Lead'
 #. Label of the image (Attach Image) field in DocType 'CRM Product'
@@ -2534,7 +2534,7 @@ msgstr "Inleder samtal..."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:593
 msgid "Integration"
-msgstr ""
+msgstr "Integration"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Integration Not Enabled"
@@ -2565,7 +2565,7 @@ msgstr "Ogiltigt Exotel Nummer"
 
 #: crm/api/dashboard.py:73
 msgid "Invalid chart name"
-msgstr ""
+msgstr "Ogiltig diagram namn"
 
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.py:25
 msgid "Invalid credentials"
@@ -2573,15 +2573,15 @@ msgstr "Ogiltiga inloggningsuppgifter"
 
 #: frontend/src/components/Settings/emailConfig.js:172
 msgid "Invalid email ID"
-msgstr ""
+msgstr "Ogiltig e-postadress"
 
 #: frontend/src/components/Settings/Users.vue:25
 msgid "Invite New User"
-msgstr ""
+msgstr "Bjud in Ny Användare"
 
 #: frontend/src/components/Settings/Settings.vue:101
 msgid "Invite User"
-msgstr ""
+msgstr "Bjud in Användare"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:56
 msgid "Invite as"
@@ -2593,15 +2593,15 @@ msgstr "Bjud in via e-post"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:538
 msgid "Invite users"
-msgstr ""
+msgstr "Bjud in Användare"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
-msgstr ""
+msgstr "Bjud in användare att få åtkomst till Säljstöd. Ange deras roller för att kontrollera åtkomst och behörigheter"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:354
 msgid "Invite your team"
-msgstr ""
+msgstr "Bjud in Team"
 
 #. Label of the invited_by (Link) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2654,7 +2654,7 @@ msgstr "Är Standard"
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
-msgstr ""
+msgstr "Det kommer att göra affärens \"Förväntad Stängningsdatum\" och \"Förväntad Affärsvärde\" erfordrade för att få korrekta prognos insikter"
 
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -2753,7 +2753,7 @@ msgstr "Senast ändrad"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "Last name"
-msgstr ""
+msgstr "Efternamn"
 
 #. Label of the layout (Code) field in DocType 'CRM Dashboard'
 #. Label of the layout (Code) field in DocType 'CRM Fields Layout'
@@ -2804,15 +2804,15 @@ msgstr "Potentiell Kund Status"
 
 #: crm/api/dashboard.py:935
 msgid "Lead generation channel analysis"
-msgstr ""
+msgstr "Potentiell Kund Generering Kanal Analys"
 
 #: crm/api/dashboard.py:729
 msgid "Lead to deal conversion pipeline"
-msgstr ""
+msgstr "Potentiell Kund till Affär Konvertering Pipeline"
 
 #: frontend/src/pages/Lead.vue:395 frontend/src/pages/MobileLead.vue:282
 msgid "Lead updated successfully"
-msgstr ""
+msgstr "Potentiell Kund uppdaterad"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -2823,7 +2823,7 @@ msgstr "Potentiella Kunder"
 #: crm/api/dashboard.py:934
 #: frontend/src/components/Dashboard/AddChartModal.vue:106
 msgid "Leads by source"
-msgstr ""
+msgstr "Potentiell Kund per källa"
 
 #. Label of the lft (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -2907,7 +2907,7 @@ msgstr "Förlorad"
 #. Label of the lost_notes (Text) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Lost Notes"
-msgstr ""
+msgstr "Förlorad Affär Anteckningar"
 
 #. Label of the lost_reason (Link) field in DocType 'CRM Deal'
 #. Label of the lost_reason (Data) field in DocType 'CRM Lost Reason'
@@ -2919,24 +2919,24 @@ msgstr "Förlorad Anledning"
 #: crm/api/dashboard.py:883
 #: frontend/src/components/Dashboard/AddChartModal.vue:98
 msgid "Lost deal reasons"
-msgstr ""
+msgstr "Förlorad Affär anledningar"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:27
 msgid "Lost notes"
-msgstr ""
+msgstr "Förlorad Affär Anteckningar"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:83
 msgid "Lost notes are required when lost reason is \"Other\""
-msgstr ""
+msgstr "Förlorad Affär Anteckningar erfordras när förlust orsaken är \"Annan\""
 
 #: frontend/src/components/Modals/LostReasonModal.vue:4
 #: frontend/src/components/Modals/LostReasonModal.vue:14
 msgid "Lost reason"
-msgstr ""
+msgstr "Förlorad Affär anledning"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:79
 msgid "Lost reason is required"
-msgstr ""
+msgstr "Förlorad Affär anledning erfordras"
 
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -2992,15 +2992,15 @@ msgstr "Gör {0} till ditt standard medium för samtal"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:23
 msgid "Makes \"Close Date\" and \"Deal Value\" mandatory for deal value forecasting"
-msgstr ""
+msgstr "\"Avslutsdatum\" och \"Affärsvärde\" erfordras för prognostisering av affärsvärde"
 
 #: frontend/src/components/Settings/Users.vue:11
 msgid "Manage CRM users by adding or inviting them, and assign roles to control their access and permissions"
-msgstr ""
+msgstr "Hantera Säljstöd användare genom att lägga till eller bjuda in dem och tilldela roller för att styra deras åtkomst och behörigheter"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:11
 msgid "Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails."
-msgstr ""
+msgstr "Hantera e-post konton för att skicka och ta emot e-post direkt från Säljstöd. Du kan lägga till flera konton och ange standard konto för inkommande och utgående e-post."
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:91
 #: frontend/src/components/Settings/InviteUserPage.vue:171
@@ -3014,7 +3014,7 @@ msgstr "Ansvarig"
 
 #: frontend/src/data/document.js:34
 msgid "Mandatory field error: {0}"
-msgstr ""
+msgstr "Erfordrad fält fel: {0}"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3080,7 +3080,7 @@ msgstr "Mobilnummer Saknas"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:606
 msgid "Mobile app installation"
-msgstr ""
+msgstr "Mobil App Installation"
 
 #: frontend/src/pages/Contact.vue:528 frontend/src/pages/MobileContact.vue:526
 #: frontend/src/pages/MobileOrganization.vue:470
@@ -3136,7 +3136,7 @@ msgstr "Namn"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:155
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:157
 msgid "Name is required"
-msgstr ""
+msgstr "Namn erfordras"
 
 #. Label of the naming_series (Select) field in DocType 'CRM Deal'
 #. Label of the naming_series (Select) field in DocType 'CRM Product'
@@ -3237,7 +3237,7 @@ msgstr "Ny organisation kommer att skapas baserat på information i detalj sekti
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 msgid "New template"
-msgstr ""
+msgstr "Ny mall"
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:89
 msgid "New {0}"
@@ -3302,7 +3302,7 @@ msgstr "Ingen e-post adress angiven"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:48
 msgid "No email templates found"
-msgstr ""
+msgstr "Inga e-postmallar hittades"
 
 #: frontend/src/components/FieldLayoutEditor.vue:92
 msgid "No label"
@@ -3328,7 +3328,7 @@ msgstr "Ingen primär kontakt angiven"
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:72
 #: frontend/src/components/Controls/MultiSelectUserInput.vue:72
 msgid "No results found"
-msgstr ""
+msgstr "Inga resultat hittades"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:66
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:42
@@ -3337,12 +3337,12 @@ msgstr "Inga mallar hittades"
 
 #: frontend/src/components/Settings/Users.vue:57
 msgid "No users found"
-msgstr ""
+msgstr "Inga användare hittades"
 
 #: frontend/src/pages/MobileOrganization.vue:284
 #: frontend/src/pages/Organization.vue:300
 msgid "No website found"
-msgstr ""
+msgstr "Ingen webbplats hittades"
 
 #: frontend/src/pages/Deal.vue:120 frontend/src/pages/Lead.vue:173
 msgid "No website set"
@@ -3485,15 +3485,15 @@ msgstr "Nummer"
 #: frontend/src/components/Dashboard/AddChartModal.vue:19
 #: frontend/src/components/Dashboard/AddChartModal.vue:69
 msgid "Number chart"
-msgstr ""
+msgstr "Nummer Diagram"
 
 #: crm/api/dashboard.py:1027 crm/api/dashboard.py:1084
 msgid "Number of deals"
-msgstr ""
+msgstr "Antal affärer"
 
 #: crm/api/dashboard.py:1077
 msgid "Number of deals and total value per salesperson"
-msgstr ""
+msgstr "Antal affärer och totalt värde per säljare"
 
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -3508,16 +3508,16 @@ msgstr "Spärrad"
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Ongoing"
-msgstr ""
+msgstr "Pågående"
 
 #: crm/api/dashboard.py:181
 #: frontend/src/components/Dashboard/AddChartModal.vue:77
 msgid "Ongoing deals"
-msgstr ""
+msgstr "Pågående Affärer"
 
 #: frontend/src/utils/index.js:451
 msgid "Only image files are allowed"
-msgstr ""
+msgstr "Endast bildfiler är tillåtna"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:62
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:23
@@ -3561,7 +3561,7 @@ msgstr "Alternativ "
 
 #: frontend/src/pages/Welcome.vue:40
 msgid "Or create leads manually"
-msgstr ""
+msgstr "Eller skapa potentiella kunder manuellt"
 
 #. Label of the order_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #. Label of the order_by (Code) field in DocType 'CRM View Settings'
@@ -3617,7 +3617,7 @@ msgstr "Organisationer"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:570
 msgid "Other features"
-msgstr ""
+msgstr "Övriga funktioner"
 
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -3653,11 +3653,11 @@ msgstr "Lösenord kan inte återställas av Demo Användare {}"
 
 #: frontend/src/components/Settings/emailConfig.js:175
 msgid "Password is required"
-msgstr ""
+msgstr "Lösenord erfordras"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:88
 msgid "Password updated successfully"
-msgstr ""
+msgstr "Lösenord uppdaterad"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:13
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:41
@@ -3721,7 +3721,7 @@ msgstr "Fästa Vyer"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:566
 msgid "Pinned view"
-msgstr ""
+msgstr "Fäst vy"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:176
 msgid "Playback speed"
@@ -3729,7 +3729,7 @@ msgstr "Uppspelningshastighet"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:49
 msgid "Please add an email account to continue."
-msgstr ""
+msgstr "Lägg till e-post konto för att fortsätta."
 
 #: crm/integrations/twilio/twilio_handler.py:119
 msgid "Please enable twilio settings before making a call."
@@ -3741,7 +3741,7 @@ msgstr "Ange giltig URL"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:9
 msgid "Please provide a reason for marking this deal as lost"
-msgstr ""
+msgstr "Ange anledning till att du anger denna affär som förlorad"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:145
 #: frontend/src/pages/MobileLead.vue:440
@@ -3759,11 +3759,11 @@ msgstr "Konfigurera Exotel Integration"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:171
 msgid "Please specify a reason for losing the deal."
-msgstr ""
+msgstr "Ange anledning till att affären förlorades."
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:173
 msgid "Please specify the reason for losing the deal."
-msgstr ""
+msgstr "Ange anledning till att affären förlorades."
 
 #. Label of the position (Int) field in DocType 'CRM Deal Status'
 #. Label of the position (Int) field in DocType 'CRM Lead Status'
@@ -3784,7 +3784,7 @@ msgstr "Primär E-post"
 #. Label of the mobile_no (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Mobile No"
-msgstr ""
+msgstr "Primär Mobil Nummer"
 
 #. Label of the phone (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -3829,14 +3829,14 @@ msgstr "Artikel"
 #. Label of the product_code (Data) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Product Code"
-msgstr ""
+msgstr "Artikelkod"
 
 #. Label of the product_name (Data) field in DocType 'CRM Product'
 #. Label of the product_name (Data) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Product Name"
-msgstr ""
+msgstr "Artikelnamn"
 
 #. Label of the products_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the products (Table) field in DocType 'CRM Deal'
@@ -3858,7 +3858,7 @@ msgstr "Profil uppdaterad"
 
 #: crm/api/dashboard.py:667
 msgid "Projected vs actual revenue based on deal probability"
-msgstr ""
+msgstr "Prognostiserade kontra faktiska intäkter baserat på affärssannolikhet"
 
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -3871,7 +3871,7 @@ msgstr "Offentliga Vyer"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:565
 msgid "Public view"
-msgstr ""
+msgstr "Allmän Vy"
 
 #. Label of the qty (Float) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -3899,7 +3899,7 @@ msgstr "Snabbfilter uppdaterade"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:589
 msgid "Quick entry layout"
-msgstr ""
+msgstr "Snabb Post Utseende"
 
 #. Label of the rate (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -4226,15 +4226,15 @@ msgstr "Försäljning Användare"
 #: crm/api/dashboard.py:598
 #: frontend/src/components/Dashboard/AddChartModal.vue:94
 msgid "Sales trend"
-msgstr ""
+msgstr "Försäljningstrend"
 
 #: frontend/src/pages/Dashboard.vue:106
 msgid "Sales user"
-msgstr ""
+msgstr "Försäljning Användare"
 
 #: crm/api/dashboard.py:1079
 msgid "Salesperson"
-msgstr ""
+msgstr "Säljare"
 
 #. Label of the salutation (Link) field in DocType 'CRM Deal'
 #. Label of the salutation (Link) field in DocType 'CRM Lead'
@@ -4278,7 +4278,7 @@ msgstr "Sparade Vyer"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:564
 msgid "Saved view"
-msgstr ""
+msgstr "Sparad vy"
 
 #: frontend/src/components/Telephony/TaskPanel.vue:8
 msgid "Schedule a task..."
@@ -4291,11 +4291,11 @@ msgstr "Skript"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:64
 msgid "Search template"
-msgstr ""
+msgstr "Sök mall"
 
 #: frontend/src/components/Settings/Users.vue:73
 msgid "Search user"
-msgstr ""
+msgstr "Sök användare"
 
 #: frontend/src/components/FieldLayoutEditor.vue:342
 msgid "Section"
@@ -4303,11 +4303,11 @@ msgstr "Sektion"
 
 #: frontend/src/pages/Dashboard.vue:59
 msgid "Select Range"
-msgstr ""
+msgstr "Välj Intervall"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:63
 msgid "Select currency"
-msgstr ""
+msgstr "Välj valuta"
 
 #: frontend/src/components/FieldLayout/Field.vue:332
 msgid "Select {0}"
@@ -4331,11 +4331,11 @@ msgstr "Skicka e-post"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:455
 msgid "Send email"
-msgstr ""
+msgstr "Skicka e-post"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:6
 msgid "Send invites to"
-msgstr ""
+msgstr "Skicka inbjudan till"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -4349,7 +4349,7 @@ msgstr "Namngivning Serie"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:576
 msgid "Service level agreement"
-msgstr ""
+msgstr "Service Nivå Avtal"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:69
 msgid "Set all as private"
@@ -4373,7 +4373,7 @@ msgstr "Ange som standard"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:136
 msgid "Set currency"
-msgstr ""
+msgstr "Ange valuta"
 
 #: frontend/src/pages/Lead.vue:130
 msgid "Set first name"
@@ -4385,37 +4385,43 @@ msgstr "Konfigurera"
 
 #: frontend/src/components/Settings/emailConfig.js:145
 msgid "Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more "
-msgstr ""
+msgstr "För att konfigurera Frappe Mail erfordras API Nyckel och API Hemlighet för e-postkonto. Läs mer om Frappe Mail "
 
 #: frontend/src/components/Settings/emailConfig.js:97
 msgid "Setting up GMail requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more"
-msgstr ""
+msgstr "För att konfigurera GMail erfordras aktivering av tvåfaktorsautentisering\n"
+"\t\t  och appspecifika lösenord. Läs mer om GMail"
 
 #: frontend/src/components/Settings/emailConfig.js:105
 msgid "Setting up Outlook requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more"
-msgstr ""
+msgstr "För att konfigurera Outlook erfordras aktivering av tvåfaktorsautentisering\n"
+"\t\t  och appspecifika lösenord. Läs mer"
 
 #: frontend/src/components/Settings/emailConfig.js:113
 msgid "Setting up Sendgrid requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
-msgstr ""
+msgstr "För att konfigurera Sendgrid erfordras aktivering av tvåfaktorsautentisering\n"
+"\t\t  och appspecifika lösenord. Läs mer "
 
 #: frontend/src/components/Settings/emailConfig.js:121
 msgid "Setting up SparkPost requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
-msgstr ""
+msgstr "För att konfigurera SparkPost erfordras aktivering av tvåfaktorsautentisering\n"
+"\t\t  och appspecifika lösenord. Läs mer "
 
 #: frontend/src/components/Settings/emailConfig.js:129
 msgid "Setting up Yahoo requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
-msgstr ""
+msgstr "För att konfigurera Yahoo erfordras aktivering av tvåfaktorsautentisering\n"
+"\t\t  och appspecifika lösenord. Läs mer "
 
 #: frontend/src/components/Settings/emailConfig.js:137
 msgid "Setting up Yandex requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
-msgstr ""
+msgstr "För att konfigurera Yandex erfordras aktivering av tvåfaktorsautentisering\n"
+"\t\t  och appspecifika lösenord. Läs mer "
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -4427,11 +4433,11 @@ msgstr "Inställningar"
 
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
-msgstr ""
+msgstr "Konfigurera e-post"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:334
 msgid "Setup your password"
-msgstr ""
+msgstr "Ange Lösenord"
 
 #: frontend/src/components/Activities/Activities.vue:230
 msgid "Show"
@@ -4439,7 +4445,7 @@ msgstr "Visa"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Show Password"
-msgstr ""
+msgstr "Visa Lösenord"
 
 #: frontend/src/components/FieldLayoutEditor.vue:360
 msgid "Show border"
@@ -4529,7 +4535,7 @@ msgstr "Start Tid"
 
 #: frontend/src/pages/Welcome.vue:21
 msgid "Start with sample 10 leads"
-msgstr ""
+msgstr "Börja med exempel på 10 potentiella kunder"
 
 #. Label of the status (Select) field in DocType 'CRM Call Log'
 #. Label of the status (Data) field in DocType 'CRM Communication Status'
@@ -4593,7 +4599,7 @@ msgstr "Söndag"
 
 #: frontend/src/components/Settings/emailConfig.js:16
 msgid "Support / Sales"
-msgstr ""
+msgstr "Support / Försäljning"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:49
 msgid "Switch camera"
@@ -4601,7 +4607,7 @@ msgstr "Byt kamera"
 
 #: frontend/src/pages/Welcome.vue:32
 msgid "Sync your contacts,email and calenders"
-msgstr ""
+msgstr "Synkronisera dina kontakter, e-post och kalendrar"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -4642,7 +4648,7 @@ msgstr "Uppgifter"
 
 #: frontend/src/components/Modals/AboutModal.vue:67
 msgid "Telegram Channel"
-msgstr ""
+msgstr "Telegram Kanal"
 
 #: frontend/src/components/Settings/Settings.vue:123
 msgid "Telephony"
@@ -4655,35 +4661,35 @@ msgstr "Telefoni Medium"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:8
 msgid "Telephony settings"
-msgstr ""
+msgstr "Telefoni Inställningar"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:178
 msgid "Template created successfully"
-msgstr ""
+msgstr "Mall skapad"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:214
 msgid "Template deleted successfully"
-msgstr ""
+msgstr "Mall borttagen"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:198
 msgid "Template disabled successfully"
-msgstr ""
+msgstr "Mall inaktiverad"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:197
 msgid "Template enabled successfully"
-msgstr ""
+msgstr "Mall aktiverad"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
 msgid "Template name"
-msgstr ""
+msgstr "Mall Namn"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:243
 msgid "Template renamed successfully"
-msgstr ""
+msgstr "Mall namn ändrad"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:208
 msgid "Template updated successfully"
-msgstr ""
+msgstr "Mall uppdaterad"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -4716,13 +4722,13 @@ msgstr "Villkor '{0}' är ogiltigt: {1}"
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "The rate used to convert the deal’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
-msgstr ""
+msgstr "Kurs som används för att konvertera affärens valuta till Säljstöd basvaluta (angiven i Säljstöd Inställningar). Anges en gång när valuta läggs till första gången och ändras inte automatiskt."
 
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM
 #. Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "The rate used to convert the organization’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
-msgstr ""
+msgstr "Kurs som används för att konvertera bolag valuta till Säljstöd bas valuta (angiven i Säljstöd Inställningar). Anges en gång när valuta läggs till första gången och ändras inte automatiskt."
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:14
 msgid "There can only be one default priority in Priorities table"
@@ -4731,7 +4737,7 @@ msgstr "Det kan bara finnas en standard prioritet i Prioriteter tabellen "
 #: frontend/src/components/Modals/AddressModal.vue:129
 #: frontend/src/components/Modals/CallLogModal.vue:132
 msgid "These fields are required: {0}"
-msgstr ""
+msgstr "Dessa fält erfordras: {0}"
 
 #: frontend/src/components/Filter.vue:644
 msgid "This Month"
@@ -4755,11 +4761,11 @@ msgstr "Detta avsnitt är inte redigerbar"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:59
 msgid "This will delete selected items and items linked to it, are you sure?"
-msgstr ""
+msgstr "Detta kommer att ta bort valda artiklar och artiklar som är länkade till dem, är du säker?"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:62
 msgid "This will delete selected items and unlink linked items to it, are you sure?"
-msgstr ""
+msgstr "Detta kommer att ta bort valda artiklar och ta bort länk till länkade artiklar, är du säker?"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:9
 msgid "This will restore (if not exist) all the default statuses, custom fields and layouts. Delete & Restore will delete default layouts and then restore them."
@@ -4809,7 +4815,7 @@ msgstr "Till Datum"
 #. Label of the to_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "To Type"
-msgstr ""
+msgstr "Till Typ"
 
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4818,7 +4824,7 @@ msgstr "Till Användare"
 
 #: frontend/src/components/Settings/EmailEdit.vue:118
 msgid "To know more about setting up email accounts, click"
-msgstr ""
+msgstr "För att veta mer om hur du konfigurerar e-post konton, klicka här"
 
 #: frontend/src/components/Filter.vue:632
 msgid "Today"
@@ -4859,24 +4865,24 @@ msgstr "Totalt Helg Dagar"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Total after discount"
-msgstr ""
+msgstr "Totalt efter rabatt"
 
 #: crm/api/dashboard.py:123
 #: frontend/src/components/Dashboard/AddChartModal.vue:76
 msgid "Total leads"
-msgstr ""
+msgstr "Total antal potentiella kunder"
 
 #: crm/api/dashboard.py:124
 msgid "Total number of leads"
-msgstr ""
+msgstr "Total antal potentiella kunder"
 
 #: crm/api/dashboard.py:182
 msgid "Total number of non won/lost deals"
-msgstr ""
+msgstr "Totalt antal förlorade affärer"
 
 #: crm/api/dashboard.py:297
 msgid "Total number of won deals based on its closure date"
-msgstr ""
+msgstr "Totalt antal vunna affärer baserat på dess stängningsdatum"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -4940,7 +4946,7 @@ msgstr "Typ"
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:73
 #: frontend/src/components/Controls/MultiSelectUserInput.vue:73
 msgid "Type an email address to invite"
-msgstr ""
+msgstr "Skriv e-postadress som ska bjudas in"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:85
 msgid "Type your message here..."
@@ -4961,27 +4967,27 @@ msgstr "Okänd"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:132
 msgid "Unlink"
-msgstr ""
+msgstr "Ta bort länk"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:77
 msgid "Unlink all"
-msgstr ""
+msgstr "Ta bort länk från alla"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:73
 msgid "Unlink and delete"
-msgstr ""
+msgstr "Ta bort länk och radera"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:35
 msgid "Unlink and delete {0} items"
-msgstr ""
+msgstr "Ta bort länkar och radera {0} artiklar"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:242
 msgid "Unlink linked item"
-msgstr ""
+msgstr "Ta bort länk till länkad artikel"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:78
 msgid "Unlink {0} item(s)"
-msgstr ""
+msgstr "Ta bort länk till {0} artikel(ar)"
 
 #: frontend/src/components/ViewControls.vue:1138
 msgid "Unpin View"
@@ -5018,7 +5024,7 @@ msgstr "Uppdatera"
 
 #: frontend/src/components/Settings/EmailEdit.vue:74
 msgid "Update Account"
-msgstr ""
+msgstr "Uppdatera Konto"
 
 #: frontend/src/components/Modals/EditValueModal.vue:30
 msgid "Update {0} Records"
@@ -5070,7 +5076,7 @@ msgstr "Användare Namn"
 
 #: frontend/src/components/Settings/Users.vue:301
 msgid "User {0} has been removed"
-msgstr ""
+msgstr "Användare {0} borttagen"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/Settings.vue:95
@@ -5080,7 +5086,7 @@ msgstr "Användare"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:103
 msgid "Users added successfully"
-msgstr ""
+msgstr "Användare tillagd"
 
 #. Label of the section_break_nevd (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
@@ -5102,7 +5108,7 @@ msgstr "Vyer"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:558
 msgid "Web form"
-msgstr ""
+msgstr "Webbformulär"
 
 #. Label of the webhook_verify_token (Data) field in DocType 'CRM Exotel
 #. Settings'
@@ -5140,7 +5146,7 @@ msgstr "Välkomstmeddelande"
 
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
-msgstr ""
+msgstr "Välkommen {0}, låt oss lägga till första potentiella kund"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5170,12 +5176,12 @@ msgstr "Bredd kan anges i antal, pixel eller rem (t.ex. 3, 30px, 10rem)"
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Won"
-msgstr ""
+msgstr "Vann"
 
 #: crm/api/dashboard.py:296
 #: frontend/src/components/Dashboard/AddChartModal.vue:79
 msgid "Won deals"
-msgstr ""
+msgstr "Vunna affärer"
 
 #. Label of the workday (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
@@ -5283,7 +5289,7 @@ msgstr "cyan"
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:268
 #: frontend/src/components/Controls/MultiSelectUserInput.vue:242
 msgid "email already exists"
-msgstr ""
+msgstr "e-post adress finns redan"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -5315,72 +5321,72 @@ msgstr "har kontaktat"
 #: frontend/src/components/Settings/EmailAdd.vue:36
 #: frontend/src/components/Settings/EmailEdit.vue:25
 msgid "here"
-msgstr ""
+msgstr "här"
 
 #: frontend/src/utils/index.js:146
 msgid "in 1 hour"
-msgstr ""
+msgstr "om 1 timme"
 
 #: frontend/src/utils/index.js:142
 msgid "in 1 minute"
-msgstr ""
+msgstr "om 1 minut"
 
 #: frontend/src/utils/index.js:160
 msgid "in 1 year"
-msgstr ""
+msgstr "om 1 år"
 
 #: frontend/src/utils/index.js:111
 msgid "in {0} M"
-msgstr ""
+msgstr "om {0} M"
 
 #: frontend/src/utils/index.js:107
 msgid "in {0} d"
-msgstr ""
+msgstr "om {0} d"
 
 #: frontend/src/utils/index.js:154
 msgid "in {0} days"
-msgstr ""
+msgstr "om {0} dagar"
 
 #: frontend/src/utils/index.js:101
 msgid "in {0} h"
-msgstr ""
+msgstr "om {0} t"
 
 #: frontend/src/utils/index.js:148
 msgid "in {0} hours"
-msgstr ""
+msgstr "om {0} timmar"
 
 #: frontend/src/utils/index.js:99
 msgid "in {0} m"
-msgstr ""
+msgstr "om {0} m"
 
 #: frontend/src/utils/index.js:144
 msgid "in {0} minutes"
-msgstr ""
+msgstr "om {0} minuter"
 
 #: frontend/src/utils/index.js:158
 msgid "in {0} months"
-msgstr ""
+msgstr "om {0} månader"
 
 #: frontend/src/utils/index.js:109
 msgid "in {0} w"
-msgstr ""
+msgstr "om {0} v"
 
 #: frontend/src/utils/index.js:156
 msgid "in {0} weeks"
-msgstr ""
+msgstr "om {0} veckor"
 
 #: frontend/src/utils/index.js:113
 msgid "in {0} y"
-msgstr ""
+msgstr "om {0} år"
 
 #: frontend/src/utils/index.js:162
 msgid "in {0} years"
-msgstr ""
+msgstr "i {0} år"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:28
 #: frontend/src/components/Settings/InviteUserPage.vue:37
 msgid "john@doe.com"
-msgstr ""
+msgstr "john@doe.com"
 
 #: frontend/src/utils/index.js:140 frontend/src/utils/index.js:166
 msgid "just now"
@@ -5471,7 +5477,7 @@ msgstr "till"
 
 #: frontend/src/utils/index.js:105 frontend/src/utils/index.js:152
 msgid "tomorrow"
-msgstr ""
+msgstr "i morgon"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -5513,7 +5519,7 @@ msgstr "{0} h"
 
 #: frontend/src/components/Settings/Users.vue:291
 msgid "{0} has been granted {1} access"
-msgstr ""
+msgstr "{0} har beviljats {1} åtkomst"
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
@@ -5566,21 +5572,21 @@ msgstr "{0} år sedan"
 
 #: frontend/src/data/script.js:330
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
-msgstr ""
+msgstr "⚠️ Undvik att använda \"trigger\" som fältnamn - det krockar med den inbyggd trigger() metod."
 
 #: frontend/src/data/script.js:342
 msgid "⚠️ Method \"{0}\" not found in class."
-msgstr ""
+msgstr "⚠️ Metod \"{0}\" hittades inte i klassen."
 
 #: frontend/src/data/script.js:87
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
-msgstr ""
+msgstr "⚠️ Ingen klass hittades för doctype: {0}, det erfordras att ha klass för överordnad doctype. Kan vara tom, men den ska finnas."
 
 #: frontend/src/data/script.js:184
 msgid "⚠️ No data found for parent field: {0}"
-msgstr ""
+msgstr "⚠️ Ingen data hittades för överordnad fält: {0}"
 
 #: frontend/src/data/script.js:192
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
-msgstr ""
+msgstr "⚠️ Ingen rad hittades för idx: {0} i överordnad fält: {1}"
 
