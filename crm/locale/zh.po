@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-22 05:22\n"
+"PO-Revision-Date: 2025-07-23 05:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -1637,7 +1637,7 @@ msgstr "放弃"
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
-msgstr ""
+msgstr "折扣 %"
 
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -5471,7 +5471,7 @@ msgstr "至"
 
 #: frontend/src/utils/index.js:105 frontend/src/utils/index.js:152
 msgid "tomorrow"
-msgstr ""
+msgstr "明天"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-22 05:22\n"
+"PO-Revision-Date: 2025-07-23 05:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -1198,7 +1198,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:345
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Panoya kopyalandı"
 
 #: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
 #: crm/api/dashboard.py:891
@@ -1637,7 +1637,7 @@ msgstr "Vazgeç"
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
-msgstr ""
+msgstr "İndirim %"
 
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -5471,7 +5471,7 @@ msgstr "giden"
 
 #: frontend/src/utils/index.js:105 frontend/src/utils/index.js:152
 msgid "tomorrow"
-msgstr ""
+msgstr "yarın"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
