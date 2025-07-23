@@ -139,12 +139,12 @@ class CRMDeal(Document):
 		if sla:
 			sla.apply(self)
 
-	def update_close_date(self):
+	def update_closed_date(self):
 		"""
-		Update the close date based on the "Won" status.
+		Update the closed date based on the "Won" status.
 		"""
-		if self.status == "Won" and not self.close_date:
-			self.close_date = frappe.utils.nowdate()
+		if self.status == "Won" and not self.closed_date:
+			self.closed_date = frappe.utils.nowdate()
 
 	def update_default_probability(self):
 		"""
@@ -154,13 +154,13 @@ class CRMDeal(Document):
 			self.probability = frappe.db.get_value("CRM Deal Status", self.status, "probability") or 0
 
 	def validate_forcasting_fields(self):
-		self.update_close_date()
+		self.update_closed_date()
 		self.update_default_probability()
 		if frappe.db.get_single_value("FCRM Settings", "enable_forecasting"):
-			if not self.deal_value or self.deal_value == 0:
-				frappe.throw(_("Deal Value is required."), frappe.MandatoryError)
-			if not self.close_date:
-				frappe.throw(_("Close Date is required."), frappe.MandatoryError)
+			if not self.expected_deal_value or self.expected_deal_value == 0:
+				frappe.throw(_("Expected Deal Value is required."), frappe.MandatoryError)
+			if not self.expected_closure_date:
+				frappe.throw(_("Expected Closure Date is required."), frappe.MandatoryError)
 
 	def validate_lost_reason(self):
 		"""
