@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-22 05:21\n"
+"PO-Revision-Date: 2025-07-23 05:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -919,7 +919,7 @@ msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:12
 msgid "Chart Type"
-msgstr ""
+msgstr "Táblázat típus"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:43
 #: frontend/src/components/Modals/ConvertToDealModal.vue:69
@@ -1074,7 +1074,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:18
 msgid "Confirm Password"
-msgstr ""
+msgstr "Jelszó megerősítése"
 
 #: frontend/src/components/Settings/Users.vue:225
 #: frontend/src/components/Settings/Users.vue:228
@@ -1198,12 +1198,12 @@ msgstr ""
 
 #: frontend/src/utils/index.js:345
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Másolja a vágólapra"
 
 #: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
 #: crm/api/dashboard.py:891
 msgid "Count"
-msgstr ""
+msgstr "Számol"
 
 #: frontend/src/components/Modals/AddressModal.vue:99
 #: frontend/src/components/Modals/CallLogModal.vue:102
@@ -1330,7 +1330,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:582
 msgid "Customization"
-msgstr ""
+msgstr "testreszabás"
 
 #: frontend/src/components/ViewControls.vue:211
 msgid "Customize quick filters"
@@ -1455,11 +1455,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:41
 msgid "Default Inbox"
-msgstr ""
+msgstr "Alapértelmezett Beérkezett üzenetek"
 
 #: frontend/src/components/Settings/emailConfig.js:44
 msgid "Default Incoming"
-msgstr ""
+msgstr "Alapértelmezett bejövő"
 
 #. Label of the default_medium (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -1468,7 +1468,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:52
 msgid "Default Outgoing"
-msgstr ""
+msgstr "Alapértelmezett kimenő"
 
 #. Label of the default_priority (Check) field in DocType 'CRM Service Level
 #. Priority'
@@ -1478,11 +1478,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:43
 msgid "Default Sending"
-msgstr ""
+msgstr "Alapértelmezett küldés"
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:39
 msgid "Default Sending and Inbox"
-msgstr ""
+msgstr "Alapértelmezett Küldés és Beérkezett"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:33
 msgid "Default Service Level Agreement already exists for {0}"
@@ -1637,7 +1637,7 @@ msgstr "Elvet"
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
-msgstr ""
+msgstr "Kedvezmény %"
 
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -1913,11 +1913,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:28
 msgid "Enable Incoming"
-msgstr ""
+msgstr "Engedélyezze mint beérkező"
 
 #: frontend/src/components/Settings/emailConfig.js:36
 msgid "Enable Outgoing"
-msgstr ""
+msgstr "Engedélyezze a kimenőt"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:19
 msgid "Enable forecasting"
@@ -2007,7 +2007,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Exchange Rate"
-msgstr ""
+msgstr "Átváltási arány"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
@@ -2167,7 +2167,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:333
 msgid "File \"{0}\" was skipped because of invalid file type"
-msgstr ""
+msgstr "A(z) \"{0}\" fájlt érvénytelen fájltípus miatt kihagytuk."
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:354
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
@@ -2496,7 +2496,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:45
 msgid "Inbox"
-msgstr ""
+msgstr "Bejövő"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -2543,12 +2543,12 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:120
 msgctxt "FCRM"
 msgid "Integrations"
-msgstr ""
+msgstr "Integrációk"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:524
 #: frontend/src/components/Layouts/AppSidebar.vue:527
 msgid "Introduction"
-msgstr ""
+msgstr "Bevezetés"
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:33
 msgid "Invalid Account SID or Auth Token."
@@ -3203,7 +3203,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:6
 msgid "New Password"
-msgstr ""
+msgstr "Új jelszó"
 
 #: frontend/src/components/FieldLayoutEditor.vue:203
 #: frontend/src/components/SidePanelLayoutEditor.vue:133
@@ -3241,7 +3241,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:89
 msgid "New {0}"
-msgstr ""
+msgstr "Új {0}"
 
 #: frontend/src/components/Filter.vue:668
 msgid "Next 6 Months"
@@ -3645,7 +3645,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:64
 msgid "Password"
-msgstr ""
+msgstr "Jelszó"
 
 #: crm/api/demo.py:21 crm/api/demo.py:29
 msgid "Password cannot be reset by Demo User {}"
@@ -5076,7 +5076,7 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:95
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
-msgstr ""
+msgstr "Felhasználók"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:103
 msgid "Users added successfully"
@@ -5384,7 +5384,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:140 frontend/src/utils/index.js:166
 msgid "just now"
-msgstr ""
+msgstr "pont most"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -5411,7 +5411,7 @@ msgstr "következő"
 
 #: frontend/src/utils/index.js:97 frontend/src/utils/index.js:117
 msgid "now"
-msgstr ""
+msgstr "Most"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -5489,7 +5489,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:179
 msgid "yesterday"
-msgstr ""
+msgstr "tegnap"
 
 #: frontend/src/utils/index.js:130
 msgid "{0} M"
@@ -5505,7 +5505,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
-msgstr ""
+msgstr "{0} napja"
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
@@ -5517,7 +5517,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
-msgstr ""
+msgstr "{0} órája"
 
 #: frontend/src/pages/Deal.vue:525 frontend/src/pages/Lead.vue:407
 #: frontend/src/pages/MobileDeal.vue:400 frontend/src/pages/MobileLead.vue:294
@@ -5542,19 +5542,19 @@ msgstr ""
 
 #: frontend/src/utils/index.js:170
 msgid "{0} minutes ago"
-msgstr ""
+msgstr "{0} perce"
 
 #: frontend/src/utils/index.js:189
 msgid "{0} months ago"
-msgstr ""
+msgstr "{0} hónappal ezelőtt"
 
 #: frontend/src/utils/index.js:128
 msgid "{0} w"
-msgstr ""
+msgstr "{0} sz"
 
 #: frontend/src/utils/index.js:185
 msgid "{0} weeks ago"
-msgstr ""
+msgstr "{0} héttel ezelőtt"
 
 #: frontend/src/utils/index.js:132
 msgid "{0} y"
@@ -5562,7 +5562,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:193
 msgid "{0} years ago"
-msgstr ""
+msgstr "{0} évvel ezelőtt"
 
 #: frontend/src/data/script.js:330
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
