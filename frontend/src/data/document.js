@@ -5,6 +5,7 @@ import { reactive } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
+const assigneesCache = {}
 
 export function useDocument(doctype, docname) {
   const { setupScript } = getScript(doctype)
@@ -46,16 +47,20 @@ export function useDocument(doctype, docname) {
     }
   }
 
-  const assignees = createResource({
-    url: 'crm.api.doc.get_assigned_users',
-    cache: `assignees:${doctype}:${docname}`,
-    auto: docname ? true : false,
-    params: {
-      doctype: doctype,
-      name: docname,
-    },
-    transform: (data) => parseAssignees(data),
-  })
+  assigneesCache[doctype] = assigneesCache[doctype] || {}
+
+  if (!assigneesCache[doctype][docname || '']) {
+    assigneesCache[doctype][docname || ''] = createResource({
+      url: 'crm.api.doc.get_assigned_users',
+      cache: `assignees:${doctype}:${docname}`,
+      auto: docname ? true : false,
+      params: {
+        doctype: doctype,
+        name: docname,
+      },
+      transform: (data) => parseAssignees(data),
+    })
+  }
 
   async function setupFormScript() {
     if (
@@ -224,7 +229,7 @@ export function useDocument(doctype, docname) {
 
   return {
     document: documentsCache[doctype][docname || ''],
-    assignees,
+    assignees: assigneesCache[doctype][docname || ''],
     getControllers,
     triggerOnLoad,
     triggerOnBeforeCreate,
