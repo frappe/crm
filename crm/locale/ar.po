@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-22 05:21\n"
+"PO-Revision-Date: 2025-07-23 05:27\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -1074,7 +1074,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:18
 msgid "Confirm Password"
-msgstr ""
+msgstr "تأكيد كلمة المرور"
 
 #: frontend/src/components/Settings/Users.vue:225
 #: frontend/src/components/Settings/Users.vue:228
@@ -1198,7 +1198,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:345
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "نسخ إلى الحافظة"
 
 #: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
 #: crm/api/dashboard.py:891
@@ -1637,7 +1637,7 @@ msgstr "تجاهل"
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
-msgstr ""
+msgstr "الخصم %"
 
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -3503,7 +3503,7 @@ msgstr "الحساب الأب السابق"
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "On Hold"
-msgstr ""
+msgstr "قيد الانتظار"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
@@ -5098,7 +5098,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:561
 msgid "Views"
-msgstr ""
+msgstr "مشاهدات"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:558
 msgid "Web form"
@@ -5471,7 +5471,7 @@ msgstr "إلى"
 
 #: frontend/src/utils/index.js:105 frontend/src/utils/index.js:152
 msgid "tomorrow"
-msgstr ""
+msgstr "غداً"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
