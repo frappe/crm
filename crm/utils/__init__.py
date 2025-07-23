@@ -275,12 +275,16 @@ def get_exchange_rate(from_currency, to_currency, date=None):
 
 	url = f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}"
 
-	response = requests.get(url)
+	for _i in range(3):
+		response = requests.get(url)
+		if response.status_code == 200:
+			data = response.json()
+			rate = data["rates"].get(to_currency)
+			if rate:
+				return rate
 
-	if response.status_code == 200:
-		data = response.json()
-		rate = data["rates"].get(to_currency)
-		return rate
-	else:
-		frappe.throw(_("Failed to fetch historical exchange rate from external API. Please try again later."))
-		return None
+	frappe.log_error(
+		f"Failed to fetch exchange rate from {from_currency} to {to_currency} on {date}",
+		title="Exchange Rate Fetch Error",
+	)
+	return 1.0  # Default exchange rate if API call fails or no rate found
