@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-22 05:21\n"
+"PO-Revision-Date: 2025-07-23 05:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -919,7 +919,7 @@ msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:12
 msgid "Chart Type"
-msgstr ""
+msgstr "Typ wykresu"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:43
 #: frontend/src/components/Modals/ConvertToDealModal.vue:69
@@ -1198,12 +1198,12 @@ msgstr ""
 
 #: frontend/src/utils/index.js:345
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Skopiowane do schowka"
 
 #: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
 #: crm/api/dashboard.py:891
 msgid "Count"
-msgstr ""
+msgstr "Liczyć"
 
 #: frontend/src/components/Modals/AddressModal.vue:99
 #: frontend/src/components/Modals/CallLogModal.vue:102
@@ -1330,7 +1330,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:582
 msgid "Customization"
-msgstr ""
+msgstr "Dostosowywanie"
 
 #: frontend/src/components/ViewControls.vue:211
 msgid "Customize quick filters"
@@ -1637,7 +1637,7 @@ msgstr "Odrzucać"
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
-msgstr ""
+msgstr "Zniżka %"
 
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -2007,7 +2007,7 @@ msgstr "Przewyższać"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Exchange Rate"
-msgstr ""
+msgstr "Kurs wymiany"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
@@ -2496,7 +2496,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:45
 msgid "Inbox"
-msgstr ""
+msgstr "W pudełku"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -2543,12 +2543,12 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:120
 msgctxt "FCRM"
 msgid "Integrations"
-msgstr ""
+msgstr "Integracje"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:524
 #: frontend/src/components/Layouts/AppSidebar.vue:527
 msgid "Introduction"
-msgstr ""
+msgstr "Wprowadzenie"
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:33
 msgid "Invalid Account SID or Auth Token."
@@ -3203,7 +3203,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:6
 msgid "New Password"
-msgstr ""
+msgstr "Nowe hasło"
 
 #: frontend/src/components/FieldLayoutEditor.vue:203
 #: frontend/src/components/SidePanelLayoutEditor.vue:133
@@ -3241,7 +3241,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:89
 msgid "New {0}"
-msgstr ""
+msgstr "Nowy rekord \"{0}\""
 
 #: frontend/src/components/Filter.vue:668
 msgid "Next 6 Months"
@@ -4493,7 +4493,7 @@ msgstr "Nazwa źródła"
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:16
 msgid "Spacer"
-msgstr ""
+msgstr "Separator"
 
 #: crm/api/dashboard.py:731 crm/api/dashboard.py:790
 msgid "Stage"
@@ -5076,7 +5076,7 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:95
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
-msgstr ""
+msgstr "Użytkownicy"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:103
 msgid "Users added successfully"
@@ -5384,7 +5384,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:140 frontend/src/utils/index.js:166
 msgid "just now"
-msgstr ""
+msgstr "właśnie teraz"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -5411,7 +5411,7 @@ msgstr "następny"
 
 #: frontend/src/utils/index.js:97 frontend/src/utils/index.js:117
 msgid "now"
-msgstr ""
+msgstr "teraz"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -5489,11 +5489,11 @@ msgstr "żółty"
 
 #: frontend/src/utils/index.js:179
 msgid "yesterday"
-msgstr ""
+msgstr "wczoraj"
 
 #: frontend/src/utils/index.js:130
 msgid "{0} M"
-msgstr ""
+msgstr "{0} M."
 
 #: crm/api/todo.py:50
 msgid "{0} assigned a {1} {2} to you"
@@ -5505,11 +5505,11 @@ msgstr ""
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
-msgstr ""
+msgstr "{0} dni temu"
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
-msgstr ""
+msgstr "{0} godz"
 
 #: frontend/src/components/Settings/Users.vue:291
 msgid "{0} has been granted {1} access"
@@ -5517,7 +5517,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
-msgstr ""
+msgstr "{0} godzin(y) temu"
 
 #: frontend/src/pages/Deal.vue:525 frontend/src/pages/Lead.vue:407
 #: frontend/src/pages/MobileDeal.vue:400 frontend/src/pages/MobileLead.vue:294
@@ -5538,15 +5538,15 @@ msgstr ""
 
 #: frontend/src/utils/index.js:119
 msgid "{0} m"
-msgstr ""
+msgstr "{0} m."
 
 #: frontend/src/utils/index.js:170
 msgid "{0} minutes ago"
-msgstr ""
+msgstr "{0} minut temu"
 
 #: frontend/src/utils/index.js:189
 msgid "{0} months ago"
-msgstr ""
+msgstr "{0} miesięcy temu"
 
 #: frontend/src/utils/index.js:128
 msgid "{0} w"
@@ -5554,7 +5554,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:185
 msgid "{0} weeks ago"
-msgstr ""
+msgstr "{0} tygodni temu"
 
 #: frontend/src/utils/index.js:132
 msgid "{0} y"
@@ -5562,7 +5562,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:193
 msgid "{0} years ago"
-msgstr ""
+msgstr "{0} lat temu"
 
 #: frontend/src/data/script.js:330
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
