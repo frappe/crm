@@ -25,25 +25,22 @@
       </template>
     </Button>
     <Dropdown
-      v-show="showDropdown"
+      v-if="showDropdown"
       :options="parsedOptions"
       size="sm"
-      class="flex-1 [&>div>div>div]:w-full"
       placement="right"
-    >
-      <template v-slot="{ togglePopover }">
-        <Button
-          :variant="$attrs.variant"
-          @click="togglePopover"
-          icon="chevron-down"
-          class="!w-6 justify-start rounded-bl-none rounded-tl-none border-0 pr-0 text-xs"
-        />
-      </template>
-    </Dropdown>
+      :button="{
+        icon: 'chevron-down',
+        variant: $attrs.variant,
+        size: $attrs.size,
+        class:
+          '!w-6 justify-start rounded-bl-none rounded-tl-none border-0 pr-0 text-xs',
+      }"
+    />
   </div>
 </template>
 <script setup>
-import { Dropdown } from 'frappe-ui'
+import { DropdownOption } from '@/utils'
 import { computed, ref } from 'vue'
 
 const props = defineProps({
@@ -57,13 +54,18 @@ const showDropdown = ref(props.options?.length > 1)
 const activeButton = ref(props.options?.[0] || {})
 
 const parsedOptions = computed(() => {
+  debugger
   return (
     props.options?.map((option) => {
       return {
         label: option.label,
-        onClick: () => {
-          activeButton.value = option
-        },
+        component: (props) =>
+          DropdownOption({
+            option: option.label,
+            active: props.active,
+            selected: option.label === activeButton.value.label,
+            onClick: () => (activeButton.value = option),
+          }),
       }
     }) || []
   )
