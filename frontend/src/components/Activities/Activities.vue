@@ -792,7 +792,7 @@ function scroll(hash) {
 const callActions = computed(() => {
   let actions = [
     {
-      label: __('Create Call Log'),
+      label: __('Log a Call'),
       onClick: () => modalRef.value.createCallLog(),
     },
     {
