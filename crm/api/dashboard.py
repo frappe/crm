@@ -44,8 +44,14 @@ def get_dashboard(from_date="", to_date="", user=""):
 		if hasattr(frappe.get_attr("crm.api.dashboard"), method_name):
 			method = getattr(frappe.get_attr("crm.api.dashboard"), method_name)
 			l["data"] = method(from_date, to_date, user)
+			frappe.logger().info(f"{l['name']} chart data: {l['data']}")
 		else:
 			l["data"] = None
+			#l["data"] = {
+            #"title": l.get("label", l.get("name", "")),
+            #"tooltip": "",
+            #"value": 0
+        	#}
 
 	return layout
 
@@ -1140,3 +1146,32 @@ def get_deal_status_change_counts(from_date, to_date, deal_conds=""):
 		as_dict=True,
 	)
 	return result or []
+
+def get_avg_call_duration(from_date, to_date, user=""):
+    """
+    Returns average call duration in minutes
+    """
+    conds = ""
+    if user:
+        conds += f" AND owner = %(user)s"
+
+    result = frappe.db.sql(
+        f"""
+        SELECT
+            AVG(duration) / 60 AS avg_duration
+        FROM `tabCRM Call Log`
+        WHERE creation BETWEEN %(from_date)s AND DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+        {conds}
+        """,
+        {"from_date": from_date, "to_date": to_date, "user": user},
+        as_dict=True,
+    )
+
+    avg_duration = result[0].avg_duration or 0
+
+    return {
+        "title": _("Avg. Call Duration"),
+        "tooltip": _("Average duration of calls in minutes") or "Average duration of calls in minutes",
+        "value": round(avg_duration, 2),
+        "suffix": " min"
+    }
