@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-24 05:56\n"
+"PO-Revision-Date: 2025-07-26 06:34\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -5176,7 +5176,7 @@ msgstr "Širina može biti u broju, pikselima ili remima (npr. 3, 30px, 10rem)"
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Won"
-msgstr "Dobiven"
+msgstr "Dobiveni"
 
 #: crm/api/dashboard.py:296
 #: frontend/src/components/Dashboard/AddChartModal.vue:79
