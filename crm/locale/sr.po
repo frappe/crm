@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-23 05:28\n"
+"PO-Revision-Date: 2025-07-26 06:34\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -180,7 +180,7 @@ msgstr "Прихваћено"
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
-msgstr "Назив рачуна"
+msgstr "Назив налога"
 
 #. Label of the account_sid (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the account_sid (Data) field in DocType 'CRM Twilio Settings'
