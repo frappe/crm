@@ -4,10 +4,14 @@ msgstr ""
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
 <<<<<<< HEAD
+<<<<<<< HEAD
 "PO-Revision-Date: 2025-07-28 07:01\n"
 =======
 "PO-Revision-Date: 2025-07-26 06:34\n"
 >>>>>>> ee843fae (chore: Serbian (Latin) translations)
+=======
+"PO-Revision-Date: 2025-07-28 07:01\n"
+>>>>>>> 2a6f1c40 (chore: Serbian (Latin) translations)
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -4390,64 +4394,92 @@ msgstr "Podešavanje"
 #: frontend/src/components/Settings/emailConfig.js:145
 msgid "Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more "
 <<<<<<< HEAD
+<<<<<<< HEAD
 msgstr "Podešavanje Frappe Mail zahteva da imate API ključ i API tajnu za svoj imejl nalog. Saznajte više "
 =======
 msgstr "Podešavanje Frappe Mail zahteva da imate API ključ i API tajnu svoj imejl naloga. Saznajte više "
 >>>>>>> ee843fae (chore: Serbian (Latin) translations)
+=======
+msgstr "Podešavanje Frappe Mail zahteva da imate API ključ i API tajnu za svoj imejl nalog. Saznajte više "
+>>>>>>> 2a6f1c40 (chore: Serbian (Latin) translations)
 
 #: frontend/src/components/Settings/emailConfig.js:97
 msgid "Setting up GMail requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more"
 <<<<<<< HEAD
+<<<<<<< HEAD
 msgstr "Podešavanje Gmail-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više"
 =======
 msgstr "Podešavanje Gmail-a zahteva uključivanje dvofakturske autentifikacije i lozinke za specifične aplikacije. Saznajte više"
 >>>>>>> ee843fae (chore: Serbian (Latin) translations)
+=======
+msgstr "Podešavanje Gmail-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više"
+>>>>>>> 2a6f1c40 (chore: Serbian (Latin) translations)
 
 #: frontend/src/components/Settings/emailConfig.js:105
 msgid "Setting up Outlook requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more"
 <<<<<<< HEAD
+<<<<<<< HEAD
 msgstr "Podešavanje Outlook-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više"
 =======
 msgstr "Podešavanje Outlook-a zahteva uključivanje dvofakturske autentifikacije i lozinke za specifične aplikacije. Saznajte više"
 >>>>>>> ee843fae (chore: Serbian (Latin) translations)
+=======
+msgstr "Podešavanje Outlook-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više"
+>>>>>>> 2a6f1c40 (chore: Serbian (Latin) translations)
 
 #: frontend/src/components/Settings/emailConfig.js:113
 msgid "Setting up Sendgrid requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
 <<<<<<< HEAD
+<<<<<<< HEAD
 msgstr "Podešavanje Sendgrid-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
 =======
 msgstr "Podešavanje Sendgrid-a zahteva uključivanje dvofakturske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
 >>>>>>> ee843fae (chore: Serbian (Latin) translations)
+=======
+msgstr "Podešavanje Sendgrid-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
+>>>>>>> 2a6f1c40 (chore: Serbian (Latin) translations)
 
 #: frontend/src/components/Settings/emailConfig.js:121
 msgid "Setting up SparkPost requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
 <<<<<<< HEAD
+<<<<<<< HEAD
 msgstr "Podešavanje SparkPost-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
 =======
 msgstr "Podešavanje SparkPost-a zahteva uključivanje dvofakturske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
 >>>>>>> ee843fae (chore: Serbian (Latin) translations)
+=======
+msgstr "Podešavanje SparkPost-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
+>>>>>>> 2a6f1c40 (chore: Serbian (Latin) translations)
 
 #: frontend/src/components/Settings/emailConfig.js:129
 msgid "Setting up Yahoo requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
 <<<<<<< HEAD
+<<<<<<< HEAD
 msgstr "Podešavanje Yahoo-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
 =======
 msgstr "Podešavanje Yahoo-a zahteva uključivanje dvofakturske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
 >>>>>>> ee843fae (chore: Serbian (Latin) translations)
+=======
+msgstr "Podešavanje Yahoo-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
+>>>>>>> 2a6f1c40 (chore: Serbian (Latin) translations)
 
 #: frontend/src/components/Settings/emailConfig.js:137
 msgid "Setting up Yandex requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
 <<<<<<< HEAD
+<<<<<<< HEAD
 msgstr "Podešavanje Yandex-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
 =======
 msgstr "Podešavanje Yandex-a zahteva uključivanje dvofakturske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
 >>>>>>> ee843fae (chore: Serbian (Latin) translations)
+=======
+msgstr "Podešavanje Yandex-a zahteva uključivanje dvofaktorske autentifikacije i lozinke za specifične aplikacije. Saznajte više "
+>>>>>>> 2a6f1c40 (chore: Serbian (Latin) translations)
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
