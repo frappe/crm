@@ -93,6 +93,7 @@ import Section from '@/components/Section.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
+import LucideLayoutDashboard from '@/components/Icons/DashboardIcon.vue
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
@@ -112,6 +113,12 @@ import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
 const { getPinnedViews, getPublicViews } = viewsStore()
 
 const links = [
+  {
+    label: 'Dashboard',
+    icon: LucideLayoutDashboard, 
+    to: 'Dashboard',
+    condition: () => isManager(), 
+  },
   {
     label: 'Leads',
     icon: LeadsIcon,
