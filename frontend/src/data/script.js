@@ -38,7 +38,7 @@ export function getScript(doctype, view = 'Form') {
     let scriptDefs = doctypeScripts[doctype]
     if (!scriptDefs || Object.keys(scriptDefs).length === 0) return null
 
-    const { $dialog, $socket, makeCall } = globalStore()
+    const { $dialog, $socket } = globalStore()
 
     helpers.createDialog = $dialog
     helpers.toast = toast
@@ -49,10 +49,6 @@ export function getScript(doctype, view = 'Form') {
     helpers.throwError = (message) => {
       toast.error(message || __('An error occurred'))
       throw new Error(message || __('An error occurred'))
-    }
-
-    helpers.crm = {
-      makePhoneCall: makeCall,
     }
 
     return setupMultipleFormControllers(scriptDefs, document, helpers)
