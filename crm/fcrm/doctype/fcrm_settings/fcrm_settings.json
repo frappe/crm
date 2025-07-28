@@ -8,7 +8,12 @@
   "defaults_tab",
   "restore_defaults",
   "enable_forecasting",
+  "currency_tab",
   "currency",
+  "exchange_rate_provider_section",
+  "service_provider",
+  "column_break_vqck",
+  "access_key",
   "branding_tab",
   "brand_name",
   "brand_logo",
@@ -72,13 +77,42 @@
    "in_list_view": 1,
    "label": "Currency",
    "options": "Currency"
+  },
+  {
+   "fieldname": "currency_tab",
+   "fieldtype": "Tab Break",
+   "label": "Currency"
+  },
+  {
+   "fieldname": "exchange_rate_provider_section",
+   "fieldtype": "Section Break",
+   "label": "Exchange Rate Provider"
+  },
+  {
+   "default": "frankfurter.app",
+   "fieldname": "service_provider",
+   "fieldtype": "Select",
+   "label": "Service Provider",
+   "options": "frankfurter.app\nexchangerate.host",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.service_provider == 'exchangerate.host';",
+   "fieldname": "access_key",
+   "fieldtype": "Data",
+   "label": "Access Key",
+   "mandatory_depends_on": "eval:doc.service_provider == 'exchangerate.host';"
+  },
+  {
+   "fieldname": "column_break_vqck",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-13 11:58:34.857638",
- "modified_by": "Administrator",
+ "modified": "2025-07-28 17:04:24.585768",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "FCRM Settings",
  "owner": "Administrator",

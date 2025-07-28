@@ -4,6 +4,7 @@
 
 <script setup>
 import GeneralSettings from './GeneralSettings.vue'
+import CurrencySettings from './CurrencySettings.vue'
 import BrandSettings from './BrandSettings.vue'
 import HomeActions from './HomeActions.vue'
 import { ref } from 'vue'
@@ -20,6 +21,8 @@ function getComponent(step) {
   switch (step) {
     case 'general-settings':
       return GeneralSettings
+    case 'currency-settings':
+      return CurrencySettings
     case 'brand-settings':
       return BrandSettings
     case 'home-actions':
