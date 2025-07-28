@@ -4,10 +4,14 @@ msgstr ""
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-20 09:37+0000\n"
 <<<<<<< HEAD
+<<<<<<< HEAD
 "PO-Revision-Date: 2025-07-28 07:01\n"
 =======
 "PO-Revision-Date: 2025-07-26 06:34\n"
 >>>>>>> 3b9ff8d5 (chore: Serbian (Cyrillic) translations)
+=======
+"PO-Revision-Date: 2025-07-28 07:01\n"
+>>>>>>> 25d2b188 (chore: Serbian (Cyrillic) translations)
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
