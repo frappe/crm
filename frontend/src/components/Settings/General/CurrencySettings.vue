@@ -6,7 +6,7 @@
         <Button
           variant="ghost"
           icon-left="chevron-left"
-          :label="__('Currency & Exchange Rate Provider')"
+          :label="__('Currency & Exchange rate provider')"
           size="md"
           @click="() => emit('updateStep', 'general-settings')"
           class="text-xl !h-7 font-semibold hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5"
@@ -64,7 +64,7 @@
       <div class="flex items-center justify-between gap-8 p-3">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Exchange Rate Provider') }}
+            {{ __('Exchange rate provider') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{ __('Configure the exchange rate provider for your CRM') }}
@@ -94,7 +94,7 @@
       >
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Exchangerate Host Access Key') }}
+            {{ __('Access key') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{
