@@ -62,7 +62,6 @@
 </template>
 
 <script setup>
-import Link from '@/components/Controls/Link.vue'
 import { getSettings } from '@/stores/settings'
 import { Switch, toast } from 'frappe-ui'
 
