@@ -27,7 +27,7 @@ export function useDocument(doctype, docname) {
           },
           onError: (err) => {
             triggerOnError(err)
-            let errorMessage = __('Error updating document')
+
             if (err.exc_type == 'MandatoryError') {
               const fieldName = err.messages
                 .map((msg) => {
@@ -35,9 +35,18 @@ export function useDocument(doctype, docname) {
                   return arr[arr.length - 1].trim()
                 })
                 .join(', ')
-              errorMessage = __('Mandatory field error: {0}', [fieldName])
+              toast.error(__('Mandatory field error: {0}', [fieldName]))
+              return
             }
-            toast.error(errorMessage)
+
+            err.messages?.forEach((msg) => {
+              toast.error(msg)
+            })
+
+            if (err.messages?.length === 0) {
+              toast.error(__('An error occurred while updating the document'))
+            }
+
             console.error(err)
           },
         },
