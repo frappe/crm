@@ -6,11 +6,9 @@ from frappe import _
 from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
-from crm.fcrm.doctype.crm_currency_exchange_settings.crm_currency_exchange_settings import get_exchange_rate
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
-from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
-	add_status_change_log,
-)
+from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
+from crm.fcrm.doctype.fcrm_settings.fcrm_settings import get_exchange_rate
 
 
 class CRMDeal(Document):
