@@ -21,7 +21,7 @@
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
               __(
-                'Makes "Close Date" and "Deal Value" mandatory for deal value forecasting',
+                'Makes "Expected Closure Date" and "Expected Deal Value" mandatory for deal value forecasting',
               )
             }}
           </div>
