@@ -284,7 +284,7 @@ def get_exchange_rate(from_currency, to_currency, date=None):
 				return rate
 
 	frappe.log_error(
-		f"Failed to fetch exchange rate from {from_currency} to {to_currency} on {date}",
 		title="Exchange Rate Fetch Error",
+		message=f"Failed to fetch exchange rate from {from_currency} to {to_currency} on {date}",
 	)
 	return 1.0  # Default exchange rate if API call fails or no rate found
