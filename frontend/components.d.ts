@@ -62,6 +62,7 @@ declare module 'vue' {
     CountUpTimer: typeof import('./src/components/CountUpTimer.vue')['default']
     CreateDocumentModal: typeof import('./src/components/Modals/CreateDocumentModal.vue')['default']
     CRMLogo: typeof import('./src/components/Icons/CRMLogo.vue')['default']
+    CurrencySettings: typeof import('./src/components/Settings/General/CurrencySettings.vue')['default']
     CustomActions: typeof import('./src/components/CustomActions.vue')['default']
     DashboardGrid: typeof import('./src/components/Dashboard/DashboardGrid.vue')['default']
     DashboardIcon: typeof import('./src/components/Icons/DashboardIcon.vue')['default']

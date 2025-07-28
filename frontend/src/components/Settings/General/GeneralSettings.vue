@@ -21,7 +21,7 @@
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
               __(
-                'Makes "Close Date" and "Deal Value" mandatory for deal value forecasting',
+                'Makes "Expected Closure Date" and "Expected Deal Value" mandatory for deal value forecasting',
               )
             }}
           </div>
@@ -31,37 +31,6 @@
             size="sm"
             v-model="settings.doc.enable_forecasting"
             @click.stop="toggleForecasting(settings.doc.enable_forecasting)"
-          />
-        </div>
-      </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
-      <div
-        class="flex items-center justify-between gap-8 p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
-      >
-        <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Currency') }}
-          </div>
-          <div class="text-p-sm text-ink-gray-5">
-            {{
-              __(
-                'CRM currency for all monetary values. Once set, cannot be edited.',
-              )
-            }}
-          </div>
-        </div>
-        <div>
-          <div v-if="settings.doc.currency" class="text-base text-ink-gray-8">
-            {{ settings.doc.currency }}
-          </div>
-          <Link
-            v-else
-            class="form-control flex-1 truncate w-40"
-            :value="settings.doc.currency"
-            doctype="Currency"
-            @change="(v) => setCurrency(v)"
-            :placeholder="__('Select currency')"
-            placement="bottom-end"
           />
         </div>
       </div>
@@ -93,17 +62,20 @@
 </template>
 
 <script setup>
-import Link from '@/components/Controls/Link.vue'
 import { getSettings } from '@/stores/settings'
-import { globalStore } from '@/stores/global'
 import { Switch, toast } from 'frappe-ui'
 
 const emit = defineEmits(['updateStep'])
 
 const { _settings: settings } = getSettings()
-const { $dialog } = globalStore()
 
 const settingsList = [
+  {
+    name: 'currency-settings',
+    label: 'Currency & Exchange rate provider',
+    description:
+      'Configure the currency and exchange rate provider for your CRM',
+  },
   {
     name: 'brand-settings',
     label: 'Brand settings',
@@ -128,33 +100,6 @@ function toggleForecasting(value) {
           : __('Forecasting disabled successfully'),
       )
     },
-  })
-}
-
-function setCurrency(value) {
-  $dialog({
-    title: __('Set currency'),
-    message: __(
-      'Are you sure you want to set the currency as {0}? This cannot be changed later.',
-      [value],
-    ),
-    variant: 'solid',
-    theme: 'blue',
-    actions: [
-      {
-        label: __('Save'),
-        variant: 'solid',
-        onClick: (close) => {
-          settings.doc.currency = value
-          settings.save.submit(null, {
-            onSuccess: () => {
-              toast.success(__('Currency set as {0} successfully', [value]))
-              close()
-            },
-          })
-        },
-      },
-    ],
   })
 }
 </script>

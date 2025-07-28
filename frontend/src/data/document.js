@@ -1,4 +1,6 @@
 import { getScript } from '@/data/script'
+import { globalStore } from '@/stores/global'
+import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { runSequentially, parseAssignees } from '@/utils'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { reactive } from 'vue'
@@ -24,7 +26,8 @@ export function useDocument(doctype, docname) {
             toast.success(__('Document updated successfully'))
           },
           onError: (err) => {
-            let errorMessage = __('Error updating document')
+            triggerOnError(err)
+
             if (err.exc_type == 'MandatoryError') {
               const fieldName = err.messages
                 .map((msg) => {
@@ -32,9 +35,18 @@ export function useDocument(doctype, docname) {
                   return arr[arr.length - 1].trim()
                 })
                 .join(', ')
-              errorMessage = __('Mandatory field error: {0}', [fieldName])
+              toast.error(__('Mandatory field error: {0}', [fieldName]))
+              return
             }
-            toast.error(errorMessage)
+
+            err.messages?.forEach((msg) => {
+              toast.error(msg)
+            })
+
+            if (err.messages?.length === 0) {
+              toast.error(__('An error occurred while updating the document'))
+            }
+
             console.error(err)
           },
         },
@@ -76,8 +88,21 @@ export function useDocument(doctype, docname) {
 
     controllersCache[doctype][docname || ''] = {}
 
+    const { makeCall } = globalStore()
+
+    let helpers = {}
+
+    helpers.crm = {
+      makePhoneCall: makeCall,
+      openSettings: (page) => {
+        showSettings.value = true
+        activeSettingsPage.value = page
+      },
+    }
+
     const controllersArray = await setupScript(
       documentsCache[doctype][docname || ''],
+      helpers,
     )
 
     if (!controllersArray || controllersArray.length === 0) return
@@ -129,6 +154,13 @@ export function useDocument(doctype, docname) {
   async function triggerOnSave() {
     const handler = async function () {
       await (this.onSave?.() || this.on_save?.())
+    }
+    await trigger(handler)
+  }
+
+  async function triggerOnError() {
+    const handler = async function () {
+      await (this.onError?.() || this.on_error?.())
     }
     await trigger(handler)
   }
@@ -234,6 +266,7 @@ export function useDocument(doctype, docname) {
     triggerOnLoad,
     triggerOnBeforeCreate,
     triggerOnSave,
+    triggerOnError,
     triggerOnRefresh,
     triggerOnChange,
     triggerOnRowAdd,
