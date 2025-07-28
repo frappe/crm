@@ -72,7 +72,7 @@ const { _settings: settings } = getSettings()
 const settingsList = [
   {
     name: 'currency-settings',
-    label: 'Currency & Exchange Rate Provider',
+    label: 'Currency & Exchange rate provider',
     description:
       'Configure the currency and exchange rate provider for your CRM',
   },
