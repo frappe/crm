@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-20 09:37+0000\n"
+"POT-Creation-Date: 2025-07-27 09:38+0000\n"
+"PO-Revision-Date: 2025-07-27 09:38+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -964,10 +964,6 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
-msgid "Close Date is required."
-msgstr ""
-
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
@@ -1226,12 +1222,6 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:795
-#: frontend/src/components/Activities/ActivityHeader.vue:137
-#: frontend/src/components/Activities/ActivityHeader.vue:180
-msgid "Create Call Log"
-msgstr ""
-
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
 msgstr ""
@@ -1384,10 +1374,6 @@ msgstr ""
 #. Label of the deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Deal Value"
-msgstr ""
-
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
-msgid "Deal Value is required."
 msgstr ""
 
 #: crm/api/dashboard.py:977
@@ -1660,7 +1646,7 @@ msgstr ""
 msgid "Document not found"
 msgstr ""
 
-#: frontend/src/data/document.js:23
+#: frontend/src/data/document.js:24
 msgid "Document updated successfully"
 msgstr ""
 
@@ -1975,7 +1961,7 @@ msgstr ""
 msgid "Error updating deal: {0}"
 msgstr ""
 
-#: frontend/src/data/document.js:26
+#: frontend/src/data/document.js:27
 msgid "Error updating document"
 msgstr ""
 
@@ -2053,9 +2039,17 @@ msgstr ""
 msgid "Expected Closure Date"
 msgstr ""
 
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
+msgid "Expected Closure Date is required."
+msgstr ""
+
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Deal Value"
+msgstr ""
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
+msgid "Expected Deal Value is required."
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
@@ -2113,10 +2107,6 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:217
 msgid "Failed to delete template"
-msgstr ""
-
-#: crm/utils/__init__.py:285
-msgid "Failed to fetch historical exchange rate from external API. Please try again later."
 msgstr ""
 
 #: frontend/src/data/script.js:110
@@ -2887,6 +2877,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+#: frontend/src/components/Activities/Activities.vue:795
+#: frontend/src/components/Activities/ActivityHeader.vue:137
+#: frontend/src/components/Activities/ActivityHeader.vue:180
+msgid "Log a Call"
+msgstr ""
+
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
 msgstr ""
@@ -3010,7 +3006,7 @@ msgstr ""
 msgid "Manager"
 msgstr ""
 
-#: frontend/src/data/document.js:34
+#: frontend/src/data/document.js:35
 msgid "Mandatory field error: {0}"
 msgstr ""
 
