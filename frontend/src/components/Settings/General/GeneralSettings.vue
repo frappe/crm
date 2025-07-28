@@ -105,6 +105,15 @@ const { $dialog } = globalStore()
 
 const settingsList = [
   {
+<<<<<<< HEAD
+=======
+    name: 'currency-settings',
+    label: 'Currency & Exchange rate provider',
+    description:
+      'Configure the currency and exchange rate provider for your CRM',
+  },
+  {
+>>>>>>> 4c7a40d8 (fix: fixed labels)
     name: 'brand-settings',
     label: 'Brand settings',
     description: 'Configure your brand name, logo and favicon',
