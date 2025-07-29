@@ -5,7 +5,12 @@
       class="flex h-full w-full rounded shadow overflow-hidden cursor-pointer"
     >
       <Tooltip :text="__(item.data.tooltip)">
-        <NumberChart v-if="item.data" :key="index" :config="item.data" />
+        <NumberChart
+          class="!items-start"
+          v-if="item.data"
+          :key="index"
+          :config="item.data"
+        />
       </Tooltip>
     </div>
     <div
