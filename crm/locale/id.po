@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-26 06:34\n"
+"POT-Creation-Date: 2025-07-27 09:38+0000\n"
+"PO-Revision-Date: 2025-07-29 07:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -966,10 +966,6 @@ msgstr "Hapus semua Filter"
 msgid "Close"
 msgstr "Tutup"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
-msgid "Close Date is required."
-msgstr "Tanggal Penutupan wajib diisi."
-
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
@@ -1228,12 +1224,6 @@ msgstr "Jumlah"
 msgid "Create"
 msgstr "Buat"
 
-#: frontend/src/components/Activities/Activities.vue:795
-#: frontend/src/components/Activities/ActivityHeader.vue:137
-#: frontend/src/components/Activities/ActivityHeader.vue:180
-msgid "Create Call Log"
-msgstr "Buat Log Panggilan"
-
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
 msgstr "Buat Kesepakatan"
@@ -1387,10 +1377,6 @@ msgstr "Status Kesepakatan"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Deal Value"
 msgstr "Nilai Kesepakatan"
-
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
-msgid "Deal Value is required."
-msgstr "Nilai Kesepakatan wajib diisi."
 
 #: crm/api/dashboard.py:977
 msgid "Deal generation channel analysis"
@@ -1662,7 +1648,7 @@ msgstr "Jenis Dokumen"
 msgid "Document not found"
 msgstr "Dokumen tidak ditemukan"
 
-#: frontend/src/data/document.js:23
+#: frontend/src/data/document.js:24
 msgid "Document updated successfully"
 msgstr "Dokumen berhasil diperbarui"
 
@@ -1977,7 +1963,7 @@ msgstr "Terjadi kesalahan saat memperbarui kesepakatan"
 msgid "Error updating deal: {0}"
 msgstr "Terjadi kesalahan saat memperbarui kesepakatan: {0}"
 
-#: frontend/src/data/document.js:26
+#: frontend/src/data/document.js:27
 msgid "Error updating document"
 msgstr "Terjadi kesalahan saat memperbarui dokumen"
 
@@ -2053,12 +2039,20 @@ msgstr "Perluas"
 #. Label of the expected_closure_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Closure Date"
-msgstr "Tanggal Penutupan yang Diharapkan"
+msgstr "Tanggal Perkiraan Penutupan"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
+msgid "Expected Closure Date is required."
+msgstr "Tanggal Perkiraan Penutupan wajib diisi."
 
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Deal Value"
-msgstr "Nilai Kesepakatan yang Diharapkan"
+msgstr "Nilai Perkiraan Kesepakatan"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
+msgid "Expected Deal Value is required."
+msgstr "Nilai Perkiraan Kesepakatan wajib diisi."
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2116,10 +2110,6 @@ msgstr "Gagal membuat templat"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:217
 msgid "Failed to delete template"
 msgstr "Gagal menghapus templat"
-
-#: crm/utils/__init__.py:285
-msgid "Failed to fetch historical exchange rate from external API. Please try again later."
-msgstr "Gagal mengambil riwayat kurs dari API eksternal. Silakan coba lagi nanti."
 
 #: frontend/src/data/script.js:110
 msgid "Failed to load form controller: {0}"
@@ -2654,7 +2644,7 @@ msgstr "Standar"
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
-msgstr "Mengaktifkan ini akan mewajibkan pengisian \"Tanggal Penutupan yang Diharapkan\" & \"Nilai Kesepakatan yang Diharapkan\" untuk mendapatkan wawasan peramalan yang akurat"
+msgstr "Mengaktifkan ini akan mewajibkan pengisian \"Tanggal Perkiraan Penutupan\" & \"Nilai Perkiraan Kesepakatan\" untuk mendapatkan gambaran perkiraan yang akurat"
 
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -2889,6 +2879,12 @@ msgstr "Memuat..."
 msgid "Log"
 msgstr "Log"
 
+#: frontend/src/components/Activities/Activities.vue:795
+#: frontend/src/components/Activities/ActivityHeader.vue:137
+#: frontend/src/components/Activities/ActivityHeader.vue:180
+msgid "Log a Call"
+msgstr "Catat Panggilan"
+
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
 msgstr "Masuk ke Frappe Cloud?"
@@ -3012,7 +3008,7 @@ msgstr "Kelola akun email Anda untuk mengirim dan menerima email langsung dari C
 msgid "Manager"
 msgstr "Manajer"
 
-#: frontend/src/data/document.js:34
+#: frontend/src/data/document.js:35
 msgid "Mandatory field error: {0}"
 msgstr "Kesalahan bidang wajib: {0}"
 
@@ -3086,7 +3082,7 @@ msgstr "Instalasi aplikasi seluler"
 #: frontend/src/pages/MobileOrganization.vue:470
 #: frontend/src/pages/Organization.vue:479
 msgid "Mobile no"
-msgstr ""
+msgstr "Nomor Ponsel"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -4876,7 +4872,7 @@ msgstr "Jumlah total kesepakatan yang sedang berjalan"
 
 #: crm/api/dashboard.py:297
 msgid "Total number of won deals based on its closure date"
-msgstr "Jumlah total kesepakatan berhasil berdasarkan tanggal penutupannya"
+msgstr "Jumlah total kesepakatan yang berhasil berdasarkan tanggal penutupannya"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
