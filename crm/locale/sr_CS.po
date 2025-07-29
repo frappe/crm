@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-28 07:01\n"
+"POT-Creation-Date: 2025-07-27 09:38+0000\n"
+"PO-Revision-Date: 2025-07-29 07:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -271,7 +271,7 @@ msgstr "Dodaj opis..."
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
-msgstr ""
+msgstr "Dodaj postojeće sistemske korisnike u ovaj CRM. Dodeli im ulogu kako bi im omogućio pristup sa postojećim kredencijalima."
 
 #: frontend/src/components/ViewControls.vue:104
 msgid "Add filter"
@@ -283,7 +283,7 @@ msgstr "Dodaj napomenu"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add sample data"
-msgstr ""
+msgstr "Dodaj probne podatke"
 
 #. Description of the 'Icon' (Code) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -567,7 +567,7 @@ msgstr "Prosečna vrednost dobijene poslovne prilike"
 #: frontend/src/components/Dashboard/AddChartModal.vue:26
 #: frontend/src/components/Dashboard/AddChartModal.vue:70
 msgid "Axis chart"
-msgstr ""
+msgstr "Dijagram sa osama"
 
 #: frontend/src/components/Activities/EmailArea.vue:72
 #: frontend/src/components/EmailEditor.vue:44
@@ -937,7 +937,7 @@ msgstr "Izaberi postojeću organizaciju"
 
 #: frontend/src/components/Settings/EmailAdd.vue:9
 msgid "Choose the email service provider you want to configure."
-msgstr ""
+msgstr "Izaberi provajdera imejl usluge koga želiš da konfigurišeš."
 
 #: frontend/src/components/Controls/Link.vue:62
 msgid "Clear"
@@ -965,10 +965,6 @@ msgstr "Očisti sve filtere"
 #: frontend/src/components/Notifications.vue:28
 msgid "Close"
 msgstr "Zatvori"
-
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
-msgid "Close Date is required."
-msgstr "Datum zatvaranje je obavezan."
 
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -1083,7 +1079,7 @@ msgstr "Potvrdi uklanjanje"
 
 #: frontend/src/pages/Welcome.vue:35
 msgid "Connect your email"
-msgstr ""
+msgstr "Povežite Vaš imejl"
 
 #. Label of the contact (Link) field in DocType 'CRM Contacts'
 #. Label of the contact (Link) field in DocType 'CRM Deal'
@@ -1228,12 +1224,6 @@ msgstr "Brojčano"
 msgid "Create"
 msgstr "Kreiraj"
 
-#: frontend/src/components/Activities/Activities.vue:795
-#: frontend/src/components/Activities/ActivityHeader.vue:137
-#: frontend/src/components/Activities/ActivityHeader.vue:180
-msgid "Create Call Log"
-msgstr "Kreiraj evidenciju poziva"
-
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
 msgstr "Kreiraj poslovnu priliku"
@@ -1302,7 +1292,7 @@ msgstr "Valuta je uspešno postavljena kao {0}"
 
 #: crm/api/dashboard.py:839
 msgid "Current pipeline distribution"
-msgstr ""
+msgstr "Trenutna raspodela prodajnog toka"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:586
 msgid "Custom actions"
@@ -1318,7 +1308,7 @@ msgstr "Prilagođena polja"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:588
 msgid "Custom list actions"
-msgstr ""
+msgstr "Prilagođene radnje na listi"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Custom statuses"
@@ -1338,7 +1328,7 @@ msgstr "Prilagodi brze filtere"
 
 #: crm/api/dashboard.py:599
 msgid "Daily performance of leads, deals, and wins"
-msgstr ""
+msgstr "Dnevne performanse po potencijalnim klijentima, poslovnim prilikama i dobijenim poslovima"
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:575
@@ -1388,10 +1378,6 @@ msgstr "Statusi poslovne prilike"
 msgid "Deal Value"
 msgstr "Vrednost poslovne prilike"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
-msgid "Deal Value is required."
-msgstr "Vrednost poslovne prilike je obavezna."
-
 #: crm/api/dashboard.py:977
 msgid "Deal generation channel analysis"
 msgstr "Analiza kanala za generisanje poslovnih prilika"
@@ -1421,7 +1407,7 @@ msgstr "Poslovne prilike"
 #: crm/api/dashboard.py:788
 #: frontend/src/components/Dashboard/AddChartModal.vue:97
 msgid "Deals by ongoing & won stage"
-msgstr ""
+msgstr "Poslovne prilike po tekućoj i dobijenoj fazi"
 
 #: crm/api/dashboard.py:1076
 #: frontend/src/components/Dashboard/AddChartModal.vue:100
@@ -1662,7 +1648,7 @@ msgstr "Vrsta dokumenta"
 msgid "Document not found"
 msgstr "Dokument nije pronađen"
 
-#: frontend/src/data/document.js:23
+#: frontend/src/data/document.js:24
 msgid "Document updated successfully"
 msgstr "Dokument je uspešno ažuriran"
 
@@ -1977,7 +1963,7 @@ msgstr "Greška pri ažuriranju poslovne prilike"
 msgid "Error updating deal: {0}"
 msgstr "Greška prilikom ažuriranja poslovne prilike: {0}"
 
-#: frontend/src/data/document.js:26
+#: frontend/src/data/document.js:27
 msgid "Error updating document"
 msgstr "Greška prilikom ažuriranja dokumenta"
 
@@ -2055,10 +2041,18 @@ msgstr "Proširi"
 msgid "Expected Closure Date"
 msgstr "Očekivani datum zatvaranja"
 
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
+msgid "Expected Closure Date is required."
+msgstr ""
+
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Deal Value"
 msgstr "Očekivana vrednost poslovne prilike"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
+msgid "Expected Deal Value is required."
+msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2117,13 +2111,9 @@ msgstr "Neuspešno kreiranje šablona"
 msgid "Failed to delete template"
 msgstr "Neuspešno brisanje šablona"
 
-#: crm/utils/__init__.py:285
-msgid "Failed to fetch historical exchange rate from external API. Please try again later."
-msgstr "Neuspešno preuzimanje istorijskog deviznog kursa sa spoljnog API-ja. Molimo Vas da pokušate kasnije."
-
 #: frontend/src/data/script.js:110
 msgid "Failed to load form controller: {0}"
-msgstr ""
+msgstr "Neuspešno učitavanje form controller-a: {0}"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:246
 msgid "Failed to rename template"
@@ -2295,7 +2285,7 @@ msgstr "Datum početka"
 #. Label of the from_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "From Type"
-msgstr ""
+msgstr "Od vrste"
 
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -2319,7 +2309,7 @@ msgstr "Ime i prezime"
 #: crm/api/dashboard.py:728
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Funnel conversion"
-msgstr ""
+msgstr "Konverzija u prodajnom levku"
 
 #. Label of the gender (Link) field in DocType 'CRM Contacts'
 #. Label of the gender (Link) field in DocType 'CRM Deal'
@@ -2654,7 +2644,7 @@ msgstr "Standardno"
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
-msgstr ""
+msgstr "Učiniće da su \"Očekivani datum zatvaranja\" i \"Očekivana vrednost poslovne prilike\" obavezni za precizno dobijanje uvida u prognozu"
 
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -2804,7 +2794,7 @@ msgstr "Statusi potencijalnog klijenta"
 
 #: crm/api/dashboard.py:935
 msgid "Lead generation channel analysis"
-msgstr ""
+msgstr "Analiza kanala za generisanje potencijalnih klijenata"
 
 #: crm/api/dashboard.py:729
 msgid "Lead to deal conversion pipeline"
@@ -2888,6 +2878,12 @@ msgstr "Učitavanje..."
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Log"
 msgstr "Evidencija"
+
+#: frontend/src/components/Activities/Activities.vue:795
+#: frontend/src/components/Activities/ActivityHeader.vue:137
+#: frontend/src/components/Activities/ActivityHeader.vue:180
+msgid "Log a Call"
+msgstr ""
 
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
@@ -2992,11 +2988,11 @@ msgstr "Postavi {0} kao podrazumevano sredstvo za pozivanje"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:23
 msgid "Makes \"Close Date\" and \"Deal Value\" mandatory for deal value forecasting"
-msgstr ""
+msgstr "Postavlja \"Datum zatvaranja\" i \"Vrednost poslovne prilike\" kao obavezne za prognozu vrednosti poslovne prilike"
 
 #: frontend/src/components/Settings/Users.vue:11
 msgid "Manage CRM users by adding or inviting them, and assign roles to control their access and permissions"
-msgstr ""
+msgstr "Upravljajte CRM korisnicima dodavanjem ili pozivanjem, i dodeljivanjem uloga kako biste kontrolisali njihov pristup i ovlašćenja"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:11
 msgid "Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails."
@@ -3012,9 +3008,9 @@ msgstr "Upravljajte svojim imejl nalozima za slanje i prijem poruka direktno iz 
 msgid "Manager"
 msgstr "Menadžer"
 
-#: frontend/src/data/document.js:34
+#: frontend/src/data/document.js:35
 msgid "Mandatory field error: {0}"
-msgstr ""
+msgstr "Greška u obaveznom polju: {0}"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3517,7 +3513,7 @@ msgstr "Tekuće poslovne prilike"
 
 #: frontend/src/utils/index.js:451
 msgid "Only image files are allowed"
-msgstr ""
+msgstr "Dozvoljeni su samo fajlovi u formatu slike"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:62
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:23
@@ -3617,7 +3613,7 @@ msgstr "Organizacije"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:570
 msgid "Other features"
-msgstr ""
+msgstr "Ostale funkcionalnosti"
 
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -3858,7 +3854,7 @@ msgstr "Profil je uspešno ažuriran"
 
 #: crm/api/dashboard.py:667
 msgid "Projected vs actual revenue based on deal probability"
-msgstr ""
+msgstr "Očekivani naspram stvarnih prihoda na osnovu verovatnoće poslovne prilike"
 
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -4291,11 +4287,11 @@ msgstr "Skripta"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:64
 msgid "Search template"
-msgstr ""
+msgstr "Pretraga šablona"
 
 #: frontend/src/components/Settings/Users.vue:73
 msgid "Search user"
-msgstr ""
+msgstr "Pretraga korisnika"
 
 #: frontend/src/components/FieldLayoutEditor.vue:342
 msgid "Section"
@@ -4427,11 +4423,11 @@ msgstr "Podešavanja"
 
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
-msgstr ""
+msgstr "Podesite imejl"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:334
 msgid "Setup your password"
-msgstr ""
+msgstr "Postavite Vašu lozinku"
 
 #: frontend/src/components/Activities/Activities.vue:230
 msgid "Show"
@@ -4593,7 +4589,7 @@ msgstr "Nedelja"
 
 #: frontend/src/components/Settings/emailConfig.js:16
 msgid "Support / Sales"
-msgstr ""
+msgstr "Podrška / Prodaja"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:49
 msgid "Switch camera"
@@ -4716,13 +4712,13 @@ msgstr "Uslov '{0}' je nevažeći: {1}"
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "The rate used to convert the deal’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
-msgstr ""
+msgstr "Kurs koji se unosi za konvertovanje valute poslovne prilike u osnovnu valutu iz Vašeg CRM-a (postavljeno u CRM podešavanjima). Postavlja se jednom, prilikom dodavanja valute i ne menja se automatski."
 
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM
 #. Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "The rate used to convert the organization’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
-msgstr ""
+msgstr "Kurs koji se koristi za konvertovanje valute organizacije u osnovnu valutu iz Vašeg CRM-a (postavljeno u CRM podešavanjima). Postavlja se jednom, prilikom dodavanja valute i ne menja se automatski."
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:14
 msgid "There can only be one default priority in Priorities table"
@@ -4809,7 +4805,7 @@ msgstr "Datum završetka"
 #. Label of the to_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "To Type"
-msgstr ""
+msgstr "Do vrste"
 
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4872,11 +4868,11 @@ msgstr "Ukupan broj potencijalnih klijenata"
 
 #: crm/api/dashboard.py:182
 msgid "Total number of non won/lost deals"
-msgstr ""
+msgstr "Ukupan broj poslovnih prika koje nisu dobijene niti izgubljene"
 
 #: crm/api/dashboard.py:297
 msgid "Total number of won deals based on its closure date"
-msgstr ""
+msgstr "Ukupan broj dobijenih poslovnih prilika prema datumu zatvaranja"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -4940,7 +4936,7 @@ msgstr "Vrsta"
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:73
 #: frontend/src/components/Controls/MultiSelectUserInput.vue:73
 msgid "Type an email address to invite"
-msgstr ""
+msgstr "Unesite imejl adresu za pozivanje"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:85
 msgid "Type your message here..."
@@ -4961,27 +4957,27 @@ msgstr "Nepoznat"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:132
 msgid "Unlink"
-msgstr ""
+msgstr "Poništi povezivanje"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:77
 msgid "Unlink all"
-msgstr ""
+msgstr "Poništi sva povezivanja"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:73
 msgid "Unlink and delete"
-msgstr ""
+msgstr "Poništi povezivanje i obriši"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:35
 msgid "Unlink and delete {0} items"
-msgstr ""
+msgstr "Poništi povezivanje i obriši {0} stavki"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:242
 msgid "Unlink linked item"
-msgstr ""
+msgstr "Poništi povezivanje povezane stavke"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:78
 msgid "Unlink {0} item(s)"
-msgstr ""
+msgstr "Poništi povezivanje {0} stavki"
 
 #: frontend/src/components/ViewControls.vue:1138
 msgid "Unpin View"
@@ -5102,7 +5098,7 @@ msgstr "Prikazi"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:558
 msgid "Web form"
-msgstr ""
+msgstr "Veb-obrazac"
 
 #. Label of the webhook_verify_token (Data) field in DocType 'CRM Exotel
 #. Settings'
@@ -5140,7 +5136,7 @@ msgstr "Poruka dobrodošlice"
 
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
-msgstr ""
+msgstr "Dobro došli {0}, hajde da dodamo tvog prvog potencijalnog klijenta"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5319,63 +5315,63 @@ msgstr "ovde"
 
 #: frontend/src/utils/index.js:146
 msgid "in 1 hour"
-msgstr ""
+msgstr "za 1 čas"
 
 #: frontend/src/utils/index.js:142
 msgid "in 1 minute"
-msgstr ""
+msgstr "za 1 minut"
 
 #: frontend/src/utils/index.js:160
 msgid "in 1 year"
-msgstr ""
+msgstr "za 1 godinu"
 
 #: frontend/src/utils/index.js:111
 msgid "in {0} M"
-msgstr ""
+msgstr "za {0} M"
 
 #: frontend/src/utils/index.js:107
 msgid "in {0} d"
-msgstr ""
+msgstr "za {0} d"
 
 #: frontend/src/utils/index.js:154
 msgid "in {0} days"
-msgstr ""
+msgstr "za {0} dana"
 
 #: frontend/src/utils/index.js:101
 msgid "in {0} h"
-msgstr ""
+msgstr "za {0} h"
 
 #: frontend/src/utils/index.js:148
 msgid "in {0} hours"
-msgstr ""
+msgstr "za {0} časova"
 
 #: frontend/src/utils/index.js:99
 msgid "in {0} m"
-msgstr ""
+msgstr "za {0} m"
 
 #: frontend/src/utils/index.js:144
 msgid "in {0} minutes"
-msgstr ""
+msgstr "za {0} minuta"
 
 #: frontend/src/utils/index.js:158
 msgid "in {0} months"
-msgstr ""
+msgstr "za {0} meseci"
 
 #: frontend/src/utils/index.js:109
 msgid "in {0} w"
-msgstr ""
+msgstr "za {0} w"
 
 #: frontend/src/utils/index.js:156
 msgid "in {0} weeks"
-msgstr ""
+msgstr "za {0} nedelja"
 
 #: frontend/src/utils/index.js:113
 msgid "in {0} y"
-msgstr ""
+msgstr "za {0} y"
 
 #: frontend/src/utils/index.js:162
 msgid "in {0} years"
-msgstr ""
+msgstr "za {0} godina"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:28
 #: frontend/src/components/Settings/InviteUserPage.vue:37
@@ -5513,7 +5509,7 @@ msgstr "{0} h"
 
 #: frontend/src/components/Settings/Users.vue:291
 msgid "{0} has been granted {1} access"
-msgstr ""
+msgstr "{0} je dodeljen pristup sa ulogom {1}"
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
@@ -5566,15 +5562,15 @@ msgstr "pre {0} godina"
 
 #: frontend/src/data/script.js:330
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
-msgstr ""
+msgstr "Izbegavajte korišćenje \"trigger\" kao naziva polja - u sukobu je sa ugrađenom trigger() metodom."
 
 #: frontend/src/data/script.js:342
 msgid "⚠️ Method \"{0}\" not found in class."
-msgstr ""
+msgstr "Metodа \"{0}\" nije pronađenа u klasi."
 
 #: frontend/src/data/script.js:87
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
-msgstr ""
+msgstr "Nijedna klasa nije pronađena za DocType: {0}, obavezno mora postojati klasa za matični DocType. Može biti prazna, ali mora postojati."
 
 #: frontend/src/data/script.js:184
 msgid "⚠️ No data found for parent field: {0}"
@@ -5582,5 +5578,5 @@ msgstr "Nema podataka za matično polje: {0}"
 
 #: frontend/src/data/script.js:192
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
-msgstr ""
+msgstr "Nijedan red nije pronađen za idx: {0} u matičnom polju: {1}"
 
