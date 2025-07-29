@@ -490,6 +490,7 @@ import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
 import { Button, Tooltip, createResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
@@ -526,6 +527,8 @@ const route = useRoute()
 const doc = defineModel()
 const reload = defineModel('reload')
 const tabIndex = defineModel('tabIndex')
+
+const { document: _document } = useDocument(props.doctype, doc.value.data.name)
 
 const reload_email = ref(false)
 const modalRef = ref(null)
@@ -767,6 +770,7 @@ const whatsappBox = ref(null)
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
     all_activities.reload()
+    _document.reload()
     reload.value = false
     reload_email.value = false
   }
