@@ -8,7 +8,7 @@
         <Button
           v-if="!editing"
           :label="__('Refresh')"
-          @click="dashboardItems.reload"
+          @click="refreshDashboard"
         >
           <template #prefix>
             <LucideRefreshCcw class="size-4" />
@@ -163,7 +163,7 @@ import {
   Dropdown,
   Tooltip,
 } from 'frappe-ui'
-import { ref, reactive, computed, provide } from 'vue'
+import { ref, reactive, computed, provide, onMounted } from 'vue'
 
 const { users, getUser, isManager, isAdmin } = usersStore()
 
@@ -192,6 +192,10 @@ const toDate = computed(() => {
 function updateFilter(key: string, value: any, callback?: () => void) {
   filters[key] = value
   callback?.()
+  dashboardItems.reload()
+}
+
+function refreshDashboard() {
   dashboardItems.reload()
 }
 
@@ -247,7 +251,15 @@ const options = computed(() => [
 
 const dashboardItems = createResource({
   url: 'crm.api.dashboard.get_dashboard',
-  cache: ['Analytics', 'ManagerDashboard'],
+  cache() {
+    return [
+      'Analytics',
+      'ManagerDashboard',
+      fromDate.value,
+      toDate.value,
+      filters.user || 'all-users'
+    ]
+  },
   makeParams() {
     return {
       from_date: fromDate.value,
@@ -256,6 +268,10 @@ const dashboardItems = createResource({
     }
   },
   auto: true,
+})
+
+onMounted(() => {
+  dashboardItems.reload()
 })
 
 const dirty = computed(() => {
@@ -313,6 +329,8 @@ function resetToDefault() {
     },
   })
 }
+
+(window as any).dashboardItems = dashboardItems
 
 usePageMeta(() => {
   return { title: __('CRM Dashboard') }
