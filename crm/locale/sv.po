@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-26 06:34\n"
+"POT-Creation-Date: 2025-07-27 09:38+0000\n"
+"PO-Revision-Date: 2025-07-29 07:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -966,10 +966,6 @@ msgstr "Rensa alla Filter"
 msgid "Close"
 msgstr "Stäng"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
-msgid "Close Date is required."
-msgstr "Stängning Datum erfordras."
-
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
@@ -1228,12 +1224,6 @@ msgstr "Antal"
 msgid "Create"
 msgstr "Skapa"
 
-#: frontend/src/components/Activities/Activities.vue:795
-#: frontend/src/components/Activities/ActivityHeader.vue:137
-#: frontend/src/components/Activities/ActivityHeader.vue:180
-msgid "Create Call Log"
-msgstr "Skapa Samtalslogg"
-
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
 msgstr "Skapa Affär"
@@ -1387,10 +1377,6 @@ msgstr "Affär Status"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Deal Value"
 msgstr "Affärsvärde"
-
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
-msgid "Deal Value is required."
-msgstr "Affärsvärde erfordras."
 
 #: crm/api/dashboard.py:977
 msgid "Deal generation channel analysis"
@@ -1662,7 +1648,7 @@ msgstr "DocType"
 msgid "Document not found"
 msgstr "Dokument hittades inte"
 
-#: frontend/src/data/document.js:23
+#: frontend/src/data/document.js:24
 msgid "Document updated successfully"
 msgstr "Dokument uppdaterad"
 
@@ -1977,7 +1963,7 @@ msgstr "Fel vid Uuppdatering av Affär"
 msgid "Error updating deal: {0}"
 msgstr "Fel vid uppdatering av affär: {0}"
 
-#: frontend/src/data/document.js:26
+#: frontend/src/data/document.js:27
 msgid "Error updating document"
 msgstr "Fel vid uppdatering av dokument"
 
@@ -2055,10 +2041,18 @@ msgstr "Expandera"
 msgid "Expected Closure Date"
 msgstr "Förväntad Stängning Datum"
 
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
+msgid "Expected Closure Date is required."
+msgstr "Förväntad stängningsdatum erfordras."
+
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Deal Value"
 msgstr "Förväntad Affärsvärde"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
+msgid "Expected Deal Value is required."
+msgstr "Förväntad Affärsvärde erfordras."
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2116,10 +2110,6 @@ msgstr "Misslyckades med att skapa mall"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:217
 msgid "Failed to delete template"
 msgstr "Misslyckades med att ta bort mall"
-
-#: crm/utils/__init__.py:285
-msgid "Failed to fetch historical exchange rate from external API. Please try again later."
-msgstr "Misslyckades med att hämta historik för växelkurs från externt API. Försök igen senare."
 
 #: frontend/src/data/script.js:110
 msgid "Failed to load form controller: {0}"
@@ -2889,6 +2879,12 @@ msgstr "Laddar..."
 msgid "Log"
 msgstr "Logg"
 
+#: frontend/src/components/Activities/Activities.vue:795
+#: frontend/src/components/Activities/ActivityHeader.vue:137
+#: frontend/src/components/Activities/ActivityHeader.vue:180
+msgid "Log a Call"
+msgstr "Logga Samtal"
+
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
 msgstr "Logga in på Frappe Cloud?"
@@ -3012,7 +3008,7 @@ msgstr "Hantera e-post konton för att skicka och ta emot e-post direkt från S�
 msgid "Manager"
 msgstr "Ansvarig"
 
-#: frontend/src/data/document.js:34
+#: frontend/src/data/document.js:35
 msgid "Mandatory field error: {0}"
 msgstr "Erfordrad fält fel: {0}"
 

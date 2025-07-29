@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-26 06:34\n"
+"POT-Creation-Date: 2025-07-27 09:38+0000\n"
+"PO-Revision-Date: 2025-07-29 07:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -966,10 +966,6 @@ msgstr "Obriši sve Filtere"
 msgid "Close"
 msgstr "Zatvori"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
-msgid "Close Date is required."
-msgstr "Datum zaključenja je obavezan."
-
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
@@ -1228,12 +1224,6 @@ msgstr "Broj"
 msgid "Create"
 msgstr "Kreiraj"
 
-#: frontend/src/components/Activities/Activities.vue:795
-#: frontend/src/components/Activities/ActivityHeader.vue:137
-#: frontend/src/components/Activities/ActivityHeader.vue:180
-msgid "Create Call Log"
-msgstr "Kreiraj zapisnik poziva"
-
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
 msgstr "Kreiraj Posao"
@@ -1387,10 +1377,6 @@ msgstr "Status Posla"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Deal Value"
 msgstr "Vrijednost posla"
-
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
-msgid "Deal Value is required."
-msgstr "Vrijednost posla je obavezana."
 
 #: crm/api/dashboard.py:977
 msgid "Deal generation channel analysis"
@@ -1662,7 +1648,7 @@ msgstr "Tip Dokumenta"
 msgid "Document not found"
 msgstr "Dokument nije pronađen"
 
-#: frontend/src/data/document.js:23
+#: frontend/src/data/document.js:24
 msgid "Document updated successfully"
 msgstr "Dokument je uspješno ažuriran"
 
@@ -1977,7 +1963,7 @@ msgstr "Greška pri ažuriranju posla"
 msgid "Error updating deal: {0}"
 msgstr "Greška pri ažuriranju posla: {0}"
 
-#: frontend/src/data/document.js:26
+#: frontend/src/data/document.js:27
 msgid "Error updating document"
 msgstr "Greška pri ažuriranju dokumenta"
 
@@ -2055,10 +2041,18 @@ msgstr "Proširi"
 msgid "Expected Closure Date"
 msgstr "Očekivani datum zatvaranja"
 
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
+msgid "Expected Closure Date is required."
+msgstr ""
+
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Deal Value"
 msgstr "Očekivana vrijednost posla"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
+msgid "Expected Deal Value is required."
+msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2116,10 +2110,6 @@ msgstr "Nije uspjelo kreiranje šablona"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:217
 msgid "Failed to delete template"
 msgstr "Brisanje šablona nije uspjelo"
-
-#: crm/utils/__init__.py:285
-msgid "Failed to fetch historical exchange rate from external API. Please try again later."
-msgstr "Nije uspjelo preuzimanje historijskog kurs iz eksternog API-ja. Pokušaj ponovo kasnije."
 
 #: frontend/src/data/script.js:110
 msgid "Failed to load form controller: {0}"
@@ -2889,6 +2879,12 @@ msgstr "Učitavanje u toku..."
 msgid "Log"
 msgstr "Zapisnik"
 
+#: frontend/src/components/Activities/Activities.vue:795
+#: frontend/src/components/Activities/ActivityHeader.vue:137
+#: frontend/src/components/Activities/ActivityHeader.vue:180
+msgid "Log a Call"
+msgstr ""
+
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
 msgstr "Prijavi se na Frappe Cloud?"
@@ -3012,7 +3008,7 @@ msgstr "Upravljaj računima e-pošte kako biste slali i primali e-poštu direktn
 msgid "Manager"
 msgstr "Upravitelj"
 
-#: frontend/src/data/document.js:34
+#: frontend/src/data/document.js:35
 msgid "Mandatory field error: {0}"
 msgstr "Greška obaveznog polja: {0}"
 
