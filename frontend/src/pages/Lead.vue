@@ -183,7 +183,7 @@
                 <Tooltip :text="__('Delete')">
                   <div>
                     <Button
-                      @click="deleteLeadWithModal"
+                      @click="deleteLead"
                       variant="subtle"
                       theme="red"
                       icon="trash-2"
@@ -245,6 +245,7 @@
   />
 </template>
 <script setup>
+import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import Resizer from '@/components/Resizer.vue'
@@ -294,7 +295,7 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
@@ -351,7 +352,7 @@ watch(
         toast,
         updateField,
         createToast: toast.create,
-        deleteDoc: deleteLeadWithModal,
+        deleteDoc: deleteLead,
         call,
       })
       document._actions = s.actions || []
@@ -501,7 +502,7 @@ function updateField(name, value) {
   })
 }
 
-async function deleteLeadWithModal() {
+function deleteLead() {
   showDeleteLinkedDocModal.value = true
 }
 
