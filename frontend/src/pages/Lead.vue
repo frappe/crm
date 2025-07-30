@@ -54,7 +54,7 @@
         <Activities
           ref="activities"
           doctype="CRM Lead"
-          :docname="doc.name"
+          :docname="leadId"
           :tabs="tabs"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
@@ -66,9 +66,9 @@
     <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
         class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
-        @click="copyToClipboard(doc.name)"
+        @click="copyToClipboard(leadId)"
       >
-        {{ __(doc.name) }}
+        {{ __(leadId) }}
       </div>
       <FileUploader
         @success="(file) => updateField('image', file.file_url)"
@@ -211,7 +211,7 @@
         <SidePanelLayout
           :sections="sections.data"
           doctype="CRM Lead"
-          :docname="doc.name"
+          :docname="leadId"
           @reload="sections.reload"
           @afterFieldChange="reloadAssignees"
         />
@@ -229,10 +229,9 @@
     :lead="doc"
   />
   <FilesUploader
-    v-if="doc?.name"
     v-model="showFilesUploader"
     doctype="CRM Lead"
-    :docname="doc.name"
+    :docname="leadId"
     @after="
       () => {
         activities?.all_activities?.reload()
