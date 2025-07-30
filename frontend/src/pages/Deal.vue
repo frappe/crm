@@ -1,5 +1,5 @@
 <template>
-  <LayoutHeader v-if="deal.data">
+  <LayoutHeader>
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">
@@ -7,38 +7,30 @@
         </template>
       </Breadcrumbs>
     </template>
-    <template #right-header>
+    <template v-if="!errorTitle" #right-header>
       <CustomActions
-        v-if="deal.data._customActions?.length"
-        :actions="deal.data._customActions"
+        v-if="document._actions?.length"
+        :actions="document._actions"
       />
       <CustomActions
         v-if="document.actions?.length"
         :actions="document.actions"
       />
-      <AssignTo
-        v-model="assignees.data"
-        :data="document.doc"
-        doctype="CRM Deal"
-      />
+      <AssignTo v-model="assignees.data" :data="doc" doctype="CRM Deal" />
       <Dropdown
-        v-if="document.doc"
+        v-if="doc"
         :options="
           statusOptions(
             'deal',
-            document.statuses?.length
-              ? document.statuses
-              : deal.data._customStatuses,
+            document.statuses?.length ? document.statuses : document._statuses,
             triggerStatusChange,
           )
         "
       >
         <template #default="{ open }">
-          <Button :label="document.doc.status">
+          <Button v-if="doc.status" :label="doc.status">
             <template #prefix>
-              <IndicatorIcon
-                :class="getDealStatus(document.doc.status).color"
-              />
+              <IndicatorIcon :class="getDealStatus(doc.status).color" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -69,9 +61,9 @@
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
         class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
-        @click="copyToClipboard(deal.data.name)"
+        @click="copyToClipboard(doc.name)"
       >
-        {{ __(deal.data.name) }}
+        {{ __(doc.name) }}
       </div>
       <div class="flex items-center justify-start gap-5 border-b p-5">
         <Tooltip :text="__('Organization logo')">
@@ -102,9 +94,7 @@
               <div>
                 <Button
                   @click="
-                    deal.data.email
-                      ? openEmailBox()
-                      : toast.error(__('No email set'))
+                    doc.email ? openEmailBox() : toast.error(__('No email set'))
                   "
                 >
                   <template #icon><Email2Icon /></template>
@@ -115,8 +105,8 @@
               <div>
                 <Button
                   @click="
-                    deal.data.website
-                      ? openWebsite(deal.data.website)
+                    doc.website
+                      ? openWebsite(doc.website)
                       : toast.error(__('No website set'))
                   "
                 >
@@ -131,12 +121,25 @@
                 </Button>
               </div>
             </Tooltip>
+<<<<<<< HEAD
+=======
+            <Tooltip :text="__('Delete')">
+              <div>
+                <Button
+                  @click="deleteDealWithModal(doc.name)"
+                  variant="subtle"
+                  icon="trash-2"
+                  theme="red"
+                />
+              </div>
+            </Tooltip>
+>>>>>>> 0144bc10 (fix: use document.doc instead of lead.data/deal.data)
           </div>
         </div>
       </div>
       <SLASection
-        v-if="deal.data.sla_status"
-        v-model="deal.data"
+        v-if="doc.sla_status"
+        v-model="doc"
         @updateField="updateField"
       />
       <div
@@ -147,7 +150,7 @@
           :sections="sections.data"
           :addContact="addContact"
           doctype="CRM Deal"
-          :docname="deal.data.name"
+          :docname="doc.name"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
           @afterFieldChange="reloadAssignees"
@@ -162,7 +165,7 @@
                   (value, close) => {
                     _contact = {
                       first_name: value,
-                      company_name: deal.data.organization,
+                      company_name: doc.organization,
                     }
                     showContactModal = true
                     close()
@@ -298,7 +301,7 @@
     :data="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organization', doc.name),
+      afterInsert: (_doc) => updateField('organization', _doc.name),
     }"
   />
   <ContactModal
@@ -307,14 +310,14 @@
     :contact="_contact"
     :options="{
       redirect: false,
-      afterInsert: (doc) => addContact(doc.name),
+      afterInsert: (_doc) => addContact(_doc.name),
     }"
   />
   <FilesUploader
-    v-if="deal.data?.name"
+    v-if="doc?.name"
     v-model="showFilesUploader"
     doctype="CRM Deal"
-    :docname="deal.data.name"
+    :docname="doc.name"
     @after="
       () => {
         activities?.all_activities?.reload()
@@ -326,7 +329,7 @@
     v-if="showDeleteLinkedDocModal"
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Deal'"
-    :docname="props.dealId"
+    :docname="dealId"
     name="Deals"
   />
   <LostReasonModal
@@ -386,7 +389,15 @@ import {
   toast,
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
-import { ref, computed, h, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import {
+  ref,
+  computed,
+  h,
+  onMounted,
+  onBeforeUnmount,
+  nextTick,
+  watch,
+} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
@@ -411,44 +422,59 @@ const props = defineProps({
 const errorTitle = ref('')
 const errorMessage = ref('')
 
+const { triggerOnChange, assignees, document, scripts, error } = useDocument(
+  'CRM Deal',
+  props.dealId,
+)
+
+const doc = computed(() => document.doc || {})
+
+watch(error, (err) => {
+  if (err) {
+    errorTitle.value = __(
+      err.exc_type == 'DoesNotExistError'
+        ? 'Document not found'
+        : 'Error occurred',
+    )
+    errorMessage.value = __(err.messages?.[0] || 'An error occurred')
+  } else {
+    errorTitle.value = ''
+    errorMessage.value = ''
+  }
+})
+
+watch(
+  () => document.doc,
+  async (_doc) => {
+    if (scripts.data?.length) {
+      let s = await setupCustomizations(scripts.data, {
+        doc: _doc,
+        $dialog,
+        $socket,
+        router,
+        toast,
+        updateField,
+        createToast: toast.create,
+        deleteDoc: deleteDeal,
+        call,
+      })
+      document._actions = s.actions || []
+      document._statuses = s.statuses || []
+    }
+  },
+  { once: true },
+)
+
 const deal = createResource({
   url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
   params: { name: props.dealId },
   cache: ['deal', props.dealId],
   onSuccess: (data) => {
-    errorTitle.value = ''
-    errorMessage.value = ''
-
     if (data.organization) {
       organization.update({
         params: { doctype: 'CRM Organization', name: data.organization },
       })
       organization.fetch()
-    }
-
-    setupCustomizations(deal, {
-      doc: data,
-      $dialog,
-      $socket,
-      router,
-      toast,
-      updateField,
-      createToast: toast.create,
-      deleteDoc: deleteDeal,
-      resource: {
-        deal,
-        dealContacts,
-        sections,
-      },
-      call,
-    })
-  },
-  onError: (err) => {
-    if (err.messages?.[0]) {
-      errorTitle.value = __('Not permitted')
-      errorMessage.value = __(err.messages?.[0])
-    } else {
-      router.push({ name: 'Deals' })
     }
   },
 })
@@ -510,7 +536,7 @@ function updateDeal(fieldname, value, callback) {
 }
 
 function validateRequired(fieldname, value) {
-  let meta = deal.data.fields_meta || {}
+  let meta = deal.data?.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
     toast.error(__('{0} is a required field', [meta[fieldname].label]))
     return true
@@ -538,14 +564,14 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Deal', params: { dealId: deal.data.name } },
+    route: { name: 'Deal', params: { dealId: props.dealId } },
   })
   return items
 })
 
 const title = computed(() => {
   let t = doctypeMeta['CRM Deal']?.title_field || 'name'
-  return deal.data?.[t] || props.dealId
+  return doc.value?.[t] || props.dealId
 })
 
 usePageMeta(() => {
@@ -736,7 +762,7 @@ function updateField(name, value, callback) {
   }
 
   updateDeal(name, value, () => {
-    deal.data[name] = value
+    doc.value[name] = value
     callback?.()
   })
 }
@@ -759,11 +785,6 @@ function openEmailBox() {
   nextTick(() => (activities.value.emailBox.show = true))
 }
 
-const { assignees, document, triggerOnChange } = useDocument(
-  'CRM Deal',
-  props.dealId,
-)
-
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
   setLostReason()
@@ -785,7 +806,10 @@ function setLostReason() {
 }
 
 function beforeStatusChange(data) {
-  if (data?.hasOwnProperty('status') && getDealStatus(data.status).type == 'Lost') {
+  if (
+    data?.hasOwnProperty('status') &&
+    getDealStatus(data.status).type == 'Lost'
+  ) {
     setLostReason()
   } else {
     document.save.submit(null, {
