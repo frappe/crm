@@ -49,7 +49,7 @@
         <Activities
           ref="activities"
           doctype="CRM Deal"
-          :docname="doc.name"
+          :docname="dealId"
           :tabs="tabs"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
@@ -61,9 +61,9 @@
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
         class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
-        @click="copyToClipboard(doc.name)"
+        @click="copyToClipboard(dealId)"
       >
-        {{ __(doc.name) }}
+        {{ __(dealId) }}
       </div>
       <div class="flex items-center justify-start gap-5 border-b p-5">
         <Tooltip :text="__('Organization logo')">
@@ -147,7 +147,7 @@
           :sections="sections.data"
           :addContact="addContact"
           doctype="CRM Deal"
-          :docname="doc.name"
+          :docname="dealId"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
           @afterFieldChange="reloadAssignees"
@@ -311,10 +311,9 @@
     }"
   />
   <FilesUploader
-    v-if="doc?.name"
     v-model="showFilesUploader"
     doctype="CRM Deal"
-    :docname="doc.name"
+    :docname="dealId"
     @after="
       () => {
         activities?.all_activities?.reload()
