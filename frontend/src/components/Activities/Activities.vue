@@ -566,7 +566,7 @@ const whatsappMessages = createResource({
     reference_doctype: props.doctype,
     reference_name: props.docname,
   },
-  auto: true,
+  auto: whatsappEnabled.value,
   transform: (data) => sortByCreation(data),
   onSuccess: () => nextTick(() => scroll()),
 })
