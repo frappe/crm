@@ -124,7 +124,7 @@
             <Tooltip :text="__('Delete')">
               <div>
                 <Button
-                  @click="deleteDealWithModal(doc.name)"
+                  @click="deleteDealWithModal"
                   variant="subtle"
                   icon="trash-2"
                   theme="red"
@@ -452,7 +452,7 @@ watch(
         toast,
         updateField,
         createToast: toast.create,
-        deleteDoc: deleteDeal,
+        deleteDoc: deleteDealWithModal,
         call,
       })
       document._actions = s.actions || []
@@ -502,44 +502,6 @@ const showOrganizationModal = ref(false)
 const showFilesUploader = ref(false)
 const _organization = ref({})
 const showDeleteLinkedDocModal = ref(false)
-
-async function deleteDealWithModal() {
-  showDeleteLinkedDocModal.value = true
-}
-function updateDeal(fieldname, value, callback) {
-  value = Array.isArray(fieldname) ? '' : value
-
-  if (validateRequired(fieldname, value)) return
-
-  createResource({
-    url: 'frappe.client.set_value',
-    params: {
-      doctype: 'CRM Deal',
-      name: props.dealId,
-      fieldname,
-      value,
-    },
-    auto: true,
-    onSuccess: () => {
-      deal.reload()
-      reload.value = true
-      toast.success(__('Deal updated'))
-      callback?.()
-    },
-    onError: (err) => {
-      toast.error(__('Error updating deal: {0}', [err.messages?.[0]]))
-    },
-  })
-}
-
-function validateRequired(fieldname, value) {
-  let meta = deal.data?.fields_meta || {}
-  if (meta[fieldname]?.reqd && !value) {
-    toast.error(__('{0} is a required field', [meta[fieldname].label]))
-    return true
-  }
-  return false
-}
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
@@ -753,23 +715,40 @@ function triggerCall() {
   makeCall(mobile_no)
 }
 
-function updateField(name, value, callback) {
+async function triggerStatusChange(value) {
+  await triggerOnChange('status', value)
+  setLostReason()
+}
+
+function updateField(name, value) {
   if (name == 'status' && !isOnboardingStepsCompleted.value) {
     updateOnboardingStep('change_deal_status')
   }
 
-  updateDeal(name, value, () => {
+  value = Array.isArray(name) ? '' : value
+  let oldValues = Array.isArray(name) ? {} : doc.value[name]
+
+  if (Array.isArray(name)) {
+    name.forEach((field) => (doc.value[field] = value))
+  } else {
     doc.value[name] = value
-    callback?.()
+  }
+
+  document.save.submit(null, {
+    onSuccess: () => (reload.value = true),
+    onError: (err) => {
+      if (Array.isArray(name)) {
+        name.forEach((field) => (doc.value[field] = oldValues[field]))
+      } else {
+        doc.value[name] = oldValues
+      }
+      toast.error(err.messages?.[0] || __('Error updating field'))
+    },
   })
 }
 
-async function deleteDeal(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Deal',
-    name,
-  })
-  router.push({ name: 'Deals' })
+async function deleteDealWithModal() {
+  showDeleteLinkedDocModal.value = true
 }
 
 const activities = ref(null)
@@ -780,11 +759,6 @@ function openEmailBox() {
     activities.value.changeTabTo('emails')
   }
   nextTick(() => (activities.value.emailBox.show = true))
-}
-
-async function triggerStatusChange(value) {
-  await triggerOnChange('status', value)
-  setLostReason()
 }
 
 const showLostReasonModal = ref(false)

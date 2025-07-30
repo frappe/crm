@@ -183,7 +183,7 @@
                 <Tooltip :text="__('Delete')">
                   <div>
                     <Button
-                      @click="deleteLeadWithModal(doc.name)"
+                      @click="deleteLeadWithModal"
                       variant="subtle"
                       theme="red"
                       icon="trash-2"
@@ -326,11 +326,6 @@ const { triggerOnChange, assignees, document, scripts, error } = useDocument(
 
 const doc = computed(() => document.doc || {})
 
-async function triggerStatusChange(value) {
-  await triggerOnChange('status', value)
-  document.save.submit()
-}
-
 watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
@@ -357,7 +352,7 @@ watch(
         toast,
         updateField,
         createToast: toast.create,
-        deleteDoc: deleteLead,
+        deleteDoc: deleteLeadWithModal,
         call,
       })
       document._actions = s.actions || []
@@ -380,41 +375,6 @@ onMounted(() => {
 
 const reload = ref(false)
 const showFilesUploader = ref(false)
-
-function updateLead(fieldname, value, callback) {
-  value = Array.isArray(fieldname) ? '' : value
-
-  if (!Array.isArray(fieldname) && validateRequired(fieldname, value)) return
-
-  createResource({
-    url: 'frappe.client.set_value',
-    params: {
-      doctype: 'CRM Lead',
-      name: props.leadId,
-      fieldname,
-      value,
-    },
-    auto: true,
-    onSuccess: () => {
-      lead.reload()
-      reload.value = true
-      toast.success(__('Lead updated successfully'))
-      callback?.()
-    },
-    onError: (err) => {
-      toast.error(err.messages?.[0] || __('Error updating lead'))
-    },
-  })
-}
-
-function validateRequired(fieldname, value) {
-  let meta = lead.data?.fields_meta || {}
-  if (meta[fieldname]?.reqd && !value) {
-    toast.error(__('{0} is a required field', [meta[fieldname].label]))
-    return true
-  }
-  return false
-}
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
@@ -525,22 +485,35 @@ const sections = createResource({
   auto: true,
 })
 
-function updateField(name, value, callback) {
-  updateLead(name, value, () => {
-    doc[name] = value
-    callback?.()
+async function triggerStatusChange(value) {
+  await triggerOnChange('status', value)
+  document.save.submit()
+}
+
+function updateField(name, value) {
+  value = Array.isArray(name) ? '' : value
+  let oldValues = Array.isArray(name) ? {} : doc.value[name]
+
+  if (Array.isArray(name)) {
+    name.forEach((field) => (doc.value[field] = value))
+  } else {
+    doc.value[name] = value
+  }
+
+  document.save.submit(null, {
+    onSuccess: () => (reload.value = true),
+    onError: (err) => {
+      if (Array.isArray(name)) {
+        name.forEach((field) => (doc.value[field] = oldValues[field]))
+      } else {
+        doc.value[name] = oldValues
+      }
+      toast.error(err.messages?.[0] || __('Error updating field'))
+    },
   })
 }
 
-async function deleteLead(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Lead',
-    name,
-  })
-  router.push({ name: 'Leads' })
-}
-
-async function deleteLeadWithModal(name) {
+async function deleteLeadWithModal() {
   showDeleteLinkedDocModal.value = true
 }
 
