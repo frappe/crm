@@ -317,10 +317,13 @@ const props = defineProps({
   },
 })
 
+const reload = ref(false)
+const activities = ref(null)
 const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
+const showFilesUploader = ref(false)
 
 const { triggerOnChange, assignees, document, scripts, error } = useDocument(
   'CRM Lead',
@@ -365,9 +368,6 @@ watch(
   { once: true },
 )
 
-const reload = ref(false)
-const showFilesUploader = ref(false)
-
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
@@ -399,10 +399,7 @@ const title = computed(() => {
 })
 
 usePageMeta(() => {
-  return {
-    title: title.value,
-    icon: brand.favicon,
-  }
+  return { title: title.value, icon: brand.favicon }
 })
 
 const tabs = computed(() => {
@@ -459,17 +456,6 @@ const tabs = computed(() => {
 
 const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
 
-watch(tabs, (value) => {
-  if (value && route.params.tabName) {
-    let index = value.findIndex(
-      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase(),
-    )
-    if (index !== -1) {
-      tabIndex.value = index
-    }
-  }
-})
-
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   cache: ['sidePanelSections', 'CRM Lead'],
@@ -508,8 +494,6 @@ function updateField(name, value) {
 function deleteLead() {
   showDeleteLinkedDocModal.value = true
 }
-
-const activities = ref(null)
 
 function openEmailBox() {
   let currentTab = tabs.value[tabIndex.value]
