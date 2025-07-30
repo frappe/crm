@@ -43,16 +43,16 @@
       </Dropdown>
     </template>
   </LayoutHeader>
-  <div v-if="deal.data" class="flex h-full overflow-hidden">
+  <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs as="div" v-model="tabIndex" :tabs="tabs">
       <template #tab-panel>
         <Activities
           ref="activities"
           doctype="CRM Deal"
+          :docname="doc.name"
           :tabs="tabs"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
-          v-model="deal"
           @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
@@ -72,12 +72,12 @@
               size="3xl"
               class="size-12"
               :label="title"
-              :image="organization.data?.organization_logo"
+              :image="organization?.organization_logo"
             />
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate text-ink-gray-9">
-          <Tooltip :text="organization.data?.name || __('Set an organization')">
+          <Tooltip :text="organization?.name || __('Set an organization')">
             <div class="truncate text-2xl font-medium">
               {{ title }}
             </div>
@@ -462,35 +462,28 @@ watch(
   { once: true },
 )
 
-const deal = createResource({
-  url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
-  params: { name: props.dealId },
-  cache: ['deal', props.dealId],
-  onSuccess: (data) => {
-    if (data.organization) {
-      organization.update({
-        params: { doctype: 'CRM Organization', name: data.organization },
-      })
-      organization.fetch()
+const organizationDocument = ref(null)
+
+watch(
+  () => doc.value.organization,
+  (org) => {
+    if (org && !organizationDocument.value?.doc) {
+      let { document: _organizationDocument } = useDocument(
+        'CRM Organization',
+        org,
+      )
+      organizationDocument.value = _organizationDocument
     }
   },
-})
+  { immediate: true },
+)
 
-const organization = createResource({
-  url: 'frappe.client.get',
-  onSuccess: (data) => (deal.data._organizationObj = data),
-})
+const organization = computed(() => organizationDocument.value?.doc || {})
 
 onMounted(() => {
   $socket.on('crm_customer_created', () => {
     toast.success(__('Customer created successfully'))
   })
-
-  if (deal.data) {
-    organization.data = deal.data._organizationObj
-    return
-  }
-  deal.fetch()
 })
 
 onBeforeUnmount(() => {

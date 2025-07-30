@@ -48,16 +48,16 @@
       />
     </template>
   </LayoutHeader>
-  <div v-if="lead.data" class="flex h-full overflow-hidden">
+  <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs as="div" v-model="tabIndex" :tabs="tabs">
       <template #tab-panel>
         <Activities
           ref="activities"
           doctype="CRM Lead"
+          :docname="doc.name"
           :tabs="tabs"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
-          v-model="lead"
           @beforeSave="saveChanges"
           @afterSave="reloadAssignees"
         />
@@ -361,17 +361,6 @@ watch(
   },
   { once: true },
 )
-
-const lead = createResource({
-  url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
-  params: { name: props.leadId },
-  cache: ['lead', props.leadId],
-})
-
-onMounted(() => {
-  if (lead.data) return
-  lead.fetch()
-})
 
 const reload = ref(false)
 const showFilesUploader = ref(false)
