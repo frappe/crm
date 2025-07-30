@@ -338,6 +338,7 @@
   />
 </template>
 <script setup>
+import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import Resizer from '@/components/Resizer.vue'
@@ -420,6 +421,7 @@ const props = defineProps({
 
 const errorTitle = ref('')
 const errorMessage = ref('')
+const showDeleteLinkedDocModal = ref(false)
 
 const { triggerOnChange, assignees, document, scripts, error } = useDocument(
   'CRM Deal',
@@ -454,7 +456,7 @@ watch(
         toast,
         updateField,
         createToast: toast.create,
-        deleteDoc: deleteDealWithModal,
+        deleteDoc: deleteDeal,
         call,
       })
       document._actions = s.actions || []
@@ -496,7 +498,6 @@ const reload = ref(false)
 const showOrganizationModal = ref(false)
 const showFilesUploader = ref(false)
 const _organization = ref({})
-const showDeleteLinkedDocModal = ref(false)
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
@@ -742,7 +743,7 @@ function updateField(name, value) {
   })
 }
 
-async function deleteDealWithModal() {
+function deleteDeal() {
   showDeleteLinkedDocModal.value = true
 }
 
