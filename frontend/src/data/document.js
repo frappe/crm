@@ -3,16 +3,18 @@ import { globalStore } from '@/stores/global'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { runSequentially, parseAssignees } from '@/utils'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
 const assigneesCache = {}
 
 export function useDocument(doctype, docname) {
-  const { setupScript } = getScript(doctype)
+  const { setupScript, scripts } = getScript(doctype)
 
   documentsCache[doctype] = documentsCache[doctype] || {}
+
+  const error = ref('')
 
   if (!documentsCache[doctype][docname || '']) {
     if (docname) {
@@ -20,6 +22,20 @@ export function useDocument(doctype, docname) {
         doctype: doctype,
         name: docname,
         onSuccess: async () => await setupFormScript(),
+        onError: (err) => {
+          error.value = err
+          if (err.exc_type === 'DoesNotExistError') {
+            toast.error(__(err.messages[0] || 'Document does not exist'))
+          }
+          if (err.exc_type === 'PermissionError') {
+            toast.error(
+              __(
+                err.messages[0] ||
+                  'You do not have permission to access this document',
+              ),
+            )
+          }
+        },
         setValue: {
           onSuccess: () => {
             triggerOnSave()
@@ -262,6 +278,8 @@ export function useDocument(doctype, docname) {
   return {
     document: documentsCache[doctype][docname || ''],
     assignees: assigneesCache[doctype][docname || ''],
+    scripts,
+    error,
     getControllers,
     triggerOnLoad,
     triggerOnBeforeCreate,
