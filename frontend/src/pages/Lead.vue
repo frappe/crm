@@ -1,5 +1,5 @@
 <template>
-  <LayoutHeader v-if="lead.data">
+  <LayoutHeader>
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">
@@ -7,38 +7,30 @@
         </template>
       </Breadcrumbs>
     </template>
-    <template #right-header>
+    <template v-if="!errorTitle" #right-header>
       <CustomActions
-        v-if="lead.data._customActions?.length"
-        :actions="lead.data._customActions"
+        v-if="document._actions?.length"
+        :actions="document._actions"
       />
       <CustomActions
         v-if="document.actions?.length"
         :actions="document.actions"
       />
-      <AssignTo
-        v-model="assignees.data"
-        :data="document.doc"
-        doctype="CRM Lead"
-      />
+      <AssignTo v-model="assignees.data" :data="doc" doctype="CRM Lead" />
       <Dropdown
-        v-if="document.doc"
+        v-if="doc"
         :options="
           statusOptions(
             'lead',
-            document.statuses?.length
-              ? document.statuses
-              : lead.data._customStatuses,
+            document.statuses?.length ? document.statuses : document._statuses,
             triggerStatusChange,
           )
         "
       >
         <template #default="{ open }">
-          <Button :label="document.doc.status">
+          <Button v-if="doc.status" :label="doc.status">
             <template #prefix>
-              <IndicatorIcon
-                :class="getLeadStatus(document.doc.status).color"
-              />
+              <IndicatorIcon :class="getLeadStatus(doc.status).color" />
             </template>
             <template #suffix>
               <FeatherIcon
@@ -56,16 +48,16 @@
       />
     </template>
   </LayoutHeader>
-  <div v-if="lead?.data" class="flex h-full overflow-hidden">
+  <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs as="div" v-model="tabIndex" :tabs="tabs">
       <template #tab-panel>
         <Activities
           ref="activities"
           doctype="CRM Lead"
+          :docname="leadId"
           :tabs="tabs"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
-          v-model="lead"
           @beforeSave="saveChanges"
           @afterSave="reloadAssignees"
         />
@@ -74,9 +66,9 @@
     <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
         class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
-        @click="copyToClipboard(lead.data.name)"
+        @click="copyToClipboard(leadId)"
       >
-        {{ __(lead.data.name) }}
+        {{ __(leadId) }}
       </div>
       <FileUploader
         @success="(file) => updateField('image', file.file_url)"
@@ -89,17 +81,17 @@
                 size="3xl"
                 class="size-12"
                 :label="title"
-                :image="lead.data.image"
+                :image="doc.image"
               />
               <component
-                :is="lead.data.image ? Dropdown : 'div'"
+                :is="doc.image ? Dropdown : 'div'"
                 v-bind="
-                  lead.data.image
+                  doc.image
                     ? {
                         options: [
                           {
                             icon: 'upload',
-                            label: lead.data.image
+                            label: doc.image
                               ? __('Change image')
                               : __('Upload image'),
                             onClick: openFileSelector,
@@ -127,7 +119,7 @@
               </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
-              <Tooltip :text="lead.data.lead_name || __('Set first name')">
+              <Tooltip :text="doc.lead_name || __('Set first name')">
                 <div class="truncate text-2xl font-medium text-ink-gray-9">
                   {{ title }}
                 </div>
@@ -138,8 +130,8 @@
                     <Button
                       @click="
                         () =>
-                          lead.data.mobile_no
-                            ? makeCall(lead.data.mobile_no)
+                          doc.mobile_no
+                            ? makeCall(doc.mobile_no)
                             : toast.error(__('No phone number set'))
                       "
                     >
@@ -153,7 +145,7 @@
                   <div>
                     <Button
                       @click="
-                        lead.data.email
+                        doc.email
                           ? openEmailBox()
                           : toast.error(__('No email set'))
                       "
@@ -168,8 +160,8 @@
                   <div>
                     <Button
                       @click="
-                        lead.data.website
-                          ? openWebsite(lead.data.website)
+                        doc.website
+                          ? openWebsite(doc.website)
                           : toast.error(__('No website set'))
                       "
                     >
@@ -191,7 +183,7 @@
                 <Tooltip :text="__('Delete')">
                   <div>
                     <Button
-                      @click="deleteLeadWithModal(lead.data.name)"
+                      @click="deleteLead"
                       variant="subtle"
                       theme="red"
                       icon="trash-2"
@@ -205,8 +197,8 @@
         </template>
       </FileUploader>
       <SLASection
-        v-if="lead.data.sla_status"
-        v-model="lead.data"
+        v-if="doc.sla_status"
+        v-model="doc"
         @updateField="updateField"
       />
       <div
@@ -216,7 +208,7 @@
         <SidePanelLayout
           :sections="sections.data"
           doctype="CRM Lead"
-          :docname="lead.data.name"
+          :docname="leadId"
           @reload="sections.reload"
           @afterFieldChange="reloadAssignees"
         />
@@ -231,13 +223,12 @@
   <ConvertToDealModal
     v-if="showConvertToDealModal"
     v-model="showConvertToDealModal"
-    :lead="lead.data"
+    :lead="doc"
   />
   <FilesUploader
-    v-if="lead.data?.name"
     v-model="showFilesUploader"
     doctype="CRM Lead"
-    :docname="lead.data.name"
+    :docname="leadId"
     @after="
       () => {
         activities?.all_activities?.reload()
@@ -249,11 +240,12 @@
     v-if="showDeleteLinkedDocModal"
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Lead'"
-    :docname="props.leadId"
+    :docname="leadId"
     name="Leads"
   />
 </template>
 <script setup>
+import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import Resizer from '@/components/Resizer.vue'
@@ -303,7 +295,7 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
@@ -322,93 +314,56 @@ const props = defineProps({
   },
 })
 
+const reload = ref(false)
+const activities = ref(null)
 const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
+const showFilesUploader = ref(false)
 
-const { triggerOnChange, assignees, document } = useDocument(
+const { triggerOnChange, assignees, document, scripts, error } = useDocument(
   'CRM Lead',
   props.leadId,
 )
 
-async function triggerStatusChange(value) {
-  await triggerOnChange('status', value)
-  document.save.submit()
-}
+const doc = computed(() => document.doc || {})
 
-const lead = createResource({
-  url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
-  params: { name: props.leadId },
-  cache: ['lead', props.leadId],
-  onSuccess: (data) => {
+watch(error, (err) => {
+  if (err) {
+    errorTitle.value = __(
+      err.exc_type == 'DoesNotExistError'
+        ? 'Document not found'
+        : 'Error occurred',
+    )
+    errorMessage.value = __(err.messages?.[0] || 'An error occurred')
+  } else {
     errorTitle.value = ''
     errorMessage.value = ''
-    setupCustomizations(lead, {
-      doc: data,
-      $dialog,
-      $socket,
-      router,
-      toast,
-      updateField,
-      createToast: toast.create,
-      deleteDoc: deleteLead,
-      resource: { lead, sections },
-      call,
-    })
-  },
-  onError: (err) => {
-    if (err.messages?.[0]) {
-      errorTitle.value = __('Not permitted')
-      errorMessage.value = __(err.messages?.[0])
-    } else {
-      router.push({ name: 'Leads' })
+  }
+})
+
+watch(
+  () => document.doc,
+  async (_doc) => {
+    if (scripts.data?.length) {
+      let s = await setupCustomizations(scripts.data, {
+        doc: _doc,
+        $dialog,
+        $socket,
+        router,
+        toast,
+        updateField,
+        createToast: toast.create,
+        deleteDoc: deleteLead,
+        call,
+      })
+      document._actions = s.actions || []
+      document._statuses = s.statuses || []
     }
   },
-})
-
-onMounted(() => {
-  if (lead.data) return
-  lead.fetch()
-})
-
-const reload = ref(false)
-const showFilesUploader = ref(false)
-
-function updateLead(fieldname, value, callback) {
-  value = Array.isArray(fieldname) ? '' : value
-
-  if (!Array.isArray(fieldname) && validateRequired(fieldname, value)) return
-
-  createResource({
-    url: 'frappe.client.set_value',
-    params: {
-      doctype: 'CRM Lead',
-      name: props.leadId,
-      fieldname,
-      value,
-    },
-    auto: true,
-    onSuccess: () => {
-      lead.reload()
-      reload.value = true
-      toast.success(__('Lead updated successfully'))
-      callback?.()
-    },
-    onError: (err) => {
-      toast.error(err.messages?.[0] || __('Error updating lead'))
-    },
-  })
-}
-
-function validateRequired(fieldname, value) {
-  let meta = lead.data.fields_meta || {}
-  if (meta[fieldname]?.reqd && !value) {
-    toast.error(__('{0} is a required field', [meta[fieldname].label]))
-    return true
-  }
-  return false
-}
+  { once: true },
+)
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
@@ -430,21 +385,18 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Lead', params: { leadId: lead.data.name } },
+    route: { name: 'Lead', params: { leadId: props.leadId } },
   })
   return items
 })
 
 const title = computed(() => {
   let t = doctypeMeta['CRM Lead']?.title_field || 'name'
-  return lead.data?.[t] || props.leadId
+  return doc?.[t] || props.leadId
 })
 
 usePageMeta(() => {
-  return {
-    title: title.value,
-    icon: brand.favicon,
-  }
+  return { title: title.value, icon: brand.favicon }
 })
 
 const tabs = computed(() => {
@@ -501,17 +453,6 @@ const tabs = computed(() => {
 
 const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
 
-watch(tabs, (value) => {
-  if (value && route.params.tabName) {
-    let index = value.findIndex(
-      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase(),
-    )
-    if (index !== -1) {
-      tabIndex.value = index
-    }
-  }
-})
-
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   cache: ['sidePanelSections', 'CRM Lead'],
@@ -519,26 +460,37 @@ const sections = createResource({
   auto: true,
 })
 
-function updateField(name, value, callback) {
-  updateLead(name, value, () => {
-    lead.data[name] = value
-    callback?.()
+async function triggerStatusChange(value) {
+  await triggerOnChange('status', value)
+  document.save.submit()
+}
+
+function updateField(name, value) {
+  value = Array.isArray(name) ? '' : value
+  let oldValues = Array.isArray(name) ? {} : doc.value[name]
+
+  if (Array.isArray(name)) {
+    name.forEach((field) => (doc.value[field] = value))
+  } else {
+    doc.value[name] = value
+  }
+
+  document.save.submit(null, {
+    onSuccess: () => (reload.value = true),
+    onError: (err) => {
+      if (Array.isArray(name)) {
+        name.forEach((field) => (doc.value[field] = oldValues[field]))
+      } else {
+        doc.value[name] = oldValues
+      }
+      toast.error(err.messages?.[0] || __('Error updating field'))
+    },
   })
 }
 
-async function deleteLead(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Lead',
-    name,
-  })
-  router.push({ name: 'Leads' })
-}
-
-async function deleteLeadWithModal(name) {
+function deleteLead() {
   showDeleteLinkedDocModal.value = true
 }
-
-const activities = ref(null)
 
 function openEmailBox() {
   let currentTab = tabs.value[tabIndex.value]
