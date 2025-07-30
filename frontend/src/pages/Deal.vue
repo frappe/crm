@@ -584,6 +584,7 @@ const tabs = computed(() => {
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
+
 const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
 
 const sections = createResource({
