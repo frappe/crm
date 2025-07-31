@@ -18,9 +18,9 @@ echo "nvm use 18" >> ~/.bashrc
 cd /workspace
 
 bench init \
---ignore-exist \
---skip-redis-config-generation \
-frappe-bench
+    --ignore-exist \
+    --skip-redis-config-generation \
+    frappe-bench
 
 cd frappe-bench
 
@@ -35,9 +35,9 @@ sed -i '/redis/d' ./Procfile
 
 
 bench new-site dev.localhost \
---mariadb-root-password 123 \
---admin-password admin \
---no-mariadb-socket
+    --mariadb-root-password 123 \
+    --admin-password admin \
+    --no-mariadb-socket
 
 bench --site dev.localhost set-config developer_mode 1
 bench --site dev.localhost clear-cache
