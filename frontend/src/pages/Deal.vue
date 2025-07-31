@@ -124,7 +124,7 @@
             <Tooltip :text="__('Delete')">
               <div>
                 <Button
-                  @click="deleteDeal"
+                  @click="deleteDealWithModal"
                   variant="subtle"
                   icon="trash-2"
                   theme="red"
