@@ -131,6 +131,19 @@
                 </Button>
               </div>
             </Tooltip>
+<<<<<<< HEAD
+=======
+            <Tooltip :text="__('Delete')">
+              <div>
+                <Button
+                  @click="deleteDeal"
+                  variant="subtle"
+                  icon="trash-2"
+                  theme="red"
+                />
+              </div>
+            </Tooltip>
+>>>>>>> abc50182 (fix: update delete button click handler in Deal component)
           </div>
         </div>
       </div>
