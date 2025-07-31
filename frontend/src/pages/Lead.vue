@@ -180,8 +180,6 @@
                     </Button>
                   </div>
                 </Tooltip>
-<<<<<<< HEAD
-=======
                 <Tooltip :text="__('Delete')">
                   <div>
                     <Button
@@ -192,7 +190,6 @@
                     />
                   </div>
                 </Tooltip>
->>>>>>> 0144bc10 (fix: use document.doc instead of lead.data/deal.data)
               </div>
               <ErrorMessage :message="__(error)" />
             </div>
