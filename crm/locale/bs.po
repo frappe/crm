@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-27 09:38+0000\n"
-"PO-Revision-Date: 2025-07-29 07:01\n"
+"PO-Revision-Date: 2025-07-30 07:41\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -2043,7 +2043,7 @@ msgstr "Očekivani datum zatvaranja"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:163
 msgid "Expected Closure Date is required."
-msgstr ""
+msgstr "Očekivani datum zatvaranja je obavezan."
 
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -2052,7 +2052,7 @@ msgstr "Očekivana vrijednost posla"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:161
 msgid "Expected Deal Value is required."
-msgstr ""
+msgstr "Očekivana vrijednost posla je obavezna."
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2883,7 +2883,7 @@ msgstr "Zapisnik"
 #: frontend/src/components/Activities/ActivityHeader.vue:137
 #: frontend/src/components/Activities/ActivityHeader.vue:180
 msgid "Log a Call"
-msgstr ""
+msgstr "Zabilježi poziv"
 
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-27 09:38+0000\n"
-"PO-Revision-Date: 2025-07-29 07:01\n"
+"PO-Revision-Date: 2025-07-30 07:41\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -207,7 +207,7 @@ msgstr "Aktivitas"
 #: frontend/src/components/Dashboard/AddChartModal.vue:41
 #: frontend/src/components/Modals/AddExistingUserModal.vue:53
 msgid "Add"
-msgstr "Tambahkan"
+msgstr "Tambah"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"

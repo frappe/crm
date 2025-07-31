@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-27 09:38+0000\n"
-"PO-Revision-Date: 2025-07-29 07:01\n"
+"PO-Revision-Date: 2025-07-30 07:41\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -518,7 +518,7 @@ msgstr "Genomsnittlig affärsvärde för vunna affärer"
 
 #: crm/api/dashboard.py:518
 msgid "Average time taken from deal creation to deal closure"
-msgstr "Genomsnittlig tid från det att affären skapades till att den slutfördes"
+msgstr "Genomsnittlig tid från det att affären skapades till att den avslutades"
 
 #: crm/api/dashboard.py:464
 msgid "Average time taken from lead creation to deal closure"
@@ -2039,11 +2039,11 @@ msgstr "Expandera"
 #. Label of the expected_closure_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Closure Date"
-msgstr "Förväntad Stängning Datum"
+msgstr "Förväntad Avslutning Datum"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:163
 msgid "Expected Closure Date is required."
-msgstr "Förväntad stängningsdatum erfordras."
+msgstr "Förväntad Avslutning Datum erfordras."
 
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -2644,7 +2644,7 @@ msgstr "Är Standard"
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
-msgstr "Det kommer att göra affärens \"Förväntad Stängningsdatum\" och \"Förväntad Affärsvärde\" erfordrade för att få korrekta prognos insikter"
+msgstr "Det kommer att göra affärens \"Förväntad Avslutning Datum\" och \"Förväntad Affärsvärde\" erfordrade för att få korrekta prognos insikter"
 
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -4878,7 +4878,7 @@ msgstr "Totalt antal förlorade affärer"
 
 #: crm/api/dashboard.py:297
 msgid "Total number of won deals based on its closure date"
-msgstr "Totalt antal vunna affärer baserat på dess stängningsdatum"
+msgstr "Totalt antal vunna affärer baserat på dess avslutning datum"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
