@@ -1,53 +1,11 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{
-      title: __('Assign To'),
-      size: 'xl',
-      actions: [
-        {
-          label: __('Cancel'),
-          variant: 'subtle',
-          onClick: () => {
-            assignees = [...oldAssignees]
-            show = false
-          },
-        },
-        {
-          label: __('Update'),
-          variant: 'solid',
-          onClick: () => updateAssignees(),
-        },
-      ],
-    }"
-    @close="
-      () => {
-        assignees = [...oldAssignees]
-      }
-    "
+    :options="{ title: __('Assign To'), size: 'xl' }"
+    @close="() => (assignees = [...oldAssignees])"
   >
     <template #body-content>
-      <Link
-        class="form-control"
-        value=""
-        doctype="User"
-        @change="(option) => addValue(option) && ($refs.input.value = '')"
-        :placeholder="__('John Doe')"
-        :filters="{ name: ['in', users.data.crmUsers?.map((user) => user.name)] }"
-        :hideMe="true"
-      >
-        <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            <div class="cursor-pointer text-ink-gray-9">
-              {{ getUser(option.value).full_name }}
-            </div>
-          </Tooltip>
-        </template>
-      </Link>
-      <div class="mt-3 flex flex-wrap items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <Tooltip
           :text="assignee.name"
           v-for="assignee in assignees"
@@ -69,8 +27,60 @@
             </Button>
           </div>
         </Tooltip>
+        <Link
+          class="form-control"
+          value=""
+          doctype="User"
+          @change="(option) => addValue(option) && ($refs.input.value = '')"
+          :placeholder="__('John Doe')"
+          :filters="{
+            name: ['in', users.data.crmUsers?.map((user) => user.name)],
+          }"
+          :hideMe="true"
+        >
+          <template #target="{ togglePopover }">
+            <Button
+              :label="__('Add assignee')"
+              variant="subtle"
+              icon-left="plus"
+              @click.stop="togglePopover"
+            />
+          </template>
+          <template #item-prefix="{ option }">
+            <UserAvatar class="mr-2" :user="option.value" size="sm" />
+          </template>
+          <template #item-label="{ option }">
+            <Tooltip :text="option.value">
+              <div class="cursor-pointer text-ink-gray-9">
+                {{ getUser(option.value).full_name }}
+              </div>
+            </Tooltip>
+          </template>
+        </Link>
       </div>
-      <ErrorMessage class="mt-2" v-if="error" :message="__(error)" />
+    </template>
+    <template #actions>
+      <div class="flex justify-between items-center gap-2">
+        <div><ErrorMessage :message="__(error)" /></div>
+        <div class="flex items-center justify-end gap-2">
+          <Button
+            variant="subtle"
+            :label="__('Cancel')"
+            @click="
+              () => {
+                assignees = [...oldAssignees]
+                show = false
+              }
+            "
+          />
+          <Button
+            variant="solid"
+            :label="__('Update')"
+            @click="updateAssignees()"
+            :disabled="!assignees.length"
+          />
+        </div>
+      </div>
     </template>
   </Dialog>
 </template>
