@@ -107,9 +107,9 @@ function sendTextMessage(event) {
 async function sendWhatsAppMessage() {
   let args = {
     reference_doctype: props.doctype,
-    reference_name: doc.value.data.name,
+    reference_name: doc.value.name,
     message: content.value,
-    to: doc.value.data.mobile_no,
+    to: doc.value.mobile_no,
     attach: whatsapp.value.attach || '',
     reply_to: reply.value?.name || '',
     content_type: whatsapp.value.content_type,

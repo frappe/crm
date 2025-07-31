@@ -4,7 +4,7 @@
     v-model:reloadTasks="activities"
     :task="task"
     :doctype="doctype"
-    :doc="doc.data?.name"
+    :doc="doc?.name"
     @after="redirect('tasks')"
   />
   <NoteModal
@@ -12,7 +12,7 @@
     v-model:reloadNotes="activities"
     :note="note"
     :doctype="doctype"
-    :doc="doc.data?.name"
+    :doc="doc?.name"
     @after="redirect('notes')"
   />
   <CallLogModal
@@ -92,8 +92,8 @@ const referenceDoc = ref({})
 
 function createCallLog() {
   let doctype = props.doctype
-  let docname = props.doc.data?.name
-  referenceDoc.value = { ...props.doc.data }
+  let docname = props.doc?.name
+  referenceDoc.value = { ...props.doc }
   callLog.value = {
     reference_doctype: doctype,
     reference_docname: docname,
