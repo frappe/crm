@@ -278,25 +278,18 @@ async function getFormScript(script, obj) {
   return formScript || {}
 }
 
-export async function setupCustomizations(doc, obj) {
-  if (!doc.data?._form_script) return []
+export async function setupCustomizations(scripts, obj) {
+  if (!scripts) return []
 
   let statuses = []
   let actions = []
-  if (Array.isArray(doc.data._form_script)) {
-    for (let script of doc.data._form_script) {
-      let _script = await getFormScript(script, obj)
+  if (Array.isArray(scripts)) {
+    for (let s of scripts) {
+      let _script = await getFormScript(s.script, obj)
       actions = actions.concat(_script?.actions || [])
       statuses = statuses.concat(_script?.statuses || [])
     }
-  } else {
-    let _script = await getFormScript(doc.data._form_script, obj)
-    actions = _script?.actions || []
-    statuses = _script?.statuses || []
   }
-
-  doc.data._customStatuses = statuses
-  doc.data._customActions = actions
   return { statuses, actions }
 }
 
