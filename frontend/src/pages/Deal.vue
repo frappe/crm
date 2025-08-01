@@ -16,7 +16,7 @@
         v-if="document.actions?.length"
         :actions="document.actions"
       />
-      <AssignTo v-model="assignees.data" :data="doc" doctype="CRM Deal" />
+      <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="dealId" />
       <Dropdown
         v-if="doc"
         :options="

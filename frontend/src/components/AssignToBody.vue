@@ -74,21 +74,25 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { Tooltip, call, Switch, toast } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { Tooltip, Switch, toast, createResource } from 'frappe-ui'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
-  doc: {
-    type: Object,
-    default: null,
-  },
   doctype: {
     type: String,
     default: '',
   },
+  docname: {
+    type: Object,
+    default: null,
+  },
   open: {
     type: Boolean,
     default: false,
+  },
+  onUpdate: {
+    type: Function,
+    default: null,
   },
 })
 
@@ -102,12 +106,6 @@ const error = ref('')
 
 const { users, getUser } = usersStore()
 
-const owner = computed(() => {
-  if (!props.doc) return ''
-  if (props.doctype == 'CRM Lead') return props.doc.lead_owner
-  return props.doc.deal_owner
-})
-
 const removeValue = (value) => {
   if (value === getUser('').name) {
     assignToMe.value = false
@@ -119,6 +117,10 @@ const removeValue = (value) => {
 }
 
 const addValue = (value) => {
+  if (value === getUser('').name) {
+    assignToMe.value = true
+  }
+
   error.value = ''
   let obj = {
     name: value,
@@ -155,6 +157,9 @@ watch(
 )
 
 async function updateAssignees() {
+  if (JSON.stringify(oldAssignees.value) === JSON.stringify(assignees.value))
+    return
+
   const removedAssignees = oldAssignees.value
     .filter(
       (assignee) => !assignees.value.find((a) => a.name === assignee.name),
@@ -167,23 +172,45 @@ async function updateAssignees() {
     )
     .map((assignee) => assignee.name)
 
-  if (removedAssignees.length) {
-    await call('crm.api.doc.remove_assignments', {
-      doctype: props.doctype,
-      name: props.doc.name,
-      assignees: removedAssignees,
-    })
-    toast.success(__('Assignees removed successfully.'))
-  }
-
-  if (addedAssignees.length) {
-    capture('assign_to', { doctype: props.doctype })
-    call('frappe.desk.form.assign_to.add', {
-      doctype: props.doctype,
-      name: props.doc.name,
-      assign_to: addedAssignees,
-    })
-    toast.success(__('Assignees added successfully.'))
+  if (props.onUpdate) {
+    props.onUpdate(
+      addedAssignees,
+      removedAssignees,
+      addAssignees,
+      removeAssignees,
+    )
+  } else {
+    if (removedAssignees.length) {
+      await removeAssignees.submit(removedAssignees)
+    }
+    if (addedAssignees.length) {
+      addAssignees.submit(addedAssignees)
+    }
   }
 }
+
+const addAssignees = createResource({
+  url: 'frappe.desk.form.assign_to.add',
+  makeParams: (addedAssignees) => ({
+    doctype: props.doctype,
+    name: props.docname,
+    assign_to: addedAssignees,
+  }),
+  onSuccess: () => {
+    capture('assign_to', { doctype: props.doctype })
+    toast.success(__('Assignees added successfully.'))
+  },
+})
+
+const removeAssignees = createResource({
+  url: 'crm.api.doc.remove_assignments',
+  makeParams: (removedAssignees) => ({
+    doctype: props.doctype,
+    name: props.docname,
+    assignees: removedAssignees,
+  }),
+  onSuccess: () => {
+    toast.success(__('Assignees removed successfully.'))
+  },
+})
 </script>
