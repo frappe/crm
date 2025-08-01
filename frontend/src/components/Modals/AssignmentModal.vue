@@ -1,30 +1,8 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{
-      title: __('Assign To'),
-      size: 'xl',
-      actions: [
-        {
-          label: __('Cancel'),
-          variant: 'subtle',
-          onClick: () => {
-            assignees = [...oldAssignees]
-            show = false
-          },
-        },
-        {
-          label: __('Update'),
-          variant: 'solid',
-          onClick: () => updateAssignees(),
-        },
-      ],
-    }"
-    @close="
-      () => {
-        assignees = [...oldAssignees]
-      }
-    "
+    :options="{ title: __('Assign To'), size: 'xl' }"
+    @close="() => (assignees = [...oldAssignees])"
   >
     <template #body-content>
       <Link
@@ -33,9 +11,43 @@
         doctype="User"
         @change="(option) => addValue(option) && ($refs.input.value = '')"
         :placeholder="__('John Doe')"
-        :filters="{ name: ['in', users.data.crmUsers?.map((user) => user.name)] }"
+        :filters="{
+          name: ['in', users.data.crmUsers?.map((user) => user.name)],
+        }"
         :hideMe="true"
       >
+        <template #target="{ togglePopover }">
+          <div
+            class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-lg bg-surface-gray-2 cursor-text"
+            @click.stop="togglePopover"
+          >
+            <Tooltip
+              :text="assignee.name"
+              v-for="assignee in assignees"
+              :key="assignee.name"
+              @click.stop
+            >
+              <div>
+                <div
+                  class="flex items-center text-sm text-ink-gray-6 border border-outline-gray-1 bg-surface-white rounded-full hover:bg-surface-white !p-0.5"
+                  @click.stop
+                >
+                  <UserAvatar :user="assignee.name" size="sm" />
+                  <div class="ml-1">{{ getUser(assignee.name).full_name }}</div>
+                  <Button
+                    variant="ghost"
+                    class="rounded-full !size-4 m-1"
+                    @click.stop="removeValue(assignee.name)"
+                  >
+                    <template #icon>
+                      <FeatherIcon name="x" class="h-3 w-3 text-ink-gray-6" />
+                    </template>
+                  </Button>
+                </div>
+              </div>
+            </Tooltip>
+          </div>
+        </template>
         <template #item-prefix="{ option }">
           <UserAvatar class="mr-2" :user="option.value" size="sm" />
         </template>
@@ -47,30 +59,28 @@
           </Tooltip>
         </template>
       </Link>
-      <div class="mt-3 flex flex-wrap items-center gap-2">
-        <Tooltip
-          :text="assignee.name"
-          v-for="assignee in assignees"
-          :key="assignee.name"
-        >
-          <div>
-            <Button :label="getUser(assignee.name).full_name" theme="gray">
-              <template #prefix>
-                <UserAvatar :user="assignee.name" size="sm" />
-              </template>
-              <template #suffix>
-                <FeatherIcon
-                  v-if="assignee.name !== owner"
-                  class="h-3.5"
-                  name="x"
-                  @click.stop="removeValue(assignee.name)"
-                />
-              </template>
-            </Button>
-          </div>
-        </Tooltip>
+    </template>
+    <template #actions>
+      <div class="flex justify-between items-center gap-2">
+        <div><ErrorMessage :message="__(error)" /></div>
+        <div class="flex items-center justify-end gap-2">
+          <Button
+            variant="subtle"
+            :label="__('Cancel')"
+            @click="
+              () => {
+                assignees = [...oldAssignees]
+                show = false
+              }
+            "
+          />
+          <Button
+            variant="solid"
+            :label="__('Update')"
+            @click="updateAssignees()"
+          />
+        </div>
       </div>
-      <ErrorMessage class="mt-2" v-if="error" :message="__(error)" />
     </template>
   </Dialog>
 </template>
@@ -132,7 +142,7 @@ const addValue = (value) => {
   }
 }
 
-function updateAssignees() {
+async function updateAssignees() {
   const removedAssignees = oldAssignees.value
     .filter(
       (assignee) => !assignees.value.find((a) => a.name === assignee.name),
@@ -146,7 +156,7 @@ function updateAssignees() {
     .map((assignee) => assignee.name)
 
   if (removedAssignees.length) {
-    call('crm.api.doc.remove_assignments', {
+    await call('crm.api.doc.remove_assignments', {
       doctype: props.doctype,
       name: props.doc.name,
       assignees: JSON.stringify(removedAssignees),

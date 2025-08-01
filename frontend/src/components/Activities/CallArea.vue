@@ -1,5 +1,5 @@
 <template>
-  <div @click="showCallLogDetailModal = true" class="cursor-pointer">
+  <div>
     <div class="mb-1 flex items-center justify-stretch gap-2 py-1 text-base">
       <div class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5">
         <Avatar
@@ -25,7 +25,8 @@
       </div>
     </div>
     <div
-      class="flex flex-col gap-2 border border-outline-gray-modals rounded-md bg-surface-cards px-3 py-2.5 text-ink-gray-9"
+      @click="showCallLogDetailModal = true"
+      class="flex flex-col gap-2 border cursor-pointer border-outline-gray-modals rounded-md bg-surface-cards px-3 py-2.5 text-ink-gray-9"
     >
       <div class="flex items-center justify-between">
         <div class="inline-flex gap-2 items-center text-base font-medium">
