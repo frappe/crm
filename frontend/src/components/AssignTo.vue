@@ -1,13 +1,15 @@
 <template>
   <NestedPopover>
     <template #target>
-      <component
-        v-if="assignees?.length"
-        :is="assignees?.length == 1 ? 'Button' : 'div'"
-      >
-        <MultipleAvatar :avatars="assignees" />
-      </component>
-      <Button v-else :label="__('Assign to')" />
+      <div class="flex items-center">
+        <component
+          v-if="assignees?.length"
+          :is="assignees?.length == 1 ? 'Button' : 'div'"
+        >
+          <MultipleAvatar :avatars="assignees" />
+        </component>
+        <Button v-else :label="__('Assign to')" />
+      </div>
     </template>
     <template #body="{ open }">
       <AssignToBody
