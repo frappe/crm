@@ -25,6 +25,7 @@ declare module 'vue' {
     AscendingIcon: typeof import('./src/components/Icons/AscendingIcon.vue')['default']
     AssignmentModal: typeof import('./src/components/Modals/AssignmentModal.vue')['default']
     AssignTo: typeof import('./src/components/AssignTo.vue')['default']
+    AssignToBody: typeof import('./src/components/AssignToBody.vue')['default']
     AttachmentArea: typeof import('./src/components/Activities/AttachmentArea.vue')['default']
     AttachmentIcon: typeof import('./src/components/Icons/AttachmentIcon.vue')['default']
     AttachmentItem: typeof import('./src/components/AttachmentItem.vue')['default']
