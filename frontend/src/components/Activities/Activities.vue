@@ -555,6 +555,7 @@ const all_activities = createResource({
   transform: ([versions, calls, notes, tasks, attachments]) => {
     return { versions, calls, notes, tasks, attachments }
   },
+  onSuccess: () => nextTick(() => scroll()),
 })
 
 const showWhatsappTemplates = ref(false)
