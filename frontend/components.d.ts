@@ -173,6 +173,7 @@ declare module 'vue' {
     LucideChevronRight: typeof import('~icons/lucide/chevron-right')['default']
     LucidePenLine: typeof import('~icons/lucide/pen-line')['default']
     LucideRefreshCcw: typeof import('~icons/lucide/refresh-ccw')['default']
+    LucideX: typeof import('~icons/lucide/x')['default']
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
     MenuIcon: typeof import('./src/components/Icons/MenuIcon.vue')['default']
