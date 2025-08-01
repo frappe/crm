@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col gap-2 my-2 w-96 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black p-3 ring-opacity-5 focus:outline-none"
+    class="flex flex-col gap-2 my-2 w-[470px] rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black p-3 ring-opacity-5 focus:outline-none"
   >
     <div class="text-base text-ink-gray-5">{{ __('Assign to') }}</div>
     <Link
@@ -27,7 +27,7 @@
           >
             <div>
               <div
-                class="flex items-center text-sm text-ink-gray-6 border border-outline-gray-1 bg-surface-white rounded-full hover:bg-surface-white !p-0.5"
+                class="flex items-center text-sm p-0.5 text-ink-gray-6 border border-outline-gray-1 bg-surface-modal rounded-full cursor-pointer"
                 @click.stop
               >
                 <UserAvatar :user="assignee.name" size="sm" />
@@ -198,7 +198,6 @@ const addAssignees = createResource({
   }),
   onSuccess: () => {
     capture('assign_to', { doctype: props.doctype })
-    toast.success(__('Assignees added successfully.'))
   },
 })
 
@@ -209,8 +208,5 @@ const removeAssignees = createResource({
     name: props.docname,
     assignees: removedAssignees,
   }),
-  onSuccess: () => {
-    toast.success(__('Assignees removed successfully.'))
-  },
 })
 </script>
