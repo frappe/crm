@@ -99,7 +99,6 @@ const oldAssignees = ref([])
 const assignToMe = ref(false)
 
 const error = ref('')
-const ownerRemoved = ref(false)
 
 const { users, getUser } = usersStore()
 
@@ -143,7 +142,6 @@ watch(assignToMe, (val) => {
 watch(
   () => props.open,
   (val) => {
-    ownerRemoved.value = false
     if (val) {
       oldAssignees.value = [...(assignees.value || [])]
 
@@ -170,15 +168,10 @@ async function updateAssignees() {
     .map((assignee) => assignee.name)
 
   if (removedAssignees.length) {
-    if (!ownerRemoved.value && removedAssignees.includes(owner.value)) {
-      ownerRemoved.value = true
-      return
-    }
-
     await call('crm.api.doc.remove_assignments', {
       doctype: props.doctype,
       name: props.doc.name,
-      assignees: JSON.stringify(removedAssignees),
+      assignees: removedAssignees,
     })
     toast.success(__('Assignees removed successfully.'))
   }
