@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-27 09:38+0000\n"
-"PO-Revision-Date: 2025-07-29 07:02\n"
+"PO-Revision-Date: 2025-08-01 07:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -1949,7 +1949,7 @@ msgstr "{0} را وارد کنید"
 #: frontend/src/components/Filter.vue:332
 #: frontend/src/components/Filter.vue:348
 msgid "Equals"
-msgstr "برابر است"
+msgstr "برابر با"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:185
 msgid "Error converting to deal: {0}"
@@ -2467,7 +2467,7 @@ msgstr "تصویر"
 #: frontend/src/components/Filter.vue:325
 #: frontend/src/components/Filter.vue:339
 msgid "In"
-msgstr "که در"
+msgstr "یکی از"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
@@ -2606,7 +2606,7 @@ msgstr "دعوت شده توسط"
 #: frontend/src/components/Filter.vue:341
 #: frontend/src/components/Filter.vue:350
 msgid "Is"
-msgstr "است"
+msgstr "هست"
 
 #. Label of the is_default (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -2717,7 +2717,7 @@ msgstr "نام خانوادگی"
 
 #: frontend/src/components/Filter.vue:616
 msgid "Last Quarter"
-msgstr "سه ماهه آخر"
+msgstr "سه ماهه گذشته"
 
 #. Label of the last_status_change_log (Link) field in DocType 'CRM Status
 #. Change Log'
@@ -2830,7 +2830,7 @@ msgstr "کتابخانه"
 #: frontend/src/components/Filter.vue:323
 #: frontend/src/components/Filter.vue:337
 msgid "Like"
-msgstr "پسندیدن"
+msgstr "شبیه"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
 msgid "Link"
@@ -3380,7 +3380,7 @@ msgstr "مجاز نیست"
 #: frontend/src/components/Filter.vue:322
 #: frontend/src/components/Filter.vue:349
 msgid "Not Equals"
-msgstr "برابر نیست"
+msgstr "برابر نیست با"
 
 #: frontend/src/components/Filter.vue:277
 #: frontend/src/components/Filter.vue:298
@@ -3388,7 +3388,7 @@ msgstr "برابر نیست"
 #: frontend/src/components/Filter.vue:326
 #: frontend/src/components/Filter.vue:340
 msgid "Not In"
-msgstr "نه در"
+msgstr "هیچ‌کدام از"
 
 #: frontend/src/components/Filter.vue:275
 #: frontend/src/components/Filter.vue:286
@@ -3396,7 +3396,7 @@ msgstr "نه در"
 #: frontend/src/components/Filter.vue:324
 #: frontend/src/components/Filter.vue:338
 msgid "Not Like"
-msgstr "نه مانند"
+msgstr "شبیه نیست به"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:10
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:10
