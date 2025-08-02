@@ -58,7 +58,7 @@ const apps = createResource({
   transform: (data) => {
     let _apps = [
       {
-        name: 'frappe',
+        name: 'nexo',
         logo: '/assets/frappe/images/framework.png',
         title: __('Desk'),
         route: '/app',

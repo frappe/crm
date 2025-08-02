@@ -11,14 +11,14 @@
  "idx": 0,
  "indicator_color": "",
  "is_hidden": 0,
- "label": "Frappe CRM",
+ "label": "Nexo CRM",
  "links": [],
  "modified": "2024-01-04 19:08:27.799960",
  "modified_by": "Administrator",
  "module": "FCRM",
- "name": "Frappe CRM",
+ "name": "Nexo CRM",
  "number_cards": [],
- "owner": "shariq@frappe.io",
+ "owner": "office@nexotech.cc",
  "parent_page": "",
  "public": 1,
  "quick_lists": [],
@@ -129,5 +129,5 @@
    "type": "DocType"
   }
  ],
- "title": "Frappe CRM"
+ "title": "Nexo CRM"
 }
