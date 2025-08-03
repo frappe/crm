@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-27 09:38+0000\n"
-"PO-Revision-Date: 2025-07-30 07:41\n"
+"PO-Revision-Date: 2025-08-03 08:13\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -1284,7 +1284,7 @@ msgstr "Buat tugas pertama Anda"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/General/GeneralSettings.vue:43
 msgid "Currency"
-msgstr "Mata uang"
+msgstr "Mata Uang"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:151
 msgid "Currency set as {0} successfully"
@@ -1642,7 +1642,7 @@ msgstr "DocType"
 #. Label of the dt (Link) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Document Type"
-msgstr "Jenis Dokumen"
+msgstr "Tipe Dokumen"
 
 #: crm/api/activities.py:19
 msgid "Document not found"
@@ -1928,7 +1928,7 @@ msgstr "Diaktifkan"
 #. Label of the end_date (Date) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "End Date"
-msgstr "Tanggal Berakhir"
+msgstr "Tanggal Akhir"
 
 #. Label of the end_time (Datetime) field in DocType 'CRM Call Log'
 #. Label of the end_time (Time) field in DocType 'CRM Service Day'
