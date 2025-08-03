@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-07-27 09:38+0000\n"
-"PO-Revision-Date: 2025-08-01 07:39\n"
+"PO-Revision-Date: 2025-08-03 08:13\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -877,7 +877,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:33
 msgid "Cannot delete standard items {0}"
-msgstr "آیتم‌های استاندارد {0} را نمی توان حذف کرد"
+msgstr "آیتم‌های استاندارد {0} را نمی‌توان حذف کرد"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:94
 msgid "Capture"
@@ -3139,7 +3139,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Naming Series"
-msgstr "سری نامگذاری"
+msgstr "سری نام‌گذاری"
 
 #. Label of the net_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -4341,7 +4341,7 @@ msgstr "جداکننده"
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Series"
-msgstr "سلسله"
+msgstr "سری"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:576
 msgid "Service level agreement"
