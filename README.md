@@ -8,7 +8,7 @@
 
 **Simplify Sales, Amplify Relationships**
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/crm)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/crm)](https://github.com/frappe/crm/releases)
 
 <div>
     <picture>
@@ -83,6 +83,14 @@ The motivation behind building Frappe CRM stems from the need for a simple, cust
 
 - [Frappe Framework](https://github.com/frappe/frappe): A full-stack web application framework.
 - [Frappe UI](https://github.com/frappe/frappe-ui): A Vue-based UI library, to provide a modern user interface.
+
+### Compatibility
+This app is compatible with the following versions of Frappe and ERPNext:
+
+| CRM branch            | Stability | Frappe branch        | ERPNext branch       |
+| :-------------------- | :-------- | :------------------- | :------------------- |
+| main - v1.x           | stable    | v15.x                | v15.x                |
+| develop - future/v2.x | unstable  | develop - future/v16 | develop - future/v16 |
 
 ## Getting Started (Production)
 
@@ -181,6 +189,7 @@ You need Docker, docker-compose and git setup on your machine. Refer [Docker doc
 -   [Discuss Forum](https://discuss.frappe.io/c/frappe-crm)
 -   [Documentation](https://docs.frappe.io/crm)
 -   [YouTube](https://www.youtube.com/channel/UCn3bV5kx77HsVwtnlCeEi_A)
+-   [X/Twitter](https://x.com/frappetech)
 
 <br>
 <br>

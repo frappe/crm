@@ -277,13 +277,13 @@ const fields = createResource({
     ]
     let existingFields = []
 
-    for (let tab of props.tabs) {
-      for (let section of tab.sections) {
-        for (let column of section.columns) {
+    props.tabs?.forEach((tab) => {
+      tab.sections?.forEach((section) => {
+        section.columns?.forEach((column) => {
           existingFields = existingFields.concat(column.fields)
-        }
-      }
-    }
+        })
+      })
+    })
 
     return data.filter((field) => {
       return (

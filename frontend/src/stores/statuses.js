@@ -28,7 +28,7 @@ export const statusesStore = defineStore('crm-statuses', () => {
 
   const dealStatuses = createListResource({
     doctype: 'CRM Deal Status',
-    fields: ['name', 'color', 'position'],
+    fields: ['name', 'color', 'position', 'type'],
     orderBy: 'position asc',
     cache: 'deal-statuses',
     initialData: [],
@@ -77,11 +77,11 @@ export const statusesStore = defineStore('crm-statuses', () => {
     return communicationStatuses[name]
   }
 
-  function statusOptions(doctype, action, statuses = []) {
+  function statusOptions(doctype, statuses = [], triggerStatusChange = null) {
     let statusesByName =
       doctype == 'deal' ? dealStatusesByName : leadStatusesByName
 
-    if (statuses.length) {
+    if (statuses?.length) {
       statusesByName = statuses.reduce((acc, status) => {
         acc[status] = statusesByName[status]
         return acc
@@ -94,9 +94,9 @@ export const statusesStore = defineStore('crm-statuses', () => {
         label: statusesByName[status]?.name,
         value: statusesByName[status]?.name,
         icon: () => h(IndicatorIcon, { class: statusesByName[status]?.color }),
-        onClick: () => {
+        onClick: async () => {
+          await triggerStatusChange?.(statusesByName[status]?.name)
           capture('status_changed', { doctype, status })
-          action && action('status', statusesByName[status]?.name)
         },
       })
     }

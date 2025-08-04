@@ -1,5 +1,3 @@
-import { get } from '@vueuse/core'
-
 const NUMBER_FORMAT_INFO = {
   '#,###.##': { decimalStr: '.', groupSep: ',' },
   '#.###,##': { decimalStr: ',', groupSep: '.' },
@@ -183,10 +181,13 @@ export function formatCurrency(value, format, currency = 'USD', precision = 2) {
   // }
 
   format = getNumberFormat(format)
-  let symbol = getCurrencySymbol(currency)
 
-  if (symbol) {
-    return __(symbol) + ' ' + formatNumber(value, format, precision)
+  if (currency) {
+    let symbol = getCurrencySymbol(currency)
+
+    if (symbol) {
+      return __(symbol) + ' ' + formatNumber(value, format, precision)
+    }
   }
 
   return formatNumber(value, format, precision)

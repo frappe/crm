@@ -14,6 +14,7 @@
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
+    @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
     <ListHeader
       class="sm:mx-5 mx-3"
@@ -68,15 +69,6 @@
               class="flex items-center"
               :image="item.image"
               :label="item.image_label"
-              size="sm"
-            />
-          </div>
-          <div v-else-if="column.key === 'organization'">
-            <Avatar
-              v-if="item"
-              class="flex items-center"
-              :image="item"
-              :label="item"
               size="sm"
             />
           </div>
@@ -250,7 +242,6 @@ const props = defineProps({
     }),
   },
 })
-
 const emit = defineEmits([
   'loadMore',
   'updatePageCount',
@@ -258,6 +249,7 @@ const emit = defineEmits([
   'applyFilter',
   'applyLikeFilter',
   'likeDoc',
+  'selectionsChanged',
 ])
 
 const route = useRoute()

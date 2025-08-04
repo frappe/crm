@@ -149,7 +149,7 @@ function removeAttachment(attachment) {
 
 const users = computed(() => {
   return (
-    usersList.data
+    usersList.data?.crmUsers
       ?.filter((user) => user.enabled)
       .map((user) => ({
         label: user.full_name.trimEnd(),

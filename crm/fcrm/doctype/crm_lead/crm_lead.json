@@ -37,6 +37,12 @@
   "annual_revenue",
   "image",
   "converted",
+  "products_tab",
+  "products",
+  "section_break_ggwh",
+  "total",
+  "column_break_uisv",
+  "net_total",
   "sla_tab",
   "sla",
   "sla_creation",
@@ -285,12 +291,47 @@
    "fieldtype": "Table",
    "label": "Status Change Log",
    "options": "CRM Status Change Log"
+  },
+  {
+   "fieldname": "products_tab",
+   "fieldtype": "Tab Break",
+   "label": "Products"
+  },
+  {
+   "fieldname": "products",
+   "fieldtype": "Table",
+   "label": "Products",
+   "options": "CRM Products"
+  },
+  {
+   "fieldname": "section_break_ggwh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_uisv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Total after discount",
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "options": "currency",
+   "read_only": 1
   }
  ],
+ "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-02 22:14:01.991054",
+ "modified": "2025-05-14 19:51:06.184569",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
@@ -331,6 +372,7 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "sender_field": "email",
  "sender_name_field": "first_name",
  "show_title_field_in_link": 1,

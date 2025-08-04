@@ -49,7 +49,8 @@ function initPosthog(ps: PosthogSettings) {
     capture_pageview: true,
     capture_pageleave: true,
     enable_heatmaps: false,
-    disable_session_recording: false,
+    disable_session_recording: true,
+    advanced_disable_decide: true,
     loaded: (ph: typeof posthog) => {
       window.posthog = ph
       ph.identify(window.location.hostname)
@@ -67,17 +68,9 @@ function capture(
 }
 
 function startRecording() {
-  if (!isTelemetryEnabled()) return
-  if (window.posthog?.__loaded) {
-    window.posthog.startSessionRecording()
-  }
 }
 
 function stopRecording() {
-  if (!isTelemetryEnabled()) return
-  if (window.posthog?.__loaded && window.posthog.sessionRecordingStarted()) {
-    window.posthog.stopSessionRecording()
-  }
 }
 
 // Posthog Plugin

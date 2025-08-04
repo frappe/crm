@@ -41,6 +41,9 @@
     @applyFilter="(data) => viewControls.applyFilter(data)"
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
+    @selectionsChanged="
+      (selections) => viewControls.updateSelections(selections)
+    "
   />
   <div
     v-else-if="callLogs.data"
@@ -59,8 +62,9 @@
     v-model:callLog="callLog"
   />
   <CallLogModal
+    v-if="showCallLogModal"
     v-model="showCallLogModal"
-    v-model:callLog="callLog"
+    :data="callLog.data"
     :options="{ afterInsert: () => callLogs.reload() }"
   />
 </template>
@@ -76,7 +80,7 @@ import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { createResource } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 
 const callLogsListView = ref(null)
 const showCallLogModal = ref(false)
@@ -120,4 +124,19 @@ function createCallLog() {
   callLog.value = {}
   showCallLogModal.value = true
 }
+
+const openCallLogFromURL = () => {
+  const searchParams = new URLSearchParams(window.location.search)
+  const callLogName = searchParams.get('open')
+
+  if (callLogName) {
+    showCallLog(callLogName)
+    searchParams.delete('open')
+    window.history.replaceState(null, '', window.location.pathname)
+  }
+}
+
+onMounted(() => {
+  openCallLogFromURL()
+})
 </script>

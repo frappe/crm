@@ -11,11 +11,18 @@
   "naming_series",
   "organization",
   "next_step",
-  "probability",
   "column_break_ijan",
   "status",
-  "close_date",
   "deal_owner",
+  "lost_reason",
+  "lost_notes",
+  "section_break_jgpm",
+  "probability",
+  "expected_deal_value",
+  "deal_value",
+  "column_break_kpxa",
+  "expected_closure_date",
+  "closed_date",
   "contacts_tab",
   "contacts",
   "contact",
@@ -32,6 +39,7 @@
   "column_break_xbyf",
   "territory",
   "currency",
+  "exchange_rate",
   "annual_revenue",
   "industry",
   "person_section",
@@ -43,6 +51,12 @@
   "mobile_no",
   "phone",
   "gender",
+  "products_tab",
+  "products",
+  "section_break_ccbj",
+  "total",
+  "column_break_udbq",
+  "net_total",
   "sla_tab",
   "sla",
   "sla_creation",
@@ -83,11 +97,6 @@
    "label": "Website"
   },
   {
-   "fieldname": "close_date",
-   "fieldtype": "Date",
-   "label": "Close Date"
-  },
-  {
    "fieldname": "next_step",
    "fieldtype": "Data",
    "label": "Next Step"
@@ -119,14 +128,16 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
-   "label": "Email",
-   "options": "Email"
+   "label": "Primary Email",
+   "options": "Email",
+   "read_only": 1
   },
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
-   "label": "Mobile No",
-   "options": "Phone"
+   "label": "Primary Mobile No",
+   "options": "Phone",
+   "read_only": 1
   },
   {
    "default": "Qualification",
@@ -239,8 +250,9 @@
   {
    "fieldname": "phone",
    "fieldtype": "Data",
-   "label": "Phone",
-   "options": "Phone"
+   "label": "Primary Phone",
+   "options": "Phone",
+   "read_only": 1
   },
   {
    "fieldname": "log_tab",
@@ -334,11 +346,96 @@
    "fieldtype": "Link",
    "label": "Currency",
    "options": "Currency"
+  },
+  {
+   "fieldname": "products_tab",
+   "fieldtype": "Tab Break",
+   "label": "Products"
+  },
+  {
+   "fieldname": "products",
+   "fieldtype": "Table",
+   "label": "Products",
+   "options": "CRM Products"
+  },
+  {
+   "fieldname": "section_break_ccbj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_udbq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "description": "Total after discount",
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_jgpm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "deal_value",
+   "fieldtype": "Currency",
+   "label": "Deal Value",
+   "options": "currency"
+  },
+  {
+   "fieldname": "column_break_kpxa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lost_reason",
+   "fieldtype": "Link",
+   "label": "Lost Reason",
+   "mandatory_depends_on": "eval: doc.status == \"Lost\"",
+   "options": "CRM Lost Reason"
+  },
+  {
+   "fieldname": "lost_notes",
+   "fieldtype": "Text",
+   "label": "Lost Notes",
+   "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
+  },
+  {
+   "default": "1",
+   "description": "The rate used to convert the deal\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
+   "fieldname": "exchange_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate"
+  },
+  {
+   "fieldname": "expected_deal_value",
+   "fieldtype": "Currency",
+   "label": "Expected Deal Value",
+   "options": "currency"
+  },
+  {
+   "fieldname": "expected_closure_date",
+   "fieldtype": "Date",
+   "label": "Expected Closure Date"
+  },
+  {
+   "fieldname": "closed_date",
+   "fieldtype": "Date",
+   "label": "Closed Date"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-11 14:31:41.058895",
+ "modified": "2025-07-13 11:54:20.608489",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
@@ -370,6 +467,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

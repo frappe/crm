@@ -10,6 +10,8 @@
       :size="attrs.size || 'sm'"
       :variant="attrs.variant"
       :placeholder="attrs.placeholder"
+      :disabled="attrs.disabled"
+      :placement="attrs.placement"
       :filterable="false"
     >
       <template #target="{ open, togglePopover }">
@@ -159,6 +161,7 @@ const options = createResource({
 })
 
 function reload(val) {
+  if (!props.doctype) return
   if (
     options.data?.length &&
     val === options.params?.txt &&

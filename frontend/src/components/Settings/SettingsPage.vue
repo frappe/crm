@@ -1,16 +1,28 @@
 <template>
-  <div class="flex h-full flex-col gap-8">
-    <h2
-      class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-9"
-    >
-      <div>{{ title || __(doctype) }}</div>
-      <Badge
-        v-if="data.isDirty"
-        :label="__('Not Saved')"
-        variant="subtle"
-        theme="orange"
-      />
-    </h2>
+  <div class="flex h-full flex-col gap-6">
+    <div class="flex justify-between">
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2
+          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
+        >
+          {{ title || __(doctype) }}
+          <Badge
+            v-if="data.isDirty"
+            :label="__('Not Saved')"
+            variant="subtle"
+            theme="orange"
+          />
+        </h2>
+      </div>
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <Button
+          :loading="data.save.loading"
+          :label="__('Update')"
+          variant="solid"
+          @click="data.save.submit()"
+        />
+      </div>
+    </div>
     <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
       <FieldLayout
         v-if="data?.doc && tabs"
@@ -22,17 +34,7 @@
     <div v-else class="flex flex-1 items-center justify-center">
       <Spinner class="size-8" />
     </div>
-    <div class="flex justify-between gap-2">
-      <div>
-        <ErrorMessage class="mt-2" :message="data.save.error" />
-      </div>
-      <Button
-        :loading="data.save.loading"
-        :label="__('Update')"
-        variant="solid"
-        @click="data.save.submit()"
-      />
-    </div>
+    <ErrorMessage :message="data.save.error" />
   </div>
 </template>
 <script setup>
@@ -42,9 +44,10 @@ import {
   createResource,
   Spinner,
   Badge,
+  toast,
   ErrorMessage,
 } from 'frappe-ui'
-import { createToast, getRandom } from '@/utils'
+import { getRandom } from '@/utils'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -79,20 +82,10 @@ const data = createDocumentResource({
   auto: true,
   setValue: {
     onSuccess: () => {
-      createToast({
-        title: __('Success'),
-        text: __(props.successMessage),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__(props.successMessage))
     },
     onError: (err) => {
-      createToast({
-        title: __('Error'),
-        text: err.message + ': ' + err.messages[0],
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
+      toast.error(err.message + ': ' + err.messages[0])
     },
   },
 })

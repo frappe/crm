@@ -3,6 +3,7 @@ import json
 import frappe
 from frappe import _
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
+from frappe.desk.form.assign_to import set_status
 from frappe.model import no_value_fields
 from frappe.model.document import get_controller
 from frappe.utils import make_filter_tuple
@@ -10,6 +11,7 @@ from pypika import Criterion
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
+from crm.utils import get_dynamic_linked_docs, get_linked_docs
 
 
 @frappe.whitelist()
@@ -418,16 +420,23 @@ def get_data(
 				rows.append(field)
 
 		for kc in kanban_columns:
-			column_filters = {column_field: kc.get("name")}
+			# Start with base filters
+			column_filters = []
+
+			# Convert and add the main filters first
+			if filters:
+				base_filters = convert_filter_to_tuple(doctype, filters)
+				column_filters.extend(base_filters)
+
+			# Add the column-specific filter
+			if column_field and kc.get("name"):
+				column_filters.append([doctype, column_field, "=", kc.get("name")])
+
 			order = kc.get("order")
-			if (column_field in filters and filters.get(column_field) != kc.get("name")) or kc.get("delete"):
+			if kc.get("delete"):
 				column_data = []
 			else:
-				column_filters.update(filters.copy())
-				page_length = 20
-
-				if kc.get("page_length"):
-					page_length = kc.get("page_length")
+				page_length = kc.get("page_length", 20)
 
 				if order:
 					column_data = get_records_based_on_order(
@@ -437,25 +446,19 @@ def get_data(
 					column_data = frappe.get_list(
 						doctype,
 						fields=rows,
-						filters=convert_filter_to_tuple(doctype, column_filters),
+						filters=column_filters,
 						order_by=order_by,
 						page_length=page_length,
 					)
 
-				new_filters = filters.copy()
-				new_filters.update({column_field: kc.get("name")})
-
 				all_count = frappe.get_list(
 					doctype,
-					filters=convert_filter_to_tuple(doctype, new_filters),
+					filters=column_filters,
 					fields="count(*) as total_count",
 				)[0].total_count
 
 				kc["all_count"] = all_count
 				kc["count"] = len(column_data)
-
-				for d in column_data:
-					getCounts(d, doctype)
 
 			if order:
 				column_data = sorted(
@@ -658,6 +661,25 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False, only_re
 	return fields_meta
 
 
+@frappe.whitelist()
+def remove_assignments(doctype, name, assignees, ignore_permissions=False):
+	assignees = frappe.parse_json(assignees)
+
+	if not assignees:
+		return
+
+	for assign_to in assignees:
+		set_status(
+			doctype,
+			name,
+			todo=None,
+			assign_to=assign_to,
+			status="Cancelled",
+			ignore_permissions=ignore_permissions,
+		)
+
+
+@frappe.whitelist()
 def get_assigned_users(doctype, name, default_assigned_to=None):
 	assigned_users = frappe.get_all(
 		"ToDo",
@@ -725,3 +747,98 @@ def getCounts(d, doctype):
 		"FCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")}
 	)
 	return d
+
+
+@frappe.whitelist()
+def get_linked_docs_of_document(doctype, docname):
+	doc = frappe.get_doc(doctype, docname)
+	linked_docs = get_linked_docs(doc)
+	dynamic_linked_docs = get_dynamic_linked_docs(doc)
+
+	linked_docs.extend(dynamic_linked_docs)
+	linked_docs = list({doc["reference_docname"]: doc for doc in linked_docs}.values())
+
+	docs_data = []
+	for doc in linked_docs:
+		data = frappe.get_doc(doc["reference_doctype"], doc["reference_docname"])
+		title = data.get("title")
+		if data.doctype == "CRM Call Log":
+			title = f"Call from {data.get('from')} to {data.get('to')}"
+
+		if data.doctype == "CRM Deal":
+			title = data.get("organization")
+
+		docs_data.append(
+			{
+				"doc": data.doctype,
+				"title": title or data.get("name"),
+				"reference_docname": doc["reference_docname"],
+				"reference_doctype": doc["reference_doctype"],
+			}
+		)
+	return docs_data
+
+
+def remove_doc_link(doctype, docname):
+	linked_doc_data = frappe.get_doc(doctype, docname)
+	linked_doc_data.update(
+		{
+			"reference_doctype": None,
+			"reference_docname": None,
+		}
+	)
+	linked_doc_data.save(ignore_permissions=True)
+
+
+def remove_contact_link(doctype, docname):
+	linked_doc_data = frappe.get_doc(doctype, docname)
+	linked_doc_data.update(
+		{
+			"contact": None,
+			"contacts": [],
+		}
+	)
+	linked_doc_data.save(ignore_permissions=True)
+
+
+@frappe.whitelist()
+def remove_linked_doc_reference(items, remove_contact=None, delete=False):
+	if isinstance(items, str):
+		items = frappe.parse_json(items)
+
+	for item in items:
+		if remove_contact:
+			remove_contact_link(item["doctype"], item["docname"])
+		else:
+			remove_doc_link(item["doctype"], item["docname"])
+
+		if delete:
+			frappe.delete_doc(item["doctype"], item["docname"])
+
+	return "success"
+
+
+@frappe.whitelist()
+def delete_bulk_docs(doctype, items, delete_linked=False):
+	from frappe.desk.reportview import delete_bulk
+
+	items = frappe.parse_json(items)
+	for doc in items:
+		linked_docs = get_linked_docs_of_document(doctype, doc)
+		for linked_doc in linked_docs:
+			remove_linked_doc_reference(
+				[
+					{
+						"doctype": linked_doc["reference_doctype"],
+						"docname": linked_doc["reference_docname"],
+					}
+				],
+				remove_contact=doctype == "Contact",
+				delete=delete_linked,
+			)
+
+	if len(items) > 10:
+		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=items)
+	else:
+		delete_bulk(doctype, items)
+	return "success"

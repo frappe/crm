@@ -1,9 +1,10 @@
-from bs4 import BeautifulSoup
 import frappe
-from frappe.translate import get_all_translations
-from frappe.utils import validate_email_address, split_emails, cstr
-from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
+from bs4 import BeautifulSoup
 from frappe.core.api.file import get_max_file_size
+from frappe.translate import get_all_translations
+from frappe.utils import cstr, split_emails, validate_email_address
+from frappe.utils.modules import get_modules_from_all_apps_for_user
+from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
 
 
 @frappe.whitelist(allow_guest=True)
@@ -63,9 +64,14 @@ def check_app_permission():
 	if frappe.session.user == "Administrator":
 		return True
 
+	allowed_modules = get_modules_from_all_apps_for_user()
+	allowed_modules = [x["module_name"] for x in allowed_modules]
+	if "FCRM" not in allowed_modules:
+		return False
+
 	roles = frappe.get_roles()
 	if any(
-		role in ["System Manager", "Sales User", "Sales Manager", "Sales Master Manager"] for role in roles
+		role in ["System Manager", "Sales User", "Sales Manager"] for role in roles
 	):
 		return True
 
@@ -93,9 +99,9 @@ def accept_invitation(key: str | None = None):
 
 @frappe.whitelist()
 def invite_by_email(emails: str, role: str):
-	frappe.only_for("Sales Manager")
+	frappe.only_for(["Sales Manager", "System Manager"])
 
-	if role not in ["Sales Manager", "Sales User"]:
+	if role not in ["System Manager", "Sales Manager", "Sales User"]:
 		frappe.throw("Cannot invite for this role")
 
 	if not emails:
@@ -108,7 +114,10 @@ def invite_by_email(emails: str, role: str):
 	existing_members = frappe.db.get_all("User", filters={"email": ["in", email_list]}, pluck="email")
 	existing_invites = frappe.db.get_all(
 		"CRM Invitation",
-		filters={"email": ["in", email_list], "role": ["in", ["Sales Manager", "Sales User"]]},
+		filters={
+			"email": ["in", email_list],
+			"role": ["in", ["System Manager", "Sales Manager", "Sales User"]],
+		},
 		pluck="email",
 	)
 
@@ -116,6 +125,12 @@ def invite_by_email(emails: str, role: str):
 
 	for email in to_invite:
 		frappe.get_doc(doctype="CRM Invitation", email=email, role=role).insert(ignore_permissions=True)
+
+	return {
+		"existing_members": existing_members,
+		"existing_invites": existing_invites,
+		"to_invite": to_invite,
+	}
 
 
 @frappe.whitelist()

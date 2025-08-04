@@ -1,16 +1,31 @@
 <template>
-  <div class="flex h-full flex-col gap-8 p-8">
-    <h2
-      class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-9"
-    >
-      <div>{{ __('Telephony Settings') }}</div>
-      <Badge
-        v-if="twilio.isDirty || exotel.isDirty || mediumChanged"
-        :label="__('Not Saved')"
-        variant="subtle"
-        theme="orange"
-      />
-    </h2>
+  <div class="flex h-full flex-col gap-6 p-8">
+    <div class="flex justify-between">
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2
+          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
+        >
+          {{ __('Telephony settings') }}
+          <Badge
+            v-if="twilio.isDirty || exotel.isDirty || mediumChanged"
+            :label="__('Not Saved')"
+            variant="subtle"
+            theme="orange"
+          />
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{ __('Configure telephony settings for your CRM') }}
+        </p>
+      </div>
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <Button
+          :loading="twilio.save.loading || exotel.save.loading"
+          :label="__('Update')"
+          variant="solid"
+          @click="update"
+        />
+      </div>
+    </div>
     <div
       v-if="!twilio.get.loading || !exotel.get.loading"
       class="flex-1 flex flex-col gap-8 overflow-y-auto"
@@ -31,7 +46,7 @@
 
       <!-- Twilio -->
       <div v-if="isManager()" class="flex flex-col justify-between gap-4">
-        <span class="text-base font-semibold text-ink-gray-9">
+        <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Twilio') }}
         </span>
         <FieldLayout
@@ -44,7 +59,7 @@
 
       <!-- Exotel -->
       <div v-if="isManager()" class="flex flex-col justify-between gap-4">
-        <span class="text-base font-semibold text-ink-gray-9">
+        <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Exotel') }}
         </span>
         <FieldLayout
@@ -58,20 +73,7 @@
     <div v-else class="flex flex-1 items-center justify-center">
       <Spinner class="size-8" />
     </div>
-    <div class="flex justify-between gap-2">
-      <div>
-        <ErrorMessage
-          class="mt-2"
-          :message="twilio.save.error || exotel.save.error || error"
-        />
-      </div>
-      <Button
-        :loading="twilio.save.loading || exotel.save.loading"
-        :label="__('Update')"
-        variant="solid"
-        @click="update"
-      />
-    </div>
+    <ErrorMessage :message="twilio.save.error || exotel.save.error || error" />
   </div>
 </template>
 <script setup>
@@ -87,10 +89,11 @@ import {
 } from 'frappe-ui'
 import { defaultCallingMedium } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
-import { createToast, getRandom } from '@/utils'
+import { toast } from 'frappe-ui'
+import { getRandom } from '@/utils'
 import { ref, computed, watch } from 'vue'
 
-const { isManager, isAgent } = usersStore()
+const { isManager, isTelephonyAgent } = usersStore()
 
 const twilioFields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -119,20 +122,10 @@ const twilio = createDocumentResource({
   auto: true,
   setValue: {
     onSuccess: () => {
-      createToast({
-        title: __('Success'),
-        text: __('Twilio settings updated successfully'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Twilio settings updated successfully'))
     },
     onError: (err) => {
-      createToast({
-        title: __('Error'),
-        text: err.message + ': ' + err.messages[0],
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
+      toast.error(err.message + ': ' + err.messages[0])
     },
   },
 })
@@ -144,20 +137,10 @@ const exotel = createDocumentResource({
   auto: true,
   setValue: {
     onSuccess: () => {
-      createToast({
-        title: __('Success'),
-        text: __('Exotel settings updated successfully'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
+      toast.success(__('Exotel settings updated successfully'))
     },
     onError: (err) => {
-      createToast({
-        title: __('Error'),
-        text: err.message + ': ' + err.messages[0],
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
+      toast.error(err.message + ': ' + err.messages[0])
     },
   },
 })
@@ -294,18 +277,13 @@ async function updateMedium() {
   })
   mediumChanged.value = false
   error.value = ''
-  createToast({
-    title: __('Success'),
-    text: __('Default calling medium updated successfully'),
-    icon: 'check',
-    iconClasses: 'text-ink-green-3',
-  })
+  toast.success(__('Default calling medium updated successfully'))
 }
 
 const error = ref('')
 
 function validateIfDefaultMediumIsEnabled() {
-  if (isAgent() && !isManager()) return true
+  if (isTelephonyAgent() && !isManager()) return true
 
   if (defaultCallingMedium.value === 'Twilio' && !twilio.doc.enabled) {
     error.value = __('Twilio is not enabled')

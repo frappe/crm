@@ -223,6 +223,9 @@
     @applyFilter="(data) => viewControls.applyFilter(data)"
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
+    @selectionsChanged="
+      (selections) => viewControls.updateSelections(selections)
+    "
   />
   <div v-else-if="deals.data" class="flex h-full items-center justify-center">
     <div
@@ -238,7 +241,6 @@
   <DealModal
     v-if="showDealModal"
     v-model="showDealModal"
-    v-model:quickEntry="showQuickEntryModal"
     :defaults="defaults"
   />
   <NoteModal
@@ -254,11 +256,6 @@
     :task="task"
     doctype="CRM Deal"
     :doc="docname"
-  />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="CRM Deal"
   />
 </template>
 
@@ -279,7 +276,6 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
@@ -303,7 +299,6 @@ const route = useRoute()
 
 const dealsListView = ref(null)
 const showDealModal = ref(false)
-const showQuickEntryModal = ref(false)
 
 const defaults = reactive({})
 
@@ -457,9 +452,6 @@ function parseRows(rows, columns = []) {
         }
       } else if (row == '_assign') {
         let assignees = JSON.parse(deal._assign || '[]')
-        if (!assignees.length && deal.deal_owner) {
-          assignees = [deal.deal_owner]
-        }
         _rows[row] = assignees.map((user) => ({
           name: user,
           image: getUser(user).user_image,

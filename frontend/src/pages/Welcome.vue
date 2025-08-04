@@ -41,21 +41,14 @@
       @click="showLeadModal = true"
     />
   </div>
-  <LeadModal
-    v-if="showLeadModal"
-    v-model="showLeadModal"
-    v-model:quickEntry="showQuickEntryModal"
-  />
-  <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" />
+  <LeadModal v-if="showLeadModal" v-model="showLeadModal" />
 </template>
 <script setup>
 import AvatarIcon from '@/components/Icons/AvatarIcon.vue'
 import GoogleIcon from '@/components/Icons/GoogleIcon.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
-import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import { ref } from 'vue'
 
 const name = ref('John Doe')
 const showLeadModal = ref(false)
-const showQuickEntryModal = ref(false)
 </script>

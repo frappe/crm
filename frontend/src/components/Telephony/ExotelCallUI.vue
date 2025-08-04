@@ -244,11 +244,10 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
-import { createToast } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { sessionStore } from '@/stores/session'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { TextEditor, Avatar, Button, createResource } from 'frappe-ui'
+import { TextEditor, Avatar, Button, createResource, toast } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -413,12 +412,7 @@ function makeOutgoingCall(number) {
       showSmallCallPopup.value = false
     },
     onError(err) {
-      createToast({
-        title: 'Error',
-        text: err.messages[0],
-        icon: 'x',
-        iconClasses: 'text-red-600',
-      })
+      toast.error(err.messages[0])
     },
   })
 }

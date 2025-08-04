@@ -7,9 +7,8 @@ from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
-from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
-	add_status_change_log,
-)
+from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
+from crm.fcrm.doctype.fcrm_settings.fcrm_settings import get_exchange_rate
 
 
 class CRMDeal(Document):
@@ -24,6 +23,11 @@ class CRMDeal(Document):
 			self.assign_agent(self.deal_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
+			if frappe.db.get_value("CRM Deal Status", self.status, "type") == "Won":
+				self.closed_date = frappe.utils.nowdate()
+		self.validate_forcasting_fields()
+		self.validate_lost_reason()
+		self.update_exchange_rate()
 
 	def after_insert(self):
 		if self.deal_owner:
@@ -132,6 +136,48 @@ class CRMDeal(Document):
 		sla = frappe.get_last_doc("CRM Service Level Agreement", {"name": self.sla})
 		if sla:
 			sla.apply(self)
+
+	def update_closed_date(self):
+		"""
+		Update the closed date based on the "Won" status.
+		"""
+		if self.status == "Won" and not self.closed_date:
+			self.closed_date = frappe.utils.nowdate()
+
+	def update_default_probability(self):
+		"""
+		Update the default probability based on the status.
+		"""
+		if not self.probability or self.probability == 0:
+			self.probability = frappe.db.get_value("CRM Deal Status", self.status, "probability") or 0
+
+	def validate_forcasting_fields(self):
+		self.update_closed_date()
+		self.update_default_probability()
+		if frappe.db.get_single_value("FCRM Settings", "enable_forecasting"):
+			if not self.expected_deal_value or self.expected_deal_value == 0:
+				frappe.throw(_("Expected Deal Value is required."), frappe.MandatoryError)
+			if not self.expected_closure_date:
+				frappe.throw(_("Expected Closure Date is required."), frappe.MandatoryError)
+
+	def validate_lost_reason(self):
+		"""
+		Validate the lost reason if the status is set to "Lost".
+		"""
+		if self.status and frappe.get_cached_value("CRM Deal Status", self.status, "type") == "Lost":
+			if not self.lost_reason:
+				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
+			elif self.lost_reason == "Other" and not self.lost_notes:
+				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
+
+	def update_exchange_rate(self):
+		if self.has_value_changed("currency") or not self.exchange_rate:
+			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
+			exchange_rate = 1
+			if self.currency and self.currency != system_currency:
+				exchange_rate = get_exchange_rate(self.currency, system_currency)
+
+			self.db_set("exchange_rate", exchange_rate)
 
 	@staticmethod
 	def default_list_data():

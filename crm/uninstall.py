@@ -1,11 +1,12 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and Contributors
 # MIT License. See license.txt
-from __future__ import unicode_literals
 import click
 import frappe
 
+
 def before_uninstall():
 	delete_email_template_custom_fields()
+
 
 def delete_email_template_custom_fields():
 	if frappe.get_meta("Email Template").has_field("enabled"):

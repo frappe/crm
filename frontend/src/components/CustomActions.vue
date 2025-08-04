@@ -37,8 +37,8 @@ import { isMobileView } from '@/composables/settings'
 
 const props = defineProps({
   actions: {
-    type: Object,
-    required: true,
+    type: [Object, Array, undefined],
+    default: () => [],
   },
 })
 
@@ -85,7 +85,7 @@ const groupedActions = computed(() => {
     })
   }
   _actions = _actions.concat(
-    props.actions.filter((action) => action.group && !action.buttonLabel)
+    props.actions.filter((action) => action.group && !action.buttonLabel),
   )
   return _actions
 })

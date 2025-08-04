@@ -27,7 +27,9 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 	if not tabs and type != "Required Fields":
 		tabs = get_default_layout(doctype)
 
-	has_tabs = tabs[0].get("sections") if tabs and tabs[0] else False
+	has_tabs = False
+	if isinstance(tabs, list) and len(tabs) > 0 and isinstance(tabs[0], dict):
+		has_tabs = any("sections" in tab for tab in tabs)
 
 	if not has_tabs:
 		tabs = [{"name": "first_tab", "sections": tabs}]
@@ -45,15 +47,51 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldname in allowed_fields]
 
+	required_fields = []
+
+	if type == "Required Fields":
+		required_fields = [
+			field for field in frappe.get_meta(doctype, False).fields if field.reqd and not field.default
+		]
+
 	for tab in tabs:
 		for section in tab.get("sections"):
+			if section.get("columns"):
+				section["columns"] = [column for column in section.get("columns") if column]
 			for column in section.get("columns") if section.get("columns") else []:
+				column["fields"] = [field for field in column.get("fields") if field]
 				for field in column.get("fields") if column.get("fields") else []:
 					field = next((f for f in fields if f.fieldname == field), None)
 					if field:
 						field = field.as_dict()
 						handle_perm_level_restrictions(field, doctype, parent_doctype)
 						column["fields"][column.get("fields").index(field["fieldname"])] = field
+
+						# remove field from required_fields if it is already present
+						if (
+							type == "Required Fields"
+							and field.reqd
+							and any(f.get("fieldname") == field.get("fieldname") for f in required_fields)
+						):
+							required_fields = [
+								f for f in required_fields if f.get("fieldname") != field.get("fieldname")
+							]
+
+	if type == "Required Fields" and required_fields and tabs:
+		tabs[-1].get("sections").append(
+			{
+				"label": "Required Fields",
+				"name": "required_fields_section_" + str(random_string(4)),
+				"opened": True,
+				"hideLabel": True,
+				"columns": [
+					{
+						"name": "required_fields_column_" + str(random_string(4)),
+						"fields": [field.as_dict() for field in required_fields],
+					}
+				],
+			}
+		)
 
 	return tabs or []
 
@@ -78,6 +116,8 @@ def get_sidepanel_sections(doctype):
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
 
+	add_forecasting_section(layout, doctype)
+
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
 		for column in section.get("columns") if section.get("columns") else []:
@@ -93,6 +133,38 @@ def get_sidepanel_sections(doctype):
 		fields_meta[field.fieldname] = field
 
 	return layout
+
+
+def add_forecasting_section(layout, doctype):
+	if (
+		doctype == "CRM Deal"
+		and frappe.db.get_single_value("FCRM Settings", "enable_forecasting")
+		and not any(section.get("name") == "forecasted_sales_section" for section in layout)
+	):
+		contacts_section_index = next(
+			(
+				i
+				for i, section in enumerate(layout)
+				if section.get("name") == "contacts_section" or section.get("label") == "Contacts"
+			),
+			None,
+		)
+
+		if contacts_section_index is not None:
+			layout.insert(
+				contacts_section_index + 1,
+				{
+					"name": "forecasted_sales_section",
+					"label": "Forecasted Sales",
+					"opened": True,
+					"columns": [
+						{
+							"name": "column_" + str(random_string(4)),
+							"fields": ["expected_closure_date", "probability", "expected_deal_value"],
+						}
+					],
+				},
+			)
 
 
 def handle_perm_level_restrictions(field, doctype, parent_doctype=None):

@@ -28,7 +28,7 @@
           @click="redirect()"
         >
           <template #suffix>
-            <ArrowUpRightIcon class="h-4 w-4" />
+            <ArrowUpRightIcon class="w-4 h-4" />
           </template>
         </Button>
       </div>
@@ -41,6 +41,7 @@
             :label="__('Title')"
             v-model="_task.title"
             :placeholder="__('Call with John Doe')"
+            required
           />
         </div>
         <div>
@@ -61,7 +62,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <Dropdown :options="taskStatusOptions(updateTaskStatus)">
-            <Button :label="_task.status" class="w-full justify-between">
+            <Button :label="_task.status" class="justify-between w-full">
               <template #prefix>
                 <TaskStatusIcon :status="_task.status" />
               </template>
@@ -73,6 +74,9 @@
             doctype="User"
             @change="(option) => (_task.assigned_to = option)"
             :placeholder="__('John Doe')"
+            :filters="{
+              name: ['in', users.data.crmUsers?.map((user) => user.name)],
+            }"
             :hideMe="true"
           >
             <template #prefix>
@@ -97,13 +101,14 @@
             input-class="border-none"
           />
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
-            <Button :label="_task.priority" class="w-full justify-between">
+            <Button :label="_task.priority" class="justify-between w-full">
               <template #prefix>
                 <TaskPriorityIcon :priority="_task.priority" />
               </template>
             </Button>
           </Dropdown>
         </div>
+        <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
       </div>
     </template>
   </Dialog>
@@ -144,9 +149,10 @@ const tasks = defineModel('reloadTasks')
 const emit = defineEmits(['updateTask', 'after'])
 
 const router = useRouter()
-const { getUser } = usersStore()
+const { users, getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
+const error = ref(null)
 const title = ref(null)
 const editMode = ref(false)
 const _task = ref({
@@ -193,14 +199,24 @@ async function updateTask() {
       emit('after', d)
     }
   } else {
-    let d = await call('frappe.client.insert', {
-      doc: {
-        doctype: 'CRM Task',
-        reference_doctype: props.doctype,
-        reference_docname: props.doc || null,
-        ..._task.value,
+    let d = await call(
+      'frappe.client.insert',
+      {
+        doc: {
+          doctype: 'CRM Task',
+          reference_doctype: props.doctype,
+          reference_docname: props.doc || null,
+          ..._task.value,
+        },
       },
-    })
+      {
+        onError: (err) => {
+          if (err.error.exc_type == 'MandatoryError') {
+            error.value = 'Title is mandatory'
+          }
+        },
+      },
+    )
     if (d.name) {
       updateOnboardingStep('create_first_task')
       capture('task_created')

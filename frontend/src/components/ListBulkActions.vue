@@ -14,15 +14,29 @@
     :doctype="doctype"
     @reload="reload"
   />
+  <DeleteLinkedDocModal
+    v-if="showDeleteDocModal.showLinkedDocsModal"
+    v-model="showDeleteDocModal.showLinkedDocsModal"
+    :doctype="props.doctype"
+    :docname="showDeleteDocModal.docname"
+    :reload="reload"
+  />
+  <BulkDeleteLinkedDocModal
+    v-if="showDeleteDocModal.showDeleteModal"
+    v-model="showDeleteDocModal.showDeleteModal"
+    :doctype="props.doctype"
+    :items="showDeleteDocModal.items"
+    :reload="reload"
+  />
 </template>
 
 <script setup>
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
-import { setupListCustomizations, createToast } from '@/utils'
+import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { capture } from '@/telemetry'
-import { call } from 'frappe-ui'
+import { call, toast } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -50,7 +64,11 @@ const { $dialog, $socket } = globalStore()
 const showEditModal = ref(false)
 const selectedValues = ref([])
 const unselectAllAction = ref(() => {})
-
+const showDeleteDocModal = ref({
+  showLinkedDocsModal: false,
+  showDeleteModal: false,
+  docname: null,
+})
 function editValues(selections, unselectAll) {
   selectedValues.value = selections
   showEditModal.value = true
@@ -75,11 +93,7 @@ function convertToDeal(selections, unselectAll) {
             call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
               lead: name,
             }).then(() => {
-              createToast({
-                title: __('Converted successfully'),
-                icon: 'check',
-                iconClasses: 'text-ink-green-3',
-              })
+              toast.success(__('Converted successfully'))
               list.value.reload()
               unselectAll()
               close()
@@ -92,37 +106,18 @@ function convertToDeal(selections, unselectAll) {
 }
 
 function deleteValues(selections, unselectAll) {
-  $dialog({
-    title: __('Delete'),
-    message: __('Are you sure you want to delete {0} item(s)?', [
-      selections.size,
-    ]),
-    variant: 'solid',
-    theme: 'red',
-    actions: [
-      {
-        label: __('Delete'),
-        variant: 'solid',
-        theme: 'red',
-        onClick: (close) => {
-          capture('bulk_delete')
-          call('frappe.desk.reportview.delete_items', {
-            items: JSON.stringify(Array.from(selections)),
-            doctype: props.doctype,
-          }).then(() => {
-            createToast({
-              title: __('Deleted successfully'),
-              icon: 'check',
-              iconClasses: 'text-ink-green-3',
-            })
-            unselectAll()
-            list.value.reload()
-            close()
-          })
-        },
-      },
-    ],
-  })
+  const selectedDocs = Array.from(selections)
+  if (selectedDocs.length == 1) {
+    showDeleteDocModal.value = {
+      showLinkedDocsModal: true,
+      docname: selectedDocs[0],
+    }
+  } else {
+    showDeleteDocModal.value = {
+      showDeleteModal: true,
+      items: selectedDocs,
+    }
+  }
 }
 
 const showAssignmentModal = ref(false)
@@ -154,11 +149,7 @@ function clearAssignemnts(selections, unselectAll) {
             names: JSON.stringify(Array.from(selections)),
             ignore_permissions: true,
           }).then(() => {
-            createToast({
-              title: __('Assignment cleared successfully'),
-              icon: 'check',
-              iconClasses: 'text-ink-green-3',
-            })
+            toast.success(__('Assignment cleared successfully'))
             reload(unselectAll)
             close()
           })
@@ -215,7 +206,8 @@ function bulkActions(selections, unselectAll) {
           selections,
           unselectAll,
           call,
-          createToast,
+          createToast: toast.create,
+          toast,
           $dialog,
           router,
         }),
@@ -235,7 +227,8 @@ onMounted(async () => {
   let customization = await setupListCustomizations(list.value.data, {
     list: list.value,
     call,
-    createToast,
+    createToast: toast.create,
+    toast,
     $dialog,
     $socket,
     router,

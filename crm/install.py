@@ -4,6 +4,9 @@ import click
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
+from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
+from crm.fcrm.doctype.crm_products.crm_products import create_product_details_script
+
 
 def before_install():
 	pass
@@ -18,7 +21,10 @@ def after_install(force=False):
 	add_email_template_custom_fields()
 	add_default_industries()
 	add_default_lead_sources()
+	add_default_lost_reasons()
 	add_standard_dropdown_items()
+	add_default_scripts()
+	create_default_manager_dashboard(force)
 	frappe.db.commit()
 
 
@@ -65,30 +71,44 @@ def add_default_deal_statuses():
 	statuses = {
 		"Qualification": {
 			"color": "gray",
+			"type": "Open",
+			"probability": 10,
 			"position": 1,
 		},
 		"Demo/Making": {
 			"color": "orange",
+			"type": "Ongoing",
+			"probability": 25,
 			"position": 2,
 		},
 		"Proposal/Quotation": {
 			"color": "blue",
+			"type": "Ongoing",
+			"probability": 50,
 			"position": 3,
 		},
 		"Negotiation": {
 			"color": "yellow",
+			"type": "Ongoing",
+			"probability": 70,
 			"position": 4,
 		},
 		"Ready to Close": {
 			"color": "purple",
+			"type": "Ongoing",
+			"probability": 90,
 			"position": 5,
 		},
 		"Won": {
 			"color": "green",
+			"type": "Won",
+			"probability": 100,
 			"position": 6,
 		},
 		"Lost": {
 			"color": "red",
+			"type": "Lost",
+			"probability": 0,
 			"position": 7,
 		},
 	}
@@ -100,6 +120,8 @@ def add_default_deal_statuses():
 		doc = frappe.new_doc("CRM Deal Status")
 		doc.deal_status = status
 		doc.color = statuses[status]["color"]
+		doc.type = statuses[status]["type"]
+		doc.probability = statuses[status]["probability"]
 		doc.position = statuses[status]["position"]
 		doc.insert()
 
@@ -340,6 +362,44 @@ def add_default_lead_sources():
 		doc.insert()
 
 
+def add_default_lost_reasons():
+	lost_reasons = [
+		{
+			"reason": "Pricing",
+			"description": "The prospect found the pricing to be too high or not competitive.",
+		},
+		{"reason": "Competition", "description": "The prospect chose a competitor's product or service."},
+		{
+			"reason": "Budget Constraints",
+			"description": "The prospect did not have the budget to proceed with the purchase.",
+		},
+		{
+			"reason": "Missing Features",
+			"description": "The prospect felt that the product or service was missing key features they needed.",
+		},
+		{
+			"reason": "Long Sales Cycle",
+			"description": "The sales process took too long, leading to loss of interest.",
+		},
+		{
+			"reason": "No Decision-Maker",
+			"description": "The prospect was not the decision-maker and could not proceed.",
+		},
+		{"reason": "Unresponsive Prospect", "description": "The prospect did not respond to follow-ups."},
+		{"reason": "Poor Fit", "description": "The prospect was not a good fit for the product or service."},
+		{"reason": "Other", "description": ""},
+	]
+
+	for reason in lost_reasons:
+		if frappe.db.exists("CRM Lost Reason", reason["reason"]):
+			continue
+
+		doc = frappe.new_doc("CRM Lost Reason")
+		doc.lost_reason = reason["reason"]
+		doc.description = reason["description"]
+		doc.insert()
+
+
 def add_standard_dropdown_items():
 	crm_settings = frappe.get_single("FCRM Settings")
 
@@ -353,3 +413,11 @@ def add_standard_dropdown_items():
 		crm_settings.append("dropdown_items", item)
 
 	crm_settings.save()
+
+
+def add_default_scripts():
+	from crm.fcrm.doctype.fcrm_settings.fcrm_settings import create_forecasting_script
+
+	for doctype in ["CRM Lead", "CRM Deal"]:
+		create_product_details_script(doctype)
+	create_forecasting_script()

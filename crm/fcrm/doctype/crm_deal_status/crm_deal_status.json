@@ -7,8 +7,11 @@
  "engine": "InnoDB",
  "field_order": [
   "deal_status",
-  "color",
-  "position"
+  "type",
+  "position",
+  "column_break_ojiu",
+  "probability",
+  "color"
  ],
  "fields": [
   {
@@ -32,11 +35,30 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Position"
+  },
+  {
+   "fieldname": "probability",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Probability"
+  },
+  {
+   "default": "Open",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Open\nOngoing\nOn Hold\nWon\nLost"
+  },
+  {
+   "fieldname": "column_break_ojiu",
+   "fieldtype": "Column Break"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:56:44.552134",
+ "modified": "2025-07-11 16:03:28.077955",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal Status",
@@ -68,6 +90,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

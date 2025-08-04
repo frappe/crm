@@ -14,32 +14,16 @@ def update_deals_email_mobile_no(doc):
 	)
 
 	for linked_deal in linked_deals:
-		deal = frappe.get_cached_doc("CRM Deal", linked_deal.parent)
+		deal = frappe.db.get_values("CRM Deal", linked_deal.parent, ["email", "mobile_no"], as_dict=True)[0]
 		if deal.email != doc.email_id or deal.mobile_no != doc.mobile_no:
-			deal.email = doc.email_id
-			deal.mobile_no = doc.mobile_no
-			deal.save(ignore_permissions=True)
-
-
-@frappe.whitelist()
-def get_contact(name):
-	Contact = frappe.qb.DocType("Contact")
-
-	query = frappe.qb.from_(Contact).select("*").where(Contact.name == name).limit(1)
-
-	contact = query.run(as_dict=True)
-	if not len(contact):
-		frappe.throw(_("Contact not found"), frappe.DoesNotExistError)
-	contact = contact.pop()
-
-	contact["doctype"] = "Contact"
-	contact["email_ids"] = frappe.get_all(
-		"Contact Email", filters={"parent": name}, fields=["name", "email_id", "is_primary"]
-	)
-	contact["phone_nos"] = frappe.get_all(
-		"Contact Phone", filters={"parent": name}, fields=["name", "phone", "is_primary_mobile_no"]
-	)
-	return contact
+			frappe.db.set_value(
+				"CRM Deal",
+				linked_deal.parent,
+				{
+					"email": doc.email_id,
+					"mobile_no": doc.mobile_no,
+				},
+			)
 
 
 @frappe.whitelist()

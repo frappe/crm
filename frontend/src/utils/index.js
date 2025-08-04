@@ -1,18 +1,11 @@
+import LucideCheck from '~icons/lucide/check'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { usersStore } from '@/stores/users'
 import { gemoji } from 'gemoji'
-import { useTimeAgo } from '@vueuse/core'
 import { getMeta } from '@/stores/meta'
-import { toast, dayjsLocal, dayjs } from 'frappe-ui'
+import { toast, dayjsLocal, dayjs, getConfig, FeatherIcon } from 'frappe-ui'
 import { h } from 'vue'
-
-export function createToast(options) {
-  toast({
-    position: 'bottom-right',
-    ...options,
-  })
-}
 
 export function formatTime(seconds) {
   const days = Math.floor(seconds / (3600 * 24))
@@ -72,7 +65,135 @@ export function getFormat(
 }
 
 export function timeAgo(date) {
-  return useTimeAgo(date).value
+  return prettyDate(date)
+}
+
+function getBrowserTimezone() {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone
+}
+
+export function prettyDate(date, mini = false) {
+  if (!date) return ''
+
+  let systemTimezone = getConfig('systemTimezone')
+  let localTimezone = getConfig('localTimezone') || getBrowserTimezone()
+
+  if (typeof date == 'string') {
+    date = dayjsLocal(date)
+  }
+
+  let nowDatetime = dayjs().tz(localTimezone || systemTimezone)
+  let diff = nowDatetime.diff(date, 'seconds')
+
+  let dayDiff = diff / 86400
+
+  if (isNaN(dayDiff)) return ''
+
+  if (mini) {
+    // Return short format of time difference
+    if (dayDiff < 0) {
+      if (Math.abs(dayDiff) < 1) {
+        if (Math.abs(diff) < 60) {
+          return __('now')
+        } else if (Math.abs(diff) < 3600) {
+          return __('in {0} m', [Math.floor(Math.abs(diff) / 60)])
+        } else if (Math.abs(diff) < 86400) {
+          return __('in {0} h', [Math.floor(Math.abs(diff) / 3600)])
+        }
+      }
+      if (Math.abs(dayDiff) >= 1 && Math.abs(dayDiff) < 1.5) {
+        return __('tomorrow')
+      } else if (Math.abs(dayDiff) < 7) {
+        return __('in {0} d', [Math.floor(Math.abs(dayDiff))])
+      } else if (Math.abs(dayDiff) < 31) {
+        return __('in {0} w', [Math.floor(Math.abs(dayDiff) / 7)])
+      } else if (Math.abs(dayDiff) < 365) {
+        return __('in {0} M', [Math.floor(Math.abs(dayDiff) / 30)])
+      } else {
+        return __('in {0} y', [Math.floor(Math.abs(dayDiff) / 365)])
+      }
+    } else if (dayDiff >= 0 && dayDiff < 1) {
+      if (diff < 60) {
+        return __('now')
+      } else if (diff < 3600) {
+        return __('{0} m', [Math.floor(diff / 60)])
+      } else if (diff < 86400) {
+        return __('{0} h', [Math.floor(diff / 3600)])
+      }
+    } else {
+      dayDiff = Math.floor(dayDiff)
+      if (dayDiff < 7) {
+        return __('{0} d', [dayDiff])
+      } else if (dayDiff < 31) {
+        return __('{0} w', [Math.floor(dayDiff / 7)])
+      } else if (dayDiff < 365) {
+        return __('{0} M', [Math.floor(dayDiff / 30)])
+      } else {
+        return __('{0} y', [Math.floor(dayDiff / 365)])
+      }
+    }
+  } else {
+    // Return long format of time difference
+    if (dayDiff < 0) {
+      if (Math.abs(dayDiff) < 1) {
+        if (Math.abs(diff) < 60) {
+          return __('just now')
+        } else if (Math.abs(diff) < 120) {
+          return __('in 1 minute')
+        } else if (Math.abs(diff) < 3600) {
+          return __('in {0} minutes', [Math.floor(Math.abs(diff) / 60)])
+        } else if (Math.abs(diff) < 7200) {
+          return __('in 1 hour')
+        } else if (Math.abs(diff) < 86400) {
+          return __('in {0} hours', [Math.floor(Math.abs(diff) / 3600)])
+        }
+      }
+      if (Math.abs(dayDiff) >= 1 && Math.abs(dayDiff) < 1.5) {
+        return __('tomorrow')
+      } else if (Math.abs(dayDiff) < 7) {
+        return __('in {0} days', [Math.floor(Math.abs(dayDiff))])
+      } else if (Math.abs(dayDiff) < 31) {
+        return __('in {0} weeks', [Math.floor(Math.abs(dayDiff) / 7)])
+      } else if (Math.abs(dayDiff) < 365) {
+        return __('in {0} months', [Math.floor(Math.abs(dayDiff) / 30)])
+      } else if (Math.abs(dayDiff) < 730) {
+        return __('in 1 year')
+      } else {
+        return __('in {0} years', [Math.floor(Math.abs(dayDiff) / 365)])
+      }
+    } else if (dayDiff >= 0 && dayDiff < 1) {
+      if (diff < 60) {
+        return __('just now')
+      } else if (diff < 120) {
+        return __('1 minute ago')
+      } else if (diff < 3600) {
+        return __('{0} minutes ago', [Math.floor(diff / 60)])
+      } else if (diff < 7200) {
+        return __('1 hour ago')
+      } else if (diff < 86400) {
+        return __('{0} hours ago', [Math.floor(diff / 3600)])
+      }
+    } else {
+      dayDiff = Math.floor(dayDiff)
+      if (dayDiff == 1) {
+        return __('yesterday')
+      } else if (dayDiff < 7) {
+        return __('{0} days ago', [dayDiff])
+      } else if (dayDiff < 14) {
+        return __('1 week ago')
+      } else if (dayDiff < 31) {
+        return __('{0} weeks ago', [Math.floor(dayDiff / 7)])
+      } else if (dayDiff < 62) {
+        return __('1 month ago')
+      } else if (dayDiff < 365) {
+        return __('{0} months ago', [Math.floor(dayDiff / 30)])
+      } else if (dayDiff < 730) {
+        return __('1 year ago')
+      } else {
+        return __('{0} years ago', [Math.floor(dayDiff / 365)])
+      }
+    }
+  }
 }
 
 export function taskStatusOptions(action, data) {
@@ -141,10 +262,9 @@ export function validateEmail(email) {
   return regExp.test(email)
 }
 
-export function setupAssignees(doc) {
+export function parseAssignees(assignees) {
   let { getUser } = usersStore()
-  let assignees = doc.data?._assign || []
-  doc.data._assignedTo = assignees.map((user) => ({
+  return assignees.map((user) => ({
     name: user,
     image: getUser(user).user_image,
     label: getUser(user).full_name,
@@ -152,30 +272,24 @@ export function setupAssignees(doc) {
 }
 
 async function getFormScript(script, obj) {
+  if (!script.includes('setupForm(')) return {}
   let scriptFn = new Function(script + '\nreturn setupForm')()
   let formScript = await scriptFn(obj)
   return formScript || {}
 }
 
-export async function setupCustomizations(doc, obj) {
-  if (!doc.data?._form_script) return []
+export async function setupCustomizations(scripts, obj) {
+  if (!scripts) return []
 
   let statuses = []
   let actions = []
-  if (Array.isArray(doc.data._form_script)) {
-    for (let script of doc.data._form_script) {
-      let _script = await getFormScript(script, obj)
+  if (Array.isArray(scripts)) {
+    for (let s of scripts) {
+      let _script = await getFormScript(s.script, obj)
       actions = actions.concat(_script?.actions || [])
       statuses = statuses.concat(_script?.statuses || [])
     }
-  } else {
-    let _script = await getFormScript(doc.data._form_script, obj)
-    actions = _script?.actions || []
-    statuses = _script?.statuses || []
   }
-
-  doc.data._customStatuses = statuses
-  doc.data._customActions = actions
   return { statuses, actions }
 }
 
@@ -208,34 +322,20 @@ export async function setupListCustomizations(data, obj = {}) {
   return { actions, bulkActions }
 }
 
-export function errorMessage(title, message) {
-  createToast({
-    title: title || 'Error',
-    text: message,
-    icon: 'x',
-    iconClasses: 'text-ink-red-4',
-  })
-}
-
 export function copyToClipboard(text) {
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(show_success_alert)
+    navigator.clipboard.writeText(text).then(showSuccessAlert)
   } else {
     let input = document.createElement('textarea')
     document.body.appendChild(input)
     input.value = text
     input.select()
     document.execCommand('copy')
-    show_success_alert()
+    showSuccessAlert()
     document.body.removeChild(input)
   }
-  function show_success_alert() {
-    createToast({
-      title: 'Copied to clipboard',
-      text: text,
-      icon: 'check',
-      iconClasses: 'text-ink-green-3',
-    })
+  function showSuccessAlert() {
+    toast.success(__('Copied to clipboard'))
   }
 }
 
@@ -338,6 +438,13 @@ export function isImage(extention) {
   )
 }
 
+export function validateIsImageFile(file) {
+  const extn = file.name.split('.').pop().toLowerCase()
+  if (!isImage(extn)) {
+    return __('Only image files are allowed')
+  }
+}
+
 export function getRandom(len = 4) {
   let text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
@@ -347,4 +454,78 @@ export function getRandom(len = 4) {
   })
 
   return text
+}
+
+export function runSequentially(functions) {
+  return functions.reduce((promise, fn) => {
+    return promise.then(() => fn())
+  }, Promise.resolve())
+}
+
+export function DropdownOption({
+  active,
+  option,
+  theme,
+  icon,
+  onClick,
+  selected,
+}) {
+  return h(
+    'button',
+    {
+      class: [
+        active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
+        'group flex w-full justify-between items-center rounded-md px-2 py-2 text-sm',
+        theme == 'danger' ? 'text-ink-red-3 hover:bg-ink-red-1' : '',
+      ],
+      onClick: !selected ? onClick : null,
+    },
+    [
+      h('div', { class: 'flex gap-2' }, [
+        icon
+          ? h(FeatherIcon, {
+              name: icon,
+              class: ['h-4 w-4 shrink-0'],
+              'aria-hidden': true,
+            })
+          : null,
+        h('span', { class: 'whitespace-nowrap' }, option),
+      ]),
+      selected
+        ? h(LucideCheck, {
+            class: ['h-4 w-4 shrink-0 text-ink-gray-7'],
+            'aria-hidden': true,
+          })
+        : null,
+    ],
+  )
+}
+
+export function TemplateOption({ active, option, theme, icon, onClick }) {
+  return h(
+    'button',
+    {
+      class: [
+        active ? 'bg-surface-gray-2 text-ink-gray-8' : 'text-ink-gray-7',
+        'group flex w-full gap-2 items-center rounded-md px-2 py-2 text-sm',
+        theme == 'danger' ? 'text-ink-red-3 hover:bg-ink-red-1' : '',
+      ],
+      onClick: onClick,
+    },
+    [
+      icon
+        ? h(FeatherIcon, {
+            name: icon,
+            class: ['h-4 w-4 shrink-0'],
+            'aria-hidden': true,
+          })
+        : null,
+      h('span', { class: 'whitespace-nowrap' }, option),
+    ],
+  )
+}
+
+export function copy(obj) {
+  if (!obj) return obj
+  return JSON.parse(JSON.stringify(obj))
 }

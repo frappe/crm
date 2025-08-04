@@ -34,6 +34,10 @@ const props = defineProps({
     type: String,
     default: 'CRM Lead',
   },
+  isGridRow: {
+    type: Boolean,
+    default: false,
+  },
   preview: {
     type: Boolean,
     default: false,
@@ -55,6 +59,7 @@ provide(
 provide('hasTabs', hasTabs)
 provide('doctype', props.doctype)
 provide('preview', props.preview)
+provide('isGridRow', props.isGridRow)
 </script>
 <style scoped>
 .section:not(:has(.field)) {

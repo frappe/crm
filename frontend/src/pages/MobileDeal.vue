@@ -1,5 +1,5 @@
 <template>
-  <LayoutHeader v-if="deal.data">
+  <LayoutHeader>
     <header
       class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2"
     >
@@ -10,14 +10,21 @@
       </Breadcrumbs>
       <div class="absolute right-0">
         <Dropdown
+          v-if="doc"
           :options="
-            statusOptions('deal', updateField, deal.data._customStatuses)
+            statusOptions(
+              'deal',
+              document.statuses?.length
+                ? document.statuses
+                : document._statuses,
+              triggerStatusChange,
+            )
           "
         >
           <template #default="{ open }">
-            <Button :label="deal.data.status">
+            <Button v-if="doc.status" :label="doc.status">
               <template #prefix>
-                <IndicatorIcon :class="getDealStatus(deal.data.status).color" />
+                <IndicatorIcon :class="getDealStatus(doc.status).color" />
               </template>
               <template #suffix>
                 <FeatherIcon
@@ -32,29 +39,29 @@
     </header>
   </LayoutHeader>
   <div
-    v-if="deal.data"
+    v-if="doc.name"
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
-    <AssignTo
-      v-model="deal.data._assignedTo"
-      :data="deal.data"
-      doctype="CRM Deal"
-    />
+    <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
     <div class="flex items-center gap-2">
       <CustomActions
-        v-if="deal.data._customActions?.length"
-        :actions="deal.data._customActions"
+        v-if="document._actions?.length"
+        :actions="document._actions"
+      />
+      <CustomActions
+        v-if="document.actions?.length"
+        :actions="document.actions"
       />
     </div>
   </div>
-  <div v-if="deal.data" class="flex h-full overflow-hidden">
+  <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
       <TabList class="!px-3" />
       <TabPanel v-slot="{ tab }">
         <div v-if="tab.name == 'Details'">
           <SLASection
-            v-if="deal.data.sla_status"
-            v-model="deal.data"
+            v-if="doc.sla_status"
+            v-model="doc"
             @updateField="updateField"
           />
           <div
@@ -62,11 +69,12 @@
             class="flex flex-1 flex-col justify-between overflow-hidden"
           >
             <SidePanelLayout
-              v-model="deal.data"
               :sections="sections.data"
               doctype="CRM Deal"
-              @update="updateField"
+              :docname="dealId"
               @reload="sections.reload"
+              @beforeFieldChange="beforeStatusChange"
+              @afterFieldChange="reloadAssignees"
             >
               <template #actions="{ section }">
                 <div v-if="section.name == 'contacts_section'" class="pr-2">
@@ -78,7 +86,7 @@
                       (value, close) => {
                         _contact = {
                           first_name: value,
-                          company_name: deal.data.organization,
+                          company_name: doc.organization,
                         }
                         showContactModal = true
                         close()
@@ -206,32 +214,55 @@
         <Activities
           v-else
           doctype="CRM Deal"
+          :docname="dealId"
           :tabs="tabs"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
-          v-model="deal"
+          @beforeSave="beforeStatusChange"
+          @afterSave="reloadAssignees"
         />
       </TabPanel>
     </Tabs>
   </div>
+  <ErrorPage
+    v-else-if="errorTitle"
+    :errorTitle="errorTitle"
+    :errorMessage="errorMessage"
+  />
   <OrganizationModal
+    v-if="showOrganizationModal"
     v-model="showOrganizationModal"
-    v-model:organization="_organization"
+    :data="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organization', doc.name),
+      afterInsert: (_doc) => updateField('organization', _doc.name),
     }"
   />
   <ContactModal
+    v-if="showContactModal"
     v-model="showContactModal"
     :contact="_contact"
     :options="{
       redirect: false,
-      afterInsert: (doc) => addContact(doc.name),
+      afterInsert: (_doc) => addContact(_doc.name),
     }"
+  />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'CRM Deal'"
+    :docname="dealId"
+    name="Deals"
+  />
+  <LostReasonModal
+    v-if="showLostReasonModal"
+    v-model="showLostReasonModal"
+    :deal="document"
   />
 </template>
 <script setup>
+import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
+import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
@@ -250,6 +281,7 @@ import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
+import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Section from '@/components/Section.vue'
@@ -257,12 +289,13 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { createToast, setupAssignees, setupCustomizations } from '@/utils'
+import { setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
+import { useDocument } from '@/data/document'
 import {
   whatsappEnabled,
   callEnabled,
@@ -279,8 +312,9 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
+  toast,
 } from 'frappe-ui'
-import { ref, computed, h, onMounted } from 'vue'
+import { ref, computed, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
@@ -297,99 +331,56 @@ const props = defineProps({
   },
 })
 
-const deal = createResource({
-  url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
-  params: { name: props.dealId },
-  cache: ['deal', props.dealId],
-  onSuccess: (data) => {
-    if (data.organization) {
-      organization.update({
-        params: { doctype: 'CRM Organization', name: data.organization },
+const errorTitle = ref('')
+const errorMessage = ref('')
+const showDeleteLinkedDocModal = ref(false)
+
+const { triggerOnChange, assignees, document, scripts, error } = useDocument(
+  'CRM Deal',
+  props.dealId,
+)
+
+const doc = computed(() => document.doc || {})
+
+watch(error, (err) => {
+  if (err) {
+    errorTitle.value = __(
+      err.exc_type == 'DoesNotExistError'
+        ? 'Document not found'
+        : 'Error occurred',
+    )
+    errorMessage.value = __(err.messages?.[0] || 'An error occurred')
+  } else {
+    errorTitle.value = ''
+    errorMessage.value = ''
+  }
+})
+
+watch(
+  () => document.doc,
+  async (_doc) => {
+    if (scripts.data?.length) {
+      let s = await setupCustomizations(scripts.data, {
+        doc: _doc,
+        $dialog,
+        $socket,
+        router,
+        toast,
+        updateField,
+        createToast: toast.create,
+        deleteDoc: deleteDeal,
+        call,
       })
-      organization.fetch()
+      document._actions = s.actions || []
+      document._statuses = s.statuses || []
     }
-
-    setupAssignees(deal)
-    setupCustomizations(deal, {
-      doc: data,
-      $dialog,
-      $socket,
-      router,
-      updateField,
-      createToast,
-      deleteDoc: deleteDeal,
-      resource: {
-        deal,
-        dealContacts,
-        sections,
-      },
-      call,
-    })
   },
-})
-
-const organization = createResource({
-  url: 'frappe.client.get',
-  onSuccess: (data) => (deal.data._organizationObj = data),
-})
-
-onMounted(() => {
-  if (deal.data) return
-  deal.fetch()
-})
+  { once: true },
+)
 
 const reload = ref(false)
 const showOrganizationModal = ref(false)
 const _organization = ref({})
-
-function updateDeal(fieldname, value, callback) {
-  value = Array.isArray(fieldname) ? '' : value
-
-  if (validateRequired(fieldname, value)) return
-
-  createResource({
-    url: 'frappe.client.set_value',
-    params: {
-      doctype: 'CRM Deal',
-      name: props.dealId,
-      fieldname,
-      value,
-    },
-    auto: true,
-    onSuccess: () => {
-      deal.reload()
-      reload.value = true
-      createToast({
-        title: __('Deal updated'),
-        icon: 'check',
-        iconClasses: 'text-ink-green-3',
-      })
-      callback?.()
-    },
-    onError: (err) => {
-      createToast({
-        title: __('Error updating deal'),
-        text: __(err.messages?.[0]),
-        icon: 'x',
-        iconClasses: 'text-ink-red-4',
-      })
-    },
-  })
-}
-
-function validateRequired(fieldname, value) {
-  let meta = deal.data.fields_meta || {}
-  if (meta[fieldname]?.reqd && !value) {
-    createToast({
-      title: __('Error Updating Deal'),
-      text: __('{0} is a required field', [meta[fieldname].label]),
-      icon: 'x',
-      iconClasses: 'text-ink-red-4',
-    })
-    return true
-  }
-  return false
-}
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
@@ -411,14 +402,14 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Deal', params: { dealId: deal.data.name } },
+    route: { name: 'Deal', params: { dealId: props.dealId } },
   })
   return items
 })
 
 const title = computed(() => {
   let t = doctypeMeta['CRM Deal']?.title_field || 'name'
-  return deal.data?.[t] || props.dealId
+  return doc.value?.[t] || props.dealId
 })
 
 usePageMeta(() => {
@@ -542,11 +533,7 @@ function contactOptions(contact) {
 
 async function addContact(contact) {
   if (dealContacts.data?.find((c) => c.name === contact)) {
-    createToast({
-      title: __('Contact already added'),
-      icon: 'x',
-      iconClasses: 'text-ink-red-3',
-    })
+    toast.error(__('Contact already added'))
     return
   }
 
@@ -556,11 +543,7 @@ async function addContact(contact) {
   })
   if (d) {
     dealContacts.reload()
-    createToast({
-      title: __('Contact added'),
-      icon: 'check',
-      iconClasses: 'text-ink-green-3',
-    })
+    toast.success(__('Contact added'))
   }
 }
 
@@ -571,11 +554,7 @@ async function removeContact(contact) {
   })
   if (d) {
     dealContacts.reload()
-    createToast({
-      title: __('Contact removed'),
-      icon: 'check',
-      iconClasses: 'text-ink-green-3',
-    })
+    toast.success(__('Contact removed'))
   }
 }
 
@@ -586,11 +565,7 @@ async function setPrimaryContact(contact) {
   })
   if (d) {
     dealContacts.reload()
-    createToast({
-      title: __('Primary contact set'),
-      icon: 'check',
-      iconClasses: 'text-ink-green-3',
-    })
+    toast.success(__('Primary contact set'))
   }
 }
 
@@ -618,18 +593,69 @@ const dealContacts = createResource({
   },
 })
 
-function updateField(name, value, callback) {
-  updateDeal(name, value, () => {
-    deal.data[name] = value
-    callback?.()
+function updateField(name, value) {
+  value = Array.isArray(name) ? '' : value
+  let oldValues = Array.isArray(name) ? {} : doc.value[name]
+
+  if (Array.isArray(name)) {
+    name.forEach((field) => (doc.value[field] = value))
+  } else {
+    doc.value[name] = value
+  }
+
+  document.save.submit(null, {
+    onSuccess: () => (reload.value = true),
+    onError: (err) => {
+      if (Array.isArray(name)) {
+        name.forEach((field) => (doc.value[field] = oldValues[field]))
+      } else {
+        doc.value[name] = oldValues
+      }
+      toast.error(err.messages?.[0] || __('Error updating field'))
+    },
   })
 }
 
-async function deleteDeal(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Deal',
-    name,
-  })
-  router.push({ name: 'Deals' })
+function deleteDeal() {
+  showDeleteLinkedDocModal.value = true
+}
+
+async function triggerStatusChange(value) {
+  await triggerOnChange('status', value)
+  setLostReason()
+}
+
+const showLostReasonModal = ref(false)
+
+function setLostReason() {
+  if (
+    getDealStatus(doc.status).type !== 'Lost' ||
+    (doc.lost_reason && doc.lost_reason !== 'Other') ||
+    (doc.lost_reason === 'Other' && doc.lost_notes)
+  ) {
+    document.save.submit()
+    return
+  }
+
+  showLostReasonModal.value = true
+}
+
+function beforeStatusChange(data) {
+  if (
+    data?.hasOwnProperty('status') &&
+    getDealStatus(data.status).type == 'Lost'
+  ) {
+    setLostReason()
+  } else {
+    document.save.submit(null, {
+      onSuccess: () => reloadAssignees(data),
+    })
+  }
+}
+
+function reloadAssignees(data) {
+  if (data?.hasOwnProperty('deal_owner')) {
+    assignees.reload()
+  }
 }
 </script>

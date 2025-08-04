@@ -126,7 +126,7 @@
           <div class="flex items-center justify-between gap-2">
             <Autocomplete
               value=""
-              :options="filterableFields.data"
+              :options="availableFilters"
               @change="(e) => setfilter(e)"
               :placeholder="__('First name')"
             >
@@ -215,6 +215,19 @@ const filters = computed(() => {
     allFilters = removeCommonFilters(props.default_filters, allFilters)
   }
   return convertFilters(filterableFields.data, allFilters)
+})
+
+const availableFilters = computed(() => {
+  if (!filterableFields.data) return []
+
+  const selectedFieldNames = new Set()
+  for (const filter of filters.value) {
+    selectedFieldNames.add(filter.fieldname)
+  }
+
+  return filterableFields.data.filter(
+    (field) => !selectedFieldNames.has(field.fieldname),
+  )
 })
 
 function removeCommonFilters(commonFilters, allFilters) {

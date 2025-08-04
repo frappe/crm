@@ -4,7 +4,7 @@
     v-model:reloadTasks="activities"
     :task="task"
     :doctype="doctype"
-    :doc="doc.data?.name"
+    :doc="doc?.name"
     @after="redirect('tasks')"
   />
   <NoteModal
@@ -12,13 +12,21 @@
     v-model:reloadNotes="activities"
     :note="note"
     :doctype="doctype"
-    :doc="doc.data?.name"
+    :doc="doc?.name"
     @after="redirect('notes')"
+  />
+  <CallLogModal
+    v-if="showCallLogModal"
+    v-model="showCallLogModal"
+    :data="callLog"
+    :referenceDoc="referenceDoc"
+    :options="{ afterInsert: () => activities.reload() }"
   />
 </template>
 <script setup>
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
+import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -77,6 +85,22 @@ function showNote(n) {
   showNoteModal.value = true
 }
 
+// Call Logs
+const showCallLogModal = ref(false)
+const callLog = ref({})
+const referenceDoc = ref({})
+
+function createCallLog() {
+  let doctype = props.doctype
+  let docname = props.doc?.name
+  referenceDoc.value = { ...props.doc }
+  callLog.value = {
+    reference_doctype: doctype,
+    reference_docname: docname,
+  }
+  showCallLogModal.value = true
+}
+
 // common
 const route = useRoute()
 const router = useRouter()
@@ -95,5 +119,6 @@ defineExpose({
   deleteTask,
   updateTaskStatus,
   showNote,
+  createCallLog,
 })
 </script>

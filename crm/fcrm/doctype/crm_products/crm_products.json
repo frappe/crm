@@ -1,0 +1,136 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-28 12:50:49.812915",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "product_code",
+  "column_break_gvbc",
+  "product_name",
+  "section_break_fnvf",
+  "qty",
+  "column_break_ajac",
+  "rate",
+  "section_break_olqb",
+  "discount_percentage",
+  "column_break_uvra",
+  "discount_amount",
+  "section_break_cnpb",
+  "column_break_pozr",
+  "amount",
+  "column_break_ejqw",
+  "net_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "column_break_gvbc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "product_name",
+   "fieldtype": "Data",
+   "label": "Product Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_fnvf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_olqb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "discount_percentage",
+   "fieldtype": "Percent",
+   "label": "Discount %"
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_cnpb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_pozr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate",
+   "options": "currency",
+   "reqd": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "depends_on": "discount_percentage",
+   "description": "Amount after discount",
+   "fieldname": "net_amount",
+   "fieldtype": "Currency",
+   "label": "Net Amount",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "columns": 5,
+   "fieldname": "product_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Product",
+   "options": "CRM Product"
+  },
+  {
+   "bold": 1,
+   "default": "1",
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "column_break_ajac",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_uvra",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ejqw",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-05-14 18:52:26.183306",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Products",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

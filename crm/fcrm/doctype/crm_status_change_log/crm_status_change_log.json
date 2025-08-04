@@ -13,6 +13,8 @@
   "column_break_mwmz",
   "duration",
   "last_status_change_log",
+  "from_type",
+  "to_type",
   "log_owner"
  ],
  "fields": [
@@ -61,17 +63,30 @@
    "fieldtype": "Link",
    "label": "Owner",
    "options": "User"
+  },
+  {
+   "fieldname": "from_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "From Type"
+  },
+  {
+   "fieldname": "to_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "To Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-01-06 13:26:40.597277",
+ "modified": "2025-07-13 12:37:41.278584",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Status Change Log",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
