@@ -77,6 +77,7 @@
           v-if="isDemoSite"
           :isSidebarCollapsed="isSidebarCollapsed"
           :afterSignup="() => capture('signup_from_demo_site')"
+          appName="Nexo CRM"
         />
         <TrialBanner
           v-if="isFCSite"
@@ -86,6 +87,7 @@
         <GettingStartedBanner
           v-if="!isOnboardingStepsCompleted"
           :isSidebarCollapsed="isSidebarCollapsed"
+          appName="nexocrm"
         />
       </div>
       <SidebarLink
@@ -131,6 +133,8 @@
       :afterReset="(step) => capture('onboarding_step_reset_' + step)"
       :afterResetAll="() => capture('onboarding_steps_reset')"
       docsLink="https://docs.frappe.io/crm"
+      appName="nexocrm"
+      title="Nexo CRM"
     />
     <IntermediateStepModal
       v-model="showIntermediateModal"
@@ -311,7 +315,7 @@ function getIcon(routeName, icon) {
 // onboarding
 const { user } = sessionStore()
 const { users, isManager } = usersStore()
-const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
+const { isOnboardingStepsCompleted, setUp } = useOnboarding('nexocrm')
 
 async function getFirstLead() {
   let firstLead = localStorage.getItem('firstLead' + user)
@@ -600,7 +604,7 @@ const articles = ref([
     ],
   },
   {
-    title: __('Frappe CRM mobile'),
+    title: __('Nexo CRM mobile'),
     opened: false,
     subArticles: [
       { name: 'mobile-app-installation', title: __('Mobile app installation') },
