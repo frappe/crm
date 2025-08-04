@@ -1,6 +1,6 @@
 <template>
   <FrappeUIProvider>
-    <Layout v-if="session().isLoggedIn">
+    <Layout class="isolate" v-if="session().isLoggedIn">
       <router-view :key="$route.fullPath"/>
     </Layout>
     <Dialogs />

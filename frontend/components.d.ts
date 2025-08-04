@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    '(refactor': update component declarations and improve Calendar daily header styling)
     AboutModal: typeof import('./src/components/Modals/AboutModal.vue')['default']
     Activities: typeof import('./src/components/Activities/Activities.vue')['default']
     ActivityHeader: typeof import('./src/components/Activities/ActivityHeader.vue')['default']
@@ -60,7 +61,6 @@ declare module 'vue' {
     CheckCircleIcon: typeof import('./src/components/Icons/CheckCircleIcon.vue')['default']
     CheckIcon: typeof import('./src/components/Icons/CheckIcon.vue')['default']
     CollapseSidebar: typeof import('./src/components/Icons/CollapseSidebar.vue')['default']
-    ColorPicker: typeof import('./src/components/frappe-ui/ColorPicker.vue')['default']
     Column: typeof import('./src/components/FieldLayout/Column.vue')['default']
     ColumnSettings: typeof import('./src/components/ColumnSettings.vue')['default']
     ColumnsIcon: typeof import('./src/components/Icons/ColumnsIcon.vue')['default']
@@ -129,7 +129,6 @@ declare module 'vue' {
     ExotelCallUI: typeof import('./src/components/Telephony/ExotelCallUI.vue')['default']
     ExportIcon: typeof import('./src/components/Icons/ExportIcon.vue')['default']
     ExternalLinkIcon: typeof import('./src/components/Icons/ExternalLinkIcon.vue')['default']
-    EyeDropperIcon: typeof import('./src/components/Icons/EyeDropperIcon.vue')['default']
     FadedScrollableDiv: typeof import('./src/components/FadedScrollableDiv.vue')['default']
     Field: typeof import('./src/components/FieldLayout/Field.vue')['default']
     FieldLayout: typeof import('./src/components/FieldLayout/FieldLayout.vue')['default']
@@ -189,7 +188,9 @@ declare module 'vue' {
     ListRows: typeof import('./src/components/ListViews/ListRows.vue')['default']
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
     LostReasonModal: typeof import('./src/components/Modals/LostReasonModal.vue')['default']
+    LucideChevronRight: typeof import('~icons/lucide/chevron-right')['default']
     LucidePlus: typeof import('~icons/lucide/plus')['default']
+    LucideX: typeof import('~icons/lucide/x')['default']
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
     MenuIcon: typeof import('./src/components/Icons/MenuIcon.vue')['default']
@@ -265,7 +266,6 @@ declare module 'vue' {
     TelegramIcon: typeof import('./src/components/Icons/TelegramIcon.vue')['default']
     TelephonySettings: typeof import('./src/components/Settings/TelephonySettings.vue')['default']
     TerritoryIcon: typeof import('./src/components/Icons/TerritoryIcon.vue')['default']
-    TimePicker: typeof import('./src/components/frappe-ui/TimePicker.vue')['default']
     TwilioCallUI: typeof import('./src/components/Telephony/TwilioCallUI.vue')['default']
     UnpinIcon: typeof import('./src/components/Icons/UnpinIcon.vue')['default']
     UserAvatar: typeof import('./src/components/UserAvatar.vue')['default']
