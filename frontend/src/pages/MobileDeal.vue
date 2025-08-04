@@ -42,7 +42,7 @@
     v-if="doc.name"
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
-    <AssignTo v-model="assignees.data" :data="doc" doctype="CRM Deal" />
+    <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
     <div class="flex items-center gap-2">
       <CustomActions
         v-if="document._actions?.length"
