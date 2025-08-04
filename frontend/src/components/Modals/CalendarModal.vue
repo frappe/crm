@@ -37,21 +37,21 @@
                 :placeholder="__('Start Date')"
                 @update:modelValue="(date) => updateDate(date, true)"
               />
-              <TimePicker
+              <!-- <TimePicker
                 v-if="!_event.isFullDay"
                 class="max-w-20"
                 :value="_event.fromTime"
                 :placeholder="__('Start Time')"
                 @update:modelValue="(time) => updateTime(time, true)"
-              />
+              /> -->
               <div class="text-base text-ink-gray-6">-</div>
-              <TimePicker
+              <!-- <TimePicker
                 v-if="!_event.isFullDay"
                 class="max-w-20"
                 :value="_event.toTime"
                 :placeholder="__('End Time')"
                 @update:modelValue="(time) => updateTime(time)"
-              />
+              /> -->
               <DatePicker
                 class="max-w-28"
                 :value="_event.toDate"
@@ -71,7 +71,7 @@
         <div class="flex justify-between items-center">
           <div class="flex">
             <div class="flex items-center gap-x-2">
-              <ColorPicker v-model="_event.color">
+              <!-- <ColorPicker v-model="_event.color">
                 <template #target="{ togglePopover }">
                   <Button variant="ghost" @click="togglePopover">
                     <div
@@ -82,7 +82,7 @@
                     />
                   </Button>
                 </template>
-              </ColorPicker>
+              </ColorPicker> -->
               <Button variant="ghost" @click="updateEventType">
                 <FeatherIcon
                   :name="_event.eventType == 'Private' ? 'lock' : 'unlock'"
@@ -118,8 +118,8 @@ import {
   TextInput,
   TextEditor,
   DatePicker,
-  ColorPicker,
-  TimePicker,
+  // ColorPicker,
+  // TimePicker,
   dayjs,
 } from 'frappe-ui'
 import { getFormat } from '@/utils'
