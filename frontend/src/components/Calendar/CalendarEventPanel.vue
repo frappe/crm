@@ -18,7 +18,16 @@
         >
           <Button variant="ghost" icon="more-horizontal" />
         </Dropdown>
-        <Button icon="x" variant="ghost" @click="show = false" />
+        <Button
+          icon="x"
+          variant="ghost"
+          @click="
+            () => {
+              show = false
+              activeEvent = ''
+            }
+          "
+        />
       </div>
     </div>
     <div class="text-base">
@@ -31,9 +40,35 @@
             :placeholder="__('Event title')"
           >
             <template #prefix>
-              <div
-                class="ml-0.5 bg-surface-blue-3 size-2 rounded-full cursor-pointer"
-              />
+              <Dropdown
+                class="ml-1"
+                :options="
+                  Object.keys(colorMap).map((color) => ({
+                    label:
+                      colorMap[color].name.charAt(0).toUpperCase() +
+                      colorMap[color].name.slice(1),
+                    value: color,
+                    icon: h('div', {
+                      class: '!size-2 rounded-full',
+                      style: {
+                        backgroundColor: colorMap[color].border,
+                      },
+                    }),
+                    onClick: () => {
+                      _event.color = color
+                    },
+                  }))
+                "
+              >
+                <div
+                  class="ml-0.5 size-2 rounded-full cursor-pointer"
+                  :style="{
+                    backgroundColor: _event.color
+                      ? colorMap[_event.color]?.border || '#30A66D'
+                      : '#30A66D',
+                  }"
+                />
+              </Dropdown>
             </template>
           </TextInput>
         </div>
@@ -135,8 +170,10 @@ import {
   ErrorMessage,
   Dropdown,
   dayjs,
+  CalendarColorMap as colorMap,
+  CalendarActiveEvent as activeEvent,
 } from 'frappe-ui'
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, h } from 'vue'
 
 const props = defineProps({
   event: {

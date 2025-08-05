@@ -97,7 +97,13 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { sessionStore } from '@/stores/session'
 import { globalStore } from '@/stores/global'
-import { Calendar, createListResource, TabButtons, dayjs } from 'frappe-ui'
+import {
+  Calendar,
+  createListResource,
+  TabButtons,
+  dayjs,
+  CalendarActiveEvent as activeEvent,
+} from 'frappe-ui'
 import { ref } from 'vue'
 
 const { user } = sessionStore()
@@ -175,6 +181,7 @@ function createEvent(_event) {
       onSuccess: (e) => {
         _event.id = e.name
         event.value = _event
+        activeEvent.value = e.name
       },
     },
   )
@@ -213,6 +220,7 @@ function deleteEvent(eventID) {
         onClick: (close) => {
           events.delete.submit(eventID)
           showEventPanel.value = false
+          activeEvent.value = ''
           close()
         },
       },
@@ -228,6 +236,8 @@ function showDetails(e) {}
 function editDetails(e) {
   showEventPanel.value = true
   event.value = { ...e.calendarEvent }
+
+  activeEvent.value = e.calendarEvent.id
 }
 
 function showEventPanelArea(e) {
