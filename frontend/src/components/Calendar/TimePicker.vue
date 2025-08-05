@@ -1,6 +1,6 @@
 <template>
   <Dropdown :options="options()">
-    <template #default="{ open }">
+    <template #default="{ open, togglePopover }">
       <slot
         v-bind="{
           emitUpdate,
@@ -17,7 +17,14 @@
           :value="timeValue"
           :placeholder="placeholder"
           @change="(e) => emitUpdate(e.target.value)"
-        />
+        >
+          <template #prefix v-if="$slots.prefix">
+            <slot name="prefix" />
+          </template>
+          <template #suffix v-if="$slots.suffix">
+            <slot name="suffix" v-bind="{ togglePopover }" />
+          </template>
+        </TextInput>
       </slot>
     </template>
     <template #body>

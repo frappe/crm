@@ -66,47 +66,63 @@
         <div
           class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
         >
-          <div class="">{{ __('From') }}</div>
+          <div class="">{{ __('Date') }}</div>
           <div class="flex items-center gap-x-2">
             <DatePicker
-              :class="[_event.isFullDay ? '[&_input]:w-[216px]' : 'max-w-28']"
+              :class="['[&_input]:w-[216px]']"
               variant="outline"
               :value="_event.fromDate"
               :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
-              :placeholder="__('Start Date')"
+              :placeholder="__('May 1, 2025')"
               @update:modelValue="(date) => updateDate(date, true)"
-            />
+            >
+              <template #suffix="{ togglePopover }">
+                <FeatherIcon
+                  name="chevron-down"
+                  class="h-4 w-4 cursor-pointer"
+                  @click="togglePopover"
+                />
+              </template>
+            </DatePicker>
+          </div>
+        </div>
+        <div
+          v-if="!_event.isFullDay"
+          class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
+        >
+          <div class="w-20">{{ __('Time') }}</div>
+          <div class="flex items-center gap-x-3">
             <TimePicker
               v-if="!_event.isFullDay"
-              class="max-w-24"
+              class="max-w-[102px]"
               variant="outline"
               :value="_event.fromTime"
               :placeholder="__('Start Time')"
               @update:modelValue="(time) => updateTime(time, true)"
-            />
-          </div>
-        </div>
-        <div
-          class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
-        >
-          <div class="w-20">{{ __('To') }}</div>
-          <div class="flex items-center gap-x-2">
-            <DatePicker
-              :class="[_event.isFullDay ? '[&_input]:w-[216px]' : 'max-w-28']"
-              variant="outline"
-              :value="_event.toDate"
-              :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
-              :placeholder="__('End Date')"
-              @update:modelValue="(date) => updateDate(date)"
-            />
+            >
+              <template #suffix="{ togglePopover }">
+                <FeatherIcon
+                  name="chevron-down"
+                  class="h-4 w-4 cursor-pointer"
+                  @click="togglePopover"
+                />
+              </template>
+            </TimePicker>
             <TimePicker
-              v-if="!_event.isFullDay"
-              class="max-w-24"
+              class="max-w-[102px]"
               variant="outline"
               :value="_event.toTime"
               :placeholder="__('End Time')"
               @update:modelValue="(time) => updateTime(time)"
-            />
+            >
+              <template #suffix="{ togglePopover }">
+                <FeatherIcon
+                  name="chevron-down"
+                  class="h-4 w-4 cursor-pointer"
+                  @click="togglePopover"
+                />
+              </template>
+            </TimePicker>
           </div>
         </div>
         <div class="mx-4.5 my-2.5 border-t" />
@@ -192,31 +208,9 @@ watch(
   { immediate: true },
 )
 
-function updateDate(d, fromDate = false) {
-  error.value = null
-  let oldTo = _event.value.toDate || _event.value.fromDate
-
-  if (fromDate) {
-    _event.value.fromDate = d
-    if (!_event.value.toDate) {
-      _event.value.toDate = d
-    }
-  } else {
-    _event.value.toDate = d
-  }
-
-  if (_event.value.toDate && _event.value.fromDate) {
-    const diff = dayjs(_event.value.toDate).diff(
-      dayjs(_event.value.fromDate),
-      'day',
-    )
-
-    if (diff < 0) {
-      _event.value.toDate = oldTo
-      error.value = __('End date should be after start date')
-      return
-    }
-  }
+function updateDate(d) {
+  _event.value.fromDate = d
+  _event.value.toDate = d
 }
 
 function updateTime(t, fromTime = false) {
