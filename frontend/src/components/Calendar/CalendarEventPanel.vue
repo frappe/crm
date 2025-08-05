@@ -40,32 +40,11 @@
             :placeholder="__('Event title')"
           >
             <template #prefix>
-              <Dropdown
-                class="ml-1"
-                :options="
-                  Object.keys(colorMap).map((color) => ({
-                    label:
-                      colorMap[color].name.charAt(0).toUpperCase() +
-                      colorMap[color].name.slice(1),
-                    value: color,
-                    icon: h('div', {
-                      class: '!size-2 rounded-full',
-                      style: {
-                        backgroundColor: colorMap[color].border,
-                      },
-                    }),
-                    onClick: () => {
-                      _event.color = color
-                    },
-                  }))
-                "
-              >
+              <Dropdown class="ml-1" :options="colors">
                 <div
                   class="ml-0.5 size-2 rounded-full cursor-pointer"
                   :style="{
-                    backgroundColor: _event.color
-                      ? colorMap[_event.color]?.border || '#30A66D'
-                      : '#30A66D',
+                    backgroundColor: _event.color || '#30A66D',
                   }"
                 />
               </Dropdown>
@@ -287,4 +266,16 @@ function saveEvent() {
 function deleteEvent() {
   emit('delete', _event.value.id)
 }
+
+const colors = Object.keys(colorMap).map((color) => ({
+  label: color.charAt(0).toUpperCase() + color.slice(1),
+  value: colorMap[color].color,
+  icon: h('div', {
+    class: '!size-2 rounded-full',
+    style: { backgroundColor: colorMap[color].color },
+  }),
+  onClick: () => {
+    _event.value.color = colorMap[color].color
+  },
+}))
 </script>
