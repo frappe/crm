@@ -42,7 +42,7 @@
             <template #prefix>
               <Dropdown class="ml-1" :options="colors">
                 <div
-                  class="ml-0.5 size-2 rounded-full cursor-pointer"
+                  class="ml-0.5 size-2.5 rounded-full cursor-pointer"
                   :style="{
                     backgroundColor: _event.color || '#30A66D',
                   }"
@@ -125,7 +125,7 @@
             </TimePicker>
           </div>
         </div>
-        <div class="mx-4.5 my-2.5 border-t" />
+        <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
         <div class="px-4.5 py-3">
           <div class="flex items-center gap-x-2 border rounded py-1">
             <TextEditor
@@ -197,7 +197,7 @@ watch(
     error.value = null
 
     if (newEvent && newEvent.id) {
-      title.value = 'Event details'
+      title.value = 'Editing event'
     } else {
       title.value = 'New event'
     }
@@ -265,7 +265,7 @@ const colors = Object.keys(colorMap).map((color) => ({
   label: color.charAt(0).toUpperCase() + color.slice(1),
   value: colorMap[color].color,
   icon: h('div', {
-    class: '!size-2 rounded-full',
+    class: '!size-2.5 rounded-full',
     style: { backgroundColor: colorMap[color].color },
   }),
   onClick: () => {

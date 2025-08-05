@@ -89,6 +89,14 @@
       @save="saveEvent"
       @delete="deleteEvent"
     />
+
+    <CalendarEventDetails
+      v-if="showEventDetails"
+      v-model="showEventDetails"
+      :event="event"
+      @edit="editDetails"
+      @delete="deleteEvent"
+    />
   </div>
 </template>
 <script setup>
@@ -181,6 +189,8 @@ function createEvent(_event) {
       onSuccess: (e) => {
         _event.id = e.name
         event.value = _event
+        showEventPanel.value = false
+        showEventDetails.value = true
         activeEvent.value = e.name
       },
     },
@@ -201,7 +211,10 @@ function updateEvent(_event) {
     color: _event.color,
   })
 
+  showEventPanel.value = false
+  showEventDetails.value = true
   event.value = _event
+  activeEvent.value = _event.id
 }
 
 function deleteEvent(eventID) {
@@ -220,6 +233,8 @@ function deleteEvent(eventID) {
         onClick: (close) => {
           events.delete.submit(eventID)
           showEventPanel.value = false
+          showEventDetails.value = false
+          event.value = {}
           activeEvent.value = ''
           close()
         },
@@ -229,15 +244,22 @@ function deleteEvent(eventID) {
 }
 
 const showEventPanel = ref(false)
+const showEventDetails = ref(false)
 const event = ref({})
 
-function showDetails(e) {}
+function showDetails(e) {
+  showEventPanel.value = false
+  showEventDetails.value = true
+  event.value = { ...e.calendarEvent }
+  activeEvent.value = e.calendarEvent.id
+}
 
 function editDetails(e) {
+  let _e = e?.calendarEvent || e
+  showEventDetails.value = false
   showEventPanel.value = true
-  event.value = { ...e.calendarEvent }
-
-  activeEvent.value = e.calendarEvent.id
+  event.value = { ..._e }
+  activeEvent.value = _e.id
 }
 
 function showEventPanelArea(e) {
@@ -246,6 +268,7 @@ function showEventPanelArea(e) {
   let fromDate = dayjs(e.date).format('YYYY-MM-DD')
 
   activeEvent.value = ''
+  showEventDetails.value = false
   showEventPanel.value = true
   event.value = {
     title: '',
