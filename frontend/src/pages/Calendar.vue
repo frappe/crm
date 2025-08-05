@@ -245,6 +245,7 @@ function showEventPanelArea(e) {
 
   let fromDate = dayjs(e.date).format('YYYY-MM-DD')
 
+  activeEvent.value = ''
   showEventPanel.value = true
   event.value = {
     title: '',
