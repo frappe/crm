@@ -4,7 +4,7 @@
       <ViewBreadcrumbs routeName="Calendar" />
     </template>
     <template #right-header>
-      <Button variant="solid" :label="__('Create')" @click="createEvent">
+      <Button variant="solid" :label="__('Create')" @click="showEventPanelArea">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -261,7 +261,10 @@ function getFromToTime(time) {
   let fromTime = `${h}:${m}`
   let toTime = `${parseInt(h) + 1}:${m}`
 
-  if (time.toLowerCase().includes('am') || time.toLowerCase().includes('pm')) {
+  if (
+    time?.toLowerCase().includes('am') ||
+    time?.toLowerCase().includes('pm')
+  ) {
     // 12 hour format
     time = time.trim().replace(' ', '')
     const ampm = time.slice(-2)

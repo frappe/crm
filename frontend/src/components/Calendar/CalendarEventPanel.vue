@@ -136,7 +136,7 @@ import {
   Dropdown,
   dayjs,
 } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 
 const props = defineProps({
   event: {
@@ -163,7 +163,6 @@ watch(
   () => props.event,
   (newEvent) => {
     error.value = null
-    _event.value = { ...newEvent }
 
     if (newEvent && newEvent.id) {
       title.value = 'Event details'
@@ -171,6 +170,7 @@ watch(
       title.value = 'New event'
     }
 
+    nextTick(() => (_event.value = { ...newEvent }))
     setTimeout(() => eventTitle.value?.el?.focus(), 100)
   },
   { immediate: true },
