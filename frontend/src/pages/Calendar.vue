@@ -9,9 +9,10 @@
       </Button>
     </template>
   </LayoutHeader>
-  <div class="flex h-screen flex-col overflow-hidden">
+  <div class="flex h-screen overflow-hidden">
     <Calendar
       v-if="events.data?.length"
+      class="flex-1 overflow-hidden"
       ref="calendar"
       :config="{
         defaultMode: 'Week',
@@ -28,7 +29,7 @@
       @delete="(eventID) => deleteEvent(eventID)"
       :onClick="showDetails"
       :onDblClick="editDetails"
-      :onCellDblClick="showNewModal"
+      :onCellDblClick="showEventPanelArea"
     >
       <template
         #header="{
@@ -80,16 +81,18 @@
         </p>
       </template>
     </Calendar>
-    <CalendarModal
-      v-model="showModal"
-      v-model:event="event"
+
+    <CalendarEventPanel
+      v-if="showEventPanel"
+      v-model="showEventPanel"
+      :event="event"
       @save="saveEvent"
       @delete="deleteEvent"
     />
   </div>
 </template>
 <script setup>
-import CalendarModal from '@/components/Modals/CalendarModal.vue'
+import CalendarEventPanel from '@/components/Calendar/CalendarEventPanel.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { sessionStore } from '@/stores/session'
@@ -151,43 +154,47 @@ const events = createListResource({
   },
 })
 
-function saveEvent(event) {
-  event.id ? updateEvent(event) : createEvent(event)
+function saveEvent(_event) {
+  _event.id ? updateEvent(_event) : createEvent(_event)
 }
 
-function createEvent(event) {
-  if (!event.title) return
+function createEvent(_event) {
+  if (!_event.title) return
 
-  events.insert.submit({
-    subject: event.title,
-    description: event.description,
-    starts_on: event.fromDateTime,
-    ends_on: event.toDateTime,
-    all_day: event.isFullDay,
-    event_type: event.eventType,
-    color: event.color,
-  })
-
-  showModal.value = false
-  event.value = {}
+  events.insert.submit(
+    {
+      subject: _event.title,
+      description: _event.description,
+      starts_on: _event.fromDateTime,
+      ends_on: _event.toDateTime,
+      all_day: _event.isFullDay,
+      event_type: _event.eventType,
+      color: _event.color,
+    },
+    {
+      onSuccess: (e) => {
+        _event.id = e.name
+        event.value = _event
+      },
+    },
+  )
 }
 
-function updateEvent(event) {
-  if (!event.id) return
+function updateEvent(_event) {
+  if (!_event.id) return
 
   events.setValue.submit({
-    name: event.id,
-    subject: event.title,
-    description: event.description,
-    starts_on: event.fromDateTime,
-    ends_on: event.toDateTime,
-    all_day: event.isFullDay,
-    event_type: event.eventType,
-    color: event.color,
+    name: _event.id,
+    subject: _event.title,
+    description: _event.description,
+    starts_on: _event.fromDateTime,
+    ends_on: _event.toDateTime,
+    all_day: _event.isFullDay,
+    event_type: _event.eventType,
+    color: _event.color,
   })
 
-  showModal.value = false
-  event.value = {}
+  event.value = _event
 }
 
 function deleteEvent(eventID) {
@@ -205,6 +212,7 @@ function deleteEvent(eventID) {
         theme: 'red',
         onClick: (close) => {
           events.delete.submit(eventID)
+          showEventPanel.value = false
           close()
         },
       },
@@ -212,21 +220,22 @@ function deleteEvent(eventID) {
   })
 }
 
-const showModal = ref(false)
+const showEventPanel = ref(false)
 const event = ref({})
 
 function showDetails(e) {}
 
 function editDetails(e) {
-  showModal.value = true
+  showEventPanel.value = true
   event.value = { ...e.calendarEvent }
 }
 
-function showNewModal(e) {
+function showEventPanelArea(e) {
   let [fromTime, toTime] = getFromToTime(e.time)
+
   let fromDate = dayjs(e.date).format('YYYY-MM-DD')
 
-  showModal.value = true
+  showEventPanel.value = true
   event.value = {
     title: '',
     description: '',
@@ -242,8 +251,15 @@ function showNewModal(e) {
 
 // utils
 function getFromToTime(time) {
-  let fromTime = '00:00'
-  let toTime = '01:00'
+  let currentTime = dayjs().format('HH:mm') || '00:00'
+  let h = currentTime.split(':')[0]
+  let m = parseInt(currentTime.split(':')[1])
+
+  m = Math.floor(m / 15) * 15
+  m = m < 10 ? '0' + m : String(m)
+
+  let fromTime = `${h}:${m}`
+  let toTime = `${parseInt(h) + 1}:${m}`
 
   if (time.toLowerCase().includes('am') || time.toLowerCase().includes('pm')) {
     // 12 hour format
@@ -262,11 +278,10 @@ function getFromToTime(time) {
     toTime = `${parseInt(hour) + 1}:00`
   } else {
     // 24 hour format
-    time = time.split(':')
-    let [hour, minute] = time
+    let [hour, minute] = time ? time.split(':') : [h, m]
 
-    fromTime = `${hour}:${minute}`
-    toTime = `${parseInt(hour) + 1}:${minute}`
+    fromTime = `${hour}:${minute || '00'}`
+    toTime = `${parseInt(hour) + 1}:${minute || '00'}`
   }
 
   return [fromTime, toTime]

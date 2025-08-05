@@ -15,71 +15,73 @@
       </template>
 
       <template #body>
-        <div
-          class="mt-2 min-w-40 divide-y divide-outline-gray-modals rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
-          :class="{
-            'mt-2': ['bottom', 'left', 'right'].includes(placement),
-            'ml-2': placement == 'right-start',
-          }"
-        >
-          <MenuItems
-            class="min-w-40 divide-y divide-outline-gray-modals"
+        <slot name="body" v-bind="{ open, placement }">
+          <div
+            class="mt-2 min-w-40 divide-y divide-outline-gray-modals rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
             :class="{
-              'left-0 origin-top-left': placement == 'left',
-              'right-0 origin-top-right': placement == 'right',
-              'inset-x-0 origin-top': placement == 'center',
-              'mt-0 origin-top-right': placement == 'right-start',
+              'mt-2': ['bottom', 'left', 'right'].includes(placement),
+              'ml-2': placement == 'right-start',
             }"
           >
-            <div v-for="group in groups" :key="group.key" class="p-1.5">
-              <div
-                v-if="group.group && !group.hideLabel"
-                class="flex h-7 items-center px-2 text-sm font-medium text-ink-gray-4"
-              >
-                {{ group.group }}
-              </div>
-              <MenuItem
-                v-for="item in group.items"
-                :key="item.label"
-                v-slot="{ active }"
-              >
-                <slot name="item" v-bind="{ item, active }">
-                  <component
-                    v-if="item.component"
-                    :is="item.component"
-                    :active="active"
-                  />
-                  <button
-                    v-else
-                    :class="[
-                      active ? 'bg-surface-gray-3' : 'text-ink-gray-6',
-                      'group flex h-7 w-full items-center rounded px-2 text-base',
-                    ]"
-                    @click="item.onClick"
-                  >
-                    <FeatherIcon
-                      v-if="item.icon && typeof item.icon === 'string'"
-                      :name="item.icon"
-                      class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
-                      aria-hidden="true"
-                    />
+            <MenuItems
+              class="min-w-40 divide-y divide-outline-gray-modals"
+              :class="{
+                'left-0 origin-top-left': placement == 'left',
+                'right-0 origin-top-right': placement == 'right',
+                'inset-x-0 origin-top': placement == 'center',
+                'mt-0 origin-top-right': placement == 'right-start',
+              }"
+            >
+              <div v-for="group in groups" :key="group.key" class="p-1.5">
+                <div
+                  v-if="group.group && !group.hideLabel"
+                  class="flex h-7 items-center px-2 text-sm font-medium text-ink-gray-4"
+                >
+                  {{ group.group }}
+                </div>
+                <MenuItem
+                  v-for="item in group.items"
+                  :key="item.label"
+                  v-slot="{ active }"
+                >
+                  <slot name="item" v-bind="{ item, active }">
                     <component
-                      class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
-                      v-else-if="item.icon"
-                      :is="item.icon"
+                      v-if="item.component"
+                      :is="item.component"
+                      :active="active"
                     />
-                    <span class="whitespace-nowrap text-ink-gray-7">
-                      {{ item.label }}
-                    </span>
-                  </button>
-                </slot>
-              </MenuItem>
+                    <button
+                      v-else
+                      :class="[
+                        active ? 'bg-surface-gray-3' : 'text-ink-gray-6',
+                        'group flex h-7 w-full items-center rounded px-2 text-base',
+                      ]"
+                      @click="item.onClick"
+                    >
+                      <FeatherIcon
+                        v-if="item.icon && typeof item.icon === 'string'"
+                        :name="item.icon"
+                        class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
+                        aria-hidden="true"
+                      />
+                      <component
+                        class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
+                        v-else-if="item.icon"
+                        :is="item.icon"
+                      />
+                      <span class="whitespace-nowrap text-ink-gray-7">
+                        {{ item.label }}
+                      </span>
+                    </button>
+                  </slot>
+                </MenuItem>
+              </div>
+            </MenuItems>
+            <div v-if="slots.footer" class="border-t p-1.5">
+              <slot name="footer"></slot>
             </div>
-          </MenuItems>
-          <div v-if="slots.footer" class="border-t p-1.5">
-            <slot name="footer"></slot>
           </div>
-        </div>
+        </slot>
       </template>
     </Popover>
   </Menu>
