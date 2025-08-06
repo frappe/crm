@@ -112,7 +112,7 @@ import {
   dayjs,
   CalendarActiveEvent as activeEvent,
 } from 'frappe-ui'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
@@ -149,22 +149,13 @@ const events = createListResource({
     }))
   },
   insert: {
-    onSuccess: async () => {
-      await events.reload()
-      calendar.value.reloadEvents()
-    },
+    onSuccess: () => events.reload(),
   },
   delete: {
-    onSuccess: async () => {
-      await events.reload()
-      calendar.value.reloadEvents()
-    },
+    onSuccess: () => events.reload(),
   },
   setValue: {
-    onSuccess: async () => {
-      await events.reload()
-      calendar.value.reloadEvents()
-    },
+    onSuccess: () => events.reload(),
   },
 })
 
@@ -212,9 +203,13 @@ function updateEvent(_event) {
   })
 
   showEventPanel.value = false
-  showEventDetails.value = true
+
+  if (showEventPanel.value) {
+    showEventPanel.value = true
+    activeEvent.value = _event.id
+  }
+
   event.value = _event
-  activeEvent.value = _event.id
 }
 
 function deleteEvent(eventID) {
@@ -242,6 +237,12 @@ function deleteEvent(eventID) {
     ],
   })
 }
+
+onMounted(() => {
+  activeEvent.value = ''
+  showEventPanel.value = false
+  showEventDetails.value = false
+})
 
 const showEventPanel = ref(false)
 const showEventDetails = ref(false)
