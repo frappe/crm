@@ -204,13 +204,6 @@ function updateEvent(_event) {
     color: _event.color,
   })
 
-  showEventPanel.value = false
-
-  if (showEventPanel.value) {
-    showEventPanel.value = true
-    activeEvent.value = _event.id
-  }
-
   event.value = _event
 }
 
