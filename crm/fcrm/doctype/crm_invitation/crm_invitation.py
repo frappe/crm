@@ -21,7 +21,7 @@ class CRMInvitation(Document):
 		if frappe.local.dev_server:
 			print(f"Invite link for {self.email}: {invite_link}")
 
-		title = "Frappe CRM"
+		title = "Nexo CRM"
 		template = "crm_invitation"
 
 		frappe.sendmail(
