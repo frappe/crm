@@ -50,19 +50,19 @@
           <div class="text-ink-gray-6 text-p-base">{{ formattedDateTime }}</div>
         </div>
       </div>
-      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <div>
-        <div class="flex gap-2 items-center text-ink-gray-7 px-4.5 py-2">
+      <div
+        v-if="event.description && event.description !== '<p></p>'"
+        class="mx-4.5 my-2.5 border-t border-outline-gray-1"
+      />
+      <div v-if="event.description && event.description !== '<p></p>'">
+        <div class="flex gap-2 items-center text-ink-gray-7 px-4.5 py-1">
           <DescriptionIcon class="size-4" />
           {{ __('Description') }}
         </div>
-        <div class="px-4.5 py-2 text-ink-gray-7 text-p-base">
-          <div
-            v-if="event.description && event.description !== '<p></p>'"
-            v-html="event.description"
-          />
-          <div class="text-ink-gray-5" v-else>{{ __('(No description)') }}</div>
-        </div>
+        <div
+          class="px-4.5 py-2 text-ink-gray-7 text-p-base"
+          v-html="event.description"
+        />
       </div>
     </div>
   </div>
