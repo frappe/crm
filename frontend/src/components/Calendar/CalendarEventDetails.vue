@@ -4,24 +4,24 @@
       class="flex items-center justify-between p-4.5 text-ink-gray-7 text-lg font-medium"
     >
       <div>{{ __('Event details') }}</div>
-      <div class="flex items-center gap-x-2">
+      <div class="flex items-center gap-x-1">
         <Button variant="ghost" @click="editDetails">
           <template #icon>
             <EditIcon class="size-4" />
           </template>
         </Button>
+        <Button icon="trash-2" variant="ghost" @click="deleteEvent" />
         <Dropdown
           v-if="event.id"
           :options="[
             {
-              label: __('Delete'),
-              value: 'delete',
-              icon: 'trash-2',
-              onClick: deleteEvent,
+              label: __('Duplicate'),
+              icon: 'copy',
+              onClick: duplicateEvent,
             },
           ]"
         >
-          <Button variant="ghost" icon="more-horizontal" />
+          <Button variant="ghost" icon="more-vertical" />
         </Dropdown>
         <Button
           icon="x"
@@ -96,6 +96,10 @@ const formattedDateTime = computed(() => {
 
 function deleteEvent() {
   emit('delete', props.event.id)
+}
+
+function duplicateEvent() {
+  emit('duplicate', props.event)
 }
 
 function editDetails() {

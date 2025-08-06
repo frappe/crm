@@ -4,7 +4,7 @@
       <ViewBreadcrumbs routeName="Calendar" />
     </template>
     <template #right-header>
-      <Button variant="solid" :label="__('Create')" @click="showEventPanelArea">
+      <Button variant="solid" :label="__('Create')" @click="newEvent">
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -29,7 +29,7 @@
       @delete="(eventID) => deleteEvent(eventID)"
       :onClick="showDetails"
       :onDblClick="editDetails"
-      :onCellDblClick="showEventPanelArea"
+      :onCellDblClick="newEvent"
     >
       <template
         #header="{
@@ -88,6 +88,7 @@
       :event="event"
       @save="saveEvent"
       @delete="deleteEvent"
+      @goToDetails="showDetails"
     />
 
     <CalendarEventDetails
@@ -96,6 +97,7 @@
       :event="event"
       @edit="editDetails"
       @delete="deleteEvent"
+      @duplicate="duplicateEvent"
     />
   </div>
 </template>
@@ -249,10 +251,11 @@ const showEventDetails = ref(false)
 const event = ref({})
 
 function showDetails(e) {
+  let _e = e?.calendarEvent || e
   showEventPanel.value = false
   showEventDetails.value = true
-  event.value = { ...e.calendarEvent }
-  activeEvent.value = e.calendarEvent.id
+  event.value = { ..._e }
+  activeEvent.value = _e.id
 }
 
 function editDetails(e) {
@@ -263,7 +266,7 @@ function editDetails(e) {
   activeEvent.value = _e.id
 }
 
-function showEventPanelArea(e) {
+function newEvent(e) {
   let [fromTime, toTime] = getFromToTime(e.time)
 
   let fromDate = dayjs(e.date).format('YYYY-MM-DD')
@@ -282,6 +285,13 @@ function showEventPanelArea(e) {
     isFullDay: false,
     eventType: 'Public',
   }
+}
+
+function duplicateEvent(e) {
+  showEventDetails.value = false
+  showEventPanel.value = true
+  e.id = ''
+  event.value = { ...e }
 }
 
 // utils

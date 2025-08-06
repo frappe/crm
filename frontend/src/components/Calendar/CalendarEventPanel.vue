@@ -3,20 +3,32 @@
     <div
       class="flex items-center justify-between p-4.5 text-ink-gray-7 text-lg font-medium"
     >
-      <div>{{ __(title) }}</div>
-      <div class="flex items-center gap-x-2">
+      <div
+        class="flex items-center gap-x-2"
+        :class="event.id && 'cursor-pointer hover:text-ink-gray-8'"
+        @click="event.id && goToDetails()"
+      >
+        <LucideChevronLeft v-if="event.id" class="size-4" />
+        {{ __(title) }}
+      </div>
+      <div class="flex items-center gap-x-1">
+        <Button
+          v-if="event.id"
+          icon="trash-2"
+          variant="ghost"
+          @click="deleteEvent"
+        />
         <Dropdown
           v-if="event.id"
           :options="[
             {
-              label: __('Delete'),
-              value: 'delete',
-              icon: 'trash-2',
-              onClick: deleteEvent,
+              label: __('Duplicate'),
+              icon: 'copy',
+              onClick: duplicateEvent,
             },
           ]"
         >
-          <Button variant="ghost" icon="more-horizontal" />
+          <Button variant="ghost" icon="more-vertical" />
         </Dropdown>
         <Button
           icon="x"
@@ -177,7 +189,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['save', 'delete'])
+const emit = defineEmits(['save', 'delete', 'goToDetails'])
 
 const show = defineModel()
 
@@ -198,11 +210,18 @@ watch(
 
     if (newEvent && newEvent.id) {
       title.value = 'Editing event'
-    } else {
+    } else if (!newEvent.title) {
       title.value = 'New event'
+    } else {
+      title.value = 'Duplicate event'
     }
 
-    nextTick(() => (_event.value = { ...newEvent }))
+    nextTick(() => {
+      _event.value = { ...newEvent }
+      if (title.value == 'Duplicate event') {
+        _event.value.title = `${_event.value.title} (Copy)`
+      }
+    })
     setTimeout(() => eventTitle.value?.el?.focus(), 100)
   },
   { immediate: true },
@@ -257,8 +276,21 @@ function saveEvent() {
   emit('save', _event.value)
 }
 
+function duplicateEvent() {
+  props.event.id = ''
+  title.value = 'Duplicate event'
+  _event.value = { ...props.event }
+  _event.value.title = `${_event.value.title} (Copy)`
+  nextTick(() => eventTitle.value?.el?.focus())
+}
+
 function deleteEvent() {
   emit('delete', _event.value.id)
+}
+
+function goToDetails() {
+  show.value = false
+  emit('goToDetails', _event.value)
 }
 
 const colors = Object.keys(colorMap).map((color) => ({
