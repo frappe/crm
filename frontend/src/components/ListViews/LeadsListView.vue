@@ -4,14 +4,17 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      getRowRoute: (row) => ({
+      getRowRoute: options.getRowRoute || options.onRowClick ? null : (row) => ({
         name: 'Lead',
         params: { leadId: row.name },
         query: { view: route.query.view, viewType: route.params.viewType },
       }),
+      onRowClick: options.onRowClick,
       selectable: options.selectable,
       showTooltip: options.showTooltip,
       resizeColumn: options.resizeColumn,
+      rowCount: options.rowCount,
+      totalCount: options.totalCount,
     }"
     row-key="name"
     @update:selections="(selections) => emit('selectionsChanged', selections)"

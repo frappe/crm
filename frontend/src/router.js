@@ -22,12 +22,12 @@ const routes = [
     alias: '/leads',
     path: '/leads/view/:viewType?',
     name: 'Leads',
-    component: () => import('@/pages/Leads.vue'),
+    component: () => import('@/pages/LeadsWithTabs.vue'),
   },
   {
     path: '/leads/:leadId',
     name: 'Lead',
-    component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
+    component: () => import('@/pages/LeadsWithTabs.vue'),
     props: true,
   },
   {
@@ -88,6 +88,11 @@ const routes = [
     path: '/welcome',
     name: 'Welcome',
     component: () => import('@/pages/Welcome.vue'),
+  },
+  {
+    path: '/theme-test',
+    name: 'Theme Test',
+    component: () => import('@/components/ThemeCustomizer.vue'),
   },
   {
     path: '/:invalidpath',
