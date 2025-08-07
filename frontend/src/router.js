@@ -90,11 +90,6 @@ const routes = [
     component: () => import('@/pages/Welcome.vue'),
   },
   {
-    path: '/theme-test',
-    name: 'Theme Test',
-    component: () => import('@/components/ThemeCustomizer.vue'),
-  },
-  {
     path: '/:invalidpath',
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),
