@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-03 09:38+0000\n"
-"PO-Revision-Date: 2025-08-04 08:34\n"
+"PO-Revision-Date: 2025-08-07 10:07\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -189,11 +189,11 @@ msgstr "Ključ za pristup je obavezan za pružaoca usluga: {0}"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:97
 msgid "Access key"
-msgstr ""
+msgstr "Ključ za pristup"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:101
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
-msgstr ""
+msgstr "Ključ za pristup Exchangerate Host. Neophodan za preuzimanje deviznih kurseva."
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
@@ -377,7 +377,7 @@ msgstr "Dogodila se greška"
 
 #: frontend/src/data/document.js:63
 msgid "An error occurred while updating the document"
-msgstr ""
+msgstr "Došlo je do greške prilikom ažuriranja dokumenta"
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -472,7 +472,7 @@ msgstr "Da li ste sigurni da želite da poništite povezivanje {0} povezanih sta
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:193
 msgid "Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
-msgstr ""
+msgstr "Zatražite od svog menadžera da postavi provajdera deviznih kurseva, jer podrazumevani provajder ne podržava konverziju valuta iz {0} u {1}."
 
 #: frontend/src/components/ListBulkActions.vue:184
 #: frontend/src/components/Modals/AssignmentModal.vue:5
@@ -1086,7 +1086,7 @@ msgstr "Konfigurišite podešavanja telefonije za Vaš CRM"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:70
 msgid "Configure the exchange rate provider for your CRM"
-msgstr ""
+msgstr "Konfigurišite provajdera deviznih kurseva za Vaš CRM"
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
@@ -1318,7 +1318,7 @@ msgstr "Valuta"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:9
 msgid "Currency & Exchange rate provider"
-msgstr ""
+msgstr "Valuta i provajder deviznih kurseva"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:188
 msgid "Currency set as {0} successfully"
@@ -1676,7 +1676,7 @@ msgstr "Vrsta dokumenta"
 
 #: frontend/src/data/document.js:28
 msgid "Document does not exist"
-msgstr ""
+msgstr "Dokument ne postoji"
 
 #: crm/api/activities.py:19
 msgid "Document not found"
@@ -1973,7 +1973,7 @@ msgstr "Vreme završetka"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:122
 msgid "Enter access key"
-msgstr ""
+msgstr "Unesite ključ za pristup"
 
 #: frontend/src/components/FieldLayout/Field.vue:334
 msgid "Enter {0}"
@@ -1996,7 +1996,7 @@ msgstr "Greška prilikom prebacivanja u poslovnu priliku: {0}"
 #: frontend/src/pages/Deal.vue:739 frontend/src/pages/Lead.vue:486
 #: frontend/src/pages/MobileDeal.vue:614 frontend/src/pages/MobileLead.vue:415
 msgid "Error updating field"
-msgstr ""
+msgstr "Greška prilikom ažuriranja polja"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:261
 msgid "Error while creating customer in ERPNext, check error log for more details"
@@ -2026,11 +2026,11 @@ msgstr "Devizni kurs"
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Exchange Rate Provider"
-msgstr ""
+msgstr "Provajder deviznih kurseva"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:67
 msgid "Exchange rate provider"
-msgstr ""
+msgstr "Provajder deviznih kurseva"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
@@ -2150,7 +2150,7 @@ msgstr "Neuspešno brisanje šablona"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:205
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
-msgstr ""
+msgstr "Neuspešno preuzimanje deviznog kursa iz {0} u {1} na {2}. Proverite svoju internet konekciju ili pokušajte ponovo kasnije."
 
 #: frontend/src/data/script.js:106
 msgid "Failed to load form controller: {0}"
@@ -3025,7 +3025,7 @@ msgstr "Postavi {0} kao podrazumevano sredstvo za pozivanje"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:23
 msgid "Makes \"Expected Closure Date\" and \"Expected Deal Value\" mandatory for deal value forecasting"
-msgstr ""
+msgstr "Postavlja \"Očekivani datum zatvaranja\" i \"Očekivana vrednost poslovne prilike\" kao obavezna polja za prognoziranje vrednosti poslovne prilike"
 
 #: frontend/src/components/Settings/Users.vue:11
 msgid "Manage CRM users by adding or inviting them, and assign roles to control their access and permissions"
@@ -3771,7 +3771,7 @@ msgstr "Molimo Vas da unesete važeći URL"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:159
 msgid "Please enter the Exchangerate Host access key."
-msgstr ""
+msgstr "Molimo Vas da unesete Exchangerate Host ključ za pristup."
 
 #: frontend/src/components/Modals/LostReasonModal.vue:9
 msgid "Please provide a reason for marking this deal as lost"
@@ -3779,7 +3779,7 @@ msgstr "Molimo Vas da navedete razlog označavanja ove poslovne prilike kao izgu
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:152
 msgid "Please select a currency before saving."
-msgstr ""
+msgstr "Molimo Vas da izaberete valutu pre čuvanja."
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:145
 #: frontend/src/pages/MobileLead.vue:434
@@ -4349,7 +4349,7 @@ msgstr "Izaberi valutu"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:82
 msgid "Select provider"
-msgstr ""
+msgstr "Izaberite provajdera"
 
 #: frontend/src/components/FieldLayout/Field.vue:332
 msgid "Select {0}"
@@ -4478,7 +4478,7 @@ msgstr "Podesite imejl"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:199
 msgid "Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
-msgstr ""
+msgstr "Podesite provajdera deviznih kurseva kao 'Exchangerate Host' u podešavanjima, jer podrazumevani provajder ne podržava konverziju valuta iz {0} u {1}."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:334
 msgid "Setup your password"
@@ -5262,7 +5262,7 @@ msgstr "Možete promeniti podrazumevano sredstvo za pozivanje u podešavanjima"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:107
 msgid "You can get your access key from "
-msgstr ""
+msgstr "Svoj ključ za pristup možete dobiti sa "
 
 #: crm/integrations/exotel/handler.py:85
 msgid "You do not have Exotel Number set in your Telephony Agent"
@@ -5274,7 +5274,7 @@ msgstr "Nemate podešen broj mobilnog telefona u svom agentu telefonije"
 
 #: frontend/src/data/document.js:32
 msgid "You do not have permission to access this document"
-msgstr ""
+msgstr "Nemate dozvolu za pristup ovom dokumentu"
 
 #: frontend/src/components/ViewControls.vue:976
 msgid "You have unsaved changes. Do you want to save them?"
