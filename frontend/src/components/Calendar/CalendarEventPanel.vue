@@ -1,5 +1,6 @@
 <template>
-  <div v-if="show" class="w-[352px] border-l">
+  <div v-if="show" class="w-[352px] border-l text-base">
+    <!-- Event Header -->
     <div
       class="flex items-center justify-between p-4.5 text-ink-gray-7 text-lg font-medium"
     >
@@ -38,129 +39,9 @@
         <Button icon="x" variant="ghost" @click="close" />
       </div>
     </div>
-    <div v-if="mode !== 'details'" class="text-base">
-      <div>
-        <div class="px-4.5 py-3">
-          <TextInput
-            ref="eventTitle"
-            v-model="_event.title"
-            :debounce="500"
-            :placeholder="__('Event title')"
-          >
-            <template #prefix>
-              <Dropdown class="ml-1" :options="colors">
-                <div
-                  class="ml-0.5 size-2.5 rounded-full cursor-pointer"
-                  :style="{
-                    backgroundColor: _event.color || '#30A66D',
-                  }"
-                />
-              </Dropdown>
-            </template>
-          </TextInput>
-        </div>
-        <div class="flex justify-between py-2.5 px-4.5 text-ink-gray-6">
-          <div class="flex items-center">
-            <Switch v-model="_event.isFullDay" />
-            <div class="ml-2">
-              {{ __('All day') }}
-            </div>
-          </div>
-          <div class="flex items-center gap-1.5 text-ink-gray-5">
-            <LucideEarth class="size-4" />
-            {{ __('GMT+5:30') }}
-          </div>
-        </div>
-        <div
-          class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
-        >
-          <div class="">{{ __('Date') }}</div>
-          <div class="flex items-center gap-x-2">
-            <DatePicker
-              :class="['[&_input]:w-[216px]']"
-              variant="outline"
-              :value="_event.fromDate"
-              :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
-              :placeholder="__('May 1, 2025')"
-              @update:modelValue="(date) => updateDate(date, true)"
-            >
-              <template #suffix="{ togglePopover }">
-                <FeatherIcon
-                  name="chevron-down"
-                  class="h-4 w-4 cursor-pointer"
-                  @click="togglePopover"
-                />
-              </template>
-            </DatePicker>
-          </div>
-        </div>
-        <div
-          v-if="!_event.isFullDay"
-          class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
-        >
-          <div class="w-20">{{ __('Time') }}</div>
-          <div class="flex items-center gap-x-3">
-            <TimePicker
-              v-if="!_event.isFullDay"
-              class="max-w-[102px]"
-              variant="outline"
-              :value="_event.fromTime"
-              :placeholder="__('Start Time')"
-              @update:modelValue="(time) => updateTime(time, true)"
-            >
-              <template #suffix="{ togglePopover }">
-                <FeatherIcon
-                  name="chevron-down"
-                  class="h-4 w-4 cursor-pointer"
-                  @click="togglePopover"
-                />
-              </template>
-            </TimePicker>
-            <TimePicker
-              class="max-w-[102px]"
-              variant="outline"
-              :value="_event.toTime"
-              :placeholder="__('End Time')"
-              @update:modelValue="(time) => updateTime(time)"
-            >
-              <template #suffix="{ togglePopover }">
-                <FeatherIcon
-                  name="chevron-down"
-                  class="h-4 w-4 cursor-pointer"
-                  @click="togglePopover"
-                />
-              </template>
-            </TimePicker>
-          </div>
-        </div>
-        <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-        <div class="px-4.5 py-3">
-          <div class="flex items-center gap-x-2 border rounded py-1">
-            <TextEditor
-              editor-class="!prose-sm overflow-auto min-h-[20px] max-h-32 px-2 rounded placeholder-ink-gray-4 focus:bg-surface-white focus:ring-0 text-ink-gray-8 transition-colors"
-              :bubbleMenu="true"
-              :content="_event.description"
-              @change="(val) => (_event.description = val)"
-              :placeholder="__('Add description')"
-            />
-          </div>
-          <div class="my-3">
-            <Button variant="solid" class="w-full" @click="saveEvent">
-              {{
-                mode === 'edit'
-                  ? __('Save')
-                  : mode === 'duplicate'
-                    ? __('Duplicate event')
-                    : __('Create event')
-              }}
-            </Button>
-          </div>
 
-          <ErrorMessage :message="error" />
-        </div>
-      </div>
-    </div>
-    <div v-else class="text-base">
+    <!-- Event Details -->
+    <div v-if="mode == 'details'">
       <div class="flex items-start gap-2 px-4.5 py-3 pb-0">
         <div
           class="mx-0.5 my-[5px] size-2.5 rounded-full cursor-pointer"
@@ -188,6 +69,128 @@
           class="px-4.5 py-2 text-ink-gray-7 text-p-base"
           v-html="event.description"
         />
+      </div>
+    </div>
+
+    <!-- Event create, duplicate & edit -->
+    <div v-else>
+      <div class="px-4.5 py-3">
+        <TextInput
+          ref="eventTitle"
+          v-model="_event.title"
+          :debounce="500"
+          :placeholder="__('Event title')"
+        >
+          <template #prefix>
+            <Dropdown class="ml-1" :options="colors">
+              <div
+                class="ml-0.5 size-2.5 rounded-full cursor-pointer"
+                :style="{
+                  backgroundColor: _event.color || '#30A66D',
+                }"
+              />
+            </Dropdown>
+          </template>
+        </TextInput>
+      </div>
+      <div class="flex justify-between py-2.5 px-4.5 text-ink-gray-6">
+        <div class="flex items-center">
+          <Switch v-model="_event.isFullDay" />
+          <div class="ml-2">
+            {{ __('All day') }}
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 text-ink-gray-5">
+          <LucideEarth class="size-4" />
+          {{ __('GMT+5:30') }}
+        </div>
+      </div>
+      <div
+        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
+      >
+        <div class="">{{ __('Date') }}</div>
+        <div class="flex items-center gap-x-2">
+          <DatePicker
+            :class="['[&_input]:w-[216px]']"
+            variant="outline"
+            :value="_event.fromDate"
+            :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
+            :placeholder="__('May 1, 2025')"
+            @update:modelValue="(date) => updateDate(date, true)"
+          >
+            <template #suffix="{ togglePopover }">
+              <FeatherIcon
+                name="chevron-down"
+                class="h-4 w-4 cursor-pointer"
+                @click="togglePopover"
+              />
+            </template>
+          </DatePicker>
+        </div>
+      </div>
+      <div
+        v-if="!_event.isFullDay"
+        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
+      >
+        <div class="w-20">{{ __('Time') }}</div>
+        <div class="flex items-center gap-x-3">
+          <TimePicker
+            v-if="!_event.isFullDay"
+            class="max-w-[102px]"
+            variant="outline"
+            :value="_event.fromTime"
+            :placeholder="__('Start Time')"
+            @update:modelValue="(time) => updateTime(time, true)"
+          >
+            <template #suffix="{ togglePopover }">
+              <FeatherIcon
+                name="chevron-down"
+                class="h-4 w-4 cursor-pointer"
+                @click="togglePopover"
+              />
+            </template>
+          </TimePicker>
+          <TimePicker
+            class="max-w-[102px]"
+            variant="outline"
+            :value="_event.toTime"
+            :placeholder="__('End Time')"
+            @update:modelValue="(time) => updateTime(time)"
+          >
+            <template #suffix="{ togglePopover }">
+              <FeatherIcon
+                name="chevron-down"
+                class="h-4 w-4 cursor-pointer"
+                @click="togglePopover"
+              />
+            </template>
+          </TimePicker>
+        </div>
+      </div>
+      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
+      <div class="px-4.5 py-3">
+        <div class="flex items-center gap-x-2 border rounded py-1">
+          <TextEditor
+            editor-class="!prose-sm overflow-auto min-h-[20px] max-h-32 px-2 rounded placeholder-ink-gray-4 focus:bg-surface-white focus:ring-0 text-ink-gray-8 transition-colors"
+            :bubbleMenu="true"
+            :content="_event.description"
+            @change="(val) => (_event.description = val)"
+            :placeholder="__('Add description')"
+          />
+        </div>
+        <div class="my-3">
+          <Button variant="solid" class="w-full" @click="saveEvent">
+            {{
+              mode === 'edit'
+                ? __('Save')
+                : mode === 'duplicate'
+                  ? __('Duplicate event')
+                  : __('Create event')
+            }}
+          </Button>
+        </div>
+
+        <ErrorMessage :message="error" />
       </div>
     </div>
   </div>
@@ -222,7 +225,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['save', 'delete', 'details', 'close', 'edit'])
+const emit = defineEmits(['save', 'edit', 'delete', 'details', 'close'])
 
 const show = defineModel()
 
