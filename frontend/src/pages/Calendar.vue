@@ -157,7 +157,11 @@ const events = createListResource({
 })
 
 function saveEvent(_event) {
-  _event.id ? updateEvent(_event) : createEvent(_event)
+  if (!event.id || event.id === 'new-event' || event.id === 'duplicate-event') {
+    createEvent(_event)
+  } else {
+    updateEvent(_event)
+  }
 }
 
 function createEvent(_event) {
@@ -188,7 +192,7 @@ function createEvent(_event) {
 function updateEvent(_event) {
   if (!_event.id) return
 
-  if (mode.value === 'edit' || mode.value === 'details') {
+  if (!mode.value || mode.value === 'edit' || mode.value === 'details') {
     events.setValue.submit({
       name: _event.id,
       subject: _event.title,
@@ -271,6 +275,7 @@ function newEvent(e, duplicate = false) {
   showEventPanel.value = true
 
   event.value = {
+    id: duplicate ? 'duplicate-event' : 'new-event',
     title: duplicate ? `${e.title} (Copy)` : '',
     description: e.description || '',
     date: fromDate,

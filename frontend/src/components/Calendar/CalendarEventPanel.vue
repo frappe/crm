@@ -247,7 +247,16 @@ watch(
       title.value = 'Duplicate event'
     }
 
-    nextTick(() => (_event.value = { ...newEvent }))
+    nextTick(() => {
+      if (props.mode === 'create') {
+        _event.value.fromDate = newEvent.fromDate
+        _event.value.toDate = newEvent.toDate
+        _event.value.fromTime = newEvent.fromTime
+        _event.value.toTime = newEvent.toTime
+      } else {
+        _event.value = { ...newEvent }
+      }
+    })
     setTimeout(() => eventTitle.value?.el?.focus(), 100)
   },
   { immediate: true },
