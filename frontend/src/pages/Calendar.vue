@@ -29,7 +29,7 @@
       @delete="(eventID) => deleteEvent(eventID)"
       :onClick="showDetails"
       :onDblClick="editDetails"
-      :onCellDblClick="newEvent"
+      :onCellClick="newEvent"
     >
       <template
         #header="{
@@ -246,6 +246,12 @@ const mode = ref('')
 
 function showDetails(e) {
   let _e = e?.calendarEvent || e
+  if (_e.id === 'new-event' || _e.id === 'duplicate-event') return
+
+  events.data = events.data.filter(
+    (ev) => ev.id !== 'new-event' && ev.id !== 'duplicate-event',
+  )
+
   showEventPanel.value = true
   event.value = { ..._e }
   activeEvent.value = _e.id
@@ -254,6 +260,12 @@ function showDetails(e) {
 
 function editDetails(e) {
   let _e = e?.calendarEvent || e
+  if (_e.id === 'new-event' || _e.id === 'duplicate-event') return
+
+  events.data = events.data.filter(
+    (ev) => ev.id !== 'new-event' && ev.id !== 'duplicate-event',
+  )
+
   showEventPanel.value = true
   event.value = { ..._e }
   activeEvent.value = _e.id
@@ -261,6 +273,10 @@ function editDetails(e) {
 }
 
 function newEvent(e, duplicate = false) {
+  events.data = events.data.filter(
+    (ev) => ev.id !== 'new-event' && ev.id !== 'duplicate-event',
+  )
+
   let fromTime = e.fromTime
   let toTime = e.toTime
   let fromDate = e.fromDate
@@ -270,6 +286,7 @@ function newEvent(e, duplicate = false) {
     fromTime = t[0]
     toTime = t[1]
     fromDate = dayjs(e.date).format('YYYY-MM-DD')
+    e = { fromDate, fromTime, toTime }
   }
 
   showEventPanel.value = true

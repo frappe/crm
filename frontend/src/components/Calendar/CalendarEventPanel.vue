@@ -251,7 +251,7 @@ watch(
     }
 
     nextTick(() => {
-      if (props.mode === 'create') {
+      if (props.mode === 'create' && _event.value.id === 'new-event') {
         _event.value.fromDate = newEvent.fromDate
         _event.value.toDate = newEvent.toDate
         _event.value.fromTime = newEvent.fromTime
