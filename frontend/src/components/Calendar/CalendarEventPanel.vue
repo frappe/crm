@@ -229,7 +229,13 @@ const emit = defineEmits(['save', 'edit', 'delete', 'details', 'close'])
 
 const show = defineModel()
 
-const title = ref('New event')
+const title = computed(() => {
+  if (props.mode === 'details') return __('Event details')
+  if (props.mode === 'edit') return __('Editing event')
+  if (props.mode === 'create') return __('New event')
+  return __('Duplicate event')
+})
+
 const _event = ref({})
 
 const eventTitle = ref(null)
@@ -239,16 +245,6 @@ watch(
   () => props.event,
   (newEvent) => {
     error.value = null
-
-    if (props.mode === 'details') {
-      title.value = 'Event details'
-    } else if (props.mode === 'edit') {
-      title.value = 'Editing event'
-    } else if (props.mode === 'create') {
-      title.value = 'New event'
-    } else {
-      title.value = 'Duplicate event'
-    }
 
     nextTick(() => {
       if (props.mode === 'create' && _event.value.id === 'new-event') {

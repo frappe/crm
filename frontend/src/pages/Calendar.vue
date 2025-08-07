@@ -157,7 +157,11 @@ const events = createListResource({
 })
 
 function saveEvent(_event) {
-  if (!event.id || event.id === 'new-event' || event.id === 'duplicate-event') {
+  if (
+    !_event.id ||
+    _event.id === 'new-event' ||
+    _event.id === 'duplicate-event'
+  ) {
     createEvent(_event)
   } else {
     updateEvent(_event)
@@ -193,16 +197,23 @@ function updateEvent(_event) {
   if (!_event.id) return
 
   if (!mode.value || mode.value === 'edit' || mode.value === 'details') {
-    events.setValue.submit({
-      name: _event.id,
-      subject: _event.title,
-      description: _event.description,
-      starts_on: _event.fromDateTime,
-      ends_on: _event.toDateTime,
-      all_day: _event.isFullDay,
-      event_type: _event.eventType,
-      color: _event.color,
-    })
+    events.setValue.submit(
+      {
+        name: _event.id,
+        subject: _event.title,
+        description: _event.description,
+        starts_on: _event.fromDateTime,
+        ends_on: _event.toDateTime,
+        all_day: _event.isFullDay,
+        event_type: _event.eventType,
+        color: _event.color,
+      },
+      {
+        onSuccess: () => {
+          mode.value = 'details'
+        },
+      },
+    )
   }
 
   event.value = _event
