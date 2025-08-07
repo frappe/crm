@@ -86,18 +86,13 @@
       v-if="showEventPanel"
       v-model="showEventPanel"
       :event="event"
+      :mode="mode"
       @save="saveEvent"
-      @delete="deleteEvent"
-      @goToDetails="showDetails"
-    />
-
-    <CalendarEventDetails
-      v-if="showEventDetails"
-      v-model="showEventDetails"
-      :event="event"
       @edit="editDetails"
       @delete="deleteEvent"
       @duplicate="duplicateEvent"
+      @details="showDetails"
+      @close="close"
     />
   </div>
 </template>
@@ -182,9 +177,9 @@ function createEvent(_event) {
       onSuccess: (e) => {
         _event.id = e.name
         event.value = _event
-        showEventPanel.value = false
-        showEventDetails.value = true
+        showEventPanel.value = true
         activeEvent.value = e.name
+        mode.value = 'details'
       },
     },
   )
@@ -193,16 +188,18 @@ function createEvent(_event) {
 function updateEvent(_event) {
   if (!_event.id) return
 
-  events.setValue.submit({
-    name: _event.id,
-    subject: _event.title,
-    description: _event.description,
-    starts_on: _event.fromDateTime,
-    ends_on: _event.toDateTime,
-    all_day: _event.isFullDay,
-    event_type: _event.eventType,
-    color: _event.color,
-  })
+  if (mode.value === 'edit' || mode.value === 'details') {
+    events.setValue.submit({
+      name: _event.id,
+      subject: _event.title,
+      description: _event.description,
+      starts_on: _event.fromDateTime,
+      ends_on: _event.toDateTime,
+      all_day: _event.isFullDay,
+      event_type: _event.eventType,
+      color: _event.color,
+    })
+  }
 
   event.value = _event
 }
@@ -223,9 +220,9 @@ function deleteEvent(eventID) {
         onClick: (close) => {
           events.delete.submit(eventID)
           showEventPanel.value = false
-          showEventDetails.value = false
           event.value = {}
           activeEvent.value = ''
+          mode.value = ''
           close()
         },
       },
@@ -235,56 +232,86 @@ function deleteEvent(eventID) {
 
 onMounted(() => {
   activeEvent.value = ''
+  mode.value = ''
   showEventPanel.value = false
-  showEventDetails.value = false
 })
 
 const showEventPanel = ref(false)
-const showEventDetails = ref(false)
 const event = ref({})
+const mode = ref('')
 
 function showDetails(e) {
   let _e = e?.calendarEvent || e
-  showEventPanel.value = false
-  showEventDetails.value = true
+  showEventPanel.value = true
   event.value = { ..._e }
   activeEvent.value = _e.id
+  mode.value = 'details'
 }
 
 function editDetails(e) {
   let _e = e?.calendarEvent || e
-  showEventDetails.value = false
   showEventPanel.value = true
   event.value = { ..._e }
   activeEvent.value = _e.id
+  mode.value = 'edit'
 }
 
-function newEvent(e) {
-  let [fromTime, toTime] = getFromToTime(e.time)
+function newEvent(e, duplicate = false) {
+  let fromTime = e.fromTime
+  let toTime = e.toTime
+  let fromDate = e.fromDate
 
-  let fromDate = dayjs(e.date).format('YYYY-MM-DD')
+  if (!duplicate) {
+    let t = getFromToTime(e.time)
+    fromTime = t[0]
+    toTime = t[1]
+    fromDate = dayjs(e.date).format('YYYY-MM-DD')
+  }
 
-  activeEvent.value = ''
-  showEventDetails.value = false
   showEventPanel.value = true
+
   event.value = {
-    title: '',
-    description: '',
+    title: duplicate ? `${e.title} (Copy)` : '',
+    description: e.description || '',
     date: fromDate,
     fromDate: fromDate,
     toDate: fromDate,
     fromTime,
     toTime,
-    isFullDay: false,
-    eventType: 'Public',
+    isFullDay: e.isFullDay,
+    eventType: e.eventType || 'Public',
+    color: e.color || 'green',
   }
+
+  events.data.push({
+    id: duplicate ? 'duplicate-event' : 'new-event',
+    title: duplicate ? `${e.title} (Copy)` : '',
+    description: e.description || '',
+    status: 'Open',
+    eventType: e.eventType || 'Public',
+    fromDate: fromDate + ' ' + fromTime,
+    toDate: fromDate + ' ' + toTime,
+    color: e.color || 'green',
+    isFullDay: e.isFullDay,
+  })
+
+  activeEvent.value = duplicate ? 'duplicate-event' : 'new-event'
+  mode.value = duplicate ? 'duplicate' : 'create'
 }
 
 function duplicateEvent(e) {
-  showEventDetails.value = false
-  showEventPanel.value = true
-  e.id = ''
-  event.value = { ...e }
+  newEvent(e, true)
+}
+
+function close() {
+  showEventPanel.value = false
+  event.value = {}
+  activeEvent.value = ''
+  mode.value = ''
+
+  events.data = events.data.filter(
+    (ev) => ev.id !== 'new-event' && ev.id !== 'duplicate-event',
+  )
 }
 
 // utils

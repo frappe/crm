@@ -5,21 +5,26 @@
     >
       <div
         class="flex items-center gap-x-2"
-        :class="event.id && 'cursor-pointer hover:text-ink-gray-8'"
-        @click="event.id && goToDetails()"
+        :class="mode == 'edit' && 'cursor-pointer hover:text-ink-gray-8'"
+        @click="mode == 'edit' && details()"
       >
-        <LucideChevronLeft v-if="event.id" class="size-4" />
+        <LucideChevronLeft v-if="mode == 'edit'" class="size-4" />
         {{ __(title) }}
       </div>
       <div class="flex items-center gap-x-1">
+        <Button v-if="mode == 'details'" variant="ghost" @click="editDetails">
+          <template #icon>
+            <EditIcon class="size-4" />
+          </template>
+        </Button>
         <Button
-          v-if="event.id"
+          v-if="mode === 'edit' || mode === 'details'"
           icon="trash-2"
           variant="ghost"
           @click="deleteEvent"
         />
         <Dropdown
-          v-if="event.id"
+          v-if="mode === 'edit' || mode === 'details'"
           :options="[
             {
               label: __('Duplicate'),
@@ -30,19 +35,10 @@
         >
           <Button variant="ghost" icon="more-vertical" />
         </Dropdown>
-        <Button
-          icon="x"
-          variant="ghost"
-          @click="
-            () => {
-              show = false
-              activeEvent = ''
-            }
-          "
-        />
+        <Button icon="x" variant="ghost" @click="close" />
       </div>
     </div>
-    <div class="text-base">
+    <div v-if="mode !== 'details'" class="text-base">
       <div>
         <div class="px-4.5 py-3">
           <TextInput
@@ -149,13 +145,14 @@
             />
           </div>
           <div class="my-3">
-            <Button
-              variant="solid"
-              class="w-full"
-              :disabled="!dirty"
-              @click="saveEvent"
-            >
-              {{ _event.id ? __('Save') : __('Create event') }}
+            <Button variant="solid" class="w-full" @click="saveEvent">
+              {{
+                mode === 'edit'
+                  ? __('Save')
+                  : mode === 'duplicate'
+                    ? __('Duplicate event')
+                    : __('Create event')
+              }}
             </Button>
           </div>
 
@@ -163,10 +160,42 @@
         </div>
       </div>
     </div>
+    <div v-else class="text-base">
+      <div class="flex items-start gap-2 px-4.5 py-3 pb-0">
+        <div
+          class="mx-0.5 my-[5px] size-2.5 rounded-full cursor-pointer"
+          :style="{
+            backgroundColor: event.color || '#30A66D',
+          }"
+        />
+        <div class="flex flex-col gap-[3px]">
+          <div class="text-ink-gray-8 font-semibold text-xl">
+            {{ event.title || __('(No title)') }}
+          </div>
+          <div class="text-ink-gray-6 text-p-base">{{ formattedDateTime }}</div>
+        </div>
+      </div>
+      <div
+        v-if="event.description && event.description !== '<p></p>'"
+        class="mx-4.5 my-2.5 border-t border-outline-gray-1"
+      />
+      <div v-if="event.description && event.description !== '<p></p>'">
+        <div class="flex gap-2 items-center text-ink-gray-7 px-4.5 py-1">
+          <DescriptionIcon class="size-4" />
+          {{ __('Description') }}
+        </div>
+        <div
+          class="px-4.5 py-2 text-ink-gray-7 text-p-base"
+          v-html="event.description"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
 import TimePicker from './TimePicker.vue'
 import { getFormat } from '@/utils'
 import {
@@ -187,9 +216,13 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  mode: {
+    type: String,
+    default: 'details',
+  },
 })
 
-const emit = defineEmits(['save', 'delete', 'goToDetails'])
+const emit = defineEmits(['save', 'delete', 'details', 'close', 'edit'])
 
 const show = defineModel()
 
@@ -199,29 +232,22 @@ const _event = ref({})
 const eventTitle = ref(null)
 const error = ref(null)
 
-const dirty = computed(() => {
-  return JSON.stringify(_event.value) !== JSON.stringify(props.event)
-})
-
 watch(
   () => props.event,
   (newEvent) => {
     error.value = null
 
-    if (newEvent && newEvent.id) {
+    if (props.mode === 'details') {
+      title.value = 'Event details'
+    } else if (props.mode === 'edit') {
       title.value = 'Editing event'
-    } else if (!newEvent.title) {
+    } else if (props.mode === 'create') {
       title.value = 'New event'
     } else {
       title.value = 'Duplicate event'
     }
 
-    nextTick(() => {
-      _event.value = { ...newEvent }
-      if (title.value == 'Duplicate event') {
-        _event.value.title = `${_event.value.title} (Copy)`
-      }
-    })
+    nextTick(() => (_event.value = { ...newEvent }))
     setTimeout(() => eventTitle.value?.el?.focus(), 100)
   },
   { immediate: true },
@@ -276,22 +302,37 @@ function saveEvent() {
   emit('save', _event.value)
 }
 
+function editDetails() {
+  emit('edit', _event.value)
+}
+
 function duplicateEvent() {
-  props.event.id = ''
-  title.value = 'Duplicate event'
-  _event.value = { ...props.event }
-  _event.value.title = `${_event.value.title} (Copy)`
-  nextTick(() => eventTitle.value?.el?.focus())
+  emit('duplicate', _event.value)
 }
 
 function deleteEvent() {
   emit('delete', _event.value.id)
 }
 
-function goToDetails() {
-  show.value = false
-  emit('goToDetails', _event.value)
+function details() {
+  emit('details', _event.value)
 }
+
+function close() {
+  show.value = false
+  activeEvent.value = ''
+  emit('close', _event.value)
+}
+
+const formattedDateTime = computed(() => {
+  if (props.event.isFullDay) {
+    return `${__('All day')} - ${dayjs(props.event.fromDateTime).format('ddd, D MMM YYYY')}`
+  }
+
+  const start = dayjs(props.event.fromDateTime)
+  const end = dayjs(props.event.toDateTime)
+  return `${start.format('h:mm a')} - ${end.format('h:mm a')} ${start.format('ddd, D MMM YYYY')}`
+})
 
 const colors = Object.keys(colorMap).map((color) => ({
   label: color.charAt(0).toUpperCase() + color.slice(1),
