@@ -50,10 +50,12 @@
                     togglePrivate(attachment.name, attachment.is_private)
                   "
                 >
-                  <FeatherIcon
-                    :name="attachment.is_private ? 'lock' : 'unlock'"
-                    class="size-3 text-ink-gray-7"
-                  />
+                  <template #icon>
+                    <FeatherIcon
+                      :name="attachment.is_private ? 'lock' : 'unlock'"
+                      class="size-3 text-ink-gray-7"
+                    />
+                  </template>
                 </Button>
               </div>
             </Tooltip>
@@ -63,7 +65,12 @@
                   class="!size-5"
                   @click.stop="() => deleteAttachment(attachment.name)"
                 >
-                  <FeatherIcon name="trash-2" class="size-3 text-ink-gray-7" />
+                  <template #icon>
+                    <FeatherIcon
+                      name="trash-2"
+                      class="size-3 text-ink-gray-7"
+                    />
+                  </template>
                 </Button>
               </div>
             </Tooltip>

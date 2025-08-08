@@ -1,20 +1,5 @@
 import frappe
 
-from crm.api.doc import get_fields_meta
-from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
-
-
-@frappe.whitelist()
-def get_deal(name):
-	deal = frappe.get_doc("CRM Deal", name)
-	deal.check_permission("read")
-
-	deal = deal.as_dict()
-
-	deal["fields_meta"] = get_fields_meta("CRM Deal")
-	deal["_form_script"] = get_form_script("CRM Deal")
-	return deal
-
 
 @frappe.whitelist()
 def get_deal_contacts(name):

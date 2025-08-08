@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-07-20 09:37+0000\n"
-"PO-Revision-Date: 2025-07-28 07:01\n"
+"POT-Creation-Date: 2025-08-03 09:38+0000\n"
+"PO-Revision-Date: 2025-08-07 10:07\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -178,6 +178,23 @@ msgstr "Прихваћено"
 msgid "Accepted At"
 msgstr "Прихваћено"
 
+#. Label of the access_key (Data) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Access Key"
+msgstr "Кључ за приступ"
+
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:156
+msgid "Access Key is required for Service Provider: {0}"
+msgstr "Кључ за приступ је обавезан за пружаоца услуга: {0}"
+
+#: frontend/src/components/Settings/General/CurrencySettings.vue:97
+msgid "Access key"
+msgstr "Кључ за приступ"
+
+#: frontend/src/components/Settings/General/CurrencySettings.vue:101
+msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
+msgstr "Кључ за приступ Exchangerate Host. Неопходан за преузимање девизних курсева."
+
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
 msgstr "Назив налога"
@@ -199,8 +216,8 @@ msgstr "Назив налога је обавезан"
 msgid "Actions"
 msgstr "Радње"
 
-#: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:454
-#: frontend/src/pages/MobileDeal.vue:453 frontend/src/pages/MobileLead.vue:347
+#: frontend/src/pages/Deal.vue:540 frontend/src/pages/Lead.vue:406
+#: frontend/src/pages/MobileDeal.vue:432 frontend/src/pages/MobileLead.vue:339
 msgid "Activity"
 msgstr "Активност"
 
@@ -271,7 +288,7 @@ msgstr "Додај опис..."
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
-msgstr ""
+msgstr "Додај постојеће системске кориснике у овај CRM. Додели им улогу како би им омогућио приступ са постојећим креденцијалима."
 
 #: frontend/src/components/ViewControls.vue:104
 msgid "Add filter"
@@ -283,7 +300,7 @@ msgstr "Додај напомену"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add sample data"
-msgstr ""
+msgstr "Додај пробне податке"
 
 #. Description of the 'Icon' (Code) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -358,6 +375,10 @@ msgstr "Износ након попуста"
 msgid "An error occurred"
 msgstr "Догодила се грешка"
 
+#: frontend/src/data/document.js:63
+msgid "An error occurred while updating the document"
+msgstr "Дошло је до грешке приликом ажурирања документа"
+
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]"
@@ -413,7 +434,7 @@ msgstr "Примени на"
 msgid "Apps"
 msgstr "Апликације"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:132
+#: frontend/src/components/Activities/AttachmentArea.vue:139
 msgid "Are you sure you want to delete this attachment?"
 msgstr "Да ли сте сигурни да желите да обришете ове прилоге?"
 
@@ -441,13 +462,17 @@ msgstr "Да ли сте сигурни да желите да се пријав
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
 msgstr "Да ли сте сигурни да желите да ресетујете скрипту обрасца 'Креирај понуду из ЦРМ пословне прилике'?"
 
-#: frontend/src/components/Settings/General/GeneralSettings.vue:137
+#: frontend/src/components/Settings/General/CurrencySettings.vue:174
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
 msgstr "Да ли сте сигурни да желите да поставите валуту као {0}? Ово се не може променити касније."
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:243
 msgid "Are you sure you want to unlink {0} linked item(s)?"
 msgstr "Да ли сте сигурни да желите да поништите повезивање {0} повезаних ставки?"
+
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:193
+msgid "Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
+msgstr "Затражите од свог менаџера да постави провајдера девизних курсева, јер подразумевани провајдер не подржава конверзију валута из {0} у {1}."
 
 #: frontend/src/components/ListBulkActions.vue:184
 #: frontend/src/components/Modals/AssignmentModal.vue:5
@@ -490,12 +515,12 @@ msgstr "Барем једно поље је обавезно"
 msgid "Attach"
 msgstr "Приложи"
 
-#: frontend/src/pages/Deal.vue:127 frontend/src/pages/Lead.vue:182
+#: frontend/src/pages/Deal.vue:117 frontend/src/pages/Lead.vue:174
 msgid "Attach a file"
 msgstr "Приложи фајл"
 
-#: frontend/src/pages/Deal.vue:607 frontend/src/pages/Lead.vue:489
-#: frontend/src/pages/MobileDeal.vue:489 frontend/src/pages/MobileLead.vue:383
+#: frontend/src/pages/Deal.vue:575 frontend/src/pages/Lead.vue:441
+#: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:375
 msgid "Attachments"
 msgstr "Прилози"
 
@@ -567,7 +592,7 @@ msgstr "Просечна вредност добијене пословне пр
 #: frontend/src/components/Dashboard/AddChartModal.vue:26
 #: frontend/src/components/Dashboard/AddChartModal.vue:70
 msgid "Axis chart"
-msgstr ""
+msgstr "Дијаграм са осама"
 
 #: frontend/src/components/Activities/EmailArea.vue:72
 #: frontend/src/components/EmailEditor.vue:44
@@ -793,7 +818,7 @@ msgstr "CRM Twilio подешавања"
 msgid "CRM View Settings"
 msgstr "CRM подешавање приказа"
 
-#: frontend/src/components/Settings/General/GeneralSettings.vue:47
+#: frontend/src/components/Settings/General/CurrencySettings.vue:42
 msgid "CRM currency for all monetary values. Once set, cannot be edited."
 msgstr "CRM валута за све новчане вредности. Једном када се постави, не може се мењати."
 
@@ -842,8 +867,8 @@ msgstr "Средство за позивање"
 msgid "Calling..."
 msgstr "Позивање..."
 
-#: frontend/src/pages/Deal.vue:592 frontend/src/pages/Lead.vue:474
-#: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:367
+#: frontend/src/pages/Deal.vue:560 frontend/src/pages/Lead.vue:426
+#: frontend/src/pages/MobileDeal.vue:452 frontend/src/pages/MobileLead.vue:359
 msgid "Calls"
 msgstr "Позиви"
 
@@ -875,7 +900,7 @@ msgstr "Отказано"
 msgid "Cannot change role of user with Admin access"
 msgstr "Није могуће променити улогу кориснику са администраторским приступом"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:33
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:34
 msgid "Cannot delete standard items {0}"
 msgstr "Није могуће обрисати стандардну ставку {0}"
 
@@ -906,7 +931,7 @@ msgid "Change deal status"
 msgstr "Промени статус пословне прилике"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
-#: frontend/src/pages/Contact.vue:41 frontend/src/pages/Lead.vue:103
+#: frontend/src/pages/Contact.vue:41 frontend/src/pages/Lead.vue:95
 #: frontend/src/pages/MobileContact.vue:37
 #: frontend/src/pages/MobileOrganization.vue:37
 #: frontend/src/pages/Organization.vue:41
@@ -923,7 +948,7 @@ msgstr "Врста дијаграма"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:43
 #: frontend/src/components/Modals/ConvertToDealModal.vue:69
-#: frontend/src/pages/MobileLead.vue:125 frontend/src/pages/MobileLead.vue:152
+#: frontend/src/pages/MobileLead.vue:124 frontend/src/pages/MobileLead.vue:151
 msgid "Choose Existing"
 msgstr "Изабери постојеће"
 
@@ -937,7 +962,7 @@ msgstr "Изабери постојећу организацију"
 
 #: frontend/src/components/Settings/EmailAdd.vue:9
 msgid "Choose the email service provider you want to configure."
-msgstr ""
+msgstr "Изабери провајдера имејл услуге кога желиш да конфигуришеш."
 
 #: frontend/src/components/Controls/Link.vue:62
 msgid "Clear"
@@ -965,10 +990,6 @@ msgstr "Очисти све филтере"
 #: frontend/src/components/Notifications.vue:28
 msgid "Close"
 msgstr "Затвори"
-
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:163
-msgid "Close Date is required."
-msgstr "Датум затварања је обавезан."
 
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -1014,8 +1035,8 @@ msgstr "Колоне"
 msgid "Comment"
 msgstr "Коментар"
 
-#: frontend/src/pages/Deal.vue:582 frontend/src/pages/Lead.vue:464
-#: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:357
+#: frontend/src/pages/Deal.vue:550 frontend/src/pages/Lead.vue:416
+#: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:349
 msgid "Comments"
 msgstr "Коментари"
 
@@ -1063,6 +1084,10 @@ msgstr "Конфигуришите општа подешавања Вашег CR
 msgid "Configure telephony settings for your CRM"
 msgstr "Конфигуришите подешавања телефоније за Ваш CRM"
 
+#: frontend/src/components/Settings/General/CurrencySettings.vue:70
+msgid "Configure the exchange rate provider for your CRM"
+msgstr "Конфигуришите провајдера девизних курсева за Ваш CRM"
+
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
 msgstr "Потврди"
@@ -1083,7 +1108,7 @@ msgstr "Потврди уклањање"
 
 #: frontend/src/pages/Welcome.vue:35
 msgid "Connect your email"
-msgstr ""
+msgstr "Повежите Ваш имејл"
 
 #. Label of the contact (Link) field in DocType 'CRM Contacts'
 #. Label of the contact (Link) field in DocType 'CRM Deal'
@@ -1091,7 +1116,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: frontend/src/components/Layouts/AppSidebar.vue:547
 #: frontend/src/components/Modals/ConvertToDealModal.vue:65
-#: frontend/src/pages/MobileLead.vue:148
+#: frontend/src/pages/MobileLead.vue:147
 msgid "Contact"
 msgstr "Контакт"
 
@@ -1107,11 +1132,11 @@ msgstr "Контактирајте подршку"
 msgid "Contact Us"
 msgstr "Контактирајте нас"
 
-#: frontend/src/pages/Deal.vue:686 frontend/src/pages/MobileDeal.vue:567
+#: frontend/src/pages/Deal.vue:655 frontend/src/pages/MobileDeal.vue:546
 msgid "Contact added"
 msgstr "Контакт је додат"
 
-#: frontend/src/pages/Deal.vue:676 frontend/src/pages/MobileDeal.vue:557
+#: frontend/src/pages/Deal.vue:645 frontend/src/pages/MobileDeal.vue:536
 msgid "Contact already added"
 msgstr "Контакт је већ додат"
 
@@ -1123,7 +1148,7 @@ msgstr "Контакт већ постоји са {0}"
 msgid "Contact image updated"
 msgstr "Слика контакта је ажурирана"
 
-#: frontend/src/pages/Deal.vue:697 frontend/src/pages/MobileDeal.vue:578
+#: frontend/src/pages/Deal.vue:666 frontend/src/pages/MobileDeal.vue:557
 msgid "Contact removed"
 msgstr "Контакт је уклоњен"
 
@@ -1171,7 +1196,7 @@ msgstr "Садржај је обавезан"
 #: frontend/src/components/Layouts/AppSidebar.vue:375
 #: frontend/src/components/ListBulkActions.vue:88
 #: frontend/src/components/Modals/ConvertToDealModal.vue:8
-#: frontend/src/pages/MobileLead.vue:62 frontend/src/pages/MobileLead.vue:111
+#: frontend/src/pages/MobileLead.vue:56 frontend/src/pages/MobileLead.vue:110
 msgid "Convert"
 msgstr "Пребаци"
 
@@ -1183,7 +1208,7 @@ msgstr "Пребаци потенцијалног клијента у посло
 #: frontend/src/components/ListBulkActions.vue:80
 #: frontend/src/components/ListBulkActions.vue:195
 #: frontend/src/components/Modals/ConvertToDealModal.vue:19
-#: frontend/src/pages/Lead.vue:53 frontend/src/pages/MobileLead.vue:107
+#: frontend/src/pages/Lead.vue:45 frontend/src/pages/MobileLead.vue:106
 msgid "Convert to Deal"
 msgstr "Пребаци у пословну прилику"
 
@@ -1196,7 +1221,7 @@ msgstr "Пребачено"
 msgid "Converted successfully"
 msgstr "Успешно пребачено"
 
-#: frontend/src/utils/index.js:345
+#: frontend/src/utils/index.js:338
 msgid "Copied to clipboard"
 msgstr "Копирано у међуспремник"
 
@@ -1228,12 +1253,6 @@ msgstr "Бројчано"
 msgid "Create"
 msgstr "Креирај"
 
-#: frontend/src/components/Activities/Activities.vue:795
-#: frontend/src/components/Activities/ActivityHeader.vue:137
-#: frontend/src/components/Activities/ActivityHeader.vue:180
-msgid "Create Call Log"
-msgstr "Креирај евиденцију позива"
-
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
 msgstr "Креирај пословну прилику"
@@ -1245,7 +1264,7 @@ msgstr "Креирај потенцијалног клијента"
 #: frontend/src/components/Controls/Link.vue:50
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:69
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:45
-#: frontend/src/components/SidePanelLayout.vue:140
+#: frontend/src/components/SidePanelLayout.vue:137
 msgid "Create New"
 msgstr "Креирај нови"
 
@@ -1289,20 +1308,25 @@ msgstr "Креирај свој први задатак"
 #. Label of the currency (Link) field in DocType 'CRM Deal'
 #. Label of the currency (Link) field in DocType 'CRM Organization'
 #. Label of the currency (Link) field in DocType 'FCRM Settings'
+#. Label of the currency_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/General/GeneralSettings.vue:43
+#: frontend/src/components/Settings/General/CurrencySettings.vue:38
 msgid "Currency"
 msgstr "Валута"
 
-#: frontend/src/components/Settings/General/GeneralSettings.vue:151
+#: frontend/src/components/Settings/General/CurrencySettings.vue:9
+msgid "Currency & Exchange rate provider"
+msgstr "Валута и провајдер девизних курсева"
+
+#: frontend/src/components/Settings/General/CurrencySettings.vue:188
 msgid "Currency set as {0} successfully"
 msgstr "Валута је успешно постављена као {0}"
 
 #: crm/api/dashboard.py:839
 msgid "Current pipeline distribution"
-msgstr ""
+msgstr "Тренутна расподела продајног тока"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:586
 msgid "Custom actions"
@@ -1318,13 +1342,13 @@ msgstr "Прилагођена поља"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:588
 msgid "Custom list actions"
-msgstr ""
+msgstr "Прилагођене радње на листи"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Custom statuses"
 msgstr "Прилагођени статуси"
 
-#: frontend/src/pages/Deal.vue:473
+#: frontend/src/pages/Deal.vue:486
 msgid "Customer created successfully"
 msgstr "Клијент је успешно креиран"
 
@@ -1338,12 +1362,12 @@ msgstr "Прилагоди брзе филтере"
 
 #: crm/api/dashboard.py:599
 msgid "Daily performance of leads, deals, and wins"
-msgstr ""
+msgstr "Дневне перформансе по потенцијалним клијентима, пословним приликама и добијеним пословима"
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:575
-#: frontend/src/pages/Deal.vue:587 frontend/src/pages/Lead.vue:469
-#: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:362
+#: frontend/src/pages/Deal.vue:555 frontend/src/pages/Lead.vue:421
+#: frontend/src/pages/MobileDeal.vue:447 frontend/src/pages/MobileLead.vue:354
 msgid "Data"
 msgstr "Подаци"
 
@@ -1388,10 +1412,6 @@ msgstr "Статуси пословне прилике"
 msgid "Deal Value"
 msgstr "Вредност пословне прилике"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
-msgid "Deal Value is required."
-msgstr "Вредност пословне прилике је обавезна."
-
 #: crm/api/dashboard.py:977
 msgid "Deal generation channel analysis"
 msgstr "Анализа канала за генерисање пословних прилика"
@@ -1402,18 +1422,14 @@ msgstr "Анализа канала за генерисање пословних
 msgid "Deal owner"
 msgstr "Власник пословне прилике"
 
-#: frontend/src/pages/Deal.vue:513 frontend/src/pages/MobileDeal.vue:388
-msgid "Deal updated"
-msgstr "Пословна прилика је ажурирана"
-
 #: crm/api/dashboard.py:1030 crm/api/dashboard.py:1087
 msgid "Deal value"
 msgstr "Вредност пословне прилике"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:532 frontend/src/pages/MobileContact.vue:291
-#: frontend/src/pages/MobileDeal.vue:407
+#: frontend/src/pages/Deal.vue:500 frontend/src/pages/MobileContact.vue:291
+#: frontend/src/pages/MobileDeal.vue:386
 #: frontend/src/pages/MobileOrganization.vue:328
 msgid "Deals"
 msgstr "Пословне прилике"
@@ -1421,7 +1437,7 @@ msgstr "Пословне прилике"
 #: crm/api/dashboard.py:788
 #: frontend/src/components/Dashboard/AddChartModal.vue:97
 msgid "Deals by ongoing & won stage"
-msgstr ""
+msgstr "Пословне прилике по текућој и добијеној фази"
 
 #: crm/api/dashboard.py:1076
 #: frontend/src/components/Dashboard/AddChartModal.vue:100
@@ -1509,7 +1525,7 @@ msgstr "Подразумевано средство"
 msgid "Default statuses, custom fields and layouts restored successfully."
 msgstr "Подразумевани статуси, прилагођена поља и распореди су успешно враћени."
 
-#: frontend/src/components/Activities/AttachmentArea.vue:135
+#: frontend/src/components/Activities/AttachmentArea.vue:142
 #: frontend/src/components/Activities/NoteArea.vue:12
 #: frontend/src/components/Activities/TaskArea.vue:55
 #: frontend/src/components/Activities/TaskArea.vue:63
@@ -1526,10 +1542,10 @@ msgstr "Подразумевани статуси, прилагођена пољ
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:238
 #: frontend/src/components/ViewControls.vue:1161
 #: frontend/src/components/ViewControls.vue:1172
-#: frontend/src/pages/Contact.vue:103 frontend/src/pages/Deal.vue:134
-#: frontend/src/pages/Lead.vue:191 frontend/src/pages/MobileContact.vue:82
+#: frontend/src/pages/Contact.vue:103 frontend/src/pages/Deal.vue:124
+#: frontend/src/pages/Lead.vue:183 frontend/src/pages/MobileContact.vue:82
 #: frontend/src/pages/MobileContact.vue:266
-#: frontend/src/pages/MobileDeal.vue:538
+#: frontend/src/pages/MobileDeal.vue:517
 #: frontend/src/pages/MobileOrganization.vue:72
 #: frontend/src/pages/MobileOrganization.vue:267
 #: frontend/src/pages/Notes.vue:40 frontend/src/pages/Organization.vue:83
@@ -1554,8 +1570,8 @@ msgstr "Обриши приказ"
 msgid "Delete all"
 msgstr "Обриши све"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:60
-#: frontend/src/components/Activities/AttachmentArea.vue:131
+#: frontend/src/components/Activities/AttachmentArea.vue:62
+#: frontend/src/components/Activities/AttachmentArea.vue:138
 msgid "Delete attachment"
 msgstr "Обриши прилог"
 
@@ -1608,7 +1624,7 @@ msgstr "Радна површина"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/pages/MobileContact.vue:286
-#: frontend/src/pages/MobileDeal.vue:447 frontend/src/pages/MobileLead.vue:341
+#: frontend/src/pages/MobileDeal.vue:426 frontend/src/pages/MobileLead.vue:333
 #: frontend/src/pages/MobileOrganization.vue:323
 msgid "Details"
 msgstr "Детаљи"
@@ -1658,11 +1674,15 @@ msgstr "DocType"
 msgid "Document Type"
 msgstr "Врста документа"
 
+#: frontend/src/data/document.js:28
+msgid "Document does not exist"
+msgstr "Документ не постоји"
+
 #: crm/api/activities.py:19
 msgid "Document not found"
 msgstr "Документ није пронађен"
 
-#: frontend/src/data/document.js:23
+#: frontend/src/data/document.js:42
 msgid "Document updated successfully"
 msgstr "Документ је успешно ажуриран"
 
@@ -1885,8 +1905,8 @@ msgstr "Имејл шаблон"
 msgid "Email templates"
 msgstr "Имејл шаблони"
 
-#: frontend/src/pages/Deal.vue:577 frontend/src/pages/Lead.vue:459
-#: frontend/src/pages/MobileDeal.vue:458 frontend/src/pages/MobileLead.vue:352
+#: frontend/src/pages/Deal.vue:545 frontend/src/pages/Lead.vue:411
+#: frontend/src/pages/MobileDeal.vue:437 frontend/src/pages/MobileLead.vue:344
 msgid "Emails"
 msgstr "Имејлови"
 
@@ -1951,6 +1971,10 @@ msgstr "Датум завршетка"
 msgid "End Time"
 msgstr "Време завршетка"
 
+#: frontend/src/components/Settings/General/CurrencySettings.vue:122
+msgid "Enter access key"
+msgstr "Унесите кључ за приступ"
+
 #: frontend/src/components/FieldLayout/Field.vue:334
 msgid "Enter {0}"
 msgstr "Унесите {0}"
@@ -1969,21 +1993,10 @@ msgstr "Једнако"
 msgid "Error converting to deal: {0}"
 msgstr "Грешка приликом пребацивања у пословну прилику: {0}"
 
-#: frontend/src/pages/MobileDeal.vue:392
-msgid "Error updating deal"
-msgstr "Грешка при ажурирању пословне прилике"
-
-#: frontend/src/pages/Deal.vue:517
-msgid "Error updating deal: {0}"
-msgstr "Грешка приликом ажурирања пословне прилике: {0}"
-
-#: frontend/src/data/document.js:26
-msgid "Error updating document"
-msgstr "Грешка приликом ажурирања документа"
-
-#: frontend/src/pages/Lead.vue:399
-msgid "Error updating lead"
-msgstr "Грешка при ажурирању потенцијалног клијента"
+#: frontend/src/pages/Deal.vue:739 frontend/src/pages/Lead.vue:486
+#: frontend/src/pages/MobileDeal.vue:614 frontend/src/pages/MobileLead.vue:415
+msgid "Error updating field"
+msgstr "Грешка приликом ажурирања поља"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:261
 msgid "Error while creating customer in ERPNext, check error log for more details"
@@ -2008,6 +2021,16 @@ msgstr "Excel"
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Exchange Rate"
 msgstr "Девизни курс"
+
+#. Label of the exchange_rate_provider_section (Section Break) field in DocType
+#. 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Exchange Rate Provider"
+msgstr "Провајдер девизних курсева"
+
+#: frontend/src/components/Settings/General/CurrencySettings.vue:67
+msgid "Exchange rate provider"
+msgstr "Провајдер девизних курсева"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
@@ -2055,10 +2078,18 @@ msgstr "Прошири"
 msgid "Expected Closure Date"
 msgstr "Очекивани датум затварања"
 
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:161
+msgid "Expected Closure Date is required."
+msgstr "Очекивани датум затварања је обавезан."
+
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Deal Value"
 msgstr "Очекивана вредност пословне прилике"
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:159
+msgid "Expected Deal Value is required."
+msgstr "Очекивана вредност пословне прилике је обавезна."
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2117,13 +2148,13 @@ msgstr "Неуспешно креирање шаблона"
 msgid "Failed to delete template"
 msgstr "Неуспешно брисање шаблона"
 
-#: crm/utils/__init__.py:285
-msgid "Failed to fetch historical exchange rate from external API. Please try again later."
-msgstr "Неуспешно преузимање историјског девизног курса са спољног API-ја. Молимо Вас да покушате касније."
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:205
+msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
+msgstr "Неуспешно преузимање девизног курса из {0} у {1} на {2}. Молимо Вас да проверите своју интернет конекцију или покушајте поново касније."
 
-#: frontend/src/data/script.js:110
+#: frontend/src/data/script.js:106
 msgid "Failed to load form controller: {0}"
-msgstr ""
+msgstr "Неуспешно учитавање form controller-а: {0}"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:246
 msgid "Failed to rename template"
@@ -2245,11 +2276,11 @@ msgstr "За"
 msgid "Forecasted revenue"
 msgstr "Прогноза прихода"
 
-#: frontend/src/components/Settings/General/GeneralSettings.vue:128
+#: frontend/src/components/Settings/General/GeneralSettings.vue:100
 msgid "Forecasting disabled successfully"
 msgstr "Прогнозирање је успешно онемогућено"
 
-#: frontend/src/components/Settings/General/GeneralSettings.vue:127
+#: frontend/src/components/Settings/General/GeneralSettings.vue:99
 msgid "Forecasting enabled successfully"
 msgstr "Прогнозирање је успешно омогућено"
 
@@ -2295,7 +2326,7 @@ msgstr "Датум почетка"
 #. Label of the from_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "From Type"
-msgstr ""
+msgstr "Од врсте"
 
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -2319,7 +2350,7 @@ msgstr "Име и презиме"
 #: crm/api/dashboard.py:728
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Funnel conversion"
-msgstr ""
+msgstr "Конверзија у продајном левку"
 
 #. Label of the gender (Link) field in DocType 'CRM Contacts'
 #. Label of the gender (Link) field in DocType 'CRM Deal'
@@ -2343,7 +2374,7 @@ msgstr "Географска расподела пословних прилик�
 msgid "GitHub Repository"
 msgstr "GitHub репозиторијум"
 
-#: frontend/src/pages/Deal.vue:114 frontend/src/pages/Lead.vue:167
+#: frontend/src/pages/Deal.vue:104 frontend/src/pages/Lead.vue:159
 msgid "Go to website"
 msgstr "Иди на веб-сајт"
 
@@ -2654,7 +2685,7 @@ msgstr "Стандардно"
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
-msgstr ""
+msgstr "Учиниће да су \"Очекивани датум затварања\" и \"Очекивана вредност пословне прилике\" обавезни за прецизно добијање увида у прогнозу"
 
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -2804,19 +2835,15 @@ msgstr "Статуси потенцијалног клијента"
 
 #: crm/api/dashboard.py:935
 msgid "Lead generation channel analysis"
-msgstr ""
+msgstr "Анализа канала за генерисање потенцијалних клијената"
 
 #: crm/api/dashboard.py:729
 msgid "Lead to deal conversion pipeline"
 msgstr "Ток пребацивања потенцијалних клијената у пословне прилике"
 
-#: frontend/src/pages/Lead.vue:395 frontend/src/pages/MobileLead.vue:282
-msgid "Lead updated successfully"
-msgstr "Потенцијални клијент је успешно ажуриран"
-
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Lead.vue:414 frontend/src/pages/MobileLead.vue:301
+#: frontend/src/pages/Lead.vue:369 frontend/src/pages/MobileLead.vue:293
 msgid "Leads"
 msgstr "Потенцијални клијенти"
 
@@ -2878,7 +2905,7 @@ msgstr "Учитај више"
 
 #: frontend/src/components/Activities/Activities.vue:22
 #: frontend/src/components/Activities/DataFields.vue:37
-#: frontend/src/pages/Deal.vue:203 frontend/src/pages/MobileDeal.vue:125
+#: frontend/src/pages/Deal.vue:193 frontend/src/pages/MobileDeal.vue:119
 msgid "Loading..."
 msgstr "Учитавање..."
 
@@ -2888,6 +2915,12 @@ msgstr "Учитавање..."
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Log"
 msgstr "Евиденција"
+
+#: frontend/src/components/Activities/Activities.vue:803
+#: frontend/src/components/Activities/ActivityHeader.vue:137
+#: frontend/src/components/Activities/ActivityHeader.vue:180
+msgid "Log a Call"
+msgstr "Евидентирај позив"
 
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
@@ -2955,18 +2988,18 @@ msgstr "Постави као приватно"
 msgid "Make Public"
 msgstr "Постави као јавно"
 
-#: frontend/src/components/Activities/Activities.vue:799
+#: frontend/src/components/Activities/Activities.vue:807
 #: frontend/src/components/Activities/ActivityHeader.vue:142
 #: frontend/src/components/Activities/ActivityHeader.vue:185
 #: frontend/src/pages/Deals.vue:504 frontend/src/pages/Leads.vue:531
 msgid "Make a Call"
 msgstr "Позови"
 
-#: frontend/src/pages/Deal.vue:94 frontend/src/pages/Lead.vue:136
+#: frontend/src/pages/Deal.vue:86 frontend/src/pages/Lead.vue:128
 msgid "Make a call"
 msgstr "Позови"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:102
+#: frontend/src/components/Activities/AttachmentArea.vue:109
 msgid "Make attachment {0}"
 msgstr "Додај прилог {0}"
 
@@ -2982,7 +3015,7 @@ msgstr "Постави као приватно"
 msgid "Make public"
 msgstr "Постави као јавно"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:111
+#: frontend/src/components/Activities/AttachmentArea.vue:118
 msgid "Make {0}"
 msgstr "Направите {0}"
 
@@ -2991,12 +3024,12 @@ msgid "Make {0} as default calling medium"
 msgstr "Постави {0} као подразумевано средство за позивање"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:23
-msgid "Makes \"Close Date\" and \"Deal Value\" mandatory for deal value forecasting"
-msgstr ""
+msgid "Makes \"Expected Closure Date\" and \"Expected Deal Value\" mandatory for deal value forecasting"
+msgstr "Поставља \"Очекивани датум затварања\" и \"Очекивана вредност пословне прилике\" као обавезна поља за прогнозирање вредности пословне прилике"
 
 #: frontend/src/components/Settings/Users.vue:11
 msgid "Manage CRM users by adding or inviting them, and assign roles to control their access and permissions"
-msgstr ""
+msgstr "Управљајте CRM корисницима додавањем или позивањем, и додељивањем улога како бисте контролисали њихов приступ и овлашћења"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:11
 msgid "Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails."
@@ -3012,9 +3045,9 @@ msgstr "Управљајте својим имејл налозима за сл�
 msgid "Manager"
 msgstr "Менаџер"
 
-#: frontend/src/data/document.js:34
+#: frontend/src/data/document.js:54
 msgid "Mandatory field error: {0}"
-msgstr ""
+msgstr "Грешка у обавезном пољу: {0}"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3226,12 +3259,12 @@ msgid "New WhatsApp Message"
 msgstr "Нова WhatsApp порука"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:81
-#: frontend/src/pages/MobileLead.vue:165
+#: frontend/src/pages/MobileLead.vue:164
 msgid "New contact will be created based on the person's details"
 msgstr "Нови контакт ће бити креиран на основу података о особи"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:56
-#: frontend/src/pages/MobileLead.vue:139
+#: frontend/src/pages/MobileLead.vue:138
 msgid "New organization will be created based on the data in details section"
 msgstr "Нова организација ће бити креирана на основу података у одељку детаљи"
 
@@ -3292,11 +3325,11 @@ msgid "No changes made"
 msgstr "Није извршена ниједна промена"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
-#: frontend/src/pages/Deal.vue:292 frontend/src/pages/MobileDeal.vue:213
+#: frontend/src/pages/Deal.vue:282 frontend/src/pages/MobileDeal.vue:207
 msgid "No contacts added"
 msgstr "Нема додатних контаката"
 
-#: frontend/src/pages/Deal.vue:107 frontend/src/pages/Lead.vue:158
+#: frontend/src/pages/Deal.vue:97 frontend/src/pages/Lead.vue:150
 msgid "No email set"
 msgstr "Није постављен имејла"
 
@@ -3308,7 +3341,7 @@ msgstr "Нису пронађени шаблони имејлова"
 msgid "No label"
 msgstr "Без ознаке"
 
-#: frontend/src/pages/Deal.vue:736
+#: frontend/src/pages/Deal.vue:705
 msgid "No mobile number set"
 msgstr "Није постављен број мобилног телефона"
 
@@ -3317,11 +3350,11 @@ msgstr "Није постављен број мобилног телефона"
 msgid "No new notifications"
 msgstr "Нема нових обавештења"
 
-#: frontend/src/pages/Lead.vue:143
+#: frontend/src/pages/Lead.vue:135
 msgid "No phone number set"
 msgstr "Није постављен број телефона"
 
-#: frontend/src/pages/Deal.vue:731
+#: frontend/src/pages/Deal.vue:700
 msgid "No primary contact set"
 msgstr "Није постављен примарни контакт"
 
@@ -3344,11 +3377,11 @@ msgstr "Нису пронађени корисници"
 msgid "No website found"
 msgstr "Није пронађен веб-сајт"
 
-#: frontend/src/pages/Deal.vue:120 frontend/src/pages/Lead.vue:173
+#: frontend/src/pages/Deal.vue:110 frontend/src/pages/Lead.vue:165
 msgid "No website set"
 msgstr "Није постављен веб-сајт"
 
-#: frontend/src/components/SidePanelLayout.vue:131
+#: frontend/src/components/SidePanelLayout.vue:128
 msgid "No {0} Available"
 msgstr "Нема доступних {0}"
 
@@ -3408,12 +3441,13 @@ msgstr "Није слично"
 #: frontend/src/components/Modals/QuickEntryModal.vue:10
 #: frontend/src/components/Modals/SidePanelModal.vue:10
 #: frontend/src/components/Settings/General/BrandSettings.vue:16
+#: frontend/src/components/Settings/General/CurrencySettings.vue:16
 #: frontend/src/components/Settings/SettingsPage.vue:11
 #: frontend/src/components/Settings/TelephonySettings.vue:11
 msgid "Not Saved"
 msgstr "Није сачувано"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:262
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:260
 msgid "Not allowed to add contact to Deal"
 msgstr "Није дозвољено додати контакт у пословну прилику"
 
@@ -3421,17 +3455,13 @@ msgstr "Није дозвољено додати контакт у послов�
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Није дозвољено пребацити потенцијалног клијента у пословну прилику"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:273
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:271
 msgid "Not allowed to remove contact from Deal"
 msgstr "Није дозвољено уклонити контакт из пословне прилике"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:284
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:282
 msgid "Not allowed to set primary contact for Deal"
 msgstr "Није дозвољено поставити примарни контакт за пословну прилику"
-
-#: frontend/src/pages/Deal.vue:458 frontend/src/pages/Lead.vue:362
-msgid "Not permitted"
-msgstr "Није дозвољено"
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3439,8 +3469,8 @@ msgstr "Није дозвољено"
 msgid "Note"
 msgstr "Белешка"
 
-#: frontend/src/pages/Deal.vue:602 frontend/src/pages/Lead.vue:484
-#: frontend/src/pages/MobileDeal.vue:484 frontend/src/pages/MobileLead.vue:378
+#: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:436
+#: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:370
 msgid "Notes"
 msgstr "Белешке"
 
@@ -3515,11 +3545,11 @@ msgstr "Текуће"
 msgid "Ongoing deals"
 msgstr "Текуће пословне прилике"
 
-#: frontend/src/utils/index.js:451
+#: frontend/src/utils/index.js:444
 msgid "Only image files are allowed"
-msgstr ""
+msgstr "Дозвољени су само фајлови у формату слике"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:62
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:60
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:23
 msgid "Only one {0} can be set as primary."
 msgstr "Може бити постављен само један {0} као примарни."
@@ -3577,7 +3607,7 @@ msgstr "Наруџбина од"
 #: frontend/src/components/Layouts/AppSidebar.vue:548
 #: frontend/src/components/Modals/ConvertToDealModal.vue:39
 #: frontend/src/pages/Contact.vue:507 frontend/src/pages/MobileContact.vue:505
-#: frontend/src/pages/MobileLead.vue:121
+#: frontend/src/pages/MobileLead.vue:120
 #: frontend/src/pages/MobileOrganization.vue:449
 #: frontend/src/pages/MobileOrganization.vue:503
 #: frontend/src/pages/Organization.vue:458
@@ -3604,7 +3634,7 @@ msgstr "Лого организације"
 msgid "Organization Name"
 msgstr "Назив организације"
 
-#: frontend/src/pages/Deal.vue:77
+#: frontend/src/pages/Deal.vue:69
 msgid "Organization logo"
 msgstr "Лого организације"
 
@@ -3617,7 +3647,7 @@ msgstr "Организације"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:570
 msgid "Other features"
-msgstr ""
+msgstr "Остале функционалности"
 
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -3739,17 +3769,25 @@ msgstr "Молимо Вас да омогућите Twilio подешавања 
 msgid "Please enter a valid URL"
 msgstr "Молимо Вас да унесете важећи URL"
 
+#: frontend/src/components/Settings/General/CurrencySettings.vue:159
+msgid "Please enter the Exchangerate Host access key."
+msgstr "Молимо Вас да унесете Exchangerate Host кључ за приступ."
+
 #: frontend/src/components/Modals/LostReasonModal.vue:9
 msgid "Please provide a reason for marking this deal as lost"
 msgstr "Молимо Вас да наведете разлог означавања ове пословне прилике као изгубљене"
 
+#: frontend/src/components/Settings/General/CurrencySettings.vue:152
+msgid "Please select a currency before saving."
+msgstr "Молимо Вас да изаберете валуту пре чувања."
+
 #: frontend/src/components/Modals/ConvertToDealModal.vue:145
-#: frontend/src/pages/MobileLead.vue:440
+#: frontend/src/pages/MobileLead.vue:434
 msgid "Please select an existing contact"
 msgstr "Молимо Вас да изаберете постојећи контакт"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:150
-#: frontend/src/pages/MobileLead.vue:445
+#: frontend/src/pages/MobileLead.vue:439
 msgid "Please select an existing organization"
 msgstr "Молимо Вас да изаберете постојећу организацију"
 
@@ -3757,11 +3795,11 @@ msgstr "Молимо Вас да изаберете постојећу орга�
 msgid "Please setup Exotel intergration"
 msgstr "Молимо Вас да поставите Exotel интеграцију"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:171
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:169
 msgid "Please specify a reason for losing the deal."
 msgstr "Молимо Вас да наведете разлог губитка пословне прилике."
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:173
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:171
 msgid "Please specify the reason for losing the deal."
 msgstr "Молимо Вас да прецизирате разлог губитка пословне прилике."
 
@@ -3772,7 +3810,7 @@ msgstr "Молимо Вас да прецизирате разлог губит�
 msgid "Position"
 msgstr "Позиција"
 
-#: frontend/src/pages/Deal.vue:232 frontend/src/pages/MobileDeal.vue:157
+#: frontend/src/pages/Deal.vue:222 frontend/src/pages/MobileDeal.vue:151
 msgid "Primary"
 msgstr "Примарна"
 
@@ -3791,7 +3829,7 @@ msgstr "Примарни број мобилног телефона"
 msgid "Primary Phone"
 msgstr "Примарни телефон"
 
-#: frontend/src/pages/Deal.vue:708 frontend/src/pages/MobileDeal.vue:589
+#: frontend/src/pages/Deal.vue:677 frontend/src/pages/MobileDeal.vue:568
 msgid "Primary contact set"
 msgstr "Примарни контакт је постављен"
 
@@ -3858,7 +3896,7 @@ msgstr "Профил је успешно ажуриран"
 
 #: crm/api/dashboard.py:667
 msgid "Projected vs actual revenue based on deal probability"
-msgstr ""
+msgstr "Очекивани наспрам стварних прихода на основу вероватноће пословне прилике"
 
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -3972,7 +4010,7 @@ msgstr "Одбиј"
 
 #: frontend/src/components/Settings/Users.vue:210
 #: frontend/src/components/Settings/Users.vue:213
-#: frontend/src/pages/Deal.vue:657
+#: frontend/src/pages/Deal.vue:626
 msgid "Remove"
 msgstr "Уклони"
 
@@ -3989,7 +4027,7 @@ msgid "Remove column"
 msgstr "Уклони колону"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:32
-#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:109
+#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:101
 #: frontend/src/pages/MobileContact.vue:43
 #: frontend/src/pages/MobileOrganization.vue:43
 #: frontend/src/pages/Organization.vue:47
@@ -4259,7 +4297,7 @@ msgstr "Субота"
 #: frontend/src/components/Modals/LostReasonModal.vue:44
 #: frontend/src/components/Modals/QuickEntryModal.vue:26
 #: frontend/src/components/Modals/SidePanelModal.vue:26
-#: frontend/src/components/Settings/General/GeneralSettings.vue:145
+#: frontend/src/components/Settings/General/CurrencySettings.vue:182
 #: frontend/src/components/Telephony/ExotelCallUI.vue:231
 #: frontend/src/components/ViewControls.vue:123
 #: frontend/src/pages/Dashboard.vue:45
@@ -4291,11 +4329,11 @@ msgstr "Скрипта"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:64
 msgid "Search template"
-msgstr ""
+msgstr "Претрага шаблона"
 
 #: frontend/src/components/Settings/Users.vue:73
 msgid "Search user"
-msgstr ""
+msgstr "Претрага корисника"
 
 #: frontend/src/components/FieldLayoutEditor.vue:342
 msgid "Section"
@@ -4305,9 +4343,13 @@ msgstr "Одељак"
 msgid "Select Range"
 msgstr "Изабери опсег"
 
-#: frontend/src/components/Settings/General/GeneralSettings.vue:63
+#: frontend/src/components/Settings/General/CurrencySettings.vue:58
 msgid "Select currency"
 msgstr "Изабери валуту"
+
+#: frontend/src/components/Settings/General/CurrencySettings.vue:82
+msgid "Select provider"
+msgstr "Изаберите провајдера"
 
 #: frontend/src/components/FieldLayout/Field.vue:332
 msgid "Select {0}"
@@ -4325,7 +4367,7 @@ msgstr "Пошаљите позивнице"
 msgid "Send Template"
 msgstr "Пошаљите шаблон"
 
-#: frontend/src/pages/Deal.vue:101 frontend/src/pages/Lead.vue:152
+#: frontend/src/pages/Deal.vue:93 frontend/src/pages/Lead.vue:144
 msgid "Send an email"
 msgstr "Пошаљите као имејл"
 
@@ -4347,6 +4389,11 @@ msgstr "Сепаратор"
 msgid "Series"
 msgstr "Серија"
 
+#. Label of the service_provider (Select) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Service Provider"
+msgstr "Пружалац услуге"
+
 #: frontend/src/components/Layouts/AppSidebar.vue:576
 msgid "Service level agreement"
 msgstr "Споразум о нивоу услуге"
@@ -4359,11 +4406,11 @@ msgstr "Постави све као приватно"
 msgid "Set all as public"
 msgstr "Постави све као јавно"
 
-#: frontend/src/pages/Deal.vue:88
+#: frontend/src/pages/Deal.vue:80
 msgid "Set an organization"
 msgstr "Постави организацију"
 
-#: frontend/src/pages/Deal.vue:665 frontend/src/pages/MobileDeal.vue:546
+#: frontend/src/pages/Deal.vue:634 frontend/src/pages/MobileDeal.vue:525
 msgid "Set as Primary Contact"
 msgstr "Постави као примарни контакт"
 
@@ -4371,11 +4418,11 @@ msgstr "Постави као примарни контакт"
 msgid "Set as default"
 msgstr "Постави као подразумевано"
 
-#: frontend/src/components/Settings/General/GeneralSettings.vue:136
+#: frontend/src/components/Settings/General/CurrencySettings.vue:173
 msgid "Set currency"
 msgstr "Постави валуту"
 
-#: frontend/src/pages/Lead.vue:130
+#: frontend/src/pages/Lead.vue:122
 msgid "Set first name"
 msgstr "Постави име"
 
@@ -4427,11 +4474,15 @@ msgstr "Подешавања"
 
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
-msgstr ""
+msgstr "Подесите имејл"
+
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:199
+msgid "Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
+msgstr "Подесите провајдера девизних курсева као 'Exchangerate Host' у подешавањима, јер подразумевани провајдер не подржава конверзију валута из {0} у {1}."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:334
 msgid "Setup your password"
-msgstr ""
+msgstr "Поставите Вашу лозинку"
 
 #: frontend/src/components/Activities/Activities.vue:230
 msgid "Show"
@@ -4491,7 +4542,7 @@ msgid "Source Name"
 msgstr "Назив извора"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
-#: frontend/src/components/Dashboard/DashboardItem.vue:16
+#: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
 msgstr "Размак"
 
@@ -4593,7 +4644,7 @@ msgstr "Недеља"
 
 #: frontend/src/components/Settings/emailConfig.js:16
 msgid "Support / Sales"
-msgstr ""
+msgstr "Подршка / Продаја"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:49
 msgid "Switch camera"
@@ -4635,8 +4686,8 @@ msgstr "Запиши белешку..."
 msgid "Task"
 msgstr "Задатак"
 
-#: frontend/src/pages/Deal.vue:597 frontend/src/pages/Lead.vue:479
-#: frontend/src/pages/MobileDeal.vue:479 frontend/src/pages/MobileLead.vue:373
+#: frontend/src/pages/Deal.vue:565 frontend/src/pages/Lead.vue:431
+#: frontend/src/pages/MobileDeal.vue:458 frontend/src/pages/MobileLead.vue:365
 msgid "Tasks"
 msgstr "Задаци"
 
@@ -4716,13 +4767,13 @@ msgstr "Услов '{0}' је неважећи: {1}"
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "The rate used to convert the deal’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
-msgstr ""
+msgstr "Курс који се уноси за конвертовање валуте пословне прилике у основну валуту из Вашег CRM-a (постављено у CRM подешавањима). Поставља се једном, приликом додавања валуте и не мења се аутоматски."
 
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM
 #. Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "The rate used to convert the organization’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
-msgstr ""
+msgstr "Курс који се користи за конвертовање валуте организације у основну валуту из Вашег CRM-a (постављено у CRM подешавањима). Поставља се једном, приликом додавања валуте и не мења се аутоматски."
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:14
 msgid "There can only be one default priority in Priorities table"
@@ -4809,7 +4860,7 @@ msgstr "Датум завршетка"
 #. Label of the to_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "To Type"
-msgstr ""
+msgstr "До врсте"
 
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4872,11 +4923,11 @@ msgstr "Укупан број потенцијалних клијената"
 
 #: crm/api/dashboard.py:182
 msgid "Total number of non won/lost deals"
-msgstr ""
+msgstr "Укупан број пословних прилика које нису добијене нити изгубљене"
 
 #: crm/api/dashboard.py:297
 msgid "Total number of won deals based on its closure date"
-msgstr ""
+msgstr "Укупан број добијених пословних прилика према датуму затварања"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -4940,7 +4991,7 @@ msgstr "Врста"
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:73
 #: frontend/src/components/Controls/MultiSelectUserInput.vue:73
 msgid "Type an email address to invite"
-msgstr ""
+msgstr "Унесите имејл адресу за позивање"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:85
 msgid "Type your message here..."
@@ -4961,27 +5012,27 @@ msgstr "Непознат"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:132
 msgid "Unlink"
-msgstr ""
+msgstr "Поништи повезивање"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:77
 msgid "Unlink all"
-msgstr ""
+msgstr "Поништи сва повезивања"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:73
 msgid "Unlink and delete"
-msgstr ""
+msgstr "Поништи повезивање и обриши"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:35
 msgid "Unlink and delete {0} items"
-msgstr ""
+msgstr "Поништи повезивање и обриши {0} ставки"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:242
 msgid "Unlink linked item"
-msgstr ""
+msgstr "Поништи повезивање повезане ставке"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:78
 msgid "Unlink {0} item(s)"
-msgstr ""
+msgstr "Поништи повезивање {0} ставки"
 
 #: frontend/src/components/ViewControls.vue:1138
 msgid "Unpin View"
@@ -5007,6 +5058,7 @@ msgstr "Без наслова"
 #: frontend/src/components/Modals/TaskModal.vue:8
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:17
 #: frontend/src/components/Settings/General/BrandSettings.vue:23
+#: frontend/src/components/Settings/General/CurrencySettings.vue:23
 #: frontend/src/components/Settings/General/HomeActions.vue:17
 #: frontend/src/components/Settings/ProfileSettings.vue:95
 #: frontend/src/components/Settings/SettingsPage.vue:20
@@ -5047,7 +5099,7 @@ msgid "Upload Video"
 msgstr "Отпреми видео"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:27
-#: frontend/src/pages/Contact.vue:42 frontend/src/pages/Lead.vue:104
+#: frontend/src/pages/Contact.vue:42 frontend/src/pages/Lead.vue:96
 #: frontend/src/pages/MobileContact.vue:38
 #: frontend/src/pages/MobileOrganization.vue:38
 #: frontend/src/pages/Organization.vue:42
@@ -5102,7 +5154,7 @@ msgstr "Прикази"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:558
 msgid "Web form"
-msgstr ""
+msgstr "Веб-образац"
 
 #. Label of the webhook_verify_token (Data) field in DocType 'CRM Exotel
 #. Settings'
@@ -5140,14 +5192,14 @@ msgstr "Порука добродошлице"
 
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
-msgstr ""
+msgstr "Добро дошли {0}, хајде да додамо твог првог потенцијалног клијента"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Layouts/AppSidebar.vue:598
 #: frontend/src/components/Settings/Settings.vue:129
-#: frontend/src/pages/Deal.vue:612 frontend/src/pages/Lead.vue:494
-#: frontend/src/pages/MobileDeal.vue:494 frontend/src/pages/MobileLead.vue:388
+#: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:446
+#: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:380
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
@@ -5208,6 +5260,10 @@ msgstr "Немате дозволу да приступите овом ресу�
 msgid "You can change the default calling medium from the settings"
 msgstr "Можете променити подразумевано средство за позивање у подешавањима"
 
+#: frontend/src/components/Settings/General/CurrencySettings.vue:107
+msgid "You can get your access key from "
+msgstr "Свој кључ за приступ можете добити са "
+
 #: crm/integrations/exotel/handler.py:85
 msgid "You do not have Exotel Number set in your Telephony Agent"
 msgstr "Немате подешен Exotel број у свом агенту телефоније"
@@ -5215,6 +5271,10 @@ msgstr "Немате подешен Exotel број у свом агенту т�
 #: crm/integrations/exotel/handler.py:93
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Немате подешен број мобилног телефона у свом агенту телефоније"
+
+#: frontend/src/data/document.js:32
+msgid "You do not have permission to access this document"
+msgstr "Немате дозволу за приступ овом документу"
 
 #: frontend/src/components/ViewControls.vue:976
 msgid "You have unsaved changes. Do you want to save them?"
@@ -5285,6 +5345,17 @@ msgstr "цијан"
 msgid "email already exists"
 msgstr "имејл већ постоји"
 
+#. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/General/CurrencySettings.vue:113
+msgid "exchangerate.host"
+msgstr "exchangerate.host"
+
+#. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "frankfurter.app"
+msgstr "frankfurter.app"
+
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
@@ -5319,63 +5390,63 @@ msgstr "овде"
 
 #: frontend/src/utils/index.js:146
 msgid "in 1 hour"
-msgstr ""
+msgstr "за 1 час"
 
 #: frontend/src/utils/index.js:142
 msgid "in 1 minute"
-msgstr ""
+msgstr "за 1 минут"
 
 #: frontend/src/utils/index.js:160
 msgid "in 1 year"
-msgstr ""
+msgstr "за 1 годину"
 
 #: frontend/src/utils/index.js:111
 msgid "in {0} M"
-msgstr ""
+msgstr "за {0} М"
 
 #: frontend/src/utils/index.js:107
 msgid "in {0} d"
-msgstr ""
+msgstr "за {0} d"
 
 #: frontend/src/utils/index.js:154
 msgid "in {0} days"
-msgstr ""
+msgstr "за {0} дана"
 
 #: frontend/src/utils/index.js:101
 msgid "in {0} h"
-msgstr ""
+msgstr "за {0} h"
 
 #: frontend/src/utils/index.js:148
 msgid "in {0} hours"
-msgstr ""
+msgstr "за {0} часова"
 
 #: frontend/src/utils/index.js:99
 msgid "in {0} m"
-msgstr ""
+msgstr "за {0} m"
 
 #: frontend/src/utils/index.js:144
 msgid "in {0} minutes"
-msgstr ""
+msgstr "за {0} минута"
 
 #: frontend/src/utils/index.js:158
 msgid "in {0} months"
-msgstr ""
+msgstr "за {0} месеци"
 
 #: frontend/src/utils/index.js:109
 msgid "in {0} w"
-msgstr ""
+msgstr "за {0} w"
 
 #: frontend/src/utils/index.js:156
 msgid "in {0} weeks"
-msgstr ""
+msgstr "за {0} недеља"
 
 #: frontend/src/utils/index.js:113
 msgid "in {0} y"
-msgstr ""
+msgstr "за {0} y"
 
 #: frontend/src/utils/index.js:162
 msgid "in {0} years"
-msgstr ""
+msgstr "за {0} година"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:28
 #: frontend/src/components/Settings/InviteUserPage.vue:37
@@ -5431,11 +5502,11 @@ msgstr "розе"
 msgid "previous"
 msgstr "претходно"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:101
+#: frontend/src/components/Activities/AttachmentArea.vue:108
 msgid "private"
 msgstr "приватно"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:101
+#: frontend/src/components/Activities/AttachmentArea.vue:108
 msgid "public"
 msgstr "јавно"
 
@@ -5501,7 +5572,7 @@ msgstr "Додељено Вам је {1} {2} од стране {0}"
 
 #: frontend/src/utils/index.js:126
 msgid "{0} d"
-msgstr "{0} д"
+msgstr "{0} d"
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
@@ -5509,20 +5580,15 @@ msgstr "пре {0} дана"
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
-msgstr "{0} х"
+msgstr "{0} h"
 
 #: frontend/src/components/Settings/Users.vue:291
 msgid "{0} has been granted {1} access"
-msgstr ""
+msgstr "{0} је додељен приступ са улогом {1}"
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
 msgstr "пре {0} часова"
-
-#: frontend/src/pages/Deal.vue:525 frontend/src/pages/Lead.vue:407
-#: frontend/src/pages/MobileDeal.vue:400 frontend/src/pages/MobileLead.vue:294
-msgid "{0} is a required field"
-msgstr "{0} је неопходно поље"
 
 #: frontend/src/components/EmailEditor.vue:29
 #: frontend/src/components/EmailEditor.vue:64
@@ -5564,23 +5630,23 @@ msgstr "{0} y"
 msgid "{0} years ago"
 msgstr "пре {0} година"
 
-#: frontend/src/data/script.js:330
+#: frontend/src/data/script.js:326
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
-msgstr ""
+msgstr "Избегавајте коришћење \"trigger\" као назива поља - у сукобу је са уграђеном trigger() методом."
 
-#: frontend/src/data/script.js:342
+#: frontend/src/data/script.js:338
 msgid "⚠️ Method \"{0}\" not found in class."
-msgstr ""
+msgstr "Метода \"{0}\" није пронађена у класи."
 
-#: frontend/src/data/script.js:87
+#: frontend/src/data/script.js:83
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
-msgstr ""
+msgstr "Ниједна класа није пронађена за DocType: {0}, обавезно мора постојати класа за матични DocType. Може бити празна, али мора постојати."
 
-#: frontend/src/data/script.js:184
+#: frontend/src/data/script.js:180
 msgid "⚠️ No data found for parent field: {0}"
 msgstr "Нема података за матично поље: {0}"
 
-#: frontend/src/data/script.js:192
+#: frontend/src/data/script.js:188
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
-msgstr ""
+msgstr "Ниједан ред није пронађен за idx: {0} у матичном пољу: {1}"
 

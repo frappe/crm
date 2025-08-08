@@ -1,5 +1,5 @@
 <template>
-  <LayoutHeader v-if="deal.data">
+  <LayoutHeader>
     <header
       class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2"
     >
@@ -10,23 +10,21 @@
       </Breadcrumbs>
       <div class="absolute right-0">
         <Dropdown
-          v-if="document.doc"
+          v-if="doc"
           :options="
             statusOptions(
               'deal',
               document.statuses?.length
                 ? document.statuses
-                : deal.data._customStatuses,
+                : document._statuses,
               triggerStatusChange,
             )
           "
         >
           <template #default="{ open }">
-            <Button :label="document.doc.status">
+            <Button v-if="doc.status" :label="doc.status">
               <template #prefix>
-                <IndicatorIcon
-                  :class="getDealStatus(document.doc.status).color"
-                />
+                <IndicatorIcon :class="getDealStatus(doc.status).color" />
               </template>
               <template #suffix>
                 <FeatherIcon
@@ -41,18 +39,14 @@
     </header>
   </LayoutHeader>
   <div
-    v-if="deal.data"
+    v-if="doc.name"
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
-    <AssignTo
-      v-model="assignees.data"
-      :data="document.doc"
-      doctype="CRM Deal"
-    />
+    <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
     <div class="flex items-center gap-2">
       <CustomActions
-        v-if="deal.data._customActions?.length"
-        :actions="deal.data._customActions"
+        v-if="document._actions?.length"
+        :actions="document._actions"
       />
       <CustomActions
         v-if="document.actions?.length"
@@ -60,14 +54,14 @@
       />
     </div>
   </div>
-  <div v-if="deal.data" class="flex h-full overflow-hidden">
+  <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
       <TabList class="!px-3" />
       <TabPanel v-slot="{ tab }">
         <div v-if="tab.name == 'Details'">
           <SLASection
-            v-if="deal.data.sla_status"
-            v-model="deal.data"
+            v-if="doc.sla_status"
+            v-model="doc"
             @updateField="updateField"
           />
           <div
@@ -77,7 +71,7 @@
             <SidePanelLayout
               :sections="sections.data"
               doctype="CRM Deal"
-              :docname="deal.data.name"
+              :docname="dealId"
               @reload="sections.reload"
               @beforeFieldChange="beforeStatusChange"
               @afterFieldChange="reloadAssignees"
@@ -92,7 +86,7 @@
                       (value, close) => {
                         _contact = {
                           first_name: value,
-                          company_name: deal.data.organization,
+                          company_name: doc.organization,
                         }
                         showContactModal = true
                         close()
@@ -220,23 +214,28 @@
         <Activities
           v-else
           doctype="CRM Deal"
+          :docname="dealId"
           :tabs="tabs"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
-          v-model="deal"
           @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
       </TabPanel>
     </Tabs>
   </div>
+  <ErrorPage
+    v-else-if="errorTitle"
+    :errorTitle="errorTitle"
+    :errorMessage="errorMessage"
+  />
   <OrganizationModal
     v-if="showOrganizationModal"
     v-model="showOrganizationModal"
     :data="_organization"
     :options="{
       redirect: false,
-      afterInsert: (doc) => updateField('organization', doc.name),
+      afterInsert: (_doc) => updateField('organization', _doc.name),
     }"
   />
   <ContactModal
@@ -245,8 +244,15 @@
     :contact="_contact"
     :options="{
       redirect: false,
-      afterInsert: (doc) => addContact(doc.name),
+      afterInsert: (_doc) => addContact(_doc.name),
     }"
+  />
+  <DeleteLinkedDocModal
+    v-if="showDeleteLinkedDocModal"
+    v-model="showDeleteLinkedDocModal"
+    :doctype="'CRM Deal'"
+    :docname="dealId"
+    name="Deals"
   />
   <LostReasonModal
     v-if="showLostReasonModal"
@@ -255,6 +261,8 @@
   />
 </template>
 <script setup>
+import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
+import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
@@ -306,7 +314,7 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, h, onMounted } from 'vue'
+import { ref, computed, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
@@ -323,85 +331,56 @@ const props = defineProps({
   },
 })
 
-const deal = createResource({
-  url: 'crm.fcrm.doctype.crm_deal.api.get_deal',
-  params: { name: props.dealId },
-  cache: ['deal', props.dealId],
-  onSuccess: (data) => {
-    if (data.organization) {
-      organization.update({
-        params: { doctype: 'CRM Organization', name: data.organization },
+const errorTitle = ref('')
+const errorMessage = ref('')
+const showDeleteLinkedDocModal = ref(false)
+
+const { triggerOnChange, assignees, document, scripts, error } = useDocument(
+  'CRM Deal',
+  props.dealId,
+)
+
+const doc = computed(() => document.doc || {})
+
+watch(error, (err) => {
+  if (err) {
+    errorTitle.value = __(
+      err.exc_type == 'DoesNotExistError'
+        ? 'Document not found'
+        : 'Error occurred',
+    )
+    errorMessage.value = __(err.messages?.[0] || 'An error occurred')
+  } else {
+    errorTitle.value = ''
+    errorMessage.value = ''
+  }
+})
+
+watch(
+  () => document.doc,
+  async (_doc) => {
+    if (scripts.data?.length) {
+      let s = await setupCustomizations(scripts.data, {
+        doc: _doc,
+        $dialog,
+        $socket,
+        router,
+        toast,
+        updateField,
+        createToast: toast.create,
+        deleteDoc: deleteDeal,
+        call,
       })
-      organization.fetch()
+      document._actions = s.actions || []
+      document._statuses = s.statuses || []
     }
-
-    setupCustomizations(deal, {
-      doc: data,
-      $dialog,
-      $socket,
-      router,
-      toast,
-      updateField,
-      createToast: toast.create,
-      deleteDoc: deleteDeal,
-      resource: {
-        deal,
-        dealContacts,
-        sections,
-      },
-      call,
-    })
   },
-})
-
-const organization = createResource({
-  url: 'frappe.client.get',
-  onSuccess: (data) => (deal.data._organizationObj = data),
-})
-
-onMounted(() => {
-  if (deal.data) return
-  deal.fetch()
-})
+  { once: true },
+)
 
 const reload = ref(false)
 const showOrganizationModal = ref(false)
 const _organization = ref({})
-
-function updateDeal(fieldname, value, callback) {
-  value = Array.isArray(fieldname) ? '' : value
-
-  if (validateRequired(fieldname, value)) return
-
-  createResource({
-    url: 'frappe.client.set_value',
-    params: {
-      doctype: 'CRM Deal',
-      name: props.dealId,
-      fieldname,
-      value,
-    },
-    auto: true,
-    onSuccess: () => {
-      deal.reload()
-      reload.value = true
-      toast.success(__('Deal updated'))
-      callback?.()
-    },
-    onError: (err) => {
-      toast.error(err.messages?.[0] || __('Error updating deal'))
-    },
-  })
-}
-
-function validateRequired(fieldname, value) {
-  let meta = deal.data.fields_meta || {}
-  if (meta[fieldname]?.reqd && !value) {
-    toast.error(__('{0} is a required field', [meta[fieldname].label]))
-    return true
-  }
-  return false
-}
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Deals'), route: { name: 'Deals' } }]
@@ -423,14 +402,14 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Deal', params: { dealId: deal.data.name } },
+    route: { name: 'Deal', params: { dealId: props.dealId } },
   })
   return items
 })
 
 const title = computed(() => {
   let t = doctypeMeta['CRM Deal']?.title_field || 'name'
-  return deal.data?.[t] || props.dealId
+  return doc.value?.[t] || props.dealId
 })
 
 usePageMeta(() => {
@@ -614,25 +593,32 @@ const dealContacts = createResource({
   },
 })
 
-function updateField(name, value, callback) {
-  updateDeal(name, value, () => {
-    deal.data[name] = value
-    callback?.()
+function updateField(name, value) {
+  value = Array.isArray(name) ? '' : value
+  let oldValues = Array.isArray(name) ? {} : doc.value[name]
+
+  if (Array.isArray(name)) {
+    name.forEach((field) => (doc.value[field] = value))
+  } else {
+    doc.value[name] = value
+  }
+
+  document.save.submit(null, {
+    onSuccess: () => (reload.value = true),
+    onError: (err) => {
+      if (Array.isArray(name)) {
+        name.forEach((field) => (doc.value[field] = oldValues[field]))
+      } else {
+        doc.value[name] = oldValues
+      }
+      toast.error(err.messages?.[0] || __('Error updating field'))
+    },
   })
 }
 
-async function deleteDeal(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Deal',
-    name,
-  })
-  router.push({ name: 'Deals' })
+function deleteDeal() {
+  showDeleteLinkedDocModal.value = true
 }
-
-const { assignees, document, triggerOnChange } = useDocument(
-  'CRM Deal',
-  props.dealId,
-)
 
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
@@ -643,9 +629,9 @@ const showLostReasonModal = ref(false)
 
 function setLostReason() {
   if (
-    getDealStatus(document.doc.status).type !== 'Lost' ||
-    (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
-    (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
+    getDealStatus(doc.status).type !== 'Lost' ||
+    (doc.lost_reason && doc.lost_reason !== 'Other') ||
+    (doc.lost_reason === 'Other' && doc.lost_notes)
   ) {
     document.save.submit()
     return
@@ -655,7 +641,10 @@ function setLostReason() {
 }
 
 function beforeStatusChange(data) {
-  if (data?.hasOwnProperty('status') && getDealStatus(data.status).type == 'Lost') {
+  if (
+    data?.hasOwnProperty('status') &&
+    getDealStatus(data.status).type == 'Lost'
+  ) {
     setLostReason()
   } else {
     document.save.submit(null, {
