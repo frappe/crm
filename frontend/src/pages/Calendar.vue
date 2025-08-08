@@ -155,13 +155,17 @@ const events = createListResource({
     })
   },
   insert: {
-    onSuccess: () => events.reload(),
+    onSuccess: async (e) => {
+      await events.reload()
+      showDetails({ id: e.name })
+    },
   },
-  delete: {
-    onSuccess: () => events.reload(),
-  },
+  delete: { onSuccess: () => events.reload() },
   setValue: {
-    onSuccess: () => events.reload(),
+    onSuccess: async (e) => {
+      await events.reload()
+      showEventPanel.value && showDetails({ id: e.name })
+    },
   },
 })
 
@@ -180,41 +184,31 @@ function saveEvent(_event) {
 function createEvent(_event) {
   if (!_event.title) return
 
-  events.insert.submit(
-    {
-      subject: _event.title,
-      description: _event.description,
-      starts_on: _event.fromDate + ' ' + _event.fromTime,
-      ends_on: _event.toDate + ' ' + _event.toTime,
-      all_day: _event.isFullDay || false,
-      event_type: _event.eventType,
-      color: _event.color,
-    },
-    { onSuccess: (e) => showDetails({ id: e.name }) },
-  )
+  events.insert.submit({
+    subject: _event.title,
+    description: _event.description,
+    starts_on: _event.fromDate + ' ' + _event.fromTime,
+    ends_on: _event.toDate + ' ' + _event.toTime,
+    all_day: _event.isFullDay || false,
+    event_type: _event.eventType,
+    color: _event.color,
+  })
 }
 
 function updateEvent(_event) {
   if (!_event.id) return
 
   if (!mode.value || mode.value === 'edit' || mode.value === 'details') {
-    events.setValue.submit(
-      {
-        name: _event.id,
-        subject: _event.title,
-        description: _event.description,
-        starts_on: _event.fromDate + ' ' + _event.fromTime,
-        ends_on: _event.toDate + ' ' + _event.toTime,
-        all_day: _event.isFullDay,
-        event_type: _event.eventType,
-        color: _event.color,
-      },
-      {
-        onSuccess: (e) => {
-          showEventPanel.value && showDetails({ id: e.name })
-        },
-      },
-    )
+    events.setValue.submit({
+      name: _event.id,
+      subject: _event.title,
+      description: _event.description,
+      starts_on: _event.fromDate + ' ' + _event.fromTime,
+      ends_on: _event.toDate + ' ' + _event.toTime,
+      all_day: _event.isFullDay,
+      event_type: _event.eventType,
+      color: _event.color,
+    })
   }
 
   event.value = _event
