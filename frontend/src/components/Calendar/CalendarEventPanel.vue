@@ -77,7 +77,7 @@
       <div class="px-4.5 py-3">
         <TextInput
           ref="eventTitle"
-          v-model="_event.title"
+          v-model="event.title"
           :debounce="500"
           :placeholder="__('Event title')"
         >
@@ -86,7 +86,7 @@
               <div
                 class="ml-0.5 size-2.5 rounded-full cursor-pointer"
                 :style="{
-                  backgroundColor: _event.color || '#30A66D',
+                  backgroundColor: event.color || '#30A66D',
                 }"
               />
             </Dropdown>
@@ -95,7 +95,7 @@
       </div>
       <div class="flex justify-between py-2.5 px-4.5 text-ink-gray-6">
         <div class="flex items-center">
-          <Switch v-model="_event.isFullDay" />
+          <Switch v-model="event.isFullDay" />
           <div class="ml-2">
             {{ __('All day') }}
           </div>
@@ -113,7 +113,7 @@
           <DatePicker
             :class="['[&_input]:w-[216px]']"
             variant="outline"
-            :value="_event.fromDate"
+            :value="event.fromDate"
             :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
             :placeholder="__('May 1, 2025')"
             @update:modelValue="(date) => updateDate(date, true)"
@@ -129,16 +129,16 @@
         </div>
       </div>
       <div
-        v-if="!_event.isFullDay"
+        v-if="!event.isFullDay"
         class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
       >
         <div class="w-20">{{ __('Time') }}</div>
         <div class="flex items-center gap-x-3">
           <TimePicker
-            v-if="!_event.isFullDay"
+            v-if="!event.isFullDay"
             class="max-w-[102px]"
             variant="outline"
-            :value="_event.fromTime"
+            :value="event.fromTime"
             :placeholder="__('Start Time')"
             @update:modelValue="(time) => updateTime(time, true)"
           >
@@ -153,7 +153,7 @@
           <TimePicker
             class="max-w-[102px]"
             variant="outline"
-            :value="_event.toTime"
+            :value="event.toTime"
             :placeholder="__('End Time')"
             @update:modelValue="(time) => updateTime(time)"
           >
@@ -173,8 +173,8 @@
           <TextEditor
             editor-class="!prose-sm overflow-auto min-h-[20px] max-h-32 px-2 rounded placeholder-ink-gray-4 focus:bg-surface-white focus:ring-0 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
-            :content="_event.description"
-            @change="(val) => (_event.description = val)"
+            :content="event.description"
+            @change="(val) => (event.description = val)"
             :placeholder="__('Add description')"
           />
         </div>
@@ -200,6 +200,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
 import TimePicker from './TimePicker.vue'
+import { globalStore } from '@/stores/global'
 import { getFormat } from '@/utils'
 import {
   TextInput,
@@ -212,7 +213,7 @@ import {
   CalendarColorMap as colorMap,
   CalendarActiveEvent as activeEvent,
 } from 'frappe-ui'
-import { ref, computed, watch, nextTick, h } from 'vue'
+import { ref, computed, watch, h } from 'vue'
 
 const props = defineProps({
   event: {
@@ -227,6 +228,8 @@ const props = defineProps({
 
 const emit = defineEmits(['save', 'edit', 'delete', 'details', 'close'])
 
+const { $dialog } = globalStore()
+
 const show = defineModel()
 
 const title = computed(() => {
@@ -236,59 +239,59 @@ const title = computed(() => {
   return __('Duplicate event')
 })
 
-const _event = ref({})
-
 const eventTitle = ref(null)
 const error = ref(null)
 
-watch(
-  () => props.event,
-  (newEvent) => {
-    error.value = null
+const oldEvent = ref(null)
+const dirty = computed(() => {
+  return JSON.stringify(oldEvent.value) !== JSON.stringify(props.event)
+})
 
-    nextTick(() => {
-      if (props.mode === 'create' && _event.value.id === 'new-event') {
-        _event.value.fromDate = newEvent.fromDate
-        _event.value.toDate = newEvent.toDate
-        _event.value.fromTime = newEvent.fromTime
-        _event.value.toTime = newEvent.toTime
-      } else {
-        _event.value = { ...newEvent }
-      }
-    })
-    setTimeout(() => eventTitle.value?.el?.focus(), 100)
+watch(
+  [() => props.mode, () => props.event],
+  () => {
+    focusOnTitle()
+    oldEvent.value = { ...props.event }
   },
   { immediate: true },
 )
 
+function focusOnTitle() {
+  setTimeout(() => {
+    if (['edit', 'create', 'duplicate'].includes(props.mode)) {
+      eventTitle.value?.el?.focus()
+    }
+  }, 100)
+}
+
 function updateDate(d) {
-  _event.value.fromDate = d
-  _event.value.toDate = d
+  props.event.fromDate = d
+  props.event.toDate = d
 }
 
 function updateTime(t, fromTime = false) {
   error.value = null
-  let oldTo = _event.value.toTime || _event.value.fromTime
+  let oldTo = props.event.toTime || props.event.fromTime
 
   if (fromTime) {
-    _event.value.fromTime = t
-    if (!_event.value.toTime) {
+    props.event.fromTime = t
+    if (!props.event.toTime) {
       const hour = parseInt(t.split(':')[0])
       const minute = parseInt(t.split(':')[1])
-      _event.value.toTime = `${hour + 1}:${minute}`
+      props.event.toTime = `${hour + 1}:${minute}`
     }
   } else {
-    _event.value.toTime = t
+    props.event.toTime = t
   }
 
-  if (_event.value.toTime && _event.value.fromTime) {
-    const diff = dayjs(_event.value.toDate + ' ' + _event.value.toTime).diff(
-      dayjs(_event.value.fromDate + ' ' + _event.value.fromTime),
+  if (props.event.toTime && props.event.fromTime) {
+    const diff = dayjs(props.event.toDate + ' ' + props.event.toTime).diff(
+      dayjs(props.event.fromDate + ' ' + props.event.fromTime),
       'minute',
     )
 
     if (diff < 0) {
-      _event.value.toTime = oldTo
+      props.event.toTime = oldTo
       error.value = __('End time should be after start time')
       return
     }
@@ -297,49 +300,99 @@ function updateTime(t, fromTime = false) {
 
 function saveEvent() {
   error.value = null
-  if (!_event.value.title) {
+  if (!props.event.title) {
     error.value = __('Title is required')
     eventTitle.value.el.focus()
     return
   }
 
-  _event.value.fromDateTime =
-    _event.value.fromDate + ' ' + _event.value.fromTime
-  _event.value.toDateTime = _event.value.toDate + ' ' + _event.value.toTime
-
-  emit('save', _event.value)
+  oldEvent.value = { ...props.event }
+  emit('save', props.event)
 }
 
 function editDetails() {
-  emit('edit', _event.value)
+  emit('edit', props.event)
 }
 
 function duplicateEvent() {
-  emit('duplicate', _event.value)
+  if (dirty.value) {
+    showDiscardChangesModal(() => reset())
+  } else {
+    emit('duplicate', props.event)
+  }
 }
 
 function deleteEvent() {
-  emit('delete', _event.value.id)
+  emit('delete', props.event.id)
 }
 
 function details() {
-  emit('details', _event.value)
+  if (dirty.value) {
+    showDiscardChangesModal(() => reset())
+  } else {
+    emit('details', props.event)
+  }
 }
 
 function close() {
-  show.value = false
-  activeEvent.value = ''
-  emit('close', _event.value)
+  const _close = () => {
+    show.value = false
+    activeEvent.value = ''
+    emit('close', props.event)
+  }
+
+  if (dirty.value) {
+    showDiscardChangesModal(() => {
+      reset()
+      if (props.event.id === 'new-event') _close()
+    })
+  } else {
+    if (props.event.id === 'duplicate-event')
+      showDiscardChangesModal(() => _close())
+    else _close()
+  }
+}
+
+function reset() {
+  Object.assign(props.event, oldEvent.value)
+}
+
+function showDiscardChangesModal(action) {
+  $dialog({
+    title: __('Discard unsaved changes?'),
+    message: __(
+      'Are you sure you want to discard unsaved changes to this event?',
+    ),
+    actions: [
+      {
+        label: __('Cancel'),
+        onClick: (close) => {
+          close()
+        },
+      },
+      {
+        label: __('Discard'),
+        variant: 'solid',
+        onClick: (close) => {
+          action()
+          close()
+        },
+      },
+    ],
+  })
 }
 
 const formattedDateTime = computed(() => {
+  const date = dayjs(props.event.fromDate)
+
   if (props.event.isFullDay) {
-    return `${__('All day')} - ${dayjs(props.event.fromDateTime).format('ddd, D MMM YYYY')}`
+    return `${__('All day')} - ${date.format('ddd, D MMM YYYY')}`
   }
 
-  const start = dayjs(props.event.fromDateTime)
-  const end = dayjs(props.event.toDateTime)
-  return `${start.format('h:mm a')} - ${end.format('h:mm a')} ${start.format('ddd, D MMM YYYY')}`
+  const start = dayjs(props.event.fromDate + ' ' + props.event.fromTime)
+  const end = dayjs(props.event.toDate + ' ' + props.event.toTime)
+
+  return `${start.format('h:mm a')} - ${end.format('h:mm a')} ${date.format('ddd, D MMM YYYY')}`
 })
 
 const colors = Object.keys(colorMap).map((color) => ({
@@ -350,7 +403,7 @@ const colors = Object.keys(colorMap).map((color) => ({
     style: { backgroundColor: colorMap[color].color },
   }),
   onClick: () => {
-    _event.value.color = colorMap[color].color
+    props.event.color = colorMap[color].color
   },
 }))
 </script>

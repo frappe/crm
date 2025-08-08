@@ -133,17 +133,26 @@ const events = createListResource({
   filters: { status: 'Open', owner: user },
   auto: true,
   transform: (data) => {
-    return data.map((event) => ({
-      id: event.name,
-      title: event.subject,
-      description: event.description,
-      status: event.status,
-      fromDate: event.starts_on,
-      toDate: event.ends_on,
-      isFullDay: event.all_day,
-      eventType: event.event_type,
-      color: event.color,
-    }))
+    return data.map((event) => {
+      let fromDate = dayjs(event.starts_on).format('YYYY-MM-DD')
+      let toDate = dayjs(event.ends_on).format('YYYY-MM-DD')
+      let fromTime = dayjs(event.starts_on).format('HH:mm')
+      let toTime = dayjs(event.ends_on).format('HH:mm')
+
+      return {
+        id: event.name,
+        title: event.subject,
+        description: event.description,
+        status: event.status,
+        fromDate,
+        toDate,
+        fromTime,
+        toTime,
+        isFullDay: event.all_day,
+        eventType: event.event_type,
+        color: event.color,
+      }
+    })
   },
   insert: {
     onSuccess: () => events.reload(),
@@ -175,21 +184,13 @@ function createEvent(_event) {
     {
       subject: _event.title,
       description: _event.description,
-      starts_on: _event.fromDateTime,
-      ends_on: _event.toDateTime,
-      all_day: _event.isFullDay,
+      starts_on: _event.fromDate + ' ' + _event.fromTime,
+      ends_on: _event.toDate + ' ' + _event.toTime,
+      all_day: _event.isFullDay || false,
       event_type: _event.eventType,
       color: _event.color,
     },
-    {
-      onSuccess: (e) => {
-        _event.id = e.name
-        event.value = _event
-        showEventPanel.value = true
-        activeEvent.value = e.name
-        mode.value = 'details'
-      },
-    },
+    { onSuccess: (e) => showDetails({ id: e.name }) },
   )
 }
 
@@ -202,15 +203,15 @@ function updateEvent(_event) {
         name: _event.id,
         subject: _event.title,
         description: _event.description,
-        starts_on: _event.fromDateTime,
-        ends_on: _event.toDateTime,
+        starts_on: _event.fromDate + ' ' + _event.fromTime,
+        ends_on: _event.toDate + ' ' + _event.toTime,
         all_day: _event.isFullDay,
         event_type: _event.eventType,
         color: _event.color,
       },
       {
-        onSuccess: () => {
-          mode.value = 'details'
+        onSuccess: (e) => {
+          showEventPanel.value && showDetails({ id: e.name })
         },
       },
     )
@@ -225,8 +226,6 @@ function deleteEvent(eventID) {
   $dialog({
     title: __('Delete'),
     message: __('Are you sure you want to delete this event?'),
-    variant: 'solid',
-    theme: 'red',
     actions: [
       {
         label: __('Delete'),
@@ -264,7 +263,7 @@ function showDetails(e) {
   )
 
   showEventPanel.value = true
-  event.value = { ..._e }
+  event.value = events.data.find((ev) => ev.id === _e.id) || _e
   activeEvent.value = _e.id
   mode.value = 'details'
 }
@@ -278,7 +277,7 @@ function editDetails(e) {
   )
 
   showEventPanel.value = true
-  event.value = { ..._e }
+  event.value = events.data.find((ev) => ev.id === _e.id) || _e
   activeEvent.value = _e.id
   mode.value = 'edit'
 }
@@ -291,43 +290,34 @@ function newEvent(e, duplicate = false) {
   let fromTime = e.fromTime
   let toTime = e.toTime
   let fromDate = e.fromDate
+  let toDate = e.toDate
 
   if (!duplicate) {
     let t = getFromToTime(e.time)
     fromTime = t[0]
     toTime = t[1]
     fromDate = dayjs(e.date).format('YYYY-MM-DD')
-    e = { fromDate, fromTime, toTime }
+    toDate = fromDate
+    e = { fromDate, toDate, fromTime, toTime }
   }
-
-  showEventPanel.value = true
 
   event.value = {
     id: duplicate ? 'duplicate-event' : 'new-event',
     title: duplicate ? `${e.title} (Copy)` : '',
     description: e.description || '',
     date: fromDate,
-    fromDate: fromDate,
-    toDate: fromDate,
+    fromDate,
+    toDate,
     fromTime,
     toTime,
-    isFullDay: e.isFullDay,
+    isFullDay: e.isFullDay || false,
     eventType: e.eventType || 'Public',
     color: e.color || 'green',
   }
 
-  events.data.push({
-    id: duplicate ? 'duplicate-event' : 'new-event',
-    title: duplicate ? `${e.title} (Copy)` : '',
-    description: e.description || '',
-    status: 'Open',
-    eventType: e.eventType || 'Public',
-    fromDate: fromDate + ' ' + fromTime,
-    toDate: fromDate + ' ' + toTime,
-    color: e.color || 'green',
-    isFullDay: e.isFullDay,
-  })
+  events.data.push(event.value)
 
+  showEventPanel.value = true
   activeEvent.value = duplicate ? 'duplicate-event' : 'new-event'
   mode.value = duplicate ? 'duplicate' : 'create'
 }
