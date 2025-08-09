@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-03 09:38+0000\n"
-"PO-Revision-Date: 2025-08-04 08:34\n"
+"PO-Revision-Date: 2025-08-09 10:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -621,16 +621,16 @@ msgstr "Zwischen"
 
 #: frontend/src/components/Settings/General/BrandSettings.vue:40
 msgid "Brand name"
-msgstr ""
+msgstr "Markenname"
 
 #: frontend/src/components/Settings/General/BrandSettings.vue:9
 msgid "Brand settings"
-msgstr ""
+msgstr "Markeneinstellungen"
 
 #. Label of the branding_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Branding"
-msgstr ""
+msgstr "Firmenlogo"
 
 #: frontend/src/components/Modals/EditValueModal.vue:2
 msgid "Bulk Edit"
@@ -1295,7 +1295,7 @@ msgstr "Interessent erstellen"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:344
 msgid "Create your first lead"
-msgstr ""
+msgstr "Erstellen Sie Ihren ersten Interessenten"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:414
 msgid "Create your first note"
@@ -1303,7 +1303,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:394
 msgid "Create your first task"
-msgstr ""
+msgstr "Erstellen Sie Ihre erste Aufgabe"
 
 #. Label of the currency (Link) field in DocType 'CRM Deal'
 #. Label of the currency (Link) field in DocType 'CRM Organization'
@@ -1334,7 +1334,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:536
 msgid "Custom branding"
-msgstr ""
+msgstr "Benutzerdefiniertes Branding"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:585
 msgid "Custom fields"
@@ -1568,7 +1568,7 @@ msgstr "Ansicht löschen"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:65
 msgid "Delete all"
-msgstr ""
+msgstr "Alles löschen"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:62
 #: frontend/src/components/Activities/AttachmentArea.vue:138
@@ -1581,15 +1581,15 @@ msgstr "Kontakt löschen"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:229
 msgid "Delete linked item"
-msgstr ""
+msgstr "Verknüpftes Element löschen"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:11
 msgid "Delete or unlink linked documents"
-msgstr ""
+msgstr "Verknüpfte Dokumente löschen oder ihre Verknüpfung aufheben"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:23
 msgid "Delete or unlink these linked documents before deleting this document"
-msgstr ""
+msgstr "Verknüpfte Dokumente löschen oder ihre Verknüpfung aufheben bevor dieses Dokument gelöscht wird"
 
 #: frontend/src/pages/MobileOrganization.vue:263
 msgid "Delete organization"
@@ -1597,11 +1597,11 @@ msgstr "Organisation löschen"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:66
 msgid "Delete {0} item(s)"
-msgstr ""
+msgstr "{0} Element(e) löschen"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:28
 msgid "Delete {0} items"
-msgstr ""
+msgstr "{0} Element(e) löschen"
 
 #. Label of the description (Text Editor) field in DocType 'CRM Holiday'
 #. Label of the description (Text Editor) field in DocType 'CRM Lost Reason'
@@ -1676,7 +1676,7 @@ msgstr "Dokumententyp"
 
 #: frontend/src/data/document.js:28
 msgid "Document does not exist"
-msgstr ""
+msgstr "Dokument existiert nicht"
 
 #: crm/api/activities.py:19
 msgid "Document not found"
@@ -1684,7 +1684,7 @@ msgstr "Dokument nicht gefunden"
 
 #: frontend/src/data/document.js:42
 msgid "Document updated successfully"
-msgstr ""
+msgstr "Dokument erfolgreich aktualisiert"
 
 #: frontend/src/components/Modals/AboutModal.vue:62
 msgid "Documentation"
@@ -1698,7 +1698,7 @@ msgstr "Erledigt"
 #: frontend/src/components/Dashboard/AddChartModal.vue:33
 #: frontend/src/components/Dashboard/AddChartModal.vue:71
 msgid "Donut chart"
-msgstr ""
+msgstr "Donut-Diagramm"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:166
 #: frontend/src/components/ViewControls.vue:254
@@ -1737,7 +1737,7 @@ msgstr "Ansicht duplizieren"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 msgid "Duplicate template"
-msgstr ""
+msgstr "Vorlage duplizieren"
 
 #. Label of the duration (Duration) field in DocType 'CRM Call Log'
 #. Label of the duration (Duration) field in DocType 'CRM Status Change Log'
@@ -1778,11 +1778,11 @@ msgstr "ERPNext ist nicht mit dem CRM integriert"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "ERPNext settings"
-msgstr ""
+msgstr "ERPNext-Einstellungen"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext settings updated"
-msgstr ""
+msgstr "ERPNext-Einstellungen aktualisiert"
 
 #: frontend/src/components/FieldLayout/Field.vue:91
 #: frontend/src/components/FieldLayoutEditor.vue:319
@@ -1803,7 +1803,7 @@ msgstr "Layout der Datenfelder bearbeiten"
 
 #: frontend/src/components/Settings/EmailEdit.vue:6
 msgid "Edit Email"
-msgstr ""
+msgstr "E-Mail bearbeiten"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:7
 msgid "Edit Field Layout"
@@ -1861,11 +1861,11 @@ msgstr "E-Mail"
 
 #: frontend/src/components/Settings/Settings.vue:107
 msgid "Email Accounts"
-msgstr ""
+msgstr "E-Mail Konten"
 
 #: frontend/src/components/Settings/emailConfig.js:168
 msgid "Email ID is required"
-msgstr ""
+msgstr "E-Mail ID ist erforderlich"
 
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -1879,19 +1879,19 @@ msgstr "E-Mail-Vorlagen"
 
 #: frontend/src/components/Settings/EmailAdd.vue:141
 msgid "Email account created successfully"
-msgstr ""
+msgstr "E-Mail-Konto erfolgreich erstellt"
 
 #: frontend/src/components/Settings/EmailEdit.vue:208
 msgid "Email account updated successfully"
-msgstr ""
+msgstr "E-Mail-Konto erfolgreich aktualisiert"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:7
 msgid "Email accounts"
-msgstr ""
+msgstr "E-Mail-Konten"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:573
 msgid "Email communication"
-msgstr ""
+msgstr "E-Mail-Kommunikation"
 
 #: frontend/src/components/EmailEditor.vue:206
 msgid "Email from Lead"
@@ -1899,11 +1899,11 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:552
 msgid "Email template"
-msgstr ""
+msgstr "E-Mail-Vorlage"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:7
 msgid "Email templates"
-msgstr ""
+msgstr "E-Mail-Vorlagen"
 
 #: frontend/src/pages/Deal.vue:545 frontend/src/pages/Lead.vue:411
 #: frontend/src/pages/MobileDeal.vue:437 frontend/src/pages/MobileLead.vue:344
@@ -1929,7 +1929,7 @@ msgstr "ermöglichen"
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Enable Forecasting"
-msgstr ""
+msgstr "Vorhersage aktivieren"
 
 #: frontend/src/components/Settings/emailConfig.js:28
 msgid "Enable Incoming"
@@ -1941,7 +1941,7 @@ msgstr "Ausgehend aktivieren"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:19
 msgid "Enable forecasting"
-msgstr ""
+msgstr "Vorhersage aktivieren"
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -2185,7 +2185,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/General/BrandSettings.vue:81
 msgid "Favicon"
-msgstr ""
+msgstr "Favicon"
 
 #: frontend/src/components/Modals/EditValueModal.vue:5
 msgid "Field"
@@ -2485,7 +2485,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:47
 msgid "If enabled, all replies to your company (eg: replies@yourcomany.com) will come to this account. Note: Only one account can be default incoming."
-msgstr ""
+msgstr "Falls aktiviert, werden alle Antworten an Ihr Unternehmen (z.B. replies@yourcomany.com) an dieses Konto gesendet. Hinweis: Es kann nur ein Konto als Standard-Eingang festgelegt werden."
 
 #: frontend/src/components/Settings/emailConfig.js:39
 msgid "If enabled, outgoing emails can be sent from this account."
@@ -3299,7 +3299,7 @@ msgstr "Nächste Woche"
 
 #: frontend/src/components/Filter.vue:672
 msgid "Next Year"
-msgstr ""
+msgstr "Nächstes Jahr"
 
 #: frontend/src/components/Controls/Grid.vue:27
 msgid "No"
