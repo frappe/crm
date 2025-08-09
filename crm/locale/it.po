@@ -3,7 +3,11 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-03 09:38+0000\n"
+<<<<<<< HEAD
 "PO-Revision-Date: 2025-08-04 08:34\n"
+=======
+"PO-Revision-Date: 2025-08-09 10:05\n"
+>>>>>>> 818fd6fc (chore: Italian translations)
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -1099,7 +1103,11 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:18
 msgid "Confirm Password"
+<<<<<<< HEAD
 msgstr ""
+=======
+msgstr "Ripeti Password"
+>>>>>>> 818fd6fc (chore: Italian translations)
 
 #: frontend/src/components/Settings/Users.vue:225
 #: frontend/src/components/Settings/Users.vue:228
@@ -1749,7 +1757,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:599
 #: frontend/src/components/Settings/Settings.vue:135
 msgid "ERPNext"
-msgstr ""
+msgstr "ERPNext"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
@@ -3236,7 +3244,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:6
 msgid "New Password"
-msgstr ""
+msgstr "Nuova Password"
 
 #: frontend/src/components/FieldLayoutEditor.vue:203
 #: frontend/src/components/SidePanelLayoutEditor.vue:133
@@ -4228,7 +4236,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Sales Manager"
-msgstr ""
+msgstr "Responsabile Vendite"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -4486,7 +4494,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:230
 msgid "Show"
-msgstr ""
+msgstr "Mostra"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Show Password"
@@ -4670,7 +4678,7 @@ msgstr ""
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "System Manager"
-msgstr ""
+msgstr "Amministratore di Sistema"
 
 #: frontend/src/components/EmailEditor.vue:22
 msgid "TO"
