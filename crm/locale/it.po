@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-03 09:38+0000\n"
-"PO-Revision-Date: 2025-08-09 10:05\n"
+"PO-Revision-Date: 2025-08-10 10:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -208,7 +208,7 @@ msgstr "SID dell'Account"
 
 #: frontend/src/components/Settings/emailConfig.js:165
 msgid "Account name is required"
-msgstr "Il nome dell'account è obbligatorio"
+msgstr "Il nome dell'Account è obbligatorio"
 
 #: frontend/src/components/CustomActions.vue:73
 #: frontend/src/components/ViewControls.vue:683
@@ -791,7 +791,7 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "CRM Task"
-msgstr ""
+msgstr "Attività CRM"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -1118,7 +1118,7 @@ msgstr ""
 #: frontend/src/components/Modals/ConvertToDealModal.vue:65
 #: frontend/src/pages/MobileLead.vue:147
 msgid "Contact"
-msgstr ""
+msgstr "Contatto"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:212
 msgid "Contact Already Exists"
@@ -1228,7 +1228,7 @@ msgstr "Copiato negli appunti"
 #: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
 #: crm/api/dashboard.py:891
 msgid "Count"
-msgstr ""
+msgstr "Q.tà"
 
 #: frontend/src/components/Modals/AddressModal.vue:99
 #: frontend/src/components/Modals/CallLogModal.vue:102
@@ -1667,7 +1667,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "DocType"
-msgstr "Tipo di documento"
+msgstr "Tipo Documento"
 
 #. Label of the dt (Link) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -1791,7 +1791,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:1131
 #: frontend/src/pages/Dashboard.vue:19
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
 #: frontend/src/components/Modals/CallLogModal.vue:98
 msgid "Edit Call Log"
@@ -2099,7 +2099,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:203
 #: frontend/src/components/ViewControls.vue:251
 msgid "Export"
-msgstr "Esportare"
+msgstr "Esporta"
 
 #: frontend/src/components/ViewControls.vue:282
 msgid "Export All {0} Record(s)"
@@ -2227,7 +2227,7 @@ msgstr "Filtri"
 #: frontend/src/components/SortBy.vue:6 frontend/src/components/SortBy.vue:106
 #: frontend/src/components/SortBy.vue:140
 msgid "First Name"
-msgstr "Nome di battesimo"
+msgstr "Nome"
 
 #: frontend/src/components/Modals/LeadModal.vue:135
 msgid "First Name is mandatory"
@@ -2296,7 +2296,7 @@ msgstr ""
 #. Name of a Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Frappe CRM"
-msgstr ""
+msgstr "CRM Frappe"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:603
 msgid "Frappe CRM mobile"
@@ -2359,7 +2359,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Gender"
-msgstr ""
+msgstr "Genere"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:5
 #: frontend/src/components/Settings/Settings.vue:89
@@ -2652,7 +2652,7 @@ msgstr ""
 #. Label of the is_default (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Is Default"
-msgstr "È predefinito"
+msgstr "È Predefinito"
 
 #. Label of the is_erpnext_in_different_site (Check) field in DocType 'ERPNext
 #. CRM Settings'
@@ -2859,7 +2859,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
 msgid "Library"
-msgstr ""
+msgstr "Libreria"
 
 #: frontend/src/components/Filter.vue:274
 #: frontend/src/components/Filter.vue:285
@@ -2974,7 +2974,7 @@ msgstr ""
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Low"
-msgstr ""
+msgstr "Bassa"
 
 #: frontend/src/pages/Contact.vue:94 frontend/src/pages/MobileContact.vue:73
 msgid "Make Call"
@@ -3091,7 +3091,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Mobile No"
-msgstr ""
+msgstr "Cellulare"
 
 #: frontend/src/components/Modals/DealModal.vue:209
 #: frontend/src/components/Modals/LeadModal.vue:150
@@ -3218,7 +3218,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:17
 #: frontend/src/components/Activities/ActivityHeader.vue:127
 msgid "New Email"
-msgstr ""
+msgstr "Nuova E-mail"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:73
 msgid "New Message"
@@ -3675,7 +3675,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:64
 msgid "Password"
-msgstr ""
+msgstr "Password"
 
 #: crm/api/demo.py:21 crm/api/demo.py:29
 msgid "Password cannot be reset by Demo User {}"
@@ -3729,7 +3729,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:498
 #: frontend/src/pages/Organization.vue:507
 msgid "Phone"
-msgstr ""
+msgstr "Telefono"
 
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -4002,7 +4002,7 @@ msgstr "Nome di Riferimento"
 #: frontend/src/components/ViewControls.vue:160
 #: frontend/src/pages/Dashboard.vue:10
 msgid "Refresh"
-msgstr ""
+msgstr "Ricarica"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:104
 msgid "Reject"
@@ -4302,7 +4302,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:123
 #: frontend/src/pages/Dashboard.vue:45
 msgid "Save"
-msgstr ""
+msgstr "Salva"
 
 #: frontend/src/components/Modals/ViewModal.vue:13
 #: frontend/src/components/ViewControls.vue:57
@@ -4515,7 +4515,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Sidebar Items"
-msgstr ""
+msgstr "Elementi della Barra Laterale"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -4534,7 +4534,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/Modals/EditValueModal.vue:10
 msgid "Source"
-msgstr ""
+msgstr "Sorgente"
 
 #. Label of the source_name (Data) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
@@ -5564,7 +5564,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:130
 msgid "{0} M"
-msgstr ""
+msgstr "{0} mesi"
 
 #: crm/api/todo.py:50
 msgid "{0} assigned a {1} {2} to you"
@@ -5572,7 +5572,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:126
 msgid "{0} d"
-msgstr ""
+msgstr "{0} giorni"
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
@@ -5616,7 +5616,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:128
 msgid "{0} w"
-msgstr ""
+msgstr "{0} settimane"
 
 #: frontend/src/utils/index.js:185
 msgid "{0} weeks ago"
@@ -5624,7 +5624,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:132
 msgid "{0} y"
-msgstr ""
+msgstr "{0} anni"
 
 #: frontend/src/utils/index.js:193
 msgid "{0} years ago"
