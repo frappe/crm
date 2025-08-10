@@ -63,9 +63,9 @@
     </div>
 
     <!-- Tab Content -->
-    <div class="flex-1 overflow-hidden">
+    <div class="flex-1 flex flex-col">
       <!-- List View -->
-      <div v-if="activeTab === 'list'" class="h-full">
+      <div v-if="activeTab === 'list'" class="flex flex-col flex-1">
         <LayoutHeader>
           <template #left-header>
             <ViewBreadcrumbs v-model="viewControls" routeName="Leads" />
@@ -307,6 +307,7 @@
           :options="{
             showTooltip: false,
             resizeColumn: true,
+            selectable: true,
             rowCount: leads.data.row_count,
             totalCount: leads.data.total_count,
             onRowClick: (row) => {
@@ -338,7 +339,7 @@
       </div>
 
       <!-- Lead Detail Views -->
-      <div v-else class="h-full">
+      <div v-else class="flex-1 overflow-auto">
         <Lead 
           :leadId="activeTab" 
           @close="closeTab(activeTab)"
