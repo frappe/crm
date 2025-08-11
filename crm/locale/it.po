@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-03 09:38+0000\n"
-"PO-Revision-Date: 2025-08-10 10:38\n"
+"PO-Revision-Date: 2025-08-11 10:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -377,7 +377,7 @@ msgstr ""
 
 #: frontend/src/data/document.js:63
 msgid "An error occurred while updating the document"
-msgstr ""
+msgstr "Si è verificato un errore durante l'aggiornamento del documento"
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -472,7 +472,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:193
 msgid "Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
-msgstr ""
+msgstr "Chiedi al tuo manager di configurare un fornitore di tassi di cambio, poiché quello predefinito non supporta la conversione da {0} a {1}."
 
 #: frontend/src/components/ListBulkActions.vue:184
 #: frontend/src/components/Modals/AssignmentModal.vue:5
@@ -726,7 +726,7 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "CRM Lead"
-msgstr ""
+msgstr "Offerta CRM"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
@@ -824,7 +824,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:272
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:8
 msgid "Call Details"
@@ -966,7 +966,7 @@ msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:62
 msgid "Clear"
-msgstr ""
+msgstr "Pulisci"
 
 #: frontend/src/components/ListBulkActions.vue:134
 #: frontend/src/components/ListBulkActions.vue:142
@@ -1086,7 +1086,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:70
 msgid "Configure the exchange rate provider for your CRM"
-msgstr ""
+msgstr "Configura un exchange rate provider per il tuo CRM"
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
@@ -1676,7 +1676,7 @@ msgstr "Tipo Documento"
 
 #: frontend/src/data/document.js:28
 msgid "Document does not exist"
-msgstr ""
+msgstr "Il Documento non esiste"
 
 #: crm/api/activities.py:19
 msgid "Document not found"
@@ -1973,7 +1973,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:122
 msgid "Enter access key"
-msgstr ""
+msgstr "Inserisci la chiave di accesso"
 
 #: frontend/src/components/FieldLayout/Field.vue:334
 msgid "Enter {0}"
@@ -1996,7 +1996,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:739 frontend/src/pages/Lead.vue:486
 #: frontend/src/pages/MobileDeal.vue:614 frontend/src/pages/MobileLead.vue:415
 msgid "Error updating field"
-msgstr ""
+msgstr "Aggiornamento campo non riuscito"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:261
 msgid "Error while creating customer in ERPNext, check error log for more details"
@@ -2080,7 +2080,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:161
 msgid "Expected Closure Date is required."
-msgstr ""
+msgstr "Data Chiusura Prevista obbligatoria."
 
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -2150,7 +2150,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:205
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
-msgstr ""
+msgstr "Impossibile recuperare il tasso di cambio da {0} a {1} in data {2}. Controlla la tua connessione internet o riprova più tardi."
 
 #: frontend/src/data/script.js:106
 msgid "Failed to load form controller: {0}"
@@ -2414,7 +2414,7 @@ msgstr "Nascosto"
 
 #: frontend/src/components/Activities/Activities.vue:230
 msgid "Hide"
-msgstr ""
+msgstr "Nascosto"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Hide Password"
@@ -2690,7 +2690,7 @@ msgstr ""
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #. Label of the job_title (Data) field in DocType 'CRM Deal'
 #. Label of the job_title (Data) field in DocType 'CRM Lead'
@@ -2711,7 +2711,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:384
 #: frontend/src/components/ViewControls.vue:600 frontend/src/utils/view.js:20
 msgid "Kanban"
-msgstr ""
+msgstr "Kanban"
 
 #. Label of the kanban_columns (Code) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -3119,7 +3119,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:470
 #: frontend/src/pages/Organization.vue:479
 msgid "Mobile no"
-msgstr ""
+msgstr "Cellulare"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
