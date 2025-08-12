@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-03 09:38+0000\n"
-"PO-Revision-Date: 2025-08-11 10:39\n"
+"PO-Revision-Date: 2025-08-12 11:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -245,7 +245,7 @@ msgstr ""
 #: frontend/src/components/Kanban/KanbanSettings.vue:84
 #: frontend/src/components/SidePanelLayoutEditor.vue:98
 msgid "Add Field"
-msgstr ""
+msgstr "افزودن فیلد"
 
 #: frontend/src/components/Filter.vue:138
 msgid "Add Filter"
@@ -258,15 +258,15 @@ msgstr "افزودن ردیف"
 #: frontend/src/components/FieldLayoutEditor.vue:200
 #: frontend/src/components/SidePanelLayoutEditor.vue:130
 msgid "Add Section"
-msgstr ""
+msgstr "افزودن بخش"
 
 #: frontend/src/components/SortBy.vue:148
 msgid "Add Sort"
-msgstr ""
+msgstr "افزودن مرتب‌سازی"
 
 #: frontend/src/components/FieldLayoutEditor.vue:62
 msgid "Add Tab"
-msgstr ""
+msgstr "افزودن تب"
 
 #. Label of the add_weekly_holidays_section (Section Break) field in DocType
 #. 'CRM Holiday List'
@@ -405,7 +405,7 @@ msgstr "درآمد سالانه"
 #: frontend/src/components/Modals/DealModal.vue:201
 #: frontend/src/components/Modals/LeadModal.vue:142
 msgid "Annual Revenue should be a number"
-msgstr ""
+msgstr "درآمد سالانه باید یک عدد باشد"
 
 #: frontend/src/components/Settings/General/BrandSettings.vue:69
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
