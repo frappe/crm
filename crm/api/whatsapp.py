@@ -13,6 +13,11 @@ def validate(doc, method):
 		doc.reference_doctype = doctype
 		doc.reference_name = name
 
+	if doc.type == "Outgoing" and doc.get("to"):
+		name, doctype = get_lead_or_deal_from_number(doc.get("to"))
+		doc.reference_doctype = doctype
+		doc.reference_name = name
+
 
 def on_update(doc, method):
 	frappe.publish_realtime(
