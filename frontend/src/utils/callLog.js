@@ -68,7 +68,7 @@ export const statusLabelMap = {
   Queued: 'Queued',
   Canceled: 'Canceled',
   Ringing: 'Ringing',
-  'No Answer': 'Missed Call',
+  'No Answer': 'No Answer', //changed missed to 'No Answer'
   'In Progress': 'In Progress',
 }
 
