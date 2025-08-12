@@ -31,7 +31,7 @@
             <slot v-bind="{ section }">
               <FadedScrollableDiv
                 v-if="section.columns?.[0].fields.length"
-                class="flex-1 gap-1.5 overflow-y-auto"
+                class="flex-1 flex flex-col gap-1.5 min-h-0"
               >
                 <template
                   v-for="field in section.columns[0].fields || []"
