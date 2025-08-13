@@ -129,6 +129,8 @@ const events = createListResource({
     'all_day',
     'event_type',
     'color',
+    'reference_doctype',
+    'reference_docname',
   ],
   filters: { status: 'Open', owner: user },
   auto: true,
@@ -151,21 +153,10 @@ const events = createListResource({
         isFullDay: event.all_day,
         eventType: event.event_type,
         color: event.color,
+        referenceDoctype: event.reference_doctype,
+        referenceDocname: event.reference_docname,
       }
     })
-  },
-  insert: {
-    onSuccess: async (e) => {
-      await events.reload()
-      showDetails({ id: e.name })
-    },
-  },
-  delete: { onSuccess: () => events.reload() },
-  setValue: {
-    onSuccess: async (e) => {
-      await events.reload()
-      showEventPanel.value && showDetails({ id: e.name })
-    },
   },
 })
 
@@ -184,31 +175,51 @@ function saveEvent(_event) {
 function createEvent(_event) {
   if (!_event.title) return
 
-  events.insert.submit({
-    subject: _event.title,
-    description: _event.description,
-    starts_on: _event.fromDate + ' ' + _event.fromTime,
-    ends_on: _event.toDate + ' ' + _event.toTime,
-    all_day: _event.isFullDay || false,
-    event_type: _event.eventType,
-    color: _event.color,
-  })
+  events.insert.submit(
+    {
+      subject: _event.title,
+      description: _event.description,
+      starts_on: _event.fromDate + ' ' + _event.fromTime,
+      ends_on: _event.toDate + ' ' + _event.toTime,
+      all_day: _event.isFullDay || false,
+      event_type: _event.eventType,
+      color: _event.color,
+      reference_doctype: _event.referenceDoctype,
+      reference_docname: _event.referenceDocname,
+    },
+    {
+      onSuccess: async (e) => {
+        await events.reload()
+        showDetails({ id: e.name })
+      },
+    },
+  )
 }
 
 function updateEvent(_event) {
   if (!_event.id) return
 
   if (!mode.value || mode.value === 'edit' || mode.value === 'details') {
-    events.setValue.submit({
-      name: _event.id,
-      subject: _event.title,
-      description: _event.description,
-      starts_on: _event.fromDate + ' ' + _event.fromTime,
-      ends_on: _event.toDate + ' ' + _event.toTime,
-      all_day: _event.isFullDay,
-      event_type: _event.eventType,
-      color: _event.color,
-    })
+    events.setValue.submit(
+      {
+        name: _event.id,
+        subject: _event.title,
+        description: _event.description,
+        starts_on: _event.fromDate + ' ' + _event.fromTime,
+        ends_on: _event.toDate + ' ' + _event.toTime,
+        all_day: _event.isFullDay,
+        event_type: _event.eventType,
+        color: _event.color,
+        reference_doctype: _event.referenceDoctype,
+        reference_docname: _event.referenceDocname,
+      },
+      {
+        onSuccess: async (e) => {
+          await events.reload()
+          showEventPanel.value && showDetails({ id: e.name })
+        },
+      },
+    )
   }
 
   event.value = _event
@@ -226,7 +237,9 @@ function deleteEvent(eventID) {
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
-          events.delete.submit(eventID)
+          events.delete.submit(eventID, {
+            onSuccess: () => events.reload(),
+          })
           showEventPanel.value = false
           event.value = {}
           activeEvent.value = ''

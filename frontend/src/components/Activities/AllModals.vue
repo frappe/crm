@@ -22,21 +22,47 @@
     :referenceDoc="referenceDoc"
     :options="{ afterInsert: () => activities.reload() }"
   />
+  <EventModal
+    v-if="showEventModal"
+    v-model="showEventModal"
+    v-model:events="events"
+    :event="event"
+    :doctype="doctype"
+    :docname="doc?.name"
+  />
 </template>
 <script setup>
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
+import EventModal from '@/components/Modals/EventModal.vue'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
   doctype: String,
+  doc: Object,
 })
 
 const activities = defineModel()
-const doc = defineModel('doc')
+const events = defineModel('events')
+
+const showEventModal = ref(false)
+const event = ref({})
+
+function showEvent(e) {
+  event.value = e || {
+    subject: '',
+    description: '',
+    starts_on: '',
+    ends_on: '',
+    all_day: false,
+    event_type: 'Public',
+    color: 'green',
+  }
+  showEventModal.value = true
+}
 
 // Tasks
 const showTaskModal = ref(false)
@@ -115,6 +141,7 @@ function redirect(tabName) {
 }
 
 defineExpose({
+  showEvent,
   showTask,
   deleteTask,
   updateTaskStatus,

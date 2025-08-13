@@ -24,6 +24,7 @@
     <div
       v-else-if="
         activities?.length ||
+        (events.data?.length && title == 'Events') ||
         (whatsappMessages.data?.length && title == 'WhatsApp')
       "
       class="activities"
@@ -35,6 +36,33 @@
           v-model:reply="replyMessage"
           :messages="whatsappMessages.data"
         />
+      </div>
+      <div v-else-if="title == 'Events'" class="activity">
+        <div v-for="(event, i) in events.data" :key="event.name">
+          <div
+            class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
+          >
+            <div
+              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+              :class="
+                i != events.data.length - 1 ? 'before:h-full' : 'before:h-4'
+              "
+            >
+              <div
+                class="flex h-8 w-7 items-center justify-center bg-surface-white text-ink-gray-8"
+              >
+                <EventIcon class="h-4 w-4" />
+              </div>
+            </div>
+            <EventArea
+              class="mb-4"
+              v-model="events"
+              :event="event"
+              :doctype="doctype"
+              :docname="doc?.name"
+            />
+          </div>
+        </div>
       </div>
       <div
         v-else-if="title == 'Notes'"
@@ -396,6 +424,11 @@
         @click="emailBox.showComment = true"
       />
       <Button
+        v-else-if="title == 'Events'"
+        :label="__('Schedule an Event')"
+        @click="modalRef.showEvent()"
+      />
+      <Button
         v-else-if="title == 'Tasks'"
         :label="__('Create Task')"
         @click="modalRef.showTask()"
@@ -435,6 +468,7 @@
   <AllModals
     ref="modalRef"
     v-model="all_activities"
+    v-model:events="events"
     :doctype="doctype"
     :doc="doc"
   />
@@ -463,11 +497,14 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import EventArea from '@/components/Activities/EventArea.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
@@ -492,7 +529,7 @@ import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
-import { Button, Tooltip, createResource } from 'frappe-ui'
+import { Button, Tooltip, createResource, createListResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -571,6 +608,47 @@ const whatsappMessages = createResource({
   auto: whatsappEnabled.value,
   transform: (data) => sortByCreation(data),
   onSuccess: () => nextTick(() => scroll()),
+})
+
+const events = createListResource({
+  doctype: 'Event',
+  cache: ['calendar', props.docname],
+  fields: [
+    'name',
+    'status',
+    'subject',
+    'description',
+    'starts_on',
+    'ends_on',
+    'all_day',
+    'event_type',
+    'color',
+    'owner',
+    'reference_doctype',
+    'reference_docname',
+    'creation',
+  ],
+  filters: {
+    status: 'Open',
+    reference_doctype: props.doctype,
+    reference_docname: props.docname,
+  },
+  orderBy: 'creation desc',
+  auto: title.value == 'Events',
+  transform: (data) => {
+    return data.map((event) => {
+      if (typeof event.owner !== 'object') {
+        event.owner = {
+          label: getUser(event.owner).full_name,
+          image: getUser(event.owner).image,
+        }
+      }
+      return event
+    })
+  },
+  onSuccess: (d) => {
+    console.log(d)
+  },
 })
 
 onBeforeUnmount(() => {
@@ -706,6 +784,8 @@ const emptyText = computed(() => {
     text = 'No Comments'
   } else if (title.value == 'Data') {
     text = 'No Data'
+  } else if (title.value == 'Events') {
+    text = 'No Events'
   } else if (title.value == 'Calls') {
     text = 'No Call Logs'
   } else if (title.value == 'Notes') {
@@ -728,6 +808,8 @@ const emptyTextIcon = computed(() => {
     icon = CommentIcon
   } else if (title.value == 'Data') {
     icon = DetailsIcon
+  } else if (title.value == 'Events') {
+    icon = EventIcon
   } else if (title.value == 'Calls') {
     icon = PhoneIcon
   } else if (title.value == 'Notes') {
@@ -753,6 +835,9 @@ function timelineIcon(activity_type, is_lead) {
       break
     case 'comment':
       icon = CommentIcon
+      break
+    case 'event':
+      icon = CalendarIcon
       break
     case 'incoming_call':
       icon = InboundCallIcon
@@ -783,7 +868,7 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
 })
 
 function scroll(hash) {
-  if (['tasks', 'notes'].includes(route.hash?.slice(1))) return
+  if (['tasks', 'notes', 'events'].includes(route.hash?.slice(1))) return
   setTimeout(() => {
     let el
     if (!hash) {

@@ -57,6 +57,30 @@
         </div>
       </div>
       <div
+        v-if="event.referenceDocname"
+        class="mx-4.5 my-2.5 border-t border-outline-gray-1"
+      />
+      <div
+        v-if="event.referenceDocname"
+        class="flex items-center px-4.5 py-1 text-ink-gray-7"
+      >
+        <component
+          :is="event.referenceDoctype == 'CRM Lead' ? LeadsIcon : DealsIcon"
+          class="size-4"
+        />
+        <Link
+          class="[&_button]:bg-surface-white [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
+          v-model="event.referenceDocname"
+          :doctype="event.referenceDoctype"
+          :disabled="true"
+        />
+        <Button variant="ghost" @click="redirect">
+          <template #icon>
+            <ArrowUpRightIcon class="size-4 text-ink-gray-7" />
+          </template>
+        </Button>
+      </div>
+      <div
         v-if="event.description && event.description !== '<p></p>'"
         class="mx-4.5 my-2.5 border-t border-outline-gray-1"
       />
@@ -100,16 +124,16 @@
             {{ __('All day') }}
           </div>
         </div>
-        <div class="flex items-center gap-1.5 text-ink-gray-5">
+        <!-- <div class="flex items-center gap-1.5 text-ink-gray-5">
           <LucideEarth class="size-4" />
           {{ __('GMT+5:30') }}
-        </div>
+        </div> -->
       </div>
       <div
         class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
       >
         <div class="">{{ __('Date') }}</div>
-        <div class="flex items-center gap-x-2">
+        <div class="flex items-center gap-x-1.5">
           <DatePicker
             :class="['[&_input]:w-[216px]']"
             variant="outline"
@@ -133,10 +157,10 @@
         class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
       >
         <div class="w-20">{{ __('Time') }}</div>
-        <div class="flex items-center gap-x-3">
+        <div class="flex items-center gap-x-1.5">
           <TimePicker
             v-if="!event.isFullDay"
-            class="max-w-[102px]"
+            class="max-w-[105px]"
             variant="outline"
             :value="event.fromTime"
             :placeholder="__('Start Time')"
@@ -151,7 +175,7 @@
             </template>
           </TimePicker>
           <TimePicker
-            class="max-w-[102px]"
+            class="max-w-[105px]"
             variant="outline"
             :value="event.toTime"
             :placeholder="__('End Time')"
@@ -165,6 +189,52 @@
               />
             </template>
           </TimePicker>
+        </div>
+      </div>
+      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
+      <div
+        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
+      >
+        <div class="">{{ __('Link') }}</div>
+        <div class="flex items-center gap-x-1.5">
+          <FormControl
+            class="w-[216px]"
+            type="select"
+            :options="[
+              {
+                label: '',
+                value: '',
+              },
+              {
+                label: __('Lead'),
+                value: 'CRM Lead',
+              },
+              {
+                label: __('Deal'),
+                value: 'CRM Deal',
+              },
+            ]"
+            v-model="event.referenceDoctype"
+            variant="outline"
+            :placeholder="__('Add Lead or Deal')"
+            @change="() => (event.referenceDocname = '')"
+          />
+        </div>
+      </div>
+      <div
+        v-if="event.referenceDoctype"
+        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
+      >
+        <div class="">
+          {{ event.referenceDoctype == 'CRM Lead' ? __('Lead') : __('Deal') }}
+        </div>
+        <div class="flex items-center gap-x-1.5">
+          <Link
+            class="w-[220px]"
+            v-model="event.referenceDocname"
+            :doctype="event.referenceDoctype"
+            variant="outline"
+          />
         </div>
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
@@ -197,6 +267,10 @@
 </template>
 
 <script setup>
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
+import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
+import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import Link from '@/components/Controls/Link.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
 import TimePicker from './TimePicker.vue'
@@ -214,6 +288,9 @@ import {
   CalendarActiveEvent as activeEvent,
 } from 'frappe-ui'
 import { ref, computed, watch, h } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps({
   event: {
@@ -290,7 +367,7 @@ function updateTime(t, fromTime = false) {
       'minute',
     )
 
-    if (diff < 0) {
+    if (diff <= 0) {
       props.event.toTime = oldTo
       error.value = __('End time should be after start time')
       return
@@ -406,4 +483,17 @@ const colors = Object.keys(colorMap).map((color) => ({
     props.event.color = colorMap[color].color
   },
 }))
+
+function redirect() {
+  if (props.event.referenceDocname) {
+    let name = props.event.referenceDoctype === 'CRM Lead' ? 'Lead' : 'Deal'
+
+    let params =
+      props.event.referenceDoctype == 'CRM Lead'
+        ? { leadId: props.event.referenceDocname }
+        : { dealId: props.event.referenceDocname }
+
+    router.push({ name, params })
+  }
+}
 </script>
