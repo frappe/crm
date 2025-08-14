@@ -51,7 +51,7 @@
               <div
                 class="flex h-8 w-7 items-center justify-center bg-surface-white text-ink-gray-8"
               >
-                <EventIcon class="h-4 w-4" />
+                <CalendarIcon class="h-4 w-4" />
               </div>
             </div>
             <EventArea

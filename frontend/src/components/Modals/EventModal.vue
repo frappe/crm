@@ -1,10 +1,24 @@
 <template>
   <Dialog v-model="show" :options="{ size: 'xl' }">
-    <template #body-title>
-      <div class="flex items-center gap-3">
-        <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-          {{ editMode ? __('Edit an event') : __('Create an event') }}
-        </h3>
+    <template #body-header>
+      <div class="mb-6 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{ editMode ? __('Edit an event') : __('Create an event') }}
+          </h3>
+        </div>
+        <div class="flex gap-1">
+          <Button variant="ghost" @click="deleteEvent">
+            <template #icon>
+              <LucideTrash2 class="h-4 w-4 text-ink-gray-9" />
+            </template>
+          </Button>
+          <Button variant="ghost" @click="show = false">
+            <template #icon>
+              <LucideX class="h-4 w-4 text-ink-gray-9" />
+            </template>
+          </Button>
+        </div>
       </div>
     </template>
     <template #body-content>
@@ -36,7 +50,7 @@
           </div>
           <div class="flex gap-2 w-9/12">
             <DatePicker
-              :class="[_event.isFullDay ? 'w-full' : 'w-[160px]']"
+              :class="[_event.isFullDay ? 'w-full' : 'w-[158px]']"
               variant="outline"
               :value="_event.fromDate"
               :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
@@ -122,6 +136,7 @@ import {
   DatePicker,
   dayjs,
 } from 'frappe-ui'
+import { globalStore } from '@/stores/global'
 import { getFormat } from '@/utils'
 import { onMounted, ref } from 'vue'
 
@@ -139,6 +154,8 @@ const props = defineProps({
     default: '',
   },
 })
+
+const { $dialog } = globalStore()
 
 const show = defineModel()
 const events = defineModel('events')
@@ -283,29 +300,28 @@ function updateEvent() {
   )
 }
 
-// function deleteEvent(eventID) {
-//   if (!eventID) return
+function deleteEvent() {
+  if (!_event.value.id) return
 
-//   $dialog({
-//     title: __('Delete'),
-//     message: __('Are you sure you want to delete this event?'),
-//     actions: [
-//       {
-//         label: __('Delete'),
-//         variant: 'solid',
-//         theme: 'red',
-//         onClick: (close) => {
-//           events.delete.submit(eventID, {
-//             onSuccess: () => events.reload(),
-//           })
-//           showEventPanel.value = false
-//           event.value = {}
-//           activeEvent.value = ''
-//           mode.value = ''
-//           close()
-//         },
-//       },
-//     ],
-//   })
-// }
+  $dialog({
+    title: __('Delete'),
+    message: __('Are you sure you want to delete this event?'),
+    actions: [
+      {
+        label: __('Delete'),
+        variant: 'solid',
+        theme: 'red',
+        onClick: (close) => {
+          events.value.delete.submit(_event.value.id, {
+            onSuccess: async () => {
+              await events.value.reload()
+              show.value = false
+              close()
+            },
+          })
+        },
+      },
+    ],
+  })
+}
 </script>
