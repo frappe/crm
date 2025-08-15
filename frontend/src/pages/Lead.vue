@@ -18,14 +18,9 @@
       />
       <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
       <Dropdown
-        v-if="doc"
-        :options="
-          statusOptions(
-            'lead',
-            document.statuses?.length ? document.statuses : document._statuses,
-            triggerStatusChange,
-          )
-        "
+        v-if="doc && document.statuses"
+        :options="statuses"
+        placement="right"
       >
         <template #default="{ open }">
           <Button v-if="doc.status" :label="doc.status">
@@ -393,6 +388,13 @@ const breadcrumbs = computed(() => {
 const title = computed(() => {
   let t = doctypeMeta['CRM Lead']?.title_field || 'name'
   return doc?.[t] || props.leadId
+})
+
+const statuses = computed(() => {
+  let customStatuses = document.statuses?.length
+    ? document.statuses
+    : document._statuses || []
+  return statusOptions('lead', customStatuses, triggerStatusChange)
 })
 
 usePageMeta(() => {
