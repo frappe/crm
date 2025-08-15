@@ -5,8 +5,8 @@
         <Button
           :label="__('Filter')"
           :class="filters?.size ? 'rounded-r-none' : ''"
+          :iconLeft="FilterIcon"
         >
-          <template #prefix><FilterIcon class="h-4" /></template>
           <template v-if="filters?.size" #suffix>
             <div
               class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
@@ -15,15 +15,13 @@
             </div>
           </template>
         </Button>
-        <Tooltip v-if="filters?.size" :text="__('Clear all Filter')">
-          <div>
-            <Button
-              class="rounded-l-none border-l"
-              icon="x"
-              @click.stop="clearfilter(false)"
-            />
-          </div>
-        </Tooltip>
+        <Button
+          v-if="filters?.size"
+          :tooltip="__('Clear all Filter')"
+          class="rounded-l-none border-l"
+          icon="x"
+          @click.stop="clearfilter(false)"
+        />
       </div>
     </template>
     <template #body="{ close }">
@@ -134,13 +132,10 @@
                 <Button
                   class="!text-ink-gray-5"
                   variant="ghost"
-                  @click="togglePopover()"
                   :label="__('Add Filter')"
-                >
-                  <template #prefix>
-                    <FeatherIcon name="plus" class="h-4" />
-                  </template>
-                </Button>
+                  iconLeft="plus"
+                  @click="togglePopover()"
+                />
               </template>
             </Autocomplete>
             <Button

@@ -29,6 +29,7 @@
               filesUploaderArea?.showWebLink || filesUploaderArea?.showCamera
             "
             :label="isMobileView ? __('Back') : __('Back to file upload')"
+            iconLeft="arrow-left"
             @click="
               () => {
                 filesUploaderArea.showWebLink = false
@@ -37,11 +38,7 @@
                 filesUploaderArea.cameraImage = null
               }
             "
-          >
-            <template #prefix>
-              <FeatherIcon name="arrow-left" class="size-4" />
-            </template>
-          </Button>
+          />
           <Button
             v-if="
               filesUploaderArea?.showCamera && !filesUploaderArea?.cameraImage

@@ -9,21 +9,9 @@
         $attrs.class,
         showDropdown ? 'rounded-br-none rounded-tr-none' : '',
       ]"
+      :iconLeft="activeButton.icon"
       @click="() => activeButton.onClick()"
-    >
-      <template #prefix>
-        <FeatherIcon
-          v-if="activeButton.icon && typeof activeButton.icon === 'string'"
-          :name="activeButton.icon"
-          class="h-4 w-4"
-        />
-        <component
-          v-else-if="activeButton.icon"
-          :is="activeButton.icon"
-          class="h-4 w-4"
-        />
-      </template>
-    </Button>
+    />
     <Dropdown
       v-if="showDropdown"
       :options="parsedOptions"

@@ -65,37 +65,28 @@
                 <Button
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
-                  @click="togglePopover()"
                   :label="__('Add Column')"
-                >
-                  <template #prefix>
-                    <FeatherIcon name="plus" class="h-4" />
-                  </template>
-                </Button>
+                  iconLeft="plus"
+                  @click="togglePopover()"
+                />
               </template>
             </Autocomplete>
             <Button
               v-if="columnsUpdated"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              @click="reset(close)"
               :label="__('Reset Changes')"
-            >
-              <template #prefix>
-                <ReloadIcon class="h-4" />
-              </template>
-            </Button>
+              :iconLeft="ReloadIcon"
+              @click="reset(close)"
+            />
             <Button
               v-if="!is_default"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              @click="resetToDefault(close)"
               :label="__('Reset to Default')"
-            >
-              <template #prefix>
-                <ReloadIcon class="h-4" />
-              </template>
-            </Button>
+              :iconLeft="ReloadIcon"
+              @click="resetToDefault(close)"
+            />
           </div>
         </div>
         <div v-else>

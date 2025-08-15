@@ -153,13 +153,10 @@
         <template #target="{ togglePopover }">
           <Button
             class="w-full mt-2.5 mb-1 mr-5"
-            @click="togglePopover()"
             :label="__('Add Column')"
-          >
-            <template #prefix>
-              <FeatherIcon name="plus" class="h-4" />
-            </template>
-          </Button>
+            iconLeft="plus"
+            @click="togglePopover()"
+          />
         </template>
       </Autocomplete>
     </div>
