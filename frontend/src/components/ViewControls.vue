@@ -22,11 +22,7 @@
         </div>
 
         <div class="flex gap-2">
-          <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
-            <template #icon>
-              <RefreshIcon class="h-4 w-4" />
-            </template>
-          </Button>
+          <Button :icon="RefreshIcon" :loading="isLoading" @click="reload()" />
           <SortBy
             v-if="route.params.viewType !== 'kanban'"
             v-model="list"
@@ -100,13 +96,10 @@
           <Button
             class="whitespace-nowrap mr-2"
             variant="ghost"
-            @click="togglePopover()"
             :label="__('Add filter')"
-          >
-            <template #prefix>
-              <FeatherIcon name="plus" class="h-4" />
-            </template>
-          </Button>
+            iconLeft="plus"
+            @click="togglePopover()"
+          />
         </template>
         <template #item-label="{ option }">
           <Tooltip :text="option.value" :hover-delay="1">
@@ -124,11 +117,7 @@
         :loading="updateQuickFilters.loading"
         @click="saveQuickFilters"
       />
-      <Button @click="customizeQuickFilter = false">
-        <template #icon>
-          <FeatherIcon name="x" class="h-4 w-4" />
-        </template>
-      </Button>
+      <Button icon="x" @click="customizeQuickFilter = false" />
     </div>
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
@@ -157,11 +146,12 @@
         <Button :label="__('Save Changes')" @click="saveView" />
       </div>
       <div class="flex items-center gap-2">
-        <Button :label="__('Refresh')" @click="reload()" :loading="isLoading">
-          <template #icon>
-            <RefreshIcon class="h-4 w-4" />
-          </template>
-        </Button>
+        <Button
+          tooltip="Refresh"
+          :icon="RefreshIcon"
+          :loading="isLoading"
+          @click="reload()"
+        />
         <GroupBy
           v-if="route.params.viewType === 'group_by'"
           v-model="list"
@@ -218,7 +208,7 @@
           ]"
         >
           <template #default>
-            <Button icon="more-horizontal" />
+            <Button tooltip="More Options" icon="more-horizontal" />
           </template>
         </Dropdown>
       </div>

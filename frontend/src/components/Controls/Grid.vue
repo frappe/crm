@@ -54,14 +54,12 @@
         </div>
         <div class="w-12">
           <Button
-            class="flex w-full items-center justify-center rounded !bg-surface-gray-2 border-0"
+            :tooltip="__('Edit grid fields')"
+            class="flex w-full items-center justify-center rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
+            icon="settings"
             @click="showGridFieldsEditorModal = true"
-          >
-            <template #icon>
-              <FeatherIcon name="settings" class="size-4 text-ink-gray-7" />
-            </template>
-          </Button>
+          />
         </div>
       </div>
       <!-- Rows -->
@@ -279,14 +277,12 @@
               </div>
               <div class="edit-row w-12">
                 <Button
-                  class="flex w-full items-center justify-center rounded border-0"
+                  :tooltip="__('Edit row')"
+                  class="flex w-full items-center justify-center rounded border-0 !text-ink-gray-7"
                   variant="outline"
+                  :icon="EditIcon"
                   @click="showRowList[index] = true"
-                >
-                  <template #icon>
-                    <EditIcon class="text-ink-gray-7" />
-                  </template>
-                </Button>
+                />
               </div>
               <GridRowModal
                 v-if="showRowList[index]"

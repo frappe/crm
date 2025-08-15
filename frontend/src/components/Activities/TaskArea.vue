@@ -41,13 +41,13 @@
             :options="taskStatusOptions(modalRef.updateTaskStatus, task)"
             @click.stop
           >
-            <Tooltip :text="__('Change Status')">
-              <div>
-                <Button variant="ghosted" class="hover:bg-surface-gray-4">
-                  <TaskStatusIcon :status="task.status" />
-                </Button>
-              </div>
-            </Tooltip>
+            <Button
+              :tooltip="__('Change status')"
+              variant="ghosted"
+              class="hover:bg-surface-gray-4"
+            >
+              <TaskStatusIcon :status="task.status" />
+            </Button>
           </Dropdown>
           <Dropdown
             :options="[
