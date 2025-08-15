@@ -5,6 +5,17 @@
         <ViewBreadcrumbs routeName="Dashboard" />
       </template>
       <template #right-header>
+
+        
+        <Button
+          class="hidden sm:inline-flex"
+          variant="solid"
+          :label="__('Import Leads')"
+          @click="createAndOpenImport"
+        >
+          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+        </Button>
+
         <Button
           v-if="!editing"
           :label="__('Refresh')"
@@ -335,4 +346,26 @@ function resetToDefault() {
 usePageMeta(() => {
   return { title: __('CRM Dashboard') }
 })
+
+
+// Create & open a new Data Import prefilled for CRM Lead
+const insertDoc = createResource({
+  url: 'frappe.client.insert',
+  method: 'POST'
+})
+
+const createAndOpenImport = async () => {
+  try {
+    const { name } = await insertDoc.submit({
+      doc: {
+        doctype: 'Data Import',
+        reference_doctype: 'CRM Lead',      // ensure this matches your DocType name exactly
+        import_type: 'Insert New Records'
+      }
+    })
+    window.location.href = `/app/data-import/${encodeURIComponent(name)}`
+  } catch (e) {
+    frappe.msgprint({ title: __('Error'), message: e?.message || String(e), indicator: 'red' })
+  }
+}
 </script>
