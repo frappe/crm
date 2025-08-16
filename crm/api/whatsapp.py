@@ -10,8 +10,15 @@ from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 def validate(doc, method):
 	if doc.type == "Incoming" and doc.get("from"):
 		name, doctype = get_lead_or_deal_from_number(doc.get("from"))
-		doc.reference_doctype = doctype
-		doc.reference_name = name
+		if name != None:
+			doc.reference_doctype = doctype
+			doc.reference_name = name
+
+	if doc.type == "Outgoing" and doc.get("to"):
+		name, doctype = get_lead_or_deal_from_number(doc.get("to"))
+		if name != None:
+			doc.reference_doctype = doctype
+			doc.reference_name = name
 
 
 def on_update(doc, method):

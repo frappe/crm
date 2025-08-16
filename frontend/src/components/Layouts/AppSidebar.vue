@@ -88,7 +88,8 @@
           :isSidebarCollapsed="isSidebarCollapsed"
         />
       </div>
-      <SidebarLink
+ <!-- 
+	<SidebarLink
         v-if="isOnboardingStepsCompleted"
         :label="__('Help')"
         :isCollapsed="isSidebarCollapsed"
@@ -103,6 +104,7 @@
           <HelpIcon class="h-4 w-4" />
         </template>
       </SidebarLink>
+-->
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
@@ -519,6 +521,7 @@ onMounted(async () => {
 })
 
 // help center
+/*
 const articles = ref([
   {
     title: __('Introduction'),
@@ -607,4 +610,5 @@ const articles = ref([
     ],
   },
 ])
+*/
 </script>

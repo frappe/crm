@@ -88,8 +88,8 @@ export default defineConfig({
       },
       manifest: {
         display: 'standalone',
-        name: 'Frappe CRM',
-        short_name: 'Frappe CRM',
+        name: 'eNirman CRM',
+        short_name: 'eNirman CRM',
         start_url: '/crm',
         description:
           'Modern & 100% Open-source CRM tool to supercharge your sales operations',
