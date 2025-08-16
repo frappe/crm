@@ -45,7 +45,7 @@
       />
 
       <!-- Twilio -->
-      <div v-if="isManager()" class="flex flex-col justify-between gap-4">
+      <div v-if="isAdmin()" class="flex flex-col justify-between gap-4">
         <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Twilio') }}
         </span>
@@ -58,7 +58,7 @@
       </div>
 
       <!-- Exotel -->
-      <div v-if="isManager()" class="flex flex-col justify-between gap-4">
+      <div v-if="isAdmin()" class="flex flex-col justify-between gap-4">
         <span class="text-base font-semibold text-ink-gray-8">
           {{ __('Exotel') }}
         </span>
@@ -93,7 +93,7 @@ import { toast } from 'frappe-ui'
 import { getRandom } from '@/utils'
 import { ref, computed, watch } from 'vue'
 
-const { isManager, isTelephonyAgent } = usersStore()
+const { isAdmin, isTelephonyAgent } = usersStore()
 
 const twilioFields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -261,7 +261,7 @@ function update() {
     updateMedium()
   }
 
-  if (!isManager()) return
+  if (!isAdmin()) return
 
   if (twilio.isDirty) {
     twilio.save.submit()
@@ -283,7 +283,7 @@ async function updateMedium() {
 const error = ref('')
 
 function validateIfDefaultMediumIsEnabled() {
-  if (isTelephonyAgent() && !isManager()) return true
+  if (isTelephonyAgent() && !isAdmin()) return true
 
   if (defaultCallingMedium.value === 'Twilio' && !twilio.doc.enabled) {
     error.value = __('Twilio is not enabled')
