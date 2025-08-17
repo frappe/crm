@@ -70,11 +70,11 @@
           </nav>
         </Section>
       </div>
-    </div>    
+    </div>
     <div class="m-2 flex flex-col gap-1">
-<!--
       <div class="flex flex-col gap-2 mb-1">
-        <SignupBanner
+<!-- 
+	<SignupBanner
           v-if="isDemoSite"
           :isSidebarCollapsed="isSidebarCollapsed"
           :afterSignup="() => capture('signup_from_demo_site')"
@@ -84,11 +84,13 @@
           :isSidebarCollapsed="isSidebarCollapsed"
           :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
         />
-    <GettingStartedBanner
-          v-if="!isOnboardingStepsCompleted"
+-->
+        <GettingStartedBanner
+	  v-if="!isOnboardingStepsCompleted"
           :isSidebarCollapsed="isSidebarCollapsed"
         />
       </div>
+<!--     
       <SidebarLink
         v-if="isOnboardingStepsCompleted"
         :label="__('Help')"
@@ -123,7 +125,6 @@
     </div>
     <Notifications />
     <Settings />
-<!--
     <HelpModal
       v-if="showHelpModal"
       v-model="showHelpModal"
@@ -139,7 +140,6 @@
       v-model="showIntermediateModal"
       :currentStep="currentStep"
     />
--->
   </div>
 </template>
 
@@ -315,8 +315,8 @@ function getIcon(routeName, icon) {
 // onboarding
 const { user } = sessionStore()
 const { users, isManager } = usersStore()
-const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
-//const { isOnboardingStepsCompleted } = ref(true)
+const { setUp } = useOnboarding('frappecrm')
+const { isOnboardingStepsCompleted } = ref(true)
 
 async function getFirstLead() {
   let firstLead = localStorage.getItem('firstLead' + user)

@@ -11,12 +11,12 @@
  "idx": 0,
  "indicator_color": "",
  "is_hidden": 0,
- "label": "Frappe CRM",
+ "label": "eNirman CRM",
  "links": [],
  "modified": "2024-01-04 19:08:27.799960",
  "modified_by": "Administrator",
  "module": "FCRM",
- "name": "Frappe CRM",
+ "name": "eNirman CRM",
  "number_cards": [],
  "owner": "shariq@frappe.io",
  "parent_page": "",
@@ -129,5 +129,5 @@
    "type": "DocType"
   }
  ],
- "title": "Frappe CRM"
+ "title": "eNirman CRM"
 }

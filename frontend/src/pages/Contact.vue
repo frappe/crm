@@ -343,7 +343,7 @@ function getParsedSections(_sections) {
                         'Contact Email',
                         option.name,
                         'email_id',
-                        option.value,
+                        option.value
                       )
                     }
                   },
@@ -386,7 +386,7 @@ function getParsedSections(_sections) {
                         'Contact Phone',
                         option.name,
                         'phone',
-                        option.value,
+                        option.value
                       )
                     }
                   },
