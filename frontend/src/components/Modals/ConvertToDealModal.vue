@@ -23,12 +23,10 @@
           <Button
             v-if="isManager() && !isMobileView"
             variant="ghost"
+            :tooltip="__('Edit deal\'s mandatory fields layout')"
+            :icon="EditIcon"
             @click="openQuickEntryModal"
-          >
-            <template #icon>
-              <EditIcon class="h-4 w-4" />
-            </template>
-          </Button>
+          />
           <Button icon="x" variant="ghost" @click="show = false" />
         </div>
       </div>

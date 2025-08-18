@@ -1,7 +1,7 @@
 <template>
-  <NestedPopover>
-    <template #target>
-      <div class="flex items-center">
+  <Popover placement="bottom-end">
+    <template #target="{ togglePopover }">
+      <div class="flex items-center" @click="togglePopover">
         <component
           v-if="assignees?.length"
           :is="assignees?.length == 1 ? 'Button' : 'div'"
@@ -11,24 +11,23 @@
         <Button v-else :label="__('Assign to')" />
       </div>
     </template>
-    <template #body="{ open }">
+    <template #body="{ isOpen }">
       <AssignToBody
-        v-show="open"
+        v-show="isOpen"
         v-model="assignees"
         :docname="docname"
         :doctype="doctype"
-        :open="open"
+        :open="isOpen"
         :onUpdate="ownerField && saveAssignees"
       />
     </template>
-  </NestedPopover>
+  </Popover>
 </template>
 <script setup>
-import NestedPopover from '@/components/NestedPopover.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import AssignToBody from '@/components/AssignToBody.vue'
 import { useDocument } from '@/data/document'
-import { toast } from 'frappe-ui'
+import { toast, Popover } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
