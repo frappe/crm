@@ -362,7 +362,7 @@ const breadcrumbs = computed(() => {
 
 const title = computed(() => {
   let t = doctypeMeta['CRM Lead']?.title_field || 'name'
-  return doc?.[t] || props.leadId
+  return doc.value?.[t] || props.leadId
 })
 
 const statuses = computed(() => {
