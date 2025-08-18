@@ -143,8 +143,9 @@ import ColumnsIcon from '@/components/Icons/ColumnsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTouchScreenDevice } from '@/utils'
-import { Autocomplete, Popover } from 'frappe-ui'
+import { Popover } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
@@ -209,6 +210,7 @@ const fields = computed(() => {
 })
 
 function addColumn(c) {
+  if (!c) return
   let align = ['Float', 'Int', 'Percent', 'Currency'].includes(c.type)
     ? 'right'
     : 'left'
