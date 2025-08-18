@@ -24,7 +24,7 @@
         />
         <Button
           v-if="!isNew && !option.selected"
-          tooltip="Set As Primary"
+          :tooltip="__('Set As Primary')"
           variant="ghost"
           :icon="SuccessIcon"
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
@@ -32,14 +32,14 @@
         />
         <Button
           v-if="!editMode"
-          tooltip="Edit"
+          :tooltip="__('Edit')"
           variant="ghost"
           :icon="EditIcon"
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
           @click="toggleEditMode"
         />
         <Button
-          tooltip="Delete"
+          :tooltip="__('Delete')"
           variant="ghost"
           icon="x"
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
