@@ -238,12 +238,9 @@
               <Button
                 class="!size-4"
                 variant="ghost"
+                :icon="SelectIcon"
                 @click="activity.show_others = !activity.show_others"
-              >
-                <template #icon>
-                  <SelectIcon />
-                </template>
-              </Button>
+              />
             </div>
             <div
               v-else

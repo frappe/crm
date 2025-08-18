@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-03 09:38+0000\n"
-"PO-Revision-Date: 2025-08-04 08:34\n"
+"PO-Revision-Date: 2025-08-12 11:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -166,7 +166,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.js:7
 msgid "Accept Invitation"
-msgstr ""
+msgstr "پذیرش دعوت نامه"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -176,7 +176,7 @@ msgstr "پذیرفته شده"
 #. Label of the accepted_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Accepted At"
-msgstr ""
+msgstr "پذیرفته شده در"
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -189,7 +189,7 @@ msgstr "کلید دسترسی برای ارائه‌دهنده خدمات لاز
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:97
 msgid "Access key"
-msgstr ""
+msgstr "کلید دسترسی"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:101
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
@@ -245,7 +245,7 @@ msgstr ""
 #: frontend/src/components/Kanban/KanbanSettings.vue:84
 #: frontend/src/components/SidePanelLayoutEditor.vue:98
 msgid "Add Field"
-msgstr ""
+msgstr "افزودن فیلد"
 
 #: frontend/src/components/Filter.vue:138
 msgid "Add Filter"
@@ -258,15 +258,15 @@ msgstr "افزودن ردیف"
 #: frontend/src/components/FieldLayoutEditor.vue:200
 #: frontend/src/components/SidePanelLayoutEditor.vue:130
 msgid "Add Section"
-msgstr ""
+msgstr "افزودن بخش"
 
 #: frontend/src/components/SortBy.vue:148
 msgid "Add Sort"
-msgstr ""
+msgstr "افزودن مرتب‌سازی"
 
 #: frontend/src/components/FieldLayoutEditor.vue:62
 msgid "Add Tab"
-msgstr ""
+msgstr "افزودن تب"
 
 #. Label of the add_weekly_holidays_section (Section Break) field in DocType
 #. 'CRM Holiday List'
@@ -405,7 +405,7 @@ msgstr "درآمد سالانه"
 #: frontend/src/components/Modals/DealModal.vue:201
 #: frontend/src/components/Modals/LeadModal.vue:142
 msgid "Annual Revenue should be a number"
-msgstr ""
+msgstr "درآمد سالانه باید یک عدد باشد"
 
 #: frontend/src/components/Settings/General/BrandSettings.vue:69
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
@@ -1033,12 +1033,12 @@ msgstr "ستون ها"
 #: frontend/src/components/CommunicationArea.vue:19
 #: frontend/src/components/Layouts/AppSidebar.vue:574
 msgid "Comment"
-msgstr "اظهار نظر"
+msgstr "دیدگاه"
 
 #: frontend/src/pages/Deal.vue:550 frontend/src/pages/Lead.vue:416
 #: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:349
 msgid "Comments"
-msgstr "نظرات"
+msgstr "دیدگاه‌ها"
 
 #: crm/api/dashboard.py:884
 msgid "Common reasons for losing deals"
@@ -1142,7 +1142,7 @@ msgstr "مخاطب قبلاً اضافه شده است"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:211
 msgid "Contact already exists with {0}"
-msgstr ""
+msgstr "مخاطب از قبل با {0} وجود دارد"
 
 #: frontend/src/pages/Contact.vue:282 frontend/src/pages/MobileContact.vue:255
 msgid "Contact image updated"
@@ -2565,7 +2565,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:593
 msgid "Integration"
-msgstr ""
+msgstr "یکپارچه سازی"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Integration Not Enabled"
@@ -4194,7 +4194,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "SLA Status"
-msgstr ""
+msgstr "وضعیت SLA"
 
 #: frontend/src/components/EmailEditor.vue:82
 msgid "SUBJECT"
@@ -4498,7 +4498,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:355
 msgid "Show label"
-msgstr ""
+msgstr "نمایش برچسب"
 
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:20
 #: frontend/src/components/Modals/DataFieldsModal.vue:20
@@ -4648,7 +4648,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:49
 msgid "Switch camera"
-msgstr ""
+msgstr "تغییر دوربین"
 
 #: frontend/src/pages/Welcome.vue:32
 msgid "Sync your contacts,email and calenders"
@@ -4678,7 +4678,7 @@ msgstr ""
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:151
 msgid "Take a note..."
-msgstr ""
+msgstr "یادداشت کنید..."
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4762,7 +4762,7 @@ msgstr "نام منطقه"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:46
 msgid "The Condition '{0}' is invalid: {1}"
-msgstr ""
+msgstr "شرط '{0}' نامعتبر است: {1}"
 
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4939,7 +4939,7 @@ msgstr "سه‌شنبه"
 #. Label of the twiml_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 msgid "TwiML SID"
-msgstr ""
+msgstr "TwiML SID"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the twilio (Check) field in DocType 'CRM Telephony Agent'
@@ -4951,7 +4951,7 @@ msgstr ""
 #: frontend/src/components/Settings/TelephonySettings.vue:40
 #: frontend/src/components/Settings/TelephonySettings.vue:50
 msgid "Twilio"
-msgstr ""
+msgstr "Twilio"
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:59
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:60
@@ -4965,7 +4965,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/TelephonySettings.vue:289
 msgid "Twilio is not enabled"
-msgstr ""
+msgstr "Twilio فعال نیست"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:125
 msgid "Twilio settings updated successfully"
@@ -5377,7 +5377,7 @@ msgstr "group_by"
 
 #: frontend/src/components/Activities/CallArea.vue:16
 msgid "has made a call"
-msgstr ""
+msgstr "تماس گرفته است"
 
 #: frontend/src/components/Activities/CallArea.vue:15
 msgid "has reached out"

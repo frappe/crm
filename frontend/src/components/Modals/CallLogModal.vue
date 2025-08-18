@@ -13,18 +13,17 @@
             <Button
               v-if="isManager() && !isMobileView"
               variant="ghost"
+              :tooltip="__('Edit fields layout')"
+              :icon="EditIcon"
               class="w-7"
               @click="openQuickEntryModal"
-            >
-              <template #icon>
-                <EditIcon />
-              </template>
-            </Button>
-            <Button variant="ghost" class="w-7" @click="show = false">
-              <template #icon>
-                <FeatherIcon name="x" class="size-4" />
-              </template>
-            </Button>
+            />
+            <Button
+              variant="ghost"
+              class="w-7"
+              @click="show = false"
+              icon="x"
+            />
           </div>
         </div>
         <div v-if="tabs.data">

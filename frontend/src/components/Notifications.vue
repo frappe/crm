@@ -16,24 +16,18 @@
       >
         <div class="text-base font-medium">{{ __('Notifications') }}</div>
         <div class="flex gap-1">
-          <Tooltip :text="__('Mark all as read')">
-            <div>
-              <Button variant="ghost" @click="() => markAllAsRead()">
-                <template #icon>
-                  <MarkAsDoneIcon class="h-4 w-4" />
-                </template>
-              </Button>
-            </div>
-          </Tooltip>
-          <Tooltip :text="__('Close')">
-            <div>
-              <Button variant="ghost" @click="() => toggle()">
-                <template #icon>
-                  <FeatherIcon name="x" class="h-4 w-4" />
-                </template>
-              </Button>
-            </div>
-          </Tooltip>
+          <Button
+            :tooltip="__('Mark all as read')"
+            :icon="MarkAsDoneIcon"
+            variant="ghost"
+            @click="markAllAsRead"
+          />
+          <Button
+            :tooltip="__('Close')"
+            icon="x"
+            variant="ghost"
+            @click="() => toggle()"
+          />
         </div>
       </div>
       <div
@@ -100,7 +94,6 @@ import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { capture } from '@/telemetry'
-import { Tooltip } from 'frappe-ui'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()

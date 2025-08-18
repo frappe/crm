@@ -27,14 +27,10 @@
           :options="s.options"
         >
           <template #default="{ open }">
-            <Button :label="s.value">
-              <template #suffix>
-                <FeatherIcon
-                  :name="open ? 'chevron-up' : 'chevron-down'"
-                  class="h-4"
-                />
-              </template>
-            </Button>
+            <Button
+              :label="s.value"
+              :iconRight="open ? 'chevron-up' : 'chevron-down'"
+            />
           </template>
         </Dropdown>
       </div>
