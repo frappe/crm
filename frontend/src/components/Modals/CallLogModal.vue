@@ -36,7 +36,7 @@
         </div>
       </div>
       <div class="px-4 pt-4 pb-7 sm:px-6">
-        <div class="space-y-2">
+        <div class="flex justify-end gap-2">
           <Button
             class="w-full"
             v-for="action in dialogOptions.actions"
@@ -60,7 +60,7 @@ import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getRandom } from '@/utils'
 import { capture } from '@/telemetry'
 import { useDocument } from '@/data/document'
-import { FeatherIcon, createResource, ErrorMessage, Badge } from 'frappe-ui'
+import { createResource, ErrorMessage, Badge } from 'frappe-ui'
 import { ref, nextTick, computed, onMounted } from 'vue'
 
 const props = defineProps({
