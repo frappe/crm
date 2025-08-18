@@ -65,55 +65,59 @@
   >
     <div class="flex flex-1 items-center overflow-hidden pl-1 gap-2">
       <FadedScrollableDiv
-        class="flex items-center gap-2 overflow-x-auto -ml-1"
+        class="flex overflow-x-auto -ml-1"
         orientation="horizontal"
       >
         <Draggable
-          class="flex gap-2"
+          class="flex w-full gap-2 items-center"
           :list="newQuickFilters"
           group="filters"
           item-key="fieldname"
         >
           <template #item="{ element: filter }">
-            <Button class="group whitespace-nowrap cursor-grab">
-              <template #default>
-                <Tooltip :text="filter.fieldname">
-                  <span>{{ filter.label }}</span>
-                </Tooltip>
-              </template>
-              <template #suffix>
-                <FeatherIcon
-                  class="h-3.5 cursor-pointer group-hover:flex hidden"
-                  name="x"
-                  @click.stop="removeQuickFilter(filter)"
-                />
-              </template>
-            </Button>
+            <div class="group whitespace-nowrap cursor-grab">
+              <Button class="cursor-grab">
+                <template #default>
+                  <Tooltip :text="filter.fieldname">
+                    <span>{{ filter.label }}</span>
+                  </Tooltip>
+                </template>
+                <template #suffix>
+                  <FeatherIcon
+                    class="h-3.5 cursor-pointer group-hover:flex hidden"
+                    name="x"
+                    @click.stop="removeQuickFilter(filter)"
+                  />
+                </template>
+              </Button>
+            </div>
           </template>
         </Draggable>
       </FadedScrollableDiv>
-      <Autocomplete
-        value=""
-        :options="quickFilterOptions"
-        @change="(e) => addQuickFilter(e)"
-      >
-        <template #target="{ togglePopover }">
-          <Button
-            class="whitespace-nowrap mr-2"
-            variant="ghost"
-            :label="__('Add filter')"
-            iconLeft="plus"
-            @click="togglePopover()"
-          />
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value" :hover-delay="1">
-            <div class="flex-1 truncate text-ink-gray-7">
-              {{ option.label }}
-            </div>
-          </Tooltip>
-        </template>
-      </Autocomplete>
+      <div>
+        <Autocomplete
+          value=""
+          :options="quickFilterOptions"
+          @change="(e) => addQuickFilter(e)"
+        >
+          <template #target="{ togglePopover }">
+            <Button
+              class="whitespace-nowrap mr-2"
+              variant="ghost"
+              :label="__('Add filter')"
+              iconLeft="plus"
+              @click="togglePopover()"
+            />
+          </template>
+          <template #item-label="{ option }">
+            <Tooltip :text="option.value" :hover-delay="1">
+              <div class="flex-1 truncate text-ink-gray-7">
+                {{ option.label }}
+              </div>
+            </Tooltip>
+          </template>
+        </Autocomplete>
+      </div>
     </div>
     <div class="-ml-2 h-[70%] border-l" />
     <div class="flex gap-1">
