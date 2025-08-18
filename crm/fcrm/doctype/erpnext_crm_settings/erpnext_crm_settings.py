@@ -135,7 +135,7 @@ def get_quotation_url(crm_deal, organization):
 			"party_name": crm_deal,
 			"company": erpnext_crm_settings.erpnext_company,
 			"contact_person": contact,
-			"customer_address": address
+			"customer_address": address,
 		}
 	else:
 		site_url = erpnext_crm_settings.get("erpnext_site_url")
@@ -147,14 +147,11 @@ def get_quotation_url(crm_deal, organization):
 			"party_name": prospect,
 			"company": erpnext_crm_settings.erpnext_company,
 			"contact_person": contact,
-			"customer_address": address
+			"customer_address": address,
 		}
-	
+
 	# Filter out None values and build query string
-	query_string = "&".join(
-		f"{key}={value}" for key, value in params.items() 
-		if value is not None
-	)
+	query_string = "&".join(f"{key}={value}" for key, value in params.items() if value is not None)
 
 	return f"{base_url}?{query_string}"
 
