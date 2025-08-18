@@ -25,12 +25,9 @@
               ? __('Open Deal')
               : __('Open Lead')
           "
+          :iconRight="ArrowUpRightIcon"
           @click="redirect()"
-        >
-          <template #suffix>
-            <ArrowUpRightIcon class="w-4 h-4" />
-          </template>
-        </Button>
+        />
       </div>
     </template>
     <template #body-content>
