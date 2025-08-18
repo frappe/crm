@@ -8,9 +8,12 @@
         v-if="tasksListView?.customListActions"
         :actions="tasksListView.customListActions"
       />
-      <Button variant="solid" :label="__('Create')" @click="createTask">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        iconLeft="plus"
+        @click="createTask"
+      />
     </template>
   </LayoutHeader>
   <ViewControls
@@ -120,8 +123,8 @@
       <div class="flex gap-2 items-center justify-between">
         <div>
           <Button
-            class="-ml-2"
             v-if="getRow(itemName, 'reference_docname').label"
+            class="-ml-2"
             variant="ghost"
             size="sm"
             :label="
@@ -129,17 +132,14 @@
                 ? __('Deal')
                 : __('Lead')
             "
+            :iconRight="ArrowUpRightIcon"
             @click.stop="
               redirect(
                 getRow(itemName, 'reference_doctype').label,
                 getRow(itemName, 'reference_docname').label,
               )
             "
-          >
-            <template #suffix>
-              <ArrowUpRightIcon class="h-4 w-4" />
-            </template>
-          </Button>
+          />
         </div>
         <Dropdown
           class="flex items-center gap-2"
@@ -182,9 +182,11 @@
     >
       <Email2Icon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Tasks')]) }}</span>
-      <Button :label="__('Create')" @click="showTaskModal = true">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <Button
+        :label="__('Create')"
+        iconLeft="plus"
+        @click="showTaskModal = true"
+      />
     </div>
   </div>
   <TaskModal

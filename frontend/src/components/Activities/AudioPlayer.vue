@@ -1,12 +1,12 @@
 <template>
   <div class="w-full text-sm text-ink-gray-5">
     <div class="flex items-center gap-2">
-      <Button variant="ghost" @click="playPause">
-        <template #icon>
-          <PlayIcon v-if="isPaused" class="size-4 text-ink-gray-5" />
-          <PauseIcon v-else class="size-4 text-ink-gray-5" />
-        </template>
-      </Button>
+      <Button
+        variant="ghost"
+        class="text-ink-gray-5"
+        :icon="isPaused ? PlayIcon : PauseIcon"
+        @click="playPause"
+      />
       <div class="flex gap-2 items-center justify-between flex-1">
         <input
           class="w-full slider !h-[0.5] bg-surface-gray-3 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb:hover]:outline [&::-webkit-slider-thumb:hover]:outline-[0.5px]"
@@ -61,11 +61,11 @@
           </Button>
         </div>
         <Dropdown :options="options">
-          <Button variant="ghost" @click="showPlaybackSpeed = false">
-            <template #icon>
-              <FeatherIcon class="size-4" name="more-horizontal" />
-            </template>
-          </Button>
+          <Button
+            icon="more-horizontal"
+            variant="ghost"
+            @click="showPlaybackSpeed = false"
+          />
         </Dropdown>
       </div>
     </div>

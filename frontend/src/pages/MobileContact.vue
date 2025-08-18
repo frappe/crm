@@ -72,12 +72,9 @@
                   v-if="callEnabled && contact.doc.mobile_no"
                   :label="__('Make Call')"
                   size="sm"
+                  :iconLeft="PhoneIcon"
                   @click="callEnabled && makeCall(contact.doc.mobile_no)"
-                >
-                  <template #prefix>
-                    <PhoneIcon class="h-4 w-4" />
-                  </template>
-                </Button>
+                />
                 <Button
                   :label="__('Delete')"
                   theme="red"
