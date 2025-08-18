@@ -1,17 +1,5 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      size: 'xl',
-      actions: [
-        {
-          label: editMode ? __('Update') : __('Create'),
-          variant: 'solid',
-          onClick: () => updateNote(),
-        },
-      ],
-    }"
-  >
+  <Dialog v-model="show" :options="{ size: 'xl' }">
     <template #body-title>
       <div class="flex items-center gap-3">
         <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
@@ -56,6 +44,15 @@
           />
         </div>
         <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+      </div>
+    </template>
+    <template #actions>
+      <div class="flex justify-end">
+        <Button
+          :label="editMode ? __('Update') : __('Create')"
+          variant="solid"
+          @click="updateNote"
+        />
       </div>
     </template>
   </Dialog>

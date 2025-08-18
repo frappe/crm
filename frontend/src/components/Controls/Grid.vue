@@ -52,10 +52,10 @@
             >
           </div>
         </div>
-        <div class="w-12">
+        <div class="flex items-center justify-center w-12">
           <Button
             :tooltip="__('Edit grid fields')"
-            class="flex w-full items-center justify-center rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
+            class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
             icon="settings"
             @click="showGridFieldsEditorModal = true"
@@ -275,10 +275,10 @@
                   />
                 </div>
               </div>
-              <div class="edit-row w-12">
+              <div class="edit-row flex items-center justify-center w-12">
                 <Button
                   :tooltip="__('Edit row')"
-                  class="flex w-full items-center justify-center rounded border-0 !text-ink-gray-7"
+                  class="rounded border-0 !text-ink-gray-7"
                   variant="outline"
                   :icon="EditIcon"
                   @click="showRowList[index] = true"
