@@ -1,17 +1,5 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      size: 'xl',
-      actions: [
-        {
-          label: editMode ? __('Update') : __('Create'),
-          variant: 'solid',
-          onClick: () => updateTask(),
-        },
-      ],
-    }"
-  >
+  <Dialog v-model="show" :options="{ size: 'xl' }">
     <template #body-title>
       <div class="flex items-center gap-3">
         <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
@@ -90,13 +78,15 @@
               </Tooltip>
             </template>
           </Link>
-          <DateTimePicker
-            class="datepicker w-36"
-            v-model="_task.due_date"
-            :placeholder="__('01/04/2024 11:30 PM')"
-            :formatter="(date) => getFormat(date, '', true, true)"
-            input-class="border-none"
-          />
+          <div class="w-36">
+            <DateTimePicker
+              class="datepicker"
+              v-model="_task.due_date"
+              :placeholder="__('01/04/2024 11:30 PM')"
+              :formatter="(date) => getFormat(date, '', true, true)"
+              input-class="border-none"
+            />
+          </div>
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
             <Button :label="_task.priority" class="justify-between w-full">
               <template #prefix>
@@ -106,6 +96,15 @@
           </Dropdown>
         </div>
         <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+      </div>
+    </template>
+    <template #actions>
+      <div class="flex justify-end">
+        <Button
+          :label="editMode ? __('Update') : __('Create')"
+          variant="solid"
+          @click="updateTask"
+        />
       </div>
     </template>
   </Dialog>
