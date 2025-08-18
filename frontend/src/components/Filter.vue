@@ -1,11 +1,12 @@
 <template>
-  <NestedPopover>
-    <template #target>
+  <Popover placement="bottom-end">
+    <template #target="{ togglePopover, close }">
       <div class="flex items-center">
         <Button
           :label="__('Filter')"
           :class="filters?.size ? 'rounded-r-none' : ''"
           :iconLeft="FilterIcon"
+          @click="togglePopover"
         >
           <template v-if="filters?.size" #suffix>
             <div
@@ -20,7 +21,7 @@
           :tooltip="__('Clear all Filter')"
           class="rounded-l-none border-l"
           icon="x"
-          @click.stop="clearfilter(false)"
+          @click.stop="clearfilter(close)"
         />
       </div>
     </template>
@@ -149,17 +150,16 @@
         </div>
       </div>
     </template>
-  </NestedPopover>
+  </Popover>
 </template>
 <script setup>
-import NestedPopover from '@/components/NestedPopover.vue'
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import {
   FormControl,
   createResource,
-  Tooltip,
+  Popover,
   DatePicker,
   DateTimePicker,
   DateRangePicker,
@@ -480,7 +480,7 @@ function removeFilter(index) {
 function clearfilter(close) {
   filters.value.clear()
   apply()
-  close && close()
+  close()
 }
 
 function updateValue(value, filter) {
