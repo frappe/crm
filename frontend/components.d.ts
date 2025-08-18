@@ -142,6 +142,8 @@ declare module 'vue' {
     GroupBy: typeof import('./src/components/GroupBy.vue')['default']
     GroupByIcon: typeof import('./src/components/Icons/GroupByIcon.vue')['default']
     HeartIcon: typeof import('./src/components/Icons/HeartIcon.vue')['default']
+    HelpdeskIcon: typeof import('./src/components/Icons/HelpdeskIcon.vue')['default']
+    HelpdeskSettings: typeof import('./src/components/Settings/HelpdeskSettings.vue')['default']
     HelpIcon: typeof import('./src/components/Icons/HelpIcon.vue')['default']
     HomeActions: typeof import('./src/components/Settings/General/HomeActions.vue')['default']
     Icon: typeof import('./src/components/Icon.vue')['default']
