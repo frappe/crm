@@ -11,10 +11,9 @@
       <Button
         variant="solid"
         :label="__('Create')"
+        iconLeft="plus"
         @click="showDealModal = true"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      />
     </template>
   </LayoutHeader>
   <ViewControls
@@ -233,9 +232,11 @@
     >
       <DealsIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Deals')]) }}</span>
-      <Button :label="__('Create')" @click="showDealModal = true">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <Button
+        :label="__('Create')"
+        iconLeft="plus"
+        @click="showDealModal = true"
+      />
     </div>
   </div>
   <DealModal

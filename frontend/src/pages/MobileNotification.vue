@@ -8,18 +8,12 @@
       />
     </template>
     <template #right-header>
-      <Tooltip :text="__('Mark all as read')">
-        <div>
-          <Button
-            :label="__('Mark all as read')"
-            @click="() => mark_as_read.reload()"
-          >
-            <template #prefix>
-              <MarkAsDoneIcon class="h-4 w-4" />
-            </template>
-          </Button>
-        </div>
-      </Tooltip>
+      <Button
+        :tooltip="__('Mark all as read')"
+        :label="__('Mark all as read')"
+        :iconLeft="MarkAsDoneIcon"
+        @click="() => mark_as_read.reload()"
+      />
     </template>
   </LayoutHeader>
   <div class="flex flex-col overflow-hidden text-ink-gray-9">

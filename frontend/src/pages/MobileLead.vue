@@ -22,15 +22,13 @@
           "
         >
           <template #default="{ open }">
-            <Button v-if="doc.status" :label="doc.status">
+            <Button
+              v-if="doc.status"
+              :label="doc.status"
+              :iconRight="open ? 'chevron-up' : 'chevron-down'"
+            >
               <template #prefix>
                 <IndicatorIcon :class="getLeadStatus(doc.status).color" />
-              </template>
-              <template #suffix>
-                <FeatherIcon
-                  :name="open ? 'chevron-up' : 'chevron-down'"
-                  class="h-4"
-                />
               </template>
             </Button>
           </template>
