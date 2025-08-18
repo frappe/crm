@@ -1,7 +1,7 @@
 <template>
-  <NestedPopover>
-    <template #target>
-      <Button :label="__('Columns')">
+  <Popover placement="bottom-end">
+    <template #target="{ togglePopover }">
+      <Button :label="__('Columns')" @click="togglePopover">
         <template v-if="hideLabel">
           <ColumnsIcon class="h-4" />
         </template>
@@ -67,7 +67,7 @@
                   variant="ghost"
                   :label="__('Add Column')"
                   iconLeft="plus"
-                  @click="togglePopover()"
+                  @click="togglePopover"
                 />
               </template>
             </Autocomplete>
@@ -135,7 +135,7 @@
         </div>
       </div>
     </template>
-  </NestedPopover>
+  </Popover>
 </template>
 
 <script setup>
@@ -143,9 +143,8 @@ import ColumnsIcon from '@/components/Icons/ColumnsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
-import NestedPopover from '@/components/NestedPopover.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTouchScreenDevice } from '@/utils'
+import { Autocomplete, Popover } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'

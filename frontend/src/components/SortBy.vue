@@ -17,13 +17,14 @@
       </Button>
     </template>
   </Autocomplete>
-  <NestedPopover v-else>
-    <template #target="{ open }">
+  <Popover placement="bottom-end" v-else>
+    <template #target="{ isOpen, togglePopover }">
       <Button
         v-if="sortValues.size > 1"
         :label="__('Sort')"
         :icon="hideLabel && SortIcon"
         :iconLeft="!hideLabel && SortIcon"
+        @click="togglePopover"
       >
         <template v-if="sortValues?.size" #suffix>
           <div
@@ -55,9 +56,10 @@
           class="shrink-0 [&_svg]:text-ink-gray-5"
           :iconLeft="!hideLabel && !sortValues?.size && SortIcon"
           :iconRight="
-            sortValues?.size && (open ? 'chevron-up' : 'chevron-down')
+            sortValues?.size && (isOpen ? 'chevron-up' : 'chevron-down')
           "
           :class="sortValues.size ? 'rounded-l-none' : ''"
+          @click.stop="togglePopover"
         />
       </div>
     </template>
@@ -155,18 +157,17 @@
         </div>
       </div>
     </template>
-  </NestedPopover>
+  </Popover>
 </template>
 
 <script setup>
 import AscendingIcon from '@/components/Icons/AscendingIcon.vue'
 import DesendingIcon from '@/components/Icons/DesendingIcon.vue'
-import NestedPopover from '@/components/NestedPopover.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
-import { createResource } from 'frappe-ui'
+import { createResource, Popover } from 'frappe-ui'
 import { computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
