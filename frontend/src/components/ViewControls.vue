@@ -22,7 +22,12 @@
         </div>
 
         <div class="flex gap-2">
-          <Button :icon="RefreshIcon" :loading="isLoading" @click="reload()" />
+          <Button
+            :tooltip="__('Refresh')"
+            :icon="RefreshIcon"
+            :loading="isLoading"
+            @click="reload()"
+          />
           <SortBy
             v-if="route.params.viewType !== 'kanban'"
             v-model="list"
@@ -147,7 +152,7 @@
       </div>
       <div class="flex items-center gap-2">
         <Button
-          tooltip="Refresh"
+          :tooltip="__('Refresh')"
           :icon="RefreshIcon"
           :loading="isLoading"
           @click="reload()"
@@ -184,6 +189,7 @@
         />
         <Dropdown
           v-if="route.params.viewType !== 'kanban' || isManager()"
+          placement="right"
           :options="[
             {
               group: __('Options'),
@@ -208,7 +214,7 @@
           ]"
         >
           <template #default>
-            <Button tooltip="More Options" icon="more-horizontal" />
+            <Button :tooltip="__('More Options')" icon="more-horizontal" />
           </template>
         </Dropdown>
       </div>
@@ -1078,7 +1084,7 @@ function updatePageLength(value, loadMore = false) {
 }
 
 // View Actions
-const viewActions = (view) => {
+const viewActions = (view, close) => {
   let isStandard = typeof view.name === 'string'
   let _view = getView(view.name)
 
@@ -1102,7 +1108,7 @@ const viewActions = (view) => {
         {
           label: __('Duplicate'),
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
-          onClick: () => duplicateView(_view),
+          onClick: () => duplicateView(_view, close),
         },
       ],
     },
@@ -1120,7 +1126,7 @@ const viewActions = (view) => {
     actions[0].items.push({
       label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
-      onClick: () => editView(_view),
+      onClick: () => editView(_view, close),
     })
 
     if (!_view.public) {
@@ -1203,17 +1209,19 @@ function setAsDefault(v) {
   })
 }
 
-function duplicateView(v) {
+function duplicateView(v, close) {
   v.label = v.label + __(' (New)')
   viewModalObj.value = v
   viewModalObj.value.mode = 'duplicate'
   showViewModal.value = true
+  close()
 }
 
-function editView(v) {
+function editView(v, close) {
   viewModalObj.value = v
   viewModalObj.value.mode = 'edit'
   showViewModal.value = true
+  close()
 }
 
 function publicView(v) {

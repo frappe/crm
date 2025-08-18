@@ -72,7 +72,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { Tooltip, Switch, toast, createResource } from 'frappe-ui'
+import { Tooltip, Switch, createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const props = defineProps({
