@@ -152,6 +152,7 @@ watch(
       updateAssignees()
     }
   },
+  { immediate: true },
 )
 
 async function updateAssignees() {
