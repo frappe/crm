@@ -72,7 +72,7 @@
       </div>
     </template>
     <template #actions>
-      <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-2 justify-end">
         <Button
           v-if="dirty"
           class="w-full"
