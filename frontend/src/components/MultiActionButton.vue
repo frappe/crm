@@ -42,7 +42,6 @@ const showDropdown = ref(props.options?.length > 1)
 const activeButton = ref(props.options?.[0] || {})
 
 const parsedOptions = computed(() => {
-  debugger
   return (
     props.options?.map((option) => {
       return {
