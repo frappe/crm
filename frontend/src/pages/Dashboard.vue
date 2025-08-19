@@ -234,7 +234,6 @@ const options = computed(() => [
 
 const dashboardItems = createResource({
   url: 'crm.api.dashboard.get_dashboard',
-  cache: ['Analytics', 'ManagerDashboard'],
   makeParams() {
     return {
       from_date: fromDate.value,
