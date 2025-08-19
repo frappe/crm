@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-08-03 09:38+0000\n"
-"PO-Revision-Date: 2025-08-05 09:16\n"
+"POT-Creation-Date: 2025-08-17 09:36+0000\n"
+"PO-Revision-Date: 2025-08-19 12:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -475,13 +475,18 @@ msgid "Ask your manager to set up the Exchange Rate Provider, as default provide
 msgstr "Be ansvarig att konfigurera Valuta Växling Leverantör, eftersom standard leverantör inte stöder valuta konvertering från {0} till {1}."
 
 #: frontend/src/components/ListBulkActions.vue:184
-#: frontend/src/components/Modals/AssignmentModal.vue:5
+#: frontend/src/components/Modals/AssignmentModal.vue:4
 msgid "Assign To"
 msgstr "Tilldela till"
 
-#: frontend/src/components/AssignTo.vue:9
+#: frontend/src/components/AssignTo.vue:11
+#: frontend/src/components/AssignToBody.vue:5
 msgid "Assign to"
 msgstr "Tilldela till"
+
+#: frontend/src/components/AssignToBody.vue:65
+msgid "Assign to me"
+msgstr "Självtilldela"
 
 #. Label of the assigned_to (Link) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -880,7 +885,7 @@ msgstr "Kamera"
 #: frontend/src/components/ColumnSettings.vue:132
 #: frontend/src/components/Dashboard/AddChartModal.vue:40
 #: frontend/src/components/DeleteLinkedDocModal.vue:114
-#: frontend/src/components/Modals/AssignmentModal.vue:9
+#: frontend/src/components/Modals/AssignmentModal.vue:69
 #: frontend/src/components/Modals/LostReasonModal.vue:43
 #: frontend/src/components/Telephony/TwilioCallUI.vue:77
 #: frontend/src/components/ViewControls.vue:56
@@ -1268,12 +1273,12 @@ msgstr "Skapa Potentiell Kund"
 msgid "Create New"
 msgstr "Skapa Ny"
 
-#: frontend/src/components/Activities/Activities.vue:384
+#: frontend/src/components/Activities/Activities.vue:388
 #: frontend/src/components/Modals/NoteModal.vue:15
 msgid "Create Note"
 msgstr "Skapa Anteckning"
 
-#: frontend/src/components/Activities/Activities.vue:399
+#: frontend/src/components/Activities/Activities.vue:403
 #: frontend/src/components/Modals/TaskModal.vue:18
 msgid "Create Task"
 msgstr "Skapa Uppgift"
@@ -1998,11 +2003,11 @@ msgstr "Fel vid konvertering till affär: {0}"
 msgid "Error updating field"
 msgstr "Fel vid uppdatering av fält"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:261
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:282
 msgid "Error while creating customer in ERPNext, check error log for more details"
 msgstr "Fel vid skapande av kund i System, kontrollera fellogg för mer information"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:173
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:194
 msgid "Error while creating prospect in ERPNext, check error log for more details"
 msgstr "Fel vid skapande av prospekt i System, kontrollera fellogg för mer information"
 
@@ -2412,7 +2417,7 @@ msgstr "Hej John, \\n\\nKan du ge mer information om detta..."
 msgid "Hidden"
 msgstr "Dold "
 
-#: frontend/src/components/Activities/Activities.vue:230
+#: frontend/src/components/Activities/Activities.vue:234
 msgid "Hide"
 msgstr "Dölj"
 
@@ -2420,7 +2425,7 @@ msgstr "Dölj"
 msgid "Hide Password"
 msgstr "Dölj Lösenord"
 
-#: frontend/src/components/Activities/CallArea.vue:74
+#: frontend/src/components/Activities/CallArea.vue:75
 msgid "Hide Recording"
 msgstr "Dölj Inspelning"
 
@@ -2521,7 +2526,7 @@ msgstr "Pågående"
 msgid "In less than a minute"
 msgstr "På mindre än en minut"
 
-#: frontend/src/components/Activities/CallArea.vue:35
+#: frontend/src/components/Activities/CallArea.vue:36
 msgid "Inbound Call"
 msgstr "Inkommande samtal"
 
@@ -2699,8 +2704,9 @@ msgstr "JSON"
 msgid "Job Title"
 msgstr "Jobb Benämning"
 
+#: frontend/src/components/AssignToBody.vue:11
 #: frontend/src/components/Filter.vue:75 frontend/src/components/Filter.vue:108
-#: frontend/src/components/Modals/AssignmentModal.vue:35
+#: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Modals/TaskModal.vue:76
 #: frontend/src/components/Telephony/TaskPanel.vue:47
 msgid "John Doe"
@@ -2887,7 +2893,7 @@ msgstr "Länkar"
 msgid "List"
 msgstr "Lista"
 
-#: frontend/src/components/Activities/CallArea.vue:74
+#: frontend/src/components/Activities/CallArea.vue:75
 msgid "Listen"
 msgstr "Lyssna"
 
@@ -2916,7 +2922,7 @@ msgstr "Laddar..."
 msgid "Log"
 msgstr "Logg"
 
-#: frontend/src/components/Activities/Activities.vue:803
+#: frontend/src/components/Activities/Activities.vue:808
 #: frontend/src/components/Activities/ActivityHeader.vue:137
 #: frontend/src/components/Activities/ActivityHeader.vue:180
 msgid "Log a Call"
@@ -2988,7 +2994,7 @@ msgstr "Gör Privat"
 msgid "Make Public"
 msgstr "Gör Offentligt"
 
-#: frontend/src/components/Activities/Activities.vue:807
+#: frontend/src/components/Activities/Activities.vue:812
 #: frontend/src/components/Activities/ActivityHeader.vue:142
 #: frontend/src/components/Activities/ActivityHeader.vue:185
 #: frontend/src/pages/Deals.vue:504 frontend/src/pages/Leads.vue:531
@@ -3204,7 +3210,7 @@ msgstr "Ny Adress"
 msgid "New Call Log"
 msgstr "Ny Samtalslogg"
 
-#: frontend/src/components/Activities/Activities.vue:394
+#: frontend/src/components/Activities/Activities.vue:398
 #: frontend/src/components/Activities/ActivityHeader.vue:27
 #: frontend/src/components/Activities/ActivityHeader.vue:132
 msgid "New Comment"
@@ -3214,7 +3220,7 @@ msgstr "Ny Kommentar"
 msgid "New Contact"
 msgstr "Ny Kontakt"
 
-#: frontend/src/components/Activities/Activities.vue:389
+#: frontend/src/components/Activities/Activities.vue:393
 #: frontend/src/components/Activities/ActivityHeader.vue:17
 #: frontend/src/components/Activities/ActivityHeader.vue:127
 msgid "New Email"
@@ -3654,7 +3660,7 @@ msgstr "Övriga funktioner"
 msgid "Others"
 msgstr "Övriga"
 
-#: frontend/src/components/Activities/CallArea.vue:36
+#: frontend/src/components/Activities/CallArea.vue:37
 msgid "Outbound Call"
 msgstr "Utgående Samtal"
 
@@ -4490,7 +4496,7 @@ msgstr "Ange Växelkurs Leverantör som \"Valuta Växling Leverantör\" i instä
 msgid "Setup your password"
 msgstr "Ange Lösenord"
 
-#: frontend/src/components/Activities/Activities.vue:230
+#: frontend/src/components/Activities/Activities.vue:234
 msgid "Show"
 msgstr "Visa"
 
@@ -4528,6 +4534,14 @@ msgstr "Sidofält Element"
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Simple Python Expression, Example: doc.status == 'Open' and doc.lead_source == 'Ads'"
 msgstr "Enkelt Python Uttryck, Exempel: doc.status == 'Open' och doc.lead_source == 'Ads'"
+
+#: frontend/src/components/AssignTo.vue:84
+msgid "Since you removed {0} from the assignee, the {0} has also been removed."
+msgstr "Eftersom du tog bort {0} från tilldelad har även {0} tagits bort."
+
+#: frontend/src/components/AssignTo.vue:77
+msgid "Since you removed {0} from the assignee, the {0} has been changed to the next available assignee {1}."
+msgstr "Sedan du tog bort {0} från tilldelad har {0} ändrats till näst tillgänglig tilldelad {1}."
 
 #: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:22
 #: frontend/src/components/SortBy.vue:240
@@ -5058,7 +5072,7 @@ msgid "Untitled"
 msgstr "Namnlös"
 
 #: frontend/src/components/ColumnSettings.vue:138
-#: frontend/src/components/Modals/AssignmentModal.vue:17
+#: frontend/src/components/Modals/AssignmentModal.vue:79
 #: frontend/src/components/Modals/ChangePasswordModal.vue:45
 #: frontend/src/components/Modals/NoteModal.vue:6
 #: frontend/src/components/Modals/TaskModal.vue:8
@@ -5086,7 +5100,7 @@ msgstr "Uppdatera {0} Poster"
 msgid "Upload"
 msgstr "Ladda upp"
 
-#: frontend/src/components/Activities/Activities.vue:404
+#: frontend/src/components/Activities/Activities.vue:408
 #: frontend/src/components/Activities/ActivityHeader.vue:62
 #: frontend/src/components/Activities/ActivityHeader.vue:158
 msgid "Upload Attachment"
@@ -5290,11 +5304,11 @@ msgstr "Du har ändringar som inte sparats. Vill du spara dem?"
 msgid "You need to be in developer mode to edit a Standard Form Script"
 msgstr "Du måste vara i Utvecklarläge att redigera Standard Formulär Skript"
 
-#: crm/api/todo.py:111
+#: crm/api/todo.py:100
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "Din tilldelning för uppgift {0} togs bort av {1}"
 
-#: crm/api/todo.py:46 crm/api/todo.py:89
+#: crm/api/todo.py:37 crm/api/todo.py:78
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "Din tilldelning {0} {1} togs bort av {2}"
 
@@ -5309,11 +5323,11 @@ msgstr "la till "
 msgid "amber"
 msgstr "bärnsten"
 
-#: crm/api/todo.py:120
+#: crm/api/todo.py:109
 msgid "assigned a new task {0} to you"
 msgstr "tilldelade dig en ny uppgift {0}"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:89
 msgid "assigned a {0} {1} to you"
 msgstr "tilldelade {0} {1} till dig"
 
@@ -5331,7 +5345,7 @@ msgstr "svart"
 msgid "blue"
 msgstr "blå"
 
-#: frontend/src/components/Activities/Activities.vue:232
+#: frontend/src/components/Activities/Activities.vue:236
 msgid "changes from"
 msgstr "ändras från"
 
@@ -5541,8 +5555,8 @@ msgstr "röd"
 msgid "teal"
 msgstr "blågrön"
 
-#: frontend/src/components/Activities/Activities.vue:274
-#: frontend/src/components/Activities/Activities.vue:337
+#: frontend/src/components/Activities/Activities.vue:278
+#: frontend/src/components/Activities/Activities.vue:341
 msgid "to"
 msgstr "till"
 
@@ -5572,7 +5586,7 @@ msgstr "igår"
 msgid "{0} M"
 msgstr "{0} M"
 
-#: crm/api/todo.py:50
+#: crm/api/todo.py:41
 msgid "{0} assigned a {1} {2} to you"
 msgstr "{0} tilldelade {1} {2} till dig"
 
