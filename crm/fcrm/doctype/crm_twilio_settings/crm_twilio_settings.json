@@ -63,8 +63,7 @@
    "fieldname": "twiml_sid",
    "fieldtype": "Data",
    "label": "TwiML SID",
-   "permlevel": 1,
-   "read_only": 1
+   "permlevel": 1
   },
   {
    "fieldname": "section_break_ssqj",
@@ -105,7 +104,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-15 19:35:13.406254",
+ "modified": "2025-08-19 13:36:19.823197",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Twilio Settings",
@@ -152,6 +151,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
