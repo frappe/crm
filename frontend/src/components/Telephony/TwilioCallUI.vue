@@ -72,10 +72,13 @@
             theme="red"
             :label="__('Cancel')"
             @click="cancelCall"
-            class="rounded-lg rotate-[135deg] text-ink-white"
+            class="rounded-lg text-ink-white"
             :disabled="callStatus == 'initiating'"
-            :iconLeft="PhoneIcon"
-          />
+          >
+            <template #prefix>
+              <PhoneIcon class="rotate-[135deg]" />
+            </template>
+          </Button>
         </div>
         <div v-else class="flex gap-2">
           <Button
@@ -92,10 +95,13 @@
             variant="solid"
             theme="red"
             :label="__('Reject')"
-            class="rounded-lg rotate-[135deg] text-ink-white"
-            :iconLeft="PhoneIcon"
+            class="rounded-lg text-ink-white"
             @click="rejectIncomingCall"
-          />
+          >
+            <template #prefix>
+              <PhoneIcon class="rotate-[135deg]" />
+            </template>
+          </Button>
         </div>
       </div>
     </div>
