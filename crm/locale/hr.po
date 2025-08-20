@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-08-03 09:38+0000\n"
-"PO-Revision-Date: 2025-08-05 09:17\n"
+"POT-Creation-Date: 2025-08-17 09:36+0000\n"
+"PO-Revision-Date: 2025-08-19 12:40\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -475,13 +475,18 @@ msgid "Ask your manager to set up the Exchange Rate Provider, as default provide
 msgstr "Zamolite odgovornog da postavi pružatelja tečaja, jer zadani pružatelj ne podržava pretvorbu valuta iz {0} u {1}."
 
 #: frontend/src/components/ListBulkActions.vue:184
-#: frontend/src/components/Modals/AssignmentModal.vue:5
+#: frontend/src/components/Modals/AssignmentModal.vue:4
 msgid "Assign To"
 msgstr "Dodijeli"
 
-#: frontend/src/components/AssignTo.vue:9
+#: frontend/src/components/AssignTo.vue:11
+#: frontend/src/components/AssignToBody.vue:5
 msgid "Assign to"
 msgstr "Dodijeli"
+
+#: frontend/src/components/AssignToBody.vue:65
+msgid "Assign to me"
+msgstr "Dodijeli meni"
 
 #. Label of the assigned_to (Link) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -880,7 +885,7 @@ msgstr "Kamera"
 #: frontend/src/components/ColumnSettings.vue:132
 #: frontend/src/components/Dashboard/AddChartModal.vue:40
 #: frontend/src/components/DeleteLinkedDocModal.vue:114
-#: frontend/src/components/Modals/AssignmentModal.vue:9
+#: frontend/src/components/Modals/AssignmentModal.vue:69
 #: frontend/src/components/Modals/LostReasonModal.vue:43
 #: frontend/src/components/Telephony/TwilioCallUI.vue:77
 #: frontend/src/components/ViewControls.vue:56
@@ -1268,12 +1273,12 @@ msgstr "Kreiraj Potencijalnog Klijenta"
 msgid "Create New"
 msgstr "Kreiraj"
 
-#: frontend/src/components/Activities/Activities.vue:384
+#: frontend/src/components/Activities/Activities.vue:388
 #: frontend/src/components/Modals/NoteModal.vue:15
 msgid "Create Note"
 msgstr "Stvori Bilješku"
 
-#: frontend/src/components/Activities/Activities.vue:399
+#: frontend/src/components/Activities/Activities.vue:403
 #: frontend/src/components/Modals/TaskModal.vue:18
 msgid "Create Task"
 msgstr "Stvori Zadatak"
@@ -1998,11 +2003,11 @@ msgstr "Greška pri pretvaranju u posao: {0}"
 msgid "Error updating field"
 msgstr "Pogreška pri ažuriranju polja"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:261
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:282
 msgid "Error while creating customer in ERPNext, check error log for more details"
 msgstr "Pogreška prilikom kreiranja klijenta u Sistemu, provjerite zapisnik grešaka za više detalja"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:173
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:194
 msgid "Error while creating prospect in ERPNext, check error log for more details"
 msgstr "Pogreška prilikom kreiranja potencijalnog klijenta u Sistemu, provjeri zapisnik grešaka za više detalja"
 
@@ -2412,7 +2417,7 @@ msgstr "Bok John, \\n\\nMožete li dati više pojedinosti o ovome..."
 msgid "Hidden"
 msgstr "Sakriveno"
 
-#: frontend/src/components/Activities/Activities.vue:230
+#: frontend/src/components/Activities/Activities.vue:234
 msgid "Hide"
 msgstr "Sakrij"
 
@@ -2420,7 +2425,7 @@ msgstr "Sakrij"
 msgid "Hide Password"
 msgstr "Sakrij Lozinku"
 
-#: frontend/src/components/Activities/CallArea.vue:74
+#: frontend/src/components/Activities/CallArea.vue:75
 msgid "Hide Recording"
 msgstr "Sakrij Snimanje"
 
@@ -2521,7 +2526,7 @@ msgstr "U Toku"
 msgid "In less than a minute"
 msgstr "Za manje od minute"
 
-#: frontend/src/components/Activities/CallArea.vue:35
+#: frontend/src/components/Activities/CallArea.vue:36
 msgid "Inbound Call"
 msgstr "Dolazni Poziv"
 
@@ -2699,8 +2704,9 @@ msgstr "JSON"
 msgid "Job Title"
 msgstr "Naziv Posla"
 
+#: frontend/src/components/AssignToBody.vue:11
 #: frontend/src/components/Filter.vue:75 frontend/src/components/Filter.vue:108
-#: frontend/src/components/Modals/AssignmentModal.vue:35
+#: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Modals/TaskModal.vue:76
 #: frontend/src/components/Telephony/TaskPanel.vue:47
 msgid "John Doe"
@@ -2887,7 +2893,7 @@ msgstr "Veze"
 msgid "List"
 msgstr "Lista"
 
-#: frontend/src/components/Activities/CallArea.vue:74
+#: frontend/src/components/Activities/CallArea.vue:75
 msgid "Listen"
 msgstr "Slušaj"
 
@@ -2916,7 +2922,7 @@ msgstr "Učitavanje u toku..."
 msgid "Log"
 msgstr "Dnevnik"
 
-#: frontend/src/components/Activities/Activities.vue:803
+#: frontend/src/components/Activities/Activities.vue:808
 #: frontend/src/components/Activities/ActivityHeader.vue:137
 #: frontend/src/components/Activities/ActivityHeader.vue:180
 msgid "Log a Call"
@@ -2988,7 +2994,7 @@ msgstr "Učini Privatno"
 msgid "Make Public"
 msgstr "Učini Javno"
 
-#: frontend/src/components/Activities/Activities.vue:807
+#: frontend/src/components/Activities/Activities.vue:812
 #: frontend/src/components/Activities/ActivityHeader.vue:142
 #: frontend/src/components/Activities/ActivityHeader.vue:185
 #: frontend/src/pages/Deals.vue:504 frontend/src/pages/Leads.vue:531
@@ -3204,7 +3210,7 @@ msgstr "Nova Adresa"
 msgid "New Call Log"
 msgstr "Novi Zapisnik Poziva"
 
-#: frontend/src/components/Activities/Activities.vue:394
+#: frontend/src/components/Activities/Activities.vue:398
 #: frontend/src/components/Activities/ActivityHeader.vue:27
 #: frontend/src/components/Activities/ActivityHeader.vue:132
 msgid "New Comment"
@@ -3214,7 +3220,7 @@ msgstr "Novi Komentar"
 msgid "New Contact"
 msgstr "Novi Kontakt"
 
-#: frontend/src/components/Activities/Activities.vue:389
+#: frontend/src/components/Activities/Activities.vue:393
 #: frontend/src/components/Activities/ActivityHeader.vue:17
 #: frontend/src/components/Activities/ActivityHeader.vue:127
 msgid "New Email"
@@ -3654,7 +3660,7 @@ msgstr "Ostale značajke"
 msgid "Others"
 msgstr "Ostalo"
 
-#: frontend/src/components/Activities/CallArea.vue:36
+#: frontend/src/components/Activities/CallArea.vue:37
 msgid "Outbound Call"
 msgstr "Odlazni Poziv"
 
@@ -4490,7 +4496,7 @@ msgstr "Postavite Pružatelja Usluge Tečaja kao 'Pružitelja Usluge Tečaja' u 
 msgid "Setup your password"
 msgstr "Postavi lozinku"
 
-#: frontend/src/components/Activities/Activities.vue:230
+#: frontend/src/components/Activities/Activities.vue:234
 msgid "Show"
 msgstr "Prikaži"
 
@@ -4528,6 +4534,14 @@ msgstr "Stavke bočne trake"
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Simple Python Expression, Example: doc.status == 'Open' and doc.lead_source == 'Ads'"
 msgstr "Jednostavan Python Izraz, Primjer: doc.status == 'Open' i doc.lead_source == 'Ads'"
+
+#: frontend/src/components/AssignTo.vue:84
+msgid "Since you removed {0} from the assignee, the {0} has also been removed."
+msgstr "Pošto ste uklonili {0} od dodijeljenog, uklonjen je i {0}."
+
+#: frontend/src/components/AssignTo.vue:77
+msgid "Since you removed {0} from the assignee, the {0} has been changed to the next available assignee {1}."
+msgstr "Pošto ste uklonili {0} od dodijeljenog, {0} je promijenjeno na sljedećeg dostupnog dodijeljenog {1}."
 
 #: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:22
 #: frontend/src/components/SortBy.vue:240
@@ -5058,7 +5072,7 @@ msgid "Untitled"
 msgstr "Neimenovano"
 
 #: frontend/src/components/ColumnSettings.vue:138
-#: frontend/src/components/Modals/AssignmentModal.vue:17
+#: frontend/src/components/Modals/AssignmentModal.vue:79
 #: frontend/src/components/Modals/ChangePasswordModal.vue:45
 #: frontend/src/components/Modals/NoteModal.vue:6
 #: frontend/src/components/Modals/TaskModal.vue:8
@@ -5086,7 +5100,7 @@ msgstr "Ažuriraj {0} Zapisa"
 msgid "Upload"
 msgstr "Učitaj"
 
-#: frontend/src/components/Activities/Activities.vue:404
+#: frontend/src/components/Activities/Activities.vue:408
 #: frontend/src/components/Activities/ActivityHeader.vue:62
 #: frontend/src/components/Activities/ActivityHeader.vue:158
 msgid "Upload Attachment"
@@ -5290,11 +5304,11 @@ msgstr "Imate nespremljene promjene. Želite li ih spremiti?"
 msgid "You need to be in developer mode to edit a Standard Form Script"
 msgstr "Morate biti u načinu rada razvojnog programera da biste uredili skriptu standardnog obrasca"
 
-#: crm/api/todo.py:111
+#: crm/api/todo.py:100
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "Vaša dodjela za zadatak {0} uklonio je {1}"
 
-#: crm/api/todo.py:46 crm/api/todo.py:89
+#: crm/api/todo.py:37 crm/api/todo.py:78
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "Vašu dodjelu {0} {1} je uklonio {2}"
 
@@ -5309,11 +5323,11 @@ msgstr "dodao"
 msgid "amber"
 msgstr "jantar"
 
-#: crm/api/todo.py:120
+#: crm/api/todo.py:109
 msgid "assigned a new task {0} to you"
 msgstr "dodijelio ti je novi zadatak {0}"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:89
 msgid "assigned a {0} {1} to you"
 msgstr "dodijelio ti je {0} {1}"
 
@@ -5331,7 +5345,7 @@ msgstr "crna"
 msgid "blue"
 msgstr "plava"
 
-#: frontend/src/components/Activities/Activities.vue:232
+#: frontend/src/components/Activities/Activities.vue:236
 msgid "changes from"
 msgstr "promjene od"
 
@@ -5541,8 +5555,8 @@ msgstr "crveno"
 msgid "teal"
 msgstr "plavozelena"
 
-#: frontend/src/components/Activities/Activities.vue:274
-#: frontend/src/components/Activities/Activities.vue:337
+#: frontend/src/components/Activities/Activities.vue:278
+#: frontend/src/components/Activities/Activities.vue:341
 msgid "to"
 msgstr "do"
 
@@ -5572,7 +5586,7 @@ msgstr "juče"
 msgid "{0} M"
 msgstr "{0} M"
 
-#: crm/api/todo.py:50
+#: crm/api/todo.py:41
 msgid "{0} assigned a {1} {2} to you"
 msgstr "{0} ti je dodijelio {1} {2}"
 
