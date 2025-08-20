@@ -346,7 +346,6 @@ import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import { createDocument } from '@/composables/document'
 import {
-  FeatherIcon,
   FormControl,
   Checkbox,
   DateTimePicker,
