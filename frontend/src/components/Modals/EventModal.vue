@@ -4,13 +4,28 @@
       <div class="mb-6 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-            {{ editMode ? __('Edit an event') : __('Create an event') }}
+            {{
+              mode === 'edit'
+                ? __('Edit an event')
+                : mode === 'duplicate'
+                  ? __('Duplicate an event')
+                  : __('Create an event')
+            }}
           </h3>
         </div>
         <div class="flex gap-1">
-          <Button variant="ghost" @click="deleteEvent">
+          <Button v-if="mode === 'edit'" variant="ghost" @click="deleteEvent">
             <template #icon>
               <LucideTrash2 class="h-4 w-4 text-ink-gray-9" />
+            </template>
+          </Button>
+          <Button
+            v-if="mode === 'edit'"
+            variant="ghost"
+            @click="duplicateEvent"
+          >
+            <template #icon>
+              <LucideCopy class="h-4 w-4 text-ink-gray-9" />
             </template>
           </Button>
           <Button variant="ghost" @click="show = false">
@@ -119,8 +134,16 @@
         <Button :label="__('Cancel')" @click="show = false" />
         <Button
           variant="solid"
-          :label="editMode ? __('Update') : __('Create')"
-          :loading="editMode ? events.setValue.loading : events.insert.loading"
+          :label="
+            mode === 'edit'
+              ? __('Update')
+              : mode === 'duplicate'
+                ? __('Duplicate')
+                : __('Create')
+          "
+          :loading="
+            mode === 'edit' ? events.setValue.loading : events.insert.loading
+          "
           @click="update"
         />
       </div>
@@ -138,7 +161,7 @@ import {
 } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
 import { getFormat } from '@/utils'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
 const props = defineProps({
   event: {
@@ -162,7 +185,13 @@ const events = defineModel('events')
 
 const title = ref(null)
 const error = ref(null)
-const editMode = ref(false)
+const mode = computed(() => {
+  return _event.value.id == 'duplicate'
+    ? 'duplicate'
+    : _event.value.id
+      ? 'edit'
+      : 'create'
+})
 
 const _event = ref({
   title: '',
@@ -181,9 +210,7 @@ onMounted(() => {
     let start = dayjs(props.event.starts_on)
     let end = dayjs(props.event.ends_on)
 
-    if (props.event.name) {
-      editMode.value = true
-    } else {
+    if (!props.event.name) {
       start = dayjs()
       end = dayjs().add(1, 'hour')
     }
@@ -298,6 +325,14 @@ function updateEvent() {
       },
     },
   )
+}
+
+function duplicateEvent() {
+  if (!_event.value.id) return
+
+  _event.value.id = 'duplicate'
+  _event.value.title = _event.value.title + ' (Copy)'
+  setTimeout(() => title.value?.el?.focus(), 100)
 }
 
 function deleteEvent() {
