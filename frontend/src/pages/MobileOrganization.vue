@@ -72,12 +72,9 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
+                  iconLeft="trash-2"
                   @click="deleteOrganization"
-                >
-                  <template #prefix>
-                    <FeatherIcon name="trash-2" class="h-4 w-4" />
-                  </template>
-                </Button>
+                />
               </div>
               <ErrorMessage :message="__(error)" />
             </div>

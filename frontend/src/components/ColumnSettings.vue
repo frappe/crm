@@ -1,7 +1,7 @@
 <template>
-  <NestedPopover>
-    <template #target>
-      <Button :label="__('Columns')">
+  <Popover placement="bottom-end">
+    <template #target="{ togglePopover }">
+      <Button :label="__('Columns')" @click="togglePopover">
         <template v-if="hideLabel">
           <ColumnsIcon class="h-4" />
         </template>
@@ -65,37 +65,28 @@
                 <Button
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
-                  @click="togglePopover()"
                   :label="__('Add Column')"
-                >
-                  <template #prefix>
-                    <FeatherIcon name="plus" class="h-4" />
-                  </template>
-                </Button>
+                  iconLeft="plus"
+                  @click="togglePopover"
+                />
               </template>
             </Autocomplete>
             <Button
               v-if="columnsUpdated"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              @click="reset(close)"
               :label="__('Reset Changes')"
-            >
-              <template #prefix>
-                <ReloadIcon class="h-4" />
-              </template>
-            </Button>
+              :iconLeft="ReloadIcon"
+              @click="reset(close)"
+            />
             <Button
               v-if="!is_default"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              @click="resetToDefault(close)"
               :label="__('Reset to Default')"
-            >
-              <template #prefix>
-                <ReloadIcon class="h-4" />
-              </template>
-            </Button>
+              :iconLeft="ReloadIcon"
+              @click="resetToDefault(close)"
+            />
           </div>
         </div>
         <div v-else>
@@ -144,7 +135,7 @@
         </div>
       </div>
     </template>
-  </NestedPopover>
+  </Popover>
 </template>
 
 <script setup>
@@ -152,9 +143,9 @@ import ColumnsIcon from '@/components/Icons/ColumnsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
-import NestedPopover from '@/components/NestedPopover.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTouchScreenDevice } from '@/utils'
+import { Popover } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
@@ -219,6 +210,7 @@ const fields = computed(() => {
 })
 
 function addColumn(c) {
+  if (!c) return
   let align = ['Float', 'Int', 'Percent', 'Currency'].includes(c.type)
     ? 'right'
     : 'left'

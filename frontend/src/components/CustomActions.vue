@@ -18,14 +18,10 @@
     :key="g.label"
   >
     <Dropdown :options="g.action" v-slot="{ open }">
-      <Button :label="g.label">
-        <template #suffix>
-          <FeatherIcon
-            :name="open ? 'chevron-up' : 'chevron-down'"
-            class="h-4"
-          />
-        </template>
-      </Button>
+      <Button
+        :label="g.label"
+        :iconRight="open ? 'chevron-up' : 'chevron-down'"
+      />
     </Dropdown>
   </div>
 </template>

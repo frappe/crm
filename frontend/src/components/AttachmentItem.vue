@@ -5,11 +5,9 @@
         :label="label"
         theme="gray"
         variant="outline"
+        :iconLeft="getIcon()"
         @click="toggleDialog()"
       >
-        <template #prefix>
-          <component :is="getIcon()" class="h-4 w-4" />
-        </template>
         <template #suffix>
           <slot name="suffix" />
         </template>

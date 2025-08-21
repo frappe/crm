@@ -80,19 +80,16 @@
                 </span>
               </div>
               <div>
-                <Tooltip text="Delete Invitation">
-                  <div>
-                    <Button
-                      icon="x"
-                      variant="ghost"
-                      :loading="
-                        pendingInvitations.delete.loading &&
-                        pendingInvitations.delete.params.name === user.name
-                      "
-                      @click="pendingInvitations.delete.submit(user.name)"
-                    />
-                  </div>
-                </Tooltip>
+                <Button
+                  :tooltip="__('Delete invitation')"
+                  icon="x"
+                  variant="ghost"
+                  :loading="
+                    pendingInvitations.delete.loading &&
+                    pendingInvitations.delete.params.name === user.name
+                  "
+                  @click="pendingInvitations.delete.submit(user.name)"
+                />
               </div>
             </li>
           </ul>

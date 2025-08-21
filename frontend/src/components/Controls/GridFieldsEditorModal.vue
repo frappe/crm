@@ -54,13 +54,10 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full mt-2"
-              @click="togglePopover()"
               :label="__('Add Field')"
-            >
-              <template #prefix>
-                <FeatherIcon name="plus" class="h-4" />
-              </template>
-            </Button>
+              iconLeft="plus"
+              @click="togglePopover()"
+            />
           </template>
           <template #item-label="{ option }">
             <div class="flex flex-col gap-1 text-ink-gray-9">
@@ -75,7 +72,7 @@
       </div>
     </template>
     <template #actions>
-      <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-2 justify-end">
         <Button
           v-if="dirty"
           class="w-full"

@@ -131,7 +131,7 @@
   </div>
 </template>
 <script setup>
-import { ErrorMessage } from 'frappe-ui'
+import { ErrorMessage, toast } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { showSettings } from '@/composables/settings'

@@ -25,23 +25,21 @@
             :key="assignee.name"
             @click.stop
           >
-            <div>
-              <div
-                class="flex items-center text-sm p-0.5 text-ink-gray-6 border border-outline-gray-1 bg-surface-modal rounded-full cursor-pointer"
-                @click.stop
+            <div
+              class="flex items-center text-sm p-0.5 text-ink-gray-6 border border-outline-gray-1 bg-surface-modal rounded-full cursor-pointer"
+              @click.stop
+            >
+              <UserAvatar :user="assignee.name" size="sm" />
+              <div class="ml-1">{{ getUser(assignee.name).full_name }}</div>
+              <Button
+                variant="ghost"
+                class="rounded-full !size-4 m-1"
+                @click.stop="removeValue(assignee.name)"
               >
-                <UserAvatar :user="assignee.name" size="sm" />
-                <div class="ml-1">{{ getUser(assignee.name).full_name }}</div>
-                <Button
-                  variant="ghost"
-                  class="rounded-full !size-4 m-1"
-                  @click.stop="removeValue(assignee.name)"
-                >
-                  <template #icon>
-                    <FeatherIcon name="x" class="h-3 w-3 text-ink-gray-6" />
-                  </template>
-                </Button>
-              </div>
+                <template #icon>
+                  <FeatherIcon name="x" class="h-3 w-3 text-ink-gray-6" />
+                </template>
+              </Button>
             </div>
           </Tooltip>
         </div>
@@ -74,7 +72,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { Tooltip, Switch, toast, createResource } from 'frappe-ui'
+import { Tooltip, Switch, createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const props = defineProps({
@@ -154,6 +152,7 @@ watch(
       updateAssignees()
     }
   },
+  { immediate: true },
 )
 
 async function updateAssignees() {

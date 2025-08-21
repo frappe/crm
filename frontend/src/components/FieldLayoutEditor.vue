@@ -169,13 +169,10 @@
                         <Button
                           class="w-full !h-8 !bg-surface-modal"
                           variant="outline"
-                          @click="togglePopover()"
                           :label="__('Add Field')"
-                        >
-                          <template #prefix>
-                            <FeatherIcon name="plus" class="h-4" />
-                          </template>
-                        </Button>
+                          iconLeft="plus"
+                          @click="togglePopover()"
+                        />
                       </div>
                     </template>
                     <template #item-label="{ option }">
@@ -198,6 +195,7 @@
           class="w-full h-8"
           variant="subtle"
           :label="__('Add Section')"
+          iconLeft="plus"
           @click="
             tabs[tabIndex].sections.push({
               label: __('New Section'),
@@ -206,11 +204,7 @@
               columns: [{ name: 'column_' + getRandom(), fields: [] }],
             })
           "
-        >
-          <template #prefix>
-            <FeatherIcon name="plus" class="h-4" />
-          </template>
-        </Button>
+        />
       </div>
     </div>
   </div>

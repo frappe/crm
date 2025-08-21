@@ -123,11 +123,12 @@
               v-slot="{ togglePopover }"
               @update:modelValue="() => appendEmoji()"
             >
-              <Button variant="ghost" @click="togglePopover()">
-                <template #icon>
-                  <SmileIcon class="h-4" />
-                </template>
-              </Button>
+              <Button
+                :tooltip="__('Insert Emoji')"
+                :icon="SmileIcon"
+                variant="ghost"
+                @click="togglePopover()"
+              />
             </IconPicker>
             <FileUploader
               :upload-args="{
@@ -138,21 +139,20 @@
               @success="(f) => attachments.push(f)"
             >
               <template #default="{ openFileSelector }">
-                <Button variant="ghost" @click="openFileSelector()">
-                  <template #icon>
-                    <AttachmentIcon class="h-4" />
-                  </template>
-                </Button>
+                <Button
+                  :tooltip="__('Attach a file')"
+                  :icon="AttachmentIcon"
+                  variant="ghost"
+                  @click="openFileSelector()"
+                />
               </template>
             </FileUploader>
             <Button
+              :tooltip="__('Insert Email Template')"
               variant="ghost"
+              :icon="EmailTemplateIcon"
               @click="showEmailTemplateSelectorModal = true"
-            >
-              <template #icon>
-                <EmailTemplateIcon class="h-4" />
-              </template>
-            </Button>
+            />
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
             <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />

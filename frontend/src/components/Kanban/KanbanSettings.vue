@@ -3,11 +3,8 @@
     :label="__('Kanban Settings')"
     @click="showDialog = true"
     v-bind="$attrs"
-  >
-    <template #prefix>
-      <KanbanIcon class="h-4" />
-    </template>
-  </Button>
+    :iconLeft="KanbanIcon"
+  />
   <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
     <template #body-content>
       <div>
@@ -23,8 +20,8 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full !justify-start"
-              @click="togglePopover()"
               :label="columnField.label"
+              @click="togglePopover()"
             />
           </template>
         </Autocomplete>
@@ -80,13 +77,10 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full mt-2"
-              @click="togglePopover()"
               :label="__('Add Field')"
-            >
-              <template #prefix>
-                <FeatherIcon name="plus" class="h-4" />
-              </template>
-            </Button>
+              iconLeft="plus"
+              @click="togglePopover()"
+            />
           </template>
           <template #item-label="{ option }">
             <div class="flex flex-col gap-1 text-ink-gray-9">

@@ -1008,7 +1008,7 @@ def get_deals_by_territory(from_date="", to_date="", user=""):
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
 		{deal_conds}
 		GROUP BY d.territory
-		ORDER BY value DESC
+		ORDER BY deals DESC, value DESC
 		""",
 		{"from": from_date, "to": to_date},
 		as_dict=True,
@@ -1065,7 +1065,7 @@ def get_deals_by_salesperson(from_date="", to_date="", user=""):
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
 		{deal_conds}
 		GROUP BY d.deal_owner
-		ORDER BY value DESC
+		ORDER BY deals DESC, value DESC
 		""",
 		{"from": from_date, "to": to_date},
 		as_dict=True,

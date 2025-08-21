@@ -123,13 +123,11 @@
         <div class="flex">
           <Button
             @click="toggleCallPopup"
-            class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0"
+            class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0 cursor-pointer"
+            :tooltip="__('Minimize')"
+            :icon="MinimizeIcon"
             size="md"
-          >
-            <template #icon>
-              <MinimizeIcon class="h-4 w-4 cursor-pointer" />
-            </template>
-          </Button>
+          />
           <Button
             v-if="callStatus == 'Call ended' || callStatus == 'No answer'"
             @click="closeCallPopup"
@@ -182,33 +180,26 @@
         <div class="flex gap-2">
           <Button
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            :tooltip="__('Add a note')"
             size="md"
+            :icon="NoteIcon"
             @click="showNoteWindow"
-          >
-            <template #icon>
-              <NoteIcon class="w-4 h-4" />
-            </template>
-          </Button>
+          />
           <Button
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
             size="md"
+            :tooltip="__('Add a task')"
+            :icon="TaskIcon"
             @click="showTaskWindow"
-          >
-            <template #icon>
-              <TaskIcon class="w-4 h-4" />
-            </template>
-          </Button>
+          />
           <Button
             v-if="contact.deal || contact.lead"
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
             size="md"
+            :iconRight="ArrowUpRightIcon"
             :label="contact.deal ? __('Deal') : __('Lead')"
             @click="openDealOrLead"
-          >
-            <template #suffix>
-              <ArrowUpRightIcon class="w-4 h-4" />
-            </template>
-          </Button>
+          />
         </div>
 
         <Button

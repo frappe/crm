@@ -2,7 +2,9 @@
   <div
     class="cursor-pointer flex flex-col rounded-md shadow bg-surface-cards px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
   >
-    <div class="-mb-0.5 flex items-center justify-between gap-2 truncate text-ink-gray-9">
+    <div
+      class="-mb-0.5 flex items-center justify-between gap-2 truncate text-ink-gray-9"
+    >
       <div class="flex items-center gap-2 truncate">
         <span>{{ activity.data.sender_full_name }}</span>
         <span class="sm:flex hidden text-sm text-ink-gray-5">
@@ -28,32 +30,20 @@
           </div>
         </Tooltip>
         <div class="flex gap-0.5">
-          <Tooltip :text="__('Reply')">
-            <div>
-              <Button
-                variant="ghost"
-                class="text-ink-gray-7"
-                @click="reply(activity.data)"
-              >
-                <template #icon>
-                  <ReplyIcon />
-                </template>
-              </Button>
-            </div>
-          </Tooltip>
-          <Tooltip :text="__('Reply All')">
-            <div>
-              <Button
-                variant="ghost"
-                class="text-ink-gray-7"
-                @click="reply(activity.data, true)"
-              >
-                <template #icon>
-                  <ReplyAllIcon />
-                </template>
-              </Button>
-            </div>
-          </Tooltip>
+          <Button
+            :tooltip="__('Reply')"
+            variant="ghost"
+            class="text-ink-gray-7"
+            :icon="ReplyIcon"
+            @click="reply(activity.data)"
+          />
+          <Button
+            :tooltip="__('Reply All')"
+            variant="ghost"
+            :icon="ReplyAllIcon"
+            class="text-ink-gray-7"
+            @click="reply(activity.data, true)"
+          />
         </div>
       </div>
     </div>

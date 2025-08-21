@@ -17,8 +17,8 @@
           :label="__('Update')"
           icon-left="plus"
           variant="solid"
-          :disabled="!settings.isDirty"
-          :loading="settings.loading"
+          :disabled="!document.isDirty"
+          :loading="document.loading"
           @click="updateSettings"
         />
       </div>
@@ -27,7 +27,7 @@
     <!-- Fields -->
     <div class="flex flex-1 flex-col gap-4 overflow-y-auto">
       <Grid
-        v-model="settings.doc.dropdown_items"
+        v-model="document.doc.dropdown_items"
         doctype="CRM Dropdown Item"
         parentDoctype="FCRM Settings"
         parentFieldname="dropdown_items"
@@ -41,17 +41,22 @@
 <script setup>
 import Grid from '@/components/Controls/Grid.vue'
 import { ErrorMessage } from 'frappe-ui'
-import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
-import { ref } from 'vue'
+import { useDocument } from '@/data/document'
+import { ref, provide } from 'vue'
 
-const { _settings: settings } = getSettings()
+const { document, triggerOnChange } = useDocument(
+  'FCRM Settings',
+  'FCRM Settings',
+)
+
+provide('triggerOnChange', triggerOnChange)
 
 const emit = defineEmits(['updateStep'])
 const errorMessage = ref('')
 
 function updateSettings() {
-  settings.save.submit(null, {
+  document.save.submit(null, {
     onSuccess: () => {
       showSettings.value = false
     },

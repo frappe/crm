@@ -8,36 +8,27 @@
         <Button
           v-if="!editing"
           :label="__('Refresh')"
+          :iconLeft="LucideRefreshCcw"
           @click="dashboardItems.reload"
-        >
-          <template #prefix>
-            <LucideRefreshCcw class="size-4" />
-          </template>
-        </Button>
+        />
         <Button
           v-if="!editing && isAdmin()"
           :label="__('Edit')"
+          :iconLeft="LucidePenLine"
           @click="enableEditing"
-        >
-          <template #prefix>
-            <LucidePenLine class="size-4" />
-          </template>
-        </Button>
+        />
         <Button
           v-if="editing"
           :label="__('Chart')"
-          icon-left="plus"
+          iconLeft="plus"
           @click="showAddChartModal = true"
         />
         <Button
           v-if="editing && isAdmin()"
           :label="__('Reset to default')"
+          :iconLeft="LucideUndo2"
           @click="resetToDefault"
-        >
-          <template #prefix>
-            <LucideUndo2 class="size-4" />
-          </template>
-        </Button>
+        />
         <Button v-if="editing" :label="__('Cancel')" @click="cancel" />
         <Button
           v-if="editing"
@@ -65,11 +56,7 @@
           iconRight: 'chevron-down',
           iconLeft: 'calendar',
         }"
-      >
-        <template #prefix>
-          <LucideCalendar class="size-4 text-ink-gray-5 mr-2" />
-        </template>
-      </Dropdown>
+      />
       <DateRangePicker
         v-else
         class="!w-48"
@@ -247,7 +234,6 @@ const options = computed(() => [
 
 const dashboardItems = createResource({
   url: 'crm.api.dashboard.get_dashboard',
-  cache: ['Analytics', 'ManagerDashboard'],
   makeParams() {
     return {
       from_date: fromDate.value,

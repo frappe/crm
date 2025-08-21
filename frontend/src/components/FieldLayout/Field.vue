@@ -89,12 +89,9 @@
         v-if="data[field.fieldname] && field.edit"
         class="shrink-0"
         :label="__('Edit')"
+        :iconLeft="EditIcon"
         @click="field.edit(data[field.fieldname])"
-      >
-        <template #prefix>
-          <EditIcon class="h-4 w-4" />
-        </template>
-      </Button>
+      />
     </div>
 
     <TableMultiselectInput

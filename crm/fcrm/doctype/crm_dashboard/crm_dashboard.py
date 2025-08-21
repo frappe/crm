@@ -26,8 +26,9 @@ def create_default_manager_dashboard(force=False):
 		doc.title = "Manager Dashboard"
 		doc.layout = default_manager_dashboard_layout()
 		doc.insert(ignore_permissions=True)
-	elif force:
+	else:
 		doc = frappe.get_doc("CRM Dashboard", "Manager Dashboard")
-		doc.layout = default_manager_dashboard_layout()
-		doc.save(ignore_permissions=True)
+		if force:
+			doc.layout = default_manager_dashboard_layout()
+			doc.save(ignore_permissions=True)
 	return doc.layout

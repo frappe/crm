@@ -21,20 +21,13 @@
             <div v-else>{{ s.value }}</div>
           </div>
         </Tooltip>
-        <Dropdown
-          class="form-control"
-          v-if="s.type == 'Select'"
-          :options="s.options"
-        >
+        <Dropdown v-if="s.type == 'Select'" :options="s.options">
           <template #default="{ open }">
-            <Button :label="s.value">
-              <template #suffix>
-                <FeatherIcon
-                  :name="open ? 'chevron-up' : 'chevron-down'"
-                  class="h-4"
-                />
-              </template>
-            </Button>
+            <Button
+              class="form-control bg-surface-white hover:bg-surface-white"
+              :label="s.value"
+              :iconRight="open ? 'chevron-up' : 'chevron-down'"
+            />
           </template>
         </Dropdown>
       </div>

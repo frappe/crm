@@ -18,25 +18,18 @@
       />
       <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
       <Dropdown
-        v-if="doc"
-        :options="
-          statusOptions(
-            'lead',
-            document.statuses?.length ? document.statuses : document._statuses,
-            triggerStatusChange,
-          )
-        "
+        v-if="doc && document.statuses"
+        :options="statuses"
+        placement="right"
       >
         <template #default="{ open }">
-          <Button v-if="doc.status" :label="doc.status">
+          <Button
+            v-if="doc.status"
+            :label="doc.status"
+            :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          >
             <template #prefix>
               <IndicatorIcon :class="getLeadStatus(doc.status).color" />
-            </template>
-            <template #suffix>
-              <FeatherIcon
-                :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4"
-              />
             </template>
           </Button>
         </template>
@@ -125,71 +118,48 @@
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
-                <Tooltip v-if="callEnabled" :text="__('Make a call')">
-                  <div>
-                    <Button
-                      @click="
-                        () =>
-                          doc.mobile_no
-                            ? makeCall(doc.mobile_no)
-                            : toast.error(__('No phone number set'))
-                      "
-                    >
-                      <template #icon>
-                        <PhoneIcon />
-                      </template>
-                    </Button>
-                  </div>
-                </Tooltip>
-                <Tooltip :text="__('Send an email')">
-                  <div>
-                    <Button
-                      @click="
-                        doc.email
-                          ? openEmailBox()
-                          : toast.error(__('No email set'))
-                      "
-                    >
-                      <template #icon>
-                        <Email2Icon />
-                      </template>
-                    </Button>
-                  </div>
-                </Tooltip>
-                <Tooltip :text="__('Go to website')">
-                  <div>
-                    <Button
-                      @click="
-                        doc.website
-                          ? openWebsite(doc.website)
-                          : toast.error(__('No website set'))
-                      "
-                    >
-                      <template #icon>
-                        <LinkIcon />
-                      </template>
-                    </Button>
-                  </div>
-                </Tooltip>
-                <Tooltip :text="__('Attach a file')">
-                  <div>
-                    <Button @click="showFilesUploader = true">
-                      <template #icon>
-                        <AttachmentIcon />
-                      </template>
-                    </Button>
-                  </div>
-                </Tooltip>
-                <Tooltip :text="__('Delete')">
-                  <div>
-                    <Button
-                      @click="deleteLead"
-                      variant="subtle"
-                      theme="red"
-                      icon="trash-2"
-                    />
-                  </div>
-                </Tooltip>
+                <Button
+                  v-if="callEnabled"
+                  :tooltip="__('Make a call')"
+                  :icon="PhoneIcon"
+                  @click="
+                    () =>
+                      doc.mobile_no
+                        ? makeCall(doc.mobile_no)
+                        : toast.error(__('No phone number set'))
+                  "
+                />
+
+                <Button
+                  :tooltip="__('Send an email')"
+                  :icon="Email2Icon"
+                  @click="
+                    doc.email ? openEmailBox() : toast.error(__('No email set'))
+                  "
+                />
+                <Button
+                  :tooltip="__('Go to website')"
+                  :icon="LinkIcon"
+                  @click="
+                    doc.website
+                      ? openWebsite(doc.website)
+                      : toast.error(__('No website set'))
+                  "
+                />
+
+                <Button
+                  :tooltip="__('Attach a file')"
+                  :icon="AttachmentIcon"
+                  @click="showFilesUploader = true"
+                />
+
+                <Button
+                  :tooltip="__('Delete')"
+                  variant="subtle"
+                  theme="red"
+                  icon="trash-2"
+                  @click="deleteLead"
+                />
               </div>
               <ErrorMessage :message="__(error)" />
             </div>
@@ -392,7 +362,14 @@ const breadcrumbs = computed(() => {
 
 const title = computed(() => {
   let t = doctypeMeta['CRM Lead']?.title_field || 'name'
-  return doc?.[t] || props.leadId
+  return doc.value?.[t] || props.leadId
+})
+
+const statuses = computed(() => {
+  let customStatuses = document.statuses?.length
+    ? document.statuses
+    : document._statuses || []
+  return statusOptions('lead', customStatuses, triggerStatusChange)
 })
 
 usePageMeta(() => {

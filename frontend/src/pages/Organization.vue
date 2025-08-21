@@ -83,19 +83,14 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
+                  iconLeft="trash-2"
                   @click="deleteOrganization()"
-                >
-                  <template #prefix>
-                    <FeatherIcon name="trash-2" class="h-4 w-4" />
-                  </template>
-                </Button>
-                <Tooltip :text="__('Open website')">
-                  <div>
-                    <Button @click="openWebsite">
-                      <FeatherIcon name="link" class="h-4 w-4" />
-                    </Button>
-                  </div>
-                </Tooltip>
+                />
+                <Button
+                  :tooltip="__('Open website')"
+                  icon="link"
+                  @click="openWebsite"
+                />
               </div>
             </div>
           </template>
