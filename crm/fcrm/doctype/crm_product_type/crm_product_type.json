@@ -1,0 +1,53 @@
+{
+  "doctype": "DocType",
+  "name": "CRM Product Type",
+  "module": "FCRM",
+  "custom": 0,
+  "istable": 0,
+  "editable_grid": 0,
+  "quick_entry": 1,
+
+  "autoname": "field:product_type",
+  "title_field": "product_type",
+  "naming_rule": "By fieldname",
+
+  "field_order": ["product_type"],
+  "fields": [
+    {
+      "fieldname": "product_type",
+      "label": "Product Type",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "unique": 1,
+      "in_standard_filter": 1,
+      "search_index": 1
+    }
+  ],
+
+  "allow_rename": 1,
+  "allow_import": 1,
+  "track_changes": 1,
+  "engine": "InnoDB",
+  "index_web_pages_for_search": 0,
+
+  "default_view": "List",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+
+  "permissions": [
+    {
+      "role": "Sales User",
+      "read": 1, "write": 1, "create": 1, "delete": 1,
+      "email": 1, "export": 1, "print": 1, "report": 1, "share": 1
+    },
+    {
+      "role": "Sales Manager",
+      "read": 1, "write": 1, "create": 1, "delete": 1,
+      "email": 1, "export": 1, "print": 1, "report": 1, "share": 1
+    },
+    {
+      "role": "All",
+      "read": 1, "export": 1, "print": 1, "report": 1, "share": 1
+    }
+  ]
+}

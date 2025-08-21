@@ -15,345 +15,425 @@ def reset_to_default():
 
 @frappe.whitelist()
 @sales_user_only
-def get_dashboard(from_date="", to_date="", user=""):
-	"""
-	Get the dashboard data for the CRM dashboard.
-	"""
+def get_dashboard(
+    from_date: str = "",
+    to_date: str = "",
+    user: str = "",
+    territory: str = "",
+    source: str = "",
+    product_type: str = ""
+):
+    
 
-	if not from_date or not to_date:
-		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
-		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
+    if not from_date or not to_date:
+        from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
+        to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
-	roles = frappe.get_roles(frappe.session.user)
-	is_sales_user = "Sales User" in roles and "Sales Manager" not in roles and "System Manager" not in roles
-	if is_sales_user and not user:
-		user = frappe.session.user
+    roles = frappe.get_roles(frappe.session.user)
+    is_sales_user = "Sales User" in roles and "Sales Manager" not in roles and "System Manager" not in roles
+    if is_sales_user and not user:
+        user = frappe.session.user
 
-	dashboard = frappe.db.exists("CRM Dashboard", "Manager Dashboard")
+    dashboard = frappe.db.exists("CRM Dashboard", "Manager Dashboard")
 
-	layout = []
+    if not dashboard:
+        layout = json.loads(create_default_manager_dashboard())
+        frappe.db.commit()
+    else:
+        layout = json.loads(frappe.db.get_value("CRM Dashboard", "Manager Dashboard", "layout") or "[]")
 
-	if not dashboard:
-		layout = json.loads(create_default_manager_dashboard())
-		frappe.db.commit()
-	else:
-		layout = json.loads(frappe.db.get_value("CRM Dashboard", "Manager Dashboard", "layout") or "[]")
+    for l in layout:
+        method_name = f"get_{l['name']}"
+        if hasattr(frappe.get_attr("crm.api.dashboard"), method_name):
+            method = getattr(frappe.get_attr("crm.api.dashboard"), method_name)
+            try:
+                l["data"] = method(from_date, to_date, user, territory=territory, source=source, product_type=product_type)
+            except TypeError:
+                try:
+                    l["data"] = method(from_date, to_date, user, territory=territory, source=source)
+                except TypeError:
+                    try:
+                        l["data"] = method(from_date, to_date, user, territory=territory)
+                    except TypeError:
+                        l["data"] = method(from_date, to_date, user)
 
-	for l in layout:
-		method_name = f"get_{l['name']}"
-		if hasattr(frappe.get_attr("crm.api.dashboard"), method_name):
-			method = getattr(frappe.get_attr("crm.api.dashboard"), method_name)
-			l["data"] = method(from_date, to_date, user)
-			frappe.logger().info(f"{l['name']} chart data: {l['data']}")
-		else:
-			l["data"] = None
-			#l["data"] = {
-            #"title": l.get("label", l.get("name", "")),
-            #"tooltip": "",
-            #"value": 0
-        	#}
+            frappe.logger().info(
+                f"{l['name']} chart data "
+                f"(user={user or 'ALL'}, territory={territory or 'ALL'}, source={source or 'ALL'}, product_type={product_type or 'ALL'}): {l['data']}"
+            )
+        else:
+            l["data"] = None
 
-	return layout
+    return layout
+
+
 
 
 @frappe.whitelist()
 @sales_user_only
-def get_chart(name, type, from_date="", to_date="", user=""):
-	"""
-	Get number chart data for the dashboard.
-	"""
-	if not from_date or not to_date:
-		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
-		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
+def get_chart(
+    name,
+    type,
+    from_date: str = "",
+    to_date: str = "",
+    user: str = "",
+    territory: str = "",
+    source: str = "",
+    product_type: str = "",
+):
+    if not from_date or not to_date:
+        from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
+        to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
-	roles = frappe.get_roles(frappe.session.user)
-	is_sales_user = "Sales User" in roles and "Sales Manager" not in roles and "System Manager" not in roles
-	if is_sales_user and not user:
-		user = frappe.session.user
+    roles = frappe.get_roles(frappe.session.user)
+    is_sales_user = "Sales User" in roles and "Sales Manager" not in roles and "System Manager" not in roles
+    if is_sales_user and not user:
+        user = frappe.session.user
 
-	method_name = f"get_{name}"
-	if hasattr(frappe.get_attr("crm.api.dashboard"), method_name):
-		method = getattr(frappe.get_attr("crm.api.dashboard"), method_name)
-		return method(from_date, to_date, user)
-	else:
-		return {"error": _("Invalid chart name")}
+    method_name = f"get_{name}"
+    if hasattr(frappe.get_attr("crm.api.dashboard"), method_name):
+        method = getattr(frappe.get_attr("crm.api.dashboard"), method_name)
+        # Try with all filters; fall back to previous versions if TypeError occurs.
+        try:
+            return method(from_date, to_date, user, territory=territory, source=source, product_type=product_type)
+        except TypeError:
+            try:
+                return method(from_date, to_date, user, territory=territory, source=source)
+            except TypeError:
+                try:
+                    return method(from_date, to_date, user, territory=territory)
+                except TypeError:
+                    return method(from_date, to_date, user)
+    else:
+        return {"error": _("Invalid chart name")}
 
 
-def get_total_leads(from_date, to_date, user=""):
-	"""
-	Get lead count for the dashboard.
-	"""
-	conds = ""
 
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
 
-	if user:
-		conds += f" AND lead_owner = '{user}'"
+def get_total_leads(
+    from_date, to_date, user: str = "", territory: str = "", source: str = "", product_types: str = ""):
+    
+    conds = ""
+    params = {"from_date": from_date, "to_date": to_date}
 
-	result = frappe.db.sql(
-		f"""
-		SELECT
+    diff = frappe.utils.date_diff(to_date, from_date) or 1
+    params["prev_from_date"] = frappe.utils.add_days(from_date, -diff)
+
+    if user:
+        conds += " AND lead_owner = %(user)s"
+        params["user"] = user
+
+    if territory:
+        conds += " AND territory = %(territory)s"
+        params["territory"] = territory
+
+    if source:
+        conds += " AND source = %(source)s"
+        params["source"] = source
+    
+    # New filter for product_types
+    if product_types:
+        conds += " AND product_types = %(product_types)s"
+        params["product_types"] = product_types
+
+    result = frappe.db.sql(
+        f"""
+        SELECT
             COUNT(CASE
-                WHEN creation >= %(from_date)s AND creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-                {conds}
-                THEN name
-                ELSE NULL
-            END) as current_month_leads,
-
+                WHEN creation >= %(from_date)s
+                    AND creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+                    {conds}
+                THEN name ELSE NULL
+            END) AS current_month_leads,
             COUNT(CASE
-                WHEN creation >= %(prev_from_date)s AND creation < %(from_date)s
-                {conds}
-                THEN name
-                ELSE NULL
-            END) as prev_month_leads
-		FROM `tabCRM Lead`
-    """,
-		{
-			"from_date": from_date,
-			"to_date": to_date,
-			"prev_from_date": frappe.utils.add_days(from_date, -diff),
-		},
-		as_dict=1,
-	)
+                WHEN creation >= %(prev_from_date)s
+                    AND creation < %(from_date)s
+                    {conds}
+                THEN name ELSE NULL
+            END) AS prev_month_leads
+        FROM `tabCRM Lead`
+        """,
+        params,
+        as_dict=True,
+    )
 
-	current_month_leads = result[0].current_month_leads or 0
-	prev_month_leads = result[0].prev_month_leads or 0
+    current = result[0].current_month_leads or 0
+    prev = result[0].prev_month_leads or 0
+    delta_pct = ((current - prev) / prev * 100) if prev else 0
 
-	delta_in_percentage = (
-		(current_month_leads - prev_month_leads) / prev_month_leads * 100 if prev_month_leads else 0
-	)
+    return {
+        "title": _("Total leads"),
+        "tooltip": _("Total number of leads"),
+        "value": current,
+        "delta": delta_pct,
+        "deltaSuffix": "%",
+    }
 
-	return {
-		"title": _("Total leads"),
-		"tooltip": _("Total number of leads"),
-		"value": current_month_leads,
-		"delta": delta_in_percentage,
-		"deltaSuffix": "%",
+def get_ongoing_deals(from_date, to_date, user="", territory="", source="", product_types=""):
+    # build params
+    diff = frappe.utils.date_diff(to_date, from_date) or 1
+    params = {
+        "from_date": from_date,
+        "to_date": to_date,
+        "prev_from_date": frappe.utils.add_days(from_date, -diff),
+    }
+
+    conds = []
+    if user:
+        conds.append("d.deal_owner = %(user)s")
+        params["user"] = user
+    if territory:
+        conds.append("l.territory = %(territory)s")
+        params["territory"] = territory
+    if source:
+        conds.append("l.source = %(source)s")
+        params["source"] = source
+    if product_types:
+        conds.append("l.product_types = %(product_types)s")
+        params["product_types"] = product_types
+
+    where_extra = (" AND " + " AND ".join(conds)) if conds else ""
+
+    result = frappe.db.sql(
+        f"""
+        SELECT
+          COUNT(CASE
+            WHEN d.creation >= %(from_date)s
+              AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+              AND s.type NOT IN ('Won','Lost')
+              {where_extra}
+            THEN d.name END) AS current_month_deals,
+
+          COUNT(CASE
+            WHEN d.creation >= %(prev_from_date)s
+              AND d.creation < %(from_date)s
+              AND s.type NOT IN ('Won','Lost')
+              {where_extra}
+            THEN d.name END) AS prev_month_deals
+        FROM `tabCRM Deal` d
+        JOIN `tabCRM Deal Status` s ON d.status = s.name
+        /* Join Lead so we can filter by territory/source/product_types when provided.
+           LEFT JOIN so no impact when filters are empty. */
+        LEFT JOIN `tabCRM Lead` l ON l.name = d.lead
+        """,
+        params,
+        as_dict=True,
+    )
+
+    current_month_deals = (result[0].current_month_deals or 0) if result else 0
+    prev_month_deals = (result[0].prev_month_deals or 0) if result else 0
+
+    delta_in_percentage = (
+        (current_month_deals - prev_month_deals) / prev_month_deals * 100
+        if prev_month_deals else 0
+    )
+
+    return {
+        "title": _("Ongoing deals"),
+        "tooltip": _("Total number of non won/lost deals"),
+        "value": current_month_deals,
+        "delta": delta_in_percentage,
+        "deltaSuffix": "%",
+    }
+
+
+
+def get_average_ongoing_deal_value(
+    from_date, to_date, user: str = "", territory: str = "", source: str = "", product_types: str = ""):
+    diff = frappe.utils.date_diff(to_date, from_date) or 1
+    params = {
+        "from_date": from_date,
+        "to_date": to_date,
+        "prev_from_date": frappe.utils.add_days(from_date, -diff),
+    }
+
+    conds = []
+    if user:
+        conds.append("d.deal_owner = %(user)s")
+        params["user"] = user
+    if territory:
+        conds.append("l.territory = %(territory)s")
+        params["territory"] = territory
+    if source:
+        conds.append("l.source = %(source)s")
+        params["source"] = source
+
+    if product_types:
+        conds.append("l.product_types = %(product_types)s")
+        params["product_types"] = product_types
+
+    where_extra = (" AND " + " AND ".join(conds)) if conds else ""
+
+    result = frappe.db.sql(
+        f"""
+        SELECT
+            AVG(CASE
+                    WHEN d.creation >= %(from_date)s
+                        AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+                        AND s.type NOT IN ('Won','Lost')
+                        {where_extra}
+                    THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+            END) AS current_month_avg_value,
+
+            AVG(CASE
+                    WHEN d.creation >= %(prev_from_date)s
+                        AND d.creation < %(from_date)s
+                        AND s.type NOT IN ('Won','Lost')
+                        {where_extra}
+                    THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+            END) AS prev_month_avg_value
+        FROM `tabCRM Deal` d
+        JOIN `tabCRM Deal Status` s ON d.status = s.name
+        /* Join Lead so we can filter by territory/source/product_types when provided */
+        LEFT JOIN `tabCRM Lead` l ON l.name = d.lead
+        """,
+        params,
+        as_dict=True,
+    )
+
+    row = result[0] if result else {}
+    current_month_avg_value = row.get("current_month_avg_value") or 0
+    prev_month_avg_value = row.get("prev_month_avg_value") or 0
+
+    avg_value_delta = (current_month_avg_value - prev_month_avg_value) if prev_month_avg_value else 0
+
+    return {
+        "title": _("Avg. ongoing deal value"),
+        "tooltip": _("Average deal value of non won/lost deals"),
+        "value": current_month_avg_value,
+        "delta": avg_value_delta,
+        "prefix": get_base_currency_symbol(),
+    }
+
+
+
+def get_won_deals(from_date, to_date, user: str = "", territory: str = "", source: str = "", product_type: str = ""):
+    
+    diff = frappe.utils.date_diff(to_date, from_date) or 1
+    params = {
+        "from_date": from_date,
+        "to_date": to_date,
+        "prev_from_date": frappe.utils.add_days(from_date, -diff),
+    }
+
+    conds = []
+    if user:
+        conds.append("d.deal_owner = %(user)s")
+        params["user"] = user
+    if territory:
+        conds.append("l.territory = %(territory)s")
+        params["territory"] = territory
+    if source:
+        conds.append("l.source = %(source)s")
+        params["source"] = source
+    if product_type:
+        conds.append("l.product_types = %(product_type)s")
+        params["product_type"] = product_type
+
+    where_extra = (" AND " + " AND ".join(conds)) if conds else ""
+
+    result = frappe.db.sql(
+        f"""
+        SELECT
+          COUNT(CASE
+            WHEN d.closed_date >= %(from_date)s
+             AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+             AND s.type = 'Won'
+             {where_extra}
+            THEN d.name END) AS current_month_deals,
+
+          COUNT(CASE
+            WHEN d.closed_date >= %(prev_from_date)s
+             AND d.closed_date < %(from_date)s
+             AND s.type = 'Won'
+             {where_extra}
+            THEN d.name END) AS prev_month_deals
+        FROM `tabCRM Deal` d
+        JOIN `tabCRM Deal Status` s ON d.status = s.name
+        /* Join Lead so we can filter by territory/source/product_type when provided */
+        LEFT JOIN `tabCRM Lead` l ON l.name = d.lead
+        """,
+        params,
+        as_dict=True,
+    )
+
+    current_month_deals = (result[0].current_month_deals or 0) if result else 0
+    prev_month_deals = (result[0].prev_month_deals or 0) if result else 0
+
+    delta_in_percentage = (
+        (current_month_deals - prev_month_deals) / prev_month_deals * 100
+        if prev_month_deals else 0
+    )
+
+    return {
+        "title": _("Won deals"),
+        "tooltip": _("Total number of won deals based on its closure date"),
+        "value": current_month_deals,
+        "delta": delta_in_percentage,
+        "deltaSuffix": "%",  # keep same shape for UI
+    }
+
+
+
+def get_average_won_deal_value(from_date, to_date, user: str = "", territory: str = "", source: str = "", product_type: str = ""):
+	diff = frappe.utils.date_diff(to_date, from_date) or 1
+	params = {
+		"from_date": from_date,
+		"to_date": to_date,
+		"prev_from_date": frappe.utils.add_days(from_date, -diff),
 	}
 
-
-def get_ongoing_deals(from_date, to_date, user=""):
-	"""
-	Get ongoing deal count for the dashboard, and also calculate average deal value for ongoing deals.
-	"""
-	conds = ""
-
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
+	conds = []
 	if user:
-		conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
-			COUNT(CASE
-				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-					AND s.type NOT IN ('Won', 'Lost')
-					{conds}
-				THEN d.name
-				ELSE NULL
-			END) as current_month_deals,
+		  AVG(CASE
+				WHEN d.closed_date >= %(from_date)s
+				 AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				 AND s.type = 'Won'
+				 {where_extra}
+			  THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+			  ELSE NULL
+		  END) AS current_month_avg_value,
 
-			COUNT(CASE
-				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s
-					AND s.type NOT IN ('Won', 'Lost')
-					{conds}
-				THEN d.name
-				ELSE NULL
-			END) as prev_month_deals
+		  AVG(CASE
+				WHEN d.closed_date >= %(prev_from_date)s
+				 AND d.closed_date < %(from_date)s
+				 AND s.type = 'Won'
+				 {where_extra}
+			  THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+			  ELSE NULL
+		  END) AS prev_month_avg_value
 		FROM `tabCRM Deal` d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
-	""",
-		{
-			"from_date": from_date,
-			"to_date": to_date,
-			"prev_from_date": frappe.utils.add_days(from_date, -diff),
-		},
-		as_dict=1,
-	)
-
-	current_month_deals = result[0].current_month_deals or 0
-	prev_month_deals = result[0].prev_month_deals or 0
-
-	delta_in_percentage = (
-		(current_month_deals - prev_month_deals) / prev_month_deals * 100 if prev_month_deals else 0
-	)
-
-	return {
-		"title": _("Ongoing deals"),
-		"tooltip": _("Total number of non won/lost deals"),
-		"value": current_month_deals,
-		"delta": delta_in_percentage,
-		"deltaSuffix": "%",
-	}
-
-
-def get_average_ongoing_deal_value(from_date, to_date, user=""):
-	"""
-	Get ongoing deal count for the dashboard, and also calculate average deal value for ongoing deals.
-	"""
-	conds = ""
-
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	if user:
-		conds += f" AND d.deal_owner = '{user}'"
-
-	result = frappe.db.sql(
-		f"""
-		SELECT
-			AVG(CASE
-				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-					AND s.type NOT IN ('Won', 'Lost')
-					{conds}
-				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
-				ELSE NULL
-			END) as current_month_avg_value,
-
-			AVG(CASE
-				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s
-					AND s.type NOT IN ('Won', 'Lost')
-					{conds}
-				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
-				ELSE NULL
-			END) as prev_month_avg_value
-		FROM `tabCRM Deal` d
-		JOIN `tabCRM Deal Status` s ON d.status = s.name
-    """,
-		{
-			"from_date": from_date,
-			"to_date": to_date,
-			"prev_from_date": frappe.utils.add_days(from_date, -diff),
-		},
-		as_dict=1,
-	)
-
-	current_month_avg_value = result[0].current_month_avg_value or 0
-	prev_month_avg_value = result[0].prev_month_avg_value or 0
-
-	avg_value_delta = current_month_avg_value - prev_month_avg_value if prev_month_avg_value else 0
-
-	return {
-		"title": _("Avg. ongoing deal value"),
-		"tooltip": _("Average deal value of non won/lost deals"),
-		"value": current_month_avg_value,
-		"delta": avg_value_delta,
-		"prefix": get_base_currency_symbol(),
-	}
-
-
-def get_won_deals(from_date, to_date, user=""):
-	"""
-	Get won deal count for the dashboard, and also calculate average deal value for won deals.
-	"""
-
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	conds = ""
-
-	if user:
-		conds += f" AND d.deal_owner = '{user}'"
-
-	result = frappe.db.sql(
-		f"""
-		SELECT
-			COUNT(CASE
-				WHEN d.closed_date >= %(from_date)s AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-					AND s.type = 'Won'
-					{conds}
-				THEN d.name
-				ELSE NULL
-			END) as current_month_deals,
-
-			COUNT(CASE
-				WHEN d.closed_date >= %(prev_from_date)s AND d.closed_date < %(from_date)s
-					AND s.type = 'Won'
-					{conds}
-				THEN d.name
-				ELSE NULL
-			END) as prev_month_deals
-		FROM `tabCRM Deal` d
-		JOIN `tabCRM Deal Status` s ON d.status = s.name
+		/* Join Lead so we can filter by territory/source/product_type when provided */
+		LEFT JOIN `tabCRM Lead` l ON l.name = d.lead
 		""",
-		{
-			"from_date": from_date,
-			"to_date": to_date,
-			"prev_from_date": frappe.utils.add_days(from_date, -diff),
-		},
-		as_dict=1,
+		params,
+		as_dict=True,
 	)
 
-	current_month_deals = result[0].current_month_deals or 0
-	prev_month_deals = result[0].prev_month_deals or 0
+	row = result[0] if result else {}
+	current_month_avg_value = row.get("current_month_avg_value") or 0
+	prev_month_avg_value = row.get("prev_month_avg_value") or 0
 
-	delta_in_percentage = (
-		(current_month_deals - prev_month_deals) / prev_month_deals * 100 if prev_month_deals else 0
-	)
-
-	return {
-		"title": _("Won deals"),
-		"tooltip": _("Total number of won deals based on its closure date"),
-		"value": current_month_deals,
-		"delta": delta_in_percentage,
-		"deltaSuffix": "%",
-	}
-
-
-def get_average_won_deal_value(from_date, to_date, user=""):
-	"""
-	Get won deal count for the dashboard, and also calculate average deal value for won deals.
-	"""
-
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	conds = ""
-
-	if user:
-		conds += f" AND d.deal_owner = '{user}'"
-
-	result = frappe.db.sql(
-		f"""
-		SELECT
-			AVG(CASE
-				WHEN d.closed_date >= %(from_date)s AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-					AND s.type = 'Won'
-					{conds}
-				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
-				ELSE NULL
-			END) as current_month_avg_value,
-
-			AVG(CASE
-				WHEN d.closed_date >= %(prev_from_date)s AND d.closed_date < %(from_date)s
-					AND s.type = 'Won'
-					{conds}
-				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
-				ELSE NULL
-			END) as prev_month_avg_value
-		FROM `tabCRM Deal` d
-		JOIN `tabCRM Deal Status` s ON d.status = s.name
-		""",
-		{
-			"from_date": from_date,
-			"to_date": to_date,
-			"prev_from_date": frappe.utils.add_days(from_date, -diff),
-		},
-		as_dict=1,
-	)
-
-	current_month_avg_value = result[0].current_month_avg_value or 0
-	prev_month_avg_value = result[0].prev_month_avg_value or 0
-
-	avg_value_delta = current_month_avg_value - prev_month_avg_value if prev_month_avg_value else 0
+	# keep original semantics: absolute delta (not %); 0 if no previous window
+	avg_value_delta = (current_month_avg_value - prev_month_avg_value) if prev_month_avg_value else 0
 
 	return {
 		"title": _("Avg. won deal value"),
@@ -364,65 +444,87 @@ def get_average_won_deal_value(from_date, to_date, user=""):
 	}
 
 
-def get_average_deal_value(from_date, to_date, user=""):
-	"""
-	Get average deal value for the dashboard.
-	"""
 
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
+def get_average_deal_value(from_date, to_date, user: str = "", territory: str = "", source: str = "", product_type: str = ""):
+    """
+    Get average deal value for the dashboard.
+    Filters:
+      - user     -> d.deal_owner
+      - territory -> l.territory (via linked Lead)
+      - source   -> l.source   (via linked Lead)
+      - product_type -> l.product_types (via linked Lead)
+    Excludes deals with status type = 'Lost'.
+    """
+    diff = frappe.utils.date_diff(to_date, from_date) or 1
+    params = {
+        "from_date": from_date,
+        "to_date": to_date,
+        "prev_from_date": frappe.utils.add_days(from_date, -diff),
+    }
 
-	conds = ""
+    conds = []
+    if user:
+        conds.append("d.deal_owner = %(user)s")
+        params["user"] = user
+    if territory:
+        conds.append("l.territory = %(territory)s")
+        params["territory"] = territory
+    if source:
+        conds.append("l.source = %(source)s")
+        params["source"] = source
+    if product_type:
+        conds.append("l.product_types = %(product_type)s")
+        params["product_type"] = product_type
 
-	if user:
-		conds += f" AND d.deal_owner = '{user}'"
+    where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
-	result = frappe.db.sql(
-		f"""
-		SELECT
-			AVG(CASE
-				WHEN d.creation >= %(from_date)s AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-					AND s.type != 'Lost'
-					{conds}
-				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
-				ELSE NULL
-			END) as current_month_avg,
+    result = frappe.db.sql(
+        f"""
+        SELECT
+            AVG(CASE
+                WHEN d.creation >= %(from_date)s
+                 AND d.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+                 AND s.type != 'Lost'
+                 {where_extra}
+                THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+                ELSE NULL
+            END) AS current_month_avg,
 
-			AVG(CASE
-				WHEN d.creation >= %(prev_from_date)s AND d.creation < %(from_date)s
-					AND s.type != 'Lost'
-					{conds}
-				THEN d.deal_value * IFNULL(d.exchange_rate, 1)
-				ELSE NULL
-			END) as prev_month_avg
-		FROM `tabCRM Deal` AS d
-		JOIN `tabCRM Deal Status` s ON d.status = s.name
-		""",
-		{
-			"from_date": from_date,
-			"to_date": to_date,
-			"prev_from_date": frappe.utils.add_days(from_date, -diff),
-		},
-		as_dict=1,
-	)
+            AVG(CASE
+                WHEN d.creation >= %(prev_from_date)s
+                 AND d.creation < %(from_date)s
+                 AND s.type != 'Lost'
+                 {where_extra}
+                THEN d.deal_value * IFNULL(d.exchange_rate, 1)
+                ELSE NULL
+            END) AS prev_month_avg
+        FROM `tabCRM Deal` d
+        JOIN `tabCRM Deal Status` s ON d.status = s.name
+        /* Join Lead to allow filtering by territory/source/product_type */
+        LEFT JOIN `tabCRM Lead` l ON l.name = d.lead
+        """,
+        params,
+        as_dict=True,
+    )
 
-	current_month_avg = result[0].current_month_avg or 0
-	prev_month_avg = result[0].prev_month_avg or 0
+    row = result[0] if result else {}
+    current_month_avg = row.get("current_month_avg") or 0
+    prev_month_avg = row.get("prev_month_avg") or 0
 
-	delta = current_month_avg - prev_month_avg if prev_month_avg else 0
+    delta = (current_month_avg - prev_month_avg) if prev_month_avg else 0
 
-	return {
-		"title": _("Avg. deal value"),
-		"tooltip": _("Average deal value of ongoing & won deals"),
-		"value": current_month_avg,
-		"prefix": get_base_currency_symbol(),
-		"delta": delta,
-		"deltaSuffix": "%",
-	}
+    return {
+        "title": _("Avg. deal value"),
+        "tooltip": _("Average deal value of ongoing & won deals"),
+        "value": current_month_avg,
+        "prefix": get_base_currency_symbol(),
+        "delta": delta,
+        "deltaSuffix": "%",  # kept as in your original
+    }
 
 
-def get_average_time_to_close_a_lead(from_date, to_date, user=""):
+
+def get_average_time_to_close_a_lead(from_date, to_date, user="", territory="", source="", product_type=""):
 	"""
 	Get average time to close deals for the dashboard.
 	"""
@@ -431,33 +533,44 @@ def get_average_time_to_close_a_lead(from_date, to_date, user=""):
 	if diff == 0:
 		diff = 1
 
-	conds = ""
+	params = {
+		"from_date": from_date,
+		"to_date": to_date,
+		"prev_from_date": frappe.utils.add_days(from_date, -diff),
+		"prev_to_date": from_date,
+	}
 
+	conds = []
 	if user:
-		conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
 
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
-	prev_to_date = from_date
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
 			AVG(CASE WHEN d.closed_date >= %(from_date)s AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				{where_extra}
 				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_date) END) as current_avg_lead,
 			AVG(CASE WHEN d.closed_date >= %(prev_from_date)s AND d.closed_date < %(prev_to_date)s
+				{where_extra}
 				THEN TIMESTAMPDIFF(DAY, COALESCE(l.creation, d.creation), d.closed_date) END) as prev_avg_lead
 		FROM `tabCRM Deal` AS d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
 		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE d.closed_date IS NOT NULL AND s.type = 'Won'
-			{conds}
 		""",
-		{
-			"from_date": from_date,
-			"to_date": to_date,
-			"prev_from_date": prev_from_date,
-			"prev_to_date": prev_to_date,
-		},
+		params,
 		as_dict=1,
 	)
 
@@ -476,7 +589,7 @@ def get_average_time_to_close_a_lead(from_date, to_date, user=""):
 	}
 
 
-def get_average_time_to_close_a_deal(from_date, to_date, user=""):
+def get_average_time_to_close_a_deal(from_date, to_date, user="", territory="", source="", product_type=""):
 	"""
 	Get average time to close deals for the dashboard.
 	"""
@@ -485,33 +598,44 @@ def get_average_time_to_close_a_deal(from_date, to_date, user=""):
 	if diff == 0:
 		diff = 1
 
-	conds = ""
+	params = {
+		"from_date": from_date,
+		"to_date": to_date,
+		"prev_from_date": frappe.utils.add_days(from_date, -diff),
+		"prev_to_date": from_date,
+	}
 
+	conds = []
 	if user:
-		conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
 
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
-	prev_to_date = from_date
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
 			AVG(CASE WHEN d.closed_date >= %(from_date)s AND d.closed_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				{where_extra}
 				THEN TIMESTAMPDIFF(DAY, d.creation, d.closed_date) END) as current_avg_deal,
 			AVG(CASE WHEN d.closed_date >= %(prev_from_date)s AND d.closed_date < %(prev_to_date)s
+				{where_extra}
 				THEN TIMESTAMPDIFF(DAY, d.creation, d.closed_date) END) as prev_avg_deal
 		FROM `tabCRM Deal` AS d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
 		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE d.closed_date IS NOT NULL AND s.type = 'Won'
-			{conds}
 		""",
-		{
-			"from_date": from_date,
-			"to_date": to_date,
-			"prev_from_date": prev_from_date,
-			"prev_to_date": prev_to_date,
-		},
+		params,
 		as_dict=1,
 	)
 
@@ -530,7 +654,7 @@ def get_average_time_to_close_a_deal(from_date, to_date, user=""):
 	}
 
 
-def get_sales_trend(from_date="", to_date="", user=""):
+def get_sales_trend(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get sales trend data for the dashboard.
 	[
@@ -549,7 +673,19 @@ def get_sales_trend(from_date="", to_date="", user=""):
 
 	if user:
 		lead_conds += f" AND lead_owner = '{user}'"
-		deal_conds += f" AND deal_owner = '{user}'"
+		deal_conds += f" AND d.deal_owner = '{user}'"
+	
+	if territory:
+		lead_conds += f" AND territory = '{territory}'"
+		deal_conds += f" AND l.territory = '{territory}'"
+		
+	if source:
+		lead_conds += f" AND source = '{source}'"
+		deal_conds += f" AND l.source = '{source}'"
+		
+	if product_type:
+		lead_conds += f" AND product_types = '{product_type}'"
+		deal_conds += f" AND l.product_types = '{product_type}'"
 
 	result = frappe.db.sql(
 		f"""
@@ -578,6 +714,7 @@ def get_sales_trend(from_date="", to_date="", user=""):
 				SUM(CASE WHEN s.type = 'Won' THEN 1 ELSE 0 END) AS won_deals
 			FROM `tabCRM Deal` d
 			JOIN `tabCRM Deal Status` s ON d.status = s.name
+			LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 			WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
 			{deal_conds}
 			GROUP BY DATE(d.creation)
@@ -620,7 +757,7 @@ def get_sales_trend(from_date="", to_date="", user=""):
 	}
 
 
-def get_forecasted_revenue(from_date="", to_date="", user=""):
+def get_forecasted_revenue(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get forecasted revenue for the dashboard.
 	[
@@ -631,10 +768,17 @@ def get_forecasted_revenue(from_date="", to_date="", user=""):
 		...
 	]
 	"""
-	deal_conds = ""
-
+	conds = []
 	if user:
-		deal_conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+	if territory:
+		conds.append("l.territory = %(territory)s")
+	if source:
+		conds.append("l.source = %(source)s")
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
@@ -654,11 +798,13 @@ def get_forecasted_revenue(from_date="", to_date="", user=""):
 			)                                                       AS actual
 		FROM `tabCRM Deal` AS d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
+		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE d.expected_closure_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
-		{deal_conds}
+		{where_extra}
 		GROUP BY DATE_FORMAT(d.expected_closure_date, '%Y-%m')
 		ORDER BY month
 		""",
+		{"user": user, "territory": territory, "source": source, "product_type": product_type},
 		as_dict=True,
 	)
 
@@ -687,7 +833,7 @@ def get_forecasted_revenue(from_date="", to_date="", user=""):
 	}
 
 
-def get_funnel_conversion(from_date="", to_date="", user=""):
+def get_funnel_conversion(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get funnel conversion data for the dashboard.
 	[
@@ -709,6 +855,18 @@ def get_funnel_conversion(from_date="", to_date="", user=""):
 	if user:
 		lead_conds += f" AND lead_owner = '{user}'"
 		deal_conds += f" AND deal_owner = '{user}'"
+		
+	if territory:
+		lead_conds += f" AND territory = '{territory}'"
+		deal_conds += f" AND l.territory = '{territory}'"
+		
+	if source:
+		lead_conds += f" AND source = '{source}'"
+		deal_conds += f" AND l.source = '{source}'"
+		
+	if product_type:
+		lead_conds += f" AND product_types = '{product_type}'"
+		deal_conds += f" AND l.product_types = '{product_type}'"
 
 	result = []
 
@@ -727,7 +885,8 @@ def get_funnel_conversion(from_date="", to_date="", user=""):
 
 	result.append({"stage": "Leads", "count": total_leads_count})
 
-	result += get_deal_status_change_counts(from_date, to_date, deal_conds)
+	# Update deal_conds to include LEFT JOIN with Lead table for territory/source/product_type filtering
+	result += get_deal_status_change_counts(from_date, to_date, user, territory, source, product_type)
 
 	return {
 		"data": result or [],
@@ -754,7 +913,7 @@ def get_funnel_conversion(from_date="", to_date="", user=""):
 	}
 
 
-def get_deals_by_stage_axis(from_date="", to_date="", user=""):
+def get_deals_by_stage_axis(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get deal data by stage for the dashboard.
 	[
@@ -763,14 +922,27 @@ def get_deals_by_stage_axis(from_date="", to_date="", user=""):
 		...
 	]
 	"""
-	deal_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	params = {"from": from_date, "to": to_date}
+	conds = []
+	
 	if user:
-		deal_conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
@@ -780,12 +952,13 @@ def get_deals_by_stage_axis(from_date="", to_date="", user=""):
 			s.type AS status_type
 		FROM `tabCRM Deal` AS d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
+		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s AND s.type NOT IN ('Lost')
-		{deal_conds}
+		{where_extra}
 		GROUP BY d.status
 		ORDER BY count DESC
 		""",
-		{"from": from_date, "to": to_date},
+		params,
 		as_dict=True,
 	)
 
@@ -804,7 +977,7 @@ def get_deals_by_stage_axis(from_date="", to_date="", user=""):
 	}
 
 
-def get_deals_by_stage_donut(from_date="", to_date="", user=""):
+def get_deals_by_stage_donut(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get deal data by stage for the dashboard.
 	[
@@ -813,14 +986,27 @@ def get_deals_by_stage_donut(from_date="", to_date="", user=""):
 		...
 	]
 	"""
-	deal_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	params = {"from": from_date, "to": to_date}
+	conds = []
+	
 	if user:
-		deal_conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
@@ -830,12 +1016,13 @@ def get_deals_by_stage_donut(from_date="", to_date="", user=""):
 			s.type AS status_type
 		FROM `tabCRM Deal` AS d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
+		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
-		{deal_conds}
+		{where_extra}
 		GROUP BY d.status
 		ORDER BY count DESC
 		""",
-		{"from": from_date, "to": to_date},
+		params,
 		as_dict=True,
 	)
 
@@ -848,7 +1035,7 @@ def get_deals_by_stage_donut(from_date="", to_date="", user=""):
 	}
 
 
-def get_lost_deal_reasons(from_date="", to_date="", user=""):
+def get_lost_deal_reasons(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get lost deal reasons for the dashboard.
 	[
@@ -858,14 +1045,27 @@ def get_lost_deal_reasons(from_date="", to_date="", user=""):
 	]
 	"""
 
-	deal_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	params = {"from": from_date, "to": to_date}
+	conds = []
+	
 	if user:
-		deal_conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
@@ -874,13 +1074,14 @@ def get_lost_deal_reasons(from_date="", to_date="", user=""):
 			COUNT(*) AS count
 		FROM `tabCRM Deal` AS d
 		JOIN `tabCRM Deal Status` s ON d.status = s.name
+		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s AND s.type = 'Lost'
-		{deal_conds}
+		{where_extra}
 		GROUP BY d.lost_reason
 		HAVING reason IS NOT NULL AND reason != ''
 		ORDER BY count DESC
 		""",
-		{"from": from_date, "to": to_date},
+		params,
 		as_dict=True,
 	)
 
@@ -902,7 +1103,7 @@ def get_lost_deal_reasons(from_date="", to_date="", user=""):
 	}
 
 
-def get_leads_by_source(from_date="", to_date="", user=""):
+def get_leads_by_source(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get lead data by source for the dashboard.
 	[
@@ -911,14 +1112,25 @@ def get_leads_by_source(from_date="", to_date="", user=""):
 		...
 	]
 	"""
-	lead_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	params = {"from": from_date, "to": to_date}
+	conds = []
+	
 	if user:
-		lead_conds += f" AND lead_owner = '{user}'"
+		conds.append("lead_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("territory = %(territory)s")
+		params["territory"] = territory
+	# Note: source filter not applied here as this function shows leads BY source
+	if product_type:
+		conds.append("product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
@@ -927,11 +1139,11 @@ def get_leads_by_source(from_date="", to_date="", user=""):
 			COUNT(*) AS count
 		FROM `tabCRM Lead`
 		WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
-		{lead_conds}
+		{where_extra}
 		GROUP BY source
 		ORDER BY count DESC
 		""",
-		{"from": from_date, "to": to_date},
+		params,
 		as_dict=True,
 	)
 
@@ -944,7 +1156,7 @@ def get_leads_by_source(from_date="", to_date="", user=""):
 	}
 
 
-def get_deals_by_source(from_date="", to_date="", user=""):
+def get_deals_by_source(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get deal data by source for the dashboard.
 	[
@@ -953,27 +1165,39 @@ def get_deals_by_source(from_date="", to_date="", user=""):
 		...
 	]
 	"""
-	deal_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	params = {"from": from_date, "to": to_date}
+	conds = []
+	
 	if user:
-		deal_conds += f" AND deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	# Note: source filter not applied here as this function shows deals BY source via linked lead
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
-			IFNULL(source, 'Empty') AS source,
+			IFNULL(l.source, 'Empty') AS source,
 			COUNT(*) AS count
-		FROM `tabCRM Deal`
-		WHERE DATE(creation) BETWEEN %(from)s AND %(to)s
-		{deal_conds}
-		GROUP BY source
+		FROM `tabCRM Deal` d
+		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
+		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
+		{where_extra}
+		GROUP BY l.source
 		ORDER BY count DESC
 		""",
-		{"from": from_date, "to": to_date},
+		params,
 		as_dict=True,
 	)
 
@@ -986,7 +1210,7 @@ def get_deals_by_source(from_date="", to_date="", user=""):
 	}
 
 
-def get_deals_by_territory(from_date="", to_date="", user=""):
+def get_deals_by_territory(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get deal data by territory for the dashboard.
 	[
@@ -995,28 +1219,40 @@ def get_deals_by_territory(from_date="", to_date="", user=""):
 		...
 	]
 	"""
-	deal_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	params = {"from": from_date, "to": to_date}
+	conds = []
+	
 	if user:
-		deal_conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	# Note: territory filter not applied here as this function shows deals BY territory via linked lead
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
-			IFNULL(d.territory, 'Empty') AS territory,
+			IFNULL(l.territory, 'Empty') AS territory,
 			COUNT(*) AS deals,
 			SUM(COALESCE(d.deal_value, 0) * IFNULL(d.exchange_rate, 1)) AS value
 		FROM `tabCRM Deal` AS d
+		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
-		{deal_conds}
-		GROUP BY d.territory
+		{where_extra}
+		GROUP BY l.territory
 		ORDER BY value DESC
 		""",
-		{"from": from_date, "to": to_date},
+		params,
 		as_dict=True,
 	)
 
@@ -1042,7 +1278,7 @@ def get_deals_by_territory(from_date="", to_date="", user=""):
 	}
 
 
-def get_deals_by_salesperson(from_date="", to_date="", user=""):
+def get_deals_by_salesperson(from_date="", to_date="", user="", territory="", source="", product_type=""):
 	"""
 	Get deal data by salesperson for the dashboard.
 	[
@@ -1051,14 +1287,27 @@ def get_deals_by_salesperson(from_date="", to_date="", user=""):
 		...
 	]
 	"""
-	deal_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
+	params = {"from": from_date, "to": to_date}
+	conds = []
+	
 	if user:
-		deal_conds += f" AND d.deal_owner = '{user}'"
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
@@ -1068,12 +1317,13 @@ def get_deals_by_salesperson(from_date="", to_date="", user=""):
 			SUM(COALESCE(d.deal_value, 0) * IFNULL(d.exchange_rate, 1)) AS value
 		FROM `tabCRM Deal` AS d
 		LEFT JOIN `tabUser` AS u ON u.name = d.deal_owner
+		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE DATE(d.creation) BETWEEN %(from)s AND %(to)s
-		{deal_conds}
+		{where_extra}
 		GROUP BY d.deal_owner
 		ORDER BY value DESC
 		""",
-		{"from": from_date, "to": to_date},
+		params,
 		as_dict=True,
 	)
 
@@ -1107,7 +1357,7 @@ def get_base_currency_symbol():
 	return frappe.db.get_value("Currency", base_currency, "symbol") or ""
 
 
-def get_deal_status_change_counts(from_date, to_date, deal_conds=""):
+def get_deal_status_change_counts(from_date, to_date, user="", territory="", source="", product_type=""):
 	"""
 	Get count of each status change (to) for each deal, excluding deals with current status type 'Lost'.
 	Order results by status position.
@@ -1118,6 +1368,24 @@ def get_deal_status_change_counts(from_date, to_date, deal_conds=""):
 	  ...
 	]
 	"""
+	params = {"from": from_date, "to": to_date}
+	conds = []
+	
+	if user:
+		conds.append("d.deal_owner = %(user)s")
+		params["user"] = user
+	if territory:
+		conds.append("l.territory = %(territory)s")
+		params["territory"] = territory
+	if source:
+		conds.append("l.source = %(source)s")
+		params["source"] = source
+	if product_type:
+		conds.append("l.product_types = %(product_type)s")
+		params["product_type"] = product_type
+
+	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
+
 	result = frappe.db.sql(
 		f"""
 		SELECT
@@ -1131,39 +1399,56 @@ def get_deal_status_change_counts(from_date, to_date, deal_conds=""):
 			`tabCRM Deal Status` s ON d.status = s.name
 		JOIN
 			`tabCRM Deal Status` st ON scl.to = st.name
+		LEFT JOIN
+			`tabCRM Lead` l ON d.lead = l.name
 		WHERE
 			scl.to IS NOT NULL
 			AND scl.to != ''
 			AND s.type != 'Lost'
 			AND DATE(d.creation) BETWEEN %(from)s AND %(to)s
-			{deal_conds}
+			{where_extra}
 		GROUP BY
 			scl.to, st.position
 		ORDER BY
 			st.position ASC
 		""",
-		{"from": from_date, "to": to_date},
+		params,
 		as_dict=True,
 	)
 	return result or []
 
-def get_avg_call_duration(from_date, to_date, user=""):
+def get_avg_call_duration(from_date, to_date, user="", territory="", source="", product_type=""):
     """
     Returns average call duration in minutes
     """
-    conds = ""
+    params = {"from_date": from_date, "to_date": to_date}
+    conds = []
+    
     if user:
-        conds += f" AND owner = %(user)s"
+        conds.append("cl.owner = %(user)s")
+        params["user"] = user
+    if territory:
+        conds.append("l.territory = %(territory)s")
+        params["territory"] = territory
+    if source:
+        conds.append("l.source = %(source)s")
+        params["source"] = source
+    if product_type:
+        conds.append("l.product_types = %(product_type)s")
+        params["product_type"] = product_type
+
+    where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
     result = frappe.db.sql(
         f"""
         SELECT
-            AVG(duration) / 60 AS avg_duration
-        FROM `tabCRM Call Log`
-        WHERE creation BETWEEN %(from_date)s AND DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-        {conds}
+            AVG(cl.duration) / 60 AS avg_duration
+        FROM `tabCRM Call Log` cl
+        LEFT JOIN `tabCRM Lead` l ON cl.lead = l.name
+        WHERE cl.creation BETWEEN %(from_date)s AND DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+        {where_extra}
         """,
-        {"from_date": from_date, "to_date": to_date, "user": user},
+        params,
         as_dict=True,
     )
 

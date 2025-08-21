@@ -136,6 +136,59 @@
           </Tooltip>
         </template>
       </Link>
+      <Link
+        class="form-control w-48"
+        variant="outline"
+        :value="filters.territory || ''"
+        doctype="CRM Territory"
+        :filters="null"
+        @change="(v) => updateFilter('territory', v)"
+        :placeholder="__('territory')"
+        :hideMe="true"
+      >
+        <template #prefix>
+          <span v-if="filters.territory" class="mr-2"></span>
+        </template>
+        <template #item-label="{ option }">
+          <Tooltip :text="option.value">
+            <div class="cursor-pointer">
+              {{ option.value }}
+            </div>
+          </Tooltip>
+        </template>
+      </Link>
+      <Link
+        class="form-control w-48"
+        variant="outline"
+        :value="filters.source || ''"
+        doctype="CRM Lead Source"
+        :filters="null"
+        @change="(v) => updateFilter('source', v)"
+        :placeholder="__('Source')"
+        :hideMe="true"
+      >
+        <template #item-label="{ option }">
+          <Tooltip :text="option.value">
+            <div class="cursor-pointer">{{ option.value }}</div>
+          </Tooltip>
+        </template>
+      </Link>
+      <Link
+        class="form-control w-48"
+        variant="outline"
+        :value="filters.product_type || ''"
+        doctype="CRM Product Type"
+        :filters="null"
+        @change="(v) => updateFilter('product_type', v)"
+        :placeholder="__('Produt Type')"
+        :hideMe="true"
+      >
+        <template #item-label="{ option }">
+          <Tooltip :text="option.value">
+            <div class="cursor-pointer">{{ option.value }}</div>
+          </Tooltip>
+        </template>
+      </Link>
     </div>
 
     <div class="w-full overflow-y-scroll">
@@ -188,6 +241,9 @@ const showAddChartModal = ref(false)
 const filters = reactive({
   period: getLastXDays(),
   user: null,
+  source:null,
+  territory: null,
+  product_type:null,
 })
 
 const fromDate = computed(() => {
@@ -268,14 +324,20 @@ const dashboardItems = createResource({
       'ManagerDashboard',
       fromDate.value,
       toDate.value,
-      filters.user || 'all-users'
+      filters.user || 'all-users',
+      filters.territory || 'all-territories',
+      filters.source || 'all-sources',
+      filters.product_type || 'all-product_types'
     ]
   },
   makeParams() {
     return {
       from_date: fromDate.value,
       to_date: toDate.value,
-      user: filters.user,
+      user: filters.user || '',
+      territory: filters.territory || '',
+      source:filters.source || '',
+      product_type:filters.product_type || ''
     }
   },
   auto: true,
