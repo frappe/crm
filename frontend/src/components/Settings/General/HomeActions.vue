@@ -17,8 +17,8 @@
           :label="__('Update')"
           icon-left="plus"
           variant="solid"
-          :disabled="!settings.isDirty"
-          :loading="settings.loading"
+          :disabled="!document.isDirty"
+          :loading="document.loading"
           @click="updateSettings"
         />
       </div>
