@@ -6,7 +6,7 @@
       </template>
       <template #right-header>
 
-        
+        <!-- import lead button -->
         <Button
           class="hidden sm:inline-flex"
           variant="solid"
@@ -61,135 +61,144 @@
       </template>
     </LayoutHeader>
 
-    <div class="p-5 pb-2 flex items-center gap-4">
-      <Dropdown
-        v-if="!showDatePicker"
-        :options="options"
-        class="form-control"
-        v-model="preset"
-        :placeholder="__('Select Range')"
-        :button="{
-          label: __(preset),
-          class:
-            '!w-full justify-start [&>span]:mr-auto [&>svg]:text-ink-gray-5 ',
-          variant: 'outline',
-          iconRight: 'chevron-down',
-          iconLeft: 'calendar',
-        }"
-      >
-        <template #prefix>
-          <LucideCalendar class="size-4 text-ink-gray-5 mr-2" />
-        </template>
-      </Dropdown>
-      <DateRangePicker
-        v-else
-        class="!w-48"
-        ref="datePickerRef"
-        :value="filters.period"
-        variant="outline"
-        :placeholder="__('Period')"
-        @change="
-          (v) =>
-            updateFilter('period', v, () => {
-              showDatePicker = false
-              if (!v) {
-                filters.period = getLastXDays()
-                preset = 'Last 30 Days'
-              } else {
-                preset = formatter(v)
-              }
-            })
-        "
-        :formatter="formatRange"
-      >
-        <template #prefix>
-          <LucideCalendar class="size-4 text-ink-gray-5 mr-2" />
-        </template>
-      </DateRangePicker>
-      <Link
-        v-if="isAdmin() || isManager()"
-        class="form-control w-48"
-        variant="outline"
-        :value="filters.user && getUser(filters.user).full_name"
-        doctype="User"
-        :filters="{ name: ['in', users.data.crmUsers?.map((u) => u.name)] }"
-        @change="(v) => updateFilter('user', v)"
-        :placeholder="__('Sales user')"
-        :hideMe="true"
-      >
-        <template #prefix>
-          <UserAvatar
-            v-if="filters.user"
-            class="mr-2"
-            :user="filters.user"
-            size="sm"
-          />
-        </template>
-        <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            <div class="cursor-pointer">
-              {{ getUser(option.value).full_name }}
-            </div>
-          </Tooltip>
-        </template>
-      </Link>
-      <Link
-        class="form-control w-48"
-        variant="outline"
-        :value="filters.territory || ''"
-        doctype="CRM Territory"
-        :filters="null"
-        @change="(v) => updateFilter('territory', v)"
-        :placeholder="__('Territory')"
-        :hideMe="true"
-      >
-        <template #prefix>
-          <span v-if="filters.territory" class="mr-2"></span>
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            <div class="cursor-pointer">
-              {{ option.value }}
-            </div>
-          </Tooltip>
-        </template>
-      </Link>
-      <Link
-        class="form-control w-48"
-        variant="outline"
-        :value="filters.source || ''"
-        doctype="CRM Lead Source"
-        :filters="null"
-        @change="(v) => updateFilter('source', v)"
-        :placeholder="__('Source')"
-        :hideMe="true"
-      >
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            <div class="cursor-pointer">{{ option.value }}</div>
-          </Tooltip>
-        </template>
-      </Link>
-      <Link
-        class="form-control w-48"
-        variant="outline"
-        :value="filters.product_type || ''"
-        doctype="CRM Product Type"
-        :filters="null"
-        @change="(v) => updateFilter('product_type', v)"
-        :placeholder="__('Produt Type')"
-        :hideMe="true"
-      >
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            <div class="cursor-pointer">{{ option.value }}</div>
-          </Tooltip>
-        </template>
-      </Link>
-    </div>
+  <div class="p-5 pb-2 grid grid-cols-2 sm:grid-cols-3 gap-4 items-center 
+            md:flex md:flex-wrap md:gap-4 md:items-center">
+  <!-- Date Preset / Range Picker -->
+  <Dropdown
+    v-if="!showDatePicker"
+    :options="options"
+    class="form-control w-full"
+    v-model="preset"
+    :placeholder="__('Select Range')"
+    :button="{
+      label: __(preset),
+      class:
+        '!w-full md:!w-auto justify-start [&>span]:mr-auto [&>svg]:text-ink-gray-5 ',
+      variant: 'outline',
+      iconRight: 'chevron-down',
+      iconLeft: 'calendar',
+    }"
+  >
+    <template #prefix>
+      <LucideCalendar class="size-4 text-ink-gray-5 mr-2" />
+    </template>
+  </Dropdown>
+
+  <!-- Date Range Picker -->
+  <DateRangePicker
+    v-else
+    class="w-full"
+    ref="datePickerRef"
+    :value="filters.period"
+    variant="outline"
+    :placeholder="__('Period')"
+    @change="
+      (v) =>
+        updateFilter('period', v, () => {
+          showDatePicker = false
+          if (!v) {
+            filters.period = getLastXDays()
+            preset = 'Last 30 Days'
+          } else {
+            preset = formatter(v)
+          }
+        })
+    "
+    :formatter="formatRange"
+  >
+    <template #prefix>
+      <LucideCalendar class="size-4 text-ink-gray-5 mr-2" />
+    </template>
+  </DateRangePicker>
+
+  <!-- user dropdown -->
+  <Link
+    v-if="isAdmin() || isManager()"
+    class="form-control w-full md:w-48"
+    variant="outline"
+    :value="filters.user && getUser(filters.user).full_name"
+    doctype="User"
+    :filters="{ name: ['in', users.data.crmUsers?.map((u) => u.name)] }"
+    @change="(v) => updateFilter('user', v)"
+    :placeholder="__('Sales user')"
+    :hideMe="true"
+  >
+    <template #prefix>
+      <UserAvatar
+        v-if="filters.user"
+        class="mr-2"
+        :user="filters.user"
+        size="sm"
+      />
+    </template>
+    <template #item-prefix="{ option }">
+      <UserAvatar class="mr-2" :user="option.value" size="sm" />
+    </template>
+    <template #item-label="{ option }">
+      <Tooltip :text="option.value">
+        <div class="cursor-pointer">
+          {{ getUser(option.value).full_name }}
+        </div>
+      </Tooltip>
+    </template>
+  </Link>
+
+  <!-- territory dropdown -->
+  <Link
+    class="form-control w-full md:w-48"
+    variant="outline"
+    :value="filters.territory || ''"
+    doctype="CRM Territory"
+    :filters="null"
+    @change="(v) => updateFilter('territory', v)"
+    :placeholder="__('Territory')"
+    :hideMe="true"
+  >
+    <template #item-label="{ option }">
+      <Tooltip :text="option.value">
+        <div class="cursor-pointer">{{ option.value }}</div>
+      </Tooltip>
+    </template>
+  </Link>
+
+  <!-- source dropdown -->
+  <Link
+    class="form-control w-full md:w-48"
+    variant="outline"
+    :value="filters.source || ''"
+    doctype="CRM Lead Source"
+    :filters="null"
+    @change="(v) => updateFilter('source', v)"
+    :placeholder="__('Source')"
+    :hideMe="true"
+  >
+    <template #item-label="{ option }">
+      <Tooltip :text="option.value">
+        <div class="cursor-pointer">{{ option.value }}</div>
+      </Tooltip>
+    </template>
+  </Link>
+
+  <!-- product type dropdown -->
+  <Link
+    class="form-control w-full md:w-48"
+    variant="outline"
+    :value="filters.product_type || ''"
+    doctype="CRM Product Type"
+    :filters="null"
+    @change="(v) => updateFilter('product_type', v)"
+    :placeholder="__('Product Type')"
+    :hideMe="true"
+  >
+    <template #item-label="{ option }">
+      <Tooltip :text="option.value">
+        <div class="cursor-pointer">{{ option.value }}</div>
+      </Tooltip>
+    </template>
+  </Link>
+</div>
+
+
 
     <div class="w-full overflow-y-scroll">
       <DashboardGrid
@@ -421,11 +430,11 @@ const createAndOpenImport = async () => {
     const { name } = await insertDoc.submit({
       doc: {
         doctype: 'Data Import',
-        reference_doctype: 'CRM Lead',      // ensure this matches your DocType name exactly
+        reference_doctype: 'CRM Lead',     
         import_type: 'Insert New Records'
       }
     })
-    window.location.href = `/app/data-import/${encodeURIComponent(name)}`
+    window.open(`/app/data-import/${encodeURIComponent(name)}`, '_blank')
   } catch (e) {
     frappe.msgprint({ title: __('Error'), message: e?.message || String(e), indicator: 'red' })
   }
