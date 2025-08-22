@@ -15,14 +15,7 @@ def reset_to_default():
 
 @frappe.whitelist()
 @sales_user_only
-def get_dashboard(
-    from_date: str = "",
-    to_date: str = "",
-    user: str = "",
-    territory: str = "",
-    source: str = "",
-    product_type: str = ""
-):
+def get_dashboard(from_date: str = "",to_date: str = "",user: str = "",territory: str = "",source: str = "",product_type: str = ""):
     
 
     if not from_date or not to_date:
@@ -111,7 +104,7 @@ def get_chart(
 
 
 def get_total_leads(
-    from_date, to_date, user: str = "", territory: str = "", source: str = "", product_types: str = ""):
+    from_date, to_date, user: str = "", territory: str = "", source: str = "", product_type: str = ""):
     
     conds = ""
     params = {"from_date": from_date, "to_date": to_date}
@@ -131,10 +124,10 @@ def get_total_leads(
         conds += " AND source = %(source)s"
         params["source"] = source
     
-    # New filter for product_types
-    if product_types:
-        conds += " AND product_types = %(product_types)s"
-        params["product_types"] = product_types
+    # New filter for product_type
+    if product_type:
+        conds += " AND product_type = %(product_type)s"
+        params["product_type"] = product_type
 
     result = frappe.db.sql(
         f"""
@@ -169,7 +162,7 @@ def get_total_leads(
         "deltaSuffix": "%",
     }
 
-def get_ongoing_deals(from_date, to_date, user="", territory="", source="", product_types=""):
+def get_ongoing_deals(from_date, to_date, user="", territory="", source="", product_type=""):
     # build params
     diff = frappe.utils.date_diff(to_date, from_date) or 1
     params = {
@@ -188,9 +181,9 @@ def get_ongoing_deals(from_date, to_date, user="", territory="", source="", prod
     if source:
         conds.append("l.source = %(source)s")
         params["source"] = source
-    if product_types:
-        conds.append("l.product_types = %(product_types)s")
-        params["product_types"] = product_types
+    if product_type:
+        conds.append("l.product_type = %(product_type)s")
+        params["product_type"] = product_type
 
     where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
@@ -212,7 +205,7 @@ def get_ongoing_deals(from_date, to_date, user="", territory="", source="", prod
             THEN d.name END) AS prev_month_deals
         FROM `tabCRM Deal` d
         JOIN `tabCRM Deal Status` s ON d.status = s.name
-        /* Join Lead so we can filter by territory/source/product_types when provided.
+        /* Join Lead so we can filter by territory/source/product_type when provided.
            LEFT JOIN so no impact when filters are empty. */
         LEFT JOIN `tabCRM Lead` l ON l.name = d.lead
         """,
@@ -239,7 +232,7 @@ def get_ongoing_deals(from_date, to_date, user="", territory="", source="", prod
 
 
 def get_average_ongoing_deal_value(
-    from_date, to_date, user: str = "", territory: str = "", source: str = "", product_types: str = ""):
+    from_date, to_date, user: str = "", territory: str = "", source: str = "", product_type: str = ""):
     diff = frappe.utils.date_diff(to_date, from_date) or 1
     params = {
         "from_date": from_date,
@@ -258,9 +251,9 @@ def get_average_ongoing_deal_value(
         conds.append("l.source = %(source)s")
         params["source"] = source
 
-    if product_types:
-        conds.append("l.product_types = %(product_types)s")
-        params["product_types"] = product_types
+    if product_type:
+        conds.append("l.product_type = %(product_type)s")
+        params["product_type"] = product_type
 
     where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
@@ -284,7 +277,7 @@ def get_average_ongoing_deal_value(
             END) AS prev_month_avg_value
         FROM `tabCRM Deal` d
         JOIN `tabCRM Deal Status` s ON d.status = s.name
-        /* Join Lead so we can filter by territory/source/product_types when provided */
+        /* Join Lead so we can filter by territory/source/product_type when provided */
         LEFT JOIN `tabCRM Lead` l ON l.name = d.lead
         """,
         params,
@@ -327,7 +320,7 @@ def get_won_deals(from_date, to_date, user: str = "", territory: str = "", sourc
         conds.append("l.source = %(source)s")
         params["source"] = source
     if product_type:
-        conds.append("l.product_types = %(product_type)s")
+        conds.append("l.product_type = %(product_type)s")
         params["product_type"] = product_type
 
     where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -394,7 +387,7 @@ def get_average_won_deal_value(from_date, to_date, user: str = "", territory: st
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -452,7 +445,7 @@ def get_average_deal_value(from_date, to_date, user: str = "", territory: str = 
       - user     -> d.deal_owner
       - territory -> l.territory (via linked Lead)
       - source   -> l.source   (via linked Lead)
-      - product_type -> l.product_types (via linked Lead)
+      - product_type -> l.product_type (via linked Lead)
     Excludes deals with status type = 'Lost'.
     """
     diff = frappe.utils.date_diff(to_date, from_date) or 1
@@ -473,7 +466,7 @@ def get_average_deal_value(from_date, to_date, user: str = "", territory: str = 
         conds.append("l.source = %(source)s")
         params["source"] = source
     if product_type:
-        conds.append("l.product_types = %(product_type)s")
+        conds.append("l.product_type = %(product_type)s")
         params["product_type"] = product_type
 
     where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -551,7 +544,7 @@ def get_average_time_to_close_a_lead(from_date, to_date, user="", territory="", 
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -616,7 +609,7 @@ def get_average_time_to_close_a_deal(from_date, to_date, user="", territory="", 
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -684,8 +677,8 @@ def get_sales_trend(from_date="", to_date="", user="", territory="", source="", 
 		deal_conds += f" AND l.source = '{source}'"
 		
 	if product_type:
-		lead_conds += f" AND product_types = '{product_type}'"
-		deal_conds += f" AND l.product_types = '{product_type}'"
+		lead_conds += f" AND product_type = '{product_type}'"
+		deal_conds += f" AND l.product_type = '{product_type}'"
 
 	result = frappe.db.sql(
 		f"""
@@ -758,16 +751,7 @@ def get_sales_trend(from_date="", to_date="", user="", territory="", source="", 
 
 
 def get_forecasted_revenue(from_date="", to_date="", user="", territory="", source="", product_type=""):
-	"""
-	Get forecasted revenue for the dashboard.
-	[
-		{ date: new Date('2024-05-01'), forecasted: 1200000, actual: 980000 },
-		{ date: new Date('2024-06-01'), forecasted: 1350000, actual: 1120000 },
-		{ date: new Date('2024-07-01'), forecasted: 1600000, actual: "" },
-		{ date: new Date('2024-08-01'), forecasted: 1500000, actual: "" },
-		...
-	]
-	"""
+	
 	conds = []
 	if user:
 		conds.append("d.deal_owner = %(user)s")
@@ -776,14 +760,14 @@ def get_forecasted_revenue(from_date="", to_date="", user="", territory="", sour
 	if source:
 		conds.append("l.source = %(source)s")
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
 	result = frappe.db.sql(
 		f"""
 		SELECT
-			DATE_FORMAT(d.expected_closure_date, '%Y-%m')                        AS month,
+			DATE_FORMAT(d.expected_closure_date, '%%Y-%%m')                        AS month,
 			SUM(
 				CASE
 					WHEN s.type = 'Lost' THEN d.expected_deal_value * IFNULL(d.exchange_rate, 1)
@@ -801,7 +785,7 @@ def get_forecasted_revenue(from_date="", to_date="", user="", territory="", sour
 		LEFT JOIN `tabCRM Lead` l ON d.lead = l.name
 		WHERE d.expected_closure_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
 		{where_extra}
-		GROUP BY DATE_FORMAT(d.expected_closure_date, '%Y-%m')
+		GROUP BY DATE_FORMAT(d.expected_closure_date, '%%Y-%%m')
 		ORDER BY month
 		""",
 		{"user": user, "territory": territory, "source": source, "product_type": product_type},
@@ -865,8 +849,8 @@ def get_funnel_conversion(from_date="", to_date="", user="", territory="", sourc
 		deal_conds += f" AND l.source = '{source}'"
 		
 	if product_type:
-		lead_conds += f" AND product_types = '{product_type}'"
-		deal_conds += f" AND l.product_types = '{product_type}'"
+		lead_conds += f" AND product_type = '{product_type}'"
+		deal_conds += f" AND l.product_type = '{product_type}'"
 
 	result = []
 
@@ -939,7 +923,7 @@ def get_deals_by_stage_axis(from_date="", to_date="", user="", territory="", sou
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -1003,7 +987,7 @@ def get_deals_by_stage_donut(from_date="", to_date="", user="", territory="", so
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -1062,7 +1046,7 @@ def get_lost_deal_reasons(from_date="", to_date="", user="", territory="", sourc
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -1127,7 +1111,7 @@ def get_leads_by_source(from_date="", to_date="", user="", territory="", source=
 		params["territory"] = territory
 	# Note: source filter not applied here as this function shows leads BY source
 	if product_type:
-		conds.append("product_types = %(product_type)s")
+		conds.append("product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -1180,7 +1164,7 @@ def get_deals_by_source(from_date="", to_date="", user="", territory="", source=
 		params["territory"] = territory
 	# Note: source filter not applied here as this function shows deals BY source via linked lead
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -1234,7 +1218,7 @@ def get_deals_by_territory(from_date="", to_date="", user="", territory="", sour
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -1304,7 +1288,7 @@ def get_deals_by_salesperson(from_date="", to_date="", user="", territory="", so
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -1381,7 +1365,7 @@ def get_deal_status_change_counts(from_date, to_date, user="", territory="", sou
 		conds.append("l.source = %(source)s")
 		params["source"] = source
 	if product_type:
-		conds.append("l.product_types = %(product_type)s")
+		conds.append("l.product_type = %(product_type)s")
 		params["product_type"] = product_type
 
 	where_extra = (" AND " + " AND ".join(conds)) if conds else ""
@@ -1434,25 +1418,29 @@ def get_avg_call_duration(from_date, to_date, user="", territory="", source="", 
         conds.append("l.source = %(source)s")
         params["source"] = source
     if product_type:
-        conds.append("l.product_types = %(product_type)s")
+        conds.append("l.product_type = %(product_type)s")
         params["product_type"] = product_type
 
     where_extra = (" AND " + " AND ".join(conds)) if conds else ""
 
     result = frappe.db.sql(
-        f"""
-        SELECT
-            AVG(cl.duration) / 60 AS avg_duration
-        FROM `tabCRM Call Log` cl
-        LEFT JOIN `tabCRM Lead` l ON cl.lead = l.name
-        WHERE cl.creation BETWEEN %(from_date)s AND DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
-        {where_extra}
-        """,
-        params,
-        as_dict=True,
-    )
+    f"""
+    SELECT
+        IFNULL(AVG(cl.duration), 0) / 60 AS avg_duration_minutes
+    FROM `tabCRM Call Log` cl
+    LEFT JOIN `tabCRM Lead` l
+           ON cl.reference_doctype = 'CRM Lead'
+          AND cl.reference_docname = l.name
+    WHERE cl.creation >= %(from_date)s
+      AND cl.creation < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+      {where_extra}
+    """,
+    params,
+    as_dict=True,
+)
 
-    avg_duration = result[0].avg_duration or 0
+
+    avg_duration = result[0].avg_duration_minutes or 0
 
     return {
         "title": _("Avg. Call Duration"),

@@ -143,7 +143,7 @@
         doctype="CRM Territory"
         :filters="null"
         @change="(v) => updateFilter('territory', v)"
-        :placeholder="__('territory')"
+        :placeholder="__('Territory')"
         :hideMe="true"
       >
         <template #prefix>

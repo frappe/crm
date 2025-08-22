@@ -14,6 +14,7 @@
   "organization",
   "website",
   "territory",
+  "product_type",
   "industry",
   "job_title",
   "source",
@@ -163,6 +164,13 @@
    "fieldtype": "Link",
    "label": "Industry",
    "options": "CRM Industry"
+  },
+  {
+  "fieldname": "product_type",
+  "fieldtype": "Link",
+  "label": "Product Type",
+  "options": "CRM Product Type",
+  "in_standard_filter": 1
   },
   {
    "fieldname": "image",
