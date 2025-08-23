@@ -67,7 +67,7 @@
   <Dropdown
     v-if="!showDatePicker"
     :options="options"
-    class="form-control w-full"
+    class="form-control w-full md:w-auto"
     v-model="preset"
     :placeholder="__('Select Range')"
     :button="{
@@ -80,14 +80,14 @@
     }"
   >
     <template #prefix>
-      <LucideCalendar class="size-4 text-ink-gray-5 mr-2" />
+      <LucideCalendar class="size-4 text-ink-gray-5 mr-2"   />
     </template>
   </Dropdown>
 
   <!-- Date Range Picker -->
   <DateRangePicker
     v-else
-    class="w-full"
+    class="w-full md:w-auto"
     ref="datePickerRef"
     :value="filters.period"
     variant="outline"
