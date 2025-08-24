@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-17 09:36+0000\n"
-"PO-Revision-Date: 2025-08-19 12:39\n"
+"PO-Revision-Date: 2025-08-24 13:33\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -892,7 +892,7 @@ msgstr "Fotocamera"
 #: frontend/src/components/ViewControls.vue:156
 #: frontend/src/pages/Dashboard.vue:41
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
@@ -1359,7 +1359,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:582
 msgid "Customization"
-msgstr ""
+msgstr "Personalizzazione"
 
 #: frontend/src/components/ViewControls.vue:211
 msgid "Customize quick filters"
@@ -2760,7 +2760,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Last Name"
-msgstr ""
+msgstr "Cognome"
 
 #: frontend/src/components/Filter.vue:616
 msgid "Last Quarter"
@@ -2907,7 +2907,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:142
 #: frontend/src/components/Settings/Users.vue:155
 msgid "Load More"
-msgstr ""
+msgstr "Carica Altro"
 
 #: frontend/src/components/Activities/Activities.vue:22
 #: frontend/src/components/Activities/DataFields.vue:37
@@ -3111,7 +3111,7 @@ msgstr ""
 
 #: frontend/src/components/Telephony/CallUI.vue:22
 msgid "Mobile Number"
-msgstr ""
+msgstr "Numero di Cellulare"
 
 #: crm/integrations/exotel/handler.py:93
 msgid "Mobile Number Missing"
@@ -3907,7 +3907,7 @@ msgstr ""
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Public"
-msgstr ""
+msgstr "Pubblico"
 
 #: frontend/src/components/ViewControls.vue:672
 msgid "Public Views"
@@ -4558,7 +4558,7 @@ msgstr ""
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
-msgstr "Spaziatore"
+msgstr "Separatore"
 
 #: crm/api/dashboard.py:731 crm/api/dashboard.py:790
 msgid "Stage"
@@ -5634,7 +5634,7 @@ msgstr "{0} settimane"
 
 #: frontend/src/utils/index.js:185
 msgid "{0} weeks ago"
-msgstr ""
+msgstr "{0} settimane fa"
 
 #: frontend/src/utils/index.js:132
 msgid "{0} y"
