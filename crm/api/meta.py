@@ -2,6 +2,7 @@ import frappe
 import hmac, hashlib
 import json
 from typing import Any, Dict, List, Optional
+from frappe.utils.password import get_decrypted_password
 
 try:
     import requests  # whitelisted RPCs can import stdlib + installed deps
@@ -21,7 +22,16 @@ def _conf(key: str, default: str = "") -> str:
 
 def _verify_token() -> str:         return _conf("meta_verify_token")
 def _app_id() -> str:               return _conf("meta_app_id")
-def _app_secret() -> str:           return _conf("meta_app_secret")
+def _app_secret() -> str:           
+    # Prefer doctype over site_config for app_secret verification
+    try:
+        doctype_val = get_decrypted_password("Meta Integration Settings", "Meta Integration Settings", "meta_app_secret", raise_exception=False)
+        if doctype_val:
+            return doctype_val.strip()
+    except Exception:
+        pass
+    # Fallback to site_config if doctype value not available
+    return (frappe.conf.get("meta_app_secret") or "").strip()
 def _graph_ver() -> str:            return _conf("meta_graph_api_version", "v20.0")
 def _access_token() -> str:         return _conf("meta_access_token")
 
