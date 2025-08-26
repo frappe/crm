@@ -1,0 +1,86 @@
+{
+  "doctype": "DocType",
+  "name": "CRM Meta Ads Lead",
+  "module": "FCRM",
+  "custom": 0,
+  "istable": 0,
+  "editable_grid": 0,
+  "quick_entry": 0,
+
+  "autoname": "field:leadgen_id",
+  "title_field": "leadgen_id",
+  "naming_rule": "By fieldname",
+
+  "field_order": [
+    "first_name",
+    "mobile_no",
+    "ad_account_id",
+    "email",
+    "campaign_name",
+    "adset_name",
+    "ad_name",
+    "page_id",
+    "leadgen_id",
+    "raw_payload",
+    "source_ip",
+    "processed",
+    "processed_on",
+    "target_lead",
+    "form_id",
+    "form_name",
+    "form_questions",
+    "field_data",
+    "ad_id",
+    "adset_id",
+    "campaign_id",
+    "created_time"
+  ],
+
+  "fields": [
+    {"fieldname": "first_name", "label": "First Name", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "mobile_no", "label": "Mobile No", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "ad_account_id", "label": "Ad Account ID", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "email", "label": "Email", "fieldtype": "Data"},
+    {"fieldname": "campaign_name", "label": "Campaign Name", "fieldtype": "Data"},
+    {"fieldname": "adset_name", "label": "Ad Set Name", "fieldtype": "Data"},
+    {"fieldname": "ad_name", "label": "Ad Name", "fieldtype": "Data"},
+    {"fieldname": "page_id", "label": "Page ID", "fieldtype": "Data"},
+    {"fieldname": "leadgen_id", "label": "Meta Lead ID", "fieldtype": "Data", "unique": 1},
+    {"fieldname": "raw_payload", "label": "Raw Payload", "fieldtype": "Long Text"},
+    {"fieldname": "source_ip", "label": "Source IP", "fieldtype": "Data"},
+    {"fieldname": "processed", "label": "Processed?", "fieldtype": "Check"},
+    {"fieldname": "processed_on", "label": "Processed On", "fieldtype": "Datetime"},
+    {"fieldname": "target_lead", "label": "Target Lead", "fieldtype": "Link", "options": "CRM Lead"},
+
+    {"fieldname": "form_id", "label": "Form ID", "fieldtype": "Data"},
+    {"fieldname": "form_name", "label": "Form Name", "fieldtype": "Data"},
+    {"fieldname": "form_questions", "label": "Form Questions JSON", "fieldtype": "Long Text"},
+    {"fieldname": "field_data", "label": "Lead Field Data JSON", "fieldtype": "Long Text"},
+    {"fieldname": "ad_id", "label": "Ad ID", "fieldtype": "Data"},
+    {"fieldname": "adset_id", "label": "Ad Set ID", "fieldtype": "Data"},
+    {"fieldname": "campaign_id", "label": "Campaign ID", "fieldtype": "Data"},
+    {"fieldname": "created_time", "label": "Created Time (Meta)", "fieldtype": "Datetime"}
+  ],
+
+  "permissions": [
+    {
+      "role": "Sales User",
+      "read": 1, "write": 1, "create": 1, "delete": 1,
+      "email": 1, "export": 1, "print": 1, "report": 1, "share": 1
+    },
+    {
+      "role": "Sales Manager",
+      "read": 1, "write": 1, "create": 1, "delete": 1,
+      "email": 1, "export": 1, "print": 1, "report": 1, "share": 1
+    },
+    {
+      "role": "All",
+      "read": 1, "export": 1, "print": 1, "report": 1, "share": 1
+    }
+  ],
+
+  "engine": "InnoDB",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

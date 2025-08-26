@@ -1,0 +1,82 @@
+{
+  "doctype": "DocType",
+  "name": "Meta Integration Settings",
+  "module": "FCRM",
+  "custom": 0,
+  "istable": 0,
+  "issingle": 1,
+  "editable_grid": 0,
+  "quick_entry": 0,
+  "allow_import": 0,
+  "allow_rename": 0,
+  "track_changes": 1,
+  "engine": "InnoDB",
+  "index_web_pages_for_search": 0,
+  "default_view": "Form",
+  "field_order": [
+    "section_api",
+    "meta_verify_token",
+    "meta_app_id",
+    "meta_app_secret",
+    "meta_access_token",
+    "meta_graph_api_version",
+    "help_html"
+  ],
+  "fields": [
+    {
+      "fieldname": "section_api",
+      "fieldtype": "Section Break",
+      "label": "Meta API Credentials"
+    },
+    {
+      "fieldname": "meta_verify_token",
+      "fieldtype": "Data",
+      "label": "Verify Token",
+      "description": "Used for GET subscription verification (hub.verify_token)."
+    },
+    {
+      "fieldname": "meta_app_id",
+      "fieldtype": "Data",
+      "label": "App ID"
+    },
+    {
+      "fieldname": "meta_app_secret",
+      "fieldtype": "Password",
+      "label": "App Secret",
+      "description": "If set, webhook requests must include a valid X-Hub-Signature-256."
+    },
+    {
+      "fieldname": "meta_access_token",
+      "fieldtype": "Password",
+      "label": "System User Access Token",
+      "description": "Used for optional Graph lookups (form name/questions, field_data)."
+    },
+    {
+      "fieldname": "meta_graph_api_version",
+      "fieldtype": "Data",
+      "label": "Graph API Version",
+      "default": "v20.0"
+    },
+    {
+      "fieldname": "help_html",
+      "fieldtype": "HTML",
+      "label": "Help",
+      "options": "<div class='text-muted'>If keys are also present in <code>site_config.json</code>, those take priority (as per <code>meta.py</code>).</div>"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1,
+      "share": 1,
+      "print": 1,
+      "export": 1,
+      "report": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}
