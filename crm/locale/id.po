@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-17 09:36+0000\n"
-"PO-Revision-Date: 2025-08-19 12:39\n"
+"PO-Revision-Date: 2025-08-24 13:33\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -181,19 +181,19 @@ msgstr "Diterima pada"
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Access Key"
-msgstr ""
+msgstr "Kunci Akses"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:156
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "Kunci Akses diperlukan untuk Penyedia Layanan: {0}"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:97
 msgid "Access key"
-msgstr ""
+msgstr "Kunci akses"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:101
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
-msgstr ""
+msgstr "Kunci akses untuk Exchangerate Host. Diperlukan untuk mengambil nilai tukar."
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
@@ -377,7 +377,7 @@ msgstr "Terjadi kesalahan"
 
 #: frontend/src/data/document.js:63
 msgid "An error occurred while updating the document"
-msgstr ""
+msgstr "Terjadi kesalahan saat memperbarui dokumen"
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -472,7 +472,7 @@ msgstr "Apakah Anda yakin ingin melepas tautan {0} item tertaut?"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:193
 msgid "Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
-msgstr ""
+msgstr "Minta manajer Anda untuk mengatur Penyedia Nilai Tukar, karena penyedia default tidak mendukung konversi mata uang untuk {0} ke {1}."
 
 #: frontend/src/components/ListBulkActions.vue:184
 #: frontend/src/components/Modals/AssignmentModal.vue:4
@@ -1091,7 +1091,7 @@ msgstr "Konfigurasikan pengaturan telepon untuk CRM Anda"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:70
 msgid "Configure the exchange rate provider for your CRM"
-msgstr ""
+msgstr "Konfigurasikan penyedia nilai tukar untuk CRM Anda"
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
@@ -1323,7 +1323,7 @@ msgstr "Mata Uang"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:9
 msgid "Currency & Exchange rate provider"
-msgstr ""
+msgstr "Mata Uang & Penyedia nilai tukar"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:188
 msgid "Currency set as {0} successfully"
@@ -1681,7 +1681,7 @@ msgstr "Tipe Dokumen"
 
 #: frontend/src/data/document.js:28
 msgid "Document does not exist"
-msgstr ""
+msgstr "Dokumen tidak ada"
 
 #: crm/api/activities.py:19
 msgid "Document not found"
@@ -1978,7 +1978,7 @@ msgstr "Waktu Selesai"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:122
 msgid "Enter access key"
-msgstr ""
+msgstr "Masukkan kunci akses"
 
 #: frontend/src/components/FieldLayout/Field.vue:334
 msgid "Enter {0}"
@@ -2001,7 +2001,7 @@ msgstr "Terjadi kesalahan saat mengonversi menjadi kesepakatan: {0}"
 #: frontend/src/pages/Deal.vue:739 frontend/src/pages/Lead.vue:486
 #: frontend/src/pages/MobileDeal.vue:614 frontend/src/pages/MobileLead.vue:415
 msgid "Error updating field"
-msgstr ""
+msgstr "Kesalahan saat memperbarui bidang"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:282
 msgid "Error while creating customer in ERPNext, check error log for more details"
@@ -2031,11 +2031,11 @@ msgstr "Kurs"
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Exchange Rate Provider"
-msgstr ""
+msgstr "Penyedia Nilai Tukar"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:67
 msgid "Exchange rate provider"
-msgstr ""
+msgstr "Penyedia nilai tukar"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
@@ -2155,7 +2155,7 @@ msgstr "Gagal menghapus templat"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:205
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
-msgstr ""
+msgstr "Gagal mengambil nilai tukar dari {0} ke {1} pada {2}. Harap periksa koneksi internet Anda atau coba lagi nanti."
 
 #: frontend/src/data/script.js:106
 msgid "Failed to load form controller: {0}"
@@ -3031,7 +3031,7 @@ msgstr "Jadikan {0} sebagai media panggilan default"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:23
 msgid "Makes \"Expected Closure Date\" and \"Expected Deal Value\" mandatory for deal value forecasting"
-msgstr ""
+msgstr "Menjadikan \"Tanggal Penutupan yang Diharapkan\" dan \"Nilai Kesepakatan yang Diharapkan\" wajib diisi untuk prakiraan nilai kesepakatan"
 
 #: frontend/src/components/Settings/Users.vue:11
 msgid "Manage CRM users by adding or inviting them, and assign roles to control their access and permissions"
@@ -3777,7 +3777,7 @@ msgstr "Harap masukkan URL yang valid"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:159
 msgid "Please enter the Exchangerate Host access key."
-msgstr ""
+msgstr "Harap masukkan kunci akses Exchangerate Host."
 
 #: frontend/src/components/Modals/LostReasonModal.vue:9
 msgid "Please provide a reason for marking this deal as lost"
@@ -3785,7 +3785,7 @@ msgstr "Mohon berikan alasan mengapa kesepakatan ini ditandai gagal"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:152
 msgid "Please select a currency before saving."
-msgstr ""
+msgstr "Harap pilih mata uang sebelum menyimpan."
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:145
 #: frontend/src/pages/MobileLead.vue:434
@@ -4355,7 +4355,7 @@ msgstr "Pilih mata uang"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:82
 msgid "Select provider"
-msgstr ""
+msgstr "Pilih penyedia"
 
 #: frontend/src/components/FieldLayout/Field.vue:332
 msgid "Select {0}"
@@ -4398,7 +4398,7 @@ msgstr "Seri Penamaan"
 #. Label of the service_provider (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Service Provider"
-msgstr ""
+msgstr "Penyedia Layanan"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:576
 msgid "Service level agreement"
@@ -4484,7 +4484,7 @@ msgstr "Atur Email"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:199
 msgid "Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
-msgstr ""
+msgstr "Siapkan Penyedia Nilai Tukar sebagai 'Exchangerate Host' di pengaturan, karena penyedia default tidak mendukung konversi mata uang untuk {0} ke {1}."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:334
 msgid "Setup your password"
@@ -4531,11 +4531,11 @@ msgstr "Ekspresi Python Sederhana, Contoh: doc.status == 'Open' and doc.lead_sou
 
 #: frontend/src/components/AssignTo.vue:84
 msgid "Since you removed {0} from the assignee, the {0} has also been removed."
-msgstr ""
+msgstr "Karena Anda menghapus {0} dari penerima tugas, {0} juga telah dihapus."
 
 #: frontend/src/components/AssignTo.vue:77
 msgid "Since you removed {0} from the assignee, the {0} has been changed to the next available assignee {1}."
-msgstr ""
+msgstr "Karena Anda menghapus {0} dari penanggung jawab, maka {0} telah dialihkan ke penanggung jawab berikutnya yang tersedia, yaitu {1}."
 
 #: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:22
 #: frontend/src/components/SortBy.vue:240
@@ -5276,7 +5276,7 @@ msgstr "Anda dapat mengubah media panggilan default dari pengaturan"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:107
 msgid "You can get your access key from "
-msgstr ""
+msgstr "Anda bisa mendapatkan kunci akses dari "
 
 #: crm/integrations/exotel/handler.py:85
 msgid "You do not have Exotel Number set in your Telephony Agent"
@@ -5288,7 +5288,7 @@ msgstr "Anda belum mengatur nomor ponsel di Agen Telepon Anda"
 
 #: frontend/src/data/document.js:32
 msgid "You do not have permission to access this document"
-msgstr ""
+msgstr "Anda tidak memiliki izin untuk mengakses dokumen ini"
 
 #: frontend/src/components/ViewControls.vue:976
 msgid "You have unsaved changes. Do you want to save them?"
@@ -5363,12 +5363,12 @@ msgstr "email sudah ada"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/General/CurrencySettings.vue:113
 msgid "exchangerate.host"
-msgstr ""
+msgstr "exchangerate.host"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "frankfurter.app"
-msgstr ""
+msgstr "frankfurter.app"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
