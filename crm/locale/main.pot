@@ -1857,11 +1857,7 @@ msgstr ""
 msgid "Edit Grid Row Fields Layout"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Modals/NoteModal.vue:18
-=======
 #: frontend/src/components/Modals/NoteModal.vue:6
->>>>>>> bf63bd54 (chore: update POT file)
 msgid "Edit Note"
 msgstr ""
 
