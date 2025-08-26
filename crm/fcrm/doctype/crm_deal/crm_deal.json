@@ -129,15 +129,13 @@
    "fieldname": "email",
    "fieldtype": "Data",
    "label": "Primary Email",
-   "options": "Email",
-   "read_only": 1
+   "options": "Email"
   },
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
    "label": "Primary Mobile No",
-   "options": "Phone",
-   "read_only": 1
+   "options": "Phone"
   },
   {
    "default": "Qualification",
@@ -251,8 +249,7 @@
    "fieldname": "phone",
    "fieldtype": "Data",
    "label": "Primary Phone",
-   "options": "Phone",
-   "read_only": 1
+   "options": "Phone"
   },
   {
    "fieldname": "log_tab",
@@ -435,7 +432,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-13 11:54:20.608489",
+ "modified": "2025-08-26 12:12:56.324245",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
