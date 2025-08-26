@@ -81,7 +81,10 @@
         </Popover>
       </Combobox>
     </div>
-    <div v-if="values.length" class="flex flex-col gap-2 px-4.5 py-[7px]">
+    <div
+      v-if="values.length"
+      class="flex flex-col gap-2 px-4.5 py-[7px] max-h-[165px] overflow-y-auto"
+    >
       <Button
         ref="emails"
         v-for="att in values"
