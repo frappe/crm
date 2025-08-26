@@ -17,6 +17,7 @@
           :value="timeValue"
           :placeholder="placeholder"
           @change="(e) => emitUpdate(e.target.value)"
+          @keydown.enter.prevent="(e) => emitUpdate(e.target.value)"
         >
           <template #prefix v-if="$slots.prefix">
             <slot name="prefix" />
@@ -29,13 +30,13 @@
     </template>
     <template #body>
       <div
-        class="mt-2 min-w-40 max-h-72 overflow-hidden overflow-y-auto divide-y divide-outline-gray-modals rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none [&>div]:focus-visible:ring-0"
+        class="mt-2 min-w-40 max-h-72 overflow-hidden overflow-y-auto divide-y divide-outline-gray-modals rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5"
         :class="{
           'mt-2': ['bottom', 'left', 'right'].includes(placement),
           'ml-2': placement == 'right-start',
         }"
       >
-        <MenuItems class="p-1" ref="menu">
+        <MenuItems class="p-1 focus-visible:outline-none" ref="menu">
           <MenuItem
             v-for="option in options()"
             :key="option.value"
@@ -67,6 +68,7 @@
 <script setup>
 import { TextInput } from 'frappe-ui'
 import Dropdown from '@/components/frappe-ui/Dropdown.vue'
+import { allTimeSlots } from '@/components/Calendar/utils'
 import { MenuItems, MenuItem } from '@headlessui/vue'
 import { ref, computed, watch } from 'vue'
 
@@ -91,6 +93,10 @@ const props = defineProps({
     type: String,
     default: 'bottom',
   },
+  customOptions: {
+    type: Array,
+    default: () => [],
+  },
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -107,32 +113,47 @@ const timeValue = computed(() => {
     time = time.substring(0, 5)
   }
 
-  if (timeMap[time]) {
-    time = timeMap[time]
-  } else {
-    const [hour, minute] = time.split(':')
-    const ampm = hour >= 12 ? 'pm' : 'am'
-    const formattedHour = hour % 12 || 12
-    time = `${formattedHour}:${minute} ${ampm}`
-  }
+  // Try to find a matching option (value is always in 24h format HH:MM)
+  const match = options().find((o) => o.value === time)
+  if (match) return match.label.split(' (')[0]
 
+  // Fallback: format manually if the value isn't part of provided options
+  const [hourStr, minute] = time.split(':')
+  if (hourStr !== undefined && minute !== undefined) {
+    const hourNum = parseInt(hourStr)
+    if (!isNaN(hourNum)) {
+      const ampm = hourNum >= 12 ? 'pm' : 'am'
+      const formattedHour = hourNum % 12 || 12
+      return `${formattedHour}:${minute} ${ampm}`
+    }
+  }
   return time
 })
 
 const options = () => {
   let timeOptions = []
-  for (const [key, value] of Object.entries(timeMap)) {
-    timeOptions.push({
-      label: value,
-      value: key,
-      onClick: () => emitUpdate(key),
-      isSelected: () => {
-        let isSelected = isSelectedOrNearestOption()
-        return isSelected?.value === key && !isSelected?.isNearest
-      },
-    })
+
+  const _options = props.customOptions.length
+    ? props.customOptions
+    : allTimeSlots()
+
+  for (const option of _options) {
+    timeOptions.push(timeObj(option.label, option.value))
   }
+
   return timeOptions
+}
+
+function timeObj(label, value) {
+  return {
+    label,
+    value,
+    onClick: () => emitUpdate(value),
+    isSelected: () => {
+      let isSelected = isSelectedOrNearestOption()
+      return isSelected?.value === value && !isSelected?.isNearest
+    },
+  }
 }
 
 const menu = ref(null)
@@ -165,7 +186,7 @@ function convertTo24HourFormat(time) {
 function isSelectedOrNearestOption() {
   const selectedTime = timeValue.value
   const selectedOption = options().find(
-    (option) => option.label === selectedTime,
+    (option) => option.label.split(' (')[0] === selectedTime,
   )
 
   if (selectedOption) {
@@ -218,56 +239,5 @@ function updateScroll(el) {
       })
     }
   }
-}
-
-const timeMap = {
-  '00:00': '12:00 am',
-  '00:30': '12:30 am',
-  '01:00': '1:00 am',
-  '01:30': '1:30 am',
-  '02:00': '2:00 am',
-  '02:30': '2:30 am',
-  '03:00': '3:00 am',
-  '03:30': '3:30 am',
-  '04:00': '4:00 am',
-  '04:30': '4:30 am',
-  '05:00': '5:00 am',
-  '05:30': '5:30 am',
-  '06:00': '6:00 am',
-  '06:30': '6:30 am',
-  '07:00': '7:00 am',
-  '07:30': '7:30 am',
-  '08:00': '8:00 am',
-  '08:30': '8:30 am',
-  '09:00': '9:00 am',
-  '09:30': '9:30 am',
-  '10:00': '10:00 am',
-  '10:30': '10:30 am',
-  '11:00': '11:00 am',
-  '11:30': '11:30 am',
-  '12:00': '12:00 pm',
-  '12:30': '12:30 pm',
-  '13:00': '1:00 pm',
-  '13:30': '1:30 pm',
-  '14:00': '2:00 pm',
-  '14:30': '2:30 pm',
-  '15:00': '3:00 pm',
-  '15:30': '3:30 pm',
-  '16:00': '4:00 pm',
-  '16:30': '4:30 pm',
-  '17:00': '5:00 pm',
-  '17:30': '5:30 pm',
-  '18:00': '6:00 pm',
-  '18:30': '6:30 pm',
-  '19:00': '7:00 pm',
-  '19:30': '7:30 pm',
-  '20:00': '8:00 pm',
-  '20:30': '8:30 pm',
-  '21:00': '9:00 pm',
-  '21:30': '9:30 pm',
-  '22:00': '10:00 pm',
-  '22:30': '10:30 pm',
-  '23:00': '11:00 pm',
-  '23:30': '11:30 pm',
 }
 </script>
