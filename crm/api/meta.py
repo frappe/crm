@@ -139,11 +139,15 @@ def _insert_staging(rec: Dict[str, Any]) -> str:
         "form_questions":  rec.get("form_questions") or "",
         "field_data":      rec.get("field_data") or "",
         "ad_id":           _get(rec, "ad_id"),
+        "adgroup_id":      _get(rec, "adgroup_id"),  # Added missing field
         "adset_id":        _get(rec, "adset_id"),
         "campaign_id":     _get(rec, "campaign_id"),
         "created_time":    rec.get("created_time") or None,
         "raw_payload":     rec.get("raw_payload") or "",
         "source_ip":       frappe.request.headers.get("X-Forwarded-For") or frappe.request.remote_addr,
+        "processed":       rec.get("processed", 0),  # Default to 0 (False)
+        "processed_on":    rec.get("processed_on") or None,
+        "target_lead":     _get(rec, "target_lead"),  # Link to CRM Lead
     })
     doc.insert(ignore_permissions=True)
     frappe.db.commit()
@@ -235,7 +239,7 @@ def meta_leads_webhook():
                 val = change.get("value") or {}
                 rec = {
                     "first_name":    _get(val, "first_name"),   # may be empty in webhook
-                    "mobile_no":     _get(val, "phone_number"),  # may be empty in webhook
+                    "mobile_no":     _get(val, "mobile_no"),  # may be empty in webhook
                     "ad_account_id": _get(val, "ad_account_id"), # may be empty in webhook
                     "email":         _get(val, "email"),
                     "campaign_name": "",                         # unknown here; optional
@@ -245,6 +249,7 @@ def meta_leads_webhook():
                     "leadgen_id":    _get(val, "leadgen_id"),
                     "form_id":       _get(val, "form_id"),
                     "ad_id":         _get(val, "ad_id"),
+                    "adgroup_id":    _get(val, "adgroup_id"),    # Added missing field
                     "adset_id":      _get(val, "adset_id"),
                     "campaign_id":   _get(val, "campaign_id"),
                     "created_time":  _get(val, "created_time"),
@@ -265,6 +270,7 @@ def meta_leads_webhook():
             "leadgen_id":    _get(payload, "lead_id") or _get(payload, "leadgen_id"),
             "form_id":       _get(payload, "form_id"),
             "ad_id":         _get(payload, "ad_id"),
+            "adgroup_id":    _get(payload, "adgroup_id"),    # Added missing field
             "adset_id":      _get(payload, "adset_id"),
             "campaign_id":   _get(payload, "campaign_id"),
             "created_time":  _get(payload, "created_time"),

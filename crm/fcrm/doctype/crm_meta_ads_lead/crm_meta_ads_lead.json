@@ -37,9 +37,9 @@
   ],
 
   "fields": [
-    {"fieldname": "first_name", "label": "First Name", "fieldtype": "Data", "reqd": 1},
-    {"fieldname": "mobile_no", "label": "Mobile No", "fieldtype": "Data", "reqd": 1},
-    {"fieldname": "ad_account_id", "label": "Ad Account ID", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "first_name", "label": "First Name", "fieldtype": "Data"},
+    {"fieldname": "mobile_no", "label": "Mobile No", "fieldtype": "Data"},
+    {"fieldname": "ad_account_id", "label": "Ad Account ID", "fieldtype": "Data"},
     {"fieldname": "email", "label": "Email", "fieldtype": "Data"},
     {"fieldname": "campaign_name", "label": "Campaign Name", "fieldtype": "Data"},
     {"fieldname": "adset_name", "label": "Ad Set Name", "fieldtype": "Data"},
@@ -57,9 +57,10 @@
     {"fieldname": "form_questions", "label": "Form Questions JSON", "fieldtype": "Long Text"},
     {"fieldname": "field_data", "label": "Lead Field Data JSON", "fieldtype": "Long Text"},
     {"fieldname": "ad_id", "label": "Ad ID", "fieldtype": "Data"},
+    {"fieldname": "adgroup_id", "label": "Ad Group ID", "fieldtype": "Data"},
     {"fieldname": "adset_id", "label": "Ad Set ID", "fieldtype": "Data"},
     {"fieldname": "campaign_id", "label": "Campaign ID", "fieldtype": "Data"},
-    {"fieldname": "created_time", "label": "Created Time (Meta)", "fieldtype": "Datetime"}
+    {"fieldname": "created_time", "label": "Created Time (Meta)", "fieldtype": "Long Int", "description": "Unix timestamp from Meta (e.g., 1756212794)"}
   ],
 
   "permissions": [
