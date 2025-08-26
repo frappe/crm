@@ -106,18 +106,21 @@ function convertToDeal(selections, unselectAll) {
 }
 
 function deleteValues(selections, unselectAll) {
-  const selectedDocs = Array.from(selections)
-  if (selectedDocs.length == 1) {
-    showDeleteDocModal.value = {
-      showLinkedDocsModal: true,
-      docname: selectedDocs[0],
-    }
-  } else {
-    showDeleteDocModal.value = {
-      showDeleteModal: true,
-      items: selectedDocs,
-    }
-  }
+ 
+  unselectAllAction.value = unselectAll
+
+ const selectedDocs = Array.from(selections)
+ if (selectedDocs.length == 1) {
+ showDeleteDocModal.value = {
+ showLinkedDocsModal: true,
+ docname: selectedDocs[0],
+ }
+ } else {
+ showDeleteDocModal.value = {
+ showDeleteModal: true,
+ items: selectedDocs,
+ }
+ }
 }
 
 const showAssignmentModal = ref(false)
@@ -217,9 +220,17 @@ function bulkActions(selections, unselectAll) {
 }
 
 function reload(unselectAll) {
-  unselectAllAction.value?.()
-  unselectAll?.()
-  list.value?.reload()
+
+  showDeleteDocModal.value = {
+    showLinkedDocsModal: false,
+    showDeleteModal: false,
+    docname: null,
+  };
+
+ 
+ unselectAllAction.value?.()
+ unselectAll?.()
+ list.value?.reload()
 }
 
 onMounted(async () => {
