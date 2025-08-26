@@ -70,6 +70,7 @@
           :delay="isTouchScreenDevice() ? 200 : 0"
           group="rows"
           item-key="name"
+          @end="reorder"
         >
           <template #item="{ element: row, index }">
             <div
@@ -346,7 +347,6 @@ import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import { createDocument } from '@/composables/document'
 import {
-  FeatherIcon,
   FormControl,
   Checkbox,
   DateTimePicker,
@@ -515,6 +515,13 @@ const deleteRows = () => {
   showRowList.value.pop()
   selectedRows.clear()
 }
+
+const reorder = () => {
+  rows.value.forEach((row, index) => {
+    row.idx = index + 1
+  })
+}
+
 
 function fieldChange(value, field, row) {
   triggerOnChange(field.fieldname, value, row)
