@@ -129,7 +129,7 @@
             @click="showAllParticipants = true"
           />
           <Button
-            v-else
+            v-else-if="showAllParticipants"
             variant="ghost"
             :label="__('Show less')"
             iconLeft="chevron-up"

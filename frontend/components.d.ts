@@ -86,6 +86,7 @@ declare module 'vue' {
     DashboardItem: typeof import('./src/components/Dashboard/DashboardItem.vue')['default']
     DataFields: typeof import('./src/components/Activities/DataFields.vue')['default']
     DataFieldsModal: typeof import('./src/components/Modals/DataFieldsModal.vue')['default']
+    DateMonthYearPicker: typeof import('./src/components/Calendar/DateMonthYearPicker.vue')['default']
     DealModal: typeof import('./src/components/Modals/DealModal.vue')['default']
     DealsIcon: typeof import('./src/components/Icons/DealsIcon.vue')['default']
     DealsListView: typeof import('./src/components/ListViews/DealsListView.vue')['default']

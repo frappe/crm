@@ -40,33 +40,51 @@
     >
       <template
         #header="{
-          currentMonthYear,
+          currentYear,
+          currentMonth,
           enabledModes,
           activeView,
           decrement,
           increment,
           updateActiveView,
+          setCalendarDate,
         }"
       >
         <div class="my-4 mx-5 flex justify-between">
           <!-- left side  -->
-          <!-- Year, Month -->
-          <span class="text-lg font-medium text-ink-gray-8">
-            {{ currentMonthYear }}
-          </span>
+          <!-- Month Year -->
+          <div class="flex items-center">
+            <DateMonthYearPicker
+              :modelValue="selectedMonthDate"
+              :formatter="(d) => dayjs(d).format('MMM YYYY')"
+              @update:modelValue="
+                (val) => onMonthYearChange(val, setCalendarDate)
+              "
+            />
+          </div>
           <!-- right side -->
           <!-- actions buttons for calendar -->
           <div class="flex gap-x-1">
-            <!-- Increment and Decrement Button-->
+            <!-- Increment and Decrement Button -->
 
             <Button
-              @click="decrement()"
+              @click="
+                () => {
+                  decrement()
+                  syncSelectedMonth(currentYear, currentMonth)
+                }
+              "
               variant="ghost"
               class="h-4 w-4"
               icon="chevron-left"
             />
             <Button
-              @click="increment()"
+              @click="
+                () => {
+                  increment()
+                  syncSelectedMonth(currentYear, currentMonth)
+                }
+              "
               variant="ghost"
               class="h-4 w-4"
               icon="chevron-right"
@@ -118,12 +136,44 @@ import {
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
+import DateMonthYearPicker from '@/components/Calendar/DateMonthYearPicker.vue'
 import { onMounted, ref } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
 
 const calendar = ref(null)
+
+const selectedMonthDate = ref(dayjs().format('YYYY-MM-DD'))
+
+function onMonthYearChange(val = '', setCalendarDate) {
+  const d = dayjs(val)
+  selectedMonthDate.value = d.format('YYYY-MM-DD')
+
+  if (setCalendarDate) {
+    setCalendarDate(selectedMonthDate.value)
+  } else if (calendar.value?.setCalendarDate) {
+    calendar.value.setCalendarDate(selectedMonthDate.value)
+  }
+}
+
+function syncSelectedMonth(year, month) {
+  // Keep same day if possible; otherwise clamp to last day
+  if (typeof year === 'number' && typeof month === 'number') {
+    const currentDay = dayjs(selectedMonthDate.value).date()
+
+    let tentative = dayjs(
+      `${year}-${String(month + 1).padStart(2, '0')}-01`,
+    ).date(currentDay)
+
+    if (tentative.month() !== month) {
+      // overflowed into next month, use last day of target month
+      tentative = tentative.startOf('month').month(month).endOf('month')
+    }
+
+    selectedMonthDate.value = tentative.format('YYYY-MM-DD')
+  }
+}
 
 const events = createListResource({
   doctype: 'Event',
@@ -411,7 +461,6 @@ function getFromToTime(time) {
   return [fromTime, toTime]
 }
 
-// Helper: create Contact docs for participants missing reference_docname
 async function ensureParticipantContacts(participants) {
   if (!Array.isArray(participants) || !participants.length) return participants
   const updated = []
