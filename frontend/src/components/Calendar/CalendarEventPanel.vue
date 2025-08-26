@@ -89,7 +89,7 @@
           <PeopleIcon class="size-4" />
           <div>{{ __('{0} Attendees', [peoples.length + 1]) }}</div>
         </div>
-        <div class="flex flex-col gap-1 -ml-1">
+        <div class="flex flex-col gap-2 -ml-1">
           <Button
             :key="_event.owner"
             variant="ghost"
@@ -108,7 +108,7 @@
             </template>
           </Button>
           <Button
-            v-for="att in peoples"
+            v-for="att in displayedPeoples"
             :key="att.email"
             :label="att.email"
             variant="ghost"
@@ -120,6 +120,22 @@
               <UserAvatar :user="att.email" class="-ml-1 !size-5" />
             </template>
           </Button>
+          <Button
+            v-if="!showAllParticipants && peoples.length > 2"
+            variant="ghost"
+            :label="__('See all participants')"
+            iconLeft="more-horizontal"
+            class="!justify-start w-fit"
+            @click="showAllParticipants = true"
+          />
+          <Button
+            v-else
+            variant="ghost"
+            :label="__('Show less')"
+            iconLeft="chevron-up"
+            class="!justify-start w-fit"
+            @click="showAllParticipants = false"
+          />
         </div>
       </div>
       <div
@@ -419,10 +435,16 @@ const title = computed(() => {
 
 const eventTitle = ref(null)
 const error = ref(null)
+const showAllParticipants = ref(false)
 
 const oldEvent = ref(null)
 const dirty = computed(() => {
   return JSON.stringify(oldEvent.value) !== JSON.stringify(_event.value)
+})
+
+const displayedPeoples = computed(() => {
+  if (showAllParticipants.value) return peoples.value
+  return peoples.value.slice(0, 2)
 })
 
 watch(
@@ -458,6 +480,7 @@ function fetchEvent() {
     _event.value = props.event
     oldEvent.value = { ...props.event }
   }
+  showAllParticipants.value = false
 }
 
 function parseEvent(_e) {
