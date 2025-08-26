@@ -4,7 +4,14 @@
       <ViewBreadcrumbs routeName="Calendar" />
     </template>
     <template #right-header>
-      <Button variant="solid" :label="__('Create')" @click="newEvent">
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        :disabled="
+          mode == 'edit' || mode == 'new-event' || mode == 'duplicate-event'
+        "
+        @click="newEvent"
+      >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
       </Button>
     </template>
@@ -93,6 +100,7 @@
       @duplicate="duplicateEvent"
       @details="showDetails"
       @close="close"
+      @sync="syncEvent"
     />
   </div>
 </template>
@@ -108,6 +116,7 @@ import {
   TabButtons,
   dayjs,
   CalendarActiveEvent as activeEvent,
+  call,
 } from 'frappe-ui'
 import { onMounted, ref } from 'vue'
 
@@ -186,6 +195,7 @@ function createEvent(_event) {
       color: _event.color,
       reference_doctype: _event.referenceDoctype,
       reference_docname: _event.referenceDocname,
+      event_participants: _event.event_participants,
     },
     {
       onSuccess: async (e) => {
@@ -196,10 +206,19 @@ function createEvent(_event) {
   )
 }
 
-function updateEvent(_event) {
+async function updateEvent(_event) {
   if (!_event.id) return
-
   if (!mode.value || mode.value === 'edit' || mode.value === 'details') {
+    // Ensure Contacts exist for participants referencing a new/unknown Contact, if not create them
+    if (
+      Array.isArray(_event.event_participants) &&
+      _event.event_participants.length
+    ) {
+      _event.event_participants = await ensureParticipantContacts(
+        _event.event_participants,
+      )
+    }
+
     events.setValue.submit(
       {
         name: _event.id,
@@ -212,6 +231,7 @@ function updateEvent(_event) {
         color: _event.color,
         reference_doctype: _event.referenceDoctype,
         reference_docname: _event.referenceDocname,
+        event_participants: _event.event_participants,
       },
       {
         onSuccess: async (e) => {
@@ -221,8 +241,6 @@ function updateEvent(_event) {
       },
     )
   }
-
-  event.value = _event
 }
 
 function deleteEvent(eventID) {
@@ -251,6 +269,11 @@ function deleteEvent(eventID) {
   })
 }
 
+function syncEvent(eventID, _event) {
+  if (!eventID) return
+  Object.assign(events.data.filter((event) => event.id === eventID)[0], _event)
+}
+
 onMounted(() => {
   activeEvent.value = ''
   mode.value = ''
@@ -270,7 +293,7 @@ function showDetails(e) {
   )
 
   showEventPanel.value = true
-  event.value = events.data.find((ev) => ev.id === _e.id) || _e
+  event.value = { id: _e.id }
   activeEvent.value = _e.id
   mode.value = 'details'
 }
@@ -284,7 +307,7 @@ function editDetails(e) {
   )
 
   showEventPanel.value = true
-  event.value = events.data.find((ev) => ev.id === _e.id) || _e
+  event.value = { id: _e.id }
   activeEvent.value = _e.id
   mode.value = 'edit'
 }
@@ -320,6 +343,9 @@ function newEvent(e, duplicate = false) {
     isFullDay: e.isFullDay || false,
     eventType: e.eventType || 'Public',
     color: e.color || 'green',
+    referenceDoctype: e.referenceDoctype,
+    referenceDocname: e.referenceDocname,
+    event_participants: e.event_participants || [],
   }
 
   events.data.push(event.value)
@@ -383,5 +409,35 @@ function getFromToTime(time) {
   }
 
   return [fromTime, toTime]
+}
+
+// Helper: create Contact docs for participants missing reference_docname
+async function ensureParticipantContacts(participants) {
+  if (!Array.isArray(participants) || !participants.length) return participants
+  const updated = []
+  for (const part of participants) {
+    const p = { ...part }
+    try {
+      if (
+        p.reference_doctype === 'Contact' &&
+        (!p.reference_docname || p.reference_docname === 'new') &&
+        p.email
+      ) {
+        const firstName = p.email.split('@')[0] || p.email
+        const contactDoc = await call('frappe.client.insert', {
+          doc: {
+            doctype: 'Contact',
+            first_name: firstName,
+            email_ids: [{ email_id: p.email, is_primary: 1 }],
+          },
+        })
+        if (contactDoc?.name) p.reference_docname = contactDoc.name
+      }
+    } catch (e) {
+      console.error('Failed creating contact for participant', p.email, e)
+    }
+    updated.push(p)
+  }
+  return updated
 }
 </script>
