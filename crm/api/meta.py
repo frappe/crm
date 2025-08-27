@@ -147,7 +147,7 @@ def _fetch_lead_info(leadgen_id: str):
     fields = "field_data,created_time,ad_id,adset_id,campaign_id,form_id"
     return _graph_get(f"/{leadgen_id}", {"fields": fields})
 
-@frappe.whitelist()
+
 def fetch_ad_account_id(leadgen_id: str):
     
     if not requests:
@@ -198,7 +198,7 @@ def fetch_ad_account_id(leadgen_id: str):
         return {"error": {"message": f"Processing failed: {str(e)}"}}
 
 
-@frappe.whitelist()
+
 def fetch_meta_accounts():
     if not requests:
         return {"error": {"message": "requests not available"}}
@@ -237,7 +237,7 @@ def fetch_meta_accounts():
         )
         return {"error": {"message": str(e)}}
 
-@frappe.whitelist()
+
 def fetch_page_leadgen_forms(page_id: str, page_access_token: str):
     if not requests:
         return {"error": {"message": "requests not available"}}
@@ -277,7 +277,7 @@ def fetch_page_leadgen_forms(page_id: str, page_access_token: str):
         )
         return {"error": {"message": str(e)}}
 
-@frappe.whitelist()
+
 def fetch_all_page_leadgen_forms():
     try:
         # Step 1: Get all Meta accounts/pages
@@ -341,7 +341,7 @@ def fetch_all_page_leadgen_forms():
         frappe.log_error(f"fetch_all_page_leadgen_forms failed: {str(e)}", "Meta Integration Error")
         return {"success": False, "error": f"Processing failed: {str(e)}"}
 
-@frappe.whitelist()
+
 def fetch_form_leads(form_id: str, page_access_token: str):
     
     if not requests:
@@ -405,7 +405,7 @@ def fetch_form_leads(form_id: str, page_access_token: str):
         )
         return {"error": {"message": str(e)}}
 
-@frappe.whitelist()
+
 def fetch_all_leads():
     
     try:
@@ -752,7 +752,7 @@ def _insert_staging_stg(rec: Dict[str, Any]) -> str:
     frappe.db.commit()
     return doc.name
 
-@frappe.whitelist()
+
 def fetch_and_insert_to_staging(leadgen_id: str, **kwargs) -> Dict[str, Any]:
 
     if not leadgen_id:
@@ -889,6 +889,19 @@ def meta_leads_webhook():
                     if lead_info.get(k):
                         rec[k] = lead_info.get(k)
 
+                # Fetch ad account ID using the leadgen_id
+                try:
+                    if rec.get("leadgen_id"):
+                        ad_account_result = fetch_ad_account_id(rec["leadgen_id"])
+                        if ad_account_result.get("success") and ad_account_result.get("ad_account_id"):
+                            rec["ad_account_id"] = ad_account_result["ad_account_id"]
+                            # Also update ad_name if available
+                            if ad_account_result.get("ad_name"):
+                                rec["ad_name"] = ad_account_result["ad_name"]
+                except Exception as e:
+                    frappe.log_error(f"Webhook: Failed to fetch ad_account_id for lead {rec.get('leadgen_id')}: {str(e)}", "Meta Integration Warning")
+                    # Continue without ad_account_id if fetch fails
+
                 # Field data -> parse core fields
                 field_data = lead_info.get("field_data")
                 if field_data and isinstance(field_data, list):
@@ -908,7 +921,6 @@ def meta_leads_webhook():
                     except Exception as e:
                         frappe.log_error(f"Meta field_data parsing failed: {e}", "Meta Integration Error")
             else:
-                # Keep raw error for debugging
                 if lead_info and "error" in lead_info:
                     frappe.log_error(f"Lead fetch error for {rec.get('leadgen_id')}: {lead_info}", "Meta Integration Error")
 
@@ -919,9 +931,8 @@ def meta_leads_webhook():
             main_doc_name = _insert_staging(rec)
             inserted.append(main_doc_name)
             
-            # Also insert into CRM Meta Ads Lead Stg (new staging with current timestamp)
+            # insert into Meta Lead Stg
             try:
-                # Create a copy of rec with current timestamp for staging table
                 stg_rec = rec.copy()
                 stg_rec["created_time"] = frappe.utils.now()  # Use current time for staging
                 stg_doc_name = _insert_staging_stg(stg_rec)
@@ -935,6 +946,64 @@ def meta_leads_webhook():
             raise
 
     raw_json_str = frappe.as_json(payload)
+
+    def sync_missing_leads():
+        
+        try:
+            # Get all leadgen_ids from CRM Meta Ads Lead
+            main_leads = frappe.db.get_all(
+                "CRM Meta Ads Lead",
+                fields=["leadgen_id"],
+                filters={"leadgen_id": ["!=", ""]}
+            )
+            main_leadgen_ids = {record["leadgen_id"] for record in main_leads if record.get("leadgen_id")}
+            
+            if not main_leadgen_ids:
+                return {"status": "no_leads", "message": "No leads found in CRM Meta Ads Lead"}
+            
+            # Get all leadgen_ids from CRM Meta Lead Stagging
+            staging_leads = frappe.db.get_all(
+                "CRM Meta Lead Stagging",
+                fields=["leadgen_id"],
+                filters={"leadgen_id": ["in", list(main_leadgen_ids)]}
+            )
+            staging_leadgen_ids = {record["leadgen_id"] for record in staging_leads if record.get("leadgen_id")}
+            
+            # Find missing leads
+            missing_leadgen_ids = main_leadgen_ids - staging_leadgen_ids
+            
+            if not missing_leadgen_ids:
+                return {
+                    "status": "synchronized", 
+                    "message": f"All {len(main_leadgen_ids)} leads are already synchronized",
+                    "main_count": len(main_leadgen_ids),
+                    "staging_count": len(staging_leadgen_ids),
+                    "missing_count": 0
+                }
+            
+            # Log the sync operation
+            frappe.log_error(
+                f"Found {len(missing_leadgen_ids)} leads in CRM Meta Ads Lead that are missing from CRM Meta Lead Stagging. Running sync...",
+                "Meta Integration Sync"
+            )
+            
+            sync_result = push_to_stagging()
+            
+            return {
+                "status": "sync_attempted",
+                "message": f"Attempted to sync {len(missing_leadgen_ids)} missing leads",
+                "main_count": len(main_leadgen_ids),
+                "staging_count": len(staging_leadgen_ids),
+                "missing_count": len(missing_leadgen_ids),
+                "sync_result": sync_result
+            }
+            
+        except Exception as e:
+            frappe.log_error(f"sync_missing_leads failed: {str(e)}", "Meta Integration Error")
+            return {
+                "status": "error",
+                "message": f"Sync check failed: {str(e)}"
+            }
 
     try:
         if "entry" in payload:
@@ -971,8 +1040,18 @@ def meta_leads_webhook():
             }
             save_record(rec, raw_json_str)
 
+        # After processing webhook data, check for missing leads and sync if needed
+        sync_results = sync_missing_leads()
+
+        response_message = {
+            "ok": True, 
+            "inserted": inserted, 
+            "count": len(inserted),
+            "sync_check": sync_results
+        }
+
         frappe.response["type"] = "json"
-        frappe.response["message"] = {"ok": True, "inserted": inserted, "count": len(inserted)}
+        frappe.response["message"] = response_message
     except Exception as e:
         frappe.log_error(f"Meta webhook processing failed: {str(e)}, Payload: {payload}", "Meta Integration Error")
         frappe.response["type"] = "json"
