@@ -41,8 +41,11 @@ def _norm(x):
 
 def _get(d, key):
     if not isinstance(d, dict): return ""
-    for k in (key, key.lower(), key.upper()):
-        if k in d: return _norm(d.get(k))
+    try:
+        for k in (key, key.lower(), key.upper()):
+            if k in d: return _norm(d.get(k))
+    except (AttributeError, TypeError):
+        pass
     return ""
 
 # ---------- Security: verify X-Hub-Signature-256 ----------
@@ -72,6 +75,43 @@ def _signature_ok(raw: bytes) -> bool:
 GRAPH_BASE = "https://graph.facebook.com"
 
 def _graph_get(path: str, params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    # --- START: Temporary Simulation Logic ---
+    if frappe.conf.get("simulate_meta_api"):
+        # Never let logging kill the simulation
+        try:
+            frappe.logger("meta_sim").info(f"Simulating API call for path: {path}")
+        except Exception:
+            pass
+
+        # Simulated lead fetch
+        if "fake_lead_789" in str(path):
+            return {
+                "field_data": [
+                    {"name": "first_name", "values": ["John"]},
+                    {"name": "email", "values": ["john.doe.test@example.com"]},
+                    {"name": "phone_number", "values": ["+1234567890"]},
+                    {"name": "custom_question_1", "values": ["Answer to question 1"]},
+                ],
+                "created_time": 1756212794,
+                "ad_id": "fake_ad_id_from_api",
+                "form_id": "fake_form_456",
+            }
+
+        # Simulated form fetch
+        if "fake_form_456" in str(path):
+            return {
+                "name": "My Test Lead Form",
+                "questions": [
+                    {"key": "first_name", "label": "What is your first name?"},
+                    {"key": "email", "label": "What is your email?"},
+                    {"key": "phone_number", "label": "What is your phone number?"},
+                    {"key": "custom_question_1", "label": "This is my custom question"},
+                ],
+            }
+
+        # Return empty dict (not None) so callers don't think it failed
+        return {}
+    # --- END: Temporary Simulation Logic ---
     if not requests:
         return None
     url = f"{GRAPH_BASE}/{_graph_ver()}{path}"
@@ -88,10 +128,8 @@ def _graph_get(path: str, params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     except Exception:
         return None
 
-def _fetch_form_meta(form_id: str) -> (str, str):
-    """
-    Return (form_name, questions_json) or ("","") if not available.
-    """
+def _fetch_form_meta(form_id: str) -> tuple[str, str]:
+    
     if not form_id:
         return "", ""
     info = _graph_get(f"/{form_id}", {"fields": "name,questions"})
@@ -105,20 +143,12 @@ def _fetch_form_meta(form_id: str) -> (str, str):
         questions_json = json.dumps(questions, separators=(",", ":"))
     return form_name, questions_json
 
-def _fetch_lead_field_data(leadgen_id: str) -> str:
-    """
-    Return field_data JSON (user answers) or "".
-    """
+def _fetch_lead_info(leadgen_id: str) -> Optional[Dict[str, Any]]:
+    """Fetches the complete lead object from the Graph API using its ID."""
     if not leadgen_id:
-        return ""
-    info = _graph_get(f"/{leadgen_id}", {"fields": "field_data,created_time,ad_id,form_id"})
-    if not info:
-        return ""
-    field_data = info.get("field_data") or []
-    try:
-        return frappe.as_json(field_data, indent=0)
-    except Exception:
-        return json.dumps(field_data, separators=(",", ":"))
+        return None
+    # This call is handled by the real API in production and our mock in testing
+    return _graph_get(f"/{leadgen_id}", {"fields": "field_data,created_time,ad_id,form_id"})
 
 # ---------- Insert into staging ----------
 def _insert_staging(rec: Dict[str, Any]) -> str:
@@ -139,7 +169,7 @@ def _insert_staging(rec: Dict[str, Any]) -> str:
         "form_questions":  rec.get("form_questions") or "",
         "field_data":      rec.get("field_data") or "",
         "ad_id":           _get(rec, "ad_id"),
-        "adgroup_id":      _get(rec, "adgroup_id"),  # Added missing field
+        "adgroup_id":      _get(rec, "adgroup_id"),
         "adset_id":        _get(rec, "adset_id"),
         "campaign_id":     _get(rec, "campaign_id"),
         "created_time":    rec.get("created_time") or None,
@@ -157,12 +187,11 @@ def _insert_staging(rec: Dict[str, Any]) -> str:
 @frappe.whitelist(allow_guest=True)
 def meta_leads_webhook():
     """
-    GET: verification (echoes hub.challenge as plain text)
-    POST: accepts either Meta's standard webhook structure OR simple JSON,
-          verifies signature (if app secret set), then writes each lead to
-          'CRM Meta Ads Lead' and returns an ack.
+    GET: verification
+    POST: accepts webhook, fetches full lead details from Graph API, and saves to staging.
     """
     if frappe.request.method == "GET":
+        # Your existing GET request logic for verification is correct and remains unchanged.
         args = frappe.form_dict or {}
         mode      = _get(args, "hub.mode").lower()
         token     = _get(args, "hub.verify_token")
@@ -171,7 +200,6 @@ def meta_leads_webhook():
 
         if mode == "subscribe" and token == _verify_token() and challenge:
             fr = frappe.response
-            # Your stack wants 'txt' plus a 'result' (and often filename)
             fr["type"]     = "txt"
             fr["result"]   = challenge
             fr["filename"] = "meta_webhook.txt"
@@ -181,17 +209,15 @@ def meta_leads_webhook():
         frappe.response["type"] = "json"
         if dbg:
             frappe.response["message"] = {
-                "ok": False,
-                "error": "Verification failed",
+                "ok": False, "error": "Verification failed",
                 "why": {"mode": mode, "has_challenge": bool(challenge), "token_match": (token == _verify_token())}
             }
         else:
             frappe.response["message"] = {"ok": False, "error": "Verification failed"}
         return
 
-    # POST
+    # POST processing starts here
     raw = frappe.request.data or b""
-    # Signature (optional but recommended in prod)
     if not _signature_ok(raw):
         frappe.local.response["http_status_code"] = 403
         frappe.response["type"] = "json"
@@ -204,78 +230,70 @@ def meta_leads_webhook():
 
     inserted = []
 
+    # --- CHANGE 1: This entire `save_record` function is new and improved ---
+    # It now fetches, parses, and consolidates all data before saving.
     def save_record(rec: Dict[str, Any], raw_json: str):
-        # Fill form_name/questions if possible
-        if not rec.get("form_name") and rec.get("form_id"):
-            form_name, questions_json = _fetch_form_meta(rec["form_id"])
-            if form_name:
-                rec["form_name"] = form_name
-            if questions_json:
-                rec["form_questions"] = questions_json
-        # Optionally fetch answers (field_data) from Graph
-        if rec.get("leadgen_id") and not rec.get("field_data"):
-            fd = _fetch_lead_field_data(rec["leadgen_id"])
-            if fd:
-                rec["field_data"] = fd
-        rec["raw_payload"] = raw_json
-        inserted.append(_insert_staging(rec))
-
-    raw_json_str = ""
-    try:
-        raw_json_str = frappe.as_json(payload, indent=0)
-    except Exception:
         try:
-            raw_json_str = json.dumps(payload, separators=(",", ":"))
-        except Exception:
-            raw_json_str = "{}"
+            # 1. Fetch Form Info using form_id
+            if not rec.get("form_name") and rec.get("form_id"):
+                form_name, questions_json = _fetch_form_meta(rec["form_id"])
+                if form_name: rec["form_name"] = form_name
+                if questions_json: rec["form_questions"] = questions_json
 
-    # Case 1: Meta’s official webhook structure (entries/changes)
-    if "entry" in payload:
-        for entry in (payload.get("entry") or []):
-            page_id = _get(entry, "id")
-            for change in (entry.get("changes") or []):
-                if _get(change, "field") != "leadgen":
-                    continue
-                val = change.get("value") or {}
-                rec = {
-                    "first_name":    _get(val, "first_name"),   # may be empty in webhook
-                    "mobile_no":     _get(val, "mobile_no"),  # may be empty in webhook
-                    "ad_account_id": _get(val, "ad_account_id"), # may be empty in webhook
-                    "email":         _get(val, "email"),
-                    "campaign_name": "",                         # unknown here; optional
-                    "adset_name":    "",
-                    "ad_name":       "",
-                    "page_id":       page_id or _get(val, "page_id"),
-                    "leadgen_id":    _get(val, "leadgen_id"),
-                    "form_id":       _get(val, "form_id"),
-                    "ad_id":         _get(val, "ad_id"),
-                    "adgroup_id":    _get(val, "adgroup_id"),    # Added missing field
-                    "adset_id":      _get(val, "adset_id"),
-                    "campaign_id":   _get(val, "campaign_id"),
-                    "created_time":  _get(val, "created_time"),
-                }
-                save_record(rec, raw_json_str)
+            # 2. Fetch full Lead Info using leadgen_id
+            lead_info = _fetch_lead_info(rec.get("leadgen_id")) if rec.get("leadgen_id") else None
 
-    # Case 2: Your simpler JSON (used in Postman/tests)
-    else:
-        rec = {
-            "first_name":    _get(payload, "first_name"),
-            "mobile_no":     _get(payload, "mobile_no"),
-            "ad_account_id": _get(payload, "ad_account_id"),
-            "email":         _get(payload, "email"),
-            "campaign_name": _get(payload, "campaign_name") or _get(payload, "campaign"),
-            "adset_name":    _get(payload, "adset_name"),
-            "ad_name":       _get(payload, "ad_name"),
-            "page_id":       _get(payload, "page_id"),
-            "leadgen_id":    _get(payload, "lead_id") or _get(payload, "leadgen_id"),
-            "form_id":       _get(payload, "form_id"),
-            "ad_id":         _get(payload, "ad_id"),
-            "adgroup_id":    _get(payload, "adgroup_id"),    # Added missing field
-            "adset_id":      _get(payload, "adset_id"),
-            "campaign_id":   _get(payload, "campaign_id"),
-            "created_time":  _get(payload, "created_time"),
-        }
-        save_record(rec, raw_json_str)
+            # 3. Parse and consolidate data from the API call
+            if lead_info:
+                rec["created_time"] = lead_info.get("created_time") or rec.get("created_time")
+                rec["ad_id"] = lead_info.get("ad_id") or rec.get("ad_id")
+                
+                field_data = lead_info.get("field_data")
+                if field_data and isinstance(field_data, list):
+                    try:
+                        rec["field_data"] = frappe.as_json(field_data)
+                        # Parse field_data to populate main fields
+                        for field in field_data:
+                            name = field.get("name", "").lower()
+                            value = (field.get("values") or [""])[0]
+                            if not value: continue
 
-    frappe.response["type"] = "json"
-    frappe.response["message"] = {"ok": True, "inserted": inserted, "count": len(inserted)}
+                            if name == "first_name": rec["first_name"] = value
+                            elif name in ("phone_number", "mobile_no"): rec["mobile_no"] = value
+                            elif name in ("email", "e-mail"): rec["email"] = value
+                    except Exception as e:
+                        frappe.log_error(f"Meta field_data parsing failed: {e}", "Meta Integration Error")
+
+            # 4. Save the final, complete record
+            rec["raw_payload"] = raw_json
+            inserted.append(_insert_staging(rec))
+        except Exception as e:
+            frappe.log_error(f"Meta save_record failed: {str(e)}, Record: {rec}", "Meta Integration Error")
+            raise
+
+    raw_json_str = frappe.as_json(payload)
+
+    try:
+        # --- CHANGE 2: The payload handling is now cleaner ---
+        if "entry" in payload:
+            for entry in (payload.get("entry") or []):
+                for change in (entry.get("changes") or []):
+                    if _get(change, "field") != "leadgen": continue
+                    val = change.get("value") or {}
+                    # Create a minimal record from the webhook payload
+                    rec = {k: _get(val, k) for k in ["leadgen_id", "form_id", "ad_id", "adset_id", "campaign_id", "created_time"]}
+                    rec["page_id"] = _get(entry, "id")
+                    save_record(rec, raw_json_str)
+        else:
+            # Handle simple test payloads
+            rec = {k: _get(payload, k) for k in ["first_name", "mobile_no", "email", "campaign_name", "adset_name", "ad_name", "page_id", "leadgen_id", "form_id", "ad_id", "adset_id", "campaign_id", "created_time"]}
+            save_record(rec, raw_json_str)
+
+        frappe.response["type"] = "json"
+        frappe.response["message"] = {"ok": True, "inserted": inserted, "count": len(inserted)}
+
+    except Exception as e:
+        frappe.log_error(f"Meta webhook processing failed: {str(e)}, Payload: {payload}", "Meta Integration Error")
+        frappe.response["type"] = "json"
+        frappe.response["message"] = {"ok": False, "error": f"Processing failed: {str(e)}"}
+        return
