@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-26 13:50\n"
+"PO-Revision-Date: 2025-08-27 13:47\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -178,7 +178,7 @@ msgstr "Prihvati Poziv"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:155
 msgid "Accept call"
-msgstr ""
+msgstr "Prihvati poziv"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -289,11 +289,11 @@ msgstr "Dodaj sedmične praznike"
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
 msgid "Add a note"
-msgstr ""
+msgstr "Dodaj bilješku"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:191
 msgid "Add a task"
-msgstr ""
+msgstr "Dodaj zadatak"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add chart"
@@ -964,7 +964,7 @@ msgstr "Promijeni Sliku"
 
 #: frontend/src/components/Activities/TaskArea.vue:45
 msgid "Change status"
-msgstr ""
+msgstr "Promijeni status"
 
 #: frontend/src/pages/Dashboard.vue:22
 msgid "Chart"
@@ -1618,7 +1618,7 @@ msgstr "Izbriši kontakt"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:84
 msgid "Delete invitation"
-msgstr ""
+msgstr "Izbriši pozivnicu"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:229
 msgid "Delete linked item"
@@ -1877,7 +1877,7 @@ msgstr "Uredi Prikaz"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:39
 msgid "Edit call log"
-msgstr ""
+msgstr "Uredi zapisnik poziva"
 
 #: frontend/src/components/Activities/DataFields.vue:17
 #: frontend/src/components/Controls/GridRowModal.vue:14
@@ -1889,11 +1889,11 @@ msgstr ""
 #: frontend/src/components/Modals/LeadModal.vue:16
 #: frontend/src/components/Modals/OrganizationModal.vue:16
 msgid "Edit fields layout"
-msgstr ""
+msgstr "Uredi raspored polja"
 
 #: frontend/src/components/Controls/Grid.vue:57
 msgid "Edit grid fields"
-msgstr ""
+msgstr "Uredi polja mreže"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:19
 msgid "Edit note"
@@ -1901,7 +1901,7 @@ msgstr "Uredi bilješku"
 
 #: frontend/src/components/Controls/Grid.vue:281
 msgid "Edit row"
-msgstr ""
+msgstr "Uredi red"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:24
 msgid "Edit task"
@@ -2469,7 +2469,7 @@ msgstr "Grupiši Po: "
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:63
 msgid "Hang up"
-msgstr ""
+msgstr "Prekini poziv"
 
 #: crm/templates/emails/helpdesk_invitation.html:2
 msgid "Hello"
@@ -2486,35 +2486,35 @@ msgstr "Podrška"
 #. Name of a DocType
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Helpdesk CRM Settings"
-msgstr ""
+msgstr "Helpdesk Postavke Prodajne Podršku"
 
 #. Label of the helpdesk_site_apis_section (Section Break) field in DocType
 #. 'Helpdesk CRM Settings'
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Helpdesk Site API's"
-msgstr ""
+msgstr "API Helpdesk sajta"
 
 #. Label of the helpdesk_site_url (Data) field in DocType 'Helpdesk CRM
 #. Settings'
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Helpdesk Site URL"
-msgstr ""
+msgstr "URL Helpdesk sajta"
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:18
 msgid "Helpdesk is not installed in the current site"
-msgstr ""
+msgstr "Helpdesk nije instaliran na trenutnom sajtu"
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:40
 msgid "Helpdesk is not integrated with the CRM"
-msgstr ""
+msgstr "Helpdesk nije integrisan sa Prodajnom Podrškom"
 
 #: frontend/src/components/Settings/HelpdeskSettings.vue:4
 msgid "Helpdesk settings"
-msgstr ""
+msgstr "Helpdesk Postavke"
 
 #: frontend/src/components/Settings/HelpdeskSettings.vue:5
 msgid "Helpdesk settings updated"
-msgstr ""
+msgstr "Helpdeks Postavke ažurirane"
 
 #: frontend/src/components/CommunicationArea.vue:56
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
@@ -2678,12 +2678,12 @@ msgstr "Pokretanje poziva..."
 
 #: frontend/src/components/EmailEditor.vue:151
 msgid "Insert Email Template"
-msgstr ""
+msgstr "Umetni predložak e-pošte"
 
 #: frontend/src/components/CommentBox.vue:49
 #: frontend/src/components/EmailEditor.vue:127
 msgid "Insert Emoji"
-msgstr ""
+msgstr "Umetni emodži"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:592
 msgid "Integration"
@@ -2730,7 +2730,7 @@ msgstr "Nevažeća e-pošta"
 
 #: frontend/src/pages/InvalidPage.vue:6
 msgid "Invalid page or not permitted to access"
-msgstr ""
+msgstr "Nevažeća stranica ili nije dozvoljen pristup"
 
 #: frontend/src/components/Settings/Users.vue:25
 msgid "Invite New User"
@@ -2795,7 +2795,7 @@ msgstr "Grupa"
 #. 'Helpdesk CRM Settings'
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Is Helpdesk installed on a different site?"
-msgstr ""
+msgstr "Da li je Helpdesk instaliran na drugom sajtu?"
 
 #. Label of the is_primary (Check) field in DocType 'CRM Contacts'
 #. Label of the is_primary (Check) field in DocType 'CRM Telephony Phone'
@@ -3222,7 +3222,7 @@ msgstr "Srednje ime"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:127
 msgid "Minimize"
-msgstr ""
+msgstr "Minimiziraj"
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Contacts'
 #. Label of the mobile_no (Data) field in DocType 'CRM Lead'
@@ -3272,7 +3272,7 @@ msgstr "Mjesec"
 
 #: frontend/src/components/ViewControls.vue:221
 msgid "More Options"
-msgstr ""
+msgstr "Više Opcija"
 
 #: frontend/src/components/FieldLayoutEditor.vue:448
 msgid "Move to next section"
@@ -4156,7 +4156,7 @@ msgstr "Odbij"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:163
 msgid "Reject call"
-msgstr ""
+msgstr "Odbij poziv"
 
 #: frontend/src/components/Settings/Users.vue:210
 #: frontend/src/components/Settings/Users.vue:213
@@ -4551,7 +4551,7 @@ msgstr "Standard Nivo Servisa"
 
 #: frontend/src/components/DropdownItem.vue:27
 msgid "Set As Primary"
-msgstr ""
+msgstr "Postavi kao primarni"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:66
 msgid "Set all as private"
@@ -5324,7 +5324,7 @@ msgstr "Prikaži Ime"
 
 #: frontend/src/pages/Deal.vue:219
 msgid "View contact"
-msgstr ""
+msgstr "Prikaži kontakt"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:560
 msgid "Views"
@@ -5370,7 +5370,7 @@ msgstr "Poruka Dobrodošlice"
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:155
 msgid "Welcome to Helpdesk"
-msgstr ""
+msgstr "Dobro došli u Helpdesk"
 
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
