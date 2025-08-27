@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-26 13:50\n"
+"PO-Revision-Date: 2025-08-27 13:47\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -530,7 +530,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:576
 msgid "Assignment rule"
-msgstr ""
+msgstr "Zuweisungsregel"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:173
 msgid "At least one field is required"
@@ -3503,7 +3503,7 @@ msgstr ""
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:72
 #: frontend/src/components/Controls/MultiSelectUserInput.vue:72
 msgid "No results found"
-msgstr ""
+msgstr "Keine Ergebnisse gefunden"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:66
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:42
