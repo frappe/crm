@@ -224,34 +224,19 @@
             v-if="!_event.isFullDay"
             class="max-w-[105px]"
             variant="outline"
-            :value="_event.fromTime"
+            v-model="_event.fromTime"
             :placeholder="__('Start Time')"
             @update:modelValue="(time) => updateTime(time, true)"
-          >
-            <template #suffix="{ togglePopover }">
-              <FeatherIcon
-                name="chevron-down"
-                class="h-4 w-4 cursor-pointer"
-                @click="togglePopover"
-              />
-            </template>
-          </TimePicker>
+          />
           <TimePicker
             class="max-w-[105px]"
             variant="outline"
-            :value="_event.toTime"
-            :customOptions="toOptions"
+            v-model="_event.toTime"
+            :options="toOptions"
             :placeholder="__('End Time')"
+            placement="bottom-end"
             @update:modelValue="(time) => updateTime(time)"
-          >
-            <template #suffix="{ togglePopover }">
-              <FeatherIcon
-                name="chevron-down"
-                class="h-4 w-4 cursor-pointer"
-                @click="togglePopover"
-              />
-            </template>
-          </TimePicker>
+          />
         </div>
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
@@ -363,7 +348,7 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
-import TimePicker from './TimePicker.vue'
+import TimePicker from '@/components/Calendar/TimePicker.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { getFormat, validateEmail } from '@/utils'
@@ -394,7 +379,15 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['save', 'edit', 'delete', 'details', 'close'])
+const emit = defineEmits([
+  'save',
+  'edit',
+  'delete',
+  'details',
+  'close',
+  'sync',
+  'duplicate',
+])
 
 const router = useRouter()
 const { $dialog } = globalStore()
@@ -409,7 +402,6 @@ const peoples = computed({
     return _event.value.event_participants || []
   },
   set(list) {
-    // Deduplicate by email while preserving first occurrence meta
     const seen = new Set()
     const out = []
     for (const a of list || []) {
@@ -723,7 +715,13 @@ function getTooltip(m) {
 function formatDuration(mins) {
   // For < 1 hour show minutes, else show hours (with decimal for 15/30/45 mins)
   if (mins < 60) return __('{0} mins', [mins])
-  const hours = mins / 60
+  let hours = mins / 60
+
+  // keep hours decimal to 2 only if decimal is not 0
+  if (hours % 1 !== 0) {
+    hours = hours.toFixed(2)
+  }
+
   if (Number.isInteger(hours)) {
     return hours === 1 ? __('1 hr') : __('{0} hrs', [hours])
   }
