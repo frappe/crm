@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-26 13:50\n"
+"PO-Revision-Date: 2025-08-27 13:47\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -3058,7 +3058,7 @@ msgstr ""
 
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
-msgstr ""
+msgstr "¿Iniciar sesión en Frappe Cloud?"
 
 #. Label of the brand_logo (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -4583,7 +4583,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:527
 msgid "Setting up"
-msgstr ""
+msgstr "Puesta en marcha"
 
 #: frontend/src/components/Settings/emailConfig.js:145
 msgid "Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more "
@@ -4792,7 +4792,7 @@ msgstr "Asunto"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:159
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:161
 msgid "Subject is required"
-msgstr ""
+msgstr "El Asunto es obligatorio"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:45
 msgid "Subject: {0}"
