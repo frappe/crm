@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-26 13:50\n"
+"PO-Revision-Date: 2025-08-27 13:47\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -3503,7 +3503,7 @@ msgstr "مخاطب اصلی تنظیم نشده است"
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:72
 #: frontend/src/components/Controls/MultiSelectUserInput.vue:72
 msgid "No results found"
-msgstr ""
+msgstr "نتیجه‌ای یافت نشد"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:66
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:42
@@ -5485,7 +5485,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "amber"
-msgstr ""
+msgstr "کهربایی"
 
 #: crm/api/todo.py:109
 msgid "assigned a new task {0} to you"
@@ -5717,7 +5717,7 @@ msgstr "قرمز"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "teal"
-msgstr ""
+msgstr "فیروزه‌ای"
 
 #: frontend/src/components/Activities/Activities.vue:275
 #: frontend/src/components/Activities/Activities.vue:338
