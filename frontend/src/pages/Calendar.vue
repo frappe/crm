@@ -74,8 +74,18 @@
                 }
               "
               variant="ghost"
-              class="h-4 w-4"
               icon="chevron-left"
+            />
+            <Button
+              :label="__('Today')"
+              variant="ghost"
+              @click="
+                () => {
+                  const today = dayjs().format('YYYY-MM-DD')
+                  setCalendarDate(today)
+                  selectedMonthDate = today
+                }
+              "
             />
             <Button
               @click="
@@ -85,7 +95,6 @@
                 }
               "
               variant="ghost"
-              class="h-4 w-4"
               icon="chevron-right"
             />
 
