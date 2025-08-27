@@ -26,7 +26,6 @@
         isEditMode: true,
         eventIcons: {},
         allowCustomClickEvents: true,
-        redundantCellHeight: 100,
         enableShortcuts: false,
         noBorder: true,
       }"
@@ -192,6 +191,7 @@ const events = createListResource({
     'reference_docname',
   ],
   filters: { status: 'Open', owner: user },
+  pageLength: 9999,
   auto: true,
   transform: (data) => {
     return data.map((event) => {
@@ -371,6 +371,7 @@ function newEvent(e, duplicate = false) {
   let toTime = e.toTime
   let fromDate = e.fromDate
   let toDate = e.toDate
+  let isFullDay = e.isFullDay
 
   if (!duplicate) {
     let t = getFromToTime(e.time)
@@ -378,7 +379,7 @@ function newEvent(e, duplicate = false) {
     toTime = t[1]
     fromDate = dayjs(e.date).format('YYYY-MM-DD')
     toDate = fromDate
-    e = { fromDate, toDate, fromTime, toTime }
+    e = { fromDate, toDate, fromTime, toTime, isFullDay }
   }
 
   event.value = {
