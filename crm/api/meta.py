@@ -3,6 +3,7 @@ import hmac, hashlib
 import json
 from typing import Any, Dict, Optional, Tuple
 from frappe.utils.password import get_decrypted_password
+from frappe.utils import now_datetime
 
 try:
     import requests  # whitelisted RPCs can import stdlib + installed deps
@@ -934,7 +935,7 @@ def meta_leads_webhook():
             # insert into Meta Lead Stg
             try:
                 stg_rec = rec.copy()
-                stg_rec["created_time"] = frappe.utils.now()  # Use current time for staging
+                stg_rec["created_time"] = now_datetime()  # Use current time for staging
                 stg_doc_name = _insert_staging_stg(stg_rec)
                 frappe.log_error(f"Lead {rec.get('leadgen_id')} also inserted into staging table: {stg_doc_name}", "Meta Integration Success")
             except Exception as stg_error:
@@ -974,7 +975,7 @@ def meta_leads_webhook():
             
             if not missing_leadgen_ids:
                 return {
-                    "status": "synchronized", 
+                    "status": "synchronized",
                     "message": f"All {len(main_leadgen_ids)} leads are already synchronized",
                     "main_count": len(main_leadgen_ids),
                     "staging_count": len(staging_leadgen_ids),
