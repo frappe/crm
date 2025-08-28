@@ -1,6 +1,7 @@
 import frappe
 import hmac, hashlib
 import json
+import datetime  # <-- added
 from typing import Any, Dict, Optional, Tuple
 from frappe.utils.password import get_decrypted_password
 from frappe.utils import now_datetime
@@ -68,6 +69,47 @@ def _get(d, key):
         pass
     return ""
 
+# ---------- created_time normalizer ----------
+def _normalize_created_time(v):
+    """Return UTC-naive 'YYYY-MM-DD HH:MM:SS' or None, accepting epoch/int/str/ISO/datetime."""
+    if v is None or v == "":
+        return None
+
+    # already a datetime?
+    if isinstance(v, datetime.datetime):
+        dt = v
+        # strip tz to naive UTC
+        if dt.tzinfo:
+            dt = dt.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    # epoch (int/float or numeric string)
+    if isinstance(v, (int, float)) or (isinstance(v, str) and v.isdigit()):
+        try:
+            dt = datetime.datetime.utcfromtimestamp(int(v))
+            return dt.strftime("%Y-%m-%d %H:%M:%S")
+        except Exception:
+            return None
+
+    if isinstance(v, str):
+        s = v.strip()
+        # convert trailing Z to +0000 for %z parsing
+        if s.endswith("Z"):
+            s = s[:-1] + "+0000"
+        # try common formats
+        for fmt in ("%Y-%m-%dT%H:%M:%S%z",
+                    "%Y-%m-%d %H:%M:%S%z",
+                    "%Y-%m-%dT%H:%M:%S",
+                    "%Y-%m-%d %H:%M:%S"):
+            try:
+                dt = datetime.datetime.strptime(s, fmt)
+                if dt.tzinfo:
+                    dt = dt.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+                return dt.strftime("%Y-%m-%d %H:%M:%S")
+            except Exception:
+                continue
+    return None
+
 # ---------- Security: verify X-Hub-Signature-256 ----------
 def _signature_ok(raw: bytes) -> bool:
     secret = _app_secret()
@@ -126,8 +168,6 @@ def _graph_get(path: str, params: Dict[str, Any]):
         )
         return {"error": {"message": str(e)}}
 
-
-
 def _fetch_form_meta(form_id: str) -> Tuple[str, str]:
     if not form_id:
         return "", ""
@@ -148,41 +188,39 @@ def _fetch_lead_info(leadgen_id: str):
     fields = "field_data,created_time,ad_id,adset_id,campaign_id,form_id"
     return _graph_get(f"/{leadgen_id}", {"fields": fields})
 
-
 def fetch_ad_account_id(leadgen_id: str):
-    
     if not requests:
         return {"error": {"message": "requests not available"}}
-    
+
     if not leadgen_id:
         return {"error": {"message": "leadgen_id is required"}}
-    
+
     try:
         # Step 1: Get lead info to extract ad_id
         lead_info = _fetch_lead_info(leadgen_id)
-        
+
         if not lead_info or "error" in lead_info:
             error_msg = lead_info.get("error", {}).get("message", "Unknown error") if lead_info else "No data returned"
             return {"error": {"message": f"Failed to fetch lead info: {error_msg}"}}
-        
+
         ad_id = lead_info.get("ad_id")
         if not ad_id:
             return {"error": {"message": f"No ad_id found in lead {leadgen_id}"}}
-        
+
         # Step 2: Get ad account info using ad_id
         ad_info = _graph_get(f"/{ad_id}", {"fields": "account_id,name"})
-        
+
         if not ad_info or "error" in ad_info:
             error_msg = ad_info.get("error", {}).get("message", "Unknown error") if ad_info else "No data returned"
             return {"error": {"message": f"Failed to fetch ad info for ad_id {ad_id}: {error_msg}"}}
-        
+
         # Step 3: Extract account_id from response
         account_id = ad_info.get("account_id")
         ad_name = ad_info.get("name")
-        
+
         if not account_id:
             return {"error": {"message": f"No account_id found in ad {ad_id}"}}
-        
+
         return {
             "success": True,
             "leadgen_id": leadgen_id,
@@ -190,7 +228,7 @@ def fetch_ad_account_id(leadgen_id: str):
             "ad_name": ad_name,
             "ad_account_id": account_id
         }
-        
+
     except Exception as e:
         frappe.log_error(
             f"fetch_ad_account_id failed for leadgen_id {leadgen_id}: {str(e)}",
@@ -198,39 +236,37 @@ def fetch_ad_account_id(leadgen_id: str):
         )
         return {"error": {"message": f"Processing failed: {str(e)}"}}
 
-
-
 def fetch_meta_accounts():
     if not requests:
         return {"error": {"message": "requests not available"}}
-    
+
     # Get user access token (not system user token)
     user_token = _system_user_access_token()
     if not user_token:
         return {"error": {"message": "Missing user access token in Meta Integration Settings. Please set meta_user_access_token field."}}
-    
+
     url = f"https://graph.facebook.com/{_graph_ver()}/me/accounts"
     headers = {
         "Authorization": f"Bearer {user_token}",
         "Accept": "application/json"
     }
-    
+
     try:
         r = requests.get(url, headers=headers, timeout=20)
         try:
             data = r.json() if r.content else {}
         except Exception:
             data = {"raw": r.text}
-        
+
         if r.status_code != 200:
             frappe.log_error(
                 f"Meta Accounts GET {r.status_code}: {data} | url={url}",
                 "Meta Integration Error"
             )
             return {"error": {"message": f"HTTP {r.status_code}", "details": data}}
-        
+
         return data
-        
+
     except Exception as e:
         frappe.log_error(
             f"Meta Accounts GET exception: {e} | url={url}",
@@ -238,39 +274,38 @@ def fetch_meta_accounts():
         )
         return {"error": {"message": str(e)}}
 
-
 def fetch_page_leadgen_forms(page_id: str, page_access_token: str):
     if not requests:
         return {"error": {"message": "requests not available"}}
-    
+
     if not page_id:
         return {"error": {"message": "page_id is required"}}
-    
+
     if not page_access_token:
         return {"error": {"message": "page_access_token is required"}}
-    
+
     url = f"https://graph.facebook.com/{_graph_ver()}/{page_id}/leadgen_forms"
     headers = {
         "Authorization": f"Bearer {page_access_token}",
         "Accept": "application/json"
     }
-    
+
     try:
         r = requests.get(url, headers=headers, timeout=20)
         try:
             data = r.json() if r.content else {}
         except Exception:
             data = {"raw": r.text}
-        
+
         if r.status_code != 200:
             frappe.log_error(
                 f"Meta Leadgen Forms GET {r.status_code}: {data} | url={url}",
                 "Meta Integration Error"
             )
             return {"error": {"message": f"HTTP {r.status_code}", "details": data}}
-        
+
         return data
-        
+
     except Exception as e:
         frappe.log_error(
             f"Meta Leadgen Forms GET exception: {e} | url={url}",
@@ -278,35 +313,34 @@ def fetch_page_leadgen_forms(page_id: str, page_access_token: str):
         )
         return {"error": {"message": str(e)}}
 
-
 def fetch_all_page_leadgen_forms():
     try:
         # Step 1: Get all Meta accounts/pages
         accounts_result = fetch_meta_accounts()
-        
+
         if "error" in accounts_result:
             return {"success": False, "error": f"Failed to fetch accounts: {accounts_result['error']['message']}"}
-        
+
         pages_data = accounts_result.get("data", [])
         if not pages_data:
             return {"success": False, "error": "No pages found in your Meta account"}
-        
+
         # Step 2: For each page, fetch its leadgen forms
         all_forms = {}
         errors = []
-        
+
         for page in pages_data:
             page_id = page.get("id")
             page_name = page.get("name")
             page_access_token = page.get("access_token")
-            
+
             if not page_id or not page_access_token:
                 errors.append(f"Missing data for page: {page_name}")
                 continue
-            
+
             # Fetch leadgen forms for this page
             forms_result = fetch_page_leadgen_forms(page_id, page_access_token)
-            
+
             if "error" in forms_result:
                 errors.append(f"Failed to fetch forms for page '{page_name}' ({page_id}): {forms_result['error']['message']}")
                 all_forms[page_id] = {
@@ -323,7 +357,7 @@ def fetch_all_page_leadgen_forms():
                     "forms_count": len(forms_data),
                     "forms": forms_data
                 }
-        
+
         # Step 3: Return comprehensive result
         result = {
             "success": True,
@@ -332,35 +366,33 @@ def fetch_all_page_leadgen_forms():
             "total_forms": sum(p.get("forms_count", 0) for p in all_forms.values()),
             "pages": all_forms
         }
-        
+
         if errors:
             result["errors"] = errors
-        
+
         return result
-        
+
     except Exception as e:
         frappe.log_error(f"fetch_all_page_leadgen_forms failed: {str(e)}", "Meta Integration Error")
         return {"success": False, "error": f"Processing failed: {str(e)}"}
 
-
 def fetch_form_leads(form_id: str, page_access_token: str):
-    
     if not requests:
         return {"error": {"message": "requests not available"}}
-    
+
     if not form_id:
         return {"error": {"message": "form_id is required"}}
-    
+
     if not page_access_token:
         return {"error": {"message": "page_access_token is required"}}
-    
+
     all_leads = []
     next_url = f"https://graph.facebook.com/{_graph_ver()}/{form_id}/leads"
     headers = {
         "Authorization": f"Bearer {page_access_token}",
         "Accept": "application/json"
     }
-    
+
     try:
         while next_url:
             r = requests.get(next_url, headers=headers, timeout=20)
@@ -368,22 +400,22 @@ def fetch_form_leads(form_id: str, page_access_token: str):
                 data = r.json() if r.content else {}
             except Exception:
                 data = {"raw": r.text}
-            
+
             if r.status_code != 200:
                 frappe.log_error(
                     f"Meta Form Leads GET {r.status_code}: {data} | url={next_url}",
                     "Meta Integration Error"
                 )
                 return {"error": {"message": f"HTTP {r.status_code}", "details": data}}
-            
+
             # Add current page leads to the collection
             current_leads = data.get("data", [])
             all_leads.extend(current_leads)
-            
+
             # Check for next page
             paging = data.get("paging", {})
             next_url = paging.get("next")
-            
+
             # Safety break to prevent infinite loops (optional)
             if len(all_leads) > 10000:  # Adjust limit as needed
                 frappe.log_error(
@@ -391,14 +423,14 @@ def fetch_form_leads(form_id: str, page_access_token: str):
                     "Meta Integration Warning"
                 )
                 break
-        
+
         # Return data in the same format as the original API
         return {
             "data": all_leads,
             "total_count": len(all_leads),
             "paginated": True
         }
-        
+
     except Exception as e:
         frappe.log_error(
             f"Meta Form Leads GET exception: {e} | url={next_url}",
@@ -406,63 +438,61 @@ def fetch_form_leads(form_id: str, page_access_token: str):
         )
         return {"error": {"message": str(e)}}
 
-
 def fetch_all_leads():
-    
     try:
         # Step 1: Get all forms from all pages
         forms_result = fetch_all_page_leadgen_forms()
-        
+
         if not forms_result.get("success"):
             return {"success": False, "error": f"Failed to fetch forms: {forms_result.get('error', 'Unknown error')}"}
-        
+
         pages_data = forms_result.get("pages", {})
         if not pages_data:
             return {"success": False, "error": "No pages with forms found"}
-        
+
         # Step 2: For each page and form, fetch leads
         all_leads = {}
         errors = []
         total_leads_count = 0
-        
+
         for page_id, page_info in pages_data.items():
             page_name = page_info.get("page_name")
             forms = page_info.get("forms", [])
-            
+
             if page_info.get("error"):
                 errors.append(f"Page '{page_name}' had form fetch error: {page_info['error']}")
                 continue
-            
+
             # Get page access token from accounts (we need to call fetch_meta_accounts again)
             accounts_result = fetch_meta_accounts()
             if "error" in accounts_result:
                 errors.append(f"Could not get access token for page '{page_name}': {accounts_result['error']['message']}")
                 continue
-            
+
             # Find the page access token
             page_access_token = None
             for account in accounts_result.get("data", []):
                 if account.get("id") == page_id:
                     page_access_token = account.get("access_token")
                     break
-            
+
             if not page_access_token:
                 errors.append(f"Could not find access token for page '{page_name}' ({page_id})")
                 continue
-            
+
             page_leads = {}
-            
+
             for form in forms:
                 form_id = form.get("id")
                 form_name = form.get("name", f"Form {form_id}")
-                
+
                 if not form_id:
                     errors.append(f"Form missing ID in page '{page_name}'")
                     continue
-                
+
                 # Fetch leads for this form
                 leads_result = fetch_form_leads(form_id, page_access_token)
-                
+
                 if "error" in leads_result:
                     errors.append(f"Failed to fetch leads for form '{form_name}' ({form_id}): {leads_result['error']['message']}")
                     page_leads[form_id] = {
@@ -476,14 +506,14 @@ def fetch_all_leads():
                     leads_data = leads_result.get("data", [])
                     leads_count = len(leads_data)
                     total_leads_count += leads_count
-                    
+
                     page_leads[form_id] = {
                         "form_name": form_name,
                         "form_id": form_id,
                         "leads_count": leads_count,
                         "leads": leads_data
                     }
-            
+
             all_leads[page_id] = {
                 "page_name": page_name,
                 "page_id": page_id,
@@ -491,7 +521,7 @@ def fetch_all_leads():
                 "total_leads_in_page": sum(form_data.get("leads_count", 0) for form_data in page_leads.values()),
                 "forms": page_leads
             }
-        
+
         # Step 3: Return comprehensive result
         result = {
             "success": True,
@@ -500,34 +530,33 @@ def fetch_all_leads():
             "total_leads": total_leads_count,
             "pages": all_leads
         }
-        
+
         if errors:
             result["errors"] = errors
-        
+
         return result
-        
+
     except Exception as e:
         frappe.log_error(f"fetch_all_leads failed: {str(e)}", "Meta Integration Error")
         return {"success": False, "error": f"Processing failed: {str(e)}"}
 
 @frappe.whitelist()
 def push_to_stagging():
-    
     try:
         # Step 1: Get all leads from all forms
         all_leads_result = fetch_all_leads()
-        
+
         if not all_leads_result.get("success"):
             return {"success": False, "error": f"Failed to fetch leads: {all_leads_result.get('error', 'Unknown error')}"}
-        
+
         pages_data = all_leads_result.get("pages", {})
         if not pages_data:
             return {"success": False, "error": "No pages with leads found"}
-        
+
         # Step 2: Collect all unique leadgen_ids
         all_leadgen_ids = set()
         total_leads_found = 0
-        
+
         for page_id, page_info in pages_data.items():
             forms_data = page_info.get("forms", {})
             for form_id, form_info in forms_data.items():
@@ -539,10 +568,10 @@ def push_to_stagging():
                     if leadgen_id:
                         all_leadgen_ids.add(leadgen_id)
                         total_leads_found += 1
-        
+
         if not all_leadgen_ids:
             return {"success": False, "error": "No leads with valid leadgen_id found"}
-        
+
         # Step 3: Check for existing records to avoid duplicates
         existing_leadgen_ids = set()
         try:
@@ -555,10 +584,10 @@ def push_to_stagging():
         except Exception as e:
             frappe.log_error(f"Error checking existing records: {str(e)}", "Meta Integration Warning")
             # Continue without duplicate check if DB query fails
-        
+
         # Step 4: Filter out duplicates
         new_leadgen_ids = all_leadgen_ids - existing_leadgen_ids
-        
+
         if not new_leadgen_ids:
             return {
                 "success": True,
@@ -569,24 +598,24 @@ def push_to_stagging():
                 "inserted": [],
                 "errors": []
             }
-        
+
         # Step 5: Process each new lead
         inserted = []
         errors = []
         processed_count = 0
-        
+
         for leadgen_id in new_leadgen_ids:
             processed_count += 1
-            
+
             try:
                 # Fetch detailed lead info
                 lead_info = _fetch_lead_info(leadgen_id)
-                
+
                 if not lead_info or "error" in lead_info:
                     error_msg = lead_info.get("error", {}).get("message", "Unknown error") if lead_info else "No data returned"
                     errors.append(f"Failed to fetch details for lead {leadgen_id}: {error_msg}")
                     continue
-                
+
                 # Prepare record for insertion
                 rec = {
                     "leadgen_id": leadgen_id,
@@ -596,7 +625,7 @@ def push_to_stagging():
                     "campaign_id": lead_info.get("campaign_id"),
                     "form_id": lead_info.get("form_id"),
                 }
-                
+
                 # Fetch ad account ID using the leadgen_id
                 try:
                     ad_account_result = fetch_ad_account_id(leadgen_id)
@@ -608,7 +637,7 @@ def push_to_stagging():
                 except Exception as e:
                     frappe.log_error(f"Failed to fetch ad_account_id for lead {leadgen_id}: {str(e)}", "Meta Integration Warning")
                     # Continue without ad_account_id if fetch fails
-                
+
                 # Fetch form metadata if form_id is available
                 if rec.get("form_id"):
                     form_name, questions_json = _fetch_form_meta(rec["form_id"])
@@ -616,7 +645,7 @@ def push_to_stagging():
                         rec["form_name"] = form_name
                     if questions_json:
                         rec["form_questions"] = questions_json
-                
+
                 # Parse field_data to extract core fields
                 field_data = lead_info.get("field_data")
                 if field_data and isinstance(field_data, list):
@@ -635,23 +664,23 @@ def push_to_stagging():
                                 rec["email"] = rec.get("email") or value
                     except Exception as e:
                         frappe.log_error(f"Meta field_data parsing failed for {leadgen_id}: {e}", "Meta Integration Error")
-                
+
                 # Add raw payload for debugging
                 rec["raw_payload"] = frappe.as_json(lead_info)
-                
+
                 # Insert into staging table
                 doc_name = _insert_staging_stg(rec)
                 inserted.append({
                     "leadgen_id": leadgen_id,
                     "doc_name": doc_name
                 })
-                
+
             except Exception as e:
                 error_msg = f"Failed to process lead {leadgen_id}: {str(e)}"
                 errors.append(error_msg)
                 frappe.log_error(error_msg, "Meta Integration Error")
                 continue
-        
+
         # Step 6: Return comprehensive result
         result = {
             "success": True,
@@ -663,24 +692,25 @@ def push_to_stagging():
             "failed_insertions": len(errors),
             # "inserted": inserted
         }
-        
+
         if errors:
             result["errors"] = errors
-        
+
         # Add summary message
         if len(inserted) > 0:
             result["message"] = f"Successfully processed {len(inserted)} new leads into staging table"
         else:
             result["message"] = "No new leads were processed"
-        
+
         return result
-        
+
     except Exception as e:
         frappe.log_error(f"push_to_stagging failed: {str(e)}", "Meta Integration Error")
         return {"success": False, "error": f"Processing failed: {str(e)}"}
 
 # ---------- Insert into CRM Meta Lead ----------
 def _insert_staging(rec: Dict[str, Any]) -> str:
+    ct = _normalize_created_time(rec.get("created_time"))  # <-- normalize
     doc = frappe.get_doc({
         "doctype": "CRM Meta Ads Lead",
         "first_name":      _get(rec, "first_name"),
@@ -700,7 +730,7 @@ def _insert_staging(rec: Dict[str, Any]) -> str:
         "adgroup_id":      _get(rec, "adgroup_id"),
         "adset_id":        _get(rec, "adset_id"),
         "campaign_id":     _get(rec, "campaign_id"),
-        "created_time":    rec.get("created_time") or None,
+        "created_time":    ct,  # <-- normalized
         "raw_payload":     rec.get("raw_payload") or "",
         "source_ip":       frappe.request.headers.get("X-Forwarded-For") or frappe.request.remote_addr,
         "processed":       rec.get("processed", 0),
@@ -714,7 +744,7 @@ def _insert_staging(rec: Dict[str, Any]) -> str:
 # ---------- Insert into CRM stg ----------
 def _insert_staging_stg(rec: Dict[str, Any]) -> str:
     """Insert record into CRM Meta Ads Lead Stg doctype"""
-    
+
     # Safely get source IP - handle cases where frappe.request is not available
     source_ip = ""
     try:
@@ -722,7 +752,9 @@ def _insert_staging_stg(rec: Dict[str, Any]) -> str:
             source_ip = frappe.request.headers.get("X-Forwarded-For") or frappe.request.remote_addr or ""
     except Exception:
         source_ip = ""
-    
+
+    ct = _normalize_created_time(rec.get("created_time"))  # <-- normalize
+
     doc = frappe.get_doc({
         "doctype": "CRM Meta Lead Stagging",
         "first_name":      _get(rec, "first_name"),
@@ -742,7 +774,7 @@ def _insert_staging_stg(rec: Dict[str, Any]) -> str:
         "adgroup_id":      _get(rec, "adgroup_id"),
         "adset_id":        _get(rec, "adset_id"),
         "campaign_id":     _get(rec, "campaign_id"),
-        "created_time":    rec.get("created_time") or None,
+        "created_time":    ct,  # <-- normalized
         "raw_payload":     rec.get("raw_payload") or "",
         "source_ip":       source_ip,
         "processed":       rec.get("processed", 0),
@@ -753,20 +785,19 @@ def _insert_staging_stg(rec: Dict[str, Any]) -> str:
     frappe.db.commit()
     return doc.name
 
-
 def fetch_and_insert_to_staging(leadgen_id: str, **kwargs) -> Dict[str, Any]:
 
     if not leadgen_id:
         return {"success": False, "error": "leadgen_id is required"}
-    
+
     try:
         # 1) Fetch lead info from Meta Graph API
         lead_info = _fetch_lead_info(leadgen_id)
-        
+
         if not lead_info or "error" in lead_info:
             error_msg = lead_info.get("error", {}).get("message", "Unknown error") if lead_info else "No data returned"
             return {"success": False, "error": f"Failed to fetch lead info: {error_msg}"}
-        
+
         # 2) Prepare record for insertion
         rec = {
             "leadgen_id": leadgen_id,
@@ -776,12 +807,12 @@ def fetch_and_insert_to_staging(leadgen_id: str, **kwargs) -> Dict[str, Any]:
             "campaign_id": lead_info.get("campaign_id"),
             "form_id": lead_info.get("form_id"),
         }
-        
+
         # 3) Add any additional fields passed as kwargs
         for key, value in kwargs.items():
             if key not in rec:  # Don't override Graph API data
                 rec[key] = value
-        
+
         # 4) Fetch form metadata if form_id is available
         if rec.get("form_id"):
             form_name, questions_json = _fetch_form_meta(rec["form_id"])
@@ -789,7 +820,7 @@ def fetch_and_insert_to_staging(leadgen_id: str, **kwargs) -> Dict[str, Any]:
                 rec["form_name"] = form_name
             if questions_json:
                 rec["form_questions"] = questions_json
-        
+
         # 5) Parse field_data to extract core fields
         field_data = lead_info.get("field_data")
         if field_data and isinstance(field_data, list):
@@ -808,20 +839,20 @@ def fetch_and_insert_to_staging(leadgen_id: str, **kwargs) -> Dict[str, Any]:
                         rec["email"] = rec.get("email") or value
             except Exception as e:
                 frappe.log_error(f"Meta field_data parsing failed: {e}", "Meta Integration Error")
-        
+
         # 6) Add raw payload for debugging
         rec["raw_payload"] = frappe.as_json(lead_info)
-        
+
         # 7) Insert into staging table
         doc_name = _insert_staging_stg(rec)
-        
+
         return {
-            "success": True, 
+            "success": True,
             "doc_name": doc_name,
             "leadgen_id": leadgen_id,
             "message": f"Lead {leadgen_id} successfully inserted into staging table"
         }
-        
+
     except Exception as e:
         frappe.log_error(f"fetch_and_insert_lead_to_staging failed: {str(e)}, leadgen_id: {leadgen_id}", "Meta Integration Error")
         return {"success": False, "error": f"Processing failed: {str(e)}"}
@@ -829,7 +860,7 @@ def fetch_and_insert_to_staging(leadgen_id: str, **kwargs) -> Dict[str, Any]:
 # ---------- Webhook entrypoint ----------
 @frappe.whitelist(allow_guest=True)
 def meta_leads_webhook():
-    
+
     if frappe.request.method == "GET":
         args = frappe.form_dict or {}
         mode      = _get(args, "hub.mode").lower()
@@ -884,7 +915,10 @@ def meta_leads_webhook():
 
             # 3) Merge fields
             if lead_info and "error" not in lead_info:
-                rec["created_time"] = lead_info.get("created_time") or rec.get("created_time")
+                # normalize created_time from lead_info (ISO) or prior value
+                rec["created_time"] = _normalize_created_time(
+                    lead_info.get("created_time") or rec.get("created_time")
+                )
                 # Prefer Graph values
                 for k in ("ad_id", "adset_id", "campaign_id", "form_id"):
                     if lead_info.get(k):
@@ -927,21 +961,21 @@ def meta_leads_webhook():
 
             # 4) Save to both staging tables
             rec["raw_payload"] = raw_json
-            
+
             # Insert into CRM Meta Ads Lead (original staging)
             main_doc_name = _insert_staging(rec)
             inserted.append(main_doc_name)
-            
+
             # insert into Meta Lead Stg
             try:
                 stg_rec = rec.copy()
-                stg_rec["created_time"] = now_datetime()  # Use current time for staging
+                stg_rec["created_time"] = now_datetime()  # current time for staging; will be normalized in insert
                 stg_doc_name = _insert_staging_stg(stg_rec)
                 frappe.log_error(f"Lead {rec.get('leadgen_id')} also inserted into staging table: {stg_doc_name}", "Meta Integration Success")
             except Exception as stg_error:
                 # Log error but don't fail the main process
                 frappe.log_error(f"Failed to insert into staging table: {str(stg_error)}, Record: {rec}", "Meta Integration Warning")
-                
+
         except Exception as e:
             frappe.log_error(f"Meta save_record failed: {str(e)}, Record: {rec}", "Meta Integration Error")
             raise
@@ -949,7 +983,6 @@ def meta_leads_webhook():
     raw_json_str = frappe.as_json(payload)
 
     def sync_missing_leads():
-        
         try:
             # Get all leadgen_ids from CRM Meta Ads Lead
             main_leads = frappe.db.get_all(
@@ -958,10 +991,10 @@ def meta_leads_webhook():
                 filters={"leadgen_id": ["!=", ""]}
             )
             main_leadgen_ids = {record["leadgen_id"] for record in main_leads if record.get("leadgen_id")}
-            
+
             if not main_leadgen_ids:
                 return {"status": "no_leads", "message": "No leads found in CRM Meta Ads Lead"}
-            
+
             # Get all leadgen_ids from CRM Meta Lead Stagging
             staging_leads = frappe.db.get_all(
                 "CRM Meta Lead Stagging",
@@ -969,10 +1002,10 @@ def meta_leads_webhook():
                 filters={"leadgen_id": ["in", list(main_leadgen_ids)]}
             )
             staging_leadgen_ids = {record["leadgen_id"] for record in staging_leads if record.get("leadgen_id")}
-            
+
             # Find missing leads
             missing_leadgen_ids = main_leadgen_ids - staging_leadgen_ids
-            
+
             if not missing_leadgen_ids:
                 return {
                     "status": "synchronized",
@@ -981,15 +1014,15 @@ def meta_leads_webhook():
                     "staging_count": len(staging_leadgen_ids),
                     "missing_count": 0
                 }
-            
+
             # Log the sync operation
             frappe.log_error(
                 f"Found {len(missing_leadgen_ids)} leads in CRM Meta Ads Lead that are missing from CRM Meta Lead Stagging. Running sync...",
                 "Meta Integration Sync"
             )
-            
+
             sync_result = push_to_stagging()
-            
+
             return {
                 "status": "sync_attempted",
                 "message": f"Attempted to sync {len(missing_leadgen_ids)} missing leads",
@@ -998,7 +1031,7 @@ def meta_leads_webhook():
                 "missing_count": len(missing_leadgen_ids),
                 "sync_result": sync_result
             }
-            
+
         except Exception as e:
             frappe.log_error(f"sync_missing_leads failed: {str(e)}", "Meta Integration Error")
             return {
@@ -1030,7 +1063,8 @@ def meta_leads_webhook():
                         "ad_id":         _get(val, "ad_id"),
                         "adset_id":      _get(val, "adset_id"),
                         "campaign_id":   _get(val, "campaign_id"),
-                        "created_time":  _get(val, "created_time"),
+                        # normalize epoch from webhook
+                        "created_time":  _normalize_created_time(_get(val, "created_time")),
                     }
                     save_record(rec, raw_json_str)
                     processed_any = True
@@ -1040,8 +1074,10 @@ def meta_leads_webhook():
             val = payload.get("value") or {}
             rec = {
                 k: _get(val, k)
-                for k in ["leadgen_id", "form_id", "ad_id", "adset_id", "campaign_id", "created_time"]
+                for k in ["leadgen_id", "form_id", "ad_id", "adset_id", "campaign_id"]
             }
+            # normalize created_time from flat payload test
+            rec["created_time"] = _normalize_created_time(_get(val, "created_time"))
             rec["page_id"] = _get(val, "page_id") or _get(payload, "page_id")
             if not rec.get("leadgen_id"):
                 frappe.response["type"] = "json"
@@ -1070,6 +1106,8 @@ def meta_leads_webhook():
                     "created_time",
                 ]
             }
+            # normalize created_time from manual payload
+            rec["created_time"] = _normalize_created_time(rec.get("created_time"))
             if rec.get("leadgen_id"):
                 save_record(rec, raw_json_str)
                 processed_any = True
