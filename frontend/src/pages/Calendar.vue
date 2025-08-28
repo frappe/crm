@@ -102,7 +102,7 @@
       <CalendarEventPanel
         v-if="showEventPanel"
         v-model="showEventPanel"
-        :event="event"
+        v-model:event="event"
         :mode="mode"
         @save="saveEvent"
         @edit="editDetails"
@@ -221,6 +221,16 @@ function createEvent(_event) {
 
 async function updateEvent(_event) {
   if (!_event.id) return
+
+  if (
+    ['duplicate', 'new'].includes(mode.value) &&
+    !['duplicate-event', 'new-event'].includes(_event.id)
+  ) {
+    event.value = { id: _event.id }
+    activeEvent.value = _event.id
+    mode.value = 'details'
+  }
+
   if (!mode.value || mode.value === 'edit' || mode.value === 'details') {
     // Ensure Contacts exist for participants referencing a new/unknown Contact, if not create them
     if (
@@ -253,6 +263,8 @@ async function updateEvent(_event) {
         },
       },
     )
+  } else {
+    event.value = { ..._event }
   }
 }
 
@@ -366,7 +378,7 @@ function newEvent(e, duplicate = false) {
 
   showEventPanel.value = true
   activeEvent.value = duplicate ? 'duplicate-event' : 'new-event'
-  mode.value = duplicate ? 'duplicate' : 'create'
+  mode.value = duplicate ? 'duplicate' : 'new'
 }
 
 function duplicateEvent(e) {

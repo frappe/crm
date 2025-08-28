@@ -154,7 +154,7 @@
       </div>
     </div>
 
-    <!-- Event create, duplicate & edit -->
+    <!-- Event new, duplicate & edit -->
     <div v-else class="flex flex-col overflow-y-auto">
       <div class="flex gap-2 items-center px-4.5 py-3">
         <Dropdown class="ml-1" :options="colors">
@@ -224,14 +224,14 @@
             v-if="!_event.isFullDay"
             class="max-w-[105px]"
             variant="outline"
-            v-model="_event.fromTime"
+            :modelValue="_event.fromTime"
             :placeholder="__('Start Time')"
             @update:modelValue="(time) => updateTime(time, true)"
           />
           <TimePicker
             class="max-w-[105px]"
             variant="outline"
-            v-model="_event.toTime"
+            :modelValue="_event.toTime"
             :options="toOptions"
             :placeholder="__('End Time')"
             placement="bottom-end"
@@ -369,10 +369,6 @@ import { ref, computed, watch, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  event: {
-    type: Object,
-    default: null,
-  },
   mode: {
     type: String,
     default: 'details',
@@ -394,6 +390,7 @@ const { $dialog } = globalStore()
 const { getUser } = usersStore()
 
 const show = defineModel()
+const event = defineModel('event')
 
 const _event = ref({})
 
@@ -421,7 +418,7 @@ const peoples = computed({
 const title = computed(() => {
   if (props.mode === 'details') return __('Event details')
   if (props.mode === 'edit') return __('Editing event')
-  if (props.mode === 'create') return __('New event')
+  if (props.mode === 'new') return __('New event')
   return __('Duplicate event')
 })
 
@@ -440,7 +437,7 @@ const displayedPeoples = computed(() => {
 })
 
 watch(
-  [() => props.mode, () => props.event],
+  [() => props.mode, () => event.value],
   () => {
     error.value = null
     focusOnTitle()
@@ -451,13 +448,13 @@ watch(
 
 function fetchEvent() {
   if (
-    props.event.id &&
-    props.event.id !== 'new-event' &&
-    props.event.id !== 'duplicate-event'
+    event.value.id &&
+    event.value.id !== 'new-event' &&
+    event.value.id !== 'duplicate-event'
   ) {
     let e = createDocumentResource({
       doctype: 'Event',
-      name: props.event.id,
+      name: event.value.id,
       fields: ['*'],
       onSuccess: (data) => {
         _event.value = parseEvent(data)
@@ -469,8 +466,8 @@ function fetchEvent() {
       oldEvent.value = { ..._event.value }
     }
   } else {
-    _event.value = props.event
-    oldEvent.value = { ...props.event }
+    _event.value = event.value
+    oldEvent.value = { ...event.value }
   }
   showAllParticipants.value = false
 }
@@ -501,7 +498,7 @@ function parseEvent(_e) {
 
 function focusOnTitle() {
   setTimeout(() => {
-    if (['edit', 'create', 'duplicate'].includes(props.mode)) {
+    if (['edit', 'new', 'duplicate'].includes(props.mode)) {
       eventTitle.value?.el?.focus()
     }
   }, 100)
