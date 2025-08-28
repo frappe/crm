@@ -110,6 +110,42 @@ def _normalize_created_time(v):
                 continue
     return None
 
+# ---------- NEW: convert to epoch for BIGINT column ----------
+def _to_epoch(v) -> Optional[int]:
+    """
+    Return epoch seconds (int) or None.
+    Accepts: int/float epoch, ISO/datetime string, 'YYYY-MM-DD HH:MM:SS', or datetime.
+    """
+    if v is None or v == "":
+        return None
+
+    # already epoch?
+    if isinstance(v, (int, float)) or (isinstance(v, str) and v.isdigit()):
+        try:
+            return int(v)
+        except Exception:
+            return None
+
+    # if it's a datetime, convert directly
+    if isinstance(v, datetime.datetime):
+        dt = v
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=datetime.timezone.utc)
+        else:
+            dt = dt.astimezone(datetime.timezone.utc)
+        return int(dt.timestamp())
+
+    # string → normalize → parse → epoch
+    s = _normalize_created_time(v)
+    if not s:
+        return None
+    try:
+        dt = datetime.datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return int(dt.timestamp())
+    except Exception:
+        return None
+
 # ---------- Security: verify X-Hub-Signature-256 ----------
 def _signature_ok(raw: bytes) -> bool:
     secret = _app_secret()
@@ -710,7 +746,10 @@ def push_to_stagging():
 
 # ---------- Insert into CRM Meta Lead ----------
 def _insert_staging(rec: Dict[str, Any]) -> str:
-    ct = _normalize_created_time(rec.get("created_time"))  # <-- normalize
+    # We normalize to string first (for robustness), then convert to epoch for BIGINT column.
+    ct_norm = _normalize_created_time(rec.get("created_time"))  # "YYYY-MM-DD HH:MM:SS" or None
+    ct_epoch = _to_epoch(ct_norm)  # <-- convert to epoch int for BIGINT
+
     doc = frappe.get_doc({
         "doctype": "CRM Meta Ads Lead",
         "first_name":      _get(rec, "first_name"),
@@ -730,7 +769,7 @@ def _insert_staging(rec: Dict[str, Any]) -> str:
         "adgroup_id":      _get(rec, "adgroup_id"),
         "adset_id":        _get(rec, "adset_id"),
         "campaign_id":     _get(rec, "campaign_id"),
-        "created_time":    ct,  # <-- normalized
+        "created_time":    ct_epoch,  # <-- BIGINT expects epoch int
         "raw_payload":     rec.get("raw_payload") or "",
         "source_ip":       frappe.request.headers.get("X-Forwarded-For") or frappe.request.remote_addr,
         "processed":       rec.get("processed", 0),
@@ -753,7 +792,7 @@ def _insert_staging_stg(rec: Dict[str, Any]) -> str:
     except Exception:
         source_ip = ""
 
-    ct = _normalize_created_time(rec.get("created_time"))  # <-- normalize
+    ct = _normalize_created_time(rec.get("created_time"))  # <-- normalize (DATETIME column)
 
     doc = frappe.get_doc({
         "doctype": "CRM Meta Lead Stagging",
@@ -774,7 +813,7 @@ def _insert_staging_stg(rec: Dict[str, Any]) -> str:
         "adgroup_id":      _get(rec, "adgroup_id"),
         "adset_id":        _get(rec, "adset_id"),
         "campaign_id":     _get(rec, "campaign_id"),
-        "created_time":    ct,  # <-- normalized
+        "created_time":    ct,  # <-- DATETIME(6) accepts normalized string
         "raw_payload":     rec.get("raw_payload") or "",
         "source_ip":       source_ip,
         "processed":       rec.get("processed", 0),
@@ -847,7 +886,7 @@ def fetch_and_insert_to_staging(leadgen_id: str, **kwargs) -> Dict[str, Any]:
         doc_name = _insert_staging_stg(rec)
 
         return {
-            "success": True,
+            "success": True, 
             "doc_name": doc_name,
             "leadgen_id": leadgen_id,
             "message": f"Lead {leadgen_id} successfully inserted into staging table"
