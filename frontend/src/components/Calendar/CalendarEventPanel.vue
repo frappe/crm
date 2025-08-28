@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="flex flex-col w-[352px] border-l text-base">
+  <div v-if="show" class="flex flex-col w-[352px] text-base">
     <!-- Event Header -->
     <div
       class="flex items-center justify-between p-4.5 text-ink-gray-7 text-lg font-medium"

@@ -90,19 +90,29 @@
       </template>
     </Calendar>
 
-    <CalendarEventPanel
-      v-if="showEventPanel"
-      v-model="showEventPanel"
-      :event="event"
-      :mode="mode"
-      @save="saveEvent"
-      @edit="editDetails"
-      @delete="deleteEvent"
-      @duplicate="duplicateEvent"
-      @details="showDetails"
-      @close="close"
-      @sync="syncEvent"
-    />
+    <!-- Event Panel Container -->
+    <div
+      class="overflow-hidden flex-none transition-all duration-300 ease-in-out flex flex-col"
+      :class="
+        showEventPanel
+          ? 'w-[352px] border-l bg-surface-white'
+          : 'w-0 border-l-0'
+      "
+    >
+      <CalendarEventPanel
+        v-if="showEventPanel"
+        v-model="showEventPanel"
+        :event="event"
+        :mode="mode"
+        @save="saveEvent"
+        @edit="editDetails"
+        @delete="deleteEvent"
+        @duplicate="duplicateEvent"
+        @details="showDetails"
+        @close="close"
+        @sync="syncEvent"
+      />
+    </div>
   </div>
 </template>
 <script setup>
