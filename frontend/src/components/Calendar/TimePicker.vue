@@ -71,14 +71,14 @@ import { Popover, TextInput } from 'frappe-ui'
 import { ref, computed, watch, nextTick } from 'vue'
 
 const props = defineProps({
-  modelValue: { type: String, default: '' }, // Expect 24h format HH:MM, but will parse flexible input
+  modelValue: { type: String, default: '' }, // Expect 24h format HH:MM (seconds in HH:MM:SS accepted & truncated), parses flexible input
   interval: { type: Number, default: 15 },
   options: {
     // Optional complete override of generated options (array of { value: 'HH:MM', label?: string })
     type: Array,
     default: () => [],
   },
-  placement: {type: String, default: 'bottom-start'},
+  placement: { type: String, default: 'bottom-start' },
   placeholder: { type: String, default: 'Select time' },
   variant: { type: String, default: 'outline' },
   allowCustom: { type: Boolean, default: true },
@@ -119,10 +119,10 @@ function optionId(idx) {
 
 function minutesFromHHMM(str) {
   if (!str) return null
-  if (!/^\d{2}:\d{2}$/.test(str)) return null
-  const [h, m] = str.split(':').map(Number)
+  if (!/^\d{2}:\d{2}(:\d{2})?$/.test(str)) return null
+  const [h, m] = str.split(':').map((n) => parseInt(n))
   if (h > 23 || m > 59) return null
-  return h * 60 + m
+  return h * 60 + m // ignore seconds if provided
 }
 const minMinutes = computed(() => minutesFromHHMM(props.minTime))
 const maxMinutes = computed(() => minutesFromHHMM(props.maxTime))
@@ -168,6 +168,8 @@ function normalize24(raw) {
   if (!raw) return ''
   // already HH:MM 24h
   if (/^\d{2}:\d{2}$/.test(raw)) return raw
+  // HH:MM:SS -> truncate seconds
+  if (/^\d{2}:\d{2}:\d{2}$/.test(raw)) return raw.slice(0, 5)
   const parsed = parseFlexibleTime(raw)
   return parsed.valid ? parsed.hh24 + ':' + parsed.mm : ''
 }
@@ -188,15 +190,23 @@ function parseFlexibleTime(input) {
   s = s.replace(/\./g, '') // remove periods like a.m.
   // Insert space before am/pm if missing
   s = s.replace(/(\d)(am|pm)$/, '$1 $2')
-  const re = /^(\d{1,2})(:?)(\d{0,2})\s*([ap]m)?$/
+  // supports: H, HH, HMM, HHMM, H:MM, HH:MM, HH:MM:SS, H:MM:SS + optional am/pm
+  // Simplify by using explicit colon format: H{1,2}(:MM)?(:SS)? with constraint that if SS present, MM must be present
+  const re = /^(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?\s*([ap]m)?$/
   const m = s.match(re)
   if (!m) return { valid: false }
-  let [, hhStr, colon, mmStr, ap] = m
+  let [, hhStr, mmStr, ssStr, ap] = m
   let hh = parseInt(hhStr)
   if (isNaN(hh) || hh < 0 || hh > 23) return { valid: false }
-  let mm = mmStr ? parseInt(mmStr) : 0
-  if (colon && !mmStr) mm = 0
+  // If seconds provided but minutes missing -> invalid
+  if (ssStr && !mmStr) return { valid: false }
+  let mm = mmStr != null && mmStr !== '' ? parseInt(mmStr) : 0
   if (isNaN(mm) || mm < 0 || mm > 59) return { valid: false }
+  if (ssStr) {
+    const ss = parseInt(ssStr)
+    if (isNaN(ss) || ss < 0 || ss > 59) return { valid: false }
+    // seconds currently ignored for internal value & total
+  }
   if (ap) {
     if (hh === 12 && ap === 'am') hh = 0
     else if (hh < 12 && ap === 'pm') hh += 12
@@ -356,7 +366,6 @@ function scheduleScroll() {
       })
   })
 }
-
 
 watch(showOptions, (open) => {
   if (open) {
