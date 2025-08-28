@@ -39,13 +39,13 @@
     >
       <template
         #header="{
-          currentYear,
-          currentMonth,
           enabledModes,
           activeView,
+          selectedMonthDate,
           decrement,
           increment,
           updateActiveView,
+          onMonthYearChange,
           setCalendarDate,
         }"
       >
@@ -56,9 +56,7 @@
             <DateMonthYearPicker
               :modelValue="selectedMonthDate"
               :formatter="(d) => dayjs(d).format('MMM YYYY')"
-              @update:modelValue="
-                (val) => onMonthYearChange(val, setCalendarDate)
-              "
+              @update:modelValue="(val) => onMonthYearChange(val)"
             />
           </div>
           <!-- right side -->
@@ -66,37 +64,13 @@
           <div class="flex gap-x-1">
             <!-- Increment and Decrement Button -->
 
-            <Button
-              @click="
-                () => {
-                  decrement()
-                  syncSelectedMonth(currentYear, currentMonth)
-                }
-              "
-              variant="ghost"
-              icon="chevron-left"
-            />
+            <Button @click="decrement" variant="ghost" icon="chevron-left" />
             <Button
               :label="__('Today')"
               variant="ghost"
-              @click="
-                () => {
-                  const today = dayjs().format('YYYY-MM-DD')
-                  setCalendarDate(today)
-                  selectedMonthDate = today
-                }
-              "
+              @click="setCalendarDate()"
             />
-            <Button
-              @click="
-                () => {
-                  increment()
-                  syncSelectedMonth(currentYear, currentMonth)
-                }
-              "
-              variant="ghost"
-              icon="chevron-right"
-            />
+            <Button @click="increment" variant="ghost" icon="chevron-right" />
 
             <!--  View change button, default is months or can be set via props!  -->
             <TabButtons
@@ -141,47 +115,16 @@ import {
   createListResource,
   TabButtons,
   dayjs,
+  DateMonthYearPicker,
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
-import DateMonthYearPicker from '@/components/Calendar/DateMonthYearPicker.vue'
 import { onMounted, ref } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
 
 const calendar = ref(null)
-
-const selectedMonthDate = ref(dayjs().format('YYYY-MM-DD'))
-
-function onMonthYearChange(val = '', setCalendarDate) {
-  const d = dayjs(val)
-  selectedMonthDate.value = d.format('YYYY-MM-DD')
-
-  if (setCalendarDate) {
-    setCalendarDate(selectedMonthDate.value)
-  } else if (calendar.value?.setCalendarDate) {
-    calendar.value.setCalendarDate(selectedMonthDate.value)
-  }
-}
-
-function syncSelectedMonth(year, month) {
-  // Keep same day if possible; otherwise clamp to last day
-  if (typeof year === 'number' && typeof month === 'number') {
-    const currentDay = dayjs(selectedMonthDate.value).date()
-
-    let tentative = dayjs(
-      `${year}-${String(month + 1).padStart(2, '0')}-01`,
-    ).date(currentDay)
-
-    if (tentative.month() !== month) {
-      // overflowed into next month, use last day of target month
-      tentative = tentative.startOf('month').month(month).endOf('month')
-    }
-
-    selectedMonthDate.value = tentative.format('YYYY-MM-DD')
-  }
-}
 
 const events = createListResource({
   doctype: 'Event',
