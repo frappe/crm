@@ -635,6 +635,7 @@ function close() {
 
 function reset() {
   Object.assign(_event.value, oldEvent.value)
+  sync()
 }
 
 function showDiscardChangesModal(action) {
@@ -745,4 +746,10 @@ const toOptions = computed(() => {
     }
   })
 })
+
+function updateEvent(_e) {
+  Object.assign(_event.value, _e)
+}
+
+defineExpose({ updateEvent })
 </script>

@@ -7,9 +7,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        :disabled="
-          mode == 'edit' || mode == 'new-event' || mode == 'duplicate-event'
-        "
+        :disabled="isCreateDisabled"
         @click="newEvent"
       >
         <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
@@ -31,7 +29,7 @@
       }"
       :events="events.data"
       @create="(event) => createEvent(event)"
-      @update="(event) => updateEvent(event)"
+      @update="(event) => updateEvent(event, true)"
       @delete="(eventID) => deleteEvent(eventID)"
       :onClick="showDetails"
       :onDblClick="editDetails"
@@ -100,6 +98,7 @@
       "
     >
       <CalendarEventPanel
+        ref="eventPanel"
         v-if="showEventPanel"
         v-model="showEventPanel"
         v-model:event="event"
@@ -130,7 +129,7 @@ import {
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
@@ -156,82 +155,105 @@ const events = createListResource({
   filters: { status: 'Open', owner: user },
   pageLength: 9999,
   auto: true,
-  transform: (data) => {
-    return data.map((event) => {
-      let fromDate = dayjs(event.starts_on).format('YYYY-MM-DD')
-      let toDate = dayjs(event.ends_on).format('YYYY-MM-DD')
-      let fromTime = dayjs(event.starts_on).format('HH:mm')
-      let toTime = dayjs(event.ends_on).format('HH:mm')
-
-      return {
-        id: event.name,
-        title: event.subject,
-        description: event.description,
-        status: event.status,
-        fromDate,
-        toDate,
-        fromTime,
-        toTime,
-        isFullDay: event.all_day,
-        eventType: event.event_type,
-        color: event.color,
-        referenceDoctype: event.reference_doctype,
-        referenceDocname: event.reference_docname,
-      }
-    })
-  },
+  transform: (data) =>
+    data.map((ev) => ({
+      id: ev.name,
+      title: ev.subject,
+      description: ev.description,
+      status: ev.status,
+      fromDate: dayjs(ev.starts_on).format('YYYY-MM-DD'),
+      toDate: dayjs(ev.ends_on).format('YYYY-MM-DD'),
+      fromTime: dayjs(ev.starts_on).format('HH:mm'),
+      toTime: dayjs(ev.ends_on).format('HH:mm'),
+      isFullDay: ev.all_day,
+      eventType: ev.event_type,
+      color: ev.color,
+      referenceDoctype: ev.reference_doctype,
+      referenceDocname: ev.reference_docname,
+    })),
 })
 
+const eventPanel = ref(null)
+const showEventPanel = ref(false)
+const event = ref({})
+const mode = ref('')
+
+const isCreateDisabled = computed(() =>
+  ['edit', 'new-event', 'duplicate-event'].includes(mode.value),
+)
+
+// Temp event helpers
+const TEMP_EVENT_IDS = new Set(['new-event', 'duplicate-event'])
+const isTempEvent = (id) => TEMP_EVENT_IDS.has(id)
+function removeTempEvents() {
+  if (!Array.isArray(events.data)) return
+  events.data = events.data.filter((ev) => !isTempEvent(ev.id))
+}
+
+function openEvent(e, nextMode) {
+  const _e = e?.calendarEvent || e
+  if (!_e?.id || isTempEvent(_e.id)) return
+  removeTempEvents()
+  showEventPanel.value = true
+  event.value = { id: _e.id }
+  activeEvent.value = _e.id
+  mode.value = nextMode
+}
+
 function saveEvent(_event) {
-  if (
-    !_event.id ||
-    _event.id === 'new-event' ||
-    _event.id === 'duplicate-event'
-  ) {
-    createEvent(_event)
-  } else {
-    updateEvent(_event)
+  if (!_event?.id || isTempEvent(_event.id)) return createEvent(_event)
+  updateEvent(_event)
+}
+
+function buildEventPayload(_event) {
+  return {
+    subject: _event.title,
+    description: _event.description,
+    starts_on: `${_event.fromDate} ${_event.fromTime}`,
+    ends_on: `${_event.toDate} ${_event.toTime}`,
+    all_day: _event.isFullDay || false,
+    event_type: _event.eventType,
+    color: _event.color,
+    reference_doctype: _event.referenceDoctype,
+    reference_docname: _event.referenceDocname,
+    event_participants: _event.event_participants,
   }
 }
 
 function createEvent(_event) {
-  if (!_event.title) return
-
-  events.insert.submit(
-    {
-      subject: _event.title,
-      description: _event.description,
-      starts_on: _event.fromDate + ' ' + _event.fromTime,
-      ends_on: _event.toDate + ' ' + _event.toTime,
-      all_day: _event.isFullDay || false,
-      event_type: _event.eventType,
-      color: _event.color,
-      reference_doctype: _event.referenceDoctype,
-      reference_docname: _event.referenceDocname,
-      event_participants: _event.event_participants,
+  if (!_event?.title) return
+  events.insert.submit(buildEventPayload(_event), {
+    onSuccess: async (e) => {
+      await events.reload()
+      showDetails({ id: e.name })
     },
-    {
-      onSuccess: async (e) => {
-        await events.reload()
-        showDetails({ id: e.name })
-      },
-    },
-  )
+  })
 }
 
-async function updateEvent(_event) {
+async function updateEvent(_event, afterDrag = false) {
   if (!_event.id) return
 
   if (
     ['duplicate', 'new'].includes(mode.value) &&
-    !['duplicate-event', 'new-event'].includes(_event.id)
+    !['duplicate-event', 'new-event'].includes(_event.id) &&
+    afterDrag
   ) {
     event.value = { id: _event.id }
     activeEvent.value = _event.id
     mode.value = 'details'
   }
 
-  if (!mode.value || mode.value === 'edit' || mode.value === 'details') {
+  if (mode.value == 'edit' && afterDrag) {
+    eventPanel.value.updateEvent({
+      fromDate: _event.fromDate,
+      toDate: _event.toDate,
+      fromTime: _event.fromTime,
+      toTime: _event.toTime,
+    })
+    return
+  }
+
+  if (!mode.value || mode.value == 'edit' || mode.value === 'details') {
     // Ensure Contacts exist for participants referencing a new/unknown Contact, if not create them
     if (
       Array.isArray(_event.event_participants) &&
@@ -243,19 +265,7 @@ async function updateEvent(_event) {
     }
 
     events.setValue.submit(
-      {
-        name: _event.id,
-        subject: _event.title,
-        description: _event.description,
-        starts_on: _event.fromDate + ' ' + _event.fromTime,
-        ends_on: _event.toDate + ' ' + _event.toTime,
-        all_day: _event.isFullDay,
-        event_type: _event.eventType,
-        color: _event.color,
-        reference_doctype: _event.referenceDoctype,
-        reference_docname: _event.referenceDocname,
-        event_participants: _event.event_participants,
-      },
+      { name: _event.id, ...buildEventPayload(_event) },
       {
         onSuccess: async (e) => {
           await events.reload()
@@ -305,67 +315,25 @@ onMounted(() => {
   showEventPanel.value = false
 })
 
-const showEventPanel = ref(false)
-const event = ref({})
-const mode = ref('')
-
 function showDetails(e) {
-  let _e = e?.calendarEvent || e
-  if (_e.id === 'new-event' || _e.id === 'duplicate-event') return
-
-  events.data = events.data.filter(
-    (ev) => ev.id !== 'new-event' && ev.id !== 'duplicate-event',
-  )
-
-  showEventPanel.value = true
-  event.value = { id: _e.id }
-  activeEvent.value = _e.id
-  mode.value = 'details'
+  openEvent(e, 'details')
 }
 
 function editDetails(e) {
-  let _e = e?.calendarEvent || e
-  if (_e.id === 'new-event' || _e.id === 'duplicate-event') return
-
-  events.data = events.data.filter(
-    (ev) => ev.id !== 'new-event' && ev.id !== 'duplicate-event',
-  )
-
-  showEventPanel.value = true
-  event.value = { id: _e.id }
-  activeEvent.value = _e.id
-  mode.value = 'edit'
+  openEvent(e, 'edit')
 }
 
-function newEvent(e, duplicate = false) {
-  events.data = events.data.filter(
-    (ev) => ev.id !== 'new-event' && ev.id !== 'duplicate-event',
-  )
-
-  let fromTime = e.fromTime
-  let toTime = e.toTime
-  let fromDate = e.fromDate
-  let toDate = e.toDate
-  let isFullDay = e.isFullDay
-
-  if (!duplicate) {
-    let t = getFromToTime(e.time)
-    fromTime = t[0]
-    toTime = t[1]
-    fromDate = dayjs(e.date).format('YYYY-MM-DD')
-    toDate = fromDate
-    e = { fromDate, toDate, fromTime, toTime, isFullDay }
-  }
-
-  event.value = {
-    id: duplicate ? 'duplicate-event' : 'new-event',
+function buildTempEvent(e, duplicate) {
+  const id = duplicate ? 'duplicate-event' : 'new-event'
+  return {
+    id,
     title: duplicate ? `${e.title} (Copy)` : '',
     description: e.description || '',
-    date: fromDate,
-    fromDate,
-    toDate,
-    fromTime,
-    toTime,
+    date: e.fromDate,
+    fromDate: e.fromDate,
+    toDate: e.toDate,
+    fromTime: e.fromTime,
+    toTime: e.toTime,
     isFullDay: e.isFullDay || false,
     eventType: e.eventType || 'Public',
     color: e.color || 'green',
@@ -373,11 +341,29 @@ function newEvent(e, duplicate = false) {
     referenceDocname: e.referenceDocname,
     event_participants: e.event_participants || [],
   }
+}
 
+function newEvent(e = {}, duplicate = false) {
+  removeTempEvents()
+
+  let base = { ...e }
+  if (!duplicate) {
+    const [fromTime, toTime] = getFromToTime(e.time)
+    const fromDate = dayjs(e.date).format('YYYY-MM-DD')
+    base = {
+      ...base,
+      fromDate,
+      toDate: fromDate,
+      fromTime,
+      toTime,
+      isFullDay: e.isFullDay,
+    }
+  }
+
+  event.value = buildTempEvent(base, duplicate)
   events.data.push(event.value)
-
   showEventPanel.value = true
-  activeEvent.value = duplicate ? 'duplicate-event' : 'new-event'
+  activeEvent.value = event.value.id
   mode.value = duplicate ? 'duplicate' : 'new'
 }
 
@@ -391,50 +377,37 @@ function close() {
   activeEvent.value = ''
   mode.value = ''
 
-  events.data = events.data.filter(
-    (ev) => ev.id !== 'new-event' && ev.id !== 'duplicate-event',
-  )
+  removeTempEvents()
 }
 
 // utils
 function getFromToTime(time) {
-  let currentTime = dayjs().format('HH:mm') || '00:00'
-  let h = currentTime.split(':')[0]
-  let m = parseInt(currentTime.split(':')[1])
-
-  m = Math.floor(m / 15) * 15
-  m = m < 10 ? '0' + m : String(m)
-
-  let fromTime = `${h}:${m}`
-  let toTime = `${parseInt(h) + 1}:${m}`
-
-  if (
-    time?.toLowerCase().includes('am') ||
-    time?.toLowerCase().includes('pm')
-  ) {
-    // 12 hour format
-    time = time.trim().replace(' ', '')
-    const ampm = time.slice(-2)
-    time = time.slice(0, -2)
-    let hour = time
-
-    if (ampm === 'pm' && parseInt(hour) < 12) {
-      hour = parseInt(hour) + 12
-    } else if (ampm === 'am' && hour == 12) {
-      hour = 0
+  const pad = (v) => String(v).padStart(2, '0')
+  let now = dayjs()
+  let h = now.hour()
+  let m = Math.floor(now.minute() / 15) * 15
+  let fromHour = h
+  let fromMinute = m
+  if (time) {
+    if (/am|pm/i.test(time)) {
+      const raw = time.trim().replace(' ', '')
+      const ampm = raw.slice(-2).toLowerCase()
+      let hour = parseInt(raw.slice(0, -2))
+      if (ampm === 'pm' && hour < 12) hour += 12
+      if (ampm === 'am' && hour === 12) hour = 0
+      fromHour = hour
+      fromMinute = 0
+    } else if (/^\d{1,2}:?\d{0,2}$/.test(time)) {
+      const [hh, mm = '00'] = time.split(':')
+      fromHour = parseInt(hh)
+      fromMinute = parseInt(mm) || 0
     }
-
-    fromTime = `${hour}:00`
-    toTime = `${parseInt(hour) + 1}:00`
-  } else {
-    // 24 hour format
-    let [hour, minute] = time ? time.split(':') : [h, m]
-
-    fromTime = `${hour}:${minute || '00'}`
-    toTime = `${parseInt(hour) + 1}:${minute || '00'}`
   }
-
-  return [fromTime, toTime]
+  const toHour = (fromHour + 1) % 24
+  return [
+    `${pad(fromHour)}:${pad(fromMinute)}`,
+    `${pad(toHour)}:${pad(fromMinute)}`,
+  ]
 }
 
 async function ensureParticipantContacts(participants) {
