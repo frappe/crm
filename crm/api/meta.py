@@ -1006,20 +1006,51 @@ def meta_leads_webhook():
             }
 
     try:
+        processed_any = False
+
         if "entry" in payload:
             for entry in (payload.get("entry") or []):
+                page_id = _get(entry, "id")
                 for change in (entry.get("changes") or []):
                     if _get(change, "field") != "leadgen":
                         continue
                     val = change.get("value") or {}
                     rec = {
-                        k: _get(val, k)
-                        for k in ["leadgen_id", "form_id", "ad_id", "adset_id", "campaign_id", "created_time"]
+                        "first_name":    _get(val, "first_name"),
+                        "mobile_no":     _get(val, "phone_number"),
+                        "ad_account_id": _get(val, "ad_account_id"),
+                        "email":         _get(val, "email"),
+                        "campaign_name": "",
+                        "adset_name":    "",
+                        "ad_name":       "",
+                        "page_id":       page_id or _get(val, "page_id"),
+                        "leadgen_id":    _get(val, "leadgen_id"),
+                        "form_id":       _get(val, "form_id"),
+                        "ad_id":         _get(val, "ad_id"),
+                        "adset_id":      _get(val, "adset_id"),
+                        "campaign_id":   _get(val, "campaign_id"),
+                        "created_time":  _get(val, "created_time"),
                     }
-                    rec["page_id"] = _get(entry, "id")
                     save_record(rec, raw_json_str)
+                    processed_any = True
+
+        elif _get(payload, "field") == "leadgen" and isinstance(payload.get("value"), dict):
+            # 2) Meta test tool payload: {"field":"leadgen","value":{...}}
+            val = payload.get("value") or {}
+            rec = {
+                k: _get(val, k)
+                for k in ["leadgen_id", "form_id", "ad_id", "adset_id", "campaign_id", "created_time"]
+            }
+            rec["page_id"] = _get(val, "page_id") or _get(payload, "page_id")
+            if not rec.get("leadgen_id"):
+                frappe.response["type"] = "json"
+                frappe.response["message"] = {"ok": False, "error": "Meta Lead ID (leadgen_id) missing in value{}"}
+                return
+            save_record(rec, raw_json_str)
+            processed_any = True
+
         else:
-            # Simple/manual payloads (e.g., Postman tests)
+            # 3) Simple/manual payload with top-level fields (Postman)
             rec = {
                 k: _get(payload, k)
                 for k in [
@@ -1038,20 +1069,32 @@ def meta_leads_webhook():
                     "created_time",
                 ]
             }
-            save_record(rec, raw_json_str)
+            if rec.get("leadgen_id"):
+                save_record(rec, raw_json_str)
+                processed_any = True
+
+        if not processed_any:
+            # Explicit, actionable response for unknown shapes
+            frappe.response["type"] = "json"
+            frappe.response["message"] = {
+                "ok": False,
+                "error": "Unsupported payload shape",
+                "hint": "Expected: {entry:[{changes:[{field:'leadgen', value:{...}}]}]} OR {field:'leadgen', value:{...}} OR top-level leadgen_id.",
+                "received_keys": list(payload.keys()),
+            }
+            return
 
         # After processing webhook data, check for missing leads and sync if needed
         sync_results = sync_missing_leads()
 
-        response_message = {
-            "ok": True, 
-            "inserted": inserted, 
+        frappe.response["type"] = "json"
+        frappe.response["message"] = {
+            "ok": True,
+            "inserted": inserted,
             "count": len(inserted),
-            "sync_check": sync_results
+            "sync_check": sync_results,
         }
 
-        frappe.response["type"] = "json"
-        frappe.response["message"] = response_message
     except Exception as e:
         frappe.log_error(f"Meta webhook processing failed: {str(e)}, Payload: {payload}", "Meta Integration Error")
         frappe.response["type"] = "json"
