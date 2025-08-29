@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-28 13:47\n"
+"PO-Revision-Date: 2025-08-29 14:41\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -645,7 +645,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:350
 msgid "Between"
-msgstr ""
+msgstr "Mellom"
 
 #: frontend/src/components/Settings/General/BrandSettings.vue:40
 msgid "Brand name"
@@ -994,13 +994,13 @@ msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:59
 msgid "Clear"
-msgstr ""
+msgstr "Tøm"
 
 #: frontend/src/components/ListBulkActions.vue:134
 #: frontend/src/components/ListBulkActions.vue:142
 #: frontend/src/components/ListBulkActions.vue:188
 msgid "Clear Assignment"
-msgstr ""
+msgstr "Slett oppgave"
 
 #: frontend/src/components/SortBy.vue:153
 msgid "Clear Sort"
@@ -2055,7 +2055,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:327
 #: frontend/src/components/Filter.vue:343
 msgid "Equals"
-msgstr ""
+msgstr "Tilsvarer"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:176
 msgid "Error converting to deal: {0}"
@@ -2278,7 +2278,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:6
 msgid "Filter"
-msgstr ""
+msgstr "Filter"
 
 #. Label of the filters (Code) field in DocType 'CRM View Settings'
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
@@ -2621,7 +2621,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:320
 #: frontend/src/components/Filter.vue:334
 msgid "In"
-msgstr ""
+msgstr "I"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
@@ -2773,7 +2773,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:336
 #: frontend/src/components/Filter.vue:345
 msgid "Is"
-msgstr ""
+msgstr "Er"
 
 #. Label of the is_default (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -3559,7 +3559,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:317
 #: frontend/src/components/Filter.vue:344
 msgid "Not Equals"
-msgstr ""
+msgstr "Ikke lik"
 
 #: frontend/src/components/Filter.vue:272
 #: frontend/src/components/Filter.vue:293
@@ -3567,7 +3567,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:321
 #: frontend/src/components/Filter.vue:335
 msgid "Not In"
-msgstr ""
+msgstr "Ikke i"
 
 #: frontend/src/components/Filter.vue:270
 #: frontend/src/components/Filter.vue:281
@@ -3575,7 +3575,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:319
 #: frontend/src/components/Filter.vue:333
 msgid "Not Like"
-msgstr ""
+msgstr "Ikke som"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:10
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:10
@@ -4162,7 +4162,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:213
 #: frontend/src/pages/Deal.vue:612
 msgid "Remove"
-msgstr ""
+msgstr "Fjern"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:23
 msgid "Remove all"
@@ -5041,7 +5041,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:627
 msgid "Today"
-msgstr ""
+msgstr "I dag"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
