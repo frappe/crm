@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-26 13:50\n"
+"PO-Revision-Date: 2025-08-28 13:47\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -824,7 +824,7 @@ msgstr "Uppgift"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "CRM Telephony Agent"
-msgstr "Telefoni Agent"
+msgstr "Telefoni Handläggare"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
