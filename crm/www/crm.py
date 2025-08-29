@@ -5,9 +5,10 @@ import subprocess
 
 import frappe
 from frappe import safe_decode
-from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 from frappe.utils import cint, get_system_timezone
 from frappe.utils.telemetry import capture
+
+from crm.api.compat import is_fc_site
 
 no_cache = 1
 
