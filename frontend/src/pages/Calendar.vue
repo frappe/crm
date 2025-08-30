@@ -190,12 +190,12 @@ function removeTempEvents() {
   events.data = events.data.filter((ev) => !isTempEvent(ev.id))
 }
 
-function openEvent(e, nextMode) {
+function openEvent(e, nextMode, reloadEvent = false) {
   const _e = e?.calendarEvent || e
   if (!_e?.id || isTempEvent(_e.id)) return
   removeTempEvents()
   showEventPanel.value = true
-  event.value = { id: _e.id }
+  event.value = { id: _e.id, reloadEvent }
   activeEvent.value = _e.id
   mode.value = nextMode
 }
@@ -269,7 +269,7 @@ async function updateEvent(_event, afterDrag = false) {
       {
         onSuccess: async (e) => {
           await events.reload()
-          showEventPanel.value && showDetails({ id: e.name })
+          showEventPanel.value && showDetails({ id: e.name }, true)
         },
       },
     )
@@ -315,8 +315,8 @@ onMounted(() => {
   showEventPanel.value = false
 })
 
-function showDetails(e) {
-  openEvent(e, 'details')
+function showDetails(e, reloadEvent = false) {
+  openEvent(e, 'details', reloadEvent)
 }
 
 function editDetails(e) {

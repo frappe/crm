@@ -426,6 +426,8 @@ const eventTitle = ref(null)
 const error = ref(null)
 const showAllParticipants = ref(false)
 
+const eventResource = ref({})
+
 const oldEvent = ref(null)
 const dirty = computed(() => {
   return JSON.stringify(oldEvent.value) !== JSON.stringify(_event.value)
@@ -452,7 +454,7 @@ function fetchEvent() {
     event.value.id !== 'new-event' &&
     event.value.id !== 'duplicate-event'
   ) {
-    let e = createDocumentResource({
+    eventResource.value = createDocumentResource({
       doctype: 'Event',
       name: event.value.id,
       fields: ['*'],
@@ -461,9 +463,11 @@ function fetchEvent() {
         oldEvent.value = { ..._event.value }
       },
     })
-    if (e.doc) {
-      _event.value = parseEvent(e.doc)
+    if (eventResource.value.doc && !event.value.reloadEvent) {
+      _event.value = parseEvent(eventResource.value.doc)
       oldEvent.value = { ..._event.value }
+    } else {
+      eventResource.value.reload()
     }
   } else {
     _event.value = event.value
