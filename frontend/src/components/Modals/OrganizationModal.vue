@@ -174,7 +174,17 @@ function openAddressModal(_address) {
   addressProps.value = {
     doctype: 'Address',
     address: _address,
+    options: {
+      afterInsert: (addressDoc) => {
+        if (organization.doc) {
+          organization.doc.address = addressDoc.name
+        }
+        
+      }
+    }
   }
-  nextTick(() => (show.value = false))
+  
+
+  // nextTick(() => (show.value = false)) 
 }
 </script>
