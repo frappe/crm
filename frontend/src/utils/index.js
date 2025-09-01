@@ -529,3 +529,163 @@ export function copy(obj) {
   if (!obj) return obj
   return JSON.parse(JSON.stringify(obj))
 }
+
+export const convertToConditions = ({ conditions, fieldPrefix }) => {
+  if (!conditions || conditions.length === 0) {
+    return ''
+  }
+
+  const processCondition = (condition) => {
+    if (typeof condition === 'string') {
+      return condition.toLowerCase()
+    }
+
+    if (Array.isArray(condition)) {
+      // Nested condition group
+      if (Array.isArray(condition[0])) {
+        const nestedStr = convertToConditions({
+          conditions: condition,
+          fieldPrefix,
+        })
+        return `(${nestedStr})`
+      }
+
+      // Simple condition: [fieldname, operator, value]
+      const [field, operator, value] = condition
+      const fieldAccess = fieldPrefix ? `${fieldPrefix}.${field}` : field
+
+      const operatorMap = {
+        equals: '==',
+        '=': '==',
+        '==': '==',
+        '!=': '!=',
+        'not equals': '!=',
+        '<': '<',
+        '<=': '<=',
+        '>': '>',
+        '>=': '>=',
+        in: 'in',
+        'not in': 'not in',
+        like: 'like',
+        'not like': 'not like',
+        is: 'is',
+        'is not': 'is not',
+        between: 'between',
+      }
+
+      let op = operatorMap[operator.toLowerCase()] || operator
+
+      if (
+        (op === '==' || op === '!=') &&
+        (String(value).toLowerCase() === 'yes' ||
+          String(value).toLowerCase() === 'no')
+      ) {
+        let checkVal = String(value).toLowerCase() === 'yes'
+        if (op === '!=') {
+          checkVal = !checkVal
+        }
+        return checkVal ? fieldAccess : `not ${fieldAccess}`
+      }
+
+      if (op === 'is' && String(value).toLowerCase() === 'set') {
+        return fieldAccess
+      }
+      if (
+        (op === 'is' && String(value).toLowerCase() === 'not set') ||
+        (op === 'is not' && String(value).toLowerCase() === 'set')
+      ) {
+        return `not ${fieldAccess}`
+      }
+
+      if (op === 'like') {
+        return `(${fieldAccess} and "${value}" in ${fieldAccess})`
+      }
+      if (op === 'not like') {
+        return `(${fieldAccess} and "${value}" not in ${fieldAccess})`
+      }
+
+      if (
+        op === 'between' &&
+        typeof value === 'string' &&
+        value.includes(',')
+      ) {
+        const [start, end] = value.split(',').map((v) => v.trim())
+        return `(${fieldAccess} >= "${start}" and ${fieldAccess} <= "${end}")`
+      }
+
+      let valueStr = ''
+      if (op === 'in' || op === 'not in') {
+        let items
+        if (Array.isArray(value)) {
+          items = value.map((v) => `"${String(v).trim()}"`)
+        } else if (typeof value === 'string') {
+          items = value.split(',').map((v) => `"${v.trim()}"`)
+        } else {
+          items = [`"${String(value).trim()}"`]
+        }
+        valueStr = `[${items.join(', ')}]`
+        return `(${fieldAccess} and ${fieldAccess} ${op} ${valueStr})`
+      }
+
+      if (typeof value === 'string') {
+        valueStr = `"${value.replace(/"/g, '\\"')}"`
+      } else if (typeof value === 'number' || typeof value === 'boolean') {
+        valueStr = String(value)
+      } else if (value === null || value === undefined) {
+        return op === '==' || op === 'is' ? `not ${fieldAccess}` : fieldAccess
+      } else {
+        valueStr = `"${String(value).replace(/"/g, '\\"')}"`
+      }
+
+      return `${fieldAccess} ${op} ${valueStr}`
+    }
+
+    return ''
+  }
+
+  const parts = conditions.map(processCondition)
+  return parts.join(' ')
+}
+
+export function validateConditions(conditions) {
+  if (!Array.isArray(conditions)) return false
+
+  // Handle simple condition [field, operator, value]
+  if (
+    conditions.length === 3 &&
+    typeof conditions[0] === 'string' &&
+    typeof conditions[1] === 'string'
+  ) {
+    return conditions[0] !== '' && conditions[1] !== '' && conditions[2] !== ''
+  }
+
+  // Iterate through conditions and logical operators
+  for (let i = 0; i < conditions.length; i++) {
+    const item = conditions[i]
+
+    // Skip logical operators (they will be validated by their position)
+    if (item === 'and' || item === 'or') {
+      // Ensure logical operators are not at start/end and not consecutive
+      if (
+        i === 0 ||
+        i === conditions.length - 1 ||
+        conditions[i - 1] === 'and' ||
+        conditions[i - 1] === 'or'
+      ) {
+        return false
+      }
+      continue
+    }
+
+    // Handle nested conditions (arrays)
+    if (Array.isArray(item)) {
+      if (!validateConditions(item)) {
+        return false
+      }
+    } else if (item !== undefined && item !== null) {
+      return false
+    }
+  }
+
+  return conditions.length > 0
+}
