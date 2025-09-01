@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-31 16:09\n"
+"PO-Revision-Date: 2025-09-01 16:20\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -1974,7 +1974,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:531 frontend/src/pages/Lead.vue:388
 #: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:342
 msgid "Emails"
-msgstr ""
+msgstr "E-poster"
 
 #: frontend/src/components/ListViews/ListRows.vue:12
 msgid "Empty"
@@ -1999,11 +1999,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:28
 msgid "Enable Incoming"
-msgstr ""
+msgstr "Aktiver innkommende e-post"
 
 #: frontend/src/components/Settings/emailConfig.js:36
 msgid "Enable Outgoing"
-msgstr ""
+msgstr "Aktiver utgående e-post"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:19
 msgid "Enable forecasting"
@@ -2139,7 +2139,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:107
 msgid "Expand"
-msgstr ""
+msgstr "Utvid"
 
 #. Label of the expected_closure_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -2167,7 +2167,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:203
 #: frontend/src/components/ViewControls.vue:251
 msgid "Export"
-msgstr ""
+msgstr "Eksporter"
 
 #: frontend/src/components/ViewControls.vue:282
 msgid "Export All {0} Record(s)"
@@ -2175,7 +2175,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:264
 msgid "Export Type"
-msgstr ""
+msgstr "Eksporttype"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
