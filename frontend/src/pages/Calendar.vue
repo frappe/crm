@@ -379,7 +379,7 @@ function buildTempEvent(e, duplicate) {
   const id = duplicate ? 'duplicate-event' : 'new-event'
   return {
     id,
-    title: duplicate ? `${e.title} (Copy)` : '',
+    title: e.title,
     description: e.description || '',
     date: e.fromDate,
     fromDate: e.fromDate,

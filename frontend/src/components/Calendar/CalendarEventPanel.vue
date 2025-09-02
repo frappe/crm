@@ -98,16 +98,16 @@
             variant="ghost"
             theme="gray"
             class="rounded-full w-fit !h-8.5 !pr-3"
-            :tooltip="__('Owner: {0}', [_event.owner.label])"
+            :tooltip="__('Owner: {0}', [_event.owner?.label])"
           >
             <template #default>
               <div class="flex flex-col justify-start items-start text-sm">
-                <div>{{ _event.owner.label }}</div>
+                <div>{{ _event.owner?.label }}</div>
                 <div class="text-ink-gray-5">{{ __('Organizer') }}</div>
               </div>
             </template>
             <template #prefix>
-              <UserAvatar :user="_event.owner.value" class="-ml-1 !size-5" />
+              <UserAvatar :user="_event.owner?.value" class="-ml-1 !size-5" />
             </template>
           </Button>
           <Button
@@ -471,6 +471,10 @@ function fetchEvent() {
   } else {
     _event.value = event.value
     oldEvent.value = { ...event.value }
+
+    if (event.value.id === 'duplicate-event') {
+      _event.value.title = _event.value.title + ' (Copy)'
+    }
   }
   showAllParticipants.value = false
 }
@@ -539,6 +543,7 @@ function saveEvent() {
   }
 
   oldEvent.value = { ..._event.value }
+  sync()
   emit('save', _event.value)
 }
 
@@ -576,12 +581,10 @@ function close() {
   if (dirty.value) {
     showDiscardChangesModal(() => {
       reset()
-      if (_event.value.id === 'new-event') _close()
+      if (['new-event', 'duplicate-event'].includes(_event.value.id)) _close()
     })
   } else {
-    if (_event.value.id === 'duplicate-event')
-      showDiscardChangesModal(() => _close())
-    else _close()
+    _close()
   }
 }
 
@@ -695,6 +698,13 @@ function keydownHandler(e) {
 
   if (!['details', 'edit'].includes(props.mode)) return
   if (isTypingEvent(e)) return
+
+  // Enter in details mode -> switch to edit
+  if (e.key === 'Enter' && props.mode === 'details') {
+    e.preventDefault()
+    editDetails()
+    return
+  }
 
   // Delete (no modifier) -> delete event
   if (e.key === 'Delete' || e.key === 'Backspace') {
