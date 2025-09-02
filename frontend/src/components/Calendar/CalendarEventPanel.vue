@@ -351,9 +351,14 @@ import Link from '@/components/Controls/Link.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
 import { globalStore } from '@/stores/global'
-import { usersStore } from '@/stores/users'
 import { validateEmail } from '@/utils'
-import { allTimeSlots } from '@/components/Calendar/utils'
+import {
+  normalizeParticipants,
+  buildEndTimeOptions,
+  computeAutoToTime,
+  validateTimeRange,
+  parseEventDoc,
+} from '@/composables/event'
 import {
   TextInput,
   Switch,
@@ -389,7 +394,6 @@ const emit = defineEmits([
 
 const router = useRouter()
 const { $dialog } = globalStore()
-const { getUser } = usersStore()
 
 const show = defineModel()
 const event = defineModel('event')
@@ -401,18 +405,7 @@ const peoples = computed({
     return _event.value.event_participants || []
   },
   set(list) {
-    const seen = new Set()
-    const out = []
-    for (const a of list || []) {
-      if (!a?.email || seen.has(a.email)) continue
-      seen.add(a.email)
-      out.push({
-        email: a.email,
-        reference_doctype: a.reference_doctype || 'Contact',
-        reference_docname: a.reference_docname || '',
-      })
-    }
-    _event.value.event_participants = out
+    _event.value.event_participants = normalizeParticipants(list)
     sync()
   },
 })
@@ -461,12 +454,12 @@ function fetchEvent() {
       name: event.value.id,
       fields: ['*'],
       onSuccess: (data) => {
-        _event.value = parseEvent(data)
+        _event.value = parseEventDoc(data)
         oldEvent.value = { ..._event.value }
       },
     })
     if (eventResource.value.doc && !event.value.reloadEvent) {
-      _event.value = parseEvent(eventResource.value.doc)
+      _event.value = parseEventDoc(eventResource.value.doc)
       oldEvent.value = { ..._event.value }
     } else {
       eventResource.value.reload()
@@ -476,30 +469,6 @@ function fetchEvent() {
     oldEvent.value = { ...event.value }
   }
   showAllParticipants.value = false
-}
-
-function parseEvent(_e) {
-  return {
-    id: _e.name,
-    title: _e.subject,
-    description: _e.description,
-    status: _e.status,
-    fromDate: dayjs(_e.starts_on).format('YYYY-MM-DD'),
-    toDate: dayjs(_e.ends_on).format('YYYY-MM-DD'),
-    fromTime: dayjs(_e.starts_on).format('HH:mm'),
-    toTime: dayjs(_e.ends_on).format('HH:mm'),
-    isFullDay: _e.all_day,
-    eventType: _e.event_type,
-    color: _e.color,
-    referenceDoctype: _e.reference_doctype,
-    referenceDocname: _e.reference_docname,
-    event_participants: _e.event_participants || [],
-    owner: {
-      label: getUser(_e.owner).full_name,
-      image: getUser(_e.owner).user_image,
-      value: _e.owner,
-    },
-  }
 }
 
 function focusOnTitle() {
@@ -523,63 +492,27 @@ function updateDate(d) {
 
 function updateTime(t, fromTime = false) {
   error.value = null
-
+  const prevTo = _event.value.toTime
   if (fromTime) {
     _event.value.fromTime = t
-    const hour = parseInt(t.split(':')[0])
-    const minute = parseInt(t.split(':')[1])
-
-    const computePlusHour = () => {
-      let nh = hour + 1
-      let nm = minute
-      if (nh >= 24) {
-        nh = 23
-        nm = 59
-      }
-      return `${String(nh).padStart(2, '0')}:${String(nm).padStart(2, '0')}`
-    }
-    if (!_event.value.toTime) {
-      _event.value.toTime = computePlusHour()
-    } else if (_event.value.toTime <= t) {
-      _event.value.toTime = computePlusHour()
+    if (!_event.value.toTime || _event.value.toTime <= t) {
+      _event.value.toTime = computeAutoToTime(t)
     }
   } else {
     _event.value.toTime = t
   }
-
-  validateFromToTime() && sync()
-}
-
-function validateFromToTime() {
-  // Generic validator for start/end times before saving.
-  // Returns true if valid, else sets error message and returns false.
-  error.value = null
-  // Full day events don't require time validation
-  if (_event.value.isFullDay) return true
-
-  // Only validate within the single start date; ignore any separate end date.
-  const fromDate = _event.value.fromDate
-  const fromTime = _event.value.fromTime
-  const toTime = _event.value.toTime
-
-  if (!fromTime || !toTime) {
-    error.value = __('Start and end time are required')
-    return false
+  const { valid, error: err } = validateTimeRange({
+    fromDate: _event.value.fromDate,
+    fromTime: _event.value.fromTime,
+    toTime: _event.value.toTime,
+    isFullDay: _event.value.isFullDay,
+  })
+  if (!valid) {
+    error.value = err
+    _event.value.toTime = prevTo
+  } else {
+    sync()
   }
-
-  const start = dayjs(fromDate + ' ' + fromTime)
-  const end = dayjs(fromDate + ' ' + toTime)
-
-  if (!start.isValid() || !end.isValid()) {
-    error.value = __('Invalid start or end time')
-    return false
-  }
-
-  if (end.diff(start, 'minute') <= 0) {
-    error.value = __('End time should be after start time')
-    return false
-  }
-  return true
 }
 
 function saveEvent() {
@@ -590,7 +523,16 @@ function saveEvent() {
     return
   }
 
-  if (!validateFromToTime()) return
+  const { valid, error: err } = validateTimeRange({
+    fromDate: _event.value.fromDate,
+    fromTime: _event.value.fromTime,
+    toTime: _event.value.toTime,
+    isFullDay: _event.value.isFullDay,
+  })
+  if (!valid) {
+    error.value = err
+    return
+  }
 
   oldEvent.value = { ..._event.value }
   emit('save', _event.value)
@@ -716,42 +658,7 @@ function getTooltip(m) {
   return parts.length ? parts.join(': ') : email
 }
 
-function formatDuration(mins) {
-  // For < 1 hour show minutes, else show hours (with decimal for 15/30/45 mins)
-  if (mins < 60) return __('{0} mins', [mins])
-  let hours = mins / 60
-
-  // keep hours decimal to 2 only if decimal is not 0
-  if (hours % 1 !== 0 && hours % 1 !== 0.5) {
-    hours = hours.toFixed(2)
-  }
-
-  if (Number.isInteger(hours)) {
-    return hours === 1 ? __('1 hr') : __('{0} hrs', [hours])
-  }
-  // Keep decimal representation for > 1 hour fractional durations
-  return `${hours} hrs`
-}
-
-const toOptions = computed(() => {
-  const fromTime = _event.value.fromTime
-  const timeSlots = allTimeSlots()
-  if (!fromTime) return timeSlots
-  const [fh, fm] = fromTime.split(':').map((n) => parseInt(n))
-  const fromTotal = fh * 60 + fm
-  // find first slot strictly after fromTime (even if fromTime not exactly a slot)
-  const startIndex = timeSlots.findIndex((o) => o.value > fromTime)
-  if (startIndex === -1) return []
-  return timeSlots.slice(startIndex).map((o) => {
-    const [th, tm] = o.value.split(':').map((n) => parseInt(n))
-    const toTotal = th * 60 + tm
-    const duration = toTotal - fromTotal
-    return {
-      ...o,
-      label: `${o.label} (${formatDuration(duration)})`,
-    }
-  })
-})
+const toOptions = computed(() => buildEndTimeOptions(_event.value.fromTime))
 
 function updateEvent(_e) {
   Object.assign(_event.value, _e)

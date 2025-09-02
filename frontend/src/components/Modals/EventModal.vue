@@ -215,8 +215,13 @@ import {
 } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
 import { validateEmail } from '@/utils'
-import { allTimeSlots } from '@/components/Calendar/utils'
-import { useEvent } from '@/composables/event'
+import {
+  useEvent,
+  normalizeParticipants,
+  buildEndTimeOptions,
+  computeAutoToTime,
+  validateTimeRange,
+} from '@/composables/event'
 import { CalendarColorMap as colorMap } from 'frappe-ui'
 import { onMounted, ref, computed, h } from 'vue'
 
@@ -271,18 +276,7 @@ const peoples = computed({
     return _event.value.event_participants || []
   },
   set(list) {
-    const seen = new Set()
-    const out = []
-    for (const a of list || []) {
-      if (!a?.email || seen.has(a.email)) continue
-      seen.add(a.email)
-      out.push({
-        email: a.email,
-        reference_doctype: a.reference_doctype || 'Contact',
-        reference_docname: a.reference_docname || '',
-      })
-    }
-    _event.value.event_participants = out
+    _event.value.event_participants = normalizeParticipants(list)
   },
 })
 
@@ -323,42 +317,25 @@ function updateDate(d) {
 
 function updateTime(t, fromTime = false) {
   error.value = null
-  let oldTo = _event.value.toTime || _event.value.fromTime
-
+  const prevTo = _event.value.toTime
   if (fromTime) {
     _event.value.fromTime = t
-    if (!_event.value.toTime) {
-      const hour = parseInt(t.split(':')[0])
-      const minute = parseInt(t.split(':')[1])
-      let nh = hour + 1
-      let nm = minute
-      if (nh >= 24) {
-        nh = 23
-        nm = 59
-      }
-      _event.value.toTime = `${String(nh).padStart(2, '0')}:${String(nm).padStart(2, '0')}`
+    if (!_event.value.toTime || _event.value.toTime <= t) {
+      _event.value.toTime = computeAutoToTime(t)
     }
   } else {
     _event.value.toTime = t
   }
-
-  validateFromToTime(oldTo)
-}
-
-function validateFromToTime(oldTo) {
-  if (_event.value.isFullDay) return true
-  if (_event.value.toTime && _event.value.fromTime) {
-    const diff = dayjs(_event.value.fromDate + ' ' + _event.value.toTime).diff(
-      dayjs(_event.value.fromDate + ' ' + _event.value.fromTime),
-      'minute',
-    )
-    if (diff <= 0) {
-      _event.value.toTime = oldTo
-      error.value = __('End time should be after start time')
-      return false
-    }
+  const { valid, error: err } = validateTimeRange({
+    fromDate: _event.value.fromDate,
+    fromTime: _event.value.fromTime,
+    toTime: _event.value.toTime,
+    isFullDay: _event.value.isFullDay,
+  })
+  if (!valid) {
+    error.value = err
+    _event.value.toTime = prevTo
   }
-  return true
 }
 
 function update() {
@@ -369,7 +346,16 @@ function update() {
     return
   }
 
-  validateFromToTime(_event.value.toTime)
+  const { valid, error: err } = validateTimeRange({
+    fromDate: _event.value.fromDate,
+    fromTime: _event.value.fromTime,
+    toTime: _event.value.toTime,
+    isFullDay: _event.value.isFullDay,
+  })
+  if (!valid) {
+    error.value = err
+    return
+  }
 
   if (_event.value.id && _event.value.id !== 'duplicate') {
     updateEvent()
@@ -467,42 +453,7 @@ function deleteEvent() {
   })
 }
 
-function formatDuration(mins) {
-  // For < 1 hour show minutes, else show hours (with decimal for 15/30/45 mins)
-  if (mins < 60) return __('{0} mins', [mins])
-  let hours = mins / 60
-
-  // keep hours decimal to 2 only if decimal is not 0
-  if (hours % 1 !== 0 && hours % 1 !== 0.5) {
-    hours = hours.toFixed(2)
-  }
-
-  if (Number.isInteger(hours)) {
-    return hours === 1 ? __('1 hr') : __('{0} hrs', [hours])
-  }
-  // Keep decimal representation for > 1 hour fractional durations
-  return `${hours} hrs`
-}
-
-const toOptions = computed(() => {
-  const fromTime = _event.value.fromTime
-  const timeSlots = allTimeSlots()
-  if (!fromTime) return timeSlots
-  const [fh, fm] = fromTime.split(':').map((n) => parseInt(n))
-  const fromTotal = fh * 60 + fm
-  // find first slot strictly after fromTime (even if fromTime not exactly a slot)
-  const startIndex = timeSlots.findIndex((o) => o.value > fromTime)
-  if (startIndex === -1) return []
-  return timeSlots.slice(startIndex).map((o) => {
-    const [th, tm] = o.value.split(':').map((n) => parseInt(n))
-    const toTotal = th * 60 + tm
-    const duration = toTotal - fromTotal
-    return {
-      ...o,
-      label: `${o.label} (${formatDuration(duration)})`,
-    }
-  })
-})
+const toOptions = computed(() => buildEndTimeOptions(_event.value.fromTime))
 
 const linkDoctypeOptions = [
   { label: '', value: '' },
