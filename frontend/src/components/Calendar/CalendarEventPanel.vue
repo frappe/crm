@@ -294,6 +294,7 @@
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <Attendee
+        class="px-4.5 py-[7px]"
         v-model="peoples"
         :validate="validateEmail"
         :error-message="
