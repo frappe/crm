@@ -43,6 +43,7 @@
 <script setup>
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
+import HelpdeskIcon from '@/components/Icons/HelpdeskIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
@@ -52,6 +53,7 @@ import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
+import HelpdeskSettings from '@/components/Settings/HelpdeskSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
@@ -135,6 +137,12 @@ const tabs = computed(() => {
           label: __('ERPNext'),
           icon: ERPNextIcon,
           component: markRaw(ERPNextSettings),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Helpdesk'),
+          icon: HelpdeskIcon,
+          component: markRaw(HelpdeskSettings),
           condition: () => isManager(),
         },
       ],

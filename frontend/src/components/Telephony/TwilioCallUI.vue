@@ -52,22 +52,18 @@
             <DialpadIcon class="cursor-pointer rounded-full" />
           </template>
         </Button> -->
-          <Button class="rounded-full">
-            <template #icon>
-              <NoteIcon
-                class="h-4 w-4 cursor-pointer rounded-full text-ink-gray-9"
-                @click="showNoteModal = true"
-              />
-            </template>
-          </Button>
-          <Button class="rounded-full bg-surface-red-5 hover:bg-surface-red-6">
-            <template #icon>
-              <PhoneIcon
-                class="h-4 w-4 rotate-[135deg] fill-white text-ink-white"
-                @click="hangUpCall"
-              />
-            </template>
-          </Button>
+          <Button
+            class="cursor-pointer rounded-full"
+            :tooltip="__('Add a note')"
+            :icon="NoteIcon"
+            @click="showNoteModal = true"
+          />
+          <Button
+            class="rounded-full bg-surface-red-5 hover:bg-surface-red-6 rotate-[135deg] text-ink-white"
+            :tooltip="__('Hang up')"
+            :icon="PhoneIcon"
+            @click="hangUpCall"
+          />
         </div>
         <div v-else-if="calling || callStatus == 'initiating'">
           <Button
@@ -76,11 +72,11 @@
             theme="red"
             :label="__('Cancel')"
             @click="cancelCall"
-            class="rounded-lg"
+            class="rounded-lg text-ink-white"
             :disabled="callStatus == 'initiating'"
           >
             <template #prefix>
-              <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
+              <PhoneIcon class="rotate-[135deg]" />
             </template>
           </Button>
         </div>
@@ -90,23 +86,20 @@
             variant="solid"
             theme="green"
             :label="__('Accept')"
-            class="rounded-lg"
+            class="rounded-lg text-ink-white"
+            :iconLeft="PhoneIcon"
             @click="acceptIncomingCall"
-          >
-            <template #prefix>
-              <PhoneIcon class="h-4 w-4 fill-white" />
-            </template>
-          </Button>
+          />
           <Button
             size="md"
             variant="solid"
             theme="red"
             :label="__('Reject')"
-            class="rounded-lg"
+            class="rounded-lg text-ink-white"
             @click="rejectIncomingCall"
           >
             <template #prefix>
-              <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
+              <PhoneIcon class="rotate-[135deg]" />
             </template>
           </Button>
         </div>
@@ -134,14 +127,13 @@
       <div class="my-1 min-w-[40px] text-center">
         {{ counterUp?.updatedTime }}
       </div>
-      <Button variant="solid" theme="red" class="!h-6 !w-6 rounded-full">
-        <template #icon>
-          <PhoneIcon
-            class="h-4 w-4 rotate-[135deg] fill-white"
-            @click.stop="hangUpCall"
-          />
-        </template>
-      </Button>
+      <Button
+        variant="solid"
+        theme="red"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
+        :icon="PhoneIcon"
+        @click.stop="hangUpCall"
+      />
     </div>
     <div v-else-if="calling" class="flex items-center gap-3">
       <div class="my-1">
@@ -150,35 +142,28 @@
       <Button
         variant="solid"
         theme="red"
-        class="!h-6 !w-6 rounded-full"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
+        :icon="PhoneIcon"
         @click.stop="cancelCall"
-      >
-        <template #icon>
-          <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
-        </template>
-      </Button>
+      />
     </div>
     <div v-else class="flex items-center gap-2">
       <Button
         variant="solid"
         theme="green"
-        class="pulse relative !h-6 !w-6 rounded-full"
+        class="pulse relative !h-6 !w-6 rounded-full animate-pulse text-ink-white"
+        :tooltip="__('Accept call')"
+        :icon="PhoneIcon"
         @click.stop="acceptIncomingCall"
-      >
-        <template #icon>
-          <PhoneIcon class="h-4 w-4 animate-pulse fill-white" />
-        </template>
-      </Button>
+      />
       <Button
         variant="solid"
         theme="red"
-        class="!h-6 !w-6 rounded-full"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
+        :tooltip="__('Reject call')"
+        :icon="PhoneIcon"
         @click.stop="rejectIncomingCall"
-      >
-        <template #icon>
-          <PhoneIcon class="h-4 w-4 rotate-[135deg] fill-white" />
-        </template>
-      </Button>
+      />
     </div>
   </div>
   <NoteModal

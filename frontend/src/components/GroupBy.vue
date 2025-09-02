@@ -7,18 +7,10 @@
             ? groupByValue?.label
             : __('Group By: ') + groupByValue?.label
         "
+        :iconLeft="DetailsIcon"
+        :iconRight="isOpen ? 'chevron-up' : 'chevron-down'"
         @click="togglePopover()"
-      >
-        <template #prefix>
-          <DetailsIcon />
-        </template>
-        <template #suffix>
-          <FeatherIcon
-            :name="isOpen ? 'chevron-up' : 'chevron-down'"
-            class="h-4"
-          />
-        </template>
-      </Button>
+      />
     </template>
   </Autocomplete>
 </template>
