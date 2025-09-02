@@ -13,30 +13,33 @@
         {{ __(title) }}
       </div>
       <div class="flex items-center gap-x-1">
-        <Button v-if="mode == 'details'" variant="ghost" @click="editDetails">
-          <template #icon>
-            <EditIcon class="size-4" />
-          </template>
-        </Button>
+        <Button
+          v-if="mode == 'details'"
+          :icon="EditIcon"
+          variant="ghost"
+          :tooltip="__('Edit event')"
+          @click="editDetails"
+        />
         <Button
           v-if="mode === 'edit' || mode === 'details'"
           icon="trash-2"
           variant="ghost"
+          :tooltip="__('Delete event')"
           @click="deleteEvent"
         />
-        <Dropdown
+        <Button
           v-if="mode === 'edit' || mode === 'details'"
-          :options="[
-            {
-              label: __('Duplicate'),
-              icon: 'copy',
-              onClick: duplicateEvent,
-            },
-          ]"
-        >
-          <Button variant="ghost" icon="more-vertical" />
-        </Dropdown>
-        <Button icon="x" variant="ghost" @click="close" />
+          icon="copy"
+          variant="ghost"
+          :tooltip="__('Duplicate event')"
+          @click="duplicateEvent"
+        />
+        <Button
+          icon="x"
+          variant="ghost"
+          :tooltip="__('Close panel')"
+          @click="close"
+        />
       </div>
     </div>
 
