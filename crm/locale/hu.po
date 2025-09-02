@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-09-01 16:20\n"
+"PO-Revision-Date: 2025-09-02 16:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -2844,7 +2844,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:384
 #: frontend/src/components/ViewControls.vue:600 frontend/src/utils/view.js:20
 msgid "Kanban"
-msgstr ""
+msgstr "Kanban"
 
 #. Label of the kanban_columns (Code) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -4834,7 +4834,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "System Manager"
-msgstr ""
+msgstr "Rendszergazda"
 
 #: frontend/src/components/EmailEditor.vue:22
 msgid "TO"
