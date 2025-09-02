@@ -141,7 +141,7 @@
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
       :value="data[field.fieldname]"
-      :formatter="(date) => getFormat(date, '', true)"
+      :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"

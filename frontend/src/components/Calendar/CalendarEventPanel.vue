@@ -200,8 +200,9 @@
             :class="['[&_input]:w-[216px]']"
             variant="outline"
             :value="_event.fromDate"
-            :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
+            :format="'MMM D, YYYY'"
             :placeholder="__('May 1, 2025')"
+            :clearable="false"
             @update:modelValue="(date) => updateDate(date, true)"
           >
             <template #suffix="{ togglePopover }">
@@ -351,7 +352,7 @@ import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
 import TimePicker from '@/components/Calendar/TimePicker.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { getFormat, validateEmail } from '@/utils'
+import { validateEmail } from '@/utils'
 import { allTimeSlots } from '@/components/Calendar/utils'
 import {
   TextInput,

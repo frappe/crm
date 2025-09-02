@@ -52,11 +52,21 @@
           <!-- left side  -->
           <!-- Month Year -->
           <div class="flex items-center">
-            <DateMonthYearPicker
+            <DatePicker
               :modelValue="selectedMonthDate"
-              :formatter="() => currentMonthYear"
               @update:modelValue="(val) => onMonthYearChange(val)"
-            />
+              :clearable="false"
+            >
+              <template #target="{ togglePopover }">
+                <Button
+                  variant="ghost"
+                  class="text-lg font-medium text-ink-gray-7"
+                  :label="currentMonthYear"
+                  iconRight="chevron-down"
+                  @click="togglePopover"
+                />
+              </template>
+            </DatePicker>
           </div>
           <!-- right side -->
           <!-- actions buttons for calendar -->
@@ -125,7 +135,7 @@ import {
   createListResource,
   TabButtons,
   dayjs,
-  DateMonthYearPicker,
+  DatePicker,
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'

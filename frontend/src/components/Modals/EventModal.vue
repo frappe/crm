@@ -68,8 +68,9 @@
               :class="[_event.isFullDay ? 'w-full' : 'w-[158px]']"
               variant="outline"
               :value="_event.fromDate"
-              :formatter="(date) => getFormat(date, 'MMM D, YYYY')"
+              :format="'MMM D, YYYY'"
               :placeholder="__('May 1, 2025')"
+              :clearable="false"
               @update:modelValue="(date) => updateDate(date, true)"
             >
               <template #suffix="{ togglePopover }">
@@ -160,7 +161,6 @@ import {
   dayjs,
 } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
-import { getFormat } from '@/utils'
 import { onMounted, ref, computed } from 'vue'
 
 const props = defineProps({

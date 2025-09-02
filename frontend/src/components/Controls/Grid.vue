@@ -183,7 +183,7 @@
                     :value="row[field.fieldname]"
                     icon-left=""
                     variant="outline"
-                    :formatter="(date) => getFormat(date, '', true)"
+                    :format="getFormat('', '', true, false, false)"
                     input-class="border-none text-sm text-ink-gray-8"
                     @change="(v) => fieldChange(v, field, row)"
                   />

@@ -252,7 +252,7 @@
                           <DatePicker
                             icon-left=""
                             :value="doc[field.fieldname]"
-                            :formatter="(date) => getFormat(date, '', true)"
+                            :format="getFormat('', '', true, false, false)"
                             :placeholder="field.placeholder"
                             placement="left-start"
                             :hideIcon="true"
