@@ -21,10 +21,12 @@
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
     </div>
+    <div v-else-if="title == 'Events'" class="activity">
+      <EventArea :doctype="doctype" :docname="docname" />
+    </div>
     <div
       v-else-if="
         activities?.length ||
-        (events.data?.length && title == 'Events') ||
         (whatsappMessages.data?.length && title == 'WhatsApp')
       "
       class="activities"
@@ -36,33 +38,6 @@
           v-model:reply="replyMessage"
           :messages="whatsappMessages.data"
         />
-      </div>
-      <div v-else-if="title == 'Events'" class="activity">
-        <div v-for="(event, i) in events.data" :key="event.name">
-          <div
-            class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
-          >
-            <div
-              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
-              :class="
-                i != events.data.length - 1 ? 'before:h-full' : 'before:h-4'
-              "
-            >
-              <div
-                class="flex h-8 w-7 items-center justify-center bg-surface-white text-ink-gray-8"
-              >
-                <CalendarIcon class="h-4 w-4" />
-              </div>
-            </div>
-            <EventArea
-              class="mb-4"
-              v-model="events"
-              :event="event"
-              :doctype="doctype"
-              :docname="doc?.name"
-            />
-          </div>
-        </div>
       </div>
       <div
         v-else-if="title == 'Notes'"
@@ -529,7 +504,7 @@ import { usersStore } from '@/stores/users'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
-import { Button, Tooltip, createResource, createListResource } from 'frappe-ui'
+import { Button, Tooltip, createResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -608,47 +583,6 @@ const whatsappMessages = createResource({
   auto: whatsappEnabled.value,
   transform: (data) => sortByCreation(data),
   onSuccess: () => nextTick(() => scroll()),
-})
-
-const events = createListResource({
-  doctype: 'Event',
-  cache: ['calendar', props.docname],
-  fields: [
-    'name',
-    'status',
-    'subject',
-    'description',
-    'starts_on',
-    'ends_on',
-    'all_day',
-    'event_type',
-    'color',
-    'owner',
-    'reference_doctype',
-    'reference_docname',
-    'creation',
-  ],
-  filters: {
-    status: 'Open',
-    reference_doctype: props.doctype,
-    reference_docname: props.docname,
-  },
-  orderBy: 'creation desc',
-  auto: title.value == 'Events',
-  transform: (data) => {
-    return data.map((event) => {
-      if (typeof event.owner !== 'object') {
-        event.owner = {
-          label: getUser(event.owner).full_name,
-          image: getUser(event.owner).image,
-        }
-      }
-      return event
-    })
-  },
-  onSuccess: (d) => {
-    console.log(d)
-  },
 })
 
 onBeforeUnmount(() => {
