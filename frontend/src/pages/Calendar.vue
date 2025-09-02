@@ -4,14 +4,16 @@
       <ViewBreadcrumbs routeName="Calendar" />
     </template>
     <template #right-header>
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        :disabled="isCreateDisabled"
-        @click="newEvent"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <ShortcutTooltip :label="__('Create event')" combo="Mod+E">
+        <Button
+          variant="solid"
+          :label="__('Create')"
+          :disabled="isCreateDisabled"
+          @click="newEvent"
+        >
+          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+        </Button>
+      </ShortcutTooltip>
     </template>
   </LayoutHeader>
   <div class="flex h-screen overflow-hidden">
@@ -129,6 +131,7 @@
 import CalendarEventPanel from '@/components/Calendar/CalendarEventPanel.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { sessionStore } from '@/stores/session'
 import { globalStore } from '@/stores/global'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'

@@ -13,33 +13,31 @@
         {{ __(title) }}
       </div>
       <div class="flex items-center gap-x-1">
-        <Button
+        <ShortcutTooltip
           v-if="mode == 'details'"
-          :icon="EditIcon"
-          variant="ghost"
-          :tooltip="__('Edit event')"
-          @click="editDetails"
-        />
-        <Button
+          :label="__('Edit event')"
+          combo="Enter"
+        >
+          <Button :icon="EditIcon" variant="ghost" @click="editDetails" />
+        </ShortcutTooltip>
+        <ShortcutTooltip
           v-if="mode === 'edit' || mode === 'details'"
-          icon="trash-2"
-          variant="ghost"
-          :tooltip="__('Delete event')"
-          @click="deleteEvent"
-        />
-        <Button
+          :label="__('Delete event')"
+          combo="Delete"
+          :alt-combos="['Backspace']"
+        >
+          <Button icon="trash-2" variant="ghost" @click="deleteEvent" />
+        </ShortcutTooltip>
+        <ShortcutTooltip
           v-if="mode === 'edit' || mode === 'details'"
-          icon="copy"
-          variant="ghost"
-          :tooltip="__('Duplicate event')"
-          @click="duplicateEvent"
-        />
-        <Button
-          icon="x"
-          variant="ghost"
-          :tooltip="__('Close panel')"
-          @click="close"
-        />
+          :label="__('Duplicate event')"
+          combo="Mod+D"
+        >
+          <Button icon="copy" variant="ghost" @click="duplicateEvent" />
+        </ShortcutTooltip>
+        <ShortcutTooltip :label="__('Close panel')" combo="Esc">
+          <Button icon="x" variant="ghost" @click="close" />
+        </ShortcutTooltip>
       </div>
     </div>
 
@@ -377,6 +375,7 @@ import {
   CalendarActiveEvent as activeEvent,
   createDocumentResource,
 } from 'frappe-ui'
+import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { ref, computed, watch, h } from 'vue'
 import { useRouter } from 'vue-router'
 
