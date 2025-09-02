@@ -25,8 +25,7 @@
   <EventModal
     v-if="showEventModal"
     v-model="showEventModal"
-    v-model:events="events"
-    :event="event"
+    :event="activeEvent"
     :doctype="doctype"
     :docname="doc?.name"
   />
@@ -36,6 +35,7 @@ import TaskModal from '@/components/Modals/TaskModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import EventModal from '@/components/Modals/EventModal.vue'
+import { showEventModal, activeEvent } from '@/composables/event'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -46,22 +46,11 @@ const props = defineProps({
 })
 
 const activities = defineModel()
-const events = defineModel('events')
 
-const showEventModal = ref(false)
-const event = ref({})
-
+// Event
 function showEvent(e) {
-  event.value = e || {
-    subject: '',
-    description: '',
-    starts_on: '',
-    ends_on: '',
-    all_day: false,
-    event_type: 'Public',
-    color: 'green',
-  }
   showEventModal.value = true
+  activeEvent.value = e
 }
 
 // Tasks

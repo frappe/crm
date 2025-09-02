@@ -42,15 +42,29 @@
           <div class="text-base text-ink-gray-7 w-3/12">
             {{ __('Title') }}
           </div>
-          <TextInput
-            ref="title"
-            class="w-9/12"
-            size="md"
-            v-model="_event.title"
-            :placeholder="__('Call with John Doe')"
-            variant="outline"
-            required
-          />
+          <div class="flex gap-1 w-9/12">
+            <Dropdown class="" :options="colors">
+              <div
+                class="flex items-center justify-center size-7 shrink-0 border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
+              >
+                <div
+                  class="size-2.5 rounded-full cursor-pointer"
+                  :style="{
+                    backgroundColor: _event.color || '#30A66D',
+                  }"
+                />
+              </div>
+            </Dropdown>
+            <TextInput
+              class="w-full"
+              ref="title"
+              size="sm"
+              v-model="_event.title"
+              :placeholder="__('Call with John Doe')"
+              variant="outline"
+              required
+            />
+          </div>
         </div>
         <div class="flex items-center">
           <div class="text-base text-ink-gray-7 w-3/12">
@@ -83,7 +97,7 @@
             </DatePicker>
             <TimePicker
               v-if="!_event.isFullDay"
-              class="max-w-[105px]"
+              class="max-w-[112px]"
               variant="outline"
               :modelValue="_event.fromTime"
               :placeholder="__('Start Time')"
@@ -91,13 +105,57 @@
             />
             <TimePicker
               v-if="!_event.isFullDay"
-              class="max-w-[105px]"
+              class="max-w-[112px]"
               variant="outline"
               :modelValue="_event.toTime"
               :options="toOptions"
               :placeholder="__('End Time')"
               placement="bottom-end"
               @update:modelValue="(time) => updateTime(time)"
+            />
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div class="text-base text-ink-gray-7 w-3/12">
+            {{ __('Link') }}
+          </div>
+          <div class="flex gap-2 w-9/12">
+            <FormControl
+              :class="_event.referenceDoctype ? 'w-20' : 'w-full'"
+              type="select"
+              :options="linkDoctypeOptions"
+              v-model="_event.referenceDoctype"
+              variant="outline"
+              :placeholder="__('Add Lead or Deal')"
+              @change="() => (_event.referenceDocname = '')"
+            />
+            <Link
+              v-if="_event.referenceDoctype"
+              class="w-full"
+              v-model="_event.referenceDocname"
+              :doctype="_event.referenceDoctype"
+              variant="outline"
+              :placeholder="
+                __('Select {0}', [
+                  _event.referenceDoctype == 'CRM Lead'
+                    ? __('Lead')
+                    : __('Deal'),
+                ])
+              "
+            />
+          </div>
+        </div>
+        <div class="flex items-start">
+          <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
+            {{ __('Attendees') }}
+          </div>
+          <div class="w-9/12">
+            <Attendee
+              v-model="peoples"
+              :validate="validateEmail"
+              :error-message="
+                (value) => __('{0} is an invalid email address', [value])
+              "
             />
           </div>
         </div>
@@ -119,7 +177,7 @@
       </div>
     </template>
     <template #actions>
-      <div class="flex gap-2 justify-end">
+      <div v-if="eventsResource" class="flex gap-2 justify-end">
         <Button :label="__('Cancel')" @click="show = false" />
         <Button
           variant="solid"
@@ -131,7 +189,9 @@
                 : __('Create')
           "
           :loading="
-            mode === 'edit' ? events.setValue.loading : events.insert.loading
+            mode === 'edit'
+              ? eventsResource.setValue.loading
+              : eventsResource.insert.loading
           "
           @click="update"
         />
@@ -140,6 +200,8 @@
   </Dialog>
 </template>
 <script setup>
+import Link from '@/components/Controls/Link.vue'
+import Attendee from '@/components/Calendar/Attendee.vue'
 import {
   Switch,
   TextEditor,
@@ -148,9 +210,15 @@ import {
   DatePicker,
   TimePicker,
   dayjs,
+  Dropdown,
+  FormControl,
 } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
-import { onMounted, ref, computed } from 'vue'
+import { validateEmail } from '@/utils'
+import { allTimeSlots } from '@/components/Calendar/utils'
+import { useEvent } from '@/composables/event'
+import { CalendarColorMap as colorMap } from 'frappe-ui'
+import { onMounted, ref, computed, h } from 'vue'
 
 const props = defineProps({
   event: {
@@ -170,7 +238,8 @@ const props = defineProps({
 const { $dialog } = globalStore()
 
 const show = defineModel()
-const events = defineModel('events')
+
+const { eventsResource } = useEvent(props.doctype, props.docname)
 
 const title = ref(null)
 const error = ref(null)
@@ -192,6 +261,29 @@ const _event = ref({
   isFullDay: false,
   eventType: 'Public',
   color: 'green',
+  referenceDoctype: '',
+  referenceDocname: '',
+  event_participants: [],
+})
+
+const peoples = computed({
+  get() {
+    return _event.value.event_participants || []
+  },
+  set(list) {
+    const seen = new Set()
+    const out = []
+    for (const a of list || []) {
+      if (!a?.email || seen.has(a.email)) continue
+      seen.add(a.email)
+      out.push({
+        email: a.email,
+        reference_doctype: a.reference_doctype || 'Contact',
+        reference_docname: a.reference_docname || '',
+      })
+    }
+    _event.value.event_participants = out
+  },
 })
 
 onMounted(() => {
@@ -215,6 +307,9 @@ onMounted(() => {
       isFullDay: props.event.all_day,
       eventType: props.event.event_type,
       color: props.event.color,
+      referenceDoctype: props.event.reference_doctype,
+      referenceDocname: props.event.reference_docname,
+      event_participants: props.event.event_participants || [],
     }
 
     setTimeout(() => title.value?.el?.focus(), 100)
@@ -235,24 +330,35 @@ function updateTime(t, fromTime = false) {
     if (!_event.value.toTime) {
       const hour = parseInt(t.split(':')[0])
       const minute = parseInt(t.split(':')[1])
-      _event.value.toTime = `${hour + 1}:${minute}`
+      let nh = hour + 1
+      let nm = minute
+      if (nh >= 24) {
+        nh = 23
+        nm = 59
+      }
+      _event.value.toTime = `${String(nh).padStart(2, '0')}:${String(nm).padStart(2, '0')}`
     }
   } else {
     _event.value.toTime = t
   }
 
+  validateFromToTime(oldTo)
+}
+
+function validateFromToTime(oldTo) {
+  if (_event.value.isFullDay) return true
   if (_event.value.toTime && _event.value.fromTime) {
-    const diff = dayjs(_event.value.toDate + ' ' + _event.value.toTime).diff(
+    const diff = dayjs(_event.value.fromDate + ' ' + _event.value.toTime).diff(
       dayjs(_event.value.fromDate + ' ' + _event.value.fromTime),
       'minute',
     )
-
     if (diff <= 0) {
       _event.value.toTime = oldTo
       error.value = __('End time should be after start time')
-      return
+      return false
     }
   }
+  return true
 }
 
 function update() {
@@ -263,11 +369,17 @@ function update() {
     return
   }
 
-  _event.value.id ? updateEvent() : createEvent()
+  validateFromToTime(_event.value.toTime)
+
+  if (_event.value.id && _event.value.id !== 'duplicate') {
+    updateEvent()
+  } else {
+    createEvent()
+  }
 }
 
 function createEvent() {
-  events.value.insert.submit(
+  eventsResource.insert.submit(
     {
       subject: _event.value.title,
       description: _event.value.description,
@@ -278,10 +390,13 @@ function createEvent() {
       color: _event.value.color,
       reference_doctype: props.doctype,
       reference_docname: props.docname,
+      reference_doctype: _event.value.referenceDoctype || props.doctype,
+      reference_docname: _event.value.referenceDocname || props.docname,
+      event_participants: _event.value.event_participants,
     },
     {
       onSuccess: async () => {
-        await events.value.reload()
+        await eventsResource.reload()
         show.value = false
       },
     },
@@ -294,7 +409,7 @@ function updateEvent() {
     return
   }
 
-  events.value.setValue.submit(
+  eventsResource.setValue.submit(
     {
       name: _event.value.id,
       subject: _event.value.title,
@@ -306,10 +421,13 @@ function updateEvent() {
       color: _event.value.color,
       reference_doctype: props.doctype,
       reference_docname: props.docname,
+      reference_doctype: _event.value.referenceDoctype || props.doctype,
+      reference_docname: _event.value.referenceDocname || props.docname,
+      event_participants: _event.value.event_participants,
     },
     {
       onSuccess: async () => {
-        await events.value.reload()
+        await eventsResource.reload()
         show.value = false
       },
     },
@@ -336,9 +454,9 @@ function deleteEvent() {
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
-          events.value.delete.submit(_event.value.id, {
+          eventsResource.delete.submit(_event.value.id, {
             onSuccess: async () => {
-              await events.value.reload()
+              await eventsResource.reload()
               show.value = false
               close()
             },
@@ -386,20 +504,19 @@ const toOptions = computed(() => {
   })
 })
 
-function allTimeSlots() {
-  const out = []
-  for (let h = 0; h < 24; h++) {
-    for (const m of [0, 15, 30, 45]) {
-      const hh = String(h).padStart(2, '0')
-      const mm = String(m).padStart(2, '0')
-      const ampm = h >= 12 ? 'pm' : 'am'
-      const hour12 = h % 12 === 0 ? 12 : h % 12
-      out.push({
-        value: `${hh}:${mm}`,
-        label: `${hour12}:${mm} ${ampm}`,
-      })
-    }
-  }
-  return out
-}
+const linkDoctypeOptions = [
+  { label: '', value: '' },
+  { label: __('Lead'), value: 'CRM Lead' },
+  { label: __('Deal'), value: 'CRM Deal' },
+]
+
+const colors = Object.keys(colorMap).map((c) => ({
+  label: c.charAt(0).toUpperCase() + c.slice(1),
+  value: colorMap[c].color,
+  icon: h('div', {
+    class: '!size-2.5 rounded-full',
+    style: { backgroundColor: colorMap[c].color },
+  }),
+  onClick: () => (_event.value.color = colorMap[c].color),
+}))
 </script>

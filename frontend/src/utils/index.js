@@ -689,3 +689,33 @@ export function validateConditions(conditions) {
 
   return conditions.length > 0
 }
+
+// sameArrayContents: returns true if both arrays have exactly the same elements
+// (including duplicate counts) irrespective of order.
+// Non-arrays or arrays of different length return false.
+export function sameArrayContents(a, b) {
+  if (a === b) return true
+  if (!Array.isArray(a) || !Array.isArray(b)) return false
+  if (a.length !== b.length) return false
+  if (a.length === 0) return true
+  const counts = new Map()
+  for (const v of a) {
+    counts.set(v, (counts.get(v) || 0) + 1)
+  }
+  for (const v of b) {
+    const c = counts.get(v)
+    if (!c) return false
+    if (c === 1) counts.delete(v)
+    else counts.set(v, c - 1)
+  }
+  return counts.size === 0
+}
+
+// orderSensitiveEqual: returns true only if arrays are strictly equal index-wise
+export function orderSensitiveEqual(a, b) {
+  if (a === b) return true
+  if (!Array.isArray(a) || !Array.isArray(b)) return false
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false
+  return true
+}

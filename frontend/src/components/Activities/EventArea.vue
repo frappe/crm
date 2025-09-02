@@ -58,31 +58,25 @@
             <div
               class="flex justify-between gap-2 items-center text-ink-gray-6"
             >
-              <div>{{ formattedDateTime(event) }}</div>
-              <div>{{ formattedDate(event) }}</div>
+              <div>
+                {{
+                  startEndTime(event.starts_on, event.ends_on, event.all_day)
+                }}
+              </div>
+              <div>{{ startDate(event.starts_on) }}</div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <EventModal
-    v-if="showEventModal"
-    v-model="showEventModal"
-    v-model:events="eventsResource"
-    :event="event"
-    :doctype="doctype"
-    :docname="docname"
-  />
 </template>
 <script setup>
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
-import EventModal from '@/components/Modals/EventModal.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
-import { usersStore } from '@/stores/users'
+import { useEvent, showEventModal, activeEvent } from '@/composables/event'
 import { formatDate, timeAgo } from '@/utils'
-import { Tooltip, Avatar, dayjs, createListResource } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { Tooltip, Avatar } from 'frappe-ui'
 
 const props = defineProps({
   doctype: {
@@ -95,103 +89,13 @@ const props = defineProps({
   },
 })
 
-const { getUser } = usersStore()
-
-const eventsResource = createListResource({
-  doctype: 'Event',
-  cache: ['calendar', props.docname],
-  fields: [
-    'name',
-    'status',
-    'subject',
-    'description',
-    'starts_on',
-    'ends_on',
-    'all_day',
-    'event_type',
-    'color',
-    'owner',
-    'reference_doctype',
-    'reference_docname',
-    'creation',
-  ],
-  filters: {
-    reference_doctype: props.doctype,
-    reference_docname: props.docname,
-  },
-  auto: true,
-  orderBy: 'creation desc',
-  onSuccess: (d) => {
-    console.log(d)
-  },
-})
-
-const eventParticipants = createListResource({
-  doctype: 'Event Participants',
-  cache: ['Event Participants', props.docname],
-  fields: ['*'],
-  parent: 'Event',
-})
-
-const events = computed(() => {
-  if (!eventsResource.data) return []
-
-  if (!eventParticipants.data?.length) {
-    eventParticipants.update({
-      filters: {
-        parenttype: 'Event',
-        parentfield: 'event_participants',
-        parent: ['in', eventsResource.data.map((e) => e.name)],
-      },
-    })
-    !eventParticipants.list.loading && eventParticipants.reload()
-  } else {
-    eventsResource.data.forEach((event) => {
-      if (typeof event.owner !== 'object') {
-        event.owner = {
-          label: getUser(event.owner).full_name,
-          image: getUser(event.owner).user_image,
-          name: event.owner,
-        }
-      }
-
-      event.participants = [
-        event.owner,
-        ...eventParticipants.data
-          .filter((participant) => participant.parent === event.name)
-          .map((participant) => ({
-            label: getUser(participant.email).full_name || participant.email,
-            image: getUser(participant.email).user_image || '',
-            name: participant.email,
-          })),
-      ]
-    })
-  }
-
-  return eventsResource.data
-})
-
-const formattedDateTime = (e) => {
-  const start = dayjs(e.starts_on)
-  const end = dayjs(e.ends_on)
-
-  if (e.all_day) {
-    return __('All day')
-  }
-
-  return `${start.format('h:mm a')} - ${end.format('h:mm a')}`
-}
-
-const formattedDate = (e) => {
-  const start = dayjs(e.starts_on)
-  return start.format('ddd, D MMM YYYY')
-}
-
-const showEventModal = ref(false)
-const event = ref(null)
-
 function showEvent(e) {
   showEventModal.value = true
-  event.value = e
+  activeEvent.value = e
 }
+
+const { events, startEndTime, startDate } = useEvent(
+  props.doctype,
+  props.docname,
+)
 </script>
