@@ -83,34 +83,22 @@
             </DatePicker>
             <TimePicker
               v-if="!_event.isFullDay"
+              class="max-w-[105px]"
               variant="outline"
-              :value="_event.fromTime"
+              :modelValue="_event.fromTime"
               :placeholder="__('Start Time')"
               @update:modelValue="(time) => updateTime(time, true)"
-            >
-              <template #suffix="{ togglePopover }">
-                <FeatherIcon
-                  name="chevron-down"
-                  class="h-4 w-4 cursor-pointer"
-                  @click="togglePopover"
-                />
-              </template>
-            </TimePicker>
+            />
             <TimePicker
               v-if="!_event.isFullDay"
+              class="max-w-[105px]"
               variant="outline"
-              :value="_event.toTime"
+              :modelValue="_event.toTime"
+              :options="toOptions"
               :placeholder="__('End Time')"
+              placement="bottom-end"
               @update:modelValue="(time) => updateTime(time)"
-            >
-              <template #suffix="{ togglePopover }">
-                <FeatherIcon
-                  name="chevron-down"
-                  class="h-4 w-4 cursor-pointer"
-                  @click="togglePopover"
-                />
-              </template>
-            </TimePicker>
+            />
           </div>
         </div>
         <div class="flex">
@@ -158,6 +146,7 @@ import {
   ErrorMessage,
   Dialog,
   DatePicker,
+  TimePicker,
   dayjs,
 } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
@@ -358,5 +347,59 @@ function deleteEvent() {
       },
     ],
   })
+}
+
+function formatDuration(mins) {
+  // For < 1 hour show minutes, else show hours (with decimal for 15/30/45 mins)
+  if (mins < 60) return __('{0} mins', [mins])
+  let hours = mins / 60
+
+  // keep hours decimal to 2 only if decimal is not 0
+  if (hours % 1 !== 0 && hours % 1 !== 0.5) {
+    hours = hours.toFixed(2)
+  }
+
+  if (Number.isInteger(hours)) {
+    return hours === 1 ? __('1 hr') : __('{0} hrs', [hours])
+  }
+  // Keep decimal representation for > 1 hour fractional durations
+  return `${hours} hrs`
+}
+
+const toOptions = computed(() => {
+  const fromTime = _event.value.fromTime
+  const timeSlots = allTimeSlots()
+  if (!fromTime) return timeSlots
+  const [fh, fm] = fromTime.split(':').map((n) => parseInt(n))
+  const fromTotal = fh * 60 + fm
+  // find first slot strictly after fromTime (even if fromTime not exactly a slot)
+  const startIndex = timeSlots.findIndex((o) => o.value > fromTime)
+  if (startIndex === -1) return []
+  return timeSlots.slice(startIndex).map((o) => {
+    const [th, tm] = o.value.split(':').map((n) => parseInt(n))
+    const toTotal = th * 60 + tm
+    const duration = toTotal - fromTotal
+    return {
+      ...o,
+      label: `${o.label} (${formatDuration(duration)})`,
+    }
+  })
+})
+
+function allTimeSlots() {
+  const out = []
+  for (let h = 0; h < 24; h++) {
+    for (const m of [0, 15, 30, 45]) {
+      const hh = String(h).padStart(2, '0')
+      const mm = String(m).padStart(2, '0')
+      const ampm = h >= 12 ? 'pm' : 'am'
+      const hour12 = h % 12 === 0 ? 12 : h % 12
+      out.push({
+        value: `${hh}:${mm}`,
+        label: `${hour12}:${mm} ${ampm}`,
+      })
+    }
+  }
+  return out
 }
 </script>

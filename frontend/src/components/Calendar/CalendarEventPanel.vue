@@ -349,7 +349,6 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
-import TimePicker from '@/components/Calendar/TimePicker.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { validateEmail } from '@/utils'
@@ -358,6 +357,7 @@ import {
   TextInput,
   Switch,
   DatePicker,
+  TimePicker,
   TextEditor,
   ErrorMessage,
   Dropdown,
@@ -721,7 +721,7 @@ function formatDuration(mins) {
   let hours = mins / 60
 
   // keep hours decimal to 2 only if decimal is not 0
-  if (hours % 1 !== 0) {
+  if (hours % 1 !== 0 && hours % 1 !== 0.5) {
     hours = hours.toFixed(2)
   }
 

@@ -6,8 +6,8 @@
   >
     <template #body-content>
       <div class="flex gap-1 border rounded mb-4 p-2 text-ink-gray-5">
-        <FeatherIcon name="info" class="size-3.5" />
-        <p class="text-sm">
+        <FeatherIcon name="info" class="size-3.5 mt-0.5" />
+        <p class="text-p-sm">
           {{
             __(
               'Add existing system users to this CRM. Assign them a role to grant access with their current credentials.',

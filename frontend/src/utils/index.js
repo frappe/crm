@@ -45,7 +45,7 @@ export function getFormat(
   onlyTime = false,
   withDate = true,
 ) {
-  if (!date) return ''
+  if (!date && withDate) return ''
   let dateFormat =
     window.sysdefaults.date_format
       .replace('mm', 'MM')
