@@ -113,6 +113,7 @@
         v-model="showEventPanel"
         v-model:event="event"
         :mode="mode"
+        @new="newEvent"
         @save="saveEvent"
         @edit="editDetails"
         @delete="deleteEvent"
@@ -139,7 +140,7 @@ import {
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, onBeforeUnmount, ref, computed } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
@@ -189,7 +190,7 @@ const event = ref({})
 const mode = ref('')
 
 const isCreateDisabled = computed(() =>
-  ['edit', 'new-event', 'duplicate-event'].includes(mode.value),
+  ['edit', 'new', 'duplicate'].includes(mode.value),
 )
 
 // Temp event helpers
@@ -323,6 +324,47 @@ onMounted(() => {
   activeEvent.value = ''
   mode.value = ''
   showEventPanel.value = false
+})
+
+// Global shortcut: Cmd/Ctrl + E -> new event (when not already creating/editing)
+function isTypingEvent(e) {
+  const el = e.target
+  if (!el) return false
+  const tag = el.tagName
+  const editable = el.isContentEditable
+  return (
+    editable ||
+    tag === 'INPUT' ||
+    tag === 'TEXTAREA' ||
+    tag === 'SELECT' ||
+    (el.closest && el.closest('[contenteditable="true"]'))
+  )
+}
+
+function calendarKeydown(e) {
+  if (isTypingEvent(e)) return
+  if (
+    (e.metaKey || e.ctrlKey) &&
+    !e.shiftKey &&
+    !e.altKey &&
+    e.key.toLowerCase() === 'e'
+  ) {
+    if (isCreateDisabled.value) return
+    e.preventDefault()
+    newEvent({
+      date: dayjs().format('YYYY-MM-DD'),
+      time: dayjs().format('HH:mm'),
+      isFullDay: false,
+    })
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', calendarKeydown)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', calendarKeydown)
 })
 
 function showDetails(e, reloadEvent = false) {
