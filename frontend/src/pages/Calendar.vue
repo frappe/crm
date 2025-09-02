@@ -131,6 +131,7 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { sessionStore } from '@/stores/session'
 import { globalStore } from '@/stores/global'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   Calendar,
   createListResource,
@@ -140,7 +141,7 @@ import {
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
-import { onMounted, onBeforeUnmount, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
@@ -327,44 +328,23 @@ onMounted(() => {
 })
 
 // Global shortcut: Cmd/Ctrl + E -> new event (when not already creating/editing)
-function isTypingEvent(e) {
-  const el = e.target
-  if (!el) return false
-  const tag = el.tagName
-  const editable = el.isContentEditable
-  return (
-    editable ||
-    tag === 'INPUT' ||
-    tag === 'TEXTAREA' ||
-    tag === 'SELECT' ||
-    (el.closest && el.closest('[contenteditable="true"]'))
-  )
-}
-
-function calendarKeydown(e) {
-  if (isTypingEvent(e)) return
-  if (
-    (e.metaKey || e.ctrlKey) &&
-    !e.shiftKey &&
-    !e.altKey &&
-    e.key.toLowerCase() === 'e'
-  ) {
-    if (isCreateDisabled.value) return
-    e.preventDefault()
-    newEvent({
-      date: dayjs().format('YYYY-MM-DD'),
-      time: dayjs().format('HH:mm'),
-      isFullDay: false,
-    })
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('keydown', calendarKeydown)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', calendarKeydown)
+useKeyboardShortcuts({
+  shortcuts: [
+    {
+      match: (e) =>
+        (e.metaKey || e.ctrlKey) &&
+        !e.shiftKey &&
+        !e.altKey &&
+        e.key.toLowerCase() === 'e',
+      guard: () => !isCreateDisabled.value,
+      action: () =>
+        newEvent({
+          date: dayjs().format('YYYY-MM-DD'),
+          time: dayjs().format('HH:mm'),
+          isFullDay: false,
+        }),
+    },
+  ],
 })
 
 function showDetails(e, reloadEvent = false) {

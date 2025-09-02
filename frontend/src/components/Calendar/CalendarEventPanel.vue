@@ -363,6 +363,7 @@ import {
   validateTimeRange,
   parseEventDoc,
 } from '@/composables/event'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   TextInput,
   Switch,
@@ -376,7 +377,7 @@ import {
   CalendarActiveEvent as activeEvent,
   createDocumentResource,
 } from 'frappe-ui'
-import { ref, computed, watch, h, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -671,68 +672,33 @@ function updateEvent(_e) {
   Object.assign(_event.value, _e)
 }
 
-// Keyboard shortcuts
-function isTypingEvent(e) {
-  const el = e.target
-  if (!el) return false
-  const tag = el.tagName
-  const editable = el.isContentEditable
-  return (
-    editable ||
-    tag === 'INPUT' ||
-    tag === 'TEXTAREA' ||
-    tag === 'SELECT' ||
-    (el.closest && el.closest('[contenteditable="true"]'))
-  )
-}
-
-function keydownHandler(e) {
-  if (!show.value) return
-
-  // Esc always closes the panel
-  if (e.key === 'Escape') {
-    e.preventDefault()
-    close()
-    return
-  }
-
-  if (!['details', 'edit'].includes(props.mode)) return
-  if (isTypingEvent(e)) return
-
-  // Enter in details mode -> switch to edit
-  if (e.key === 'Enter' && props.mode === 'details') {
-    e.preventDefault()
-    editDetails()
-    return
-  }
-
-  // Delete (no modifier) -> delete event
-  if (e.key === 'Delete' || e.key === 'Backspace') {
-    // Avoid capturing Backspace if it would navigate away when no focus
-    e.preventDefault()
-    deleteEvent()
-    return
-  }
-
-  // Cmd/Ctrl + D -> duplicate event
-  if (
-    (e.metaKey || e.ctrlKey) &&
-    !e.shiftKey &&
-    !e.altKey &&
-    e.key.toLowerCase() === 'd'
-  ) {
-    e.preventDefault()
-    duplicateEvent()
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('keydown', keydownHandler)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', keydownHandler)
-})
-
 defineExpose({ updateEvent })
+
+// Keyboard shortcuts
+useKeyboardShortcuts({
+  active: () => show.value,
+  shortcuts: [
+    { keys: 'Escape', action: () => close() },
+    {
+      keys: 'Enter',
+      guard: () =>
+        ['details', 'edit'].includes(props.mode) && props.mode === 'details',
+      action: () => editDetails(),
+    },
+    {
+      keys: ['Delete', 'Backspace'],
+      guard: () => ['details', 'edit'].includes(props.mode),
+      action: () => deleteEvent(),
+    },
+    {
+      match: (e) =>
+        ['details', 'edit'].includes(props.mode) &&
+        (e.metaKey || e.ctrlKey) &&
+        !e.shiftKey &&
+        !e.altKey &&
+        e.key.toLowerCase() === 'd',
+      action: () => duplicateEvent(),
+    },
+  ],
+})
 </script>
