@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-28 13:47\n"
+"PO-Revision-Date: 2025-09-02 16:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -321,7 +321,7 @@ msgstr "Tilføj note"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add sample data"
-msgstr ""
+msgstr "Tilføj eksempel data"
 
 #. Description of the 'Icon' (Code) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -595,19 +595,19 @@ msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:80
 msgid "Avg won deal value"
-msgstr ""
+msgstr "Gennemsnitlig vundet aftaleværdi"
 
 #: crm/api/dashboard.py:410
 msgid "Avg. deal value"
-msgstr ""
+msgstr "Gennemsnitlig aftaleværdi"
 
 #: crm/api/dashboard.py:237
 msgid "Avg. ongoing deal value"
-msgstr ""
+msgstr "Gennemsnitlig løbende aftaleværdi"
 
 #: crm/api/dashboard.py:517
 msgid "Avg. time to close a deal"
-msgstr ""
+msgstr "Gennemsnitlig tid til at lukke aftale"
 
 #: crm/api/dashboard.py:463
 msgid "Avg. time to close a lead"
@@ -615,7 +615,7 @@ msgstr ""
 
 #: crm/api/dashboard.py:353
 msgid "Avg. won deal value"
-msgstr ""
+msgstr "Gennemsnitlig vundet aftaleværdi"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:26
 #: frontend/src/components/Dashboard/AddChartModal.vue:70
@@ -719,7 +719,7 @@ msgstr "Exotel Indstillinger"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "CRM Fields Layout"
-msgstr ""
+msgstr "Feltlayout"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -784,37 +784,37 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "CRM Portal Page"
-msgstr ""
+msgstr "Portal Side"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "CRM Product"
-msgstr ""
+msgstr "Artikel"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "CRM Products"
-msgstr ""
+msgstr "Artikler"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "CRM Service Day"
-msgstr ""
+msgstr "Service Dag"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "CRM Service Level Agreement"
-msgstr ""
+msgstr "Service Niveau Aftale"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
 msgid "CRM Service Level Priority"
-msgstr ""
+msgstr "Service Niveau Prioritet"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "CRM Status Change Log"
-msgstr ""
+msgstr "Status Ændringslog"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -1100,7 +1100,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Completed"
-msgstr ""
+msgstr "Udført"
 
 #. Option for the 'Device' (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -1205,7 +1205,7 @@ msgstr ""
 #: frontend/src/pages/Contact.vue:234 frontend/src/pages/MobileContact.vue:212
 #: frontend/src/pages/MobileOrganization.vue:331
 msgid "Contacts"
-msgstr ""
+msgstr "Kontakter"
 
 #. Label of the content (Text Editor) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
