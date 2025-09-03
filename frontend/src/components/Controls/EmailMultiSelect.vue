@@ -31,14 +31,13 @@
           :ignore-filter="true"
         >
           <ComboboxAnchor
-            class="flex h-7 items-center gap-2 rounded px-2 py-1 border border-transparent"
+            class="flex h-7 max-w-full w-auto items-center gap-2 rounded px-2 py-1 border border-transparent"
             :class="[
               variant == 'ghost'
                 ? 'bg-surface-white hover:bg-surface-white'
                 : 'bg-surface-gray-2 hover:bg-surface-gray-3',
               inputClass,
             ]"
-            style="max-width: 100%; width: auto"
           >
             <ComboboxInput
               ref="search"
@@ -54,10 +53,9 @@
           </ComboboxAnchor>
           <ComboboxPortal>
             <ComboboxContent
-              class="z-10 mt-1 bg-surface-modal overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
+              class="z-10 mt-1 min-w-48 w-auto max-w-96 bg-surface-modal overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
               position="popper"
               :align="'start'"
-              :style="{ minWidth: '12rem', width: 'auto', maxWidth: '24rem' }"
               @openAutoFocus.prevent
               @closeAutoFocus.prevent
             >
