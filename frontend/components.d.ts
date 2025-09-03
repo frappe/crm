@@ -224,7 +224,6 @@ declare module 'vue' {
     PlaybackSpeedIcon: typeof import('./src/components/Icons/PlaybackSpeedIcon.vue')['default']
     PlaybackSpeedOption: typeof import('./src/components/Activities/PlaybackSpeedOption.vue')['default']
     PlayIcon: typeof import('./src/components/Icons/PlayIcon.vue')['default']
-    Popover: typeof import('./src/components/frappe-ui/Popover.vue')['default']
     ProfileSettings: typeof import('./src/components/Settings/ProfileSettings.vue')['default']
     QuickEntryModal: typeof import('./src/components/Modals/QuickEntryModal.vue')['default']
     QuickFilterField: typeof import('./src/components/QuickFilterField.vue')['default']
