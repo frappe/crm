@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-28 13:47\n"
+"PO-Revision-Date: 2025-09-02 16:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -498,7 +498,7 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:184
 #: frontend/src/components/Modals/AssignmentModal.vue:4
 msgid "Assign To"
-msgstr ""
+msgstr "Tilordne til"
 
 #: frontend/src/components/AssignTo.vue:11
 #: frontend/src/components/AssignToBody.vue:5
@@ -507,7 +507,7 @@ msgstr ""
 
 #: frontend/src/components/AssignToBody.vue:63
 msgid "Assign to me"
-msgstr ""
+msgstr "Tilordne til meg"
 
 #. Label of the assigned_to (Link) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -522,7 +522,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Assignment Rule"
-msgstr ""
+msgstr "Tilordningsregel"
 
 #: frontend/src/components/ListBulkActions.vue:152
 msgid "Assignment cleared successfully"
@@ -626,7 +626,7 @@ msgstr ""
 #: frontend/src/components/EmailEditor.vue:44
 #: frontend/src/components/EmailEditor.vue:69
 msgid "BCC"
-msgstr ""
+msgstr "BCC"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:31
 #: frontend/src/components/Settings/EmailAdd.vue:79
@@ -645,7 +645,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:350
 msgid "Between"
-msgstr ""
+msgstr "Mellom"
 
 #: frontend/src/components/Settings/General/BrandSettings.vue:40
 msgid "Brand name"
@@ -942,7 +942,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:484
 msgid "Change"
-msgstr ""
+msgstr "Endre"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:2
 #: frontend/src/components/Settings/ProfileSettings.vue:65
@@ -994,13 +994,13 @@ msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:59
 msgid "Clear"
-msgstr ""
+msgstr "Tøm"
 
 #: frontend/src/components/ListBulkActions.vue:134
 #: frontend/src/components/ListBulkActions.vue:142
 #: frontend/src/components/ListBulkActions.vue:188
 msgid "Clear Assignment"
-msgstr ""
+msgstr "Slett oppgave"
 
 #: frontend/src/components/SortBy.vue:153
 msgid "Clear Sort"
@@ -1030,7 +1030,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:107
 msgid "Collapse"
-msgstr ""
+msgstr "Fold sammen alle"
 
 #: frontend/src/components/FieldLayoutEditor.vue:344
 msgid "Collapsible"
@@ -1166,7 +1166,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:20
 msgid "Contact Us"
-msgstr ""
+msgstr "Kontakt oss"
 
 #: frontend/src/pages/Deal.vue:641 frontend/src/pages/MobileDeal.vue:544
 msgid "Contact added"
@@ -1507,11 +1507,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:41
 msgid "Default Inbox"
-msgstr ""
+msgstr "Standard innboks"
 
 #: frontend/src/components/Settings/emailConfig.js:44
 msgid "Default Incoming"
-msgstr ""
+msgstr "Standard innkommende"
 
 #. Label of the default_medium (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -1520,7 +1520,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:52
 msgid "Default Outgoing"
-msgstr ""
+msgstr "Standard utgående"
 
 #. Label of the default_priority (Check) field in DocType 'CRM Service Level
 #. Priority'
@@ -1530,11 +1530,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:43
 msgid "Default Sending"
-msgstr ""
+msgstr "Standard sending"
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:39
 msgid "Default Sending and Inbox"
-msgstr ""
+msgstr "Standard sending og innboks"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:33
 msgid "Default Service Level Agreement already exists for {0}"
@@ -1668,7 +1668,7 @@ msgstr ""
 #: frontend/src/pages/MobileDeal.vue:424 frontend/src/pages/MobileLead.vue:331
 #: frontend/src/pages/MobileOrganization.vue:320
 msgid "Details"
-msgstr ""
+msgstr "Detaljer"
 
 #. Label of the call_receiving_device (Select) field in DocType 'CRM Telephony
 #. Agent'
@@ -1689,7 +1689,7 @@ msgstr ""
 #: frontend/src/components/CommentBox.vue:74
 #: frontend/src/components/EmailEditor.vue:158
 msgid "Discard"
-msgstr ""
+msgstr "Kast"
 
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -1974,7 +1974,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:531 frontend/src/pages/Lead.vue:388
 #: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:342
 msgid "Emails"
-msgstr ""
+msgstr "E-poster"
 
 #: frontend/src/components/ListViews/ListRows.vue:12
 msgid "Empty"
@@ -1999,11 +1999,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:28
 msgid "Enable Incoming"
-msgstr ""
+msgstr "Aktiver innkommende e-post"
 
 #: frontend/src/components/Settings/emailConfig.js:36
 msgid "Enable Outgoing"
-msgstr ""
+msgstr "Aktiver utgående e-post"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:19
 msgid "Enable forecasting"
@@ -2055,7 +2055,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:327
 #: frontend/src/components/Filter.vue:343
 msgid "Equals"
-msgstr ""
+msgstr "Tilsvarer"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:176
 msgid "Error converting to deal: {0}"
@@ -2139,7 +2139,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:107
 msgid "Expand"
-msgstr ""
+msgstr "Utvid"
 
 #. Label of the expected_closure_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -2167,7 +2167,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:203
 #: frontend/src/components/ViewControls.vue:251
 msgid "Export"
-msgstr ""
+msgstr "Eksporter"
 
 #: frontend/src/components/ViewControls.vue:282
 msgid "Export All {0} Record(s)"
@@ -2175,7 +2175,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:264
 msgid "Export Type"
-msgstr ""
+msgstr "Eksporttype"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
@@ -2278,7 +2278,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:6
 msgid "Filter"
-msgstr ""
+msgstr "Filter"
 
 #. Label of the filters (Code) field in DocType 'CRM View Settings'
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
@@ -2295,7 +2295,7 @@ msgstr ""
 #: frontend/src/components/SortBy.vue:6 frontend/src/components/SortBy.vue:103
 #: frontend/src/components/SortBy.vue:136
 msgid "First Name"
-msgstr ""
+msgstr "Fornavn"
 
 #: frontend/src/components/Modals/LeadModal.vue:134
 msgid "First Name is mandatory"
@@ -2621,7 +2621,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:320
 #: frontend/src/components/Filter.vue:334
 msgid "In"
-msgstr ""
+msgstr "I"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
@@ -2773,12 +2773,12 @@ msgstr ""
 #: frontend/src/components/Filter.vue:336
 #: frontend/src/components/Filter.vue:345
 msgid "Is"
-msgstr ""
+msgstr "Er"
 
 #. Label of the is_default (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Is Default"
-msgstr ""
+msgstr "Er standard"
 
 #. Label of the is_erpnext_in_different_site (Check) field in DocType 'ERPNext
 #. CRM Settings'
@@ -3559,7 +3559,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:317
 #: frontend/src/components/Filter.vue:344
 msgid "Not Equals"
-msgstr ""
+msgstr "Ikke lik"
 
 #: frontend/src/components/Filter.vue:272
 #: frontend/src/components/Filter.vue:293
@@ -3567,7 +3567,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:321
 #: frontend/src/components/Filter.vue:335
 msgid "Not In"
-msgstr ""
+msgstr "Ikke i"
 
 #: frontend/src/components/Filter.vue:270
 #: frontend/src/components/Filter.vue:281
@@ -3575,7 +3575,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:319
 #: frontend/src/components/Filter.vue:333
 msgid "Not Like"
-msgstr ""
+msgstr "Ikke som"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:10
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:10
@@ -4162,7 +4162,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:213
 #: frontend/src/pages/Deal.vue:612
 msgid "Remove"
-msgstr ""
+msgstr "Fjern"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:23
 msgid "Remove all"
@@ -5041,7 +5041,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:627
 msgid "Today"
-msgstr ""
+msgstr "I dag"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
