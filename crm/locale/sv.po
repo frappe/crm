@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-28 13:47\n"
+"POT-Creation-Date: 2025-08-31 09:35+0000\n"
+"PO-Revision-Date: 2025-09-03 16:19\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Crowdin-File-ID: 97\n"
 "Language: sv_SE\n"
 
-#: frontend/src/components/ViewControls.vue:1217
+#: frontend/src/components/ViewControls.vue:1172
 msgid " (New)"
 msgstr " (Ny)"
 
@@ -224,7 +224,7 @@ msgstr "Konto namn erfordras"
 
 #: frontend/src/components/CustomActions.vue:69
 #: frontend/src/components/ViewControls.vue:683
-#: frontend/src/components/ViewControls.vue:1109
+#: frontend/src/components/ViewControls.vue:1064
 msgid "Actions"
 msgstr "Åtgärder"
 
@@ -1577,8 +1577,8 @@ msgstr "Standard status, anpassade fält och upplägg återställdes."
 #: frontend/src/components/ListBulkActions.vue:177
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:235
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:238
-#: frontend/src/components/ViewControls.vue:1161
-#: frontend/src/components/ViewControls.vue:1172
+#: frontend/src/components/ViewControls.vue:1116
+#: frontend/src/components/ViewControls.vue:1127
 #: frontend/src/pages/Contact.vue:100 frontend/src/pages/Deal.vue:111
 #: frontend/src/pages/Lead.vue:157 frontend/src/pages/MobileContact.vue:79
 #: frontend/src/pages/MobileContact.vue:263
@@ -1598,8 +1598,8 @@ msgstr "Ta bort och Återställ"
 msgid "Delete Task"
 msgstr "Ta bort Uppgift"
 
-#: frontend/src/components/ViewControls.vue:1157
-#: frontend/src/components/ViewControls.vue:1165
+#: frontend/src/components/ViewControls.vue:1112
+#: frontend/src/components/ViewControls.vue:1120
 msgid "Delete View"
 msgstr "Ta bort Vy"
 
@@ -1768,7 +1768,7 @@ msgstr "Förfallo Datum"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:225
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:228
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:19
-#: frontend/src/components/ViewControls.vue:1113
+#: frontend/src/components/ViewControls.vue:1068
 msgid "Duplicate"
 msgstr "Kopiera"
 
@@ -1830,7 +1830,7 @@ msgstr "Affärssystem Inställningar uppdaterade"
 #: frontend/src/components/FieldLayoutEditor.vue:313
 #: frontend/src/components/FieldLayoutEditor.vue:339
 #: frontend/src/components/ListBulkActions.vue:170
-#: frontend/src/components/ViewControls.vue:1131
+#: frontend/src/components/ViewControls.vue:1086
 #: frontend/src/pages/Dashboard.vue:16
 msgid "Edit"
 msgstr "Redigera"
@@ -3114,11 +3114,11 @@ msgstr "Låg"
 msgid "Make Call"
 msgstr "Ring Samtal"
 
-#: frontend/src/components/ViewControls.vue:1146
+#: frontend/src/components/ViewControls.vue:1101
 msgid "Make Private"
 msgstr "Gör Privat"
 
-#: frontend/src/components/ViewControls.vue:1146
+#: frontend/src/components/ViewControls.vue:1101
 msgid "Make Public"
 msgstr "Gör Offentligt"
 
@@ -3878,7 +3878,7 @@ msgstr "Telefon"
 msgid "Phone Numbers"
 msgstr "Telefonnummer"
 
-#: frontend/src/components/ViewControls.vue:1138
+#: frontend/src/components/ViewControls.vue:1093
 msgid "Pin View"
 msgstr "Fäst Vy"
 
@@ -4569,7 +4569,7 @@ msgstr "Ange Organisation"
 msgid "Set as Primary Contact"
 msgstr "Ange som Primär Kontakt"
 
-#: frontend/src/components/ViewControls.vue:1123
+#: frontend/src/components/ViewControls.vue:1078
 msgid "Set as default"
 msgstr "Ange som standard"
 
@@ -5208,13 +5208,9 @@ msgstr "Ta bort länk till länkad artikel"
 msgid "Unlink {0} item(s)"
 msgstr "Ta bort länk till {0} artikel(ar)"
 
-#: frontend/src/components/ViewControls.vue:1138
+#: frontend/src/components/ViewControls.vue:1093
 msgid "Unpin View"
 msgstr "Lossa Vy"
-
-#: frontend/src/components/ViewControls.vue:975
-msgid "Unsaved Changes"
-msgstr "Osparade Ändringar"
 
 #: frontend/src/components/FieldLayoutEditor.vue:26
 #: frontend/src/components/Modals/AddressModal.vue:8
@@ -5238,7 +5234,6 @@ msgstr "Namnlös"
 #: frontend/src/components/Settings/SettingsPage.vue:20
 #: frontend/src/components/Settings/TelephonySettings.vue:23
 #: frontend/src/components/Telephony/ExotelCallUI.vue:210
-#: frontend/src/components/ViewControls.vue:980
 msgid "Update"
 msgstr "Uppdatera"
 
@@ -5461,10 +5456,6 @@ msgstr "Du har inget Mobil Nummer angiven i din Telefoni Agent"
 #: frontend/src/data/document.js:32
 msgid "You do not have permission to access this document"
 msgstr "Du har inte behörighet att komma åt detta dokument"
-
-#: frontend/src/components/ViewControls.vue:976
-msgid "You have unsaved changes. Do you want to save them?"
-msgstr "Du har ändringar som inte sparats. Vill du spara dem?"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:24
 msgid "You need to be in developer mode to edit a Standard Form Script"
