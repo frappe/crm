@@ -36,7 +36,7 @@ def on_update(doc, method):
 def notify_agent(doc):
 	if doc.type == "Incoming":
 		doctype = doc.reference_doctype
-		if doctype and doctype.startswith("CRM "): #checks if there is a valid doctype, this is required because for making sure notification is triggered only for whatsapp message with a valid doctype assiged by validate fundtion. in absence of this ("doctype and ") addition, it stops creation of new whatsapp message.
+		if doctype and doctype.startswith("CRM "):
 			doctype = doctype[4:].lower()
 		notification_text = f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
