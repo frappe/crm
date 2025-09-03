@@ -10,7 +10,7 @@ from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 def validate(doc, method):
 	if doc.type == "Incoming" and doc.get("from"):
 		name, doctype = get_lead_or_deal_from_number(doc.get("from"))
-		if name != None: # only assignes a doctype and name if matching number is found, else does not obstruct creation of new message in whatsapp message doctype (frappe_whatsapp app) which is required for other chat applications
+		if name != None:
 			doc.reference_doctype = doctype 
 			doc.reference_name = name
 
