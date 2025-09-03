@@ -439,15 +439,15 @@ const displayedPeoples = computed(() => {
 
 watch(
   [() => props.mode, () => event.value],
-  () => {
+  ([mode, event], [oldMode, oldEvent]) => {
     error.value = null
     focusOnTitle()
-    fetchEvent()
+    fetchEvent(oldMode)
   },
   { immediate: true },
 )
 
-function fetchEvent() {
+function fetchEvent(oldMode) {
   if (
     event.value.id &&
     event.value.id !== 'new-event' &&
@@ -470,9 +470,12 @@ function fetchEvent() {
     }
   } else {
     _event.value = event.value
-    oldEvent.value = { ...event.value }
 
-    if (event.value.id === 'duplicate-event') {
+    if (oldMode !== props.mode) {
+      oldEvent.value = { ...event.value }
+    }
+
+    if (event.value.id === 'duplicate-event' && oldMode !== 'duplicate') {
       _event.value.title = _event.value.title + ' (Copy)'
     }
   }
