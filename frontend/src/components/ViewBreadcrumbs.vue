@@ -60,13 +60,14 @@
             class="flex flex-row-reverse gap-2 items-center min-w-11"
           >
             <Dropdown
-              placement="right-start"
+              side="right"
+              :offset="15"
               :options="viewControls.viewActions(item, close)"
             >
               <template #default>
                 <Button
                   variant="ghost"
-                  class="!size-5 hidden group-hover:block"
+                  class="!size-5 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity"
                   icon="more-horizontal"
                   @click.stop
                 />

@@ -89,7 +89,7 @@ import VolumnHighIcon from '@/components/Icons/VolumnHighIcon.vue'
 import MuteIcon from '@/components/Icons/MuteIcon.vue'
 import PlaybackSpeedIcon from '@/components/Icons/PlaybackSpeedIcon.vue'
 import PlaybackSpeedOption from '@/components/Activities/PlaybackSpeedOption.vue'
-import Dropdown from '@/components/frappe-ui/Dropdown.vue'
+import { Dropdown } from 'frappe-ui'
 import { computed, h, ref } from 'vue'
 
 const props = defineProps({

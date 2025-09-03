@@ -8,7 +8,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    '(refactor': update component declarations and improve Calendar daily header styling)
     AboutModal: typeof import('./src/components/Modals/AboutModal.vue')['default']
     Activities: typeof import('./src/components/Activities/Activities.vue')['default']
     ActivityHeader: typeof import('./src/components/Activities/ActivityHeader.vue')['default']
