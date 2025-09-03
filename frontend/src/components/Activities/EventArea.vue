@@ -1,5 +1,5 @@
 <template>
-  <div v-for="(event, i) in events" :key="event.name">
+  <div v-if="events.length" v-for="(event, i) in events" :key="event.name">
     <div
       class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
     >
@@ -70,6 +70,14 @@
       </div>
     </div>
   </div>
+  <div
+    v-else
+    class="flex h-full flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
+  >
+    <CalendarIcon class="h-10 w-10" />
+    <span>{{ __('No Events Scheduled') }}</span>
+    <Button :label="__('Schedule an Event')" @click="showEvent()" />
+  </div>
 </template>
 <script setup>
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
@@ -89,7 +97,7 @@ const props = defineProps({
   },
 })
 
-function showEvent(e) {
+function showEvent(e = {}) {
   showEventModal.value = true
   activeEvent.value = e
 }

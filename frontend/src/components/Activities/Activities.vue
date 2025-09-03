@@ -21,7 +21,7 @@
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
     </div>
-    <div v-else-if="title == 'Events'" class="activity">
+    <div v-else-if="title == 'Events'" class="h-full activity">
       <EventArea :doctype="doctype" :docname="docname" />
     </div>
     <div
@@ -399,11 +399,6 @@
         @click="emailBox.showComment = true"
       />
       <Button
-        v-else-if="title == 'Events'"
-        :label="__('Schedule an Event')"
-        @click="modalRef.showEvent()"
-      />
-      <Button
         v-else-if="title == 'Tasks'"
         :label="__('Create Task')"
         @click="modalRef.showTask()"
@@ -473,7 +468,6 @@ import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
-import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -718,8 +712,6 @@ const emptyText = computed(() => {
     text = 'No Comments'
   } else if (title.value == 'Data') {
     text = 'No Data'
-  } else if (title.value == 'Events') {
-    text = 'No Events'
   } else if (title.value == 'Calls') {
     text = 'No Call Logs'
   } else if (title.value == 'Notes') {
@@ -742,8 +734,6 @@ const emptyTextIcon = computed(() => {
     icon = CommentIcon
   } else if (title.value == 'Data') {
     icon = DetailsIcon
-  } else if (title.value == 'Events') {
-    icon = EventIcon
   } else if (title.value == 'Calls') {
     icon = PhoneIcon
   } else if (title.value == 'Notes') {
