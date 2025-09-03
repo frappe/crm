@@ -106,21 +106,20 @@ function convertToDeal(selections, unselectAll) {
 }
 
 function deleteValues(selections, unselectAll) {
- 
   unselectAllAction.value = unselectAll
 
- const selectedDocs = Array.from(selections)
- if (selectedDocs.length == 1) {
- showDeleteDocModal.value = {
- showLinkedDocsModal: true,
- docname: selectedDocs[0],
- }
- } else {
- showDeleteDocModal.value = {
- showDeleteModal: true,
- items: selectedDocs,
- }
- }
+  const selectedDocs = Array.from(selections)
+  if (selectedDocs.length == 1) {
+    showDeleteDocModal.value = {
+      showLinkedDocsModal: true,
+      docname: selectedDocs[0],
+    }
+  } else {
+    showDeleteDocModal.value = {
+      showDeleteModal: true,
+      items: selectedDocs,
+    }
+  }
 }
 
 const showAssignmentModal = ref(false)
