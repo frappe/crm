@@ -219,17 +219,15 @@ function bulkActions(selections, unselectAll) {
 }
 
 function reload(unselectAll) {
-
   showDeleteDocModal.value = {
     showLinkedDocsModal: false,
     showDeleteModal: false,
     docname: null,
-  };
+  }
 
- 
- unselectAllAction.value?.()
- unselectAll?.()
- list.value?.reload()
+  unselectAllAction.value?.()
+  unselectAll?.()
+  list.value?.reload()
 }
 
 onMounted(async () => {
