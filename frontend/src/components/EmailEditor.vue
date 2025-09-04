@@ -285,7 +285,6 @@ const editor = computed(() => {
 async function getEmailAccounts() {
   try {
     const response = await call('crm.api.email.get_user_email_accounts')
-    console.log('Fetched email accounts:', response)
     emailAccounts.value = response || []
 
     if (emailAccounts.value.length > 0 && fromEmails.value.length === 0) {
