@@ -92,11 +92,6 @@
           </div>
         </div>
       </template>
-      <template #daily-header="{ parseDateWithDay, currentDate }">
-        <p class="ml-4 pb-2 text-base text-ink-gray-6">
-          {{ parseDateWithDay(currentDate) }}
-        </p>
-      </template>
     </Calendar>
 
     <!-- Event Panel Container -->
