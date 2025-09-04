@@ -169,14 +169,12 @@ const selectEmail = (email) => {
   info.value = null
 
   if (email) {
-    // Validate email if validation function is provided
     if (props.validate && !props.validate(email)) {
       error.value = props.errorMessage(email)
       query.value = email
       return
     }
 
-    // For single selection, always replace the existing value
     values.value = [email]
 
     // Check if email already exists
@@ -187,24 +185,30 @@ const selectEmail = (email) => {
 }
 
 const clearSelection = () => {
+  // Prevent clearing
+  if (!selectedEmail.value) {
+    error.value = __('Please select an email account')
+    return
+  }
   values.value = []
-  error.value = null
+  error.value = __('Please select an email account')
   info.value = null
   nextTick(() => {
     setFocus()
   })
 }
 
-// Watch for changes in values to enforce single selection
+// Validation: Ensure not empty before using
 watch(
   values,
   (newValue) => {
-    if (Array.isArray(newValue) && newValue.length > 1) {
-      // Keep only the last selected email if somehow multiple get selected
-      values.value = [newValue[newValue.length - 1]]
+    if (!newValue || newValue.length === 0) {
+      error.value = __('Please select an email account')
+    } else {
+      error.value = null
     }
   },
-  { deep: true },
+  { deep: true, immediate: true },
 )
 
 function setFocus() {

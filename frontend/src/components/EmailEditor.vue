@@ -282,20 +282,12 @@ const editor = computed(() => {
   return textEditor.value.editor
 })
 
-// Fetch email accounts function
 async function getEmailAccounts() {
   try {
-    const response = await call('frappe.client.get_list', {
-      doctype: 'Email Account',
-      fields: ['name', 'email_id', 'email_account_name'],
-      filters: {
-        enable_outgoing: 1,
-      },
-    })
-
+    const response = await call('crm.api.email.get_user_email_accounts')
+    console.log('Fetched email accounts:', response)
     emailAccounts.value = response || []
 
-    // Set default selected email if available and fromEmails is empty
     if (emailAccounts.value.length > 0 && fromEmails.value.length === 0) {
       fromEmails.value = [emailAccounts.value[0].email_id]
     }
