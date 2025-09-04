@@ -158,6 +158,7 @@
                 ? __('Duplicate')
                 : __('Create')
           "
+          :disabled="!dirty"
           :loading="
             mode === 'edit'
               ? eventsResource.setValue.loading
@@ -224,6 +225,7 @@ const mode = computed(() => {
       : 'create'
 })
 
+const oldEvent = ref({})
 const _event = ref({
   title: '',
   description: '',
@@ -237,6 +239,10 @@ const _event = ref({
   referenceDoctype: '',
   referenceDocname: '',
   event_participants: [],
+})
+
+const dirty = computed(() => {
+  return JSON.stringify(_event.value) !== JSON.stringify(oldEvent.value)
 })
 
 const peoples = computed({
@@ -273,6 +279,8 @@ onMounted(() => {
       referenceDocname: props.event.reference_docname,
       event_participants: props.event.event_participants || [],
     }
+
+    oldEvent.value = JSON.parse(JSON.stringify(_event.value))
 
     setTimeout(() => title.value?.el?.focus(), 100)
   }
