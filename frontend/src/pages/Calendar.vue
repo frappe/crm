@@ -18,7 +18,6 @@
   </LayoutHeader>
   <div class="flex h-screen overflow-hidden">
     <Calendar
-      v-if="events.data?.length"
       class="flex-1 overflow-hidden"
       ref="calendar"
       :config="{
