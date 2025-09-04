@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-31 09:35+0000\n"
-"PO-Revision-Date: 2025-09-03 16:19\n"
+"PO-Revision-Date: 2025-09-04 16:59\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -29,15 +29,15 @@ msgstr "01/04/2024 23:30"
 
 #: frontend/src/utils/index.js:172
 msgid "1 hour ago"
-msgstr ""
+msgstr "há 1 hora atrás"
 
 #: frontend/src/utils/index.js:168
 msgid "1 minute ago"
-msgstr ""
+msgstr "há 1 minuto atrás"
 
 #: frontend/src/utils/index.js:187
 msgid "1 month ago"
-msgstr ""
+msgstr "1 mês atrás"
 
 #: frontend/src/utils/index.js:183
 msgid "1 week ago"
@@ -45,7 +45,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:191
 msgid "1 year ago"
-msgstr ""
+msgstr "1 ano atrás"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
