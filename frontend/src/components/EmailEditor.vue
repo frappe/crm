@@ -37,11 +37,12 @@
         <!-- EXISTING TO FIELD -->
         <div class="sm:mx-10 mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
-          <MultiSelectEmailInput
+          <EmailMultiSelect
             class="flex-1"
             variant="ghost"
             v-model="toEmails"
             :validate="validateEmail"
+            :fetchContacts="true"
             :error-message="
               (value) => __('{0} is an invalid email address', [value])
             "
@@ -71,11 +72,12 @@
         </div>
         <div v-if="cc" class="sm:mx-10 mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('CC') }}:</span>
-          <MultiSelectEmailInput
+          <EmailMultiSelect
             ref="ccInput"
             class="flex-1"
             variant="ghost"
             v-model="ccEmails"
+            :fetchContacts="true"
             :validate="validateEmail"
             :error-message="
               (value) => __('{0} is an invalid email address', [value])
@@ -84,11 +86,12 @@
         </div>
         <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('BCC') }}:</span>
-          <MultiSelectEmailInput
+          <EmailMultiSelect
             ref="bccInput"
             class="flex-1"
             variant="ghost"
             v-model="bccEmails"
+            :fetchContacts="true"
             :validate="validateEmail"
             :error-message="
               (value) => __('{0} is an invalid email address', [value])
@@ -140,11 +143,12 @@
               v-slot="{ togglePopover }"
               @update:modelValue="() => appendEmoji()"
             >
-              <Button variant="ghost" @click="togglePopover()">
-                <template #icon>
-                  <SmileIcon class="h-4" />
-                </template>
-              </Button>
+              <Button
+                :tooltip="__('Insert Emoji')"
+                :icon="SmileIcon"
+                variant="ghost"
+                @click="togglePopover()"
+              />
             </IconPicker>
             <FileUploader
               :upload-args="{
@@ -155,21 +159,20 @@
               @success="(f) => attachments.push(f)"
             >
               <template #default="{ openFileSelector }">
-                <Button variant="ghost" @click="openFileSelector()">
-                  <template #icon>
-                    <AttachmentIcon class="h-4" />
-                  </template>
-                </Button>
+                <Button
+                  :tooltip="__('Attach a file')"
+                  :icon="AttachmentIcon"
+                  variant="ghost"
+                  @click="openFileSelector()"
+                />
               </template>
             </FileUploader>
             <Button
+              :tooltip="__('Insert Email Template')"
               variant="ghost"
+              :icon="EmailTemplateIcon"
               @click="showEmailTemplateSelectorModal = true"
-            >
-              <template #icon>
-                <EmailTemplateIcon class="h-4" />
-              </template>
-            </Button>
+            />
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
             <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />
@@ -196,8 +199,8 @@ import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
-import MultiSelectEmailInput from '@/components/Controls/MultiSelectEmailInput.vue'
 import SingleSelectEmailInput from '@/components/Controls/SingleSelectEmailInput.vue'
+import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { capture } from '@/telemetry'

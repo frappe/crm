@@ -20,12 +20,9 @@
                   v-if="section.showEditButton"
                   variant="ghost"
                   class="w-7 mr-2"
+                  :icon="EditIcon"
                   @click="showSidePanelModal = true"
-                >
-                  <template #icon>
-                    <EditIcon />
-                  </template>
-                </Button>
+                />
               </slot>
             </template>
             <slot v-bind="{ section }">
@@ -83,11 +80,12 @@
                           </Tooltip>
                         </div>
                         <div v-else-if="field.fieldtype === 'Dropdown'">
-                          <NestedPopover>
-                            <template #target="{ open }">
+                          <Popover>
+                            <template #target="{ isOpen, togglePopover }">
                               <Button
                                 :label="doc[field.fieldname]"
-                                class="dropdown-button flex w-full items-center justify-between rounded border border-gray-100 bg-surface-gray-2 px-2 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+                                class="dropdown-button flex items-center justify-between bg-surface-white !px-2.5 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:bg-surface-white focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0"
+                                @click="togglePopover"
                               >
                                 <div
                                   v-if="doc[field.fieldname]"
@@ -103,7 +101,9 @@
                                 </div>
                                 <template #suffix>
                                   <FeatherIcon
-                                    :name="open ? 'chevron-up' : 'chevron-down'"
+                                    :name="
+                                      isOpen ? 'chevron-up' : 'chevron-down'
+                                    "
                                     class="h-4 text-ink-gray-5"
                                   />
                                 </template>
@@ -135,16 +135,13 @@
                                     variant="ghost"
                                     class="w-full !justify-start"
                                     :label="__('Create New')"
+                                    iconLeft="plus"
                                     @click="field.create()"
-                                  >
-                                    <template #prefix>
-                                      <FeatherIcon name="plus" class="h-4" />
-                                    </template>
-                                  </Button>
+                                  />
                                 </div>
                               </div>
                             </template>
-                          </NestedPopover>
+                          </Popover>
                         </div>
                         <FormControl
                           v-else-if="field.fieldtype == 'Check'"
@@ -233,18 +230,25 @@
                           :onCreate="field.create"
                         />
                         <div
+                          v-else-if="field.fieldtype === 'Time'"
+                          class="form-control"
+                        >
+                          <TimePicker
+                            :value="doc[field.fieldname]"
+                            :format="getFormat('', '', false, true, false)"
+                            :placeholder="field.placeholder"
+                            @change="(v) => fieldChange(v, field)"
+                          />
+                        </div>
+                        <div
                           v-else-if="field.fieldtype === 'Datetime'"
                           class="form-control"
                         >
                           <DateTimePicker
-                            icon-left=""
                             :value="doc[field.fieldname]"
-                            :formatter="
-                              (date) => getFormat(date, '', true, true)
-                            "
+                            :format="getFormat('', '', true, true, false)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -253,12 +257,10 @@
                           class="form-control"
                         >
                           <DatePicker
-                            icon-left=""
                             :value="doc[field.fieldname]"
-                            :formatter="(date) => getFormat(date, '', true)"
+                            :format="getFormat('', '', true, false, false)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -369,7 +371,6 @@
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import Section from '@/components/Section.vue'
-import NestedPopover from '@/components/NestedPopover.vue'
 import DropdownItem from '@/components/DropdownItem.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
@@ -382,7 +383,13 @@ import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
-import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
+import {
+  Tooltip,
+  DateTimePicker,
+  DatePicker,
+  TimePicker,
+  Popover,
+} from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 

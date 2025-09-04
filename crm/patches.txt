@@ -15,3 +15,5 @@ crm.patches.v1_0.move_twilio_agent_to_telephony_agent
 crm.patches.v1_0.create_default_scripts # 13-06-2025
 crm.patches.v1_0.update_deal_status_probabilities
 crm.patches.v1_0.update_deal_status_type
+crm.patches.v1_0.create_default_lost_reasons
+crm.patches.v1_0.add_fields_in_assignment_rule

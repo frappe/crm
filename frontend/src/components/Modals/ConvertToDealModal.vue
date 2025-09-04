@@ -1,17 +1,5 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      size: 'xl',
-      actions: [
-        {
-          label: __('Convert'),
-          variant: 'solid',
-          onClick: convertToDeal,
-        },
-      ],
-    }"
-  >
+  <Dialog v-model="show" :options="{ size: 'xl' }">
     <template #body-header>
       <div class="mb-6 flex items-center justify-between">
         <div>
@@ -23,12 +11,10 @@
           <Button
             v-if="isManager() && !isMobileView"
             variant="ghost"
+            :tooltip="__('Edit deal\'s mandatory fields layout')"
+            :icon="EditIcon"
             @click="openQuickEntryModal"
-          >
-            <template #icon>
-              <EditIcon class="h-4 w-4" />
-            </template>
-          </Button>
+          />
           <Button icon="x" variant="ghost" @click="show = false" />
         </div>
       </div>
@@ -91,6 +77,11 @@
         doctype="CRM Deal"
       />
       <ErrorMessage class="mt-4" :message="error" />
+    </template>
+    <template #actions>
+      <div class="flex justify-end">
+        <Button :label="__('Convert')" variant="solid" @click="convertToDeal" />
+      </div>
     </template>
   </Dialog>
 </template>

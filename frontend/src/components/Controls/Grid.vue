@@ -52,16 +52,14 @@
             >
           </div>
         </div>
-        <div class="w-12">
+        <div class="flex items-center justify-center w-12">
           <Button
-            class="flex w-full items-center justify-center rounded !bg-surface-gray-2 border-0"
+            :tooltip="__('Edit grid fields')"
+            class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
+            icon="settings"
             @click="showGridFieldsEditorModal = true"
-          >
-            <template #icon>
-              <FeatherIcon name="settings" class="size-4 text-ink-gray-7" />
-            </template>
-          </Button>
+          />
         </div>
       </div>
       <!-- Rows -->
@@ -72,6 +70,7 @@
           :delay="isTouchScreenDevice() ? 200 : 0"
           group="rows"
           item-key="name"
+          @end="reorder"
         >
           <template #item="{ element: row, index }">
             <div
@@ -179,21 +178,27 @@
                       @change="(e) => fieldChange(e.target.checked, field, row)"
                     />
                   </div>
+                  <TimePicker
+                    v-else-if="field.fieldtype === 'Time'"
+                    :value="row[field.fieldname]"
+                    variant="outline"
+                    :format="getFormat('', '', false, true, false)"
+                    input-class="border-none text-sm text-ink-gray-8"
+                    @change="(v) => fieldChange(v, field, row)"
+                  />
                   <DatePicker
                     v-else-if="field.fieldtype === 'Date'"
                     :value="row[field.fieldname]"
-                    icon-left=""
                     variant="outline"
-                    :formatter="(date) => getFormat(date, '', true)"
+                    :format="getFormat('', '', true, false, false)"
                     input-class="border-none text-sm text-ink-gray-8"
                     @change="(v) => fieldChange(v, field, row)"
                   />
                   <DateTimePicker
                     v-else-if="field.fieldtype === 'Datetime'"
                     :value="row[field.fieldname]"
-                    icon-left=""
                     variant="outline"
-                    :formatter="(date) => getFormat(date, '', true, true)"
+                    :format="getFormat('', '', true, true, false)"
                     input-class="border-none text-sm text-ink-gray-8"
                     @change="(v) => fieldChange(v, field, row)"
                   />
@@ -277,16 +282,14 @@
                   />
                 </div>
               </div>
-              <div class="edit-row w-12">
+              <div class="edit-row flex items-center justify-center w-12">
                 <Button
-                  class="flex w-full items-center justify-center rounded border-0"
+                  :tooltip="__('Edit row')"
+                  class="rounded border-0 !text-ink-gray-7"
                   variant="outline"
+                  :icon="EditIcon"
                   @click="showRowList[index] = true"
-                >
-                  <template #icon>
-                    <EditIcon class="text-ink-gray-7" />
-                  </template>
-                </Button>
+                />
               </div>
               <GridRowModal
                 v-if="showRowList[index]"
@@ -350,9 +353,9 @@ import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import { createDocument } from '@/composables/document'
 import {
-  FeatherIcon,
   FormControl,
   Checkbox,
+  TimePicker,
   DateTimePicker,
   DatePicker,
   Tooltip,
@@ -519,6 +522,13 @@ const deleteRows = () => {
   showRowList.value.pop()
   selectedRows.clear()
 }
+
+const reorder = () => {
+  rows.value.forEach((row, index) => {
+    row.idx = index + 1
+  })
+}
+
 
 function fieldChange(value, field, row) {
   triggerOnChange(field.fieldname, value, row)

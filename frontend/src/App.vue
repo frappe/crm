@@ -1,6 +1,6 @@
 <template>
   <FrappeUIProvider>
-    <Layout v-if="session().isLoggedIn">
+    <Layout class="isolate" v-if="session().isLoggedIn">
       <router-view :key="$route.fullPath"/>
     </Layout>
     <Dialogs />
@@ -10,9 +10,8 @@
 <script setup>
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore as session } from '@/stores/session'
-import { setTheme } from '@/stores/theme'
 import { FrappeUIProvider, setConfig } from 'frappe-ui'
-import { computed, defineAsyncComponent, onMounted } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 
 const MobileLayout = defineAsyncComponent(
   () => import('./components/Layouts/MobileLayout.vue'),
@@ -27,8 +26,6 @@ const Layout = computed(() => {
     return DesktopLayout
   }
 })
-
-onMounted(() => setTheme())
 
 setConfig('systemTimezone', window.timezone?.system || null)
 setConfig('localTimezone', window.timezone?.user || null)

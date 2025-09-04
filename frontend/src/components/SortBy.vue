@@ -17,13 +17,15 @@
       </Button>
     </template>
   </Autocomplete>
-  <NestedPopover v-else>
-    <template #target="{ open }">
-      <Button v-if="sortValues.size > 1" :label="__('Sort')">
-        <template v-if="hideLabel">
-          <SortIcon class="h-4" />
-        </template>
-        <template v-if="!hideLabel" #prefix><SortIcon class="h-4" /></template>
+  <Popover placement="bottom-end" v-else>
+    <template #target="{ isOpen, togglePopover }">
+      <Button
+        v-if="sortValues.size > 1"
+        :label="__('Sort')"
+        :icon="hideLabel && SortIcon"
+        :iconLeft="!hideLabel && SortIcon"
+        @click="togglePopover"
+      >
         <template v-if="sortValues?.size" #suffix>
           <div
             class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
@@ -36,6 +38,11 @@
         <Button
           v-if="sortValues.size"
           class="rounded-r-none border-r"
+          :icon="
+            Array.from(sortValues)[0].direction == 'asc'
+              ? AscendingIcon
+              : DesendingIcon
+          "
           @click.stop="
             () => {
               Array.from(sortValues)[0].direction =
@@ -43,28 +50,17 @@
               apply()
             }
           "
-        >
-          <AscendingIcon
-            v-if="Array.from(sortValues)[0].direction == 'asc'"
-            class="h-4"
-          />
-          <DesendingIcon v-else class="h-4" />
-        </Button>
+        />
         <Button
           :label="getSortLabel()"
-          class="shrink-0"
+          class="shrink-0 [&_svg]:text-ink-gray-5"
+          :iconLeft="!hideLabel && !sortValues?.size && SortIcon"
+          :iconRight="
+            sortValues?.size && (isOpen ? 'chevron-up' : 'chevron-down')
+          "
           :class="sortValues.size ? 'rounded-l-none' : ''"
-        >
-          <template v-if="!hideLabel && !sortValues?.size" #prefix>
-            <SortIcon class="h-4" />
-          </template>
-          <template v-if="sortValues?.size" #suffix>
-            <FeatherIcon
-              :name="open ? 'chevron-up' : 'chevron-down'"
-              class="h-4 text-ink-gray-5"
-            />
-          </template>
-        </Button>
+          @click.stop="togglePopover"
+        />
       </div>
     </template>
     <template #body="{ close }">
@@ -85,42 +81,42 @@
               <div class="handle flex h-7 w-7 items-center justify-center">
                 <DragIcon class="h-4 w-4 cursor-grab text-ink-gray-5" />
               </div>
-              <div class="flex flex-1 [&>_div]:w-full">
+              <div class="flex flex-1">
                 <Button
                   size="md"
                   class="rounded-r-none border-r"
+                  :icon="
+                    sort.direction == 'asc' ? AscendingIcon : DesendingIcon
+                  "
                   @click="
                     () => {
                       sort.direction = sort.direction == 'asc' ? 'desc' : 'asc'
                       apply()
                     }
                   "
-                >
-                  <AscendingIcon v-if="sort.direction == 'asc'" class="h-4" />
-                  <DesendingIcon v-else class="h-4" />
-                </Button>
+                />
                 <Autocomplete
+                  class="[&>_div]:w-full"
                   :value="sort.fieldname"
                   :options="sortOptions.data"
                   @change="(e) => updateSort(e, i)"
                   :placeholder="__('First Name')"
                 >
                   <template
-                    #target="{ togglePopover, selectedValue, displayValue }"
+                    #target="{
+                      open,
+                      togglePopover,
+                      selectedValue,
+                      displayValue,
+                    }"
                   >
                     <Button
                       class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
                       size="md"
+                      :label="displayValue(selectedValue)"
+                      :iconRight="open ? 'chevron-down' : 'chevron-up'"
                       @click="togglePopover()"
-                    >
-                      {{ displayValue(selectedValue) }}
-                      <template #suffix>
-                        <FeatherIcon
-                          name="chevron-down"
-                          class="h-4 text-ink-gray-5"
-                        />
-                      </template>
-                    </Button>
+                    />
                   </template>
                 </Autocomplete>
               </div>
@@ -143,14 +139,11 @@
               <template #target="{ togglePopover }">
                 <Button
                   class="!text-ink-gray-5"
-                  variant="ghost"
-                  @click="togglePopover()"
                   :label="__('Add Sort')"
-                >
-                  <template #prefix>
-                    <FeatherIcon name="plus" class="h-4" />
-                  </template>
-                </Button>
+                  variant="ghost"
+                  iconLeft="plus"
+                  @click="togglePopover()"
+                />
               </template>
             </Autocomplete>
             <Button
@@ -164,18 +157,17 @@
         </div>
       </div>
     </template>
-  </NestedPopover>
+  </Popover>
 </template>
 
 <script setup>
 import AscendingIcon from '@/components/Icons/AscendingIcon.vue'
 import DesendingIcon from '@/components/Icons/DesendingIcon.vue'
-import NestedPopover from '@/components/NestedPopover.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
-import { createResource } from 'frappe-ui'
+import { createResource, Popover } from 'frappe-ui'
 import { computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({

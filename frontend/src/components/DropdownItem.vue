@@ -19,53 +19,36 @@
           v-if="editMode"
           variant="ghost"
           :label="__('Save')"
-          size="sm"
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
           @click="saveOption"
         />
-        <Tooltip text="Set As Primary" v-if="!isNew && !option.selected">
-          <div>
-            <Button
-              variant="ghost"
-              size="sm"
-              class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
-              @click="option.onClick"
-            >
-              <template #icon>
-                <SuccessIcon />
-              </template>
-            </Button>
-          </div>
-        </Tooltip>
-        <Tooltip v-if="!editMode" text="Edit">
-          <div>
-            <Button
-              variant="ghost"
-              size="sm"
-              class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
-              @click="toggleEditMode"
-            >
-              <template #icon>
-                <EditIcon />
-              </template>
-            </Button>
-          </div>
-        </Tooltip>
-        <Tooltip text="Delete">
-          <div>
-            <Button
-              variant="ghost"
-              icon="x"
-              size="sm"
-              class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
-              @click="() => option.onDelete(option, isNew)"
-            />
-          </div>
-        </Tooltip>
+        <Button
+          v-if="!isNew && !option.selected"
+          :tooltip="__('Set As Primary')"
+          variant="ghost"
+          :icon="SuccessIcon"
+          class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
+          @click="option.onClick"
+        />
+        <Button
+          v-if="!editMode"
+          :tooltip="__('Edit')"
+          variant="ghost"
+          :icon="EditIcon"
+          class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
+          @click="toggleEditMode"
+        />
+        <Button
+          :tooltip="__('Delete')"
+          variant="ghost"
+          icon="x"
+          class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
+          @click="() => option.onDelete(option, isNew)"
+        />
       </div>
     </div>
     <div v-if="option.selected">
-      <FeatherIcon name="check" class="text-ink-gray-5 h-4 w-6" size="sm" />
+      <FeatherIcon name="check" class="text-ink-gray-5 h-4 w-6" />
     </div>
   </div>
 </template>

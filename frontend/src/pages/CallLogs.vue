@@ -8,9 +8,12 @@
         v-if="callLogsListView?.customListActions"
         :actions="callLogsListView.customListActions"
       />
-      <Button variant="solid" :label="__('Create')" @click="createCallLog">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        iconLeft="plus"
+        @click="createCallLog"
+      />
     </template>
   </LayoutHeader>
   <ViewControls

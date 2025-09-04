@@ -3,8 +3,8 @@
     class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
   >
-    <div>
-      <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
+    <div class="p-2">
+      <UserDropdown :isCollapsed="isSidebarCollapsed" />
     </div>
     <div class="flex-1 overflow-y-auto">
       <div class="mb-3 flex flex-col">
@@ -157,6 +157,7 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
@@ -197,51 +198,55 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
 
-const allViews = computed(() => {
-  const links = [
-    {
-      label: 'Dashboard',
-      icon: LucideLayoutDashboard,
-      to: 'Dashboard',
-      condition: () => isManager(),
-    },
-    {
-      label: 'Leads',
-      icon: LeadsIcon,
-      to: 'Leads',
-    },
-    {
-      label: 'Deals',
-      icon: DealsIcon,
-      to: 'Deals',
-    },
-    {
-      label: 'Contacts',
-      icon: ContactsIcon,
-      to: 'Contacts',
-    },
-    {
-      label: 'Organizations',
-      icon: OrganizationsIcon,
-      to: 'Organizations',
-    },
-    {
-      label: 'Notes',
-      icon: NoteIcon,
-      to: 'Notes',
-    },
-    {
-      label: 'Tasks',
-      icon: TaskIcon,
-      to: 'Tasks',
-    },
-    {
-      label: 'Call Logs',
-      icon: PhoneIcon,
-      to: 'Call Logs',
-    },
-  ]
+const links = [
+  {
+    label: 'Dashboard',
+    icon: LucideLayoutDashboard,
+    to: 'Dashboard',
+  },
+  {
+    label: 'Leads',
+    icon: LeadsIcon,
+    to: 'Leads',
+  },
+  {
+    label: 'Deals',
+    icon: DealsIcon,
+    to: 'Deals',
+  },
+  {
+    label: 'Contacts',
+    icon: ContactsIcon,
+    to: 'Contacts',
+  },
+  {
+    label: 'Organizations',
+    icon: OrganizationsIcon,
+    to: 'Organizations',
+  },
+  {
+    label: 'Notes',
+    icon: NoteIcon,
+    to: 'Notes',
+  },
+  {
+    label: 'Tasks',
+    icon: TaskIcon,
+    to: 'Tasks',
+  },
+  {
+    label: 'Calendar',
+    icon: CalendarIcon,
+    to: 'Calendar',
+  },
+  {
+    label: 'Call Logs',
+    icon: PhoneIcon,
+    to: 'Call Logs',
+  },
+]
 
+const allViews = computed(() => {
   let _views = [
     {
       name: 'All Views',

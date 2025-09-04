@@ -89,12 +89,9 @@
         v-if="data[field.fieldname] && field.edit"
         class="shrink-0"
         :label="__('Edit')"
+        :iconLeft="EditIcon"
         @click="field.edit(data[field.fieldname])"
-      >
-        <template #prefix>
-          <EditIcon class="h-4 w-4" />
-        </template>
-      </Button>
+      />
     </div>
 
     <TableMultiselectInput
@@ -133,10 +130,18 @@
         </Tooltip>
       </template>
     </Link>
+    <TimePicker
+      v-else-if="field.fieldtype === 'Time'"
+      :value="data[field.fieldname]"
+      :format="getFormat('', '', false, true, false)"
+      :placeholder="getPlaceholder(field)"
+      input-class="border-none"
+      @change="(v) => fieldChange(v, field)"
+    />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
       :value="data[field.fieldname]"
-      :formatter="(date) => getFormat(date, '', true, true)"
+      :format="getFormat('', '', true, true, false)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
@@ -144,7 +149,7 @@
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
       :value="data[field.fieldname]"
-      :formatter="(date) => getFormat(date, '', true)"
+      :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
@@ -228,7 +233,7 @@ import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
-import { Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
+import { Tooltip, DatePicker, DateTimePicker, TimePicker } from 'frappe-ui'
 import { computed, provide, inject } from 'vue'
 
 const props = defineProps({

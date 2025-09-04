@@ -3,6 +3,7 @@
     v-model="showSettings"
     :options="{ size: '5xl' }"
     @close="activeSettingsPage = ''"
+    :disableOutsideClickToClose="disableSettingModalOutsideClick"
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
@@ -43,15 +44,18 @@
 <script setup>
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
+import HelpdeskIcon from '@/components/Icons/HelpdeskIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
+import SettingsIcon2 from '@/components/Icons/SettingsIcon2.vue'
 import Users from '@/components/Settings/Users.vue'
 import GeneralSettingsPage from '@/components/Settings/General/GeneralSettingsPage.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
+import HelpdeskSettings from '@/components/Settings/HelpdeskSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
@@ -61,9 +65,11 @@ import {
   isWhatsappInstalled,
   showSettings,
   activeSettingsPage,
+  disableSettingModalOutsideClick,
 } from '@/composables/settings'
 import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
+import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 
 const { isManager, isTelephonyAgent, getUser } = usersStore()
 
@@ -114,6 +120,11 @@ const tabs = computed(() => {
           icon: EmailTemplateIcon,
           component: markRaw(EmailTemplatePage),
         },
+        {
+          label: __('Assignment rules'),
+          icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
+          component: markRaw(AssignmentRulePage),
+        },
       ],
     },
     {
@@ -135,6 +146,12 @@ const tabs = computed(() => {
           label: __('ERPNext'),
           icon: ERPNextIcon,
           component: markRaw(ERPNextSettings),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Helpdesk'),
+          icon: HelpdeskIcon,
+          component: markRaw(HelpdeskSettings),
           condition: () => isManager(),
         },
       ],

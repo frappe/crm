@@ -11,10 +11,9 @@
       <Button
         variant="solid"
         :label="__('Create')"
+        iconLeft="plus"
         @click="showContactModal = true"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      />
     </template>
   </LayoutHeader>
   <ViewControls
@@ -57,9 +56,11 @@
     >
       <ContactsIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Contacts')]) }}</span>
-      <Button :label="__('Create')" @click="showContactModal = true">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
-      </Button>
+      <Button
+        :label="__('Create')"
+        iconLeft="plus"
+        @click="showContactModal = true"
+      />
     </div>
   </div>
   <ContactModal
