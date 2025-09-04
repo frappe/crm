@@ -175,6 +175,5 @@ function openAddressModal(_address) {
     doctype: 'Address',
     address: _address,
   }
-  //nextTick(() => (show.value = false))
 }
 </script>
