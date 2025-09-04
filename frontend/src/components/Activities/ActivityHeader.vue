@@ -26,6 +26,16 @@
       :options="callActions"
     />
     <Button
+      v-else-if="title == 'Events'"
+      variant="solid"
+      @click="modalRef.showEvent()"
+    >
+      <template #prefix>
+        <EventIcon class="h-4 w-4" />
+      </template>
+      <span>{{ __('Schedule an event') }}</span>
+    </Button>
+    <Button
       v-else-if="title == 'Notes'"
       variant="solid"
       :label="__('New Note')"
@@ -75,6 +85,7 @@
 import MultiActionButton from '@/components/MultiActionButton.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -111,6 +122,11 @@ const defaultActions = computed(() => {
       icon: h(CommentIcon, { class: 'h-4 w-4' }),
       label: __('New Comment'),
       onClick: () => (props.emailBox.showComment = true),
+    },
+    {
+      icon: h(EventIcon, { class: 'h-4 w-4' }),
+      label: __('Schedule an event'),
+      onClick: () => props.modalRef.showEvent(),
     },
     {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),

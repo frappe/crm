@@ -21,9 +21,11 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <FormControl
+          <div class="mb-1.5 text-xs text-ink-gray-5">
+            {{ __('Title') }}
+          </div>
+          <TextInput
             ref="title"
-            :label="__('Title')"
             v-model="_task.title"
             :placeholder="__('Call with John Doe')"
             required
@@ -225,8 +227,8 @@ async function updateTask() {
 
 function render() {
   editMode.value = false
+  setTimeout(() => title.value?.el?.focus?.(), 100)
   nextTick(() => {
-    title.value?.el?.focus?.()
     _task.value = { ...props.task }
     if (_task.value.title) {
       editMode.value = true

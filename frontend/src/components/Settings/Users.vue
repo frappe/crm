@@ -170,7 +170,15 @@ import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import { TemplateOption, DropdownOption } from '@/utils'
-import { Avatar, TextInput, toast, call, FeatherIcon, Tooltip } from 'frappe-ui'
+import {
+  Dropdown,
+  Avatar,
+  TextInput,
+  toast,
+  call,
+  FeatherIcon,
+  Tooltip,
+} from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 
 const { users, isAdmin, isManager } = usersStore()

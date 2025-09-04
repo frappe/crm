@@ -31,7 +31,7 @@
         <div
           class="p-2 group bg-surface-gray-2 hover:bg-surface-gray-3 rounded"
         >
-          <MultiSelectUserInput
+          <EmailMultiSelect
             class="flex-1"
             inputClass="!bg-surface-gray-2 hover:!bg-surface-gray-3 group-hover:!bg-surface-gray-3"
             :placeholder="__('john@doe.com')"
@@ -40,7 +40,7 @@
             :error-message="
               (value) => __('{0} is an invalid email address', [value])
             "
-            :fetchUsers="false"
+            :emptyPlaceholder="__('Type an email address to invite')"
           />
         </div>
         <div
@@ -100,7 +100,7 @@
   </div>
 </template>
 <script setup>
-import MultiSelectUserInput from '@/components/Controls/MultiSelectUserInput.vue'
+import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import { validateEmail, convertArrayToString } from '@/utils'
 import { usersStore } from '@/stores/users'
 import {
