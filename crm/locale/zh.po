@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-26 13:50\n"
+"POT-Creation-Date: 2025-08-31 09:35+0000\n"
+"PO-Revision-Date: 2025-09-03 16:19\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Crowdin-File-ID: 97\n"
 "Language: zh_CN\n"
 
-#: frontend/src/components/ViewControls.vue:1217
+#: frontend/src/components/ViewControls.vue:1172
 msgid " (New)"
 msgstr "（新建）"
 
@@ -224,7 +224,7 @@ msgstr ""
 
 #: frontend/src/components/CustomActions.vue:69
 #: frontend/src/components/ViewControls.vue:683
-#: frontend/src/components/ViewControls.vue:1109
+#: frontend/src/components/ViewControls.vue:1064
 msgid "Actions"
 msgstr "操作"
 
@@ -1577,8 +1577,8 @@ msgstr "默认状态、自定义字段及布局已成功恢复。"
 #: frontend/src/components/ListBulkActions.vue:177
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:235
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:238
-#: frontend/src/components/ViewControls.vue:1161
-#: frontend/src/components/ViewControls.vue:1172
+#: frontend/src/components/ViewControls.vue:1116
+#: frontend/src/components/ViewControls.vue:1127
 #: frontend/src/pages/Contact.vue:100 frontend/src/pages/Deal.vue:111
 #: frontend/src/pages/Lead.vue:157 frontend/src/pages/MobileContact.vue:79
 #: frontend/src/pages/MobileContact.vue:263
@@ -1598,8 +1598,8 @@ msgstr "删除并恢复"
 msgid "Delete Task"
 msgstr "删除任务"
 
-#: frontend/src/components/ViewControls.vue:1157
-#: frontend/src/components/ViewControls.vue:1165
+#: frontend/src/components/ViewControls.vue:1112
+#: frontend/src/components/ViewControls.vue:1120
 msgid "Delete View"
 msgstr "删除视图"
 
@@ -1768,7 +1768,7 @@ msgstr "截止日期"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:225
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:228
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:19
-#: frontend/src/components/ViewControls.vue:1113
+#: frontend/src/components/ViewControls.vue:1068
 msgid "Duplicate"
 msgstr "复制"
 
@@ -1830,7 +1830,7 @@ msgstr ""
 #: frontend/src/components/FieldLayoutEditor.vue:313
 #: frontend/src/components/FieldLayoutEditor.vue:339
 #: frontend/src/components/ListBulkActions.vue:170
-#: frontend/src/components/ViewControls.vue:1131
+#: frontend/src/components/ViewControls.vue:1086
 #: frontend/src/pages/Dashboard.vue:16
 msgid "Edit"
 msgstr "编辑"
@@ -3114,11 +3114,11 @@ msgstr "低"
 msgid "Make Call"
 msgstr "发起呼叫"
 
-#: frontend/src/components/ViewControls.vue:1146
+#: frontend/src/components/ViewControls.vue:1101
 msgid "Make Private"
 msgstr "设为私有"
 
-#: frontend/src/components/ViewControls.vue:1146
+#: frontend/src/components/ViewControls.vue:1101
 msgid "Make Public"
 msgstr "设为公开"
 
@@ -3878,7 +3878,7 @@ msgstr "电话"
 msgid "Phone Numbers"
 msgstr "电话号码"
 
-#: frontend/src/components/ViewControls.vue:1138
+#: frontend/src/components/ViewControls.vue:1093
 msgid "Pin View"
 msgstr "固定视图"
 
@@ -4569,7 +4569,7 @@ msgstr "设置组织"
 msgid "Set as Primary Contact"
 msgstr "设为主要联系人"
 
-#: frontend/src/components/ViewControls.vue:1123
+#: frontend/src/components/ViewControls.vue:1078
 msgid "Set as default"
 msgstr "设为默认"
 
@@ -5202,13 +5202,9 @@ msgstr ""
 msgid "Unlink {0} item(s)"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1138
+#: frontend/src/components/ViewControls.vue:1093
 msgid "Unpin View"
 msgstr "取消固定视图"
-
-#: frontend/src/components/ViewControls.vue:975
-msgid "Unsaved Changes"
-msgstr "未保存的更改"
 
 #: frontend/src/components/FieldLayoutEditor.vue:26
 #: frontend/src/components/Modals/AddressModal.vue:8
@@ -5232,7 +5228,6 @@ msgstr "未命名"
 #: frontend/src/components/Settings/SettingsPage.vue:20
 #: frontend/src/components/Settings/TelephonySettings.vue:23
 #: frontend/src/components/Telephony/ExotelCallUI.vue:210
-#: frontend/src/components/ViewControls.vue:980
 msgid "Update"
 msgstr "更新"
 
@@ -5455,10 +5450,6 @@ msgstr "您的电话客服未设置手机号码"
 #: frontend/src/data/document.js:32
 msgid "You do not have permission to access this document"
 msgstr ""
-
-#: frontend/src/components/ViewControls.vue:976
-msgid "You have unsaved changes. Do you want to save them?"
-msgstr "存在未保存更改，是否保存？"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:24
 msgid "You need to be in developer mode to edit a Standard Form Script"
