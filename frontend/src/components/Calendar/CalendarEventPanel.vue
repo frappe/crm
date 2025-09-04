@@ -43,7 +43,10 @@
 
     <!-- Event Details -->
     <div v-if="mode == 'details'" class="flex flex-col overflow-y-auto">
-      <div class="flex items-start gap-2 px-4.5 py-3 pb-0" @dblclick="editDetails">
+      <div
+        class="flex items-start gap-2 px-4.5 py-3 pb-0"
+        @dblclick="editDetails"
+      >
         <div
           class="mx-0.5 my-[5px] size-2.5 rounded-full cursor-pointer"
           :style="{
@@ -289,6 +292,9 @@
             class="w-[220px]"
             v-model="_event.referenceDocname"
             :doctype="_event.referenceDoctype"
+            :filters="
+              _event.referenceDoctype === 'CRM Lead' ? { converted: 0 } : {}
+            "
             variant="outline"
             @update:model-value="sync"
           />
