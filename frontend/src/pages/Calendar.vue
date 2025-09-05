@@ -138,7 +138,7 @@ import {
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, provide } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
@@ -181,6 +181,8 @@ const events = createListResource({
       referenceDocname: ev.reference_docname,
     })),
 })
+
+provide('events', events)
 
 const eventPanel = ref(null)
 const showEventPanel = ref(false)

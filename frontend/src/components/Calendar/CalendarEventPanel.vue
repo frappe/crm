@@ -335,6 +335,9 @@
           variant="solid"
           class="w-full"
           :disabled="!dirty"
+          :loading="
+            mode === 'edit' ? events.setValue.loading : events.insert.loading
+          "
           @click="saveEvent"
         >
           {{
@@ -382,7 +385,7 @@ import {
   createDocumentResource,
 } from 'frappe-ui'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
-import { ref, computed, watch, h } from 'vue'
+import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -407,6 +410,8 @@ const { $dialog } = globalStore()
 
 const show = defineModel()
 const event = defineModel('event')
+
+const events = inject('events')
 
 const _event = ref({})
 
