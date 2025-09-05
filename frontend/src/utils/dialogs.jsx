@@ -3,6 +3,10 @@ import { reactive, ref } from 'vue'
 
 let dialogs = ref([])
 
+export function isDialogOpen() {
+  return dialogs.value.some((d) => d.show)
+}
+
 export let Dialogs = {
   name: 'Dialogs',
   render() {
@@ -18,9 +22,7 @@ export let Dialogs = {
               dialog.message && (
                 <p class="text-p-base text-ink-gray-7">{dialog.message}</p>
               ),
-              dialog.html && (
-                <div v-html={dialog.html} />
-              ),
+              dialog.html && <div v-html={dialog.html} />,
               <ErrorMessage class="mt-2" message={dialog.error} />,
             ]
           },

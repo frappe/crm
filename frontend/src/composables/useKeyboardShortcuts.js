@@ -1,4 +1,5 @@
 import { onMounted, onBeforeUnmount, unref } from 'vue'
+import { isDialogOpen } from '@/utils/dialogs'
 
 /**
  * Generic global keyboard shortcuts composable.
@@ -20,6 +21,7 @@ export function useKeyboardShortcuts(options) {
     shortcuts = [],
     ignoreTyping = true,
     target = typeof window !== 'undefined' ? window : null,
+    skipWhenDialogOpen = true,
   } = options || {}
 
   function isTypingEvent(e) {
@@ -49,6 +51,7 @@ export function useKeyboardShortcuts(options) {
     const isActive = typeof active === 'function' ? active() : unref(active)
     if (!isActive) return
     if (isTypingEvent(e)) return
+    if (skipWhenDialogOpen && isDialogOpen()) return
 
     for (const def of shortcuts) {
       if (!def) continue
