@@ -1,78 +1,70 @@
 <template>
   <div>
-    <div
-      class="flex items-center justify-between text-ink-gray-7 [&>div]:w-full"
-    >
-      <Popover v-model:show="showOptions">
-        <template #target="{ togglePopover }">
-          <TextInput
+    <!-- Combobox Input -->
+    <div class="flex items-center w-full text-ink-gray-8 [&>div]:w-full">
+      <ComboboxRoot
+        :model-value="tempSelection"
+        :open="showOptions"
+        @update:open="(o) => (showOptions = o)"
+        @update:modelValue="onSelect"
+        :ignore-filter="true"
+      >
+        <ComboboxAnchor
+          class="flex w-full text-base items-center gap-1 rounded border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 px-2 py-1"
+          :class="[size === 'sm' ? 'h-7' : 'h-8 ', inputClass]"
+          @click="showOptions = true"
+        >
+          <ComboboxInput
             ref="search"
-            type="text"
-            :size="size"
-            class="w-full"
-            variant="outline"
-            v-model="query"
-            :debounce="300"
+            autocomplete="off"
+            class="bg-transparent p-0 outline-none border-0 text-base text-ink-gray-8 h-full placeholder:text-ink-gray-4 w-full focus:outline-none focus:ring-0 focus:border-0"
             :placeholder="placeholder"
-            @click="togglePopover"
-            @keydown="onKeydown"
+            :value="query"
+            @input="onInput"
+            @keydown.enter.prevent="handleEnter"
+            @keydown.escape.stop="showOptions = false"
+          />
+          <FeatherIcon
+            name="chevron-down"
+            class="h-4 text-ink-gray-5 cursor-pointer"
+            @click.stop="showOptions = !showOptions"
+          />
+        </ComboboxAnchor>
+        <ComboboxPortal>
+          <ComboboxContent
+            class="z-10 mt-1 min-w-48 w-full max-w-md bg-surface-modal overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
+            position="popper"
+            :align="'start'"
+            @openAutoFocus.prevent
+            @closeAutoFocus.prevent
           >
-            <template #suffix>
-              <FeatherIcon
-                name="chevron-down"
-                class="h-4 text-ink-gray-5"
-                @click.stop="togglePopover()"
-              />
-            </template>
-          </TextInput>
-        </template>
-        <template #body="{ isOpen }">
-          <div v-show="isOpen">
-            <div
-              class="mt-1 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
-            >
-              <ul
-                v-if="options.length"
-                role="listbox"
-                class="p-1.5 max-h-[12rem] overflow-y-auto"
-              >
-                <li
-                  v-for="(option, idx) in options"
-                  :key="option.value"
-                  role="option"
-                  :aria-selected="idx === highlightIndex"
-                  @click="selectOption(option)"
-                  @mouseenter="highlightIndex = idx"
-                  class="flex cursor-pointer items-center rounded px-2 py-1 text-base"
-                  :class="{ 'bg-surface-gray-3': idx === highlightIndex }"
-                >
-                  <UserAvatar class="mr-2" :user="option.value" size="lg" />
-                  <div class="flex flex-col gap-1 p-1 text-ink-gray-8">
-                    <div class="text-base font-medium">
-                      {{ option.label }}
-                    </div>
-                    <div class="text-sm text-ink-gray-5">
-                      {{ option.value }}
-                    </div>
-                  </div>
-                </li>
-              </ul>
-              <div
-                v-else
+            <ComboboxViewport class="max-h-60 overflow-auto p-1.5">
+              <ComboboxEmpty
                 class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
               >
                 <FeatherIcon v-if="fetchContacts" name="search" class="h-4" />
-                {{
-                  fetchContacts
-                    ? __('No results found')
-                    : __('Type an email address to add attendee')
-                }}
-              </div>
-            </div>
-          </div>
-        </template>
-      </Popover>
+                {{ emptyStateText }}
+              </ComboboxEmpty>
+              <ComboboxItem
+                v-for="option in options"
+                :key="option.value"
+                :value="option.value"
+                class="text-base leading-none text-ink-gray-7 rounded flex items-center px-2 py-1 relative select-none data-[highlighted]:outline-none data-[highlighted]:bg-surface-gray-3 cursor-pointer"
+                @mousedown.prevent="onSelect(option.value, option)"
+              >
+                <UserAvatar class="mr-2" :user="option.value" size="lg" />
+                <div class="flex flex-col gap-1 p-1 text-ink-gray-8">
+                  <div class="text-base font-medium">{{ option.label }}</div>
+                  <div class="text-sm text-ink-gray-5">{{ option.value }}</div>
+                </div>
+              </ComboboxItem>
+            </ComboboxViewport>
+          </ComboboxContent>
+        </ComboboxPortal>
+      </ComboboxRoot>
     </div>
+
+    <!-- Selected Attendees -->
     <div
       v-if="values.length"
       class="flex flex-col gap-2 mt-2 max-h-[165px] overflow-y-auto"
@@ -105,8 +97,18 @@
 
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
-import { createResource, TextInput, Popover } from 'frappe-ui'
-import { ref, computed, nextTick, watch } from 'vue'
+import { createResource } from 'frappe-ui'
+import {
+  ComboboxRoot,
+  ComboboxAnchor,
+  ComboboxInput,
+  ComboboxPortal,
+  ComboboxContent,
+  ComboboxViewport,
+  ComboboxItem,
+  ComboboxEmpty,
+} from 'reka-ui'
+import { ref, computed, nextTick } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 
 const props = defineProps({
@@ -154,7 +156,7 @@ const query = ref('')
 const text = ref('')
 const showOptions = ref(false)
 const optionsRef = ref(null)
-const highlightIndex = ref(-1)
+const tempSelection = ref(null)
 
 const metaByEmail = computed(() => {
   const out = {}
@@ -225,6 +227,12 @@ const options = computed(() => {
   return searchedContacts || []
 })
 
+const emptyStateText = computed(() =>
+  props.fetchContacts
+    ? __('No results found')
+    : __('Type an email address to add attendee'),
+)
+
 function reload(val) {
   if (!props.fetchContacts) return
 
@@ -234,32 +242,36 @@ function reload(val) {
   filterOptions.reload()
 }
 
-watch(
-  () => options.value,
-  () => {
-    highlightIndex.value = options.value.length ? 0 : -1
-  },
-)
-
-function selectOption(option) {
-  if (!option) return
-  addValue(option)
-  !error.value && (query.value = '')
-  showOptions.value = false
+function onSelect(val, fullOption = null) {
+  if (!val) return
+  const optionObj = fullOption ||
+    options.value.find((o) => o.value === val) || {
+      name: 'new',
+      label: val,
+      value: val,
+    }
+  addValue(optionObj)
+  if (!error.value) {
+    query.value = ''
+    tempSelection.value = null
+    showOptions.value = false
+    nextTick(() => setFocus())
+  }
 }
 
-function onKeydown(e) {
-  if (e.key === 'Enter') {
-    if (highlightIndex.value >= 0 && options.value[highlightIndex.value]) {
-      selectOption(options.value[highlightIndex.value])
-    } else if (query.value) {
-      // Add entered email directly
-      selectOption({ name: 'new', label: query.value, value: query.value })
-    }
-    e.preventDefault()
-  } else if (e.key === 'Escape') {
-    showOptions.value = false
+function handleEnter() {
+  if (query.value) {
+    onSelect(query.value, {
+      name: 'new',
+      label: query.value,
+      value: query.value,
+    })
   }
+}
+
+function onInput(e) {
+  query.value = e.target.value
+  showOptions.value = true
 }
 
 const addValue = (option) => {
@@ -315,7 +327,7 @@ const removeValue = (email) => {
 }
 
 function setFocus() {
-  search.value.$el.focus()
+  search.value?.focus?.()
 }
 
 defineExpose({ setFocus })
