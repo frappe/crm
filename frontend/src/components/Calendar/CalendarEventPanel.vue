@@ -533,6 +533,8 @@ function updateTime(t, fromTime = false) {
 }
 
 function saveEvent() {
+  if (!dirty.value) return
+
   error.value = null
   if (!_event.value.title) {
     error.value = __('Title is required')
