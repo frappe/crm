@@ -84,8 +84,11 @@ declare module 'vue' {
     DoubleCheckIcon: typeof import('./src/components/Icons/DoubleCheckIcon.vue')['default']
     DragIcon: typeof import('./src/components/Icons/DragIcon.vue')['default']
     DragVerticalIcon: typeof import('./src/components/Icons/DragVerticalIcon.vue')['default']
+<<<<<<< HEAD
     Dropdown: typeof import('./src/components/frappe-ui/Dropdown.vue')['default']
     DropdownItem: typeof import('./src/components/DropdownItem.vue')['default']
+=======
+>>>>>>> 50708ebe (fix: if contact email is updated it is updating previously opened contact)
     DuplicateIcon: typeof import('./src/components/Icons/DuplicateIcon.vue')['default']
     DurationIcon: typeof import('./src/components/Icons/DurationIcon.vue')['default']
     EditEmailTemplate: typeof import('./src/components/Settings/EmailTemplate/EditEmailTemplate.vue')['default']
@@ -201,7 +204,12 @@ declare module 'vue' {
     PlaybackSpeedIcon: typeof import('./src/components/Icons/PlaybackSpeedIcon.vue')['default']
     PlaybackSpeedOption: typeof import('./src/components/Activities/PlaybackSpeedOption.vue')['default']
     PlayIcon: typeof import('./src/components/Icons/PlayIcon.vue')['default']
+<<<<<<< HEAD
     Popover: typeof import('./src/components/frappe-ui/Popover.vue')['default']
+=======
+    PrimaryDropdown: typeof import('./src/components/PrimaryDropdown.vue')['default']
+    PrimaryDropdownItem: typeof import('./src/components/PrimaryDropdownItem.vue')['default']
+>>>>>>> 50708ebe (fix: if contact email is updated it is updating previously opened contact)
     ProfileSettings: typeof import('./src/components/Settings/ProfileSettings.vue')['default']
     QuickEntryModal: typeof import('./src/components/Modals/QuickEntryModal.vue')['default']
     QuickFilterField: typeof import('./src/components/QuickFilterField.vue')['default']

@@ -79,70 +79,14 @@
                             <div>{{ doc[field.fieldname] }}</div>
                           </Tooltip>
                         </div>
-                        <div v-else-if="field.fieldtype === 'Dropdown'">
-                          <Popover>
-                            <template #target="{ isOpen, togglePopover }">
-                              <Button
-                                :label="doc[field.fieldname]"
-                                class="dropdown-button flex items-center justify-between bg-surface-white !px-2.5 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:bg-surface-white focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0"
-                                @click="togglePopover"
-                              >
-                                <div
-                                  v-if="doc[field.fieldname]"
-                                  class="truncate"
-                                >
-                                  {{ doc[field.fieldname] }}
-                                </div>
-                                <div
-                                  v-else
-                                  class="text-base leading-5 text-ink-gray-4 truncate"
-                                >
-                                  {{ field.placeholder }}
-                                </div>
-                                <template #suffix>
-                                  <FeatherIcon
-                                    :name="
-                                      isOpen ? 'chevron-up' : 'chevron-down'
-                                    "
-                                    class="h-4 text-ink-gray-5"
-                                  />
-                                </template>
-                              </Button>
-                            </template>
-                            <template #body>
-                              <div
-                                class="my-2 p-1.5 min-w-40 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
-                              >
-                                <div>
-                                  <DropdownItem
-                                    v-if="field.options?.length"
-                                    v-for="option in field.options"
-                                    :key="option.name"
-                                    :option="option"
-                                  />
-                                  <div v-else>
-                                    <div
-                                      class="p-1.5 pl-3 pr-4 text-base text-ink-gray-4"
-                                    >
-                                      {{
-                                        __('No {0} Available', [field.label])
-                                      }}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="pt-1.5">
-                                  <Button
-                                    variant="ghost"
-                                    class="w-full !justify-start"
-                                    :label="__('Create New')"
-                                    iconLeft="plus"
-                                    @click="field.create()"
-                                  />
-                                </div>
-                              </div>
-                            </template>
-                          </Popover>
-                        </div>
+                        <PrimaryDropdown
+                          v-else-if="field.fieldtype === 'Dropdown'"
+                          :value="doc[field.fieldname]"
+                          :placeholder="field.placeholder"
+                          :options="field.options"
+                          :create="field.create"
+                          :label="field.label"
+                        />
                         <FormControl
                           v-else-if="field.fieldtype == 'Check'"
                           class="form-control"
@@ -366,7 +310,7 @@
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import Section from '@/components/Section.vue'
-import DropdownItem from '@/components/DropdownItem.vue'
+import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
@@ -378,7 +322,11 @@ import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
+<<<<<<< HEAD
 import { Tooltip, DateTimePicker, DatePicker, Popover } from 'frappe-ui'
+=======
+import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
+>>>>>>> 50708ebe (fix: if contact email is updated it is updating previously opened contact)
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 
