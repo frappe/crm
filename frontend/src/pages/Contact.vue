@@ -113,7 +113,7 @@
         class="flex flex-1 flex-col justify-between overflow-hidden"
       >
         <SidePanelLayout
-          :sections="parsedSections"
+          :sections="sections.data"
           doctype="Contact"
           :docname="contact.doc.name"
           @reload="sections.reload"
@@ -293,7 +293,9 @@ const tabs = [
 const deals = createResource({
   url: 'crm.api.contact.get_linked_deals',
   cache: ['deals', props.contactId],
-  params: { contact: props.contactId },
+  params: {
+    contact: props.contactId,
+  },
   auto: true,
 })
 
@@ -308,110 +310,118 @@ const sections = createResource({
   cache: ['sidePanelSections', 'Contact'],
   params: { doctype: 'Contact' },
   auto: true,
+  transform: (data) => computed(() => getParsedSections(data)),
 })
 
-const parsedSections = computed(() => {
-  if (!sections.data) return []
-  return sections.data.map((section) => ({
-    ...section,
-    columns: section.columns.map((column) => ({
-      ...column,
-      fields: column.fields.map((field) => {
+function getParsedSections(_sections) {
+  return _sections.map((section) => {
+    section.columns = section.columns.map((column) => {
+      column.fields = column.fields.map((field) => {
         if (field.fieldname === 'email_id') {
           return {
             ...field,
             read_only: false,
             fieldtype: 'Dropdown',
-            options: (contact.doc?.email_ids || []).map((email) => ({
-              name: email.name,
-              value: email.email_id,
-              selected: email.email_id === contact.doc.email_id,
-              placeholder: 'john@doe.com',
-              onClick: () => setAsPrimary('email', email.email_id),
-              onSave: (option, isNew) =>
-                isNew
-                  ? createNew('email', option.value)
-                  : editOption(
-                      'Contact Email',
-                      option.name,
-                      'email_id',
-                      option.value,
-                    ),
-              onDelete: async (option, isNew) => {
-                contact.doc.email_ids = contact.doc.email_ids.filter(
-                  (e) => e.name !== option.name,
-                )
-                if (!isNew) await deleteOption('Contact Email', option.name)
-              },
-            })),
+            options:
+              contact.doc?.email_ids?.map((email) => {
+                return {
+                  name: email.name,
+                  value: email.email_id,
+                  selected: email.email_id === contact.doc.email_id,
+                  placeholder: 'john@doe.com',
+                  onClick: () => {
+                    setAsPrimary('email', email.email_id)
+                  },
+                  onSave: (option, isNew) => {
+                    if (isNew) {
+                      createNew('email', option.value)
+                    } else {
+                      editOption(
+                        'Contact Email',
+                        option.name,
+                        'email_id',
+                        option.value,
+                      )
+                    }
+                  },
+                  onDelete: async (option, isNew) => {
+                    contact.doc.email_ids = contact.doc.email_ids.filter(
+                      (email) => email.name !== option.name,
+                    )
+                    !isNew && (await deleteOption('Contact Email', option.name))
+                  },
+                }
+              }) || [],
             create: () => {
-              // Add a temporary new option locally (mirrors original behavior)
-              contact.doc.email_ids = [
-                ...(contact.doc.email_ids || []),
-                {
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
-                },
-              ]
+              contact.doc?.email_ids?.push({
+                name: 'new-1',
+                value: '',
+                selected: false,
+                isNew: true,
+              })
             },
           }
-        }
-        if (field.fieldname === 'mobile_no') {
+        } else if (field.fieldname === 'mobile_no') {
           return {
             ...field,
             read_only: false,
             fieldtype: 'Dropdown',
-            options: (contact.doc?.phone_nos || []).map((phone) => ({
-              name: phone.name,
-              value: phone.phone,
-              selected: phone.phone === contact.doc.mobile_no,
-              onClick: () => setAsPrimary('mobile_no', phone.phone),
-              onSave: (option, isNew) =>
-                isNew
-                  ? createNew('phone', option.value)
-                  : editOption(
-                      'Contact Phone',
-                      option.name,
-                      'phone',
-                      option.value,
-                    ),
-              onDelete: async (option, isNew) => {
-                contact.doc.phone_nos = contact.doc.phone_nos.filter(
-                  (p) => p.name !== option.name,
-                )
-                if (!isNew) await deleteOption('Contact Phone', option.name)
-              },
-            })),
+            options:
+              contact.doc?.phone_nos?.map((phone) => {
+                return {
+                  name: phone.name,
+                  value: phone.phone,
+                  selected: phone.phone === contact.doc.mobile_no,
+                  onClick: () => {
+                    setAsPrimary('mobile_no', phone.phone)
+                  },
+                  onSave: (option, isNew) => {
+                    if (isNew) {
+                      createNew('phone', option.value)
+                    } else {
+                      editOption(
+                        'Contact Phone',
+                        option.name,
+                        'phone',
+                        option.value,
+                      )
+                    }
+                  },
+                  onDelete: async (option, isNew) => {
+                    contact.doc.phone_nos = contact.doc.phone_nos.filter(
+                      (phone) => phone.name !== option.name,
+                    )
+                    !isNew && (await deleteOption('Contact Phone', option.name))
+                  },
+                }
+              }) || [],
             create: () => {
-              contact.doc.phone_nos = [
-                ...(contact.doc.phone_nos || []),
-                {
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
-                },
-              ]
+              contact.doc?.phone_nos?.push({
+                name: 'new-1',
+                value: '',
+                selected: false,
+                isNew: true,
+              })
             },
           }
-        }
-        if (field.fieldname === 'address') {
+        } else if (field.fieldname === 'address') {
           return {
             ...field,
-            create: (_value, close) => {
+            create: (value, close) => {
               openAddressModal()
-              close && close()
+              close()
             },
             edit: (address) => openAddressModal(address),
           }
+        } else {
+          return field
         }
-        return field
-      }),
-    })),
-  }))
-})
+      })
+      return column
+    })
+    return section
+  })
+}
 
 async function setAsPrimary(field, value) {
   let d = await call('crm.api.contact.set_as_primary', {

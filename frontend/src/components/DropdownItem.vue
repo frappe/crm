@@ -56,7 +56,7 @@
 <script setup>
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import { TextInput } from 'frappe-ui'
+import { TextInput, Tooltip } from 'frappe-ui'
 import { nextTick, ref, onMounted } from 'vue'
 
 const props = defineProps({
