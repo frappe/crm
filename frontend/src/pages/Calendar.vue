@@ -18,7 +18,6 @@
   </LayoutHeader>
   <div class="flex h-screen overflow-hidden">
     <Calendar
-      v-if="events.data?.length"
       class="flex-1 overflow-hidden"
       ref="calendar"
       :config="{
@@ -93,11 +92,6 @@
           </div>
         </div>
       </template>
-      <template #daily-header="{ parseDateWithDay, currentDate }">
-        <p class="ml-4 pb-2 text-base text-ink-gray-6">
-          {{ parseDateWithDay(currentDate) }}
-        </p>
-      </template>
     </Calendar>
 
     <!-- Event Panel Container -->
@@ -144,7 +138,7 @@ import {
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, provide } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
@@ -187,6 +181,8 @@ const events = createListResource({
       referenceDocname: ev.reference_docname,
     })),
 })
+
+provide('events', events)
 
 const eventPanel = ref(null)
 const showEventPanel = ref(false)
@@ -247,6 +243,9 @@ function createEvent(_event) {
 
 async function updateEvent(_event, afterDrag = false) {
   if (!_event.id) return
+
+  _event.fromTime = dayjs(_event.fromTime, 'HH:mm').format('HH:mm')
+  _event.toTime = dayjs(_event.toTime, 'HH:mm').format('HH:mm')
 
   if (
     ['duplicate', 'new'].includes(mode.value) &&

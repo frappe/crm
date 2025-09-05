@@ -115,36 +115,6 @@
             />
           </div>
         </div>
-        <div class="flex items-center">
-          <div class="text-base text-ink-gray-7 w-3/12">
-            {{ __('Link') }}
-          </div>
-          <div class="flex gap-2 w-9/12">
-            <FormControl
-              :class="_event.referenceDoctype ? 'w-20' : 'w-full'"
-              type="select"
-              :options="linkDoctypeOptions"
-              v-model="_event.referenceDoctype"
-              variant="outline"
-              :placeholder="__('Add Lead or Deal')"
-              @change="() => (_event.referenceDocname = '')"
-            />
-            <Link
-              v-if="_event.referenceDoctype"
-              class="w-full"
-              v-model="_event.referenceDocname"
-              :doctype="_event.referenceDoctype"
-              variant="outline"
-              :placeholder="
-                __('Select {0}', [
-                  _event.referenceDoctype == 'CRM Lead'
-                    ? __('Lead')
-                    : __('Deal'),
-                ])
-              "
-            />
-          </div>
-        </div>
         <div class="flex items-start">
           <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
             {{ __('Attendees') }}
@@ -188,6 +158,7 @@
                 ? __('Duplicate')
                 : __('Create')
           "
+          :disabled="!dirty"
           :loading="
             mode === 'edit'
               ? eventsResource.setValue.loading
@@ -200,7 +171,6 @@
   </Dialog>
 </template>
 <script setup>
-import Link from '@/components/Controls/Link.vue'
 import Attendee from '@/components/Calendar/Attendee.vue'
 import {
   Switch,
@@ -211,7 +181,6 @@ import {
   TimePicker,
   dayjs,
   Dropdown,
-  FormControl,
 } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
 import { validateEmail } from '@/utils'
@@ -256,6 +225,7 @@ const mode = computed(() => {
       : 'create'
 })
 
+const oldEvent = ref({})
 const _event = ref({
   title: '',
   description: '',
@@ -269,6 +239,10 @@ const _event = ref({
   referenceDoctype: '',
   referenceDocname: '',
   event_participants: [],
+})
+
+const dirty = computed(() => {
+  return JSON.stringify(_event.value) !== JSON.stringify(oldEvent.value)
 })
 
 const peoples = computed({
@@ -305,6 +279,8 @@ onMounted(() => {
       referenceDocname: props.event.reference_docname,
       event_participants: props.event.event_participants || [],
     }
+
+    oldEvent.value = JSON.parse(JSON.stringify(_event.value))
 
     setTimeout(() => title.value?.el?.focus(), 100)
   }
@@ -376,8 +352,6 @@ function createEvent() {
       color: _event.value.color,
       reference_doctype: props.doctype,
       reference_docname: props.docname,
-      reference_doctype: _event.value.referenceDoctype || props.doctype,
-      reference_docname: _event.value.referenceDocname || props.docname,
       event_participants: _event.value.event_participants,
     },
     {
@@ -407,8 +381,6 @@ function updateEvent() {
       color: _event.value.color,
       reference_doctype: props.doctype,
       reference_docname: props.docname,
-      reference_doctype: _event.value.referenceDoctype || props.doctype,
-      reference_docname: _event.value.referenceDocname || props.docname,
       event_participants: _event.value.event_participants,
     },
     {
@@ -454,12 +426,6 @@ function deleteEvent() {
 }
 
 const toOptions = computed(() => buildEndTimeOptions(_event.value.fromTime))
-
-const linkDoctypeOptions = [
-  { label: '', value: '' },
-  { label: __('Lead'), value: 'CRM Lead' },
-  { label: __('Deal'), value: 'CRM Deal' },
-]
 
 const colors = Object.keys(colorMap).map((c) => ({
   label: c.charAt(0).toUpperCase() + c.slice(1),
