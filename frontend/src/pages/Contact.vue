@@ -322,38 +322,6 @@ const parsedSections = computed(() => {
             ...field,
             read_only: false,
             fieldtype: 'Dropdown',
-<<<<<<< HEAD
-            options:
-              contact.doc?.email_ids?.map((email) => {
-                return {
-                  name: email.name,
-                  value: email.email_id,
-                  selected: email.email_id === contact.doc.email_id,
-                  placeholder: 'john@doe.com',
-                  onClick: () => {
-                    setAsPrimary('email', email.email_id)
-                  },
-                  onSave: (option, isNew) => {
-                    if (isNew) {
-                      createNew('email', option.value)
-                    } else {
-                      editOption(
-                        'Contact Email',
-                        option.name,
-                        'email_id',
-                        option.value
-                      )
-                    }
-                  },
-                  onDelete: async (option, isNew) => {
-                    contact.doc.email_ids = contact.doc.email_ids.filter(
-                      (email) => email.name !== option.name,
-                    )
-                    !isNew && (await deleteOption('Contact Email', option.name))
-                  },
-                }
-              }) || [],
-=======
             options: (contact.doc?.email_ids || []).map((email) => ({
               name: email.name,
               value: email.email_id,
@@ -376,7 +344,6 @@ const parsedSections = computed(() => {
                 if (!isNew) await deleteOption('Contact Email', option.name)
               },
             })),
->>>>>>> 50708ebe (fix: if contact email is updated it is updating previously opened contact)
             create: () => {
               // Add a temporary new option locally (mirrors original behavior)
               contact.doc.email_ids = [
@@ -396,37 +363,6 @@ const parsedSections = computed(() => {
             ...field,
             read_only: false,
             fieldtype: 'Dropdown',
-<<<<<<< HEAD
-            options:
-              contact.doc?.phone_nos?.map((phone) => {
-                return {
-                  name: phone.name,
-                  value: phone.phone,
-                  selected: phone.phone === contact.doc.mobile_no,
-                  onClick: () => {
-                    setAsPrimary('mobile_no', phone.phone)
-                  },
-                  onSave: (option, isNew) => {
-                    if (isNew) {
-                      createNew('phone', option.value)
-                    } else {
-                      editOption(
-                        'Contact Phone',
-                        option.name,
-                        'phone',
-                        option.value
-                      )
-                    }
-                  },
-                  onDelete: async (option, isNew) => {
-                    contact.doc.phone_nos = contact.doc.phone_nos.filter(
-                      (phone) => phone.name !== option.name,
-                    )
-                    !isNew && (await deleteOption('Contact Phone', option.name))
-                  },
-                }
-              }) || [],
-=======
             options: (contact.doc?.phone_nos || []).map((phone) => ({
               name: phone.name,
               value: phone.phone,
@@ -448,7 +384,6 @@ const parsedSections = computed(() => {
                 if (!isNew) await deleteOption('Contact Phone', option.name)
               },
             })),
->>>>>>> 50708ebe (fix: if contact email is updated it is updating previously opened contact)
             create: () => {
               contact.doc.phone_nos = [
                 ...(contact.doc.phone_nos || []),
