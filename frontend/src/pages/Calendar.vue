@@ -242,6 +242,9 @@ function createEvent(_event) {
 async function updateEvent(_event, afterDrag = false) {
   if (!_event.id) return
 
+  _event.fromTime = dayjs(_event.fromTime, 'HH:mm').format('HH:mm')
+  _event.toTime = dayjs(_event.toTime, 'HH:mm').format('HH:mm')
+
   if (
     ['duplicate', 'new'].includes(mode.value) &&
     !['duplicate-event', 'new-event'].includes(_event.id) &&
