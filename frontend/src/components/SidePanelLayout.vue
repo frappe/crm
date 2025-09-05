@@ -322,11 +322,7 @@ import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
-<<<<<<< HEAD
-import { Tooltip, DateTimePicker, DatePicker, Popover } from 'frappe-ui'
-=======
-import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
->>>>>>> 50708ebe (fix: if contact email is updated it is updating previously opened contact)
+import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 
