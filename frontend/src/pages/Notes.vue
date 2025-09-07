@@ -45,12 +45,12 @@
                 onClick: () => deleteNote(note.name),
               },
             ]"
-            @click.stop
           >
             <Button
               icon="more-horizontal"
               variant="ghosted"
               class="hover:bg-surface-white"
+              @click.stop
             />
           </Dropdown>
         </div>
