@@ -7,13 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2025-08-24 09:35+0000\n"
-"PO-Revision-Date: 2025-08-24 09:35+0000\n"
-=======
 "POT-Creation-Date: 2025-09-07 09:35+0000\n"
 "PO-Revision-Date: 2025-09-07 09:35+0000\n"
->>>>>>> 591076bf (chore: update POT file)
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -1779,14 +1774,9 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:133
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:235
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:238
-<<<<<<< HEAD
-#: frontend/src/components/ViewControls.vue:1161
-#: frontend/src/components/ViewControls.vue:1172
-=======
 #: frontend/src/components/ViewControls.vue:1116
 #: frontend/src/components/ViewControls.vue:1127
 #: frontend/src/pages/Calendar.vue:299 frontend/src/pages/Calendar.vue:303
->>>>>>> 591076bf (chore: update POT file)
 #: frontend/src/pages/Contact.vue:100 frontend/src/pages/Deal.vue:111
 #: frontend/src/pages/Lead.vue:157 frontend/src/pages/MobileContact.vue:79
 #: frontend/src/pages/MobileContact.vue:263
@@ -2070,14 +2060,9 @@ msgstr ""
 #: frontend/src/components/FieldLayout/Field.vue:91
 #: frontend/src/components/FieldLayoutEditor.vue:313
 #: frontend/src/components/FieldLayoutEditor.vue:339
-<<<<<<< HEAD
-#: frontend/src/components/ListBulkActions.vue:170
-#: frontend/src/components/ViewControls.vue:1131
-=======
 #: frontend/src/components/ListBulkActions.vue:172
 #: frontend/src/components/PrimaryDropdownItem.vue:35
 #: frontend/src/components/ViewControls.vue:1086
->>>>>>> 591076bf (chore: update POT file)
 #: frontend/src/pages/Dashboard.vue:16
 msgid "Edit"
 msgstr ""
@@ -5672,17 +5657,12 @@ msgstr ""
 msgid "Unpin View"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/ViewControls.vue:975
-msgid "Unsaved Changes"
-=======
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:28
 msgid "Unsaved"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:560
 msgid "Unsaved changes"
->>>>>>> 591076bf (chore: update POT file)
 msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:26
