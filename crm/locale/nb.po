@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-08-31 09:35+0000\n"
-"PO-Revision-Date: 2025-09-03 16:19\n"
+"PO-Revision-Date: 2025-09-06 17:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -2696,7 +2696,7 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:122
 msgctxt "FCRM"
 msgid "Integrations"
-msgstr ""
+msgstr "Integrasjoner"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:523
 #: frontend/src/components/Layouts/AppSidebar.vue:526
@@ -2859,7 +2859,7 @@ msgstr ""
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 #: frontend/src/components/Kanban/KanbanSettings.vue:8
 msgid "Kanban Settings"
-msgstr ""
+msgstr "Innstillinger for Kanban-tavle"
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -3010,7 +3010,7 @@ msgstr ""
 #. Label of the links (Table) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Links"
-msgstr ""
+msgstr "Lenker"
 
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #. Label of the list_tab (Tab Break) field in DocType 'CRM View Settings'
@@ -3035,7 +3035,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:142
 #: frontend/src/components/Settings/Users.vue:155
 msgid "Load More"
-msgstr ""
+msgstr "Last inn flere"
 
 #: frontend/src/components/Activities/Activities.vue:22
 #: frontend/src/components/Activities/DataFields.vue:35
