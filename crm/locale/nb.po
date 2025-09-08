@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-07 09:35+0000\n"
-"PO-Revision-Date: 2025-09-07 17:34\n"
+"PO-Revision-Date: 2025-09-08 18:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -4303,7 +4303,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:126
 msgid "Please set Email Address"
-msgstr ""
+msgstr "Angi e-postadresse"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Please setup Exotel intergration"
@@ -4331,7 +4331,7 @@ msgstr ""
 #. Label of the email (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Email"
-msgstr ""
+msgstr "Primær e-postadresse"
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4341,7 +4341,7 @@ msgstr ""
 #. Label of the phone (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Phone"
-msgstr ""
+msgstr "Primært telefonnummer"
 
 #: frontend/src/pages/Deal.vue:669 frontend/src/pages/MobileDeal.vue:566
 msgid "Primary contact set"
@@ -4497,7 +4497,7 @@ msgstr ""
 #. Label of the reference_doctype (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Reference Doctype"
-msgstr "Referanse DocType"
+msgstr "Referanse-DocType"
 
 #. Label of the reference_doctype (Link) field in DocType 'CRM Call Log'
 #. Label of the reference_doctype (Link) field in DocType 'CRM Task'
