@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: frontend/src/components/ViewControls.vue:1217
+#: frontend/src/components/ViewControls.vue:1172
 msgid " (New)"
 msgstr ""
 
@@ -230,7 +230,7 @@ msgstr ""
 
 #: frontend/src/components/CustomActions.vue:69
 #: frontend/src/components/ViewControls.vue:683
-#: frontend/src/components/ViewControls.vue:1109
+#: frontend/src/components/ViewControls.vue:1064
 msgid "Actions"
 msgstr ""
 
@@ -1796,8 +1796,8 @@ msgstr ""
 msgid "Delete Task"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1157
-#: frontend/src/components/ViewControls.vue:1165
+#: frontend/src/components/ViewControls.vue:1112
+#: frontend/src/components/ViewControls.vue:1120
 msgid "Delete View"
 msgstr ""
 
@@ -1986,7 +1986,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:225
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:228
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:19
-#: frontend/src/components/ViewControls.vue:1113
+#: frontend/src/components/ViewControls.vue:1068
 msgid "Duplicate"
 msgstr ""
 
@@ -3429,11 +3429,11 @@ msgstr ""
 msgid "Make Call"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1146
+#: frontend/src/components/ViewControls.vue:1101
 msgid "Make Private"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1146
+#: frontend/src/components/ViewControls.vue:1101
 msgid "Make Public"
 msgstr ""
 
@@ -4244,7 +4244,7 @@ msgstr ""
 msgid "Phone Numbers"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1138
+#: frontend/src/components/ViewControls.vue:1093
 msgid "Pin View"
 msgstr ""
 
@@ -4963,7 +4963,7 @@ msgstr ""
 msgid "Set as Primary Contact"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1123
+#: frontend/src/components/ViewControls.vue:1078
 msgid "Set as default"
 msgstr ""
 
@@ -5653,7 +5653,7 @@ msgstr ""
 msgid "Unlink {0} item(s)"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1138
+#: frontend/src/components/ViewControls.vue:1093
 msgid "Unpin View"
 msgstr ""
 
@@ -5688,7 +5688,6 @@ msgstr ""
 #: frontend/src/components/Settings/SettingsPage.vue:20
 #: frontend/src/components/Settings/TelephonySettings.vue:23
 #: frontend/src/components/Telephony/ExotelCallUI.vue:210
-#: frontend/src/components/ViewControls.vue:980
 msgid "Update"
 msgstr ""
 
@@ -5915,10 +5914,6 @@ msgstr ""
 
 #: frontend/src/data/document.js:32
 msgid "You do not have permission to access this document"
-msgstr ""
-
-#: frontend/src/components/ViewControls.vue:976
-msgid "You have unsaved changes. Do you want to save them?"
 msgstr ""
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:24
