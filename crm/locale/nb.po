@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-07 09:35+0000\n"
-"PO-Revision-Date: 2025-09-08 18:05\n"
+"PO-Revision-Date: 2025-09-09 18:08\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -4572,11 +4572,11 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:34
 #: frontend/src/components/CommunicationArea.vue:10
 msgid "Reply"
-msgstr ""
+msgstr "Svar"
 
 #: frontend/src/components/Activities/EmailArea.vue:41
 msgid "Reply All"
-msgstr ""
+msgstr "Svar alle"
 
 #: frontend/src/components/Modals/AboutModal.vue:72
 msgid "Report an Issue"
@@ -4597,7 +4597,7 @@ msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:78
 msgid "Reset Changes"
-msgstr "Nullstill endringer"
+msgstr "Tilbakestill endringer"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
@@ -4609,7 +4609,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:28
 msgid "Reset to default"
-msgstr ""
+msgstr "Tilbakestill til standardinnstilling"
 
 #. Label of the response_by (Datetime) field in DocType 'CRM Deal'
 #. Label of the response_by (Datetime) field in DocType 'CRM Lead'
@@ -4635,7 +4635,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:14
 msgid "Restore"
-msgstr ""
+msgstr "Gjenopprett"
 
 #. Label of the restore_defaults (Button) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:13
