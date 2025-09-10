@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-07 09:35+0000\n"
-"PO-Revision-Date: 2025-09-09 18:08\n"
+"PO-Revision-Date: 2025-09-10 18:54\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr " (Ny)"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:58
 msgid "(No title)"
-msgstr ""
+msgstr "(Ingen tittel)"
 
 #: frontend/src/components/Modals/TaskModal.vue:87
 #: frontend/src/components/Telephony/TaskPanel.vue:70
@@ -37,7 +37,7 @@ msgstr "1 time siden"
 
 #: frontend/src/composables/event.js:163
 msgid "1 hr"
-msgstr ""
+msgstr "1 time"
 
 #: frontend/src/utils/index.js:168
 msgid "1 minute ago"
@@ -3809,7 +3809,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:150
 msgid "No changes made"
-msgstr "Ingen endringer gjort"
+msgstr "Ingen endringer er gjort"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
 #: frontend/src/pages/Deal.vue:261 frontend/src/pages/MobileDeal.vue:205
@@ -4807,7 +4807,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Salutation"
-msgstr ""
+msgstr "Hilsen"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
