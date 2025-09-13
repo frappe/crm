@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-07 09:35+0000\n"
-"PO-Revision-Date: 2025-09-10 18:54\n"
+"PO-Revision-Date: 2025-09-13 19:19\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -156,7 +156,7 @@ msgstr "En ny konto er opprettet for deg på {0}"
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "API Key"
-msgstr ""
+msgstr "API Nøkkel"
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "API Key is required"
@@ -169,7 +169,7 @@ msgstr ""
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "API Secret"
-msgstr ""
+msgstr "API-hemmelighet"
 
 #. Label of the api_token (Password) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
@@ -545,7 +545,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
-msgstr ""
+msgstr "Er du sikker på at du vil tilbakestille skjemaskriptet \"Opprett tilbud fra CRM-avtale\"?"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:174
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
@@ -799,7 +799,7 @@ msgstr ""
 #: frontend/src/components/EmailEditor.vue:35
 #: frontend/src/components/EmailEditor.vue:57
 msgid "CC"
-msgstr ""
+msgstr "CC"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -1249,7 +1249,7 @@ msgstr ""
 #. Label of the erpnext_company (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Company in ERPNext Site"
-msgstr ""
+msgstr "Bedrift i ERPNext-nettsted"
 
 #: crm/templates/emails/helpdesk_invitation.html:10
 msgid "Complete Registration"
@@ -1498,7 +1498,7 @@ msgstr ""
 #. 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Create customer on status change"
-msgstr ""
+msgstr "Opprett kunde ved statusendring"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:348
 #: frontend/src/pages/Calendar.vue:7
@@ -1627,7 +1627,7 @@ msgstr ""
 #. Label of the deal_status (Link) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Deal Status"
-msgstr ""
+msgstr "Avtalestatus"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -2024,40 +2024,40 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:604
 #: frontend/src/components/Settings/Settings.vue:146
 msgid "ERPNext"
-msgstr ""
+msgstr "ERPNext"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext CRM Settings"
-msgstr ""
+msgstr "ERPNext CRM-innstillinger"
 
 #. Label of the section_break_oubd (Section Break) field in DocType 'ERPNext
 #. CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext Site API's"
-msgstr ""
+msgstr "ERPNext-nettstedets API-er"
 
 #. Label of the erpnext_site_url (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext Site URL"
-msgstr ""
+msgstr "ERPNext-nettstedets URL"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:25
 msgid "ERPNext is not installed in the current site"
-msgstr ""
+msgstr "ERPNext er ikke installert på det aktuelle nettstedet"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:98
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:124
 msgid "ERPNext is not integrated with the CRM"
-msgstr ""
+msgstr "ERPNext er ikke integrert med CRM-systemet"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "ERPNext settings"
-msgstr ""
+msgstr "ERPNext-innstillinger"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext settings updated"
-msgstr ""
+msgstr "ERPNext-innstillinger oppdatert"
 
 #: frontend/src/components/FieldLayout/Field.vue:91
 #: frontend/src/components/FieldLayoutEditor.vue:313
@@ -2322,15 +2322,15 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:279
 msgid "Error while creating customer in ERPNext, check error log for more details"
-msgstr ""
+msgstr "Feil under oppretting av kunde i ERPNext, sjekk feilloggen for mer informasjon"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:191
 msgid "Error while creating prospect in ERPNext, check error log for more details"
-msgstr ""
+msgstr "Feil under oppretting av prospekt i ERPNext, sjekk feilloggen for mer informasjon"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:117
 msgid "Error while fetching customer in ERPNext, check error log for more details"
-msgstr ""
+msgstr "Feil under henting av kunde i ERPNext, sjekk feilloggen for mer informasjon"
 
 #: frontend/src/components/Modals/EventModal.vue:368
 msgid "Event ID is required"
@@ -2630,7 +2630,7 @@ msgstr "Skjema"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:19
 msgid "Form Script updated successfully"
-msgstr ""
+msgstr "Skjemaskriptet ble vellykket oppdatert"
 
 #. Name of a Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -2975,7 +2975,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:598
 msgid "Integration"
-msgstr ""
+msgstr "Integrasjon"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Integration Not Enabled"
@@ -3085,7 +3085,7 @@ msgstr "Er standard"
 #. CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Is ERPNext installed on a different site?"
-msgstr ""
+msgstr "Er ERPNext installert på et annet nettsted?"
 
 #. Label of the is_group (Check) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -4601,7 +4601,7 @@ msgstr "Tilbakestill endringer"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
-msgstr ""
+msgstr "Tilbakestill ERPNext skjemaskript"
 
 #: frontend/src/components/ColumnSettings.vue:86
 msgid "Reset to Default"
@@ -4756,7 +4756,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Sales Manager"
-msgstr ""
+msgstr "Salgsleder"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -5248,7 +5248,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "System Manager"
-msgstr ""
+msgstr "Systemansvarlig"
 
 #: frontend/src/components/EmailEditor.vue:22
 msgid "TO"
