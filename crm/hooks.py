@@ -310,3 +310,11 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 ]
+
+fixtures = [
+    'CRM Lead Status',
+    'CRM Fields Layout',
+    'CRM Deal Status',
+    'CRM Task Type',
+    'Item Group'
+]
