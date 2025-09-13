@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:B-Lead-{######}",
+ "creation": "2025-02-19 12:46:20.485369",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "buyer_name",
+  "lead_source",
+  "status",
+  "column_break_qapr",
+  "team_leader",
+  "sales_advisor",
+  "property_reference",
+  "section_break_vgeq",
+  "contact_number",
+  "email",
+  "address"
+ ],
+ "fields": [
+  {
+   "fieldname": "buyer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Buyer Name"
+  },
+  {
+   "fieldname": "lead_source",
+   "fieldtype": "Select",
+   "label": "Lead Source",
+   "options": "Website\nSocial Media\nReferral"
+  },
+  {
+   "fieldname": "team_leader",
+   "fieldtype": "Link",
+   "label": "Team Leader",
+   "options": "User"
+  },
+  {
+   "fieldname": "sales_advisor",
+   "fieldtype": "Link",
+   "label": "Sales Advisor",
+   "options": "User"
+  },
+  {
+   "fieldname": "property_reference",
+   "fieldtype": "Link",
+   "label": "Property Reference",
+   "options": "Item"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Link",
+   "label": "Status",
+   "options": "Asroy Lead Status"
+  },
+  {
+   "fieldname": "column_break_qapr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vgeq",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-02-24 13:08:24.167353",
+ "modified_by": "Administrator",
+ "module": "Asroy CRM",
+ "name": "Asroy Buyer Lead",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

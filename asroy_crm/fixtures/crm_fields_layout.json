@@ -1,0 +1,137 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Lead",
+  "layout": "[{\"name\":\"first_tab\",\"sections\":[{\"name\":\"lead_section\",\"columns\":[{\"name\":\"column_EO1H\",\"fields\":[\"custom_lead_type\"]},{\"name\":\"column_RWBe\",\"fields\":[\"lead_owner\"]}]},{\"name\":\"person_section\",\"columns\":[{\"name\":\"column_5jrk\",\"fields\":[\"salutation\",\"email\"]},{\"name\":\"column_5CPV\",\"fields\":[\"first_name\",\"mobile_no\"]},{\"name\":\"column_gXOy\",\"fields\":[\"last_name\",\"gender\"]}]},{\"label\":\"Property\",\"name\":\"section_ScTm\",\"opened\":true,\"columns\":[{\"name\":\"column_gXxv\",\"fields\":[\"custom_property_reference\",\"custom_property_title\"]},{\"label\":\"\",\"name\":\"column_CHpH\",\"fields\":[\"custom_property_type\",\"custom_property_pin\"]}],\"editingLabel\":false},{\"name\":\"organization_section\",\"columns\":[{\"name\":\"column_GHfX\",\"fields\":[\"organization\",\"territory\"]},{\"name\":\"column_hXjS\",\"fields\":[\"website\",\"annual_revenue\"]},{\"name\":\"column_RDNA\",\"fields\":[\"no_of_employees\",\"industry\"]}]}]}]",
+  "modified": "2025-04-12 11:03:32.981637",
+  "name": "CRM Lead-Quick Entry",
+  "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Deal",
+  "layout": "[{\"name\":\"first_tab\",\"sections\":[{\"name\":\"organization_section\",\"hidden\":true,\"editable\":false,\"columns\":[{\"name\":\"column_GpMP\",\"fields\":[\"organization\"]}],\"editingLabel\":false,\"label\":\"\",\"hideLabel\":true},{\"name\":\"organization_details_section\",\"editable\":false,\"columns\":[{\"name\":\"column_S3tQ\",\"fields\":[\"organization_name\",\"territory\"]},{\"name\":\"column_KqV1\",\"fields\":[\"website\",\"annual_revenue\"]},{\"name\":\"column_1r67\",\"fields\":[\"no_of_employees\",\"industry\"]}],\"hideLabel\":false},{\"name\":\"contact_section\",\"hidden\":true,\"editable\":false,\"columns\":[{\"name\":\"column_CeXr\",\"fields\":[\"contact\"]},{\"name\":\"column_yHbk\",\"fields\":[]}],\"hideLabel\":false},{\"name\":\"contact_details_section\",\"editable\":false,\"columns\":[{\"name\":\"column_ZTWr\",\"fields\":[\"salutation\",\"email\",\"custom_deal_type\"]},{\"name\":\"column_tabr\",\"fields\":[\"first_name\",\"mobile_no\"]},{\"name\":\"column_Qjdx\",\"fields\":[\"last_name\",\"gender\"]}]},{\"label\":\"Property\",\"name\":\"property_section\",\"hidden\":true,\"columns\":[{\"name\":\"column_hSWf\",\"fields\":[\"custom_property_\"]}],\"editingLabel\":false,\"collapsible\":false,\"hideLabel\":true},{\"label\":\"Property Details\",\"name\":\"property_details_section\",\"opened\":true,\"columns\":[{\"name\":\"column_IuEe\",\"fields\":[\"custom_property_title\",\"custom_property_pin\",\"custom_property_type\"]}],\"editingLabel\":false,\"collapsible\":false,\"hideLabel\":true},{\"name\":\"deal_section\",\"columns\":[{\"name\":\"column_mdps\",\"fields\":[\"status\"]},{\"name\":\"column_H40H\",\"fields\":[\"deal_owner\"]}]}]}]",
+  "modified": "2025-04-12 11:05:36.522330",
+  "name": "CRM Deal-Quick Entry",
+  "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "Contact",
+  "layout": "[\n  {\n    \"name\": \"salutation_section\",\n    \"columns\": [\n      {\n        \"name\": \"column_eXks\",\n        \"fields\": [\"salutation\"]\n      }\n    ]\n  },\n  {\n    \"name\": \"full_name_section\",\n    \"hideBorder\": true,\n    \"columns\": [\n      {\n        \"name\": \"column_cSxf\",\n        \"fields\": [\"first_name\"]\n      },\n      {\n        \"name\": \"column_yBc7\",\n        \"fields\": [\"last_name\"]\n      }\n    ]\n  },\n  {\n    \"name\": \"email_section\",\n    \"hideBorder\": true,\n    \"columns\": [\n      {\n        \"name\": \"column_tH3L\",\n        \"fields\": [\"email_id\"]\n      }\n    ]\n  },\n  {\n    \"name\": \"mobile_gender_section\",\n    \"hideBorder\": true,\n    \"columns\": [\n      {\n        \"name\": \"column_lrfI\",\n        \"fields\": [\"mobile_no\"]\n      },\n      {\n        \"name\": \"column_Tx3n\",\n        \"fields\": [\"gender\"]\n      }\n    ]\n  },\n  {\n    \"name\": \"designation_section\",\n    \"hideBorder\": true,\n    \"columns\": [\n      {\n        \"name\": \"column_bsO8\",\n        \"fields\": [\"designation\"]\n      }\n    ]\n  },\n  {\n    \"name\": \"address_section\",\n    \"hideBorder\": true,\n    \"columns\": [\n      {\n        \"name\": \"column_W3VY\",\n        \"fields\": [\"address\"]\n      }\n    ]\n  }\n]\n",
+  "modified": "2025-04-09 14:20:31.488198",
+  "name": "Contact-Quick Entry",
+  "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Organization",
+  "layout": "[{\"name\": \"organization_section\", \"columns\": [{\"name\": \"column_zOuv\", \"fields\": [\"organization_name\"]}]}, {\"name\": \"website_revenue_section\", \"hideBorder\": true, \"columns\": [{\"name\": \"column_I5Dy\", \"fields\": [\"website\"]}, {\"name\": \"column_Rgss\", \"fields\": [\"annual_revenue\"]}]}, {\"name\": \"territory_section\", \"hideBorder\": true, \"columns\": [{\"name\": \"column_w6ap\", \"fields\": [\"territory\"]}]}, {\"name\": \"employee_industry_section\", \"hideBorder\": true, \"columns\": [{\"name\": \"column_u5tZ\", \"fields\": [\"no_of_employees\"]}, {\"name\": \"column_FFrT\", \"fields\": [\"industry\"]}]}, {\"name\": \"address_section\", \"hideBorder\": true, \"columns\": [{\"name\": \"column_O2dk\", \"fields\": [\"address\"]}]}]",
+  "modified": "2025-02-19 10:34:00.195180",
+  "name": "CRM Organization-Quick Entry",
+  "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "Address",
+  "layout": "[{\"name\": \"details_section\", \"columns\": [{\"name\": \"column_uSSG\", \"fields\": [\"address_title\", \"address_type\", \"address_line1\", \"address_line2\", \"city\", \"state\", \"country\", \"pincode\"]}]}]",
+  "modified": "2025-02-19 10:34:00.196000",
+  "name": "Address-Quick Entry",
+  "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Call Log",
+  "layout": "[{\"name\":\"details_section\",\"columns\":[{\"name\":\"column_uMSG\",\"fields\":[\"type\",\"from\",\"duration\"]},{\"name\":\"column_wiZT\",\"fields\":[\"to\",\"status\",\"caller\",\"receiver\"]}]}]",
+  "modified": "2025-02-19 10:34:00.197018",
+  "name": "CRM Call Log-Quick Entry",
+  "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Lead",
+  "layout": "[{\"label\":\"Details\",\"name\":\"details_section\",\"opened\":true,\"columns\":[{\"name\":\"column_kl92\",\"fields\":[\"organization\",\"website\",\"territory\",\"industry\",\"job_title\",\"source\",\"lead_owner\",\"custom_lead_type\"]}]},{\"label\":\"Person\",\"name\":\"person_section\",\"opened\":true,\"columns\":[{\"name\":\"column_XmW2\",\"fields\":[\"salutation\",\"first_name\",\"last_name\",\"email\",\"mobile_no\"]}]},{\"label\":\"Property\",\"opened\":true,\"name\":\"section_rrxm\",\"columns\":[{\"name\":\"column_tCUr\",\"fields\":[\"custom_property_type\",\"custom_property_pin\",\"custom_property_title\",\"custom_property_reference\"]}],\"editingLabel\":false}]",
+  "modified": "2025-04-12 11:10:33.701486",
+  "name": "CRM Lead-Side Panel",
+  "type": "Side Panel"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Deal",
+  "layout": "[{\"label\":\"Contacts\",\"name\":\"contacts_section\",\"opened\":true,\"editable\":false,\"contacts\":[]},{\"label\":\"Property Details\",\"name\":\"organization_section\",\"opened\":true,\"columns\":[{\"name\":\"column_na2Q\",\"fields\":[\"custom_property_\",\"custom_property_title\",\"custom_property_type\",\"custom_property_pin\"]}],\"editingLabel\":true},{\"label\":\"Lead Details\",\"opened\":true,\"name\":\"section_vDPF\",\"columns\":[{\"name\":\"column_IXkJ\",\"fields\":[\"lead\",\"lead_name\",\"source\"]}],\"editingLabel\":false}]",
+  "modified": "2025-04-12 11:11:00.396706",
+  "name": "CRM Deal-Side Panel",
+  "type": "Side Panel"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "Contact",
+  "layout": "[{\"label\":\"Details\",\"name\":\"details_section\",\"opened\":true,\"columns\":[{\"name\":\"column_eIWl\",\"fields\":[\"salutation\",\"first_name\",\"last_name\",\"email_id\",\"mobile_no\",\"gender\",\"company_name\",\"designation\",\"address\",\"custom_kyc_response\"]}]}]",
+  "modified": "2025-04-12 11:11:47.985249",
+  "name": "Contact-Side Panel",
+  "type": "Side Panel"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Organization",
+  "layout": "[{\"label\": \"Details\", \"name\": \"details_section\", \"opened\": true, \"columns\": [{\"name\": \"column_IJOV\", \"fields\": [\"organization_name\", \"website\", \"territory\", \"industry\", \"no_of_employees\", \"address\"]}]}]",
+  "modified": "2025-02-19 10:34:00.200398",
+  "name": "CRM Organization-Side Panel",
+  "type": "Side Panel"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Lead",
+  "layout": "[{\"name\":\"first_tab\",\"sections\":[{\"label\":\"Details\",\"name\":\"details_section\",\"opened\":true,\"columns\":[{\"name\":\"column_ZgLG\",\"fields\":[\"organization\",\"industry\",\"lead_owner\"]},{\"name\":\"column_TbYq\",\"fields\":[\"website\",\"job_title\",\"custom_lead_type\"]},{\"name\":\"column_OKSX\",\"fields\":[\"territory\",\"source\"]}]},{\"label\":\"Person\",\"name\":\"person_section\",\"opened\":true,\"columns\":[{\"name\":\"column_6c5g\",\"fields\":[\"salutation\",\"email\"]},{\"name\":\"column_1n7Q\",\"fields\":[\"first_name\",\"mobile_no\"]},{\"name\":\"column_cT6C\",\"fields\":[\"last_name\"]}]},{\"label\":\"Property\",\"name\":\"section_iZqr\",\"opened\":true,\"columns\":[{\"name\":\"column_swap\",\"fields\":[\"custom_property_reference\",\"custom_property_pin\",\"custom_property_type\",\"custom_property_title\"]}],\"editingLabel\":false}]}]",
+  "modified": "2025-04-12 11:12:04.791038",
+  "name": "CRM Lead-Data Fields",
+  "type": "Data Fields"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Deal",
+  "layout": "[{\"name\":\"first_tab\",\"sections\":[{\"label\":\"Details\",\"name\":\"details_section\",\"opened\":true,\"columns\":[{\"name\":\"column_z9XL\",\"fields\":[\"deal_owner\",\"custom_deal_type\",\"close_date\"]},{\"name\":\"column_gM4w\",\"fields\":[\"phone\"]},{\"name\":\"column_gWmE\",\"fields\":[\"territory\",\"probability\"]}]},{\"label\":\"Property Details\",\"name\":\"section_ZFGL\",\"opened\":true,\"columns\":[{\"name\":\"column_zlPN\",\"fields\":[\"custom_property_type\",\"custom_property_pin\",\"custom_property_title\",\"custom_property_reference\"]}],\"editingLabel\":false}]}]",
+  "modified": "2025-04-12 11:12:16.561954",
+  "name": "CRM Deal-Data Fields",
+  "type": "Data Fields"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "Item",
+  "layout": "[{\"name\":\"tab_cLjl\",\"sections\":[{\"name\":\"section_bBhD\",\"columns\":[{\"name\":\"column_Msfc\",\"fields\":[\"item_group\",\"item_code\",\"item_name\"]},{\"name\":\"column_T1c3\",\"fields\":[\"disabled\",\"allow_alternative_item\",\"is_stock_item\",\"has_variants\",\"opening_stock\",\"valuation_rate\",\"standard_rate\",\"is_fixed_asset\",\"auto_create_assets\",\"is_grouped_asset\",\"asset_category\",\"asset_naming_series\",\"over_delivery_receipt_allowance\",\"over_billing_allowance\"]}]},{\"name\":\"section_7bZN\",\"columns\":[{\"name\":\"column_KbxV\",\"fields\":[\"description\",\"brand\"]}]},{\"name\":\"section_VIwH\",\"columns\":[{\"name\":\"column_W1FL\",\"fields\":[\"uoms\"]}]}]},{\"name\":\"tab_kEm1\",\"sections\":[{\"name\":\"section_TXia\",\"columns\":[{\"name\":\"column_QKuu\",\"fields\":[\"custom_project_name\",\"custom_total_units\",\"custom_unit_per_floor\",\"custom_facilities\"]},{\"name\":\"column_B7O2\",\"fields\":[\"custom_land_size\",\"custom_building_height\",\"custom_made_by\",\"custom_developer\"]}]}]},{\"name\":\"tab_Y4Vr\",\"sections\":[{\"name\":\"section_K1NX\",\"columns\":[{\"name\":\"column_tKAn\",\"fields\":[\"custom_holding_no\",\"custom_floor\",\"custom_unit\",\"custom_sizesqft\",\"custom_facing\",\"custom_total_bedroom\",\"custom_total_room\",\"custom_total_bath\"]},{\"name\":\"column_Qj8r\",\"fields\":[\"custom_address_roadblocksector\",\"custom_division\",\"custom_district\",\"custom_thana_upazzila\",\"custom_zip\",\"custom_zone\",\"custom_video\",\"custom_handover_year\",\"custom_wordpress_post_id\"]}]},{\"name\":\"section_0aiU\",\"columns\":[{\"name\":\"column_UqgW\",\"fields\":[\"custom_apartment_details\"]}]},{\"name\":\"section_XtX6\",\"columns\":[{\"name\":\"column_GFQM\",\"fields\":[\"custom_map\"]}]}]},{\"name\":\"tab_iIlv\",\"sections\":[{\"name\":\"section_oAtT\",\"columns\":[{\"name\":\"column_32w5\",\"fields\":[\"custom_asking_price\"]},{\"name\":\"column_9w9k\",\"fields\":[\"custom_bottom_price\"]}]}]},{\"name\":\"tab_lrad\",\"sections\":[{\"name\":\"section_7PEA\",\"columns\":[{\"name\":\"column_PxWn\",\"fields\":[]}]}]},{\"name\":\"tab_emNd\",\"sections\":[{\"name\":\"section_yGsG\",\"columns\":[{\"name\":\"column_UarI\",\"fields\":[]}]},{\"name\":\"section_3YSb\",\"columns\":[{\"name\":\"column_mKpH\",\"fields\":[\"shelf_life_in_days\",\"end_of_life\",\"default_material_request_type\",\"valuation_method\"]},{\"name\":\"column_02aw\",\"fields\":[\"warranty_period\",\"weight_per_unit\",\"weight_uom\",\"allow_negative_stock\"]}]},{\"name\":\"section_TD8L\",\"columns\":[{\"name\":\"column_i5qj\",\"fields\":[\"barcodes\"]}]},{\"name\":\"section_8168\",\"columns\":[{\"name\":\"column_8A1z\",\"fields\":[\"reorder_levels\"]}]},{\"name\":\"section_W1Bx\",\"columns\":[{\"name\":\"column_phaJ\",\"fields\":[\"has_batch_no\",\"create_new_batch\",\"batch_number_series\",\"has_expiry_date\",\"retain_sample\",\"sample_quantity\"]},{\"name\":\"column_txHv\",\"fields\":[\"has_serial_no\",\"serial_no_series\"]}]}]},{\"name\":\"tab_vIss\",\"sections\":[{\"name\":\"section_gDwC\",\"columns\":[{\"name\":\"column_ZAL2\",\"fields\":[\"variant_of\",\"variant_based_on\",\"attributes\"]}]}]},{\"name\":\"tab_73sC\",\"sections\":[{\"name\":\"section_sKwB\",\"columns\":[{\"name\":\"column_krBp\",\"fields\":[]}]},{\"name\":\"section_ScLV\",\"columns\":[{\"name\":\"column_yEOx\",\"fields\":[\"enable_deferred_expense\",\"no_of_months_exp\"]},{\"name\":\"column_5gtL\",\"fields\":[\"enable_deferred_revenue\",\"no_of_months\"]}]},{\"name\":\"section_WnsG\",\"columns\":[{\"name\":\"column_vUAr\",\"fields\":[\"item_defaults\"]}]}]},{\"name\":\"tab_vbd3\",\"sections\":[{\"name\":\"section_fD1N\",\"columns\":[{\"name\":\"column_hJhz\",\"fields\":[\"purchase_uom\",\"min_order_qty\",\"safety_stock\",\"is_purchase_item\"]},{\"name\":\"column_5NzH\",\"fields\":[\"lead_time_days\",\"last_purchase_rate\",\"is_customer_provided_item\",\"customer\"]}]},{\"name\":\"section_qSvn\",\"columns\":[{\"name\":\"column_N6Fd\",\"fields\":[\"delivered_by_supplier\"]},{\"name\":\"column_b1zM\",\"fields\":[\"supplier_items\"]}]},{\"name\":\"section_gGkq\",\"columns\":[{\"name\":\"column_krz4\",\"fields\":[\"country_of_origin\"]},{\"name\":\"column_04FE\",\"fields\":[\"customs_tariff_number\"]}]}]},{\"name\":\"tab_uV3i\",\"sections\":[{\"name\":\"section_zg4V\",\"columns\":[{\"name\":\"column_6eoY\",\"fields\":[\"sales_uom\",\"grant_commission\",\"is_sales_item\"]},{\"name\":\"column_ZDTI\",\"fields\":[\"max_discount\"]}]},{\"name\":\"section_d3QG\",\"columns\":[{\"name\":\"column_8Pjz\",\"fields\":[\"customer_items\"]}]}]},{\"name\":\"tab_nQ1v\",\"sections\":[{\"name\":\"section_ZbLG\",\"columns\":[{\"name\":\"column_cgiK\",\"fields\":[\"taxes\"]}]}]},{\"name\":\"tab_9cdQ\",\"sections\":[{\"name\":\"section_0PhM\",\"columns\":[{\"name\":\"column_Iclp\",\"fields\":[\"inspection_required_before_purchase\",\"quality_inspection_template\",\"inspection_required_before_delivery\"]}]}]},{\"name\":\"tab_zLqq\",\"sections\":[{\"name\":\"section_OpGC\",\"columns\":[{\"name\":\"column_EZbw\",\"fields\":[\"include_item_in_manufacturing\",\"is_sub_contracted_item\",\"default_bom\"]},{\"name\":\"column_GMhm\",\"fields\":[\"customer_code\",\"default_item_manufacturer\",\"default_manufacturer_part_no\",\"total_projected_qty\"]}]}]}]",
+  "modified": "2025-04-12 11:13:09.794730",
+  "name": "Item-Quick Entry",
+  "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "Item",
+  "layout": "[{\"label\":\"Details\",\"name\":\"details_section\",\"opened\":true,\"columns\":[{\"name\":\"column_eIWl\",\"fields\":[\"item_group\",\"item_code\",\"item_name\"]}]},{\"label\":\"Project Details\",\"name\":\"custom_project_details\",\"opened\":true,\"columns\":[{\"name\":\"column_eIWl\",\"fields\":[\"custom_project_name\",\"custom_total_units\",\"custom_land_size\",\"custom_building_height\",\"custom_unit_per_floor\"]}]},{\"label\":\"Property Details\",\"opened\":true,\"name\":\"section_RWWi\",\"columns\":[{\"name\":\"column_WMMG\",\"fields\":[\"custom_holding_no\",\"custom_floor\",\"custom_unit\",\"custom_sizesqft\",\"custom_facing\",\"custom_total_bedroom\",\"custom_total_room\",\"custom_total_bath\"]}],\"editingLabel\":false},{\"label\":\"Address\",\"opened\":true,\"name\":\"section_Ahhf\",\"columns\":[{\"name\":\"column_qyJR\",\"fields\":[\"custom_address_roadblocksector\",\"custom_division\",\"custom_district\",\"custom_thana_upazzila\",\"custom_zip\",\"custom_zone\"]}],\"editingLabel\":false}]",
+  "modified": "2025-04-12 11:12:56.728657",
+  "name": "Item-Side Panel",
+  "type": "Side Panel"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "Item",
+  "layout": "[{\"name\":\"tab_pkkE\",\"label\":\"Basic Details\",\"sections\":[{\"name\":\"section_kdm6\",\"columns\":[{\"name\":\"column_nP1T\",\"fields\":[\"item_name\",\"item_code\",\"item_group\",\"stock_uom\",\"custom_stage\"]},{\"name\":\"column_ILVa\",\"fields\":[\"custom_seller\",\"custom_status\"]}]},{\"name\":\"section_CXbH\",\"columns\":[{\"name\":\"column_OAMz\",\"fields\":[\"description\"]}]}]},{\"name\":\"tab_9NCI\",\"label\":\"Property Details\",\"sections\":[{\"name\":\"section_Q1NF\",\"columns\":[{\"name\":\"column_Tz7V\",\"fields\":[\"custom_holding_no\",\"custom_floor\",\"custom_unit\",\"custom_sizesqft\",\"custom_facing\",\"custom_total_bedroom\",\"custom_total_room\",\"custom_total_bath\"]},{\"name\":\"column_sQul\",\"fields\":[\"custom_address_roadblocksector\",\"custom_division\",\"custom_district\",\"custom_thana_upazzila\",\"custom_zip\",\"custom_zone\",\"custom_video\",\"custom_handover_year\",\"custom_wordpress_post_id\"]}]},{\"name\":\"section_jZNk\",\"columns\":[{\"name\":\"column_0iHk\",\"fields\":[\"custom_apartment_details\"]}]}]},{\"name\":\"tab_aaaM\",\"label\":\"Project Information\",\"sections\":[{\"name\":\"section_2iJP\",\"columns\":[{\"name\":\"column_iHLO\",\"fields\":[\"custom_project_name\",\"custom_total_units\",\"custom_unit_per_floor\",\"custom_facilities\"]},{\"name\":\"column_GZL2\",\"fields\":[\"custom_land_size\",\"custom_building_height\",\"custom_made_by\"]}]}]},{\"name\":\"tab_NlKt\",\"label\":\"Pricing\",\"sections\":[{\"name\":\"section_Q76M\",\"columns\":[{\"name\":\"column_jul2\",\"fields\":[\"custom_asking_price\"]},{\"name\":\"column_PS6L\",\"fields\":[\"custom_bottom_price\"]}]}]}]",
+  "modified": "2025-04-12 10:51:55.742315",
+  "name": "Item-Data Fields",
+  "type": "Data Fields"
+ }
+]

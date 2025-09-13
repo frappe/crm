@@ -1,0 +1,29 @@
+[
+ {
+  "color": "gray",
+  "deal_status": "Pipeline Stage",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2025-04-12 13:36:42.746384",
+  "name": "Pipeline Stage",
+  "position": 1
+ },
+ {
+  "color": "blue",
+  "deal_status": "After Sales Stage",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2025-04-12 13:36:33.458381",
+  "name": "After Sales Stage",
+  "position": 0
+ },
+ {
+  "color": "green",
+  "deal_status": "Service Stage",
+  "docstatus": 0,
+  "doctype": "CRM Deal Status",
+  "modified": "2025-04-12 13:36:57.784651",
+  "name": "Service Stage",
+  "position": 2
+ }
+]
