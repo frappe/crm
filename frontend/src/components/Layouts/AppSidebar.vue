@@ -149,6 +149,9 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
 import Section from '@/components/Section.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
+import PropertyIcon from '@/components/Icons/PropertyIcon.vue'
+import FunnelIcon from '@/components/Icons/FunnelIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -225,6 +228,11 @@ const links = [
     to: 'Organizations',
   },
   {
+    label: 'Properties',
+    icon: PropertyIcon,
+    to: 'Properties',
+  },
+  {
     label: 'Notes',
     icon: NoteIcon,
     to: 'Notes',
@@ -243,6 +251,16 @@ const links = [
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
+  },
+  {
+    label: 'Sales Funnel',
+    icon: FunnelIcon,
+    to: 'Sales Funnel',
+  },
+  {
+    label: 'Email Templates',
+    icon: Email2Icon,
+    to: 'Email Templates',
   },
 ]
 
