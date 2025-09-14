@@ -117,12 +117,11 @@
           class="flex flex-1 flex-col justify-between overflow-hidden"
         >
           <SidePanelLayout
-            v-model="property.doc"
-            :sections="sections.data"
-            doctype="Item"
-            @update="updateField"
-            @reload="sections.reload"
-          />
+          :sections="sections.data"
+          doctype="Item"
+          :docname="propertyId"
+          @reload="sections.reload"
+        />
         </div>
       </Resizer>
       <Tabs as="div" v-model="tabIndex" :tabs="tabs">
