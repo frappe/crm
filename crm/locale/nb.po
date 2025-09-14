@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-07 09:35+0000\n"
-"PO-Revision-Date: 2025-09-13 19:19\n"
+"PO-Revision-Date: 2025-09-14 19:18\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -3535,7 +3535,7 @@ msgstr ""
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Message"
-msgstr ""
+msgstr "Melding"
 
 #. Label of the middle_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -3551,7 +3551,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Mobile No"
-msgstr "Mobilnummer"
+msgstr "Mobile No"
 
 #: frontend/src/components/Modals/DealModal.vue:208
 #: frontend/src/components/Modals/LeadModal.vue:149
@@ -5037,7 +5037,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:237
 msgid "Show"
-msgstr ""
+msgstr "Vis"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Show Password"
