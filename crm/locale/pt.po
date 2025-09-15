@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-07 09:35+0000\n"
-"PO-Revision-Date: 2025-09-13 19:19\n"
+"PO-Revision-Date: 2025-09-15 19:46\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr " (Novo)"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:58
 msgid "(No title)"
-msgstr ""
+msgstr "(Sem título)"
 
 #: frontend/src/components/Modals/TaskModal.vue:87
 #: frontend/src/components/Telephony/TaskPanel.vue:70
@@ -160,7 +160,7 @@ msgstr "API Key"
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "API Key is required"
-msgstr ""
+msgstr "É necessária uma chave API"
 
 #. Label of the api_secret (Password) field in DocType 'CRM Twilio Settings'
 #. Label of the api_secret (Password) field in DocType 'ERPNext CRM Settings'
@@ -205,7 +205,7 @@ msgstr "Chave de Acesso"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:156
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "A Chave de Acesso é necessária para o Provedor de Serviço: {0}"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:97
 msgid "Access key"
@@ -213,7 +213,7 @@ msgstr "Chave de acesso"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:101
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
-msgstr ""
+msgstr "Chave de acesso do Exchangerate Host. Obrigatória para obter taxas de câmbio."
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
@@ -252,7 +252,7 @@ msgstr "Adicionar conta"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:9
 msgid "Add Assignee"
-msgstr ""
+msgstr "Adicionar Responsável"
 
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/Kanban/KanbanView.vue:157
@@ -262,7 +262,7 @@ msgstr "Adicionar Coluna"
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
 #: frontend/src/components/Settings/Users.vue:21
 msgid "Add Existing User"
-msgstr ""
+msgstr "Adicionar Utilizador Existente"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:57
 #: frontend/src/components/FieldLayoutEditor.vue:172
