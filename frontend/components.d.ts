@@ -142,7 +142,7 @@ declare module 'vue' {
     GroupByIcon: typeof import('./src/components/Icons/GroupByIcon.vue')['default']
     HeartIcon: typeof import('./src/components/Icons/HeartIcon.vue')['default']
     HelpIcon: typeof import('./src/components/Icons/HelpIcon.vue')['default']
-    HomeActions: typeof import('./src/components/Settings/General/HomeActions.vue')['default']
+    HomeActions: typeof import('./src/components/Settings/HomeActions.vue')['default']
     Icon: typeof import('./src/components/Icon.vue')['default']
     IconPicker: typeof import('./src/components/IconPicker.vue')['default']
     ImageUploader: typeof import('./src/components/Controls/ImageUploader.vue')['default']

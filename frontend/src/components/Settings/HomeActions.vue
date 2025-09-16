@@ -1,16 +1,14 @@
 <template>
   <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
     <!-- Header -->
-    <div class="flex justify-between">
-      <div class="flex gap-1 -ml-4 w-9/12">
-        <Button
-          variant="ghost"
-          icon-left="chevron-left"
-          :label="__('Home actions')"
-          size="md"
-          @click="() => emit('updateStep', 'general-settings')"
-          class="cursor-pointer hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
-        />
+    <div class="flex justify-between text-ink-gray-8">
+      <div class="flex flex-col gap-1">
+        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+          {{ __('Home actions') }}
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{ __('Configure actions that appear on the home dropdown') }}
+        </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
@@ -25,7 +23,7 @@
     </div>
 
     <!-- Fields -->
-    <div class="flex flex-1 flex-col gap-4 overflow-y-auto">
+    <div class="flex flex-1 flex-col overflow-y-auto">
       <Grid
         v-model="document.doc.dropdown_items"
         doctype="CRM Dropdown Item"
