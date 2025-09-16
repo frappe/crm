@@ -5,7 +5,7 @@
         {{ __('Forecasting') }}
       </h2>
       <p class="text-p-base text-ink-gray-6">
-        {{ __('Configure forecasting settings for your CRM') }}
+        {{ __('Configure forecasting feature to help predict sales performance and growth') }}
       </p>
     </div>
 
