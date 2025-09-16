@@ -12,7 +12,7 @@
         showTooltip: options.showTooltip,
         resizeColumn: options.resizeColumn,
       }"
-    row-key="name"
+    row-key="item_code"
   >
     <ListHeader
       class="sm:mx-5 mx-3"
