@@ -48,7 +48,7 @@
             />
             <ImageIcon v-else class="size-5 text-ink-gray-4" />
           </div>
-          <div class="flex flex-1 flex-col gap-2">
+          <div class="flex flex-1 flex-col gap-1">
             <span class="text-base font-medium">{{ __('Brand logo') }}</span>
             <span class="text-p-base text-ink-gray-6">
               {{
@@ -83,7 +83,7 @@
             />
             <ImageIcon v-else class="size-5 text-ink-gray-4" />
           </div>
-          <div class="flex flex-1 flex-col gap-2">
+          <div class="flex flex-1 flex-col gap-1">
             <span class="text-base font-medium">{{ __('Favicon') }}</span>
             <span class="text-p-base text-ink-gray-6">
               {{
