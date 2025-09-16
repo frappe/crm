@@ -25,7 +25,7 @@ class CRMDeal(Document):
 			add_status_change_log(self)
 			if frappe.db.get_value("CRM Deal Status", self.status, "type") == "Won":
 				self.closed_date = frappe.utils.nowdate()
-		self.validate_forcasting_fields()
+		self.validate_forecasting_fields()
 		self.validate_lost_reason()
 		self.update_exchange_rate()
 
@@ -151,9 +151,21 @@ class CRMDeal(Document):
 		if not self.probability or self.probability == 0:
 			self.probability = frappe.db.get_value("CRM Deal Status", self.status, "probability") or 0
 
-	def validate_forcasting_fields(self):
+	def update_expected_deal_value(self):
+		"""
+		Update the expected deal value based on the net total or total.
+		"""
+		if (
+			frappe.db.get_single_value("FCRM Settings", "auto_update_expected_deal_value")
+			and (self.net_total or self.total)
+			and self.expected_deal_value
+		):
+			self.expected_deal_value = self.net_total or self.total
+
+	def validate_forecasting_fields(self):
 		self.update_closed_date()
 		self.update_default_probability()
+		self.update_expected_deal_value()
 		if frappe.db.get_single_value("FCRM Settings", "enable_forecasting"):
 			if not self.expected_deal_value or self.expected_deal_value == 0:
 				frappe.throw(_("Expected Deal Value is required."), frappe.MandatoryError)
