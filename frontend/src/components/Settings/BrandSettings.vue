@@ -47,7 +47,7 @@
               alt="Logo"
               class="size-8 rounded"
             />
-            <ImageIcon class="size-5 text-ink-gray-4" />
+            <ImageIcon v-else class="size-5 text-ink-gray-4" />
           </div>
           <div class="flex flex-1 flex-col gap-2">
             <span class="text-base font-medium">{{ __('Brand logo') }}</span>
@@ -82,7 +82,7 @@
               alt="Favicon"
               class="size-8 rounded"
             />
-            <ImageIcon class="size-5 text-ink-gray-4" />
+            <ImageIcon v-else class="size-5 text-ink-gray-4" />
           </div>
           <div class="flex flex-1 flex-col gap-2">
             <span class="text-base font-medium">{{ __('Favicon') }}</span>
@@ -105,18 +105,14 @@
         </div>
       </div>
     </div>
-    <div v-if="errorMessage">
-      <ErrorMessage :message="__(errorMessage)" />
-    </div>
   </div>
 </template>
 <script setup>
 import ImageIcon from '~icons/lucide/image'
 import ImageUploader from '@/components/Controls/ImageUploader.vue'
-import { FormControl, ErrorMessage } from 'frappe-ui'
+import { FormControl } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
-import { ref } from 'vue'
 
 const { _settings: settings, setupBrand } = getSettings()
 
@@ -128,7 +124,4 @@ function updateSettings() {
     },
   })
 }
-
-const emit = defineEmits(['updateStep'])
-const errorMessage = ref('')
 </script>
