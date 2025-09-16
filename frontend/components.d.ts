@@ -162,7 +162,7 @@ declare module 'vue' {
     HelpdeskIcon: typeof import('./src/components/Icons/HelpdeskIcon.vue')['default']
     HelpdeskSettings: typeof import('./src/components/Settings/HelpdeskSettings.vue')['default']
     HelpIcon: typeof import('./src/components/Icons/HelpIcon.vue')['default']
-    HomeActions: typeof import('./src/components/Settings/General/HomeActions.vue')['default']
+    HomeActions: typeof import('./src/components/Settings/HomeActions.vue')['default']
     Icon: typeof import('./src/components/Icon.vue')['default']
     IconPicker: typeof import('./src/components/IconPicker.vue')['default']
     ImageUploader: typeof import('./src/components/Controls/ImageUploader.vue')['default']
