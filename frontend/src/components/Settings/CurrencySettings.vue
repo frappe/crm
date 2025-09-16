@@ -15,7 +15,6 @@
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
           :label="__('Update')"
-          icon-left="plus"
           variant="solid"
           :disabled="!settings.isDirty"
           :loading="settings.loading"
