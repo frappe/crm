@@ -2,10 +2,10 @@
   <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
     <div class="flex flex-col gap-1">
       <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-        {{ __('General') }}
+        {{ __('Forecasting') }}
       </h2>
       <p class="text-p-base text-ink-gray-6">
-        {{ __('Configure general settings for your CRM') }}
+        {{ __('Configure forecasting settings for your CRM') }}
       </p>
     </div>
 
@@ -35,28 +35,30 @@
         </div>
       </div>
       <div class="h-px border-t mx-2 border-outline-gray-modals" />
-      <template v-for="(setting, i) in settingsList" :key="setting.name">
-        <li
-          class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
-          @click="() => emit('updateStep', setting.name)"
-        >
-          <div class="flex flex-col">
-            <div class="text-p-base font-medium text-ink-gray-7 truncate">
-              {{ __(setting.label) }}
-            </div>
-            <div class="text-p-sm text-ink-gray-5 truncate">
-              {{ __(setting.description) }}
-            </div>
+      <div
+        class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
+        @click="autoUpdateExpectedDealValue"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Auto update expected deal value') }}
           </div>
-          <div>
-            <FeatherIcon name="chevron-right" class="text-ink-gray-7 size-4" />
+          <div class="text-p-sm text-ink-gray-5 truncate">
+            {{
+              __(
+                'Automatically update "Expected Deal Value" based on the total value of associated products in a deal',
+              )
+            }}
           </div>
-        </li>
-        <div
-          v-if="settingsList.length !== i + 1"
-          class="h-px border-t mx-2 border-outline-gray-modals"
-        />
-      </template>
+        </div>
+        <div>
+          <Switch
+            size="sm"
+            v-model="settings.doc.auto_update_expected_deal_value"
+            @click.stop="autoUpdateExpectedDealValue"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -65,28 +67,7 @@
 import { getSettings } from '@/stores/settings'
 import { Switch, toast } from 'frappe-ui'
 
-const emit = defineEmits(['updateStep'])
-
 const { _settings: settings } = getSettings()
-
-const settingsList = [
-  {
-    name: 'currency-settings',
-    label: 'Currency & Exchange rate provider',
-    description:
-      'Configure the currency and exchange rate provider for your CRM',
-  },
-  {
-    name: 'brand-settings',
-    label: 'Brand settings',
-    description: 'Configure your brand name, logo and favicon',
-  },
-  {
-    name: 'home-actions',
-    label: 'Home actions',
-    description: 'Configure actions that appear on the home dropdown',
-  },
-]
 
 function toggleForecasting(value) {
   settings.doc.enable_forecasting =
@@ -98,6 +79,21 @@ function toggleForecasting(value) {
         settings.doc.enable_forecasting
           ? __('Forecasting enabled successfully')
           : __('Forecasting disabled successfully'),
+      )
+    },
+  })
+}
+
+function autoUpdateExpectedDealValue() {
+  settings.doc.auto_update_expected_deal_value =
+    !settings.doc.auto_update_expected_deal_value
+
+  settings.save.submit(null, {
+    onSuccess: () => {
+      toast.success(
+        settings.doc.auto_update_expected_deal_value
+          ? __('Auto update of expected deal value enabled')
+          : __('Auto update of expected deal value disabled'),
       )
     },
   })
