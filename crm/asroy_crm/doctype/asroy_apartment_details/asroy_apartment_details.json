@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-10 15:12:57.462928",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "space_type",
+  "custom_name",
+  "size_sqft",
+  "facing",
+  "attach_bath",
+  "publish_website",
+  "picture",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "space_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Space Type",
+   "options": "Foyer/Entrance Hall\nKitchen Room\nFamily Room\nDining Room\nLiving Room\nMaster Bedroom\nBathroom\nLaundry Room\nGuest Room\nHome Office\nLibrary\nKids Bedroom\nPlayroom\nHome Theatre Room\nGym Room\nBasement\nGarage\nWalk-in Closet\nPantry\nGaming Room\nAttic\nSunrooms and Conservatories\nStorage Room\nMusic Room\nWine Cellar",
+   "reqd": 1
+  },
+  {
+   "fieldname": "custom_name",
+   "fieldtype": "Data",
+   "label": "Custom Name"
+  },
+  {
+   "fieldname": "size_sqft",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Size (sqft)",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "facing",
+   "fieldtype": "Select",
+   "label": "Facing",
+   "options": "North\nNortheast\nEast\nSoutheast\nSouth\nSouthwest\nWest\nNorthwest"
+  },
+  {
+   "default": "0",
+   "fieldname": "attach_bath",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Attach Bath"
+  },
+  {
+   "default": "0",
+   "fieldname": "publish_website",
+   "fieldtype": "Check",
+   "label": "Publish Website"
+  },
+  {
+   "fieldname": "picture",
+   "fieldtype": "Attach Image",
+   "label": "Picture"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-03-10 15:19:09.171095",
+ "modified_by": "Administrator",
+ "module": "Asroy CRM",
+ "name": "Asroy Apartment Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

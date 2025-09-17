@@ -35,6 +35,11 @@ let globalComponents = {
   Badge,
   FeatherIcon,
 }
+<<<<<<< HEAD
+=======
+import CanvasJSChart from '@canvasjs/vue-charts';
+
+>>>>>>> asroy_crm
 
 // create a pinia instance
 let pinia = createPinia()
@@ -52,6 +57,10 @@ for (let key in globalComponents) {
 }
 
 app.config.globalProperties.$dialog = createDialog
+<<<<<<< HEAD
+=======
+app.use(CanvasJSChart);
+>>>>>>> asroy_crm
 
 let socket
 if (import.meta.env.DEV) {

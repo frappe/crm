@@ -20,6 +20,10 @@
    "options": "black\ngray\nblue\ngreen\nred\npink\norange\namber\nyellow\ncyan\nteal\nviolet\npurple"
   },
   {
+<<<<<<< HEAD
+=======
+   "default": "New Lead",
+>>>>>>> asroy_crm
    "fieldname": "lead_status",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -37,7 +41,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2025-01-02 22:13:43.038656",
+=======
+ "modified": "2025-09-17 23:11:33.494995",
+>>>>>>> asroy_crm
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead Status",
@@ -78,7 +86,15 @@
    "share": 1
   }
  ],
+<<<<<<< HEAD
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
 }
+=======
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
+>>>>>>> asroy_crm

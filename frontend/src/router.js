@@ -73,6 +73,21 @@ const routes = [
     component: () => import('@/pages/Organizations.vue'),
   },
   {
+<<<<<<< HEAD
+=======
+    alias: '/properties',
+    path: '/Properties/view/:viewType?',
+    name: 'Properties',
+    component: () => import('@/pages/Properties.vue'),
+  },
+  {
+    path: '/properties/:propertyId',
+    name: 'Property',
+    component: () => import(`@/pages/${handleMobileView('Property')}.vue`),
+    props: true,
+  },
+  {
+>>>>>>> asroy_crm
     path: '/organizations/:organizationId',
     name: 'Organization',
     component: () => import(`@/pages/${handleMobileView('Organization')}.vue`),
@@ -90,6 +105,21 @@ const routes = [
     component: () => import('@/pages/Calendar.vue'),
   },
   {
+<<<<<<< HEAD
+=======
+    alias: '/sales-funnel',
+    path: '/sales-funnel/view/:viewType?',
+    name: 'Sales Funnel',
+    component: () => import('@/pages/SalesFunnel.vue'),
+  },
+  {
+    alias: '/email-templates',
+    path: '/email-templates/view/:viewType?',
+    name: 'Email Templates',
+    component: () => import('@/pages/EmailTemplates.vue'),
+  },
+  {
+>>>>>>> asroy_crm
     path: '/welcome',
     name: 'Welcome',
     component: () => import('@/pages/Welcome.vue'),

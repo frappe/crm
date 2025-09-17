@@ -195,12 +195,20 @@ def get_exchange_rate(from_currency, to_currency, date=None):
 				).format(from_currency, to_currency)
 			)
 		else:
+<<<<<<< HEAD
 			return 0.0082
 			# frappe.throw(
 			# 	_(
 			# 		"Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
 			# 	).format(from_currency, to_currency)
 			# )
+=======
+			frappe.throw(
+				_(
+					"Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
+				).format(from_currency, to_currency)
+			)
+>>>>>>> asroy_crm
 
 	frappe.throw(
 		_(

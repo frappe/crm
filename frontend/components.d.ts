@@ -118,9 +118,17 @@ declare module 'vue' {
     EmailMultiSelect: typeof import('./src/components/Controls/EmailMultiSelect.vue')['default']
     EmailProviderIcon: typeof import('./src/components/Settings/EmailProviderIcon.vue')['default']
     EmailTemplateIcon: typeof import('./src/components/Icons/EmailTemplateIcon.vue')['default']
+<<<<<<< HEAD
     EmailTemplatePage: typeof import('./src/components/Settings/EmailTemplate/EmailTemplatePage.vue')['default']
     EmailTemplates: typeof import('./src/components/Settings/EmailTemplate/EmailTemplates.vue')['default']
     EmailTemplateSelectorModal: typeof import('./src/components/Modals/EmailTemplateSelectorModal.vue')['default']
+=======
+    EmailTemplateModal: typeof import('./src/components/Modals/EmailTemplateModal.vue')['default']
+    EmailTemplatePage: typeof import('./src/components/Settings/EmailTemplate/EmailTemplatePage.vue')['default']
+    EmailTemplates: typeof import('./src/components/Settings/EmailTemplate/EmailTemplates.vue')['default']
+    EmailTemplateSelectorModal: typeof import('./src/components/Modals/EmailTemplateSelectorModal.vue')['default']
+    EmailTemplatesListView: typeof import('./src/components/ListViews/EmailTemplatesListView.vue')['default']
+>>>>>>> asroy_crm
     ERPNextIcon: typeof import('./src/components/Icons/ERPNextIcon.vue')['default']
     ERPNextSettings: typeof import('./src/components/Settings/ERPNextSettings.vue')['default']
     ErrorPage: typeof import('./src/components/ErrorPage.vue')['default']
@@ -147,6 +155,10 @@ declare module 'vue' {
     FilterIcon: typeof import('./src/components/Icons/FilterIcon.vue')['default']
     FormattedInput: typeof import('./src/components/Controls/FormattedInput.vue')['default']
     FrappeCloudIcon: typeof import('./src/components/Icons/FrappeCloudIcon.vue')['default']
+<<<<<<< HEAD
+=======
+    FunnelIcon: typeof import('./src/components/Icons/FunnelIcon.vue')['default']
+>>>>>>> asroy_crm
     GenderIcon: typeof import('./src/components/Icons/GenderIcon.vue')['default']
     GeneralSettings: typeof import('./src/components/Settings/General/GeneralSettings.vue')['default']
     GeneralSettingsPage: typeof import('./src/components/Settings/General/GeneralSettingsPage.vue')['default']
@@ -226,6 +238,12 @@ declare module 'vue' {
     PrimaryDropdown: typeof import('./src/components/PrimaryDropdown.vue')['default']
     PrimaryDropdownItem: typeof import('./src/components/PrimaryDropdownItem.vue')['default']
     ProfileSettings: typeof import('./src/components/Settings/ProfileSettings.vue')['default']
+<<<<<<< HEAD
+=======
+    PropertiesListView: typeof import('./src/components/ListViews/PropertiesListView.vue')['default']
+    PropertyIcon: typeof import('./src/components/Icons/PropertyIcon.vue')['default']
+    PropertyModal: typeof import('./src/components/Modals/PropertyModal.vue')['default']
+>>>>>>> asroy_crm
     QuickEntryModal: typeof import('./src/components/Modals/QuickEntryModal.vue')['default']
     QuickFilterField: typeof import('./src/components/QuickFilterField.vue')['default']
     QuickFilterIcon: typeof import('./src/components/Icons/QuickFilterIcon.vue')['default']

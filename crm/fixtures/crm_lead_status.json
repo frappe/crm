@@ -1,0 +1,38 @@
+[
+ {
+  "color": "green",
+  "docstatus": 0,
+  "doctype": "CRM Lead Status",
+  "lead_status": "Pipeline Stage",
+  "modified": "2025-04-12 13:35:16.365257",
+  "name": "Pipeline Stage",
+  "position": 3
+ },
+ {
+  "color": "green",
+  "docstatus": 0,
+  "doctype": "CRM Lead Status",
+  "lead_status": "After Sales Stage",
+  "modified": "2025-03-04 11:33:27.154687",
+  "name": "After Sales Stage",
+  "position": 4
+ },
+ {
+  "color": "orange",
+  "docstatus": 0,
+  "doctype": "CRM Lead Status",
+  "lead_status": "Service Stage",
+  "modified": "2025-03-04 11:32:05.914762",
+  "name": "Service Stage",
+  "position": 2
+ },
+ {
+  "color": "purple",
+  "docstatus": 0,
+  "doctype": "CRM Lead Status",
+  "lead_status": "None",
+  "modified": "2025-04-12 13:36:02.228458",
+  "name": "None",
+  "position": 1
+ }
+]

@@ -23,6 +23,10 @@
    "options": "black\ngray\nblue\ngreen\nred\npink\norange\namber\nyellow\ncyan\nteal\nviolet\npurple"
   },
   {
+<<<<<<< HEAD
+=======
+   "default": "Unvalidated",
+>>>>>>> asroy_crm
    "fieldname": "deal_status",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -58,7 +62,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2025-07-11 16:03:28.077955",
+=======
+ "modified": "2025-09-17 23:09:51.574116",
+>>>>>>> asroy_crm
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal Status",
