@@ -72,7 +72,6 @@ import {
   toast,
 } from 'frappe-ui'
 import { inject, ref } from 'vue'
-import { TemplateOption } from '@/utils'
 
 const assignmentRulesList = inject('assignmentRulesList')
 const updateStep = inject('updateStep')
@@ -128,29 +127,19 @@ const dropdownOptions = [
   },
   {
     label: __('Delete'),
-    component: (props) =>
-      TemplateOption({
-        option: __('Delete'),
-        icon: 'trash-2',
-        active: props.active,
-        onClick: (e) => {
-          e.preventDefault()
-          e.stopImmediatePropagation()
-          isConfirmingDelete.value = true
-        },
-      }),
+    icon: 'trash-2',
+    onClick: (e) => {
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      isConfirmingDelete.value = true
+    },
     condition: () => !isConfirmingDelete.value,
   },
   {
     label: __('Confirm Delete'),
-    component: (props) =>
-      TemplateOption({
-        option: __('Confirm Delete'),
-        icon: 'trash-2',
-        active: props.active,
-        theme: 'danger',
-        onClick: () => deleteAssignmentRule(),
-      }),
+    icon: 'trash-2',
+    theme: 'red',
+    onClick: () => deleteAssignmentRule(),
     condition: () => isConfirmingDelete.value,
   },
 ]
