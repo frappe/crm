@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-14 09:35+0000\n"
-"PO-Revision-Date: 2025-09-16 20:02\n"
+"PO-Revision-Date: 2025-09-17 20:27\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -588,7 +588,7 @@ msgstr "Atribuído a"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:5
 msgid "Assignee Rules"
-msgstr ""
+msgstr "Regras de Atribuição"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:75
 msgid "Assignees"
