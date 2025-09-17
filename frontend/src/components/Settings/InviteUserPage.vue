@@ -1,6 +1,6 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
-    <div class="flex justify-between">
+  <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
+    <div class="flex px-2 justify-between">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
           {{ __('Send invites to') }}
@@ -23,8 +23,9 @@
         />
       </div>
     </div>
-    <div class="flex-1 flex flex-col gap-8 overflow-y-auto">
+    <div class="flex-1 flex flex-col px-2 gap-8 overflow-y-auto">
       <div>
+<<<<<<< HEAD
         <label class="block text-xs text-ink-gray-5 mb-1.5">
           {{ __('Invite by email') }}
         </label>
@@ -43,6 +44,21 @@
             :fetchUsers="false"
           />
         </div>
+=======
+        <FormControl
+          type="textarea"
+          label="Invite by email"
+          placeholder="user1@example.com, user2@example.com, ..."
+          @input="updateInvitees($event.target.value)"
+          :debounce="100"
+          :disabled="inviteByEmail.loading"
+          :description="
+            __(
+              'You can invite multiple users by comma separating their email addresses',
+            )
+          "
+        />
+>>>>>>> 69f80903 (refactor: replace EmailMultiSelect with FormControl for inviting users by email)
         <div
           v-if="userExistMessage || inviteeExistMessage"
           class="text-xs text-ink-red-3 mt-1.5"
@@ -100,15 +116,13 @@
   </div>
 </template>
 <script setup>
+<<<<<<< HEAD
 import MultiSelectUserInput from '@/components/Controls/MultiSelectUserInput.vue'
+=======
+>>>>>>> 69f80903 (refactor: replace EmailMultiSelect with FormControl for inviting users by email)
 import { validateEmail, convertArrayToString } from '@/utils'
 import { usersStore } from '@/stores/users'
-import {
-  createListResource,
-  createResource,
-  FormControl,
-  Tooltip,
-} from 'frappe-ui'
+import { createListResource, createResource, FormControl } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, computed } from 'vue'
 
@@ -208,6 +222,15 @@ const pendingInvitations = createListResource({
   doctype: 'CRM Invitation',
   filters: { status: 'Pending' },
   fields: ['name', 'email', 'role'],
+  pageLength: 999,
   auto: true,
 })
+
+function updateInvitees(value) {
+  const emails = value
+    .split(',')
+    .map((email) => email.trim())
+    .filter((email) => validateEmail(email))
+  invitees.value = emails
+}
 </script>
