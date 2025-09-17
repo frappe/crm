@@ -1,14 +1,14 @@
 <template>
-  <div class="px-10 py-8 sticky top-0">
+  <div class="p-8 sticky top-0">
     <div class="flex items-start justify-between">
       <div class="flex flex-col gap-1">
-        <h1 class="text-lg font-semibold text-ink-gray-8">
+        <h1 class="text-xl font-semibold text-ink-gray-8">
           {{ __('Assignment rules') }}
         </h1>
-        <p class="text-p-sm text-ink-gray-6 max-w-md">
+        <p class="text-p-base text-ink-gray-6 max-w-md">
           {{
             __(
-              'Assignment Rules automatically route tickets to the right team members based on predefined conditions.',
+              'Assignment Rules automatically route leads or deals to the right team members based on predefined conditions.',
             )
           }}
         </p>
@@ -22,7 +22,7 @@
       />
     </div>
   </div>
-  <div class="overflow-y-auto px-10 pb-8">
+  <div class="overflow-y-auto px-8 pb-6">
     <AssignmentRulesList />
   </div>
 </template>
