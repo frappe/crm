@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-07 09:35+0000\n"
-"PO-Revision-Date: 2025-09-07 17:34\n"
+"POT-Creation-Date: 2025-09-14 09:35+0000\n"
+"PO-Revision-Date: 2025-09-16 20:03\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr " (Ny)"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:58
 msgid "(No title)"
-msgstr ""
+msgstr "(Ingen tittel)"
 
 #: frontend/src/components/Modals/TaskModal.vue:87
 #: frontend/src/components/Telephony/TaskPanel.vue:70
@@ -37,7 +37,7 @@ msgstr "1 time siden"
 
 #: frontend/src/composables/event.js:163
 msgid "1 hr"
-msgstr ""
+msgstr "1 time"
 
 #: frontend/src/utils/index.js:168
 msgid "1 minute ago"
@@ -128,20 +128,20 @@ msgstr "<b>SNARVEIER</b>"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:98
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:98
 msgid "<p>Dear {{ lead_name }},</p>\\n\\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\\n\\n<p>Thanks,</p>\\n<p>Frappé</p>"
-msgstr ""
+msgstr "<p>Kjære {{ lead_name }},</p>\\n\\n<p>Dette er en påminnelse om betaling av {{ grand_total }}.</p>\\n\\n<p>Takk,</p>\\n<p>Frappé</p>"
 
 #. Header text in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "<span class=\"h5\"><b>PORTAL</b></span>"
-msgstr ""
+msgstr "<span class=\"h5\"><b>PORTAL</b></span>"
 
 #: frontend/src/components/CommunicationArea.vue:79
 msgid "@John, can you please check this?"
-msgstr ""
+msgstr "@John, kan du sjekke dette?"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:56
 msgid "A Lead requires either a person's name or an organization's name"
-msgstr ""
+msgstr "En potensiell kunde krever enten en persons navn eller en organisasjons navn"
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
@@ -156,7 +156,7 @@ msgstr "En ny konto er opprettet for deg på {0}"
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "API Key"
-msgstr ""
+msgstr "API Nøkkel"
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "API Key is required"
@@ -169,7 +169,7 @@ msgstr ""
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "API Secret"
-msgstr ""
+msgstr "API-hemmelighet"
 
 #. Label of the api_token (Password) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
@@ -388,7 +388,7 @@ msgstr ""
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Address"
-msgstr ""
+msgstr "Adresse"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:94
 #: frontend/src/components/Settings/InviteUserPage.vue:169
@@ -430,7 +430,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_products/crm_products.json
 #: frontend/src/pages/Contact.vue:499 frontend/src/pages/MobileContact.vue:507
 #: frontend/src/pages/MobileOrganization.vue:451
-#: frontend/src/pages/Organization.vue:458
+#: frontend/src/pages/Organization.vue:472
 msgid "Amount"
 msgstr ""
 
@@ -545,7 +545,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
-msgstr ""
+msgstr "Er du sikker på at du vil tilbakestille skjemaskriptet \"Opprett tilbud fra CRM-avtale\"?"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:174
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
@@ -799,7 +799,7 @@ msgstr ""
 #: frontend/src/components/EmailEditor.vue:35
 #: frontend/src/components/EmailEditor.vue:57
 msgid "CC"
-msgstr ""
+msgstr "CC"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -1067,7 +1067,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:91
 msgid "Capture"
-msgstr ""
+msgstr "Ta bilde"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:561
 msgid "Capturing leads"
@@ -1249,7 +1249,7 @@ msgstr ""
 #. Label of the erpnext_company (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Company in ERPNext Site"
-msgstr ""
+msgstr "Bedrift i ERPNext-nettsted"
 
 #: crm/templates/emails/helpdesk_invitation.html:10
 msgid "Complete Registration"
@@ -1498,7 +1498,7 @@ msgstr ""
 #. 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Create customer on status change"
-msgstr ""
+msgstr "Opprett kunde ved statusendring"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:348
 #: frontend/src/pages/Calendar.vue:7
@@ -1627,7 +1627,7 @@ msgstr ""
 #. Label of the deal_status (Link) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Deal Status"
-msgstr ""
+msgstr "Avtalestatus"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -1645,7 +1645,7 @@ msgstr ""
 
 #: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:528
 #: frontend/src/pages/MobileOrganization.vue:472
-#: frontend/src/pages/Organization.vue:479
+#: frontend/src/pages/Organization.vue:493
 msgid "Deal owner"
 msgstr ""
 
@@ -2024,40 +2024,40 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:604
 #: frontend/src/components/Settings/Settings.vue:146
 msgid "ERPNext"
-msgstr ""
+msgstr "ERPNext"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext CRM Settings"
-msgstr ""
+msgstr "ERPNext CRM-innstillinger"
 
 #. Label of the section_break_oubd (Section Break) field in DocType 'ERPNext
 #. CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext Site API's"
-msgstr ""
+msgstr "ERPNext-nettstedets API-er"
 
 #. Label of the erpnext_site_url (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext Site URL"
-msgstr ""
+msgstr "ERPNext-nettstedets URL"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:25
 msgid "ERPNext is not installed in the current site"
-msgstr ""
+msgstr "ERPNext er ikke installert på det aktuelle nettstedet"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:98
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:124
 msgid "ERPNext is not integrated with the CRM"
-msgstr ""
+msgstr "ERPNext er ikke integrert med CRM-systemet"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "ERPNext settings"
-msgstr ""
+msgstr "ERPNext-innstillinger"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext settings updated"
-msgstr ""
+msgstr "ERPNext-innstillinger oppdatert"
 
 #: frontend/src/components/FieldLayout/Field.vue:91
 #: frontend/src/components/FieldLayoutEditor.vue:313
@@ -2166,8 +2166,8 @@ msgstr ""
 #: frontend/src/pages/MobileContact.vue:518
 #: frontend/src/pages/MobileOrganization.vue:462
 #: frontend/src/pages/MobileOrganization.vue:490
-#: frontend/src/pages/Organization.vue:469
-#: frontend/src/pages/Organization.vue:497
+#: frontend/src/pages/Organization.vue:483
+#: frontend/src/pages/Organization.vue:511
 msgid "Email"
 msgstr ""
 
@@ -2322,15 +2322,15 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:279
 msgid "Error while creating customer in ERPNext, check error log for more details"
-msgstr ""
+msgstr "Feil under oppretting av kunde i ERPNext, sjekk feilloggen for mer informasjon"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:191
 msgid "Error while creating prospect in ERPNext, check error log for more details"
-msgstr ""
+msgstr "Feil under oppretting av prospekt i ERPNext, sjekk feilloggen for mer informasjon"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:117
 msgid "Error while fetching customer in ERPNext, check error log for more details"
-msgstr ""
+msgstr "Feil under henting av kunde i ERPNext, sjekk feilloggen for mer informasjon"
 
 #: frontend/src/components/Modals/EventModal.vue:368
 msgid "Event ID is required"
@@ -2630,7 +2630,7 @@ msgstr "Skjema"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:19
 msgid "Form Script updated successfully"
-msgstr ""
+msgstr "Skjemaskriptet ble vellykket oppdatert"
 
 #. Name of a Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -2975,7 +2975,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:598
 msgid "Integration"
-msgstr ""
+msgstr "Integrasjon"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Integration Not Enabled"
@@ -3085,7 +3085,7 @@ msgstr "Er standard"
 #. CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Is ERPNext installed on a different site?"
-msgstr ""
+msgstr "Er ERPNext installert på et annet nettsted?"
 
 #. Label of the is_group (Check) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -3215,8 +3215,8 @@ msgstr ""
 #: frontend/src/pages/Contact.vue:525 frontend/src/pages/MobileContact.vue:533
 #: frontend/src/pages/MobileOrganization.vue:477
 #: frontend/src/pages/MobileOrganization.vue:505
-#: frontend/src/pages/Organization.vue:484
-#: frontend/src/pages/Organization.vue:512
+#: frontend/src/pages/Organization.vue:498
+#: frontend/src/pages/Organization.vue:526
 msgid "Last modified"
 msgstr ""
 
@@ -3535,7 +3535,7 @@ msgstr ""
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Message"
-msgstr ""
+msgstr "Melding"
 
 #. Label of the middle_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -3551,7 +3551,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Mobile No"
-msgstr "Mobilnummer"
+msgstr "Mobile No"
 
 #: frontend/src/components/Modals/DealModal.vue:208
 #: frontend/src/components/Modals/LeadModal.vue:149
@@ -3577,7 +3577,7 @@ msgstr ""
 
 #: frontend/src/pages/Contact.vue:515 frontend/src/pages/MobileContact.vue:523
 #: frontend/src/pages/MobileOrganization.vue:467
-#: frontend/src/pages/Organization.vue:474
+#: frontend/src/pages/Organization.vue:488
 msgid "Mobile no"
 msgstr ""
 
@@ -3628,7 +3628,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:42
 #: frontend/src/components/ViewControls.vue:779
 #: frontend/src/pages/MobileOrganization.vue:485
-#: frontend/src/pages/Organization.vue:492
+#: frontend/src/pages/Organization.vue:506
 msgid "Name"
 msgstr ""
 
@@ -3809,7 +3809,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:150
 msgid "No changes made"
-msgstr "Ingen endringer gjort"
+msgstr "Ingen endringer er gjort"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
 #: frontend/src/pages/Deal.vue:261 frontend/src/pages/MobileDeal.vue:205
@@ -3866,7 +3866,7 @@ msgid "No users found"
 msgstr ""
 
 #: frontend/src/pages/MobileOrganization.vue:281
-#: frontend/src/pages/Organization.vue:295
+#: frontend/src/pages/Organization.vue:309
 msgid "No website found"
 msgstr ""
 
@@ -3882,7 +3882,7 @@ msgstr ""
 #: frontend/src/pages/Contacts.vue:58 frontend/src/pages/Deals.vue:234
 #: frontend/src/pages/Leads.vue:260 frontend/src/pages/MobileContact.vue:147
 #: frontend/src/pages/MobileOrganization.vue:139
-#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:151
+#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:152
 #: frontend/src/pages/Organizations.vue:58 frontend/src/pages/Tasks.vue:184
 msgid "No {0} Found"
 msgstr "Ingen {0} funnet"
@@ -4112,8 +4112,8 @@ msgstr ""
 #: frontend/src/pages/MobileLead.vue:118
 #: frontend/src/pages/MobileOrganization.vue:446
 #: frontend/src/pages/MobileOrganization.vue:500
-#: frontend/src/pages/Organization.vue:453
-#: frontend/src/pages/Organization.vue:507
+#: frontend/src/pages/Organization.vue:467
+#: frontend/src/pages/Organization.vue:521
 msgid "Organization"
 msgstr ""
 
@@ -4143,7 +4143,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/MobileOrganization.vue:205
-#: frontend/src/pages/Organization.vue:233
+#: frontend/src/pages/Organization.vue:234
 msgid "Organizations"
 msgstr ""
 
@@ -4237,7 +4237,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/pages/MobileOrganization.vue:495
-#: frontend/src/pages/Organization.vue:502
+#: frontend/src/pages/Organization.vue:516
 msgid "Phone"
 msgstr ""
 
@@ -4303,7 +4303,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:126
 msgid "Please set Email Address"
-msgstr ""
+msgstr "Angi e-postadresse"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Please setup Exotel intergration"
@@ -4331,7 +4331,7 @@ msgstr ""
 #. Label of the email (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Email"
-msgstr ""
+msgstr "Primær e-postadresse"
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4341,7 +4341,7 @@ msgstr ""
 #. Label of the phone (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Phone"
-msgstr ""
+msgstr "Primært telefonnummer"
 
 #: frontend/src/pages/Deal.vue:669 frontend/src/pages/MobileDeal.vue:566
 msgid "Primary contact set"
@@ -4497,7 +4497,7 @@ msgstr ""
 #. Label of the reference_doctype (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Reference Doctype"
-msgstr "Referanse DocType"
+msgstr "Referanse-DocType"
 
 #. Label of the reference_doctype (Link) field in DocType 'CRM Call Log'
 #. Label of the reference_doctype (Link) field in DocType 'CRM Task'
@@ -4572,11 +4572,11 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:34
 #: frontend/src/components/CommunicationArea.vue:10
 msgid "Reply"
-msgstr ""
+msgstr "Svar"
 
 #: frontend/src/components/Activities/EmailArea.vue:41
 msgid "Reply All"
-msgstr ""
+msgstr "Svar alle"
 
 #: frontend/src/components/Modals/AboutModal.vue:72
 msgid "Report an Issue"
@@ -4597,11 +4597,11 @@ msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:78
 msgid "Reset Changes"
-msgstr "Nullstill endringer"
+msgstr "Tilbakestill endringer"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
-msgstr ""
+msgstr "Tilbakestill ERPNext skjemaskript"
 
 #: frontend/src/components/ColumnSettings.vue:86
 msgid "Reset to Default"
@@ -4609,7 +4609,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:28
 msgid "Reset to default"
-msgstr ""
+msgstr "Tilbakestill til standardinnstilling"
 
 #. Label of the response_by (Datetime) field in DocType 'CRM Deal'
 #. Label of the response_by (Datetime) field in DocType 'CRM Lead'
@@ -4635,7 +4635,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:14
 msgid "Restore"
-msgstr ""
+msgstr "Gjenopprett"
 
 #. Label of the restore_defaults (Button) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:13
@@ -4756,7 +4756,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Sales Manager"
-msgstr ""
+msgstr "Salgsleder"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -4807,7 +4807,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Salutation"
-msgstr ""
+msgstr "Hilsen"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -5037,7 +5037,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:237
 msgid "Show"
-msgstr ""
+msgstr "Vis"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Show Password"
@@ -5177,7 +5177,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:505
 #: frontend/src/pages/MobileContact.vue:513
 #: frontend/src/pages/MobileOrganization.vue:457
-#: frontend/src/pages/Organization.vue:464
+#: frontend/src/pages/Organization.vue:478
 msgid "Status"
 msgstr ""
 
@@ -5248,7 +5248,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "System Manager"
-msgstr ""
+msgstr "Systemansvarlig"
 
 #: frontend/src/components/EmailEditor.vue:22
 msgid "TO"

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-07 09:35+0000\n"
-"PO-Revision-Date: 2025-09-07 17:34\n"
+"POT-Creation-Date: 2025-09-14 09:35+0000\n"
+"PO-Revision-Date: 2025-09-16 20:03\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr " (Ny)"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:58
 msgid "(No title)"
-msgstr ""
+msgstr "(Ingen titel)"
 
 #: frontend/src/components/Modals/TaskModal.vue:87
 #: frontend/src/components/Telephony/TaskPanel.vue:70
@@ -141,11 +141,11 @@ msgstr "@John, kan du tjekke dette?"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:56
 msgid "A Lead requires either a person's name or an organization's name"
-msgstr ""
+msgstr "En Lead kræver enten en persons navn eller en organisations navn"
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
-msgstr ""
+msgstr "En ny konto er blevet oprettet til dig på {0}"
 
 #. Label of the api_key (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the api_key (Data) field in DocType 'CRM Twilio Settings'
@@ -205,7 +205,7 @@ msgstr "Adgangs Nøgle"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:156
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "Adgangsnøgle kræves for tjenesteudbyder: {0}"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:97
 msgid "Access key"
@@ -213,7 +213,7 @@ msgstr "Adgangs Nøgle"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:101
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
-msgstr ""
+msgstr "Adgangsnøgle til Exchangerate Host. Kræves for at hente valutakurser."
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
@@ -252,7 +252,7 @@ msgstr "Tilføj Konto"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:9
 msgid "Add Assignee"
-msgstr ""
+msgstr "Tilføj tildeler"
 
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/Kanban/KanbanView.vue:157
@@ -277,7 +277,7 @@ msgstr "Tilføj Filter"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:273
 msgid "Add Lead or Deal"
-msgstr ""
+msgstr "Tilføj kundeemne eller aftale"
 
 #: frontend/src/components/Controls/Grid.vue:324
 msgid "Add Row"
@@ -304,7 +304,7 @@ msgstr "Tilføj Ugentlige Helligdage"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a condition"
-msgstr ""
+msgstr "Tilføj en betingelse"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
@@ -328,12 +328,12 @@ msgstr "Tilføj kolonne"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:28
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:64
 msgid "Add condition"
-msgstr ""
+msgstr "Tilføj betingelse"
 
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:91
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:70
 msgid "Add condition group"
-msgstr ""
+msgstr "Tilføj betingelsesgruppe"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:325
 msgid "Add description"
@@ -349,7 +349,7 @@ msgstr "Tilføj beskrivelse..."
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
-msgstr ""
+msgstr "Tilføj eksisterende systembrugere til dette CRM. Tildel dem en rolle for at give adgang med deres nuværende legitimationsoplysninger."
 
 #: frontend/src/components/ViewControls.vue:107
 msgid "Add filter"
@@ -366,7 +366,7 @@ msgstr "Tilføj eksempel data"
 #. Description of the 'Icon' (Code) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Add svg code or use feather icons e.g 'settings'"
-msgstr ""
+msgstr "Tilføj svg-kode eller brug fjerikoner, f.eks. 'indstillinger'"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:24
 msgid "Add task"
@@ -383,7 +383,7 @@ msgstr "Tilføj din første kommentar"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:11
 msgid "Add, edit, and manage email templates for various CRM communications"
-msgstr ""
+msgstr "Tilføj, rediger og administrer e-mail-skabeloner til forskellige CRM-kommunikationer"
 
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
@@ -403,7 +403,7 @@ msgstr "Administrator"
 
 #: crm/integrations/twilio/twilio_handler.py:144
 msgid "Agent is unavailable to take the call, please call after some time."
-msgstr ""
+msgstr "Agenten kan ikke besvare opkaldet. Ring venligst senere."
 
 #. Name of a role
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
@@ -424,13 +424,13 @@ msgstr "Alle"
 #: frontend/src/components/Modals/EventModal.vue:71
 #: frontend/src/composables/event.js:122
 msgid "All day"
-msgstr ""
+msgstr "Hele dagen"
 
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 #: frontend/src/pages/Contact.vue:499 frontend/src/pages/MobileContact.vue:507
 #: frontend/src/pages/MobileOrganization.vue:451
-#: frontend/src/pages/Organization.vue:458
+#: frontend/src/pages/Organization.vue:472
 msgid "Amount"
 msgstr "Beløb"
 
@@ -445,17 +445,17 @@ msgstr "Der opstod en fejl"
 
 #: frontend/src/data/document.js:63
 msgid "An error occurred while updating the document"
-msgstr ""
+msgstr "Der opstod en fejl under opdatering af dokumentet"
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]"
-msgstr ""
+msgstr "En ikonfil med filtypenavnet .ico. Skal være 16 x 16 px. Genereret ved hjælp af en favicon-generator. [favicon-generator.org]"
 
 #. Description of the 'Logo' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "An image with 1:1 & 2:1 ratio is preferred"
-msgstr ""
+msgstr "Et billede med forholdet 1:1 og 2:1 foretrækkes"
 
 #: frontend/src/components/Filter.vue:43 frontend/src/components/Filter.vue:81
 msgid "And"
@@ -1645,7 +1645,7 @@ msgstr ""
 
 #: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:528
 #: frontend/src/pages/MobileOrganization.vue:472
-#: frontend/src/pages/Organization.vue:479
+#: frontend/src/pages/Organization.vue:493
 msgid "Deal owner"
 msgstr ""
 
@@ -2166,8 +2166,8 @@ msgstr ""
 #: frontend/src/pages/MobileContact.vue:518
 #: frontend/src/pages/MobileOrganization.vue:462
 #: frontend/src/pages/MobileOrganization.vue:490
-#: frontend/src/pages/Organization.vue:469
-#: frontend/src/pages/Organization.vue:497
+#: frontend/src/pages/Organization.vue:483
+#: frontend/src/pages/Organization.vue:511
 msgid "Email"
 msgstr "E-mail"
 
@@ -3215,8 +3215,8 @@ msgstr ""
 #: frontend/src/pages/Contact.vue:525 frontend/src/pages/MobileContact.vue:533
 #: frontend/src/pages/MobileOrganization.vue:477
 #: frontend/src/pages/MobileOrganization.vue:505
-#: frontend/src/pages/Organization.vue:484
-#: frontend/src/pages/Organization.vue:512
+#: frontend/src/pages/Organization.vue:498
+#: frontend/src/pages/Organization.vue:526
 msgid "Last modified"
 msgstr ""
 
@@ -3577,7 +3577,7 @@ msgstr ""
 
 #: frontend/src/pages/Contact.vue:515 frontend/src/pages/MobileContact.vue:523
 #: frontend/src/pages/MobileOrganization.vue:467
-#: frontend/src/pages/Organization.vue:474
+#: frontend/src/pages/Organization.vue:488
 msgid "Mobile no"
 msgstr ""
 
@@ -3628,7 +3628,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:42
 #: frontend/src/components/ViewControls.vue:779
 #: frontend/src/pages/MobileOrganization.vue:485
-#: frontend/src/pages/Organization.vue:492
+#: frontend/src/pages/Organization.vue:506
 msgid "Name"
 msgstr ""
 
@@ -3866,7 +3866,7 @@ msgid "No users found"
 msgstr ""
 
 #: frontend/src/pages/MobileOrganization.vue:281
-#: frontend/src/pages/Organization.vue:295
+#: frontend/src/pages/Organization.vue:309
 msgid "No website found"
 msgstr ""
 
@@ -3882,7 +3882,7 @@ msgstr ""
 #: frontend/src/pages/Contacts.vue:58 frontend/src/pages/Deals.vue:234
 #: frontend/src/pages/Leads.vue:260 frontend/src/pages/MobileContact.vue:147
 #: frontend/src/pages/MobileOrganization.vue:139
-#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:151
+#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:152
 #: frontend/src/pages/Organizations.vue:58 frontend/src/pages/Tasks.vue:184
 msgid "No {0} Found"
 msgstr ""
@@ -4112,8 +4112,8 @@ msgstr ""
 #: frontend/src/pages/MobileLead.vue:118
 #: frontend/src/pages/MobileOrganization.vue:446
 #: frontend/src/pages/MobileOrganization.vue:500
-#: frontend/src/pages/Organization.vue:453
-#: frontend/src/pages/Organization.vue:507
+#: frontend/src/pages/Organization.vue:467
+#: frontend/src/pages/Organization.vue:521
 msgid "Organization"
 msgstr ""
 
@@ -4143,7 +4143,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/MobileOrganization.vue:205
-#: frontend/src/pages/Organization.vue:233
+#: frontend/src/pages/Organization.vue:234
 msgid "Organizations"
 msgstr ""
 
@@ -4237,7 +4237,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/pages/MobileOrganization.vue:495
-#: frontend/src/pages/Organization.vue:502
+#: frontend/src/pages/Organization.vue:516
 msgid "Phone"
 msgstr ""
 
@@ -5177,7 +5177,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:505
 #: frontend/src/pages/MobileContact.vue:513
 #: frontend/src/pages/MobileOrganization.vue:457
-#: frontend/src/pages/Organization.vue:464
+#: frontend/src/pages/Organization.vue:478
 msgid "Status"
 msgstr ""
 
