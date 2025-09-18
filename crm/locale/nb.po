@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-14 09:35+0000\n"
-"PO-Revision-Date: 2025-09-16 20:03\n"
+"PO-Revision-Date: 2025-09-18 20:35\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -1754,7 +1754,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:9
 msgid "Define who receives the tickets and how they’re distributed among agents."
-msgstr ""
+msgstr "Definer hvem som skal motta billettene og hvordan de skal fordeles mellom agentene."
 
 #: frontend/src/components/Activities/AttachmentArea.vue:131
 #: frontend/src/components/Activities/NoteArea.vue:12
@@ -1822,7 +1822,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/InviteUserPage.vue:84
 msgid "Delete invitation"
-msgstr ""
+msgstr "Slett invitasjon"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:230
 msgid "Delete linked item"
@@ -1887,7 +1887,7 @@ msgstr "Detaljer"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:39
 msgid "Device"
-msgstr ""
+msgstr "Enhet"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 msgid "Disable"
@@ -1911,7 +1911,7 @@ msgstr ""
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
-msgstr ""
+msgstr "Rabatt %"
 
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -1961,7 +1961,7 @@ msgstr ""
 #: frontend/src/components/Activities/AudioPlayer.vue:166
 #: frontend/src/components/ViewControls.vue:254
 msgid "Download"
-msgstr ""
+msgstr "Last ned"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:24
 msgid "Drag and drop files here or upload from"
@@ -2053,7 +2053,7 @@ msgstr "ERPNext er ikke integrert med CRM-systemet"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "ERPNext settings"
-msgstr "ERPNext-innstillinger"
+msgstr "ERPNext innstillinger"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext settings updated"
@@ -2228,7 +2228,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:123
 msgid "Empty - Choose a field to filter by"
-msgstr ""
+msgstr "Tom - Velg et felt å filtrere etter"
 
 #: frontend/src/components/SortBy.vue:130
 msgid "Empty - Choose a field to sort by"
@@ -2253,7 +2253,7 @@ msgstr "Aktiver utgående e-post"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:19
 msgid "Enable forecasting"
-msgstr ""
+msgstr "Aktiver prognoser"
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -2278,7 +2278,7 @@ msgstr "Aktivert"
 #. Label of the end_date (Date) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "End Date"
-msgstr ""
+msgstr "Sluttdato"
 
 #. Label of the end_time (Datetime) field in DocType 'CRM Call Log'
 #. Label of the end_time (Time) field in DocType 'CRM Service Day'
@@ -2287,19 +2287,19 @@ msgstr ""
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:242
 #: frontend/src/components/Modals/EventModal.vue:112
 msgid "End Time"
-msgstr ""
+msgstr "Sluttidspunkt"
 
 #: frontend/src/composables/event.js:206
 msgid "End time should be after start time"
-msgstr ""
+msgstr "Sluttidspunkt må være etter starttidspunkt"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:122
 msgid "Enter access key"
-msgstr ""
+msgstr "Angi tilgangsnøkkel"
 
 #: frontend/src/components/FieldLayout/Field.vue:339
 msgid "Enter {0}"
-msgstr ""
+msgstr "Angi {0}"
 
 #: frontend/src/components/Filter.vue:66 frontend/src/components/Filter.vue:99
 #: frontend/src/components/Filter.vue:267
@@ -2313,12 +2313,12 @@ msgstr "Tilsvarer"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:176
 msgid "Error converting to deal: {0}"
-msgstr ""
+msgstr "Feil ved konvertering til avtale: {0}"
 
 #: frontend/src/pages/Deal.vue:731 frontend/src/pages/Lead.vue:469
 #: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:413
 msgid "Error updating field"
-msgstr ""
+msgstr "Feil ved oppdatering av felt"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:279
 msgid "Error while creating customer in ERPNext, check error log for more details"
@@ -2364,11 +2364,11 @@ msgstr ""
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Exchange Rate Provider"
-msgstr ""
+msgstr "Valutakursleverandør"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:67
 msgid "Exchange rate provider"
-msgstr ""
+msgstr "Valutakursleverandør"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
@@ -2384,20 +2384,20 @@ msgstr ""
 
 #: crm/integrations/exotel/handler.py:114
 msgid "Exotel Exception"
-msgstr ""
+msgstr "Exotel-unntak"
 
 #. Label of the exotel_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Exotel Number"
-msgstr ""
+msgstr "Exotel-nummer"
 
 #: crm/integrations/exotel/handler.py:85
 msgid "Exotel Number Missing"
-msgstr ""
+msgstr "Exotel-nummer mangler"
 
 #: crm/integrations/exotel/handler.py:89
 msgid "Exotel Number {0} is not valid"
-msgstr ""
+msgstr "Exotel-nummer {0} er ikke gyldig"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:293
 msgid "Exotel is not enabled"
@@ -2468,7 +2468,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:111
 msgid "Failed to add users"
-msgstr ""
+msgstr "Kunne ikke legge til brukere"
 
 #: crm/integrations/twilio/api.py:130
 msgid "Failed to capture Twilio recording"
@@ -2488,11 +2488,11 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:205
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
-msgstr ""
+msgstr "Kunne ikke hente valutakurs fra {0} til {1} på {2}. Vennligst sjekk internettforbindelsen din eller prøv igjen senere."
 
 #: frontend/src/data/script.js:106
 msgid "Failed to load form controller: {0}"
-msgstr ""
+msgstr "Kunne ikke laste inn skjemakontroller: {0}"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:246
 msgid "Failed to rename template"
@@ -2523,7 +2523,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/General/BrandSettings.vue:81
 msgid "Favicon"
-msgstr ""
+msgstr "Favicon"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:38
 #: frontend/src/components/Modals/EditValueModal.vue:5
@@ -2533,7 +2533,7 @@ msgstr "Felt"
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
 #: frontend/src/components/Kanban/KanbanSettings.vue:48
 msgid "Fields Order"
-msgstr ""
+msgstr "Feltrekkefølge"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:333
 msgid "File \"{0}\" was skipped because of invalid file type"
@@ -2541,11 +2541,11 @@ msgstr "Filen «{0}» ble hoppet over på grunn av ugyldig filtype"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:354
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
-msgstr ""
+msgstr "Filen \"{0}\" ble hoppet over fordi bare {1} -opplastinger er tillatt"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:359
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed for DocType \"{2}\""
-msgstr ""
+msgstr "Filen \"{0}\" ble hoppet over fordi bare {1} -opplastinger er tillatt for DocType \"{2}\""
 
 #: frontend/src/components/Filter.vue:6
 msgid "Filter"
@@ -2555,7 +2555,7 @@ msgstr "Filter"
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Filters"
-msgstr ""
+msgstr "Filtre"
 
 #. Label of the first_name (Data) field in DocType 'CRM Deal'
 #. Label of the first_name (Data) field in DocType 'CRM Lead'
@@ -2590,7 +2590,7 @@ msgstr ""
 #. Level Priority'
 #: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
 msgid "First Response TIme"
-msgstr ""
+msgstr "Første responstid"
 
 #. Label of the first_response_time (Duration) field in DocType 'CRM Deal'
 #. Label of the first_response_time (Duration) field in DocType 'CRM Lead'
@@ -2602,7 +2602,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:130
 #: frontend/src/components/Settings/ProfileSettings.vue:78
 msgid "First name"
-msgstr ""
+msgstr "Fornavn"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:51
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:84
@@ -2617,11 +2617,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:100
 msgid "Forecasting disabled successfully"
-msgstr ""
+msgstr "Prognoser er deaktivert"
 
 #: frontend/src/components/Settings/General/GeneralSettings.vue:99
 msgid "Forecasting enabled successfully"
-msgstr ""
+msgstr "Prognoser er aktivert"
 
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -2646,7 +2646,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Friday"
-msgstr ""
+msgstr "Fredag"
 
 #. Label of the from (Data) field in DocType 'CRM Call Log'
 #. Label of the from (Data) field in DocType 'CRM Status Change Log'
@@ -2670,7 +2670,7 @@ msgstr ""
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "From User"
-msgstr ""
+msgstr "Fra bruker"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -2689,7 +2689,7 @@ msgstr "Fullt navn"
 #: crm/api/dashboard.py:728
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Funnel conversion"
-msgstr ""
+msgstr "Traktkonvertering"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:196
 msgid "GMT+5:30"
@@ -2822,7 +2822,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:354
 msgid "Hide border"
-msgstr ""
+msgstr "Skjul grensen"
 
 #: frontend/src/components/FieldLayoutEditor.vue:349
 msgid "Hide label"
@@ -2844,7 +2844,7 @@ msgstr ""
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Holiday List"
-msgstr ""
+msgstr "Ferieliste"
 
 #. Label of the holiday_list_name (Data) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -2861,12 +2861,12 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:542
 #: frontend/src/components/Settings/General/HomeActions.vue:9
 msgid "Home actions"
-msgstr ""
+msgstr "Tiltak på hjemmebane"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:204
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:285
 msgid "I understand, add conditions"
-msgstr ""
+msgstr "Jeg forstår, legg til betingelser"
 
 #. Label of the id (Data) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -2966,12 +2966,12 @@ msgstr ""
 
 #: frontend/src/components/EmailEditor.vue:154
 msgid "Insert Email Template"
-msgstr ""
+msgstr "Sett inn e-postmal"
 
 #: frontend/src/components/CommentBox.vue:49
 #: frontend/src/components/EmailEditor.vue:130
 msgid "Insert Emoji"
-msgstr ""
+msgstr "Sett inn emoji"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:598
 msgid "Integration"
@@ -2979,7 +2979,7 @@ msgstr "Integrasjon"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Integration Not Enabled"
-msgstr ""
+msgstr "Integrasjon ikke aktivert"
 
 #: frontend/src/components/Settings/Settings.vue:131
 msgctxt "FCRM"
@@ -3002,7 +3002,7 @@ msgstr ""
 
 #: crm/integrations/exotel/handler.py:89
 msgid "Invalid Exotel Number"
-msgstr ""
+msgstr "Ugyldig Exotel-nummer"
 
 #: crm/api/dashboard.py:73
 msgid "Invalid chart name"
@@ -3022,7 +3022,7 @@ msgstr ""
 
 #: frontend/src/pages/InvalidPage.vue:6
 msgid "Invalid page or not permitted to access"
-msgstr ""
+msgstr "Ugyldig side eller manglende rettigheter"
 
 #: frontend/src/composables/event.js:203
 msgid "Invalid start or end time"
@@ -3030,11 +3030,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/Users.vue:25
 msgid "Invite New User"
-msgstr ""
+msgstr "Inviter ny bruker"
 
 #: frontend/src/components/Settings/Settings.vue:107
 msgid "Invite User"
-msgstr ""
+msgstr "Inviter bruker"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:78
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:149
@@ -3043,19 +3043,19 @@ msgstr ""
 
 #: frontend/src/components/Settings/InviteUserPage.vue:56
 msgid "Invite as"
-msgstr ""
+msgstr "Inviter som"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:29
 msgid "Invite by email"
-msgstr ""
+msgstr "Invitasjon via e-post"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:543
 msgid "Invite users"
-msgstr ""
+msgstr "Inviter brukere"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
-msgstr ""
+msgstr "Inviter brukere til å få tilgang til CRM. Spesifiser rollene deres for å kontrollere tilgang og tillatelser"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:359
 msgid "Invite your team"
