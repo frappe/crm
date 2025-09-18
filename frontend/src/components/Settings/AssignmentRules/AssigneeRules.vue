@@ -6,10 +6,7 @@
       }}</span>
       <span class="text-p-sm text-ink-gray-6">
         {{
-          __(
-            'Define who receives the {0} and how they’re distributed among agents.',
-            [documentType],
-          )
+          __('Choose how {0} are assigned among salespeople.', [documentType])
         }}
       </span>
     </div>
@@ -26,7 +23,7 @@
         </div>
         <div class="text-p-sm text-ink-gray-6 mt-1">
           {{
-            __('Choose how {0} are distributed among selected assignees.', [
+            __('Choose how {0} are assigned among the selected assignees.', [
               documentType,
             ])
           }}
@@ -36,7 +33,7 @@
         <Popover placement="bottom-end">
           <template #target="{ togglePopover }">
             <div
-              class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] select-none min-w-40"
+              class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] select-none min-w-40"
               @click="togglePopover()"
             >
               <div>
@@ -84,7 +81,7 @@
           {{ __('Assignees') }}
         </div>
         <div class="text-p-sm text-ink-gray-6 mt-1">
-          {{ __('Choose who receives the {0}.', [documentType]) }}
+          {{ __('Select the assignees for {0}.', [documentType]) }}
         </div>
       </div>
       <AssigneeSearch @addAssignee="validateAssignmentRule('users')" />
