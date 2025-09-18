@@ -27,7 +27,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Role",
-   "options": "\nSales User\nSales Manager\nSystem Manager",
+   "options": "Customer Service\nSales Agent\nPurchase Agent\nSales Team Lead\nPurchase Team Lead\nManager",
    "reqd": 1
   },
   {
@@ -66,7 +66,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-17 17:20:18.935395",
+ "modified": "2025-09-18 15:31:53.632614",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Invitation",
