@@ -169,10 +169,6 @@
 import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
-<<<<<<< HEAD
-import { TemplateOption, DropdownOption } from '@/utils'
-import { Avatar, TextInput, toast, call, FeatherIcon, Tooltip } from 'frappe-ui'
-=======
 import { DropdownOption } from '@/utils'
 import {
   Dropdown,
@@ -183,7 +179,6 @@ import {
   FeatherIcon,
   Tooltip,
 } from 'frappe-ui'
->>>>>>> ac34ac9b (refactor: remove TemplateOption component usage and simplify dropdown options in multiple components)
 import { ref, computed, onMounted } from 'vue'
 
 const { users, isAdmin, isManager } = usersStore()
