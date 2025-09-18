@@ -116,7 +116,7 @@ const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { users, isAdmin, isManager } = usersStore()
 
 const invitees = ref([])
-const role = ref('Sales User')
+const role = ref('Customer Service')
 const error = ref(null)
 
 const userExistMessage = computed(() => {
@@ -153,27 +153,27 @@ const inviteeExistMessage = computed(() => {
 
 const description = computed(() => {
   return {
-    'System Manager':
+    'Manager':
       'Can manage all aspects of the CRM, including user management, customizations and settings.',
-    'Sales Manager':
+    'Sales Agent':
       'Can manage and invite new users, and create public & private views (reports).',
-    'Sales User':
+    'Customer Service':
       'Can work with leads and deals and create private views (reports).',
   }[role.value]
 })
 
 const roleOptions = computed(() => {
   return [
-    { value: 'Sales User', label: __('Sales User') },
-    ...(isManager() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
-    ...(isAdmin() ? [{ value: 'System Manager', label: __('Admin') }] : []),
+    { value: 'Customer Service', label: __('Customer Service') },
+    ...(isManager() ? [{ value: 'Sales Agent', label: __('Manager') }] : []),
+    ...(isAdmin() ? [{ value: 'Manager', label: __('Admin') }] : []),
   ]
 })
 
 const roleMap = {
-  'Sales User': __('Sales User'),
-  'Sales Manager': __('Manager'),
-  'System Manager': __('Admin'),
+  'Customer Service': __('Customer Service'),
+  'Sales Agent': __('Manager'),
+  'Manager': __('Admin'),
 }
 
 const inviteByEmail = createResource({
@@ -190,7 +190,7 @@ const inviteByEmail = createResource({
         data.existing_invites.join(', '),
       ])
     } else {
-      role.value = 'Sales User'
+      role.value = 'Customer Service'
       error.value = null
     }
 
