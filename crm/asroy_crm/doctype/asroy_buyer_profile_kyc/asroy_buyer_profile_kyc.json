@@ -1,0 +1,252 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:Buyer-KYC-{######}",
+ "creation": "2025-02-25 12:16:01.032069",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "personal_information_section",
+  "salutation",
+  "name1",
+  "email",
+  "mobile",
+  "date_of_birth",
+  "designation",
+  "nationality",
+  "nid_no",
+  "mailing_address",
+  "permanent_address",
+  "type_of_profession",
+  "column_break_slxd",
+  "marital_status",
+  "relation_with_secondary_contact_person",
+  "secondary_contact_person_mobile",
+  "secondary_contact_person_name",
+  "residency_status",
+  "no_of_children_family_members",
+  "no_of_adult_family_members",
+  "no_of_household_family_members",
+  "name_of_organization",
+  "address_of_organization",
+  "property_information_section",
+  "location",
+  "location_comments",
+  "property_type",
+  "property_size_squar_feet",
+  "property_condition",
+  "property_size_katha",
+  "no_of_beds",
+  "no_of_baths",
+  "no_of_balconies",
+  "no_of_car_parking",
+  "budget_bdt",
+  "financial_mode"
+ ],
+ "fields": [
+  {
+   "fieldname": "personal_information_section",
+   "fieldtype": "Section Break",
+   "label": "Personal Information"
+  },
+  {
+   "fieldname": "salutation",
+   "fieldtype": "Data",
+   "label": "Salutation"
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "label": "Name"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Mobile"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality"
+  },
+  {
+   "fieldname": "nid_no",
+   "fieldtype": "Data",
+   "label": "NID or Passport no"
+  },
+  {
+   "fieldname": "mailing_address",
+   "fieldtype": "Small Text",
+   "label": "Mailing Address"
+  },
+  {
+   "fieldname": "permanent_address",
+   "fieldtype": "Small Text",
+   "label": "Permanent Address"
+  },
+  {
+   "fieldname": "type_of_profession",
+   "fieldtype": "Small Text",
+   "label": "Type of Profession"
+  },
+  {
+   "fieldname": "column_break_slxd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "marital_status",
+   "fieldtype": "Data",
+   "label": "Marital Status"
+  },
+  {
+   "fieldname": "relation_with_secondary_contact_person",
+   "fieldtype": "Data",
+   "label": "Relation with Secondary Contact Person"
+  },
+  {
+   "fieldname": "secondary_contact_person_mobile",
+   "fieldtype": "Data",
+   "label": "Secondary Contact Person Mobile"
+  },
+  {
+   "fieldname": "secondary_contact_person_name",
+   "fieldtype": "Data",
+   "label": "Secondary Contact Person Name"
+  },
+  {
+   "fieldname": "residency_status",
+   "fieldtype": "Data",
+   "label": "Residency Status"
+  },
+  {
+   "fieldname": "no_of_children_family_members",
+   "fieldtype": "Data",
+   "label": "No of Children Family Members"
+  },
+  {
+   "fieldname": "no_of_adult_family_members",
+   "fieldtype": "Data",
+   "label": "No of Adult Family Members"
+  },
+  {
+   "fieldname": "no_of_household_family_members",
+   "fieldtype": "Data",
+   "label": "No of Household Family Members"
+  },
+  {
+   "fieldname": "name_of_organization",
+   "fieldtype": "Data",
+   "label": "Name of Organization"
+  },
+  {
+   "fieldname": "address_of_organization",
+   "fieldtype": "Small Text",
+   "label": "Address of Organization"
+  },
+  {
+   "fieldname": "property_information_section",
+   "fieldtype": "Section Break",
+   "label": "Property Information"
+  },
+  {
+   "fieldname": "location_comments",
+   "fieldtype": "Small Text",
+   "label": "Location Comments"
+  },
+  {
+   "fieldname": "property_type",
+   "fieldtype": "Small Text",
+   "label": "Property Type"
+  },
+  {
+   "fieldname": "property_size_squar_feet",
+   "fieldtype": "Data",
+   "label": "Property Size (Squar Feet)"
+  },
+  {
+   "fieldname": "property_condition",
+   "fieldtype": "Small Text",
+   "label": "Property Condition"
+  },
+  {
+   "fieldname": "property_size_katha",
+   "fieldtype": "Data",
+   "label": "Property Size (Katha)"
+  },
+  {
+   "fieldname": "no_of_beds",
+   "fieldtype": "Data",
+   "label": "No of Beds"
+  },
+  {
+   "fieldname": "no_of_baths",
+   "fieldtype": "Data",
+   "label": "No of Baths"
+  },
+  {
+   "fieldname": "no_of_balconies",
+   "fieldtype": "Data",
+   "label": "No of Balconies"
+  },
+  {
+   "fieldname": "no_of_car_parking",
+   "fieldtype": "Data",
+   "label": "No of Car Parking"
+  },
+  {
+   "fieldname": "budget_bdt",
+   "fieldtype": "Data",
+   "label": "Budget (BDT)"
+  },
+  {
+   "fieldname": "financial_mode",
+   "fieldtype": "Data",
+   "label": "Financial Mode"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Small Text",
+   "label": "Locations"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-03 10:16:55.230931",
+ "modified_by": "Administrator",
+ "module": "Asroy CRM",
+ "name": "Asroy Buyer Profile KYC",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

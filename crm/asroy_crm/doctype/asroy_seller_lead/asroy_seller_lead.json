@@ -1,0 +1,116 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:S-Lead-{######}",
+ "creation": "2025-02-22 12:57:58.571992",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "seller_name",
+  "lead_source",
+  "status",
+  "column_break_tpqv",
+  "team_leader",
+  "product_advisor",
+  "property_reference",
+  "section_break_qxgw",
+  "contact_number",
+  "email",
+  "address",
+  "column_break_ofbw"
+ ],
+ "fields": [
+  {
+   "fieldname": "lead_source",
+   "fieldtype": "Select",
+   "label": "Lead Source",
+   "options": "Website\nSocial Media\nReferral"
+  },
+  {
+   "fieldname": "column_break_tpqv",
+   "fieldtype": "Column Break",
+   "options": "Open\nIn Progress\nClosed"
+  },
+  {
+   "fieldname": "team_leader",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Team Leader",
+   "options": "User"
+  },
+  {
+   "fieldname": "product_advisor",
+   "fieldtype": "Link",
+   "label": "Product Advisor",
+   "options": "User"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Link",
+   "label": "Status",
+   "options": "Asroy Lead Status"
+  },
+  {
+   "fieldname": "property_reference",
+   "fieldtype": "Link",
+   "label": "Property Reference",
+   "options": "Item"
+  },
+  {
+   "fieldname": "section_break_qxgw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "column_break_ofbw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "seller_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Seller Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-02-24 13:10:17.528901",
+ "modified_by": "Administrator",
+ "module": "Asroy CRM",
+ "name": "Asroy Seller Lead",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

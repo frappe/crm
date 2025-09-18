@@ -1,0 +1,102 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "autoincrement",
+ "creation": "2025-02-22 14:40:45.333077",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "after_sales_name",
+  "property",
+  "buyer_lead",
+  "status",
+  "column_break_bylr",
+  "booking_date",
+  "deed_signing_date",
+  "sale_permission_date",
+  "registration_date",
+  "success_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "after_sales_name",
+   "fieldtype": "Select",
+   "label": "After Sales Name",
+   "options": "After_Sales_yyy"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "buyer_lead",
+   "fieldtype": "Link",
+   "label": "Buyer Lead",
+   "options": "Asroy Buyer Lead"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "In Progress\nCompleted"
+  },
+  {
+   "fieldname": "column_break_bylr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "booking_date",
+   "fieldtype": "Date",
+   "label": "Booking Date"
+  },
+  {
+   "fieldname": "deed_signing_date",
+   "fieldtype": "Date",
+   "label": "Deed Signing Date"
+  },
+  {
+   "fieldname": "sale_permission_date",
+   "fieldtype": "Date",
+   "label": "Sale Permission Date"
+  },
+  {
+   "fieldname": "registration_date",
+   "fieldtype": "Date",
+   "label": "Registration Date"
+  },
+  {
+   "fieldname": "success_date",
+   "fieldtype": "Date",
+   "label": "Success Date"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-02-22 15:02:57.310054",
+ "modified_by": "Administrator",
+ "module": "Asroy CRM",
+ "name": "Asroy After Sales",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

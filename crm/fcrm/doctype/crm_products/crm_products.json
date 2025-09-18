@@ -13,6 +13,7 @@
   "qty",
   "column_break_ajac",
   "rate",
+  "bottom_price",
   "section_break_olqb",
   "discount_percentage",
   "column_break_uvra",
@@ -29,6 +30,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "product_code.item_name",
    "fieldname": "product_name",
    "fieldtype": "Data",
    "label": "Product Name",
@@ -65,6 +67,7 @@
   },
   {
    "bold": 1,
+   "fetch_from": "product_code.custom_asking_price",
    "fieldname": "rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -97,7 +100,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Product",
-   "options": "CRM Product"
+   "options": "Item"
   },
   {
    "bold": 1,
@@ -117,13 +120,19 @@
   {
    "fieldname": "column_break_ejqw",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "product_code.custom_bottom_price",
+   "fieldname": "bottom_price",
+   "fieldtype": "Currency",
+   "label": "Bottom Price"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-14 18:52:26.183306",
+ "modified": "2025-09-17 20:47:11.822150",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Products",

@@ -1,0 +1,52 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-02-24 14:18:05.090807",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "buyer_lead",
+  "buyer_name",
+  "status",
+  "lead_type"
+ ],
+ "fields": [
+  {
+   "fieldname": "buyer_lead",
+   "fieldtype": "Link",
+   "label": " Lead",
+   "options": "CRM Lead"
+  },
+  {
+   "fetch_from": "buyer_lead.lead_name",
+   "fieldname": "buyer_name",
+   "fieldtype": "Data",
+   "label": "Buyer Name"
+  },
+  {
+   "fetch_from": "buyer_lead.status",
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fetch_from": "buyer_lead.custom_lead_type",
+   "fieldname": "lead_type",
+   "fieldtype": "Data",
+   "label": "Lead Type"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-03-09 14:50:46.632011",
+ "modified_by": "Administrator",
+ "module": "Asroy CRM",
+ "name": "Asroy Property Lead",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

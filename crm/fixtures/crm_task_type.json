@@ -1,0 +1,79 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-03-12 09:21:03.826440",
+  "name": "Viewing",
+  "type_name": "Viewing"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-04-12 13:50:15.961954",
+  "name": "Negotiation",
+  "type_name": "Negotiation"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-04-12 13:54:25.435648",
+  "name": "Confirm",
+  "type_name": "Confirm"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-04-12 13:54:35.543696",
+  "name": "Deed Signing",
+  "type_name": "Deed Signing"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-04-12 13:54:51.253060",
+  "name": "Sale Permission",
+  "type_name": "Sale Permission"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-04-12 13:55:04.210927",
+  "name": "Registration",
+  "type_name": "Registration"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-03-12 09:20:38.372504",
+  "name": "Property Visit",
+  "type_name": "Property Visit"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-03-12 09:20:25.947704",
+  "name": "Meeting",
+  "type_name": "Meeting"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-03-16 09:36:32.556275",
+  "name": "Booking",
+  "type_name": "Booking"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-03-12 09:26:09.108958",
+  "name": "Price Offer Received",
+  "type_name": "Price Offer Received"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Task Type",
+  "modified": "2025-03-12 09:26:17.441007",
+  "name": "Call",
+  "type_name": "Call"
+ }
+]

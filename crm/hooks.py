@@ -132,6 +132,7 @@ before_uninstall = "crm.uninstall.before_uninstall"
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
+    "Item": "crm.overrides.item.CustomItem"
 }
 
 # Document Events
@@ -309,4 +310,12 @@ standard_dropdown_items = [
 		"route": "#",
 		"is_standard": 1,
 	},
+]
+
+fixtures = [
+    'CRM Lead Status',
+    'CRM Fields Layout',
+    'CRM Deal Status',
+    'CRM Task Type',
+    'Item Group'
 ]

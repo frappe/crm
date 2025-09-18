@@ -1,0 +1,702 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:Seller-KYC-{######}",
+ "creation": "2025-02-26 09:37:05.453099",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_informations_tab",
+  "personal_and_building_information_section",
+  "salutation",
+  "name1",
+  "mobile",
+  "mailing_address",
+  "permanent_address",
+  "email",
+  "date_of_birth",
+  "marital_status",
+  "nationality",
+  "nid_or_passport_number",
+  "column_break_cunf",
+  "no_of_household_family_members",
+  "number_of_adult_family_members",
+  "number_of_children_family_members",
+  "residency_status",
+  "secondary_contact_person_name",
+  "secondary_contact_person_mobile",
+  "secondary_contact_person_relationship",
+  "type_of_profession",
+  "name_of_organization",
+  "designation",
+  "addresses_of_organization",
+  "building_information_section",
+  "column_break_nygc",
+  "project_name",
+  "project_address",
+  "project_type",
+  "location",
+  "total_floors",
+  "total_units",
+  "land_size_katha",
+  "road_size_feet",
+  "column_break_hbdu",
+  "developer_name",
+  "handover_year",
+  "building_type",
+  "holding_type",
+  "total_parkings",
+  "finishing_status",
+  "building_facing",
+  "fair_facing",
+  "gps_coordinate",
+  "finance_and_contact_tab",
+  "financial_information_section",
+  "asking_price_bdt",
+  "bottom_price_bdt",
+  "pricing_specific",
+  "bastuana_service_charge_bdt",
+  "bastuana_service_charge_specific",
+  "property_monthly_rent_bdt",
+  "property_monthly_service_charge_bdt",
+  "contact_information_section",
+  "viewing_contact_name",
+  "viewing_contact_mobile",
+  "viewing_access",
+  "safety_and_security_tab",
+  "safety_and_security_section",
+  "cctv",
+  "security_guard",
+  "fire_extinguisher",
+  "fire_hydrant",
+  "water_sprinkler",
+  "listing_and_building_tab",
+  "listing_details_section",
+  "floor_no",
+  "unit_no",
+  "occupancy_status",
+  "gross_area_square_feet",
+  "gross_area_specific",
+  "no_of_parking",
+  "net_area_square_feet",
+  "property_facing",
+  "no_of_beds",
+  "column_break_aysg",
+  "no_of_baths",
+  "no_of_livings",
+  "no_of_balconies",
+  "maid_quarters",
+  "store_room",
+  "flooring",
+  "floor_titles_size",
+  "fittings_brand",
+  "building_service_section",
+  "reception_lobby",
+  "electricity_backup",
+  "cleaning_staff",
+  "garbage_disposal",
+  "prayer_room",
+  "green_zone",
+  "column_break_qtms",
+  "jogging_area",
+  "gymnasium",
+  "wheelchair_access",
+  "game_or_sports_zone",
+  "community_space",
+  "other_tab",
+  "encumbrance_information_section",
+  "no_of_owners_of_the_property",
+  "registration_status",
+  "mutation",
+  "holding_tax",
+  "mortgage_against_property",
+  "mortgage_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "personal_and_building_information_section",
+   "fieldtype": "Section Break",
+   "label": "Personal Information"
+  },
+  {
+   "fieldname": "salutation",
+   "fieldtype": "Data",
+   "label": "Salutation"
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mobile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mailing_address",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Mailing Address",
+   "reqd": 1
+  },
+  {
+   "fieldname": "permanent_address",
+   "fieldtype": "Small Text",
+   "label": "Permanent Address"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "marital_status",
+   "fieldtype": "Data",
+   "label": "Marital Status"
+  },
+  {
+   "fieldname": "no_of_household_family_members",
+   "fieldtype": "Data",
+   "label": "No of Household Family Members"
+  },
+  {
+   "fieldname": "number_of_adult_family_members",
+   "fieldtype": "Data",
+   "label": "Number of Adult Family Members"
+  },
+  {
+   "fieldname": "number_of_children_family_members",
+   "fieldtype": "Data",
+   "label": "Number of Children Family Members"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality"
+  },
+  {
+   "fieldname": "residency_status",
+   "fieldtype": "Data",
+   "label": "Residency Status"
+  },
+  {
+   "fieldname": "nid_or_passport_number",
+   "fieldtype": "Data",
+   "label": "NID or Passport Number"
+  },
+  {
+   "fieldname": "secondary_contact_person_name",
+   "fieldtype": "Data",
+   "label": "Secondary Contact Person Name"
+  },
+  {
+   "fieldname": "secondary_contact_person_mobile",
+   "fieldtype": "Data",
+   "label": "Secondary Contact Person Mobile"
+  },
+  {
+   "fieldname": "secondary_contact_person_relationship",
+   "fieldtype": "Data",
+   "label": "Secondary Contact Person Relationship"
+  },
+  {
+   "fieldname": "type_of_profession",
+   "fieldtype": "Data",
+   "label": "Type of Profession"
+  },
+  {
+   "fieldname": "name_of_organization",
+   "fieldtype": "Data",
+   "label": "Name of Organization"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "addresses_of_organization",
+   "fieldtype": "Small Text",
+   "label": "Addresses of Organization"
+  },
+  {
+   "fieldname": "column_break_nygc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name"
+  },
+  {
+   "fieldname": "project_address",
+   "fieldtype": "Small Text",
+   "label": "Project Address"
+  },
+  {
+   "fieldname": "project_type",
+   "fieldtype": "Select",
+   "label": "Project Type",
+   "options": "Residential\nCommercial"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Select",
+   "label": "Location",
+   "options": "Aftab Nagar\nBadda\nBanani\nBanasree\nBaridhara\nBashundhara\nDhanmondi\nGulshan 1\nGulshan 2\nLalmatia\nMohammadpur\nMirpur\nNiketan\nRampura\nUttara"
+  },
+  {
+   "fieldname": "total_floors",
+   "fieldtype": "Data",
+   "label": "Total Floors"
+  },
+  {
+   "fieldname": "total_units",
+   "fieldtype": "Data",
+   "label": "Total Units"
+  },
+  {
+   "fieldname": "land_size_katha",
+   "fieldtype": "Data",
+   "label": "Land Size Katha"
+  },
+  {
+   "fieldname": "road_size_feet",
+   "fieldtype": "Data",
+   "label": "Road Size Feet"
+  },
+  {
+   "fieldname": "developer_name",
+   "fieldtype": "Data",
+   "label": "Developer Name"
+  },
+  {
+   "fieldname": "handover_year",
+   "fieldtype": "Data",
+   "label": "Handover Year"
+  },
+  {
+   "fieldname": "building_type",
+   "fieldtype": "Select",
+   "label": "Building Type",
+   "options": "Residential\nCommercial"
+  },
+  {
+   "fieldname": "holding_type",
+   "fieldtype": "Select",
+   "label": "Holding Type",
+   "options": "Freehold\nLeasehold"
+  },
+  {
+   "fieldname": "total_parkings",
+   "fieldtype": "Data",
+   "label": "Total Parkings"
+  },
+  {
+   "fieldname": "finishing_status",
+   "fieldtype": "Select",
+   "label": "Finishing Status",
+   "options": "Completed\nUnder Construction"
+  },
+  {
+   "fieldname": "building_facing",
+   "fieldtype": "Select",
+   "label": "Building Facing",
+   "options": "North\nSouth\nWest\nEast"
+  },
+  {
+   "fieldname": "fair_facing",
+   "fieldtype": "Select",
+   "label": "Fair Facing",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "gps_coordinate",
+   "fieldtype": "Data",
+   "label": "GPS Coordinate"
+  },
+  {
+   "fieldname": "safety_and_security_section",
+   "fieldtype": "Section Break",
+   "label": "Safety and Security"
+  },
+  {
+   "fieldname": "cctv",
+   "fieldtype": "Select",
+   "label": "CCTV",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "security_guard",
+   "fieldtype": "Select",
+   "label": "Security Guard",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "fire_extinguisher",
+   "fieldtype": "Select",
+   "label": "Fire Extinguisher",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "fire_hydrant",
+   "fieldtype": "Select",
+   "label": "Fire Hydrant",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "water_sprinkler",
+   "fieldtype": "Select",
+   "label": "Water Sprinkler",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "building_service_section",
+   "fieldtype": "Section Break",
+   "label": "Building Service"
+  },
+  {
+   "fieldname": "reception_lobby",
+   "fieldtype": "Select",
+   "label": "Reception Lobby",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "electricity_backup",
+   "fieldtype": "Select",
+   "label": "Electricity Backup",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "cleaning_staff",
+   "fieldtype": "Select",
+   "label": "Cleaning Staff",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "garbage_disposal",
+   "fieldtype": "Select",
+   "label": "Garbage Disposal",
+   "options": "Chute\nBin"
+  },
+  {
+   "fieldname": "prayer_room",
+   "fieldtype": "Select",
+   "label": "Prayer Room",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "green_zone",
+   "fieldtype": "Select",
+   "label": "Green Zone",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "column_break_qtms",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "jogging_area",
+   "fieldtype": "Select",
+   "label": "Jogging Area",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "gymnasium",
+   "fieldtype": "Select",
+   "label": "Gymnasium",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "wheelchair_access",
+   "fieldtype": "Select",
+   "label": "Wheelchair Access",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "game_or_sports_zone",
+   "fieldtype": "Select",
+   "label": "Game or Sports Zone",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "community_space",
+   "fieldtype": "Select",
+   "label": "Community Space",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "listing_details_section",
+   "fieldtype": "Section Break",
+   "label": "Listing Details"
+  },
+  {
+   "fieldname": "floor_no",
+   "fieldtype": "Data",
+   "label": "Floor No"
+  },
+  {
+   "fieldname": "unit_no",
+   "fieldtype": "Data",
+   "label": "Unit No"
+  },
+  {
+   "fieldname": "occupancy_status",
+   "fieldtype": "Select",
+   "label": "Occupancy Status",
+   "options": "Vacant\nOccupied"
+  },
+  {
+   "fieldname": "gross_area_square_feet",
+   "fieldtype": "Data",
+   "label": "Gross Area Square Feet"
+  },
+  {
+   "fieldname": "gross_area_specific",
+   "fieldtype": "Select",
+   "label": "Gross Area Specific",
+   "options": "With Parking\nWithout Parking"
+  },
+  {
+   "fieldname": "no_of_parking",
+   "fieldtype": "Data",
+   "label": "No of Parking"
+  },
+  {
+   "fieldname": "net_area_square_feet",
+   "fieldtype": "Data",
+   "label": "Net Area Square Feet"
+  },
+  {
+   "fieldname": "property_facing",
+   "fieldtype": "Select",
+   "label": "Property Facing",
+   "options": "North\nSouth\nEast\nWest"
+  },
+  {
+   "fieldname": "no_of_beds",
+   "fieldtype": "Data",
+   "label": "No of Beds"
+  },
+  {
+   "fieldname": "column_break_aysg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "no_of_baths",
+   "fieldtype": "Data",
+   "label": "No of Baths"
+  },
+  {
+   "fieldname": "no_of_livings",
+   "fieldtype": "Data",
+   "label": "No of Livings"
+  },
+  {
+   "fieldname": "no_of_balconies",
+   "fieldtype": "Data",
+   "label": "No of Balconies"
+  },
+  {
+   "fieldname": "maid_quarters",
+   "fieldtype": "Data",
+   "label": "Maid Quarters"
+  },
+  {
+   "fieldname": "store_room",
+   "fieldtype": "Select",
+   "label": "Store Room",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "flooring",
+   "fieldtype": "Select",
+   "label": "Flooring",
+   "options": "Ceramic\nMarble\nWooden\nOther"
+  },
+  {
+   "fieldname": "floor_titles_size",
+   "fieldtype": "Data",
+   "label": "Floor Titles Size"
+  },
+  {
+   "fieldname": "fittings_brand",
+   "fieldtype": "Data",
+   "label": "Fittings Brand"
+  },
+  {
+   "fieldname": "financial_information_section",
+   "fieldtype": "Section Break",
+   "label": "Financial Information"
+  },
+  {
+   "fieldname": "asking_price_bdt",
+   "fieldtype": "Data",
+   "label": "Asking Price (BDT)"
+  },
+  {
+   "fieldname": "bottom_price_bdt",
+   "fieldtype": "Data",
+   "label": "Bottom Price (BDT)"
+  },
+  {
+   "fieldname": "pricing_specific",
+   "fieldtype": "Select",
+   "label": "Pricing Specific",
+   "options": "Including Parking\nExcluding Parking"
+  },
+  {
+   "fieldname": "bastuana_service_charge_bdt",
+   "fieldtype": "Data",
+   "label": "Bastuana Service Charge (BDT)"
+  },
+  {
+   "fieldname": "bastuana_service_charge_specific",
+   "fieldtype": "Select",
+   "label": "Bastuana Service Charge Specific",
+   "options": "Price Including Service Charge\nPrice Excluding Service Charge"
+  },
+  {
+   "fieldname": "property_monthly_rent_bdt",
+   "fieldtype": "Data",
+   "label": "Property Monthly Rent (BDT)"
+  },
+  {
+   "fieldname": "property_monthly_service_charge_bdt",
+   "fieldtype": "Data",
+   "label": "Property Monthly Service Charge (BDT)"
+  },
+  {
+   "fieldname": "contact_information_section",
+   "fieldtype": "Section Break",
+   "label": "Contact Information"
+  },
+  {
+   "fieldname": "viewing_contact_name",
+   "fieldtype": "Data",
+   "label": "Viewing Contact Name"
+  },
+  {
+   "fieldname": "viewing_contact_mobile",
+   "fieldtype": "Data",
+   "label": "Viewing Contact Mobile"
+  },
+  {
+   "fieldname": "viewing_access",
+   "fieldtype": "Data",
+   "label": "Viewing Access"
+  },
+  {
+   "fieldname": "encumbrance_information_section",
+   "fieldtype": "Section Break",
+   "label": "Encumbrance Information"
+  },
+  {
+   "fieldname": "no_of_owners_of_the_property",
+   "fieldtype": "Data",
+   "label": "No of Owners of the Property"
+  },
+  {
+   "fieldname": "registration_status",
+   "fieldtype": "Select",
+   "label": "Registration Status",
+   "options": "Registered\nUnregistered"
+  },
+  {
+   "fieldname": "mutation",
+   "fieldtype": "Select",
+   "label": "Mutation",
+   "options": "Completed\nApplied\nIncomplete"
+  },
+  {
+   "fieldname": "holding_tax",
+   "fieldtype": "Select",
+   "label": "Holding Tax",
+   "options": "Up to Date\nPending"
+  },
+  {
+   "fieldname": "mortgage_against_property",
+   "fieldtype": "Select",
+   "label": "Mortgage Against Property",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "mortgage_details",
+   "fieldtype": "Small Text",
+   "label": "Mortgage Details"
+  },
+  {
+   "fieldname": "basic_informations_tab",
+   "fieldtype": "Tab Break",
+   "label": "Basic Informations"
+  },
+  {
+   "fieldname": "column_break_cunf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "building_information_section",
+   "fieldtype": "Section Break",
+   "label": "Building Information"
+  },
+  {
+   "fieldname": "column_break_hbdu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "finance_and_contact_tab",
+   "fieldtype": "Tab Break",
+   "label": "Finance and Contact"
+  },
+  {
+   "fieldname": "safety_and_security_tab",
+   "fieldtype": "Tab Break",
+   "label": "Safety and Security"
+  },
+  {
+   "fieldname": "listing_and_building_tab",
+   "fieldtype": "Tab Break",
+   "label": "Listing and Building"
+  },
+  {
+   "fieldname": "other_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-03 10:18:51.202059",
+ "modified_by": "Administrator",
+ "module": "Asroy CRM",
+ "name": "Asroy Seller Profile KYC",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

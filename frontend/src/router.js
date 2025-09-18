@@ -73,6 +73,18 @@ const routes = [
     component: () => import('@/pages/Organizations.vue'),
   },
   {
+    alias: '/properties',
+    path: '/Properties/view/:viewType?',
+    name: 'Properties',
+    component: () => import('@/pages/Properties.vue'),
+  },
+  {
+    path: '/properties/:propertyId',
+    name: 'Property',
+    component: () => import(`@/pages/${handleMobileView('Property')}.vue`),
+    props: true,
+  },
+  {
     path: '/organizations/:organizationId',
     name: 'Organization',
     component: () => import(`@/pages/${handleMobileView('Organization')}.vue`),
@@ -88,6 +100,18 @@ const routes = [
     path: '/calendar',
     name: 'Calendar',
     component: () => import('@/pages/Calendar.vue'),
+  },
+  {
+    alias: '/sales-funnel',
+    path: '/sales-funnel/view/:viewType?',
+    name: 'Sales Funnel',
+    component: () => import('@/pages/SalesFunnel.vue'),
+  },
+  {
+    alias: '/email-templates',
+    path: '/email-templates/view/:viewType?',
+    name: 'Email Templates',
+    component: () => import('@/pages/EmailTemplates.vue'),
   },
   {
     path: '/welcome',

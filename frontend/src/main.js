@@ -35,6 +35,8 @@ let globalComponents = {
   Badge,
   FeatherIcon,
 }
+import CanvasJSChart from '@canvasjs/vue-charts';
+
 
 // create a pinia instance
 let pinia = createPinia()
@@ -52,6 +54,7 @@ for (let key in globalComponents) {
 }
 
 app.config.globalProperties.$dialog = createDialog
+app.use(CanvasJSChart);
 
 let socket
 if (import.meta.env.DEV) {
