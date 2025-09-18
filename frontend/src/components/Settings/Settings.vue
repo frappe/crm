@@ -7,19 +7,19 @@
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
-        <div class="flex flex-col p-2 w-52 shrink-0 bg-surface-gray-2">
-          <h1 class="px-2 pt-2 mb-3 text-lg font-semibold text-ink-gray-8">
+        <div class="flex flex-col p-1 w-52 shrink-0 bg-surface-gray-2">
+          <h1 class="px-3 pt-3 pb-2 text-lg font-semibold text-ink-gray-8">
             {{ __('Settings') }}
           </h1>
           <div class="flex flex-col overflow-y-auto">
             <template v-for="tab in tabs" :key="tab.label">
               <div
                 v-if="!tab.hideLabel"
-                class="py-[7px] px-1 my-1 flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
+                class="py-[7px] px-2 my-1 flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
               >
                 <span>{{ __(tab.label) }}</span>
               </div>
-              <nav class="space-y-1">
+              <nav class="space-y-1 px-1">
                 <SidebarLink
                   v-for="i in tab.items"
                   :icon="i.icon"
