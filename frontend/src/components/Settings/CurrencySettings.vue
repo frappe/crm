@@ -25,7 +25,7 @@
 
     <!-- Fields -->
     <div class="flex flex-1 flex-col overflow-y-auto">
-      <div class="flex items-center justify-between gap-8 p-3">
+      <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
             {{ __('Currency') }}
@@ -54,7 +54,7 @@
         </div>
       </div>
       <div class="h-px border-t mx-2 border-outline-gray-modals" />
-      <div class="flex items-center justify-between gap-8 p-3">
+      <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
             {{ __('Exchange rate provider') }}
