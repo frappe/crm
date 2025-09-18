@@ -1,19 +1,20 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
-    <div class="flex flex-col gap-1">
+  <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
+    <div class="flex flex-col gap-1 px-2">
       <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
         {{ __('Forecasting') }}
       </h2>
       <p class="text-p-base text-ink-gray-6">
-        {{ __('Configure forecasting feature to help predict sales performance and growth') }}
+        {{
+          __(
+            'Configure forecasting feature to help predict sales performance and growth',
+          )
+        }}
       </p>
     </div>
 
     <div class="flex-1 flex flex-col overflow-y-auto">
-      <div
-        class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
-        @click="toggleForecasting()"
-      >
+      <div class="flex items-center justify-between py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
             {{ __('Enable forecasting') }}
@@ -30,15 +31,12 @@
           <Switch
             size="sm"
             v-model="settings.doc.enable_forecasting"
-            @click.stop="toggleForecasting(settings.doc.enable_forecasting)"
+            @click.stop="toggleForecasting"
           />
         </div>
       </div>
       <div class="h-px border-t mx-2 border-outline-gray-modals" />
-      <div
-        class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
-        @click="autoUpdateExpectedDealValue"
-      >
+      <div class="flex items-center justify-between py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
             {{ __('Auto update expected deal value') }}
@@ -69,10 +67,7 @@ import { Switch, toast } from 'frappe-ui'
 
 const { _settings: settings } = getSettings()
 
-function toggleForecasting(value) {
-  settings.doc.enable_forecasting =
-    value !== undefined ? value : !settings.doc.enable_forecasting
-
+function toggleForecasting() {
   settings.save.submit(null, {
     onSuccess: () => {
       toast.success(
@@ -85,9 +80,6 @@ function toggleForecasting(value) {
 }
 
 function autoUpdateExpectedDealValue() {
-  settings.doc.auto_update_expected_deal_value =
-    !settings.doc.auto_update_expected_deal_value
-
   settings.save.submit(null, {
     onSuccess: () => {
       toast.success(
