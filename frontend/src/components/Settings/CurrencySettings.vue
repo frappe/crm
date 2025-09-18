@@ -1,27 +1,20 @@
 <template>
   <div class="flex h-full flex-col gap-6 px-6 py-8 text-ink-gray-8">
     <!-- Header -->
-    <div class="flex px-2 justify-between">
-      <div class="flex items-center gap-1 -ml-4 w-9/12">
-        <Button
-          variant="ghost"
-          icon-left="chevron-left"
-          :label="__('Currency & Exchange rate provider')"
-          size="md"
-          @click="() => emit('updateStep', 'general-settings')"
-          class="cursor-pointer hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !justify-start"
-        />
-        <Badge
-          v-if="settings.isDirty"
-          :label="__('Not Saved')"
-          variant="subtle"
-          theme="orange"
-        />
+    <div class="flex justify-between px-2 text-ink-gray-8">
+      <div class="flex flex-col gap-1">
+        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+          {{ __('Currency & Exchange rate provider') }}
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{
+            __('Configure the currency and exchange rate provider for your CRM')
+          }}
+        </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
           :label="__('Update')"
-          icon-left="plus"
           variant="solid"
           :disabled="!settings.isDirty"
           :loading="settings.loading"
@@ -32,7 +25,7 @@
 
     <!-- Fields -->
     <div class="flex flex-1 flex-col overflow-y-auto">
-      <div class="flex items-center justify-between gap-8 p-3">
+      <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
             {{ __('Currency') }}
@@ -61,7 +54,7 @@
         </div>
       </div>
       <div class="h-px border-t mx-2 border-outline-gray-modals" />
-      <div class="flex items-center justify-between gap-8 p-3">
+      <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
             {{ __('Exchange rate provider') }}
@@ -131,17 +124,15 @@
   </div>
 </template>
 <script setup>
-import { ErrorMessage, toast } from 'frappe-ui'
+import { ErrorMessage, FormControl, toast } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { showSettings } from '@/composables/settings'
 import { ref } from 'vue'
-import FormControl from 'frappe-ui/src/components/FormControl/FormControl.vue'
 
 const { _settings: settings } = getSettings()
 const { $dialog } = globalStore()
 
-const emit = defineEmits(['updateStep'])
 const errorMessage = ref('')
 
 function updateSettings() {

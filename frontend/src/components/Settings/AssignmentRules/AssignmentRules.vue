@@ -1,35 +1,39 @@
 <template>
-  <div class="p-8 sticky top-0">
-    <div class="flex items-start justify-between">
-      <div class="flex flex-col gap-1">
-        <h1 class="text-xl font-semibold text-ink-gray-8">
+  <div class="flex h-full flex-col gap-6 p-6 text-ink-gray-8">
+    <!-- Header -->
+    <div class="flex justify-between px-2 pt-2">
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
           {{ __('Assignment rules') }}
-        </h1>
-        <p class="text-p-base text-ink-gray-6 max-w-md">
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Assignment Rules automatically route leads or deals to the right team members based on predefined conditions.',
+              'Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions',
             )
           }}
         </p>
       </div>
-      <Button
-        :label="__('Create new')"
-        theme="gray"
-        variant="solid"
-        @click="goToNew()"
-        icon-left="plus"
-      />
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <Button
+          :label="__('New')"
+          icon-left="plus"
+          variant="solid"
+          @click="goToNew()"
+        />
+      </div>
     </div>
-  </div>
-  <div class="overflow-y-auto px-8 pb-6">
-    <AssignmentRulesList />
+
+    <!-- Assignment rules list -->
+    <div class="overflow-y-auto">
+      <AssignmentRulesList />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { createResource } from 'frappe-ui'
 import AssignmentRulesList from './AssignmentRulesList.vue'
+import { createResource } from 'frappe-ui'
 import { inject, provide } from 'vue'
 
 const updateStep = inject('updateStep')
