@@ -25,26 +25,6 @@
     </div>
     <div class="flex-1 flex flex-col px-2 gap-8 overflow-y-auto">
       <div>
-<<<<<<< HEAD
-        <label class="block text-xs text-ink-gray-5 mb-1.5">
-          {{ __('Invite by email') }}
-        </label>
-        <div
-          class="p-2 group bg-surface-gray-2 hover:bg-surface-gray-3 rounded"
-        >
-          <MultiSelectUserInput
-            class="flex-1"
-            inputClass="!bg-surface-gray-2 hover:!bg-surface-gray-3 group-hover:!bg-surface-gray-3"
-            :placeholder="__('john@doe.com')"
-            v-model="invitees"
-            :validate="validateEmail"
-            :error-message="
-              (value) => __('{0} is an invalid email address', [value])
-            "
-            :fetchUsers="false"
-          />
-        </div>
-=======
         <FormControl
           type="textarea"
           label="Invite by email"
@@ -58,7 +38,6 @@
             )
           "
         />
->>>>>>> 69f80903 (refactor: replace EmailMultiSelect with FormControl for inviting users by email)
         <div
           v-if="userExistMessage || inviteeExistMessage"
           class="text-xs text-ink-red-3 mt-1.5"
@@ -116,10 +95,6 @@
   </div>
 </template>
 <script setup>
-<<<<<<< HEAD
-import MultiSelectUserInput from '@/components/Controls/MultiSelectUserInput.vue'
-=======
->>>>>>> 69f80903 (refactor: replace EmailMultiSelect with FormControl for inviting users by email)
 import { validateEmail, convertArrayToString } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { createListResource, createResource, FormControl } from 'frappe-ui'
