@@ -231,7 +231,6 @@ declare module 'vue' {
     ProfileSettings: typeof import('./src/components/Settings/ProfileSettings.vue')['default']
     PropertiesListView: typeof import('./src/components/ListViews/PropertiesListView.vue')['default']
     PropertyIcon: typeof import('./src/components/Icons/PropertyIcon.vue')['default']
-    PropertyModal: typeof import('./src/components/Modals/PropertyModal.vue')['default']
     QuickEntryModal: typeof import('./src/components/Modals/QuickEntryModal.vue')['default']
     QuickFilterField: typeof import('./src/components/QuickFilterField.vue')['default']
     QuickFilterIcon: typeof import('./src/components/Icons/QuickFilterIcon.vue')['default']
