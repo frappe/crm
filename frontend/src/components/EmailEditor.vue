@@ -19,6 +19,20 @@
     <template #top>
       <div class="flex flex-col gap-3">
         <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
+          <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
+          <SingleSelectEmailInput
+            class="flex-1"
+            variant="ghost"
+            v-model="fromEmails"
+            :validate="validateEmail"
+            :options="emailAccountOptions"
+            :error-message="
+              (value) => __('{0} is an invalid email address', [value])
+            "
+            placeholder="Select sender email"
+          />
+        </div>
+        <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
           <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
           <EmailMultiSelect
             class="flex-1"
@@ -183,6 +197,7 @@ import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
+import SingleSelectEmailInput from '@/components/Controls/SingleSelectEmailInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { capture } from '@/telemetry'
@@ -190,7 +205,7 @@ import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, nextTick } from 'vue'
-
+import { createResource } from 'frappe-ui'
 const props = defineProps({
   placeholder: {
     type: String,
@@ -255,11 +270,26 @@ const ccEmails = ref([])
 const bccEmails = ref([])
 const ccInput = ref(null)
 const bccInput = ref(null)
-
+const emailAccounts = ref([])
+const fromEmails = ref([])
+const emailAccountOptions = computed(() =>
+  emailAccounts.value.map((acc) => acc.email_id),
+)
 const editor = computed(() => {
   return textEditor.value.editor
 })
 
+const emailAccountsResource = createResource({
+  url: 'crm.api.email.get_user_email_accounts',
+  auto: true,
+  onSuccess(data) {
+    emailAccounts.value = data || []
+    // default select
+    if (emailAccounts.value.length > 0 && fromEmails.value.length === 0) {
+      fromEmails.value = [emailAccounts.value[0].email_id]
+    }
+  },
+})
 function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
 }
