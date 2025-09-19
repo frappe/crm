@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-14 09:35+0000\n"
-"PO-Revision-Date: 2025-09-18 20:35\n"
+"PO-Revision-Date: 2025-09-19 20:32\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -160,7 +160,7 @@ msgstr "API Nøkkel"
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "API Key is required"
-msgstr ""
+msgstr "API-key er påkrevd"
 
 #. Label of the api_secret (Password) field in DocType 'CRM Twilio Settings'
 #. Label of the api_secret (Password) field in DocType 'ERPNext CRM Settings'
@@ -174,72 +174,72 @@ msgstr "API-hemmelighet"
 #. Label of the api_token (Password) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 msgid "API Token"
-msgstr ""
+msgstr "API-token"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:88
 msgid "Accept"
-msgstr ""
+msgstr "Aksepter"
 
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.js:7
 msgid "Accept Invitation"
-msgstr ""
+msgstr "Aksepter invitasjon"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:155
 msgid "Accept call"
-msgstr ""
+msgstr "Aksepter anrop"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Accepted"
-msgstr ""
+msgstr "Akseptert"
 
 #. Label of the accepted_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Accepted At"
-msgstr ""
+msgstr "Akseptert kl. "
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Access Key"
-msgstr ""
+msgstr "Tilgangsnøkkel"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:156
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "Tilgangsnøkkel er nødvendig for tjenesteleverandøren: {0}"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:97
 msgid "Access key"
-msgstr ""
+msgstr "Tilgangsnøkkel"
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:101
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
-msgstr ""
+msgstr "Tilgangsnøkkel for Exchangerate Host. Nødvendig for å hente valutakurser."
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
-msgstr ""
+msgstr "Kontonavn"
 
 #. Label of the account_sid (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the account_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 msgid "Account SID"
-msgstr ""
+msgstr "Konto-SID"
 
 #: frontend/src/components/Settings/emailConfig.js:165
 msgid "Account name is required"
-msgstr ""
+msgstr "Kontonavn er påkrevd"
 
 #: frontend/src/components/CustomActions.vue:69
 #: frontend/src/components/ViewControls.vue:683
 #: frontend/src/components/ViewControls.vue:1064
 msgid "Actions"
-msgstr ""
+msgstr "Handlinger"
 
 #: frontend/src/pages/Deal.vue:527 frontend/src/pages/Lead.vue:384
 #: frontend/src/pages/MobileDeal.vue:430 frontend/src/pages/MobileLead.vue:337
 msgid "Activity"
-msgstr ""
+msgstr "Aktivitet"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:41
 #: frontend/src/components/Modals/AddExistingUserModal.vue:55
@@ -252,7 +252,7 @@ msgstr "Legg til Konto"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:9
 msgid "Add Assignee"
-msgstr ""
+msgstr "Legg til rettighetshaver"
 
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/Kanban/KanbanView.vue:157
@@ -262,7 +262,7 @@ msgstr "Legg til Kolonne"
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
 #: frontend/src/components/Settings/Users.vue:21
 msgid "Add Existing User"
-msgstr ""
+msgstr "Legg til eksisterende bruker"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:57
 #: frontend/src/components/FieldLayoutEditor.vue:172
@@ -277,7 +277,7 @@ msgstr "Legg til Filter"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:273
 msgid "Add Lead or Deal"
-msgstr ""
+msgstr "Legg til potensiell kunde eller avtale"
 
 #: frontend/src/components/Controls/Grid.vue:324
 msgid "Add Row"
@@ -286,7 +286,7 @@ msgstr "Legg til Rad"
 #: frontend/src/components/FieldLayoutEditor.vue:197
 #: frontend/src/components/SidePanelLayoutEditor.vue:127
 msgid "Add Section"
-msgstr ""
+msgstr "Legg til seksjon"
 
 #: frontend/src/components/SortBy.vue:142
 msgid "Add Sort"
@@ -432,7 +432,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:451
 #: frontend/src/pages/Organization.vue:472
 msgid "Amount"
-msgstr ""
+msgstr "Beløp"
 
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -2236,7 +2236,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 msgid "Enable"
-msgstr ""
+msgstr "Aktiver"
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2861,7 +2861,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:542
 #: frontend/src/components/Settings/General/HomeActions.vue:9
 msgid "Home actions"
-msgstr "Tiltak på hjemmebane"
+msgstr "Handlinger på Hjem-siden"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:204
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:285
@@ -3123,7 +3123,7 @@ msgstr ""
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #. Label of the job_title (Data) field in DocType 'CRM Deal'
 #. Label of the job_title (Data) field in DocType 'CRM Lead'
@@ -3165,7 +3165,7 @@ msgstr "Innstillinger for Kanban-tavle"
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Key"
-msgstr ""
+msgstr "Nøkkel"
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
@@ -3246,7 +3246,7 @@ msgstr ""
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
 #: frontend/src/pages/Tasks.vue:133
 msgid "Lead"
-msgstr ""
+msgstr "Potensiell kunde"
 
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4832,7 +4832,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:125
 #: frontend/src/pages/Dashboard.vue:36
 msgid "Save"
-msgstr ""
+msgstr "Lagre"
 
 #: frontend/src/components/Modals/ViewModal.vue:40
 #: frontend/src/components/ViewControls.vue:58
@@ -4904,7 +4904,7 @@ msgstr "Velg {0}"
 
 #: frontend/src/components/EmailEditor.vue:165
 msgid "Send"
-msgstr ""
+msgstr "Send"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:18
 msgid "Send Invites"
@@ -5326,7 +5326,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Territory"
-msgstr ""
+msgstr "Territorium"
 
 #. Label of the territory_manager (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -5685,7 +5685,7 @@ msgstr ""
 #: frontend/src/components/Settings/TelephonySettings.vue:23
 #: frontend/src/components/Telephony/ExotelCallUI.vue:210
 msgid "Update"
-msgstr ""
+msgstr "Oppdater"
 
 #: frontend/src/components/Settings/EmailEdit.vue:74
 msgid "Update Account"
@@ -5797,7 +5797,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: frontend/src/components/Modals/AboutModal.vue:52
 msgid "Website"
-msgstr ""
+msgstr "Nettsted"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
