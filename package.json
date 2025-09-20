@@ -6,5 +6,9 @@
 		"dev": "cd frontend && yarn dev",
 		"build": "cd frontend && yarn build",
 		"upgrade-frappeui": "cd frontend && yarn add frappe-ui@latest && cd .."
+	},
+	"dependencies": {
+		"@ringcentral/sdk": "^5.0.5",
+		"ringcentral-web-phone": "^2.2.7"
 	}
 }

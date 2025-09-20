@@ -23,6 +23,7 @@ createResource({
 export const callEnabled = ref(false)
 export const twilioEnabled = ref(false)
 export const exotelEnabled = ref(false)
+export const ringcentralEnabled = ref(false)
 export const defaultCallingMedium = ref('')
 createResource({
   url: 'crm.integrations.api.is_call_integration_enabled',
@@ -31,8 +32,19 @@ createResource({
   onSuccess: (data) => {
     twilioEnabled.value = Boolean(data.twilio_enabled)
     exotelEnabled.value = Boolean(data.exotel_enabled)
+    ringcentralEnabled.value = Boolean(data.ringcentral_enabled)
     defaultCallingMedium.value = data.default_calling_medium
-    callEnabled.value = twilioEnabled.value || exotelEnabled.value
+    callEnabled.value = twilioEnabled.value || exotelEnabled.value || ringcentralEnabled.value
+    console.log('Integration Status:', {
+      twilioEnabled: twilioEnabled.value,
+      exotelEnabled: exotelEnabled.value,
+      ringcentralEnabled: ringcentralEnabled.value,
+      callEnabled: callEnabled.value,
+      defaultCallingMedium: defaultCallingMedium.value
+    })
+  },
+  onError: (error) => {
+    console.error('Failed to fetch integration status:', error)
   },
 })
 

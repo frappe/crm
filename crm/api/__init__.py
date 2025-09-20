@@ -3,9 +3,19 @@ from bs4 import BeautifulSoup
 from frappe.core.api.file import get_max_file_size
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
-from frappe.utils.modules import get_modules_from_all_apps_for_user
+#from frappe.utils import get_modules_from_all_apps_for_user
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
 
+
+# Compatibility patch for Frappe v15
+def get_modules_from_all_apps_for_user(user=None):
+    """Return modules accessible to a user (simplified)."""
+    if not user:
+        user = frappe.session.user
+
+    # Fetch modules from Module Def
+    modules = frappe.get_all("Module Def", fields=["module_name", "app_name"])
+    return modules
 
 @frappe.whitelist(allow_guest=True)
 def get_translations():
