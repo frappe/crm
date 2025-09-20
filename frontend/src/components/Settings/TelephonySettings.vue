@@ -7,7 +7,7 @@
         >
           {{ __('Telephony settings') }}
           <Badge
-            v-if="twilio.isDirty || exotel.isDirty || mediumChanged"
+            v-if="twilio.isDirty || exotel.isDirty || ringcentral.isDirty || mediumChanged"
             :label="__('Not Saved')"
             variant="subtle"
             theme="orange"
@@ -19,7 +19,7 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
-          :loading="twilio.save.loading || exotel.save.loading"
+          :loading="twilio.save.loading || exotel.save.loading || ringcentral.save.loading"
           :label="__('Update')"
           variant="solid"
           @click="update"
@@ -27,7 +27,7 @@
       </div>
     </div>
     <div
-      v-if="!twilio.get.loading || !exotel.get.loading"
+      v-if="!twilio.get.loading || !exotel.get.loading || !ringcentral.get.loading"
       class="flex-1 flex flex-col gap-8 overflow-y-auto"
     >
       <!-- General -->
@@ -39,6 +39,8 @@
           { label: __(''), value: '' },
           { label: __('Twilio'), value: 'Twilio' },
           { label: __('Exotel'), value: 'Exotel' },
+          { label: __('RingCentral'), value: 'RingCentral' },
+
         ]"
         class="w-1/2"
         :description="__('Default calling medium for logged in user')"
@@ -69,11 +71,41 @@
           doctype="CRM Exotel Settings"
         />
       </div>
+
+      <!-- RingCentral -->
+      <div v-if="isManager()" class="flex flex-col justify-between gap-4">
+        <div class="flex items-center justify-between">
+        <span class="text-base font-semibold text-ink-gray-8">
+          {{ __('RingCentral') }}
+        </span>
+        <Button
+          v-if="ringcentral?.doc?.enabled && !isRingCentralAuthorized"
+          :loading="authorizationInProgress"
+          :label="__('Authorize RingCentral')"
+          variant="solid"
+          theme="gray"
+          @click="startOAuthFlow"
+        />
+        <Badge
+          v-else-if="ringcentral?.doc?.enabled && isRingCentralAuthorized"
+          :label="__('Authorized')"
+          variant="subtle"
+          theme="green"
+        />
+        </div>
+
+        <FieldLayout
+          v-if="ringcentral?.doc && ringcentralTabs"
+          :tabs="ringcentralTabs"
+          :data="ringcentral.doc"
+          doctype="CRM RingCentral Settings"
+        />
+      </div>
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
       <Spinner class="size-8" />
     </div>
-    <ErrorMessage :message="twilio.save.error || exotel.save.error || error" />
+    <ErrorMessage :message="twilio.save.error || exotel.save.error || error || ringcentral.save.error" />
   </div>
 </template>
 <script setup>
@@ -92,8 +124,18 @@ import { usersStore } from '@/stores/users'
 import { toast } from 'frappe-ui'
 import { getRandom } from '@/utils'
 import { ref, computed, watch } from 'vue'
+import { useRingCentralAuth } from '@/composables/useRingCentralAuth'
 
 const { isManager, isTelephonyAgent } = usersStore()
+
+const {
+  isRingCentralAuthorized,
+  authorizationInProgress,
+  log,
+  startOAuthFlow,
+  handleOAuthCallback,
+  checkAuthStatus,
+} = useRingCentralAuth()
 
 const twilioFields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -110,6 +152,16 @@ const exotelFields = createResource({
   cache: ['fields', 'CRM Exotel Settings'],
   params: {
     doctype: 'CRM Exotel Settings',
+    allow_all_fieldtypes: true,
+  },
+  auto: true,
+})
+
+const ringcentralFields = createResource({
+  url: 'crm.api.doc.get_fields',
+  cache: ['fields', 'CRM RingCentral Settings'],
+  params: {
+    doctype: 'CRM RingCentral Settings',
     allow_all_fieldtypes: true,
   },
   auto: true,
@@ -138,6 +190,21 @@ const exotel = createDocumentResource({
   setValue: {
     onSuccess: () => {
       toast.success(__('Exotel settings updated successfully'))
+    },
+    onError: (err) => {
+      toast.error(err.message + ': ' + err.messages[0])
+    },
+  },
+})
+
+const ringcentral = createDocumentResource({
+  doctype: 'CRM RingCentral Settings',
+  name: 'CRM RingCentral Settings',
+  fields: ['*'],
+  auto: true,
+  setValue: {
+    onSuccess: () => {
+      toast.success(__('RingCentral settings updated successfully'))
     },
     onError: (err) => {
       toast.error(err.message + ': ' + err.messages[0])
@@ -249,6 +316,57 @@ const exotelTabs = computed(() => {
   return _tabs
 })
 
+const ringcentralTabs = computed(() => {
+  if (!ringcentralFields.data) return []
+  let _tabs = []
+  let fieldsData = ringcentralFields.data
+
+  if (fieldsData[0].type != 'Tab Break') {
+    let _sections = []
+    if (fieldsData[0].type != 'Section Break') {
+      _sections.push({
+        name: 'first_section',
+        columns: [{ name: 'first_column', fields: [] }],
+      })
+    }
+    _tabs.push({ name: 'first_tab', sections: _sections })
+  }
+
+  fieldsData.forEach((field) => {
+    let last_tab = _tabs[_tabs.length - 1]
+    let _sections = _tabs.length ? last_tab.sections : []
+    if (field.fieldtype === 'Tab Break') {
+      _tabs.push({
+        label: field.label,
+        name: field.fieldname,
+        sections: [
+          {
+            name: 'section_' + getRandom(),
+            columns: [{ name: 'column_' + getRandom(), fields: [] }],
+          },
+        ],
+      })
+    } else if (field.fieldtype === 'Section Break') {
+      _sections.push({
+        label: field.label,
+        name: field.fieldname,
+        hideBorder: field.hide_border,
+        columns: [{ name: 'column_' + getRandom(), fields: [] }],
+      })
+    } else if (field.fieldtype === 'Column Break') {
+      _sections[_sections.length - 1].columns.push({
+        name: field.fieldname,
+        fields: [],
+      })
+    } else {
+      let last_section = _sections[_sections.length - 1]
+      let last_column = last_section.columns[last_section.columns.length - 1]
+      last_column.fields.push(field)
+    }
+  })
+
+  return _tabs
+})
 const mediumChanged = ref(false)
 
 watch(defaultCallingMedium, () => {
@@ -268,6 +386,9 @@ function update() {
   }
   if (exotel.isDirty) {
     exotel.save.submit()
+  }
+  if (ringcentral.isDirty) {
+  ringcentral.save.submit()
   }
 }
 
@@ -291,6 +412,10 @@ function validateIfDefaultMediumIsEnabled() {
   }
   if (defaultCallingMedium.value === 'Exotel' && !exotel.doc.enabled) {
     error.value = __('Exotel is not enabled')
+    return false
+  }
+  if (defaultCallingMedium.value === 'RingCentral' && !ringcentral.doc.enabled) {
+    error.value = __('RingCentral is not enabled')
     return false
   }
   return true

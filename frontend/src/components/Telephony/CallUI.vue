@@ -1,6 +1,8 @@
 <template>
   <TwilioCallUI ref="twilio" />
   <ExotelCallUI ref="exotel" />
+  <RingCentralCallUI ref = "ringcentral" />
+
   <Dialog
     v-model="show"
     :options="{
@@ -25,7 +27,7 @@
           type="select"
           v-model="callMedium"
           :label="__('Calling Medium')"
-          :options="['Twilio', 'Exotel']"
+          :options="['Twilio', 'Exotel','RingCentral']"
         />
         <div class="flex flex-col gap-1">
           <FormControl
@@ -47,9 +49,11 @@
 <script setup>
 import TwilioCallUI from '@/components/Telephony/TwilioCallUI.vue'
 import ExotelCallUI from '@/components/Telephony/ExotelCallUI.vue'
+import RingCentralCallUI from '@/components/Telephony/RingCentralCallUI.vue'
 import {
   twilioEnabled,
   exotelEnabled,
+  ringcentralEnabled,
   defaultCallingMedium,
 } from '@/composables/settings'
 import { globalStore } from '@/stores/global'
@@ -60,7 +64,7 @@ const { setMakeCall } = globalStore()
 
 const twilio = ref(null)
 const exotel = ref(null)
-
+const ringcentral = ref(null)
 const callMedium = ref('Twilio')
 const isDefaultMedium = ref(false)
 
@@ -71,6 +75,7 @@ function makeCall(number) {
   if (
     twilioEnabled.value &&
     exotelEnabled.value &&
+    ringcentralEnabled.value &&
     !defaultCallingMedium.value
   ) {
     mobileNumber.value = number
@@ -78,9 +83,12 @@ function makeCall(number) {
     return
   }
 
-  callMedium.value = twilioEnabled.value ? 'Twilio' : 'Exotel'
-  if (defaultCallingMedium.value) {
-    callMedium.value = defaultCallingMedium.value
+  if (twilioEnabled.value) {
+    callMedium.value = 'Twilio'
+  } else if (exotelEnabled.value) {
+    callMedium.value = 'Exotel'
+  } else {
+    callMedium.value = 'RingCentral'
   }
 
   mobileNumber.value = number
@@ -99,6 +107,10 @@ function makeCallUsing() {
   if (callMedium.value === 'Exotel') {
     exotel.value.makeOutgoingCall(mobileNumber.value)
   }
+
+  if (callMedium.value === 'RingCentral') {
+    ringcentral.value.makeOutgoingCall(mobileNumber.value)
+  }
   show.value = false
 }
 
@@ -114,8 +126,8 @@ async function setDefaultCallingMedium() {
 }
 
 watch(
-  [twilioEnabled, exotelEnabled],
-  ([twilioValue, exotelValue]) =>
+  [twilioEnabled, exotelEnabled, ringcentralEnabled],
+  ([twilioValue, exotelValue, ringcentralValue]) =>
     nextTick(() => {
       if (twilioValue) {
         twilio.value.setup()
@@ -127,7 +139,12 @@ watch(
         callMedium.value = 'Exotel'
       }
 
-      if (twilioValue || exotelValue) {
+      if (ringcentralValue) {
+        ringcentral.value.setup()
+        callMedium.value = 'RingCentral'
+      }
+
+      if (twilioValue || exotelValue || ringcentralValue) {
         callMedium.value = 'Twilio'
         setMakeCall(makeCall)
       }
