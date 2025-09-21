@@ -17,7 +17,7 @@
         <Button
           :label="__('Send Invites')"
           variant="solid"
-          :disabled="!invitees.length"
+          :disabled="!invitees.length || !role"
           @click="inviteByEmail.submit()"
           :loading="inviteByEmail.loading"
         />
@@ -107,7 +107,8 @@ import {
   createListResource,
   createResource,
   FormControl,
-  Tooltip,
+  Button,
+  ErrorMessage,
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, computed } from 'vue'
@@ -152,7 +153,7 @@ const inviteeExistMessage = computed(() => {
 })
 
 const description = computed(() => {
-  return {
+  const descriptions = {
     'Customer Service':
       'Can handle customer inquiries, support tickets, and provide customer assistance.',
     'Sales Agent':
@@ -167,7 +168,8 @@ const description = computed(() => {
       'Can manage and invite new users, create public & private views (reports), and oversee team operations.',
     'System Manager':
       'Can manage all aspects of the CRM, including user management, customizations and settings.',
-  }[role.value]
+  }
+  return descriptions[role.value] || 'Select a role to see description.'
 })
 
 const roleOptions = computed(() => {
@@ -215,7 +217,9 @@ const inviteByEmail = createResource({
     updateOnboardingStep('invite_your_team')
   },
   onError(err) {
-    error.value = err?.messages?.[0]
+    const errorMessage = err?.messages?.[0] || err?.message || __('Failed to send invitations')
+    error.value = errorMessage
+    console.error('Error sending invitations:', err)
   },
 })
 

@@ -101,7 +101,7 @@ def accept_invitation(key: str | None = None):
 def invite_by_email(emails: str, role: str):
 	frappe.only_for(["Sales Manager", "System Manager"])
 
-	if role not in ["System Manager", "Sales Manager", "Sales User"]:
+	if role not in ["System Manager", "Sales Manager", "Sales User", "Customer Service", "Sales Agent", "Purchase Agent", "Sales Team Lead", "Purchase Team Lead", "Manager"]:
 		frappe.throw("Cannot invite for this role")
 
 	if not emails:
