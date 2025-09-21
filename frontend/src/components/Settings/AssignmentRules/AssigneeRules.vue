@@ -6,20 +6,26 @@
       }}</span>
       <span class="text-p-sm text-ink-gray-6">
         {{
-          __(
-            'Define who receives the tickets and how they’re distributed among agents.',
-          )
+          __('Choose how {0} are assigned among salespeople.', [documentType])
         }}
       </span>
     </div>
     <div class="mt-8 flex items-center justify-between gap-2">
       <div>
         <div class="text-base font-medium text-ink-gray-8">
-          {{ __('Ticket Routing') }}
+          {{
+            __('{0} Routing', [
+              assignmentRuleData.documentType == 'CRM Lead'
+                ? __('Lead')
+                : __('Deal'),
+            ])
+          }}
         </div>
         <div class="text-p-sm text-ink-gray-6 mt-1">
           {{
-            __('Choose how tickets are distributed among selected assignees.')
+            __('Choose how {0} are assigned among the selected assignees.', [
+              documentType,
+            ])
           }}
         </div>
       </div>
@@ -27,12 +33,12 @@
         <Popover placement="bottom-end">
           <template #target="{ togglePopover }">
             <div
-              class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] select-none min-w-40"
+              class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] select-none min-w-40"
               @click="togglePopover()"
             >
               <div>
                 {{
-                  ticketRoutingOptions.find(
+                  documentRoutingOptions.find(
                     (option) => option.value == assignmentRuleData.rule,
                   )?.label
                 }}
@@ -45,7 +51,7 @@
               class="p-1 text-ink-gray-7 mt-1 w-48 bg-white shadow-xl rounded"
             >
               <div
-                v-for="option in ticketRoutingOptions"
+                v-for="option in documentRoutingOptions"
                 :key="option.value"
                 class="p-2 cursor-pointer hover:bg-gray-50 text-sm flex items-center justify-between rounded"
                 @click="
@@ -75,7 +81,7 @@
           {{ __('Assignees') }}
         </div>
         <div class="text-p-sm text-ink-gray-6 mt-1">
-          {{ __('Choose who receives the tickets.') }}
+          {{ __('Select the assignees for {0}.', [documentType]) }}
         </div>
       </div>
       <AssigneeSearch @addAssignee="validateAssignmentRule('users')" />
@@ -119,8 +125,13 @@ const { getUser } = usersStore()
 const assignmentRuleData = inject('assignmentRuleData')
 const assignmentRuleErrors = inject('assignmentRuleErrors')
 const validateAssignmentRule = inject('validateAssignmentRule')
+const documentType = computed(() =>
+  assignmentRuleData.value.documentType == 'CRM Lead'
+    ? __('leads')
+    : __('deals'),
+)
 
-const ticketRoutingOptions = [
+const documentRoutingOptions = [
   {
     label: 'Auto-rotate',
     value: 'Round Robin',
