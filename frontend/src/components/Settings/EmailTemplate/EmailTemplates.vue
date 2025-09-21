@@ -148,6 +148,7 @@
   </div>
 </template>
 <script setup>
+import { TemplateOption } from '@/utils'
 import {
   TextInput,
   FormControl,
@@ -222,28 +223,43 @@ function getDropdownOptions(template) {
   let options = [
     {
       label: __('Duplicate'),
-      icon: 'copy',
-      onClick: () => emit('updateStep', 'new-template', { ...template }),
+      component: (props) =>
+        TemplateOption({
+          option: __('Duplicate'),
+          icon: 'copy',
+          active: props.active,
+          onClick: () => emit('updateStep', 'new-template', { ...template }),
+        }),
     },
     {
       label: __('Delete'),
-      icon: 'trash-2',
-      onClick: (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        confirmDelete.value = true
-      },
+      component: (props) =>
+        TemplateOption({
+          option: __('Delete'),
+          icon: 'trash-2',
+          active: props.active,
+          onClick: (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            confirmDelete.value = true
+          },
+        }),
       condition: () => !confirmDelete.value,
     },
     {
       label: __('Confirm Delete'),
-      icon: 'trash-2',
-      theme: 'red',
-      onClick: () => deleteTemplate(template),
+      component: (props) =>
+        TemplateOption({
+          option: __('Confirm Delete'),
+          icon: 'trash-2',
+          active: props.active,
+          theme: 'danger',
+          onClick: () => deleteTemplate(template),
+        }),
       condition: () => confirmDelete.value,
     },
   ]
 
-  return options
+  return options.filter((option) => option.condition?.() || true)
 }
 </script>

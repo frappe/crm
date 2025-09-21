@@ -110,6 +110,7 @@
 </template>
 
 <script setup>
+import { TemplateOption } from '@/utils'
 import {
   Autocomplete,
   Button,
@@ -190,17 +191,31 @@ const dropdownOptions = computed(() => {
 
   options.push({
     label: __('Remove'),
-    icon: 'trash-2',
-    variant: 'red',
-    onClick: () => emit('remove'),
+    component: (props) =>
+      TemplateOption({
+        option: __('Remove'),
+        icon: 'trash-2',
+        active: props.active,
+        variant: 'danger',
+        onClick: () => {
+          emit('remove')
+        },
+      }),
     condition: () => !props.isGroup,
   })
 
   options.push({
     label: __('Remove group'),
-    icon: 'trash-2',
-    variant: 'red',
-    onClick: () => emit('remove'),
+    component: (props) =>
+      TemplateOption({
+        option: __('Remove group'),
+        icon: 'trash-2',
+        active: props.active,
+        variant: 'danger',
+        onClick: () => {
+          emit('remove')
+        },
+      }),
     condition: () => props.isGroup,
   })
 

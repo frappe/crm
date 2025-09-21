@@ -1,25 +1,25 @@
 <template>
   <div
-    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-menu-bar rounded"
+    class="grid grid-cols-11 items-center gap-4 cursor-pointer hover:bg-gray-50 rounded"
   >
-    <div class="w-7/12" @click="updateStep('view', data)">
+    <div class="w-full py-3 pl-2 col-span-7" @click="updateStep('view', data)">
       <div class="text-base text-ink-gray-7 font-medium">{{ data.name }}</div>
       <div
         v-if="data.description && data.description.length > 0"
-        class="text-p-base w-full text-ink-gray-5 mt-0.5 whitespace-nowrap overflow-ellipsis overflow-hidden"
+        class="text-sm w-full text-ink-gray-5 mt-1 whitespace-nowrap overflow-ellipsis overflow-hidden"
       >
         {{ data.description }}
       </div>
     </div>
-    <div class="w-3/12">
+    <div class="col-span-2">
       <Select
-        class="w-max -ml-2 bg-transparent border-0 text-ink-gray-6 focus-visible:!ring-0 bg-none"
+        class="w-max bg-transparent -ml-2 border-0 text-ink-gray-6 focus-visible:!ring-0 bg-none"
         :options="priorityOptions"
         v-model="data.priority"
         @update:modelValue="onPriorityChange"
       />
     </div>
-    <div class="flex justify-between items-center w-2/12">
+    <div class="flex justify-between items-center w-full pr-2 col-span-2">
       <Switch
         size="sm"
         :modelValue="!data.disabled"
@@ -72,6 +72,7 @@ import {
   toast,
 } from 'frappe-ui'
 import { inject, ref } from 'vue'
+import { TemplateOption } from '@/utils'
 
 const assignmentRulesList = inject('assignmentRulesList')
 const updateStep = inject('updateStep')
@@ -127,19 +128,29 @@ const dropdownOptions = [
   },
   {
     label: __('Delete'),
-    icon: 'trash-2',
-    onClick: (e) => {
-      e.preventDefault()
-      e.stopImmediatePropagation()
-      isConfirmingDelete.value = true
-    },
+    component: (props) =>
+      TemplateOption({
+        option: __('Delete'),
+        icon: 'trash-2',
+        active: props.active,
+        onClick: (e) => {
+          e.preventDefault()
+          e.stopImmediatePropagation()
+          isConfirmingDelete.value = true
+        },
+      }),
     condition: () => !isConfirmingDelete.value,
   },
   {
     label: __('Confirm Delete'),
-    icon: 'trash-2',
-    theme: 'red',
-    onClick: () => deleteAssignmentRule(),
+    component: (props) =>
+      TemplateOption({
+        option: __('Confirm Delete'),
+        icon: 'trash-2',
+        active: props.active,
+        theme: 'danger',
+        onClick: () => deleteAssignmentRule(),
+      }),
     condition: () => isConfirmingDelete.value,
   },
 ]

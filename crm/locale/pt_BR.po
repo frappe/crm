@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-14 09:35+0000\n"
-"PO-Revision-Date: 2025-09-16 20:02\n"
+"POT-Creation-Date: 2025-09-07 09:35+0000\n"
+"PO-Revision-Date: 2025-09-07 17:34\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -430,7 +430,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_products/crm_products.json
 #: frontend/src/pages/Contact.vue:499 frontend/src/pages/MobileContact.vue:507
 #: frontend/src/pages/MobileOrganization.vue:451
-#: frontend/src/pages/Organization.vue:472
+#: frontend/src/pages/Organization.vue:458
 msgid "Amount"
 msgstr "Montante"
 
@@ -1645,7 +1645,7 @@ msgstr ""
 
 #: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:528
 #: frontend/src/pages/MobileOrganization.vue:472
-#: frontend/src/pages/Organization.vue:493
+#: frontend/src/pages/Organization.vue:479
 msgid "Deal owner"
 msgstr ""
 
@@ -2166,8 +2166,8 @@ msgstr ""
 #: frontend/src/pages/MobileContact.vue:518
 #: frontend/src/pages/MobileOrganization.vue:462
 #: frontend/src/pages/MobileOrganization.vue:490
-#: frontend/src/pages/Organization.vue:483
-#: frontend/src/pages/Organization.vue:511
+#: frontend/src/pages/Organization.vue:469
+#: frontend/src/pages/Organization.vue:497
 msgid "Email"
 msgstr ""
 
@@ -3215,8 +3215,8 @@ msgstr "Ano passado"
 #: frontend/src/pages/Contact.vue:525 frontend/src/pages/MobileContact.vue:533
 #: frontend/src/pages/MobileOrganization.vue:477
 #: frontend/src/pages/MobileOrganization.vue:505
-#: frontend/src/pages/Organization.vue:498
-#: frontend/src/pages/Organization.vue:526
+#: frontend/src/pages/Organization.vue:484
+#: frontend/src/pages/Organization.vue:512
 msgid "Last modified"
 msgstr ""
 
@@ -3577,7 +3577,7 @@ msgstr ""
 
 #: frontend/src/pages/Contact.vue:515 frontend/src/pages/MobileContact.vue:523
 #: frontend/src/pages/MobileOrganization.vue:467
-#: frontend/src/pages/Organization.vue:488
+#: frontend/src/pages/Organization.vue:474
 msgid "Mobile no"
 msgstr ""
 
@@ -3628,7 +3628,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:42
 #: frontend/src/components/ViewControls.vue:779
 #: frontend/src/pages/MobileOrganization.vue:485
-#: frontend/src/pages/Organization.vue:506
+#: frontend/src/pages/Organization.vue:492
 msgid "Name"
 msgstr "Nome"
 
@@ -3866,7 +3866,7 @@ msgid "No users found"
 msgstr ""
 
 #: frontend/src/pages/MobileOrganization.vue:281
-#: frontend/src/pages/Organization.vue:309
+#: frontend/src/pages/Organization.vue:295
 msgid "No website found"
 msgstr ""
 
@@ -3882,7 +3882,7 @@ msgstr ""
 #: frontend/src/pages/Contacts.vue:58 frontend/src/pages/Deals.vue:234
 #: frontend/src/pages/Leads.vue:260 frontend/src/pages/MobileContact.vue:147
 #: frontend/src/pages/MobileOrganization.vue:139
-#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:152
+#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:151
 #: frontend/src/pages/Organizations.vue:58 frontend/src/pages/Tasks.vue:184
 msgid "No {0} Found"
 msgstr ""
@@ -4112,8 +4112,8 @@ msgstr "Ordenar Por"
 #: frontend/src/pages/MobileLead.vue:118
 #: frontend/src/pages/MobileOrganization.vue:446
 #: frontend/src/pages/MobileOrganization.vue:500
-#: frontend/src/pages/Organization.vue:467
-#: frontend/src/pages/Organization.vue:521
+#: frontend/src/pages/Organization.vue:453
+#: frontend/src/pages/Organization.vue:507
 msgid "Organization"
 msgstr "Organização"
 
@@ -4143,7 +4143,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/MobileOrganization.vue:205
-#: frontend/src/pages/Organization.vue:234
+#: frontend/src/pages/Organization.vue:233
 msgid "Organizations"
 msgstr ""
 
@@ -4237,7 +4237,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/pages/MobileOrganization.vue:495
-#: frontend/src/pages/Organization.vue:516
+#: frontend/src/pages/Organization.vue:502
 msgid "Phone"
 msgstr "Telefone"
 
@@ -5177,7 +5177,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:505
 #: frontend/src/pages/MobileContact.vue:513
 #: frontend/src/pages/MobileOrganization.vue:457
-#: frontend/src/pages/Organization.vue:478
+#: frontend/src/pages/Organization.vue:464
 msgid "Status"
 msgstr ""
 

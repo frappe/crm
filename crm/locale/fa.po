@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-14 09:35+0000\n"
-"PO-Revision-Date: 2025-09-16 20:03\n"
+"POT-Creation-Date: 2025-09-07 09:35+0000\n"
+"PO-Revision-Date: 2025-09-07 17:34\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr " (جدید)"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:58
 msgid "(No title)"
-msgstr "(بدون عنوان)"
+msgstr ""
 
 #: frontend/src/components/Modals/TaskModal.vue:87
 #: frontend/src/components/Telephony/TaskPanel.vue:70
@@ -262,7 +262,7 @@ msgstr "افزودن ستون"
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
 #: frontend/src/components/Settings/Users.vue:21
 msgid "Add Existing User"
-msgstr "افزودن کاربر موجود"
+msgstr ""
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:57
 #: frontend/src/components/FieldLayoutEditor.vue:172
@@ -313,11 +313,11 @@ msgstr ""
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:191
 msgid "Add a task"
-msgstr "افزودن یک تسک"
+msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add chart"
-msgstr "افزودن نمودار"
+msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:420
 msgid "Add column"
@@ -361,7 +361,7 @@ msgstr "افزودن یادداشت"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add sample data"
-msgstr "افزودن داده‌های نمونه"
+msgstr ""
 
 #. Description of the 'Icon' (Code) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -430,18 +430,18 @@ msgstr ""
 #: crm/fcrm/doctype/crm_products/crm_products.json
 #: frontend/src/pages/Contact.vue:499 frontend/src/pages/MobileContact.vue:507
 #: frontend/src/pages/MobileOrganization.vue:451
-#: frontend/src/pages/Organization.vue:472
+#: frontend/src/pages/Organization.vue:458
 msgid "Amount"
 msgstr "مبلغ"
 
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Amount after discount"
-msgstr "مبلغ پس از تخفیف"
+msgstr ""
 
 #: frontend/src/data/script.js:50 frontend/src/data/script.js:51
 msgid "An error occurred"
-msgstr "یک خطا رخ داد"
+msgstr ""
 
 #: frontend/src/data/document.js:63
 msgid "An error occurred while updating the document"
@@ -820,7 +820,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
 #: frontend/src/pages/Dashboard.vue:304
 msgid "CRM Dashboard"
-msgstr "داشبورد CRM"
+msgstr ""
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -1492,7 +1492,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EventModal.vue:12
 msgid "Create an event"
-msgstr "ایجاد یک رویداد"
+msgstr ""
 
 #. Label of the create_customer_on_status_change (Check) field in DocType
 #. 'ERPNext CRM Settings'
@@ -1503,7 +1503,7 @@ msgstr "ایجاد مشتری در صورت تغییر وضعیت"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:348
 #: frontend/src/pages/Calendar.vue:7
 msgid "Create event"
-msgstr "ایجاد رویداد"
+msgstr ""
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:151
 msgid "Create lead"
@@ -1511,7 +1511,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:17
 msgid "Create new"
-msgstr "ایجاد جدید"
+msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:349
 msgid "Create your first lead"
@@ -1604,7 +1604,7 @@ msgstr "تاریخ"
 
 #: frontend/src/components/Modals/EventModal.vue:78
 msgid "Date & Time"
-msgstr "تاریخ و زمان"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:267
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:288
@@ -1645,7 +1645,7 @@ msgstr ""
 
 #: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:528
 #: frontend/src/pages/MobileOrganization.vue:472
-#: frontend/src/pages/Organization.vue:493
+#: frontend/src/pages/Organization.vue:479
 msgid "Deal owner"
 msgstr ""
 
@@ -1818,7 +1818,7 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:25
 msgid "Delete event"
-msgstr "حذف رویداد"
+msgstr ""
 
 #: frontend/src/components/Settings/InviteUserPage.vue:84
 msgid "Delete invitation"
@@ -1866,7 +1866,7 @@ msgstr "شرح"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:411
 msgid "Description is required"
-msgstr "توضیحات الزامی است"
+msgstr ""
 
 #: frontend/src/components/Apps.vue:63
 msgid "Desk"
@@ -2111,7 +2111,7 @@ msgstr "ویرایش نما"
 
 #: frontend/src/components/Modals/EventModal.vue:9
 msgid "Edit an event"
-msgstr "ویرایش یک رویداد"
+msgstr ""
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:39
 msgid "Edit call log"
@@ -2119,7 +2119,7 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:18
 msgid "Edit event"
-msgstr "ویرایش رویداد"
+msgstr ""
 
 #: frontend/src/components/Activities/DataFields.vue:17
 #: frontend/src/components/Controls/GridRowModal.vue:14
@@ -2166,8 +2166,8 @@ msgstr ""
 #: frontend/src/pages/MobileContact.vue:518
 #: frontend/src/pages/MobileOrganization.vue:462
 #: frontend/src/pages/MobileOrganization.vue:490
-#: frontend/src/pages/Organization.vue:483
-#: frontend/src/pages/Organization.vue:511
+#: frontend/src/pages/Organization.vue:469
+#: frontend/src/pages/Organization.vue:497
 msgid "Email"
 msgstr "ایمیل"
 
@@ -2291,7 +2291,7 @@ msgstr "زمان پایان"
 
 #: frontend/src/composables/event.js:206
 msgid "End time should be after start time"
-msgstr "زمان پایان باید بعد از زمان شروع باشد"
+msgstr ""
 
 #: frontend/src/components/Settings/General/CurrencySettings.vue:122
 msgid "Enter access key"
@@ -2334,15 +2334,15 @@ msgstr ""
 
 #: frontend/src/components/Modals/EventModal.vue:368
 msgid "Event ID is required"
-msgstr "شناسه رویداد الزامی است"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:429
 msgid "Event details"
-msgstr "جزئیات رویداد"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:182
 msgid "Event title"
-msgstr "عنوان رویداد"
+msgstr ""
 
 #: frontend/src/pages/Deal.vue:547 frontend/src/pages/Lead.vue:404
 msgid "Events"
@@ -2723,7 +2723,7 @@ msgstr "برگرد"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:156
 msgid "Go to invite page"
-msgstr "رفتن به صفحه دعوت"
+msgstr ""
 
 #: frontend/src/pages/Deal.vue:95 frontend/src/pages/Lead.vue:141
 msgid "Go to website"
@@ -3177,7 +3177,7 @@ msgstr "برچسب"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:102
 msgid "Last"
-msgstr "آخرین"
+msgstr ""
 
 #: frontend/src/components/Filter.vue:615
 msgid "Last 6 Months"
@@ -3215,8 +3215,8 @@ msgstr "سال گذشته"
 #: frontend/src/pages/Contact.vue:525 frontend/src/pages/MobileContact.vue:533
 #: frontend/src/pages/MobileOrganization.vue:477
 #: frontend/src/pages/MobileOrganization.vue:505
-#: frontend/src/pages/Organization.vue:498
-#: frontend/src/pages/Organization.vue:526
+#: frontend/src/pages/Organization.vue:484
+#: frontend/src/pages/Organization.vue:512
 msgid "Last modified"
 msgstr ""
 
@@ -3577,7 +3577,7 @@ msgstr ""
 
 #: frontend/src/pages/Contact.vue:515 frontend/src/pages/MobileContact.vue:523
 #: frontend/src/pages/MobileOrganization.vue:467
-#: frontend/src/pages/Organization.vue:488
+#: frontend/src/pages/Organization.vue:474
 msgid "Mobile no"
 msgstr ""
 
@@ -3628,7 +3628,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:42
 #: frontend/src/components/ViewControls.vue:779
 #: frontend/src/pages/MobileOrganization.vue:485
-#: frontend/src/pages/Organization.vue:506
+#: frontend/src/pages/Organization.vue:492
 msgid "Name"
 msgstr "نام"
 
@@ -3744,7 +3744,7 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:431
 msgid "New event"
-msgstr "رویداد جدید"
+msgstr ""
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:42
 #: frontend/src/pages/MobileLead.vue:136
@@ -3799,7 +3799,7 @@ msgstr "اطلاعاتی وجود ندارد"
 
 #: frontend/src/components/Activities/EventArea.vue:78
 msgid "No Events Scheduled"
-msgstr "هیچ رویدادی زمان‌بندی نشده است"
+msgstr ""
 
 #: frontend/src/components/Kanban/KanbanView.vue:103
 #: frontend/src/pages/Deals.vue:105 frontend/src/pages/Leads.vue:121
@@ -3826,7 +3826,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:14
 msgid "No items in the list"
-msgstr "هیچ آیتمی در لیست وجود ندارد"
+msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:92
 msgid "No label"
@@ -3866,7 +3866,7 @@ msgid "No users found"
 msgstr ""
 
 #: frontend/src/pages/MobileOrganization.vue:281
-#: frontend/src/pages/Organization.vue:309
+#: frontend/src/pages/Organization.vue:295
 msgid "No website found"
 msgstr ""
 
@@ -3882,7 +3882,7 @@ msgstr ""
 #: frontend/src/pages/Contacts.vue:58 frontend/src/pages/Deals.vue:234
 #: frontend/src/pages/Leads.vue:260 frontend/src/pages/MobileContact.vue:147
 #: frontend/src/pages/MobileOrganization.vue:139
-#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:152
+#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:151
 #: frontend/src/pages/Organizations.vue:58 frontend/src/pages/Tasks.vue:184
 msgid "No {0} Found"
 msgstr "هیچ {0} یافت نشد"
@@ -4112,8 +4112,8 @@ msgstr "سفارش توسط"
 #: frontend/src/pages/MobileLead.vue:118
 #: frontend/src/pages/MobileOrganization.vue:446
 #: frontend/src/pages/MobileOrganization.vue:500
-#: frontend/src/pages/Organization.vue:467
-#: frontend/src/pages/Organization.vue:521
+#: frontend/src/pages/Organization.vue:453
+#: frontend/src/pages/Organization.vue:507
 msgid "Organization"
 msgstr "سازمان"
 
@@ -4143,7 +4143,7 @@ msgstr "لوگوی سازمان"
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/MobileOrganization.vue:205
-#: frontend/src/pages/Organization.vue:234
+#: frontend/src/pages/Organization.vue:233
 msgid "Organizations"
 msgstr "سازمان ها"
 
@@ -4237,7 +4237,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/pages/MobileOrganization.vue:495
-#: frontend/src/pages/Organization.vue:516
+#: frontend/src/pages/Organization.vue:502
 msgid "Phone"
 msgstr "تلفن"
 
@@ -4551,7 +4551,7 @@ msgstr "حذف ستون"
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:208
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:211
 msgid "Remove group"
-msgstr "حذف گروه"
+msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:32
 #: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:94
@@ -4585,7 +4585,7 @@ msgstr "گزارش یک مشکل"
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Required Fields"
-msgstr "فیلدهای الزامی"
+msgstr ""
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:79
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:30
@@ -4854,12 +4854,12 @@ msgstr ""
 
 #: frontend/src/components/Activities/EventArea.vue:79
 msgid "Schedule an Event"
-msgstr "زمان‌بندی یک رویداد"
+msgstr ""
 
 #: frontend/src/components/Activities/ActivityHeader.vue:36
 #: frontend/src/components/Activities/ActivityHeader.vue:128
 msgid "Schedule an event"
-msgstr "زمان‌بندی یک رویداد"
+msgstr ""
 
 #. Label of the script (Code) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -4884,7 +4884,7 @@ msgstr "بخش"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:130
 msgid "See all participants"
-msgstr "مشاهده همه شرکت‌کنندگان"
+msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:50
 msgid "Select Range"
@@ -5053,7 +5053,7 @@ msgstr "نمایش برچسب"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:138
 msgid "Show less"
-msgstr "نمایش کمتر"
+msgstr ""
 
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:20
 #: frontend/src/components/Modals/DataFieldsModal.vue:20
@@ -5153,7 +5153,7 @@ msgstr "زمان شروع"
 
 #: frontend/src/composables/event.js:198
 msgid "Start and end time are required"
-msgstr "زمان شروع و پایان الزامی است"
+msgstr ""
 
 #: frontend/src/pages/Welcome.vue:21
 msgid "Start with sample 10 leads"
@@ -5177,7 +5177,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:505
 #: frontend/src/pages/MobileContact.vue:513
 #: frontend/src/pages/MobileOrganization.vue:457
-#: frontend/src/pages/Organization.vue:478
+#: frontend/src/pages/Organization.vue:464
 msgid "Status"
 msgstr "وضعیت"
 
@@ -5407,7 +5407,7 @@ msgstr "پنج‌شنبه"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:18
 msgid "Ticket Routing"
-msgstr "مسیریابی تیکت"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:227
 msgid "Time"
@@ -5534,7 +5534,7 @@ msgstr "سه‌شنبه"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:174
 msgid "Turn into a group"
-msgstr "تبدیل به گروه"
+msgstr ""
 
 #. Label of the twiml_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -5598,7 +5598,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:85
 msgid "Type your message here..."
-msgstr "پیام خود را اینجا تایپ کنید..."
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:439
 msgid "Unassign conditions are invalid"
@@ -5655,11 +5655,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:28
 msgid "Unsaved"
-msgstr "ذخیره نشده"
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:560
 msgid "Unsaved changes"
-msgstr "تغییرات ذخیره نشده"
+msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:26
 #: frontend/src/components/Modals/AddressModal.vue:8
@@ -5668,7 +5668,7 @@ msgstr "تغییرات ذخیره نشده"
 #: frontend/src/components/Section.vue:21
 #: frontend/src/components/SidePanelLayoutEditor.vue:19
 msgid "Untitled"
-msgstr "بدون عنوان"
+msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:79
@@ -5849,7 +5849,7 @@ msgstr "عرض"
 
 #: frontend/src/components/ColumnSettings.vue:113
 msgid "Width can be in number, pixel or rem (eg. 3, 30px, 10rem)"
-msgstr "عرض می تواند بر حسب عدد، پیکسل یا rem باشد (مثلاً 3، 30px، 10rem)"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
@@ -5910,11 +5910,11 @@ msgstr ""
 
 #: frontend/src/data/document.js:32
 msgid "You do not have permission to access this document"
-msgstr "شما اجازه دسترسی به این سند را ندارید"
+msgstr ""
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:24
 msgid "You need to be in developer mode to edit a Standard Form Script"
-msgstr "برای ویرایش یک اسکریپت فرم استاندارد، باید در حالت توسعه دهنده باشید"
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:150
 msgid "You will be redirected to invite user page, unsaved changes will be lost."
@@ -6227,7 +6227,7 @@ msgstr "دیروز"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:94
 msgid "{0} Attendees"
-msgstr "{0} شرکت‌کننده"
+msgstr ""
 
 #: frontend/src/utils/index.js:130
 msgid "{0} M"
@@ -6259,7 +6259,7 @@ msgstr "{0} ساعت قبل"
 
 #: frontend/src/composables/event.js:163
 msgid "{0} hrs"
-msgstr "{0} ساعت"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:309
 #: frontend/src/components/EmailEditor.vue:30
@@ -6281,7 +6281,7 @@ msgstr "{0} دقیقه"
 
 #: frontend/src/composables/event.js:157
 msgid "{0} mins"
-msgstr "{0} دقیقه"
+msgstr ""
 
 #: frontend/src/utils/index.js:170
 msgid "{0} minutes ago"

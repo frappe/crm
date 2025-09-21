@@ -3,7 +3,7 @@
     class="grid py-3.5 px-4 items-center"
     style="grid-template-columns: 3fr 1fr"
   >
-    <div class="text-ink-gray-7 font-medium">{{ __(data.day) }}</div>
+    <div class="text-ink-gray-7 font-medium">{{ data.day }}</div>
     <div class="flex justify-start">
       <Switch v-model="data.active" @update:model-value="toggleDay" />
     </div>

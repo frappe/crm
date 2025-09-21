@@ -13,10 +13,7 @@
   "qty",
   "column_break_ajac",
   "rate",
-<<<<<<< HEAD
-=======
   "bottom_price",
->>>>>>> asroy_crm
   "section_break_olqb",
   "discount_percentage",
   "column_break_uvra",
@@ -33,10 +30,7 @@
    "fieldtype": "Column Break"
   },
   {
-<<<<<<< HEAD
-=======
    "fetch_from": "product_code.item_name",
->>>>>>> asroy_crm
    "fieldname": "product_name",
    "fieldtype": "Data",
    "label": "Product Name",
@@ -73,10 +67,7 @@
   },
   {
    "bold": 1,
-<<<<<<< HEAD
-=======
    "fetch_from": "product_code.custom_asking_price",
->>>>>>> asroy_crm
    "fieldname": "rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -109,11 +100,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Product",
-<<<<<<< HEAD
-   "options": "CRM Product"
-=======
    "options": "Item"
->>>>>>> asroy_crm
   },
   {
    "bold": 1,
@@ -133,26 +120,19 @@
   {
    "fieldname": "column_break_ejqw",
    "fieldtype": "Column Break"
-<<<<<<< HEAD
-=======
   },
   {
    "fetch_from": "product_code.custom_bottom_price",
    "fieldname": "bottom_price",
    "fieldtype": "Currency",
    "label": "Bottom Price"
->>>>>>> asroy_crm
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2025-05-14 18:52:26.183306",
-=======
  "modified": "2025-09-17 20:47:11.822150",
->>>>>>> asroy_crm
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Products",
@@ -162,8 +142,4 @@
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> asroy_crm

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-14 09:35+0000\n"
-"PO-Revision-Date: 2025-09-16 20:03\n"
+"POT-Creation-Date: 2025-09-07 09:35+0000\n"
+"PO-Revision-Date: 2025-09-07 17:34\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -430,7 +430,7 @@ msgstr "crwdns158770:0crwdne158770:0"
 #: crm/fcrm/doctype/crm_products/crm_products.json
 #: frontend/src/pages/Contact.vue:499 frontend/src/pages/MobileContact.vue:507
 #: frontend/src/pages/MobileOrganization.vue:451
-#: frontend/src/pages/Organization.vue:472
+#: frontend/src/pages/Organization.vue:458
 msgid "Amount"
 msgstr "crwdns152751:0crwdne152751:0"
 
@@ -1645,7 +1645,7 @@ msgstr "crwdns156258:0crwdne156258:0"
 
 #: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:528
 #: frontend/src/pages/MobileOrganization.vue:472
-#: frontend/src/pages/Organization.vue:493
+#: frontend/src/pages/Organization.vue:479
 msgid "Deal owner"
 msgstr "crwdns153043:0crwdne153043:0"
 
@@ -2166,8 +2166,8 @@ msgstr "crwdns158854:0crwdne158854:0"
 #: frontend/src/pages/MobileContact.vue:518
 #: frontend/src/pages/MobileOrganization.vue:462
 #: frontend/src/pages/MobileOrganization.vue:490
-#: frontend/src/pages/Organization.vue:483
-#: frontend/src/pages/Organization.vue:511
+#: frontend/src/pages/Organization.vue:469
+#: frontend/src/pages/Organization.vue:497
 msgid "Email"
 msgstr "crwdns153167:0crwdne153167:0"
 
@@ -3215,8 +3215,8 @@ msgstr "crwdns153421:0crwdne153421:0"
 #: frontend/src/pages/Contact.vue:525 frontend/src/pages/MobileContact.vue:533
 #: frontend/src/pages/MobileOrganization.vue:477
 #: frontend/src/pages/MobileOrganization.vue:505
-#: frontend/src/pages/Organization.vue:498
-#: frontend/src/pages/Organization.vue:526
+#: frontend/src/pages/Organization.vue:484
+#: frontend/src/pages/Organization.vue:512
 msgid "Last modified"
 msgstr "crwdns153423:0crwdne153423:0"
 
@@ -3577,7 +3577,7 @@ msgstr "crwdns156468:0crwdne156468:0"
 
 #: frontend/src/pages/Contact.vue:515 frontend/src/pages/MobileContact.vue:523
 #: frontend/src/pages/MobileOrganization.vue:467
-#: frontend/src/pages/Organization.vue:488
+#: frontend/src/pages/Organization.vue:474
 msgid "Mobile no"
 msgstr "crwdns153521:0crwdne153521:0"
 
@@ -3628,7 +3628,7 @@ msgstr "crwdns153533:0crwdne153533:0"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:42
 #: frontend/src/components/ViewControls.vue:779
 #: frontend/src/pages/MobileOrganization.vue:485
-#: frontend/src/pages/Organization.vue:506
+#: frontend/src/pages/Organization.vue:492
 msgid "Name"
 msgstr "crwdns153535:0crwdne153535:0"
 
@@ -3866,7 +3866,7 @@ msgid "No users found"
 msgstr "crwdns156490:0crwdne156490:0"
 
 #: frontend/src/pages/MobileOrganization.vue:281
-#: frontend/src/pages/Organization.vue:309
+#: frontend/src/pages/Organization.vue:295
 msgid "No website found"
 msgstr "crwdns156492:0crwdne156492:0"
 
@@ -3882,7 +3882,7 @@ msgstr "crwdns153607:0{0}crwdne153607:0"
 #: frontend/src/pages/Contacts.vue:58 frontend/src/pages/Deals.vue:234
 #: frontend/src/pages/Leads.vue:260 frontend/src/pages/MobileContact.vue:147
 #: frontend/src/pages/MobileOrganization.vue:139
-#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:152
+#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:151
 #: frontend/src/pages/Organizations.vue:58 frontend/src/pages/Tasks.vue:184
 msgid "No {0} Found"
 msgstr "crwdns153609:0{0}crwdne153609:0"
@@ -4112,8 +4112,8 @@ msgstr "crwdns153667:0crwdne153667:0"
 #: frontend/src/pages/MobileLead.vue:118
 #: frontend/src/pages/MobileOrganization.vue:446
 #: frontend/src/pages/MobileOrganization.vue:500
-#: frontend/src/pages/Organization.vue:467
-#: frontend/src/pages/Organization.vue:521
+#: frontend/src/pages/Organization.vue:453
+#: frontend/src/pages/Organization.vue:507
 msgid "Organization"
 msgstr "crwdns153669:0crwdne153669:0"
 
@@ -4143,7 +4143,7 @@ msgstr "crwdns153677:0crwdne153677:0"
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/MobileOrganization.vue:205
-#: frontend/src/pages/Organization.vue:234
+#: frontend/src/pages/Organization.vue:233
 msgid "Organizations"
 msgstr "crwdns153681:0crwdne153681:0"
 
@@ -4237,7 +4237,7 @@ msgstr "crwdns153703:0crwdne153703:0"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/pages/MobileOrganization.vue:495
-#: frontend/src/pages/Organization.vue:516
+#: frontend/src/pages/Organization.vue:502
 msgid "Phone"
 msgstr "crwdns153705:0crwdne153705:0"
 
@@ -5177,7 +5177,7 @@ msgstr "crwdns156620:0crwdne156620:0"
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:505
 #: frontend/src/pages/MobileContact.vue:513
 #: frontend/src/pages/MobileOrganization.vue:457
-#: frontend/src/pages/Organization.vue:478
+#: frontend/src/pages/Organization.vue:464
 msgid "Status"
 msgstr "crwdns153925:0crwdne153925:0"
 

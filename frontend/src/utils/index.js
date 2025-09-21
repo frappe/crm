@@ -462,12 +462,23 @@ export function runSequentially(functions) {
   }, Promise.resolve())
 }
 
-export function DropdownOption({ option, icon, selected }) {
+export function DropdownOption({
+  active,
+  option,
+  theme,
+  icon,
+  onClick,
+  selected,
+}) {
   return h(
     'button',
     {
-      class:
-        'group flex w-full text-ink-gray-8 justify-between items-center rounded-md px-2 py-2 text-sm hover:bg-surface-gray-2',
+      class: [
+        active ? 'bg-surface-gray-2' : 'text-ink-gray-8',
+        'group flex w-full justify-between items-center rounded-md px-2 py-2 text-sm',
+        theme == 'danger' ? 'text-ink-red-3 hover:bg-ink-red-1' : '',
+      ],
+      onClick: !selected ? onClick : null,
     },
     [
       h('div', { class: 'flex gap-2' }, [
@@ -486,6 +497,30 @@ export function DropdownOption({ option, icon, selected }) {
             'aria-hidden': true,
           })
         : null,
+    ],
+  )
+}
+
+export function TemplateOption({ active, option, theme, icon, onClick }) {
+  return h(
+    'button',
+    {
+      class: [
+        active ? 'bg-surface-gray-2 text-ink-gray-8' : 'text-ink-gray-7',
+        'group flex w-full gap-2 items-center rounded-md px-2 py-2 text-sm',
+        theme == 'danger' ? 'text-ink-red-3 hover:bg-ink-red-1' : '',
+      ],
+      onClick: onClick,
+    },
+    [
+      icon
+        ? h(FeatherIcon, {
+            name: icon,
+            class: ['h-4 w-4 shrink-0'],
+            'aria-hidden': true,
+          })
+        : null,
+      h('span', { class: 'whitespace-nowrap' }, option),
     ],
   )
 }

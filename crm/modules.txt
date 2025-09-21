@@ -1,6 +1,2 @@
-<<<<<<< HEAD
-FCRM
-=======
 FCRM
 Asroy CRM
->>>>>>> asroy_crm

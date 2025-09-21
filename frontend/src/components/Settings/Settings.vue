@@ -7,33 +7,31 @@
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
-        <div class="flex flex-col p-1 w-52 shrink-0 bg-surface-gray-2">
-          <h1 class="px-3 pt-3 pb-2 text-lg font-semibold text-ink-gray-8">
+        <div class="flex flex-col p-2 w-52 shrink-0 bg-surface-gray-2">
+          <h1 class="px-2 pt-2 mb-3 text-lg font-semibold text-ink-gray-8">
             {{ __('Settings') }}
           </h1>
-          <div class="flex flex-col overflow-y-auto">
-            <template v-for="tab in tabs" :key="tab.label">
-              <div
-                v-if="!tab.hideLabel"
-                class="py-[7px] px-2 my-1 flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
-              >
-                <span>{{ __(tab.label) }}</span>
-              </div>
-              <nav class="space-y-1 px-1">
-                <SidebarLink
-                  v-for="i in tab.items"
-                  :icon="i.icon"
-                  :label="__(i.label)"
-                  class="w-full"
-                  :class="
-                    activeTab?.label == i.label
-                      ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
-                      : 'hover:bg-surface-gray-3'
-                  "
-                  @click="activeSettingsPage = i.label"
-                />
-              </nav>
-            </template>
+          <div v-for="tab in tabs">
+            <div
+              v-if="!tab.hideLabel"
+              class="mb-2 mt-3 flex cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out"
+            >
+              <span>{{ __(tab.label) }}</span>
+            </div>
+            <nav class="space-y-1">
+              <SidebarLink
+                v-for="i in tab.items"
+                :icon="i.icon"
+                :label="__(i.label)"
+                class="w-full"
+                :class="
+                  activeTab?.label == i.label
+                    ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
+                    : 'hover:bg-surface-gray-3'
+                "
+                @click="activeSettingsPage = i.label"
+              />
+            </nav>
           </div>
         </div>
         <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
@@ -44,9 +42,6 @@
   </Dialog>
 </template>
 <script setup>
-import CircleDollarSignIcon from '~icons/lucide/circle-dollar-sign'
-import TrendingUpDownIcon from '~icons/lucide/trending-up-down'
-import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import HelpdeskIcon from '@/components/Icons/HelpdeskIcon.vue'
@@ -55,15 +50,12 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import SettingsIcon2 from '@/components/Icons/SettingsIcon2.vue'
 import Users from '@/components/Settings/Users.vue'
+import GeneralSettingsPage from '@/components/Settings/General/GeneralSettingsPage.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import HelpdeskSettings from '@/components/Settings/HelpdeskSettings.vue'
-import BrandSettings from '@/components/Settings/BrandSettings.vue'
-import HomeActions from '@/components/Settings/HomeActions.vue'
-import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
-import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
@@ -86,7 +78,7 @@ const user = computed(() => getUser() || {})
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: __('Personal Settings'),
+      label: __('Settings'),
       hideLabel: true,
       items: [
         {
@@ -99,32 +91,12 @@ const tabs = computed(() => {
             }),
           component: markRaw(ProfileSettings),
         },
-      ],
-    },
-    {
-      label: __('System Configuration'),
-      items: [
         {
-          label: __('Forecasting'),
-          component: markRaw(ForecastingSettings),
-          icon: TrendingUpDownIcon,
+          label: __('General'),
+          icon: 'settings',
+          component: markRaw(GeneralSettingsPage),
+          condition: () => isManager(),
         },
-        {
-          label: __('Currency & Exchange Rate'),
-          icon: CircleDollarSignIcon,
-          component: markRaw(CurrencySettings),
-        },
-        {
-          label: __('Brand Settings'),
-          icon: SparkleIcon,
-          component: markRaw(BrandSettings),
-        },
-      ],
-      condition: () => isManager(),
-    },
-    {
-      label: __('User Management'),
-      items: [
         {
           label: __('Users'),
           icon: 'user',
@@ -137,12 +109,6 @@ const tabs = computed(() => {
           component: markRaw(InviteUserPage),
           condition: () => isManager(),
         },
-      ],
-      condition: () => isManager(),
-    },
-    {
-      label: __('Email Settings'),
-      items: [
         {
           label: __('Email Accounts'),
           icon: Email2Icon,
@@ -154,28 +120,12 @@ const tabs = computed(() => {
           icon: EmailTemplateIcon,
           component: markRaw(EmailTemplatePage),
         },
-      ],
-    },
-    {
-      label: __('Automation & Rules'),
-      items: [
         {
           label: __('Assignment rules'),
           icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
           component: markRaw(AssignmentRulePage),
         },
       ],
-    },
-    {
-      label: __('Customization'),
-      items: [
-        {
-          label: __('Home Actions'),
-          component: markRaw(HomeActions),
-          icon: 'home',
-        },
-      ],
-      condition: () => isManager(),
     },
     {
       label: __('Integrations', null, 'FCRM'),

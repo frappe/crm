@@ -149,12 +149,9 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
 import Section from '@/components/Section.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
-<<<<<<< HEAD
-=======
 import PropertyIcon from '@/components/Icons/PropertyIcon.vue'
 import FunnelIcon from '@/components/Icons/FunnelIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
->>>>>>> asroy_crm
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -231,14 +228,11 @@ const links = [
     to: 'Organizations',
   },
   {
-<<<<<<< HEAD
-=======
     label: 'Properties',
     icon: PropertyIcon,
     to: 'Properties',
   },
   {
->>>>>>> asroy_crm
     label: 'Notes',
     icon: NoteIcon,
     to: 'Notes',
@@ -258,8 +252,6 @@ const links = [
     icon: PhoneIcon,
     to: 'Call Logs',
   },
-<<<<<<< HEAD
-=======
   {
     label: 'Sales Funnel',
     icon: FunnelIcon,
@@ -270,7 +262,6 @@ const links = [
     icon: Email2Icon,
     to: 'Email Templates',
   },
->>>>>>> asroy_crm
 ]
 
 const allViews = computed(() => {

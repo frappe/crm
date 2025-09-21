@@ -132,10 +132,7 @@ before_uninstall = "crm.uninstall.before_uninstall"
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
-<<<<<<< HEAD
-=======
     "Item": "crm.overrides.item.CustomItem"
->>>>>>> asroy_crm
 }
 
 # Document Events
@@ -314,8 +311,6 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 ]
-<<<<<<< HEAD
-=======
 
 fixtures = [
     'CRM Lead Status',
@@ -324,4 +319,3 @@ fixtures = [
     'CRM Task Type',
     'Item Group'
 ]
->>>>>>> asroy_crm

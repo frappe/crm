@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-md border px-2 border-outline-gray-2 text-sm">
+  <div class="rounded-md border px-2 border-gray-300 text-sm">
     <div
       class="grid p-2 px-4 items-center"
       style="grid-template-columns: 3fr 1fr"
@@ -9,7 +9,7 @@
         :key="column.key"
         class="text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis"
       >
-        {{ __(column.label) }}
+        {{ column.label }}
       </div>
     </div>
     <hr />
@@ -24,9 +24,10 @@
 </template>
 
 <script setup>
-import AssignmentScheduleItem from './AssignmentScheduleItem.vue'
 import { ErrorMessage } from 'frappe-ui'
-import { onMounted, ref, inject } from 'vue'
+import { onMounted, ref } from 'vue'
+import AssignmentScheduleItem from './AssignmentScheduleItem.vue'
+import { inject } from 'vue'
 
 const assignmentRuleData = inject('assignmentRuleData')
 const assignmentRuleErrors = inject('assignmentRuleErrors')

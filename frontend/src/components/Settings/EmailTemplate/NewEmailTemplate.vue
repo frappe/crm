@@ -11,14 +11,10 @@
           "
           size="md"
           @click="() => emit('updateStep', 'template-list')"
-          class="cursor-pointer hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="text-xl !h-7 font-semibold hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5"
         />
       </div>
-      <div class="flex item-center space-x-4 w-3/12 justify-end">
-        <div class="flex items-center space-x-2">
-          <Switch size="sm" v-model="template.enabled" />
-          <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
-        </div>
+      <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
           :label="templateData?.name ? __('Duplicate') : __('Create')"
           icon-left="plus"
@@ -30,6 +26,13 @@
 
     <!-- Fields -->
     <div class="flex flex-1 flex-col gap-4 overflow-y-auto">
+      <div
+        class="flex justify-between items-center cursor-pointer border-b py-3"
+        @click="() => (template.enabled = !template.enabled)"
+      >
+        <div class="text-base text-ink-gray-7">{{ __('Enabled') }}</div>
+        <Switch v-model="template.enabled" @click.stop />
+      </div>
       <div class="flex sm:flex-row flex-col gap-4">
         <div class="flex-1">
           <FormControl

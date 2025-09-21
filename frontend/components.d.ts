@@ -44,7 +44,7 @@ declare module 'vue' {
     Autocomplete: typeof import('./src/components/frappe-ui/Autocomplete.vue')['default']
     AvatarIcon: typeof import('./src/components/Icons/AvatarIcon.vue')['default']
     BrandLogo: typeof import('./src/components/BrandLogo.vue')['default']
-    BrandSettings: typeof import('./src/components/Settings/BrandSettings.vue')['default']
+    BrandSettings: typeof import('./src/components/Settings/General/BrandSettings.vue')['default']
     BulkDeleteLinkedDocModal: typeof import('./src/components/BulkDeleteLinkedDocModal.vue')['default']
     CalendarEventPanel: typeof import('./src/components/Calendar/CalendarEventPanel.vue')['default']
     CalendarIcon: typeof import('./src/components/Icons/CalendarIcon.vue')['default']
@@ -77,7 +77,7 @@ declare module 'vue' {
     CountUpTimer: typeof import('./src/components/CountUpTimer.vue')['default']
     CreateDocumentModal: typeof import('./src/components/Modals/CreateDocumentModal.vue')['default']
     CRMLogo: typeof import('./src/components/Icons/CRMLogo.vue')['default']
-    CurrencySettings: typeof import('./src/components/Settings/CurrencySettings.vue')['default']
+    CurrencySettings: typeof import('./src/components/Settings/General/CurrencySettings.vue')['default']
     CustomActions: typeof import('./src/components/CustomActions.vue')['default']
     DashboardGrid: typeof import('./src/components/Dashboard/DashboardGrid.vue')['default']
     DashboardIcon: typeof import('./src/components/Icons/DashboardIcon.vue')['default']
@@ -118,17 +118,11 @@ declare module 'vue' {
     EmailMultiSelect: typeof import('./src/components/Controls/EmailMultiSelect.vue')['default']
     EmailProviderIcon: typeof import('./src/components/Settings/EmailProviderIcon.vue')['default']
     EmailTemplateIcon: typeof import('./src/components/Icons/EmailTemplateIcon.vue')['default']
-<<<<<<< HEAD
-    EmailTemplatePage: typeof import('./src/components/Settings/EmailTemplate/EmailTemplatePage.vue')['default']
-    EmailTemplates: typeof import('./src/components/Settings/EmailTemplate/EmailTemplates.vue')['default']
-    EmailTemplateSelectorModal: typeof import('./src/components/Modals/EmailTemplateSelectorModal.vue')['default']
-=======
     EmailTemplateModal: typeof import('./src/components/Modals/EmailTemplateModal.vue')['default']
     EmailTemplatePage: typeof import('./src/components/Settings/EmailTemplate/EmailTemplatePage.vue')['default']
     EmailTemplates: typeof import('./src/components/Settings/EmailTemplate/EmailTemplates.vue')['default']
     EmailTemplateSelectorModal: typeof import('./src/components/Modals/EmailTemplateSelectorModal.vue')['default']
     EmailTemplatesListView: typeof import('./src/components/ListViews/EmailTemplatesListView.vue')['default']
->>>>>>> asroy_crm
     ERPNextIcon: typeof import('./src/components/Icons/ERPNextIcon.vue')['default']
     ERPNextSettings: typeof import('./src/components/Settings/ERPNextSettings.vue')['default']
     ErrorPage: typeof import('./src/components/ErrorPage.vue')['default']
@@ -153,14 +147,12 @@ declare module 'vue' {
     FileVideoIcon: typeof import('./src/components/Icons/FileVideoIcon.vue')['default']
     Filter: typeof import('./src/components/Filter.vue')['default']
     FilterIcon: typeof import('./src/components/Icons/FilterIcon.vue')['default']
-    ForecastingSettings: typeof import('./src/components/Settings/ForecastingSettings.vue')['default']
     FormattedInput: typeof import('./src/components/Controls/FormattedInput.vue')['default']
     FrappeCloudIcon: typeof import('./src/components/Icons/FrappeCloudIcon.vue')['default']
-<<<<<<< HEAD
-=======
     FunnelIcon: typeof import('./src/components/Icons/FunnelIcon.vue')['default']
->>>>>>> asroy_crm
     GenderIcon: typeof import('./src/components/Icons/GenderIcon.vue')['default']
+    GeneralSettings: typeof import('./src/components/Settings/General/GeneralSettings.vue')['default']
+    GeneralSettingsPage: typeof import('./src/components/Settings/General/GeneralSettingsPage.vue')['default']
     GlobalModals: typeof import('./src/components/Modals/GlobalModals.vue')['default']
     GoogleIcon: typeof import('./src/components/Icons/GoogleIcon.vue')['default']
     Grid: typeof import('./src/components/Controls/Grid.vue')['default']
@@ -173,7 +165,7 @@ declare module 'vue' {
     HelpdeskIcon: typeof import('./src/components/Icons/HelpdeskIcon.vue')['default']
     HelpdeskSettings: typeof import('./src/components/Settings/HelpdeskSettings.vue')['default']
     HelpIcon: typeof import('./src/components/Icons/HelpIcon.vue')['default']
-    HomeActions: typeof import('./src/components/Settings/HomeActions.vue')['default']
+    HomeActions: typeof import('./src/components/Settings/General/HomeActions.vue')['default']
     Icon: typeof import('./src/components/Icon.vue')['default']
     IconPicker: typeof import('./src/components/IconPicker.vue')['default']
     ImageUploader: typeof import('./src/components/Controls/ImageUploader.vue')['default']
@@ -237,12 +229,8 @@ declare module 'vue' {
     PrimaryDropdown: typeof import('./src/components/PrimaryDropdown.vue')['default']
     PrimaryDropdownItem: typeof import('./src/components/PrimaryDropdownItem.vue')['default']
     ProfileSettings: typeof import('./src/components/Settings/ProfileSettings.vue')['default']
-<<<<<<< HEAD
-=======
     PropertiesListView: typeof import('./src/components/ListViews/PropertiesListView.vue')['default']
     PropertyIcon: typeof import('./src/components/Icons/PropertyIcon.vue')['default']
-    PropertyModal: typeof import('./src/components/Modals/PropertyModal.vue')['default']
->>>>>>> asroy_crm
     QuickEntryModal: typeof import('./src/components/Modals/QuickEntryModal.vue')['default']
     QuickFilterField: typeof import('./src/components/QuickFilterField.vue')['default']
     QuickFilterIcon: typeof import('./src/components/Icons/QuickFilterIcon.vue')['default']
@@ -270,7 +258,6 @@ declare module 'vue' {
     SmileIcon: typeof import('./src/components/Icons/SmileIcon.vue')['default']
     SortBy: typeof import('./src/components/SortBy.vue')['default']
     SortIcon: typeof import('./src/components/Icons/SortIcon.vue')['default']
-    SparkleIcon: typeof import('./src/components/Icons/SparkleIcon.vue')['default']
     SquareAsterisk: typeof import('./src/components/Icons/SquareAsterisk.vue')['default']
     StepsIcon: typeof import('./src/components/Icons/StepsIcon.vue')['default']
     SuccessIcon: typeof import('./src/components/Icons/SuccessIcon.vue')['default']
