@@ -1,83 +1,56 @@
 [
  {
-  "color": "gray",
+  "color": "red",
   "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "New Lead",
+  "doctype": "CRM Deal Status",
+  "deal_status": "Unvalidated",
   "modified": "2025-01-15 10:00:00.000000",
-  "name": "New Lead",
+  "name": "Unvalidated",
   "position": 1
  },
  {
   "color": "orange",
   "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "Contacted",
+  "doctype": "CRM Deal Status",
+  "deal_status": "Inbound",
   "modified": "2025-01-15 10:00:00.000000",
-  "name": "Contacted",
+  "name": "Inbound",
   "position": 2
  },
  {
-  "color": "green",
+  "color": "blue",
   "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "Qualified",
+  "doctype": "CRM Deal Status",
+  "deal_status": "Service",
   "modified": "2025-01-15 10:00:00.000000",
-  "name": "Qualified",
+  "name": "Service",
   "position": 3
  },
  {
-  "color": "orange",
+  "color": "yellow",
   "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "Property Viewed",
+  "doctype": "CRM Deal Status",
+  "deal_status": "Pipeline",
   "modified": "2025-01-15 10:00:00.000000",
-  "name": "Property Viewed",
+  "name": "Pipeline",
   "position": 4
  },
  {
   "color": "purple",
   "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "Property Inspected",
+  "doctype": "CRM Deal Status",
+  "deal_status": "After Sales",
   "modified": "2025-01-15 10:00:00.000000",
-  "name": "Property Inspected",
-  "position": 4
- },
- {
-  "color": "blue",
-  "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "Offer Made",
-  "modified": "2025-01-15 10:00:00.000000",
-  "name": "Offer Made",
-  "position": 5
- },
- {
-  "color": "gray",
-  "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "Under Contact",
-  "modified": "2025-01-15 10:00:00.000000",
-  "name": "Under Contact",
+  "name": "After Sales",
   "position": 5
  },
  {
   "color": "green",
   "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "Negotiation",
+  "doctype": "CRM Deal Status",
+  "deal_status": "Closed",
   "modified": "2025-01-15 10:00:00.000000",
-  "name": "Negotiation",
+  "name": "Closed",
   "position": 6
- },
- {
-  "color": "green",
-  "docstatus": 0,
-  "doctype": "CRM Lead Status",
-  "lead_status": "Deal Closed",
-  "modified": "2025-01-15 10:00:00.000000",
-  "name": "Deal Closed",
-  "position": 7
  }
 ]
