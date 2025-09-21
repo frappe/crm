@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-14 09:35+0000\n"
-"PO-Revision-Date: 2025-09-20 20:29\n"
+"PO-Revision-Date: 2025-09-21 20:47\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -5787,7 +5787,7 @@ msgstr ""
 #. Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 msgid "Webhook Verify Token"
-msgstr ""
+msgstr "Webhook-verifiseringstoken"
 
 #. Label of the website (Data) field in DocType 'CRM Deal'
 #. Label of the website (Data) field in DocType 'CRM Lead'
