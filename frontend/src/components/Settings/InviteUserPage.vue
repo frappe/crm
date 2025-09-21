@@ -116,7 +116,7 @@ const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { users, isAdmin, isManager } = usersStore()
 
 const invitees = ref([])
-const role = ref('Sales User')
+const role = ref('Sales Agent')
 const error = ref(null)
 
 const userExistMessage = computed(() => {
@@ -153,27 +153,43 @@ const inviteeExistMessage = computed(() => {
 
 const description = computed(() => {
   return {
+    'Customer Service':
+      'Can handle customer inquiries, support tickets, and provide customer assistance.',
+    'Sales Agent':
+      'Can work with leads and deals, manage customer relationships and sales activities.',
+    'Purchase Agent':
+      'Can manage purchase orders, vendor relationships, and procurement activities.',
+    'Sales Team Lead':
+      'Can lead sales team, manage sales processes, and oversee sales performance.',
+    'Purchase Team Lead':
+      'Can lead purchase team, manage procurement processes, and oversee purchasing activities.',
+    'Manager':
+      'Can manage and invite new users, create public & private views (reports), and oversee team operations.',
     'System Manager':
       'Can manage all aspects of the CRM, including user management, customizations and settings.',
-    'Sales Manager':
-      'Can manage and invite new users, and create public & private views (reports).',
-    'Sales User':
-      'Can work with leads and deals and create private views (reports).',
   }[role.value]
 })
 
 const roleOptions = computed(() => {
   return [
-    { value: 'Sales User', label: __('Sales User') },
-    ...(isManager() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
-    ...(isAdmin() ? [{ value: 'System Manager', label: __('Admin') }] : []),
+    { value: 'Customer Service', label: __('Customer Service') },
+    { value: 'Sales Agent', label: __('Sales Agent') },
+    { value: 'Purchase Agent', label: __('Purchase Agent') },
+    { value: 'Sales Team Lead', label: __('Sales Team Lead') },
+    { value: 'Purchase Team Lead', label: __('Purchase Team Lead') },
+    ...(isManager() ? [{ value: 'Manager', label: __('Manager') }] : []),
+    ...(isAdmin() ? [{ value: 'System Manager', label: __('System Manager') }] : []),
   ]
 })
 
 const roleMap = {
-  'Sales User': __('Sales User'),
-  'Sales Manager': __('Manager'),
-  'System Manager': __('Admin'),
+  'Customer Service': __('Customer Service'),
+  'Sales Agent': __('Sales Agent'),
+  'Purchase Agent': __('Purchase Agent'),
+  'Sales Team Lead': __('Sales Team Lead'),
+  'Purchase Team Lead': __('Purchase Team Lead'),
+  'Manager': __('Manager'),
+  'System Manager': __('System Manager'),
 }
 
 const inviteByEmail = createResource({
@@ -190,7 +206,7 @@ const inviteByEmail = createResource({
         data.existing_invites.join(', '),
       ])
     } else {
-      role.value = 'Sales User'
+      role.value = 'Sales Agent'
       error.value = null
     }
 
