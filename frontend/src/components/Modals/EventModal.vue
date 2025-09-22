@@ -129,6 +129,20 @@
             />
           </div>
         </div>
+        <div class="flex items-start">
+          <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
+            {{ __('Location') }}
+          </div>
+          <div class="w-9/12">
+            <TextInput
+              class="w-full"
+              size="sm"
+              variant="outline"
+              v-model="_event.location"
+              :placeholder="__('Add location')"
+            />
+          </div>
+        </div>
         <div class="flex">
           <div class="mt-2 text-base text-ink-gray-7 w-3/12">
             {{ __('Description') }}
@@ -235,6 +249,7 @@ const _event = ref({
   toTime: '',
   isFullDay: false,
   eventType: 'Public',
+  location: '',
   color: 'green',
   referenceDoctype: '',
   referenceDocname: '',
@@ -274,6 +289,7 @@ onMounted(() => {
       toTime: end.format('HH:mm'),
       isFullDay: props.event.all_day,
       eventType: props.event.event_type,
+      location: props.event.location || '',
       color: props.event.color,
       referenceDoctype: props.event.reference_doctype,
       referenceDocname: props.event.reference_docname,
@@ -349,6 +365,7 @@ function createEvent() {
       ends_on: _event.value.toDate + ' ' + _event.value.toTime,
       all_day: _event.value.isFullDay || false,
       event_type: _event.value.eventType,
+      location: _event.value.location || '',
       color: _event.value.color,
       reference_doctype: props.doctype,
       reference_docname: props.docname,
@@ -378,6 +395,7 @@ function updateEvent() {
       ends_on: _event.value.toDate + ' ' + _event.value.toTime,
       all_day: _event.value.isFullDay,
       event_type: _event.value.eventType,
+      location: _event.value.location || '',
       color: _event.value.color,
       reference_doctype: props.doctype,
       reference_docname: props.docname,
