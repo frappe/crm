@@ -1,0 +1,43 @@
+<template>
+  <div
+    v-if="assignmentRulesList.loading && !assignmentRulesList.data"
+    class="flex items-center justify-center mt-12"
+  >
+    <LoadingIndicator class="w-4" />
+  </div>
+  <div v-else>
+    <div
+      v-if="assignmentRulesList.data?.length === 0"
+      class="flex items-center justify-center rounded-md border border-outline-gray-2 p-4"
+    >
+      <div class="text-sm text-ink-gray-7">
+        {{ __('No items in the list') }}
+      </div>
+    </div>
+    <div v-else>
+      <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
+        <div class="w-7/12">{{ __('Assignment rule') }}</div>
+        <div class="w-3/12">{{ __('Priority') }}</div>
+        <div class="w-2/12">{{ __('Enabled') }}</div>
+      </div>
+      <div class="h-px border-t mx-4 border-outline-gray-modals" />
+      <div class="overflow-y-auto px-2">
+        <template
+          v-for="(assignmentRule, i) in assignmentRulesList.data"
+          :key="assignmentRule.name"
+        >
+          <AssignmentRuleListItem :data="assignmentRule" />
+          <hr v-if="assignmentRulesList.data.length !== i + 1" class="mx-2" />
+        </template>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { LoadingIndicator } from 'frappe-ui'
+import { inject } from 'vue'
+import AssignmentRuleListItem from './AssignmentRuleListItem.vue'
+
+const assignmentRulesList = inject('assignmentRulesList')
+</script>
