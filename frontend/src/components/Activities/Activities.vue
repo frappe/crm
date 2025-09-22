@@ -438,7 +438,6 @@
   <AllModals
     ref="modalRef"
     v-model="all_activities"
-    v-model:events="events"
     :doctype="doctype"
     :doc="doc"
   />

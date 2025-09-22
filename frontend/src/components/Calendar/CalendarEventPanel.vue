@@ -61,6 +61,16 @@
         </div>
       </div>
       <div
+        v-if="_event.location"
+        class="mx-4.5 my-2.5 border-t border-outline-gray-1"
+      />
+      <div v-if="_event.location" class="px-4.5 py-2">
+        <div class="flex gap-3 text-ink-gray-7">
+          <LocationIcon class="size-4" />
+          <div>{{ __(_event.location) }}</div>
+        </div>
+      </div>
+      <div
         v-if="_event.referenceDocname"
         class="mx-4.5 my-2.5 border-t border-outline-gray-1"
       />
@@ -163,7 +173,7 @@
       <div class="flex gap-2 items-center px-4.5 py-3">
         <Dropdown class="ml-1" :options="colors">
           <div
-            class="flex items-center justify-center size-7 shrink-0 border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
+            class="flex items-center justify-center size-8 shrink-0 border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
           >
             <div
               class="size-2.5 rounded-full cursor-pointer"
@@ -177,6 +187,7 @@
           ref="eventTitle"
           class="w-full"
           variant="outline"
+          size="md"
           v-model="_event.title"
           :debounce="500"
           :placeholder="__('Event title')"
@@ -303,12 +314,21 @@
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <Attendee
         class="px-4.5 py-[7px]"
+        size="md"
         v-model="peoples"
         :validate="validateEmail"
         :error-message="
           (value) => __('{0} is an invalid email address', [value])
         "
       />
+      <div class="mx-4.5 my-2.5 space-y-2">
+        <TextInput
+          v-model="_event.location"
+          :placeholder="__('Add location')"
+          variant="outline"
+          size="md"
+        />
+      </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <div class="px-4.5 py-3">
         <div class="flex items-center gap-x-2 border rounded py-1">
@@ -354,6 +374,7 @@
 </template>
 
 <script setup>
+import LocationIcon from '@/components/Icons/LocationIcon.vue'
 import PeopleIcon from '@/components/Icons/PeopleIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
