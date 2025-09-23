@@ -53,7 +53,7 @@
         <Button
           variant="solid"
           :label="__('Add')"
-          :disabled="!newUsers.length"
+          :disabled="!newUsers.length || !role"
           @click="addNewUser.submit()"
           :loading="addNewUser.loading"
         />
@@ -66,7 +66,7 @@
 import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import { validateEmail } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { createResource, toast } from 'frappe-ui'
+import { createResource, toast, FormControl, Button, Dialog, FeatherIcon } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const { users, isAdmin, isManager } = usersStore()
@@ -77,7 +77,7 @@ const newUsers = ref([])
 const role = ref('Sales Agent')
 
 const description = computed(() => {
-  return {
+  const descriptions = {
     'Customer Service':
       'Can handle customer inquiries, support tickets, and provide customer assistance.',
     'Sales Agent':
@@ -92,7 +92,8 @@ const description = computed(() => {
       'Can manage and invite new users, create public & private views (reports), and oversee team operations.',
     'System Manager':
       'Can manage all aspects of the CRM, including user management, customizations and settings.',
-  }[role.value]
+  }
+  return descriptions[role.value] || 'Select a role to see description.'
 })
 
 const roleOptions = computed(() => {
@@ -113,14 +114,16 @@ const addNewUser = createResource({
     users: JSON.stringify(newUsers.value),
     role: role.value,
   }),
-  onSuccess: () => {
+  onSuccess: (data) => {
     toast.success(__('Users added successfully'))
     newUsers.value = []
     show.value = false
     users.reload()
   },
   onError: (error) => {
-    toast.error(error.messages[0] || __('Failed to add users'))
+    const errorMessage = error?.messages?.[0] || error?.message || __('Failed to add users')
+    toast.error(errorMessage)
+    console.error('Error adding users:', error)
   },
 })
 </script>
