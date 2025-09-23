@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-22 20:42\n"
+"PO-Revision-Date: 2025-09-23 21:26\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -300,7 +300,7 @@ msgstr ""
 #. 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Add Weekly Holidays"
-msgstr ""
+msgstr "Legg til ukentlige helligdager"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a condition"
@@ -1165,7 +1165,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:306
 msgid "Choose the days of the week when this rule should be active."
-msgstr ""
+msgstr "Velg hvilke ukedager denne regelen skal være aktiv."
 
 #: frontend/src/components/Settings/EmailAdd.vue:9
 msgid "Choose the email service provider you want to configure."
@@ -3248,7 +3248,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:603
 msgid "Last Week"
-msgstr ""
+msgstr "Forrige uke"
 
 #: frontend/src/components/Filter.vue:619
 msgid "Last Year"
@@ -3821,7 +3821,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:651
 msgid "Next Week"
-msgstr ""
+msgstr "Neste uke"
 
 #: frontend/src/components/Filter.vue:667
 msgid "Next Year"
@@ -5426,7 +5426,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:635
 msgid "This Week"
-msgstr ""
+msgstr "Denne uken"
 
 #: frontend/src/components/Filter.vue:647
 msgid "This Year"
@@ -5862,7 +5862,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Weekly Off"
-msgstr ""
+msgstr "Ukentlig fri"
 
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:11
 msgid "Welcome Message"
@@ -5933,7 +5933,7 @@ msgstr ""
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
-msgstr ""
+msgstr "Du"
 
 #: crm/utils/__init__.py:262
 msgid "You are not permitted to access this resource."
@@ -6152,7 +6152,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:156
 msgid "in {0} weeks"
-msgstr ""
+msgstr "om {0} uker"
 
 #: frontend/src/utils/index.js:113
 msgid "in {0} y"
@@ -6360,7 +6360,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:185
 msgid "{0} weeks ago"
-msgstr ""
+msgstr "{0} uker siden"
 
 #: frontend/src/utils/index.js:132
 msgid "{0} y"
