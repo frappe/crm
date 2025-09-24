@@ -60,14 +60,29 @@
           <div class="text-ink-gray-6 text-p-base">{{ formattedDateTime }}</div>
         </div>
       </div>
-      <div
-        v-if="_event.location"
-        class="mx-4.5 my-2.5 border-t border-outline-gray-1"
-      />
+      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <div v-if="_event.location" class="px-4.5 py-2">
         <div class="flex gap-3 text-ink-gray-7">
           <LocationIcon class="size-4" />
           <div>{{ __(_event.location) }}</div>
+        </div>
+      </div>
+      <div class="px-4.5 py-2">
+        <div class="flex gap-3 text-ink-gray-7">
+          <BellIcon class="size-4" />
+          <div class="flex flex-col gap-1.5">
+            <div v-for="reminder in reminders" :key="reminder.name">
+              {{
+                __(`{0} {1} before{2}`, [
+                  reminder.time,
+                  reminder.time == 1
+                    ? reminder.unit.slice(0, -1)
+                    : reminder.unit,
+                  reminder.type == 'Email' ? ', as email' : '',
+                ])
+              }}
+            </div>
+          </div>
         </div>
       </div>
       <div
@@ -312,6 +327,8 @@
         </div>
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
+      <EventReminders class="px-4.5 py-[7px]" size="md" v-model="reminders" />
+      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <Attendee
         class="px-4.5 py-[7px]"
         size="md"
@@ -374,6 +391,7 @@
 </template>
 
 <script setup>
+import BellIcon from '@/components/Icons/BellIcon.vue'
 import LocationIcon from '@/components/Icons/LocationIcon.vue'
 import PeopleIcon from '@/components/Icons/PeopleIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
@@ -382,8 +400,11 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
+import Attendee from '@/components/Calendar/Attendee.vue'
+import EventReminders from '@/components/Calendar/EventReminders.vue'
+import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { globalStore } from '@/stores/global'
-import { validateEmail } from '@/utils'
+import { validateEmail, deepClone } from '@/utils'
 import {
   normalizeParticipants,
   buildEndTimeOptions,
@@ -405,7 +426,6 @@ import {
   CalendarActiveEvent as activeEvent,
   createDocumentResource,
 } from 'frappe-ui'
-import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -442,6 +462,16 @@ const peoples = computed({
   },
   set(list) {
     _event.value.event_participants = normalizeParticipants(list)
+    sync()
+  },
+})
+
+const reminders = computed({
+  get() {
+    return _event.value.reminders
+  },
+  set(list) {
+    _event.value.reminders = list
     sync()
   },
 })
@@ -491,12 +521,12 @@ function fetchEvent(oldMode) {
       fields: ['*'],
       onSuccess: (data) => {
         _event.value = parseEventDoc(data)
-        oldEvent.value = { ..._event.value }
+        oldEvent.value = deepClone(_event.value)
       },
     })
     if (eventResource.value.doc && !event.value.reloadEvent) {
       _event.value = parseEventDoc(eventResource.value.doc)
-      oldEvent.value = { ..._event.value }
+      oldEvent.value = deepClone(_event.value)
     } else {
       eventResource.value.reload()
     }
@@ -504,7 +534,10 @@ function fetchEvent(oldMode) {
     _event.value = event.value
 
     if (oldMode !== props.mode) {
-      oldEvent.value = { ...event.value }
+      oldEvent.value = deepClone(event.value)
+    } else if (!oldEvent.value) {
+      // Ensure oldEvent is set if it hasn't been initialized
+      oldEvent.value = deepClone(event.value)
     }
 
     if (event.value.id === 'duplicate-event' && oldMode !== 'duplicate') {
@@ -579,7 +612,7 @@ function saveEvent() {
     return
   }
 
-  oldEvent.value = { ..._event.value }
+  oldEvent.value = deepClone(_event.value)
   sync()
   emit('save', _event.value)
 }
@@ -626,7 +659,7 @@ function close() {
 }
 
 function reset() {
-  Object.assign(_event.value, oldEvent.value)
+  _event.value = deepClone(oldEvent.value)
   sync()
 }
 
