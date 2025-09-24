@@ -1,4 +1,5 @@
 import { usersStore } from '@/stores/users'
+import { getSettings } from '@/stores/settings'
 import { dayjs, createListResource } from 'frappe-ui'
 import { sameArrayContents } from '@/utils'
 import { computed, ref } from 'vue'
@@ -46,9 +47,17 @@ export function useEvent(doctype, docname) {
     parent: 'Event',
   })
 
+  const eventRemindersResource = createListResource({
+    doctype: 'Event Reminders',
+    fields: ['*'],
+    parent: 'Event',
+  })
+
   const events = computed(() => {
     if (!eventsResource.data) return []
     const eventNames = eventsResource.data.map((e) => e.name)
+
+    // participants
     if (
       !eventParticipantsResource.data?.length ||
       eventsParticipantIsUpdated(eventNames)
@@ -91,6 +100,25 @@ export function useEvent(doctype, docname) {
       })
     }
 
+    // reminders
+    if (eventRemindersResource.data?.length !== eventNames.length) {
+      eventRemindersResource.update({
+        filters: {
+          parenttype: 'Event',
+          parentfield: 'reminders',
+          parent: ['in', eventNames],
+        },
+      })
+      !eventRemindersResource.list.loading && eventRemindersResource.reload()
+    } else {
+      eventsResource.data.forEach((event) => {
+        event.reminders = [
+          ...eventRemindersResource.data.filter(
+            (reminder) => reminder.parent === event.name,
+          ),
+        ]
+      })
+    }
     return eventsResource.data
   })
 
@@ -209,9 +237,20 @@ export function validateTimeRange({ fromDate, fromTime, toTime, isFullDay }) {
   return { valid: true, error: null }
 }
 
+const { settings } = getSettings()
+
 export function parseEventDoc(doc) {
   if (!doc) return {}
   const { getUser } = usersStore()
+
+  let defaultReminder = {
+    type: settings.value?.reminder_type || 'Notification',
+    time: settings.value?.reminder_time || 10,
+    unit: settings.value?.reminder_unit || 'minutes',
+  }
+
+  let reminders = doc.reminders?.length ? doc.reminders : [defaultReminder]
+
   return {
     id: doc.name,
     title: doc.subject,
@@ -228,6 +267,7 @@ export function parseEventDoc(doc) {
     referenceDoctype: doc.reference_doctype,
     referenceDocname: doc.reference_docname,
     event_participants: doc.event_participants || [],
+    reminders: reminders,
     owner: doc.owner
       ? {
           label: getUser(doc.owner).full_name,
