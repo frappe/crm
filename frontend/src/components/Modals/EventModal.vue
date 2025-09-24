@@ -157,34 +157,51 @@
             />
           </div>
         </div>
-        <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+        <div class="border-t border-outline-gray-1" />
+        <div class="flex">
+          <div class="mt-1.5 text-base text-ink-gray-7 w-3/12">
+            {{ __('Reminder') }}
+          </div>
+          <div class="w-9/12">
+            <EventReminders v-model="reminders" />
+          </div>
+        </div>
       </div>
     </template>
     <template #actions>
-      <div v-if="eventsResource" class="flex gap-2 justify-end">
-        <Button :label="__('Cancel')" @click="show = false" />
-        <Button
-          variant="solid"
-          :label="
-            mode === 'edit'
-              ? __('Update')
-              : mode === 'duplicate'
-                ? __('Duplicate')
-                : __('Create')
-          "
-          :disabled="!dirty"
-          :loading="
-            mode === 'edit'
-              ? eventsResource.setValue.loading
-              : eventsResource.insert.loading
-          "
-          @click="update"
-        />
+      <div
+        v-if="eventsResource"
+        class="flex w-full items-center justify-between"
+      >
+        <div>
+          <ErrorMessage v-if="error" :message="__(error)" />
+        </div>
+        <div class="flex gap-2 justify-end">
+          <Button :label="__('Cancel')" @click="show = false" />
+          <Button
+            variant="solid"
+            :label="
+              mode === 'edit'
+                ? __('Update')
+                : mode === 'duplicate'
+                  ? __('Duplicate')
+                  : __('Create')
+            "
+            :disabled="!dirty"
+            :loading="
+              mode === 'edit'
+                ? eventsResource.setValue.loading
+                : eventsResource.insert.loading
+            "
+            @click="update"
+          />
+        </div>
       </div>
     </template>
   </Dialog>
 </template>
 <script setup>
+import EventReminders from '@/components/Calendar/EventReminders.vue'
 import Attendee from '@/components/Calendar/Attendee.vue'
 import {
   Switch,
@@ -254,6 +271,7 @@ const _event = ref({
   referenceDoctype: '',
   referenceDocname: '',
   event_participants: [],
+  reminders: [],
 })
 
 const dirty = computed(() => {
@@ -266,6 +284,15 @@ const peoples = computed({
   },
   set(list) {
     _event.value.event_participants = normalizeParticipants(list)
+  },
+})
+
+const reminders = computed({
+  get() {
+    return _event.value.reminders || []
+  },
+  set(list) {
+    _event.value.reminders = list
   },
 })
 
@@ -294,6 +321,7 @@ onMounted(() => {
       referenceDoctype: props.event.reference_doctype,
       referenceDocname: props.event.reference_docname,
       event_participants: props.event.event_participants || [],
+      reminders: props.event.reminders || [],
     }
 
     oldEvent.value = JSON.parse(JSON.stringify(_event.value))
@@ -370,6 +398,7 @@ function createEvent() {
       reference_doctype: props.doctype,
       reference_docname: props.docname,
       event_participants: _event.value.event_participants,
+      reminders: _event.value.reminders,
     },
     {
       onSuccess: async () => {
@@ -400,6 +429,7 @@ function updateEvent() {
       reference_doctype: props.doctype,
       reference_docname: props.docname,
       event_participants: _event.value.event_participants,
+      reminders: _event.value.reminders,
     },
     {
       onSuccess: async () => {
