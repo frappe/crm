@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2">
+    <div v-if="reminders?.length" class="flex flex-col gap-2">
       <div
         class="flex gap-2"
         v-for="reminder in reminders"
@@ -56,7 +56,6 @@
           :placeholder="__('Select interval')"
         />
         <Button
-          v-if="reminders.length > 1"
           icon="x"
           variant="outline"
           @click="reminders.splice(reminders.indexOf(reminder), 1)"
@@ -64,8 +63,8 @@
       </div>
     </div>
     <Button
-      class="mt-2"
-      :label="__('Add Reminder')"
+      variant="outline"
+      :label="__('Add reminder')"
       :icon-left="BellIcon"
       @click="addReminder"
     />
