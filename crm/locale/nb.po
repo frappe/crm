@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-23 21:26\n"
+"PO-Revision-Date: 2025-09-24 21:29\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -2091,7 +2091,7 @@ msgstr "ERPNext innstillinger"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext settings updated"
-msgstr "ERPNext-innstillinger oppdatert"
+msgstr "ERPNext innstillinger oppdatert"
 
 #: frontend/src/components/FieldLayout/Field.vue:91
 #: frontend/src/components/FieldLayoutEditor.vue:313
@@ -3685,7 +3685,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Naming Series"
-msgstr ""
+msgstr "Nummerserie"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:99
 msgid "Nested conditions"
