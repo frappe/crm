@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-22 20:42\n"
+"PO-Revision-Date: 2025-09-24 21:29\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -652,7 +652,7 @@ msgstr "Правила додељивања"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
 msgid "Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions"
-msgstr ""
+msgstr "Правила доделе аутоматски додељују потенцијалног клијента/пословну прилику правом продавцу на основу унапред дефинисаних услова"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:173
 msgid "At least one field is required"
@@ -687,30 +687,30 @@ msgstr "Аутентификациони токен"
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Auto Update Expected Deal Value"
-msgstr ""
+msgstr "Аутоматско ажурирање очекиване вредности пословне прилике"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:42
 msgid "Auto update expected deal value"
-msgstr ""
+msgstr "Аутоматско ажурирање очекиване вредности пословне прилике"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:88
 msgid "Auto update of expected deal value disabled"
-msgstr ""
+msgstr "Аутоматско ажурирање очекиване вредности пословне прилике је онемогућено"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:87
 msgid "Auto update of expected deal value enabled"
-msgstr ""
+msgstr "Аутоматско ажурирање очекиване вредности пословне прилике је омогућено"
 
 #. Description of the 'Auto Update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/ForecastingSettings.vue:46
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
-msgstr ""
+msgstr "Аутоматски ажурирај \"Очекивана вредност пословне прилике\" на основу укупне вредности повезаних производа у пословној прилици"
 
 #: frontend/src/components/Settings/Settings.vue:160
 msgid "Automation & Rules"
-msgstr ""
+msgstr "Аутоматизација и правила"
 
 #: crm/api/dashboard.py:238
 msgid "Average deal value of non won/lost deals"
@@ -804,11 +804,11 @@ msgstr "Између"
 
 #: frontend/src/components/Settings/Settings.vue:118
 msgid "Brand Settings"
-msgstr ""
+msgstr "Подешавања бренда"
 
 #: frontend/src/components/Settings/BrandSettings.vue:52
 msgid "Brand logo"
-msgstr ""
+msgstr "Лого бренда"
 
 #: frontend/src/components/Settings/BrandSettings.vue:32
 msgid "Brand name"
@@ -1161,7 +1161,7 @@ msgstr "Изабери постојећу организацију"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:9
 msgid "Choose how {0} are assigned among salespeople."
-msgstr ""
+msgstr "Изаберите како се {0} додељују међу продавцима."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:306
 msgid "Choose the days of the week when this rule should be active."
@@ -1173,7 +1173,7 @@ msgstr "Изабери провајдера имејл услуге кога ж�
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:229
 msgid "Choose which {0} are affected by this un-assignment rule."
-msgstr ""
+msgstr "Изаберите на које {0} утиче ово правило поништавања доделе."
 
 #: frontend/src/components/Controls/Link.vue:59
 msgid "Clear"
@@ -1307,11 +1307,11 @@ msgstr "Услови за ово правило су креирани из"
 
 #: frontend/src/components/Settings/HomeActions.vue:10
 msgid "Configure actions that appear on the home dropdown"
-msgstr ""
+msgstr "Конфигуришите радње које се појављују у падајућем менију на почетној страници"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:9
 msgid "Configure forecasting feature to help predict sales performance and growth"
-msgstr ""
+msgstr "Конфигуришите функцију прогнозирања ради предвиђања продајних резултата и раста"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:17
 msgid "Configure telephony settings for your CRM"
@@ -1319,7 +1319,7 @@ msgstr "Конфигуришите подешавања телефоније з�
 
 #: frontend/src/components/Settings/CurrencySettings.vue:11
 msgid "Configure the currency and exchange rate provider for your CRM"
-msgstr ""
+msgstr "Конфигуришите валуту и провајдера девизног курса за свој CRM"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:63
 msgid "Configure the exchange rate provider for your CRM"
@@ -1327,7 +1327,7 @@ msgstr "Конфигуришите провајдера девизних кур�
 
 #: frontend/src/components/Settings/BrandSettings.vue:10
 msgid "Configure your brand name, logo, and favicon"
-msgstr ""
+msgstr "Конфигуришите назив бренда, лого и favicon"
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
@@ -1573,7 +1573,7 @@ msgstr "Валута"
 
 #: frontend/src/components/Settings/Settings.vue:113
 msgid "Currency & Exchange Rate"
-msgstr ""
+msgstr "Валута и девизни курс"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:7
 msgid "Currency & Exchange rate provider"
@@ -2337,7 +2337,7 @@ msgstr "Унесите кључ за приступ"
 
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Enter brand name"
-msgstr ""
+msgstr "Унесите назив бренда"
 
 #: frontend/src/components/FieldLayout/Field.vue:339
 msgid "Enter {0}"
@@ -2902,7 +2902,7 @@ msgstr "Празници"
 
 #: frontend/src/components/Settings/Settings.vue:173
 msgid "Home Actions"
-msgstr ""
+msgstr "Радње на почетној страници"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:542
 #: frontend/src/components/Settings/HomeActions.vue:7
@@ -4273,7 +4273,7 @@ msgstr "Особа"
 
 #: frontend/src/components/Settings/Settings.vue:89
 msgid "Personal Settings"
-msgstr ""
+msgstr "Лична подешавања"
 
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
@@ -4943,7 +4943,7 @@ msgstr "Изаберите провајдера"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:84
 msgid "Select the assignees for {0}."
-msgstr ""
+msgstr "Изаберите извршиоце за {0}."
 
 #: frontend/src/components/FieldLayout/Field.vue:337
 msgid "Select {0}"
@@ -5279,7 +5279,7 @@ msgstr "Синхронизуј своје контакте, имејлове и 
 
 #: frontend/src/components/Settings/Settings.vue:105
 msgid "System Configuration"
-msgstr ""
+msgstr "Системска подешавања"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -5783,7 +5783,7 @@ msgstr "Корисник"
 
 #: frontend/src/components/Settings/Settings.vue:126
 msgid "User Management"
-msgstr ""
+msgstr "Управљање корисницима"
 
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -5953,7 +5953,7 @@ msgstr "Свој кључ за приступ можете добити са "
 
 #: frontend/src/components/Settings/InviteUserPage.vue:36
 msgid "You can invite multiple users by comma separating their email addresses"
-msgstr ""
+msgstr "Можете позвати више корисника тако што ћете њихове имејл адресе раздвојити зарезима"
 
 #: crm/integrations/exotel/handler.py:85
 msgid "You do not have Exotel Number set in your Telephony Agent"
