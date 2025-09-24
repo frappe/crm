@@ -128,6 +128,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { sessionStore } from '@/stores/session'
 import { globalStore } from '@/stores/global'
+import { getSettings } from '@/stores/settings'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   Calendar,
@@ -142,6 +143,7 @@ import { onMounted, ref, computed, provide } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
+const { settings } = getSettings()
 
 const calendar = ref(null)
 
@@ -361,8 +363,17 @@ function editDetails(e) {
   openEvent(e, 'edit')
 }
 
-function buildTempEvent(e, duplicate) {
+function buildTempEvent(e = {}, duplicate = false) {
   const id = duplicate ? 'duplicate-event' : 'new-event'
+
+  let defaultReminder = {
+    type: settings.value?.reminder_type || 'Notification',
+    time: settings.value?.reminder_time || 10,
+    unit: settings.value?.reminder_unit || 'minutes',
+  }
+
+  let reminders = e.reminders?.length ? e.reminders : [defaultReminder]
+
   return {
     id,
     title: e.title,
@@ -379,7 +390,7 @@ function buildTempEvent(e, duplicate) {
     referenceDoctype: e.referenceDoctype,
     referenceDocname: e.referenceDocname,
     event_participants: e.event_participants || [],
-    reminders: e.reminders || [],
+    reminders: reminders,
   }
 }
 

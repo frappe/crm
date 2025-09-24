@@ -86,6 +86,5 @@ const reminders = defineModel()
 
 function addReminder() {
   reminders.value.push({ type: 'Notification', time: 10, unit: 'minutes' })
-  reminders.value = [...reminders.value]
 }
 </script>
