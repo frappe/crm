@@ -48,6 +48,7 @@ declare module 'vue' {
     BulkDeleteLinkedDocModal: typeof import('./src/components/BulkDeleteLinkedDocModal.vue')['default']
     CalendarEventPanel: typeof import('./src/components/Calendar/CalendarEventPanel.vue')['default']
     CalendarIcon: typeof import('./src/components/Icons/CalendarIcon.vue')['default']
+    CalendarSettings: typeof import('./src/components/Settings/CalendarSettings.vue')['default']
     CallArea: typeof import('./src/components/Activities/CallArea.vue')['default']
     CallLogDetailModal: typeof import('./src/components/Modals/CallLogDetailModal.vue')['default']
     CallLogModal: typeof import('./src/components/Modals/CallLogModal.vue')['default']
