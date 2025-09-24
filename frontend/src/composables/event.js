@@ -1,5 +1,4 @@
 import { usersStore } from '@/stores/users'
-import { getSettings } from '@/stores/settings'
 import { dayjs, createListResource } from 'frappe-ui'
 import { sameArrayContents } from '@/utils'
 import { computed, ref } from 'vue'
@@ -101,7 +100,7 @@ export function useEvent(doctype, docname) {
     }
 
     // reminders
-    if (eventRemindersResource.data?.length !== eventNames.length) {
+    if (!eventRemindersResource.data?.length) {
       eventRemindersResource.update({
         filters: {
           parenttype: 'Event',
@@ -237,19 +236,9 @@ export function validateTimeRange({ fromDate, fromTime, toTime, isFullDay }) {
   return { valid: true, error: null }
 }
 
-const { settings } = getSettings()
-
 export function parseEventDoc(doc) {
   if (!doc) return {}
   const { getUser } = usersStore()
-
-  let defaultReminder = {
-    type: settings.value?.reminder_type || 'Notification',
-    time: settings.value?.reminder_time || 10,
-    unit: settings.value?.reminder_unit || 'minutes',
-  }
-
-  let reminders = doc.reminders?.length ? doc.reminders : [defaultReminder]
 
   return {
     id: doc.name,
@@ -267,7 +256,7 @@ export function parseEventDoc(doc) {
     referenceDoctype: doc.reference_doctype,
     referenceDocname: doc.reference_docname,
     event_participants: doc.event_participants || [],
-    reminders: reminders,
+    reminders: doc.reminders || [],
     owner: doc.owner
       ? {
           label: getUser(doc.owner).full_name,
