@@ -19,6 +19,13 @@
   "brand_name",
   "brand_logo",
   "favicon",
+  "calendar_tab",
+  "default_reminder_section",
+  "reminder_type",
+  "column_break_unue",
+  "reminder_time",
+  "column_break_hyyz",
+  "reminder_unit",
   "dropdown_items_tab",
   "dropdown_items"
  ],
@@ -113,12 +120,51 @@
    "fieldname": "auto_update_expected_deal_value",
    "fieldtype": "Check",
    "label": "Auto Update Expected Deal Value"
+  },
+  {
+   "fieldname": "calendar_tab",
+   "fieldtype": "Tab Break",
+   "label": "Calendar"
+  },
+  {
+   "description": "Time before the event when a reminder will be sent by default. This will be applied to all events unless a custom reminder is set for a specific event.",
+   "fieldname": "default_reminder_section",
+   "fieldtype": "Section Break",
+   "label": "Default Reminder"
+  },
+  {
+   "default": "Notification",
+   "fieldname": "reminder_type",
+   "fieldtype": "Select",
+   "label": "Reminder Type",
+   "options": "Notification\nEmail"
+  },
+  {
+   "fieldname": "column_break_unue",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "10",
+   "fieldname": "reminder_time",
+   "fieldtype": "Int",
+   "label": "Reminder Time"
+  },
+  {
+   "fieldname": "column_break_hyyz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "minutes",
+   "fieldname": "reminder_unit",
+   "fieldtype": "Select",
+   "label": "Reminder Unit",
+   "options": "minutes\nhours\ndays\nweeks"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-16 17:33:26.406549",
+ "modified": "2025-09-23 17:37:34.116983",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
