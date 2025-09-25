@@ -421,6 +421,36 @@ export function evaluateDependsOnValue(expression, doc) {
   return out
 }
 
+export function evaluateExpression(expression, doc, parent) {
+  if (!expression) return false
+  if (!doc) return false
+
+  let out = null
+  if (typeof expression === 'boolean') {
+    out = expression
+  } else if (typeof expression === 'function') {
+    out = expression(doc)
+  } else if (expression.substr(0, 5) == 'eval:') {
+    try {
+      out = _eval(expression.substr(5), { doc, parent })
+      if (parent && parent.istable && expression.includes('is_submittable')) {
+        out = true
+      }
+    } catch (e) {
+      out = true
+    }
+  } else {
+    let value = doc[expression]
+    if (Array.isArray(value)) {
+      out = !!value.length
+    } else {
+      out = !!value
+    }
+  }
+
+  return out
+}
+
 export function convertSize(size) {
   const units = ['B', 'KB', 'MB', 'GB', 'TB']
   let unitIndex = 0

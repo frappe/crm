@@ -1,7 +1,8 @@
 import { getScript } from '@/data/script'
 import { globalStore } from '@/stores/global'
+import { getMeta } from '@/stores/meta'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { runSequentially, parseAssignees } from '@/utils'
+import { runSequentially, parseAssignees, evaluateExpression } from '@/utils'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive } from 'vue'
 
@@ -11,6 +12,7 @@ const assigneesCache = {}
 
 export function useDocument(doctype, docname) {
   const { setupScript, scripts } = getScript(doctype)
+  const meta = getMeta(doctype)
 
   documentsCache[doctype] = documentsCache[doctype] || {}
 
@@ -37,6 +39,7 @@ export function useDocument(doctype, docname) {
           }
         },
         setValue: {
+          validate,
           onSuccess: () => {
             triggerOnSave()
             toast.success(__('Document updated successfully'))
@@ -150,6 +153,42 @@ export function useDocument(doctype, docname) {
       return docControllers[controllerKey] || []
     }
     return []
+  }
+
+  function validate(d) {
+    checkMandatory(d.doc || d.fieldname)
+  }
+
+  function checkMandatory(doc) {
+    let fields = meta?.getFields() || []
+
+    if (!fields || fields.length === 0) return
+
+    let missingFields = []
+
+    fields.forEach((df) => {
+      let parent = meta?.doctypeMeta?.[df.parent] || null
+      if (evaluateExpression(df.mandatory_depends_on, doc, parent)) {
+        const value = doc[df.fieldname]
+        if (
+          value === undefined ||
+          value === null ||
+          (typeof value === 'string' && value.trim() === '') ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          missingFields.push(df.label || df.fieldname)
+        }
+      }
+    })
+
+    if (missingFields.length > 0) {
+      toast.error(
+        __('Mandatory fields required: {0}', [missingFields.join(', ')]),
+      )
+      throw new Error(
+        __('Mandatory fields required: {0}', [missingFields.join(', ')]),
+      )
+    }
   }
 
   async function triggerOnLoad() {
@@ -280,6 +319,7 @@ export function useDocument(doctype, docname) {
     assignees: assigneesCache[doctype][docname || ''],
     scripts,
     error,
+    validate,
     getControllers,
     triggerOnLoad,
     triggerOnBeforeCreate,
