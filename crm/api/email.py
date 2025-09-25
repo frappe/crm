@@ -27,6 +27,7 @@ def get_user_email_accounts():
             "enable_outgoing": 1,
             "email_id": ["in", all_user_emails],
         },
+        order_by="email_account_name asc",
     )
 
     return accounts

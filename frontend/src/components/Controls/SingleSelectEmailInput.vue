@@ -39,7 +39,7 @@
                   }
                 "
                 autocomplete="off"
-                @focus="() => togglePopover()"
+                @focus="() => (showOptions = true)"
               />
             </template>
             <template #body="{ isOpen }">
@@ -175,10 +175,10 @@ const selectEmail = (email) => {
       return
     }
 
-    values.value = [email]
+    const wasSelected = selectedEmail.value === email
 
-    // Check if email already exists
-    if (selectedEmail.value && selectedEmail.value === email) {
+    values.value = [email]
+    if (wasSelected) {
       info.value = __('email already selected')
     }
   }
@@ -212,7 +212,9 @@ watch(
 )
 
 function setFocus() {
-  search.value.$el.focus()
+  search.value &&
+    typeof search.value.focus === 'function' &&
+    search.value.focus()
 }
 
 defineExpose({ setFocus })

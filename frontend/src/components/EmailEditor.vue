@@ -29,7 +29,7 @@
             :error-message="
               (value) => __('{0} is an invalid email address', [value])
             "
-            placeholder="Select sender email"
+            :placeholder="__('Select sender email')"
           />
         </div>
         <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
@@ -342,6 +342,7 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
+  fromEmails,
 })
 
 const textEditorMenuButtons = [
