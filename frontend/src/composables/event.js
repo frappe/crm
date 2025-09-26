@@ -46,8 +46,8 @@ export function useEvent(doctype, docname) {
     parent: 'Event',
   })
 
-  const eventRemindersResource = createListResource({
-    doctype: 'Event Reminders',
+  const eventNotificationsResource = createListResource({
+    doctype: 'Event Notifications',
     fields: ['*'],
     parent: 'Event',
   })
@@ -99,21 +99,22 @@ export function useEvent(doctype, docname) {
       })
     }
 
-    // reminders
-    if (!eventRemindersResource.data?.length) {
-      eventRemindersResource.update({
+    // notifications
+    if (!eventNotificationsResource.data?.length) {
+      eventNotificationsResource.update({
         filters: {
           parenttype: 'Event',
-          parentfield: 'reminders',
+          parentfield: 'notifications',
           parent: ['in', eventNames],
         },
       })
-      !eventRemindersResource.list.loading && eventRemindersResource.reload()
+      !eventNotificationsResource.list.loading &&
+        eventNotificationsResource.reload()
     } else {
       eventsResource.data.forEach((event) => {
-        event.reminders = [
-          ...eventRemindersResource.data.filter(
-            (reminder) => reminder.parent === event.name,
+        event.notifications = [
+          ...eventNotificationsResource.data.filter(
+            (notification) => notification.parent === event.name,
           ),
         ]
       })
@@ -256,7 +257,7 @@ export function parseEventDoc(doc) {
     referenceDoctype: doc.reference_doctype,
     referenceDocname: doc.reference_docname,
     event_participants: doc.event_participants || [],
-    reminders: doc.reminders || [],
+    notifications: doc.notifications || [],
     owner: doc.owner
       ? {
           label: getUser(doc.owner).full_name,

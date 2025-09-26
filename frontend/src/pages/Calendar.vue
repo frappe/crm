@@ -243,7 +243,7 @@ function buildEventPayload(_event) {
     reference_doctype: _event.referenceDoctype,
     reference_docname: _event.referenceDocname,
     event_participants: _event.event_participants,
-    reminders: _event.reminders,
+    notifications: _event.notifications,
   }
 }
 
@@ -392,7 +392,7 @@ function buildTempEvent(e = {}, duplicate = false) {
     referenceDoctype: e.referenceDoctype,
     referenceDocname: e.referenceDocname,
     event_participants: e.event_participants || [],
-    reminders: e.reminders || [],
+    notifications: e.notifications || [],
   }
 }
 

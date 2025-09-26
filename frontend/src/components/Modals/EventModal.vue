@@ -160,10 +160,13 @@
         <div class="border-t border-outline-gray-1" />
         <div class="flex">
           <div class="mt-1.5 text-base text-ink-gray-7 w-3/12">
-            {{ __('Reminder') }}
+            {{ __('Notifications') }}
           </div>
           <div class="w-9/12">
-            <EventReminders v-model="reminders" />
+            <EventNotifications
+              v-model="_event.notifications"
+              :isAllDay="_event.isFullDay"
+            />
           </div>
         </div>
       </div>
@@ -201,7 +204,7 @@
   </Dialog>
 </template>
 <script setup>
-import EventReminders from '@/components/Calendar/EventReminders.vue'
+import EventNotifications from '@/components/Calendar/EventNotifications.vue'
 import Attendee from '@/components/Calendar/Attendee.vue'
 import {
   Switch,
@@ -271,7 +274,7 @@ const _event = ref({
   referenceDoctype: '',
   referenceDocname: '',
   event_participants: [],
-  reminders: [],
+  notifications: [],
 })
 
 const dirty = computed(() => {
@@ -284,15 +287,6 @@ const peoples = computed({
   },
   set(list) {
     _event.value.event_participants = normalizeParticipants(list)
-  },
-})
-
-const reminders = computed({
-  get() {
-    return _event.value.reminders || []
-  },
-  set(list) {
-    _event.value.reminders = list
   },
 })
 
@@ -321,7 +315,7 @@ onMounted(() => {
       referenceDoctype: props.event.reference_doctype,
       referenceDocname: props.event.reference_docname,
       event_participants: props.event.event_participants || [],
-      reminders: props.event.reminders || [],
+      notifications: props.event.notifications || [],
     }
 
     oldEvent.value = JSON.parse(JSON.stringify(_event.value))
@@ -398,7 +392,7 @@ function createEvent() {
       reference_doctype: props.doctype,
       reference_docname: props.docname,
       event_participants: _event.value.event_participants,
-      reminders: _event.value.reminders,
+      notifications: _event.value.notifications,
     },
     {
       onSuccess: async () => {
@@ -429,7 +423,7 @@ function updateEvent() {
       reference_doctype: props.doctype,
       reference_docname: props.docname,
       event_participants: _event.value.event_participants,
-      reminders: _event.value.reminders,
+      notifications: _event.value.notifications,
     },
     {
       onSuccess: async () => {
