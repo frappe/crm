@@ -21,7 +21,7 @@
       class="flex-1 overflow-hidden"
       ref="calendar"
       :config="{
-        defaultMode: 'Week',
+        defaultMode: defaultMode,
         isEditMode: true,
         eventIcons: {},
         allowCustomClickEvents: true,
@@ -128,6 +128,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { sessionStore } from '@/stores/session'
 import { globalStore } from '@/stores/global'
+import { getSettings } from '@/stores/settings'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   Calendar,
@@ -142,6 +143,17 @@ import { onMounted, ref, computed, provide } from 'vue'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
+const { settings } = getSettings()
+
+const modeMap = {
+  Daily: 'Day',
+  Weekly: 'Week',
+  Monthly: 'Month',
+}
+
+const defaultMode = computed(() => {
+  return modeMap[settings.value?.default_calendar_view] || 'Week'
+})
 
 const calendar = ref(null)
 

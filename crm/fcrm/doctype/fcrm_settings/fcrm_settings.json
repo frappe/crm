@@ -21,11 +21,7 @@
   "favicon",
   "calendar_tab",
   "default_reminder_section",
-  "reminder_type",
-  "column_break_unue",
-  "reminder_time",
-  "column_break_hyyz",
-  "reminder_unit",
+  "default_calendar_view",
   "dropdown_items_tab",
   "dropdown_items"
  ],
@@ -127,44 +123,17 @@
    "label": "Calendar"
   },
   {
-   "description": "Time before the event when a reminder will be sent by default. This will be applied to all events unless a custom reminder is set for a specific event.",
-   "fieldname": "default_reminder_section",
-   "fieldtype": "Section Break",
-   "label": "Default Reminder"
-  },
-  {
-   "default": "Notification",
-   "fieldname": "reminder_type",
+   "default": "Weekly",
+   "fieldname": "default_calendar_view",
    "fieldtype": "Select",
-   "label": "Reminder Type",
-   "options": "Notification\nEmail"
-  },
-  {
-   "fieldname": "column_break_unue",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "10",
-   "fieldname": "reminder_time",
-   "fieldtype": "Int",
-   "label": "Reminder Time"
-  },
-  {
-   "fieldname": "column_break_hyyz",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "minutes",
-   "fieldname": "reminder_unit",
-   "fieldtype": "Select",
-   "label": "Reminder Unit",
-   "options": "minutes\nhours\ndays\nweeks"
+   "label": "Default calendar view",
+   "options": "Daily\nWeekly\nMonthly"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-23 17:37:34.116983",
+ "modified": "2025-09-24 14:43:50.510563",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

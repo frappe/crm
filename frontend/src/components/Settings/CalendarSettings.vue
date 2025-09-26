@@ -9,7 +9,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Configure your calendar settings like default view and reminder interval',
+              'Configure your calendar settings like default view and event notifications here',
             )
           }}
         </p>
@@ -26,16 +26,16 @@
     </div>
 
     <!-- Fields -->
-    <div class="flex flex-1 flex-col gap-4 overflow-y-auto">
+    <div class="flex flex-1 flex-col overflow-y-auto">
       <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Default Reminder') }}
+            {{ __('Default view') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{
               __(
-                'Time before the event when a reminder will be sent by default. This will be applied to all events unless a custom reminder is set for a specific event',
+                'Select the default view for your calendar. This will be the initial view when you open the calendar',
               )
             }}
           </div>
@@ -44,30 +44,13 @@
           <FormControl
             type="select"
             class="w-28"
-            v-model="settings.doc.reminder_type"
             :options="[
-              { label: __('Notification'), value: 'Notification' },
-              { label: __('Email'), value: 'Email' },
+              { label: __('Daily'), value: 'Daily' },
+              { label: __('Weekly'), value: 'Weekly' },
+              { label: __('Monthly'), value: 'Monthly' },
             ]"
-            :placeholder="__('Select reminder type')"
-          />
-          <FormControl
-            type="number"
-            class="w-[50px]"
-            v-model="settings.doc.reminder_time"
-            :placeholder="__('Enter time')"
-          />
-          <FormControl
-            type="select"
-            class="w-[90px]"
-            v-model="settings.doc.reminder_unit"
-            :options="[
-              { label: __('minutes'), value: 'minutes' },
-              { label: __('hours'), value: 'hours' },
-              { label: __('days'), value: 'days' },
-              { label: __('weeks'), value: 'weeks' },
-            ]"
-            :placeholder="__('Select interval')"
+            v-model="settings.doc.default_calendar_view"
+            :placeholder="__('Select view')"
           />
         </div>
       </div>
@@ -75,9 +58,9 @@
   </div>
 </template>
 <script setup>
-import { FormControl } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
+import { FormControl } from 'frappe-ui'
 
 const { _settings: settings } = getSettings()
 
