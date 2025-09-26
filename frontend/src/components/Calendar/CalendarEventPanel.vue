@@ -60,25 +60,28 @@
           <div class="text-ink-gray-6 text-p-base">{{ formattedDateTime }}</div>
         </div>
       </div>
-      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
+      <div
+        v-if="_event.location || notifications?.length"
+        class="mx-4.5 my-2.5 border-t border-outline-gray-1"
+      />
       <div v-if="_event.location" class="px-4.5 py-2">
         <div class="flex gap-3 text-ink-gray-7">
           <LocationIcon class="size-4" />
           <div>{{ __(_event.location) }}</div>
         </div>
       </div>
-      <div class="px-4.5 py-2">
+      <div v-if="notifications?.length" class="px-4.5 py-2">
         <div class="flex gap-3 text-ink-gray-7">
           <BellIcon class="size-4" />
           <div class="flex flex-col gap-1.5">
-            <div v-for="reminder in reminders" :key="reminder.name">
+            <div v-for="notification in notifications" :key="notification.name">
               {{
                 __(`{0} {1} before{2}`, [
-                  reminder.time,
-                  reminder.time == 1
-                    ? reminder.unit.slice(0, -1)
-                    : reminder.unit,
-                  reminder.type == 'Email' ? ', as email' : '',
+                  notification.before,
+                  notification.before == 1
+                    ? notification.interval.slice(0, -1)
+                    : notification.interval,
+                  notification.type == 'Email' ? ', as email' : '',
                 ])
               }}
             </div>
@@ -327,7 +330,11 @@
         </div>
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <EventReminders class="px-4.5 py-[7px]" size="md" v-model="reminders" />
+      <EventNotifications
+        class="px-4.5 py-[7px]"
+        v-model="notifications"
+        :isAllDay="_event.isFullDay"
+      />
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <Attendee
         class="px-4.5 py-[7px]"
@@ -401,7 +408,7 @@ import Link from '@/components/Controls/Link.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
 import Attendee from '@/components/Calendar/Attendee.vue'
-import EventReminders from '@/components/Calendar/EventReminders.vue'
+import EventNotifications from '@/components/Calendar/EventNotifications.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { globalStore } from '@/stores/global'
 import { validateEmail, deepClone } from '@/utils'
@@ -466,12 +473,12 @@ const peoples = computed({
   },
 })
 
-const reminders = computed({
+const notifications = computed({
   get() {
-    return _event.value.reminders
+    return _event.value.notifications
   },
   set(list) {
-    _event.value.reminders = list
+    _event.value.notifications = list
     sync()
   },
 })

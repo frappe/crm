@@ -129,7 +129,7 @@ declare module 'vue' {
     EventArea: typeof import('./src/components/Activities/EventArea.vue')['default']
     EventIcon: typeof import('./src/components/Icons/EventIcon.vue')['default']
     EventModal: typeof import('./src/components/Modals/EventModal.vue')['default']
-    EventReminders: typeof import('./src/components/Calendar/EventReminders.vue')['default']
+    EventNotifications: typeof import('./src/components/Calendar/EventNotifications.vue')['default']
     ExotelCallUI: typeof import('./src/components/Telephony/ExotelCallUI.vue')['default']
     ExportIcon: typeof import('./src/components/Icons/ExportIcon.vue')['default']
     ExternalLinkIcon: typeof import('./src/components/Icons/ExternalLinkIcon.vue')['default']
