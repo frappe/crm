@@ -22,6 +22,8 @@
   "calendar_tab",
   "default_reminder_section",
   "default_calendar_view",
+  "event_notifications",
+  "all_day_event_notifications",
   "dropdown_items_tab",
   "dropdown_items"
  ],
@@ -121,6 +123,24 @@
    "fieldname": "calendar_tab",
    "fieldtype": "Tab Break",
    "label": "Calendar"
+  },
+  {
+   "description": "Time before the event when a reminder notification will be sent by default. This will be applied to all events unless a custom notification is set for a specific event.",
+   "fieldname": "default_reminder_section",
+   "fieldtype": "Section Break",
+   "label": "Default event notifications"
+  },
+  {
+   "fieldname": "event_notifications",
+   "fieldtype": "Table",
+   "label": "Event notifications",
+   "options": "Event Notifications"
+  },
+  {
+   "fieldname": "all_day_event_notifications",
+   "fieldtype": "Table",
+   "label": "All day event notifications",
+   "options": "Event Notifications"
   },
   {
    "default": "Weekly",
