@@ -22,6 +22,8 @@ add_to_apps_screen = [
 	}
 ]
 
+export_python_type_annotations = True
+
 # Includes in <head>
 # ------------------
 
