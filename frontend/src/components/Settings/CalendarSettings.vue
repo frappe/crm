@@ -94,7 +94,10 @@
               <FormControl
                 class="w-20 shrink-0"
                 type="number"
-                min="1"
+                :min="min(notification)"
+                :max="max(notification)"
+                :step="notification.interval == 'minutes' ? 5 : 1"
+                @blur="handleIntervalChange(notification)"
                 v-model.number="notification.before"
                 :placeholder="__('10')"
               />
@@ -121,6 +124,7 @@
                   },
                 ]"
                 v-model="notification.interval"
+                @change="() => handleIntervalChange(notification)"
                 :placeholder="__('minutes')"
               />
               <Button
@@ -189,7 +193,9 @@
               <FormControl
                 class="w-20 shrink-0"
                 type="number"
-                min="1"
+                :min="min(notification)"
+                :max="max(notification)"
+                @blur="handleIntervalChange(notification)"
                 v-model.number="notification.before"
                 :placeholder="__('10')"
               />
@@ -207,6 +213,7 @@
                   },
                 ]"
                 v-model="notification.interval"
+                @change="() => handleIntervalChange(notification)"
                 :placeholder="__('minutes')"
               />
               <div class="text-p-sm text-ink-gray-5">
@@ -250,6 +257,7 @@
 <script setup>
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
+import { min, max, handleIntervalChange } from '@/components/Calendar/utils'
 import { FormControl, TimePicker } from 'frappe-ui'
 import { computed } from 'vue'
 

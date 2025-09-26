@@ -33,6 +33,9 @@
             <FormControl
               class="w-fit"
               type="number"
+              :min="min(notification)"
+              :max="max(notification)"
+              @blur="handleIntervalChange(notification)"
               v-model.number="notification.before"
               variant="outline"
               :placeholder="__('10')"
@@ -42,6 +45,7 @@
               type="select"
               :options="intervalOptions(notification)"
               v-model="notification.interval"
+              @change="() => handleIntervalChange(notification)"
               variant="outline"
               :placeholder="__('minutes')"
             />
@@ -82,6 +86,10 @@
           <FormControl
             class="w-fit"
             type="number"
+            :min="min(notification)"
+            :max="max(notification)"
+            :step="notification.interval === 'minutes' ? 5 : 1"
+            @blur="handleIntervalChange(notification)"
             v-model.number="notification.before"
             variant="outline"
             :placeholder="__('10')"
@@ -91,6 +99,7 @@
             type="select"
             :options="intervalOptions(notification)"
             v-model="notification.interval"
+            @change="() => handleIntervalChange(notification)"
             variant="outline"
             :placeholder="__('minutes')"
           />
@@ -114,6 +123,7 @@
 </template>
 <script setup>
 import BellIcon from '@/components/Icons/BellIcon.vue'
+import { min, max, handleIntervalChange } from '@/components/Calendar/utils'
 import { TimePicker } from 'frappe-ui'
 
 const props = defineProps({
