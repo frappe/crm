@@ -181,7 +181,7 @@ async function sendMail() {
   let subject = newEmailEditor.value.subject
   let cc = newEmailEditor.value.ccEmails || []
   let bcc = newEmailEditor.value.bccEmails || []
-
+  let senderEmail = newEmailEditor.value.fromEmails?.[0]
   if (attachments.value.length) {
     capture('email_attachments_added')
   }
@@ -195,7 +195,7 @@ async function sendMail() {
     doctype: props.doctype,
     name: doc.value.name,
     send_email: 1,
-    sender: getUser().email,
+    sender: senderEmail,
     sender_full_name: getUser()?.full_name || undefined,
   })
 }
