@@ -191,6 +191,7 @@ declare module 'vue' {
     LoadingIndicator: typeof import('./src/components/Icons/LoadingIndicator.vue')['default']
     LocationIcon: typeof import('./src/components/Icons/LocationIcon.vue')['default']
     LostReasonModal: typeof import('./src/components/Modals/LostReasonModal.vue')['default']
+    LucideCalendar: typeof import('~icons/lucide/calendar')['default']
     LucideChevronLeft: typeof import('~icons/lucide/chevron-left')['default']
     LucideCopy: typeof import('~icons/lucide/copy')['default']
     LucideTrash2: typeof import('~icons/lucide/trash2')['default']
