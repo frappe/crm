@@ -1,0 +1,83 @@
+{
+ "actions": [],
+ "autoname": "field:id",
+ "creation": "2025-09-26 18:59:12.833879",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "page_name",
+  "account_id",
+  "category",
+  "column_break_eteo",
+  "id",
+  "access_token"
+ ],
+ "fields": [
+  {
+   "fieldname": "category",
+   "fieldtype": "Data",
+   "label": "Category"
+  },
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "account_id",
+   "fieldtype": "Data",
+   "label": "Account ID"
+  },
+  {
+   "fieldname": "column_break_eteo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Small Text",
+   "label": "Access Token"
+  },
+  {
+   "fieldname": "page_name",
+   "fieldtype": "Data",
+   "label": "Page Name"
+  }
+ ],
+ "grid_page_length": 50,
+ "in_create": 1,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Facebook Lead Form",
+   "link_fieldname": "page"
+  }
+ ],
+ "modified": "2025-09-26 19:36:59.413214",
+ "modified_by": "hussain@frappe.io",
+ "module": "Lead Syncing",
+ "name": "Facebook Page",
+ "naming_rule": "By fieldname",
+ "owner": "hussain@frappe.io",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "page_name",
+ "track_changes": 1
+}
