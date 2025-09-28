@@ -31,101 +31,103 @@ def after_install(force=False):
 
 
 def add_default_lead_statuses():
-	statuses = {
-		"New": {
-			"color": "gray",
-			"position": 1,
-		},
-		"Contacted": {
-			"color": "orange",
-			"position": 2,
-		},
-		"Nurture": {
-			"color": "blue",
-			"position": 3,
-		},
-		"Qualified": {
-			"color": "green",
-			"position": 4,
-		},
-		"Unqualified": {
-			"color": "red",
-			"position": 5,
-		},
-		"Junk": {
-			"color": "purple",
-			"position": 6,
-		},
-	}
+	pass
+	# statuses = {
+	# 	"New": {
+	# 		"color": "gray",
+	# 		"position": 1,
+	# 	},
+	# 	"Contacted": {
+	# 		"color": "orange",
+	# 		"position": 2,
+	# 	},
+	# 	"Nurture": {
+	# 		"color": "blue",
+	# 		"position": 3,
+	# 	},
+	# 	"Qualified": {
+	# 		"color": "green",
+	# 		"position": 4,
+	# 	},
+	# 	"Unqualified": {
+	# 		"color": "red",
+	# 		"position": 5,
+	# 	},
+	# 	"Junk": {
+	# 		"color": "purple",
+	# 		"position": 6,
+	# 	},
+	# }
 
-	for status in statuses:
-		if frappe.db.exists("CRM Lead Status", status):
-			continue
+	# for status in statuses:
+	# 	if frappe.db.exists("CRM Lead Status", status):
+	# 		continue
 
-		doc = frappe.new_doc("CRM Lead Status")
-		doc.lead_status = status
-		doc.color = statuses[status]["color"]
-		doc.position = statuses[status]["position"]
-		doc.insert()
+	# 	doc = frappe.new_doc("CRM Lead Status")
+	# 	doc.lead_status = status
+	# 	doc.color = statuses[status]["color"]
+	# 	doc.position = statuses[status]["position"]
+	# 	doc.insert()
 
 
 def add_default_deal_statuses():
-	statuses = {
-		"Qualification": {
-			"color": "gray",
-			"type": "Open",
-			"probability": 10,
-			"position": 1,
-		},
-		"Demo/Making": {
-			"color": "orange",
-			"type": "Ongoing",
-			"probability": 25,
-			"position": 2,
-		},
-		"Proposal/Quotation": {
-			"color": "blue",
-			"type": "Ongoing",
-			"probability": 50,
-			"position": 3,
-		},
-		"Negotiation": {
-			"color": "yellow",
-			"type": "Ongoing",
-			"probability": 70,
-			"position": 4,
-		},
-		"Ready to Close": {
-			"color": "purple",
-			"type": "Ongoing",
-			"probability": 90,
-			"position": 5,
-		},
-		"Won": {
-			"color": "green",
-			"type": "Won",
-			"probability": 100,
-			"position": 6,
-		},
-		"Lost": {
-			"color": "red",
-			"type": "Lost",
-			"probability": 0,
-			"position": 7,
-		},
-	}
+	pass
+	# statuses = {
+	# 	"Qualification": {
+	# 		"color": "gray",
+	# 		"type": "Open",
+	# 		"probability": 10,
+	# 		"position": 1,
+	# 	},
+	# 	"Demo/Making": {
+	# 		"color": "orange",
+	# 		"type": "Ongoing",
+	# 		"probability": 25,
+	# 		"position": 2,
+	# 	},
+	# 	"Proposal/Quotation": {
+	# 		"color": "blue",
+	# 		"type": "Ongoing",
+	# 		"probability": 50,
+	# 		"position": 3,
+	# 	},
+	# 	"Negotiation": {
+	# 		"color": "yellow",
+	# 		"type": "Ongoing",
+	# 		"probability": 70,
+	# 		"position": 4,
+	# 	},
+	# 	"Ready to Close": {
+	# 		"color": "purple",
+	# 		"type": "Ongoing",
+	# 		"probability": 90,
+	# 		"position": 5,
+	# 	},
+	# 	"Won": {
+	# 		"color": "green",
+	# 		"type": "Won",
+	# 		"probability": 100,
+	# 		"position": 6,
+	# 	},
+	# 	"Lost": {
+	# 		"color": "red",
+	# 		"type": "Lost",
+	# 		"probability": 0,
+	# 		"position": 7,
+	# 	},
+	# }
 
-	for status in statuses:
-		if frappe.db.exists("CRM Deal Status", status):
-			continue
+	# for status in statuses:
+	# 	if frappe.db.exists("CRM Deal Status", status):
+	# 		continue
 
-		doc = frappe.new_doc("CRM Deal Status")
-		doc.deal_status = status
-		doc.color = statuses[status]["color"]
-		doc.type = statuses[status]["type"]
-		doc.probability = statuses[status]["probability"]
-		doc.position = statuses[status]["position"]
-		doc.insert()
+	# 	doc = frappe.new_doc("CRM Deal Status")
+	# 	doc.deal_status = status
+	# 	doc.color = statuses[status]["color"]
+	# 	doc.type = statuses[status]["type"]
+	# 	doc.probability = statuses[status]["probability"]
+	# 	doc.position = statuses[status]["position"]
+	# 	doc.insert()
 
 
 def add_default_communication_statuses():
