@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-24 21:29\n"
+"PO-Revision-Date: 2025-09-26 21:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -1331,7 +1331,7 @@ msgstr ""
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
-msgstr ""
+msgstr "Bekreft"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:139
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:239
@@ -1340,7 +1340,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:18
 msgid "Confirm Password"
-msgstr ""
+msgstr "Bekreft passord"
 
 #: frontend/src/components/Settings/Users.vue:228
 msgid "Confirm Remove"
@@ -1362,7 +1362,7 @@ msgstr ""
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 #: frontend/src/pages/MobileLead.vue:145
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:212
 msgid "Contact Already Exists"
@@ -1614,7 +1614,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 #: frontend/src/components/Settings/Settings.vue:170
 msgid "Customization"
-msgstr ""
+msgstr "Egendefinering"
 
 #: frontend/src/components/ViewControls.vue:211
 msgid "Customize quick filters"
@@ -3234,7 +3234,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Last Name"
-msgstr ""
+msgstr "Etternavn"
 
 #: frontend/src/components/Filter.vue:611
 msgid "Last Quarter"
@@ -4610,7 +4610,7 @@ msgstr "Fjernet seksjon"
 
 #: frontend/src/components/FieldLayoutEditor.vue:318
 msgid "Remove tab"
-msgstr ""
+msgstr "Fjern fane"
 
 #: frontend/src/components/Activities/EmailArea.vue:34
 #: frontend/src/components/CommunicationArea.vue:10
@@ -5981,7 +5981,7 @@ msgstr ""
 
 #: crm/api/todo.py:37 crm/api/todo.py:78
 msgid "Your assignment on {0} {1} has been removed by {2}"
-msgstr ""
+msgstr "Oppgaven din på {0} {1} er fjernet av {2}"
 
 #: crm/templates/emails/helpdesk_invitation.html:6
 msgid "Your login id is"
@@ -6168,7 +6168,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:140 frontend/src/utils/index.js:166
 msgid "just now"
-msgstr ""
+msgstr "akkurat nå"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6177,7 +6177,7 @@ msgstr ""
 
 #: crm/api/doc.py:40 crm/api/doc.py:158 crm/api/doc.py:503
 msgid "label"
-msgstr ""
+msgstr "etikett"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:130
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:379
@@ -6200,7 +6200,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:97 frontend/src/utils/index.js:117
 msgid "now"
-msgstr ""
+msgstr "nå"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:47
 msgid "operator"
@@ -6295,7 +6295,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:130
 msgid "{0} M"
-msgstr ""
+msgstr "{0} M"
 
 #: crm/api/todo.py:41
 msgid "{0} assigned a {1} {2} to you"
@@ -6303,15 +6303,15 @@ msgstr ""
 
 #: frontend/src/utils/index.js:126
 msgid "{0} d"
-msgstr ""
+msgstr "{0} d"
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
-msgstr ""
+msgstr "{0} dager siden"
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
-msgstr ""
+msgstr "{0} h"
 
 #: frontend/src/components/Settings/Users.vue:286
 msgid "{0} has been granted {1} access"
@@ -6319,7 +6319,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
-msgstr ""
+msgstr "{0} timer siden."
 
 #: frontend/src/composables/event.js:163
 msgid "{0} hrs"
@@ -6340,7 +6340,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:119
 msgid "{0} m"
-msgstr ""
+msgstr "{0} m"
 
 #: frontend/src/composables/event.js:157
 msgid "{0} mins"
@@ -6348,15 +6348,15 @@ msgstr ""
 
 #: frontend/src/utils/index.js:170
 msgid "{0} minutes ago"
-msgstr ""
+msgstr "{0} minutter siden"
 
 #: frontend/src/utils/index.js:189
 msgid "{0} months ago"
-msgstr ""
+msgstr "{0} måneder siden"
 
 #: frontend/src/utils/index.js:128
 msgid "{0} w"
-msgstr ""
+msgstr "{0} w"
 
 #: frontend/src/utils/index.js:185
 msgid "{0} weeks ago"
@@ -6364,11 +6364,11 @@ msgstr "{0} uker siden"
 
 #: frontend/src/utils/index.js:132
 msgid "{0} y"
-msgstr ""
+msgstr "{0} y"
 
 #: frontend/src/utils/index.js:193
 msgid "{0} years ago"
-msgstr ""
+msgstr "{0} uker siden"
 
 #: frontend/src/data/script.js:326
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
