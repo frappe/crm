@@ -17,6 +17,22 @@ def get_fb_graph_api_url(endpoint: str) -> str:
 
 
 class LeadSyncSource(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		access_token: DF.SmallText | None
+		facebook_lead_form: DF.Link | None
+		facebook_page: DF.Link | None
+		last_synced_at: DF.Datetime | None
+		name: DF.Int | None
+		type: DF.Literal["Facebook"]
+	# end: auto-generated types
+
 	def before_save(self):
 		if self.type == "Facebook" and self.access_token:
 			fetch_and_store_pages_from_facebook(self.access_token)
@@ -38,12 +54,28 @@ def sync_leads_from_facebook(access_token: str, lead_form_id: str) -> None:
 			"limit": 15000,
 		},
 	).get("data", [])
+
+	form_questions = frappe.db.get_all(
+		"Facebook Lead Form Question", filters={"parent": lead_form_id}, fields=["key", "mapped_to_crm_field"]
+	)
+
+	# Map form questions to CRM Lead fields
+	question_to_field_map = {q["key"]: q["mapped_to_crm_field"]
+		for q in form_questions
+		if q["mapped_to_crm_field"]
+	}
+
 	for lead in leads:
+		lead_data = {item["name"]: item["values"][0] for item in lead["field_data"]}
+		crm_lead_data = {question_to_field_map.get(k): v for
+			k, v in lead_data.items() if k in question_to_field_map
+		}
+		crm_lead_data["source"] = "Facebook"
+
 		frappe.get_doc(
 			{
 				"doctype": "CRM Lead",
-				"first_name": lead["field_data"][0]["values"][0],
-				"source": "Facebook",
+				**crm_lead_data,
 			}
 		).insert(ignore_permissions=True)
 
