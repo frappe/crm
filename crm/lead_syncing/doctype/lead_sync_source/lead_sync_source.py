@@ -46,6 +46,14 @@ class LeadSyncSource(Document):
 
 def sync_leads_from_facebook(access_token: str, lead_form_id: str) -> None:
 	url = get_fb_graph_api_url(f"/{lead_form_id}/leads")
+	last_synced_at = frappe.db.get_value(
+		"Lead Sync Source", {"facebook_lead_form": lead_form_id}, "last_synced_at"
+	)
+	timestamp = frappe.utils.data.get_timestamp(last_synced_at)
+	filtering = f"filtering=[{{'field':'time_created','operator':'GREATER_THAN','value':{timestamp}}}]"
+	if last_synced_at:
+		url = f"{url}?{filtering}"
+
 	leads = make_get_request(
 		url,
 		params={
@@ -60,24 +68,33 @@ def sync_leads_from_facebook(access_token: str, lead_form_id: str) -> None:
 	)
 
 	# Map form questions to CRM Lead fields
-	question_to_field_map = {q["key"]: q["mapped_to_crm_field"]
-		for q in form_questions
-		if q["mapped_to_crm_field"]
+	question_to_field_map = {
+		q["key"]: q["mapped_to_crm_field"] for q in form_questions if q["mapped_to_crm_field"]
 	}
 
 	for lead in leads:
 		lead_data = {item["name"]: item["values"][0] for item in lead["field_data"]}
-		crm_lead_data = {question_to_field_map.get(k): v for
-			k, v in lead_data.items() if k in question_to_field_map
+		crm_lead_data = {
+			question_to_field_map.get(k): v for k, v in lead_data.items() if k in question_to_field_map
 		}
 		crm_lead_data["source"] = "Facebook"
+		crm_lead_data["facebook_lead_id"] = lead["id"]
 
-		frappe.get_doc(
-			{
-				"doctype": "CRM Lead",
-				**crm_lead_data,
-			}
-		).insert(ignore_permissions=True)
+		try:
+			frappe.get_doc(
+				{
+					"doctype": "CRM Lead",
+					**crm_lead_data,
+				}
+			).insert(ignore_permissions=True)
+		except frappe.UniqueValidationError:
+			# Skip duplicate leads based on facebook_lead_id
+			frappe.log_error("Duplicate lead skipped")
+			continue
+
+	frappe.db.set_value(
+		"Lead Sync Source", {"facebook_lead_form": lead_form_id}, "last_synced_at", frappe.utils.now()
+	)
 
 
 def fetch_and_store_pages_from_facebook(access_token: str) -> None:

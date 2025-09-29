@@ -58,14 +58,15 @@
    "fieldname": "facebook_lead_form",
    "fieldtype": "Link",
    "label": "Facebook Lead Form",
-   "options": "Facebook Lead Form"
+   "options": "Facebook Lead Form",
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-29 18:45:32.305860",
- "modified_by": "hussain@frappe.io",
+ "modified": "2025-09-29 19:03:14.804026",
+ "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
  "naming_rule": "Autoincrement",
