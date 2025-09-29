@@ -10,6 +10,7 @@
   "access_token",
   "column_break_lwcw",
   "last_synced_at",
+  "enabled",
   "facebook_tab",
   "facebook_page",
   "column_break_uxlr",
@@ -60,12 +61,18 @@
    "label": "Facebook Lead Form",
    "options": "Facebook Lead Form",
    "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled?"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-29 19:03:14.804026",
+ "modified": "2025-09-29 19:54:24.841414",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
