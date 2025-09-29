@@ -5,23 +5,20 @@
 from frappe.model.document import Document
 
 
-class FacebookLeadFormQuestion(Document):
+class FacebookLeadForm(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from crm.lead_syncing.doctype.facebook_lead_form_question.facebook_lead_form_question import FacebookLeadFormQuestion
 		from frappe.types import DF
 
+		form_name: DF.Data | None
 		id: DF.Data | None
-		key: DF.Data
-		label: DF.Data | None
-		mapped_to_crm_field: DF.Autocomplete | None
-		parent: DF.Data
-		parentfield: DF.Data
-		parenttype: DF.Data
-		type: DF.Data | None
+		page: DF.Link
+		questions: DF.Table[FacebookLeadFormQuestion]
 	# end: auto-generated types
 
 	pass

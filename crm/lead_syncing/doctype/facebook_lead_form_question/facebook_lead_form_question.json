@@ -10,7 +10,8 @@
   "id",
   "column_break_hgde",
   "key",
-  "type"
+  "type",
+  "mapped_to_crm_field"
  ],
  "fields": [
   {
@@ -40,13 +41,20 @@
    "fieldname": "id",
    "fieldtype": "Data",
    "label": "ID"
+  },
+  {
+   "default": "Not Synced",
+   "fieldname": "mapped_to_crm_field",
+   "fieldtype": "Autocomplete",
+   "in_list_view": 1,
+   "label": "Mapped to CRM Field"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-26 19:48:30.897092",
+ "modified": "2025-09-29 18:45:21.800960",
  "modified_by": "hussain@frappe.io",
  "module": "Lead Syncing",
  "name": "Facebook Lead Form Question",

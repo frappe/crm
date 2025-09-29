@@ -10,8 +10,6 @@
   "access_token",
   "column_break_lwcw",
   "last_synced_at",
-  "section_break_itlk",
-  "field_mapping",
   "facebook_tab",
   "facebook_page",
   "column_break_uxlr",
@@ -41,16 +39,6 @@
    "label": "Access Token"
   },
   {
-   "fieldname": "section_break_itlk",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "field_mapping",
-   "fieldtype": "Table",
-   "label": "Field Mapping",
-   "options": "Lead Form Field Mapping"
-  },
-  {
    "depends_on": "eval:doc.type===\"Facebook\"",
    "fieldname": "facebook_tab",
    "fieldtype": "Tab Break",
@@ -76,7 +64,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-26 19:04:31.584094",
+ "modified": "2025-09-29 18:45:32.305860",
  "modified_by": "hussain@frappe.io",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
