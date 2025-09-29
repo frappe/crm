@@ -26,6 +26,7 @@ class LeadSyncSource(Document):
 		from frappe.types import DF
 
 		access_token: DF.SmallText | None
+		enabled: DF.Check
 		facebook_lead_form: DF.Link | None
 		facebook_page: DF.Link | None
 		last_synced_at: DF.Datetime | None
