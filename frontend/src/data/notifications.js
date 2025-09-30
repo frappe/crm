@@ -1,13 +1,16 @@
+import { sessionStore } from '@/stores/session'
 import { createListResource, dayjs } from 'frappe-ui'
 import isBetween from 'dayjs/plugin/isBetween'
 
 dayjs.extend(isBetween)
 
+const { user } = sessionStore()
+
 export const useEventNotifications = () => {
   const events = createListResource({
     doctype: 'Event',
     fields: ['*'],
-    filters: { status: 'Open' },
+    filters: { status: 'Open', owner: user },
     auto: true,
     limit: 9999,
     orderBy: 'modified desc',
