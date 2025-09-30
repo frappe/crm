@@ -86,12 +86,7 @@
             </div>
           </div>
           <div v-if="tab.name == 'events'" class="flex h-full">
-            <div class="flex flex-1 flex-col items-center justify-center gap-2">
-              <EventIcon class="h-20 w-20 text-ink-gray-2" />
-              <div class="text-lg font-medium text-ink-gray-4">
-                {{ __('No upcoming events') }}
-              </div>
-            </div>
+            <EventNotificationsArea />
           </div>
         </TabPanel>
       </Tabs>
@@ -101,8 +96,8 @@
 <script setup>
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
-import EventIcon from '@/components/Icons/EventIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
+import EventNotificationsArea from '@/components/EventNotificationsArea.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import {
   visible,
