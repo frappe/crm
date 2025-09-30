@@ -36,6 +36,7 @@
               v-for="e in event.items"
               :key="e.id"
               class="flex items-center justify-between gap-2 h-full p-2 group hover:bg-surface-gray-1 rounded cursor-pointer"
+              @click="handleEventClick(e)"
             >
               <div class="flex items-stretch gap-1.5 flex-1 min-w-0">
                 <div
@@ -88,11 +89,28 @@
   </div>
 </template>
 <script setup>
-import { useEventNotifications } from '@/data/notifications'
 import EventIcon from '@/components/Icons/EventIcon.vue'
+import { useEventNotifications } from '@/data/notifications'
+import { notificationsStore } from '@/stores/notifications'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const { events } = useEventNotifications()
+const { toggle } = notificationsStore()
+
+function handleEventClick(e) {
+  toggle()
+
+  router.push({
+    name: 'Calendar',
+    query: {
+      eventId: e.id,
+      date: e.fromDate,
+    },
+  })
+}
 
 const computedEvents = computed(() => {
   if (!events.data?.length) return []
@@ -147,6 +165,6 @@ const formattedDateTime = (e) => {
     return `${fromTime} - ${e.toTime} `
   }
 
-  return `${e.fromTime} - ${toTime}`
+  return `${e.fromTime} - ${e.toTime}`
 }
 </script>

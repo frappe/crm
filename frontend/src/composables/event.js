@@ -34,6 +34,7 @@ export function useEvent(doctype, docname) {
       reference_docname: docname,
     },
     auto: true,
+    limit: 50,
     orderBy: 'creation desc',
     onSuccess: (d) => {
       console.log(d)

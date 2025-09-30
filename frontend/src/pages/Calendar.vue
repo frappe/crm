@@ -139,11 +139,13 @@ import {
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
-import { onMounted, ref, computed, provide } from 'vue'
+import { onMounted, ref, computed, provide, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
 const { settings } = getSettings()
+const route = useRoute()
 
 const modeMap = {
   Daily: 'Day',
@@ -339,10 +341,23 @@ function syncEvent(eventID, _event) {
   Object.assign(events.data.filter((event) => event.id === eventID)[0], _event)
 }
 
-onMounted(() => {
+onMounted(async () => {
   activeEvent.value = ''
   mode.value = ''
   showEventPanel.value = false
+
+  const { eventId, date } = route.query
+  if (eventId && date) {
+    await events.promise
+    await nextTick()
+
+    // Set calendar date to the event's date
+    if (calendar.value.onMonthYearChange) {
+      calendar.value.onMonthYearChange(dayjs(date).toDate())
+    }
+
+    showDetails({ id: eventId })
+  }
 })
 
 // Global shortcut: Cmd/Ctrl + E -> new event (when not already creating/editing)
