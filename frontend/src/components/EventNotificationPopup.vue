@@ -8,7 +8,7 @@
         <div
           v-for="alert in visibleAlerts"
           :key="alert.id"
-          class="bg-surface-gray-6 rounded-lg shadow-2xl"
+          class="group flex flex-col relative bg-surface-gray-6 rounded-lg shadow-2xl"
         >
           <div class="flex justify-between items-center gap-1 p-3">
             <div class="flex items-stretch space-x-2">
@@ -16,7 +16,7 @@
                 class="w-[2px] rounded shrink-0"
                 :style="{
                   backgroundColor:
-                    CalendarColorMapDark[alert.notification.color]?.color ||
+                    CalendarColorMap[alert.notification.color]?.color ||
                     '#30A66D',
                 }"
               />
@@ -33,21 +33,21 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-1">
-              <div
-                class="flex gap-1 h-fit items-center text-sm text-ink-amber-1 bg-surface-amber-3 rounded-full px-2 py-1"
-              >
-                <div><LucideZap class="size-3" /></div>
-                <div>{{ getTimeUntilEvent(alert.notification) }}</div>
+            <div
+              class="flex gap-1 h-fit items-center text-sm text-ink-gray-8 bg-surface-gray-3 rounded-full px-2 py-1"
+            >
+              <div>
+                <LucideZap class="size-3 text-ink-amber-3 fill-amber-500" />
               </div>
-              <Button
-                class="text-ink-white hover:bg-surface-gray-5 !size-6"
-                variant="ghost"
-                icon="x"
-                @click="completeAlert(alert.id)"
-              />
+              <div>{{ getTimeUntilEvent(alert.notification) }}</div>
             </div>
           </div>
+          <Button
+            class="absolute -top-2 -left-2 shadow-sm shadow-gray-500 ring-inset group-hover:bg-surface-gray-6 text-ink-white !p-0 !size-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+            @click="completeAlert(alert.id)"
+          >
+            <FeatherIcon name="x" class="size-3" />
+          </Button>
         </div>
       </TransitionGroup>
     </div>
@@ -56,7 +56,7 @@
 
 <script setup>
 import { useEventNotificationAlert } from '@/data/notifications'
-import { Button, dayjs, CalendarColorMapDark } from 'frappe-ui'
+import { Button, dayjs, CalendarColorMap } from 'frappe-ui'
 import { computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 
