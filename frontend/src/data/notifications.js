@@ -60,6 +60,7 @@ export const useEventNotifications = () => {
           id: event.name,
           title: event.subject,
           date: dateLabel,
+          fromDate: dayjs(event.starts_on).format('YYYY-MM-DD'),
           fromTime: dayjs(event.starts_on).format('h:mm a'),
           toTime: dayjs(event.ends_on).format('h:mm a'),
           color: event.color,
