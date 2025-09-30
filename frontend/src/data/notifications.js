@@ -1,12 +1,13 @@
 import { sessionStore } from '@/stores/session'
 import { createListResource, dayjs } from 'frappe-ui'
 import isBetween from 'dayjs/plugin/isBetween'
+import { useStorage } from '@vueuse/core'
 
 dayjs.extend(isBetween)
 
-const { user } = sessionStore()
-
 export const useEventNotifications = () => {
+  const { user } = sessionStore()
+
   const events = createListResource({
     doctype: 'Event',
     fields: ['*'],
@@ -67,10 +68,44 @@ export const useEventNotifications = () => {
         }
       })
     },
-    onSuccess: (d) => {
-      console.log(d)
-    },
   })
 
   return { events }
+}
+
+const eventNotificationAlerts = useStorage('eventNotificationAlerts', [])
+
+export const useEventNotificationAlert = () => {
+  function addEventNotificationAlert(data) {
+    eventNotificationAlerts.value.push({
+      id: data.notification.name,
+      completed: false,
+      notification: data.notification,
+    })
+  }
+
+  function completeEventNotificationAlert(id) {
+    let alert = eventNotificationAlerts.value.find((a) => a.id === id)
+    if (alert) {
+      alert.completed = true
+    }
+  }
+
+  function removeCompletedEventNotificationAlerts() {
+    eventNotificationAlerts.value = eventNotificationAlerts.value.filter(
+      (alert) => !alert.completed,
+    )
+  }
+
+  function clearAllEventNotificationAlerts() {
+    eventNotificationAlerts.value = []
+  }
+
+  return {
+    eventNotificationAlerts,
+    addEventNotificationAlert,
+    completeEventNotificationAlert,
+    removeCompletedEventNotificationAlerts,
+    clearAllEventNotificationAlerts,
+  }
 }

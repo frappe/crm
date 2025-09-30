@@ -36,6 +36,7 @@ def trigger_hourly_event_notifications():
 			en.time as time_of_day,
 			e.subject,
 			e.starts_on,
+			e.ends_on,
 			e.owner,
 			e.description,
 			e.all_day as all_day_event
@@ -102,7 +103,7 @@ def trigger_hourly_event_notifications():
 			if notification.notification_type == "Email":
 				_send_email_notification(notification, event_start, before_hours, notification_subject)
 			elif notification.notification_type == "Notification":
-				_send_system_notification(notification, event_start, before_hours, notification_subject)
+				_send_system_notification(notification)
 
 		except Exception as e:
 			frappe.logger().error(
@@ -173,6 +174,6 @@ def _send_email_notification(notification, event_start, before_hours, subject):
 		frappe.logger().error(f"Failed to send email for event {notification.event_name}: {e!s}")
 
 
-def _send_system_notification(notification, event_start, before_hours, subject):
+def _send_system_notification(notification):
 	"""Send system notification for an event"""
-	pass
+	frappe.publish_realtime("event_notification", notification)
