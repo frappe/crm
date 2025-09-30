@@ -104,6 +104,7 @@ import {
   notifications,
   notificationsStore,
 } from '@/stores/notifications'
+import { useEventNotificationAlert } from '@/data/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
@@ -113,6 +114,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
+const { addEventNotificationAlert } = useEventNotificationAlert()
 
 const tabIndex = ref(0)
 const tabs = [
@@ -143,11 +145,16 @@ function markAllAsRead() {
 
 onBeforeUnmount(() => {
   $socket.off('crm_notification')
+  $socket.off('event_notification')
 })
 
 onMounted(() => {
   $socket.on('crm_notification', () => {
     notifications.reload()
+  })
+
+  $socket.on('event_notification', (data) => {
+    addEventNotificationAlert(data)
   })
 })
 
