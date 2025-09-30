@@ -25,7 +25,7 @@ class LeadSyncSource(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		access_token: DF.SmallText | None
+		access_token: DF.Password | None
 		enabled: DF.Check
 		facebook_lead_form: DF.Link | None
 		facebook_page: DF.Link | None
@@ -42,7 +42,7 @@ class LeadSyncSource(Document):
 	@frappe.whitelist()
 	def sync_leads(self):
 		if self.type == "Facebook" and self.access_token:
-			sync_leads_from_facebook(self.access_token, self.facebook_lead_form)
+			sync_leads_from_facebook(self.get_password("access_token"), self.facebook_lead_form)
 
 
 def sync_leads_from_facebook(access_token: str, lead_form_id: str) -> None:

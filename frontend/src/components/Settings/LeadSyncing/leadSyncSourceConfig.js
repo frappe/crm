@@ -5,7 +5,7 @@ export const supportedSourceTypes = [
   {
     name: 'Facebook',
     icon: LogoFacebook,
-    link: 'https://support.google.com/accounts/answer/185833',
+    link: 'https://www.facebook.com/business/help/503306463479099?id=2190812977867143',
     custom: false,
   }
 ]
