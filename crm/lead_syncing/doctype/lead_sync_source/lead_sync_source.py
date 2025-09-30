@@ -36,8 +36,8 @@ class LeadSyncSource(Document):
 
 	def before_save(self):
 		if self.type == "Facebook" and self.access_token:
-			fetch_and_store_pages_from_facebook(self.access_token)
-		pass
+			# fetch_and_store_pages_from_facebook(self.access_token)
+			pass
 
 	@frappe.whitelist()
 	def sync_leads(self):

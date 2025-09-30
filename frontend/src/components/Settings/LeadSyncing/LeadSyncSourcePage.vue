@@ -1,18 +1,20 @@
 <template>
-  <NewLeadSyncSource
-    v-if="step === 'new-source'"
-    :templateData="source"
-    @updateStep="updateStep"
-  />
-  <LeadSyncSources
-    v-else-if="step === 'source-list'"
-    @updateStep="updateStep"
-  />
-  <EditLeadSyncSource
-    v-else-if="step === 'edit-source'"
-    :templateData="source"
-    @updateStep="updateStep"
-  />
+  <div class="flex-1 p-6">
+    <NewLeadSyncSource
+      v-if="step === 'new-source'"
+      :templateData="source"
+      @updateStep="updateStep"
+    />
+    <LeadSyncSources
+      v-else-if="step === 'source-list'"
+      @updateStep="updateStep"
+    />
+    <EditLeadSyncSource
+      v-else-if="step === 'edit-source'"
+      :templateData="source"
+      @updateStep="updateStep"
+    />
+  </div>
 </template>
 
 <script setup>
