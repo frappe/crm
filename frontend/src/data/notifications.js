@@ -78,9 +78,9 @@ const eventNotificationAlerts = useStorage('eventNotificationAlerts', [])
 export const useEventNotificationAlert = () => {
   function addEventNotificationAlert(data) {
     eventNotificationAlerts.value.push({
-      id: data.notification.name,
+      id: data.event_name,
       completed: false,
-      notification: data.notification,
+      notification: data,
     })
   }
 
