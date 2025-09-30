@@ -36,8 +36,9 @@
   },
   {
    "fieldname": "access_token",
-   "fieldtype": "Small Text",
-   "label": "Access Token"
+   "fieldtype": "Password",
+   "label": "Access Token",
+   "length": 500
   },
   {
    "depends_on": "eval:doc.type===\"Facebook\"",
@@ -72,7 +73,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-29 19:54:24.841414",
+ "modified": "2025-09-30 19:31:57.730618",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
