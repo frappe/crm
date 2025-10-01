@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-28 07:50\n"
+"POT-Creation-Date: 2025-09-28 09:35+0000\n"
+"PO-Revision-Date: 2025-10-01 08:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -443,7 +443,7 @@ msgstr "Belopp efter rabatt"
 msgid "An error occurred"
 msgstr "Ett fel uppstod"
 
-#: frontend/src/data/document.js:63
+#: frontend/src/data/document.js:66
 msgid "An error occurred while updating the document"
 msgstr "Ett fel inträffade vid uppdatering av dokument"
 
@@ -1967,7 +1967,7 @@ msgstr "DocType"
 msgid "Document Type"
 msgstr "DocType"
 
-#: frontend/src/data/document.js:28
+#: frontend/src/data/document.js:30
 msgid "Document does not exist"
 msgstr "Dokument finns inte"
 
@@ -1975,7 +1975,7 @@ msgstr "Dokument finns inte"
 msgid "Document not found"
 msgstr "Dokument hittades inte"
 
-#: frontend/src/data/document.js:42
+#: frontend/src/data/document.js:45
 msgid "Document updated successfully"
 msgstr "Dokument uppdaterad"
 
@@ -3538,9 +3538,13 @@ msgstr "Hantera e-post konton för att skicka och ta emot e-post direkt från S�
 msgid "Manager"
 msgstr "Ansvarig"
 
-#: frontend/src/data/document.js:54
+#: frontend/src/data/document.js:57
 msgid "Mandatory field error: {0}"
 msgstr "Erfordrad fält fel: {0}"
+
+#: frontend/src/data/document.js:186 frontend/src/data/document.js:189
+msgid "Mandatory fields required: {0}"
+msgstr "Erfordrade Fält saknas {0}"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -4084,7 +4088,7 @@ msgstr "Pågående"
 msgid "Ongoing deals"
 msgstr "Pågående Affärer"
 
-#: frontend/src/utils/index.js:444
+#: frontend/src/utils/index.js:474
 msgid "Only image files are allowed"
 msgstr "Endast bildfiler är tillåtna"
 
@@ -5969,7 +5973,7 @@ msgstr "Du har inget Exotel Nummer angiven i din Telefoni Agent"
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Du har inget Mobil Nummer angiven i din Telefoni Agent"
 
-#: frontend/src/data/document.js:32
+#: frontend/src/data/document.js:34
 msgid "You do not have permission to access this document"
 msgstr "Du har inte behörighet att komma åt detta dokument"
 
