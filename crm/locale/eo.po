@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-22 20:42\n"
+"POT-Creation-Date: 2025-09-28 09:35+0000\n"
+"PO-Revision-Date: 2025-10-01 08:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -443,7 +443,7 @@ msgstr "crwdns156120:0crwdne156120:0"
 msgid "An error occurred"
 msgstr "crwdns156122:0crwdne156122:0"
 
-#: frontend/src/data/document.js:63
+#: frontend/src/data/document.js:66
 msgid "An error occurred while updating the document"
 msgstr "crwdns157248:0crwdne157248:0"
 
@@ -1967,7 +1967,7 @@ msgstr "crwdns153097:0crwdne153097:0"
 msgid "Document Type"
 msgstr "crwdns153101:0crwdne153101:0"
 
-#: frontend/src/data/document.js:28
+#: frontend/src/data/document.js:30
 msgid "Document does not exist"
 msgstr "crwdns157256:0crwdne157256:0"
 
@@ -1975,7 +1975,7 @@ msgstr "crwdns157256:0crwdne157256:0"
 msgid "Document not found"
 msgstr "crwdns153103:0crwdne153103:0"
 
-#: frontend/src/data/document.js:42
+#: frontend/src/data/document.js:45
 msgid "Document updated successfully"
 msgstr "crwdns156302:0crwdne156302:0"
 
@@ -3538,9 +3538,13 @@ msgstr "crwdns156460:0crwdne156460:0"
 msgid "Manager"
 msgstr "crwdns156462:0crwdne156462:0"
 
-#: frontend/src/data/document.js:54
+#: frontend/src/data/document.js:57
 msgid "Mandatory field error: {0}"
 msgstr "crwdns156464:0{0}crwdne156464:0"
+
+#: frontend/src/data/document.js:186 frontend/src/data/document.js:189
+msgid "Mandatory fields required: {0}"
+msgstr "crwdns160008:0{0}crwdne160008:0"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -4084,7 +4088,7 @@ msgstr "crwdns156506:0crwdne156506:0"
 msgid "Ongoing deals"
 msgstr "crwdns156508:0crwdne156508:0"
 
-#: frontend/src/utils/index.js:444
+#: frontend/src/utils/index.js:474
 msgid "Only image files are allowed"
 msgstr "crwdns156510:0crwdne156510:0"
 
@@ -5963,7 +5967,7 @@ msgstr "crwdns154099:0crwdne154099:0"
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "crwdns154101:0crwdne154101:0"
 
-#: frontend/src/data/document.js:32
+#: frontend/src/data/document.js:34
 msgid "You do not have permission to access this document"
 msgstr "crwdns157282:0crwdne157282:0"
 
