@@ -86,7 +86,7 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 		return f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
                 <span class="font-medium text-ink-gray-9">{ owner }</span>
-                <span>{ _('assigned a {0} {1} to you').format(
+                <span>{ _('atribuiu um(a) {0} {1} para você').format(
                     doctype,
                     f'<span class="font-medium text-ink-gray-9">{ name }</span>'
                 ) }</span>

@@ -7,15 +7,15 @@
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
-        <div class="flex flex-col p-1 w-52 shrink-0 bg-surface-gray-2">
-          <h1 class="px-3 pt-3 pb-2 text-lg font-semibold text-ink-gray-8">
+        <div class="flex flex-col bg-surface-gray-2 p-1 w-52 shrink-0">
+          <h1 class="px-3 pt-3 pb-2 font-semibold text-ink-gray-8 text-lg">
             {{ __('Settings') }}
           </h1>
           <div class="flex flex-col overflow-y-auto">
             <template v-for="tab in tabs" :key="tab.label">
               <div
                 v-if="!tab.hideLabel"
-                class="py-[7px] px-2 my-1 flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
+                class="flex gap-1.5 my-1 px-2 py-[7px] text-ink-gray-5 text-base transition-all duration-300 ease-in-out cursor-pointer"
               >
                 <span>{{ __(tab.label) }}</span>
               </div>
@@ -36,7 +36,7 @@
             </template>
           </div>
         </div>
-        <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
+        <div class="flex flex-col flex-1 bg-surface-modal overflow-y-auto">
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
@@ -163,6 +163,7 @@ const tabs = computed(() => {
           component: markRaw(AssignmentRulePage),
         },
       ],
+      condition: () => isManager(),
     },
     {
       label: __('Customization'),

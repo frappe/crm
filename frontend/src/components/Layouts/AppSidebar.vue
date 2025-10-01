@@ -1,13 +1,13 @@
 <template>
   <div
-    class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
+    class="relative flex flex-col justify-between h-full transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
   >
     <div class="p-2">
       <UserDropdown :isCollapsed="isSidebarCollapsed" />
     </div>
     <div class="flex-1 overflow-y-auto">
-      <div class="mb-3 flex flex-col">
+      <div class="flex flex-col mb-3">
         <SidebarLink
           id="notifications-btn"
           :label="__('Notifications')"
@@ -24,7 +24,7 @@
             />
             <div
               v-else-if="unreadNotificationsCount"
-              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-6 ring-1 ring-white"
+              class="top-1 -left-1.5 z-20 absolute bg-surface-gray-6 rounded-full ring-1 ring-white w-[5px] h-[5px] translate-x-6 translate-y-1"
             />
           </template>
         </SidebarLink>
@@ -32,7 +32,7 @@
       <div v-for="view in allViews" :key="view.label">
         <div
           v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length"
-          class="mx-2 my-2 h-1 border-b"
+          class="mx-2 my-2 border-b h-1"
         />
         <Section
           :label="view.name"
@@ -42,7 +42,7 @@
           <template #header="{ opened, hide, toggle }">
             <div
               v-if="!hide"
-              class="flex cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out"
+              class="flex gap-1.5 px-1 font-medium text-ink-gray-5 text-base transition-all duration-300 ease-in-out cursor-pointer"
               :class="
                 isSidebarCollapsed
                   ? 'ml-0 h-0 overflow-hidden opacity-0'
@@ -71,7 +71,7 @@
         </Section>
       </div>
     </div>
-    <div class="m-2 flex flex-col gap-1">
+    <div class="flex flex-col gap-1 m-2">
       <div class="flex flex-col gap-2 mb-1">
         <SignupBanner
           v-if="isDemoSite"
@@ -88,19 +88,8 @@
           :isSidebarCollapsed="isSidebarCollapsed"
         />
       </div>
-      <SidebarLink
-        v-if="isOnboardingStepsCompleted"
-        :label="__('Help')"
-        :isCollapsed="isSidebarCollapsed"
-        @click="
-          () => {
-            showHelpModal = minimize ? true : !showHelpModal
-            minimize = !showHelpModal
-          }
-        "
-      >
         <template #icon>
-          <HelpIcon class="h-4 w-4" />
+          <HelpIcon class="w-4 h-4" />
         </template>
       </SidebarLink>
       <SidebarLink
@@ -110,9 +99,9 @@
         class=""
       >
         <template #icon>
-          <span class="grid h-4 w-4 flex-shrink-0 place-items-center">
+          <span class="flex-shrink-0 place-items-center grid w-4 h-4">
             <CollapseSidebar
-              class="h-4 w-4 text-ink-gray-7 duration-300 ease-in-out"
+              class="w-4 h-4 text-ink-gray-7 duration-300 ease-in-out"
               :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
             />
           </span>
@@ -209,34 +198,9 @@ const links = [
     to: 'Leads',
   },
   {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
     label: 'Notes',
     icon: NoteIcon,
     to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
   },
 ]
 
@@ -276,7 +240,7 @@ function parseView(views) {
   return views.map((view) => {
     return {
       label: view.label,
-      icon: getIcon(view.route_name, view.icon),
+      icon: getIcon(c.route_name, view.icon),
       to: {
         name: view.route_name,
         params: { viewType: view.type || 'list' },

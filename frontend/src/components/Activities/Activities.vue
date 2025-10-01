@@ -16,9 +16,9 @@
   >
     <div
       v-if="all_activities?.loading"
-      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
+      class="flex flex-col flex-1 justify-center items-center gap-3 font-medium text-ink-gray-4 text-xl"
     >
-      <LoadingIndicator class="h-6 w-6" />
+      <LoadingIndicator class="w-6 h-6" />
       <span>{{ __('Loading...') }}</span>
     </div>
     <div
@@ -38,7 +38,7 @@
       </div>
       <div
         v-else-if="title == 'Notes'"
-        class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
+        class="gap-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 px-3 sm:px-10 pb-3 sm:pb-5"
       >
         <div v-for="note in activities" @click="modalRef.showNote(note)">
           <NoteArea :note="note" v-model="all_activities" />
@@ -47,16 +47,16 @@
       <div v-else-if="title == 'Comments'" class="pb-5">
         <div v-for="(comment, i) in activities">
           <div
-            class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 px-3 sm:gap-4 sm:px-10"
+            class="gap-2 sm:gap-4 grid grid-cols-[30px_minmax(auto,_1fr)] px-3 sm:px-10 activity"
           >
             <div
-              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+              class="before:top-0 before:left-[50%] z-0 before:-z-[1] before:absolute relative flex justify-center before:border-l before:border-outline-gray-modals"
               :class="
                 i != activities.length - 1 ? 'before:h-full' : 'before:h-4'
               "
             >
               <div
-                class="flex h-8 w-7 items-center justify-center bg-surface-white"
+                class="flex justify-center items-center bg-surface-white w-7 h-8"
               >
                 <CommentIcon class="text-ink-gray-8" />
               </div>
@@ -65,22 +65,22 @@
           </div>
         </div>
       </div>
-      <div v-else-if="title == 'Tasks'" class="px-3 pb-3 sm:px-10 sm:pb-5">
+      <div v-else-if="title == 'Tasks'" class="px-3 sm:px-10 pb-3 sm:pb-5">
         <TaskArea :modalRef="modalRef" :tasks="activities" :doctype="doctype" />
       </div>
       <div v-else-if="title == 'Calls'" class="activity">
         <div v-for="(call, i) in activities">
           <div
-            class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
+            class="gap-4 grid grid-cols-[30px_minmax(auto,_1fr)] px-3 sm:px-10 activity"
           >
             <div
-              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+              class="before:top-0 before:left-[50%] z-0 before:-z-[1] before:absolute relative flex justify-center before:border-l before:border-outline-gray-modals"
               :class="
                 i != activities.length - 1 ? 'before:h-full' : 'before:h-4'
               "
             >
               <div
-                class="flex h-8 w-7 items-center justify-center bg-surface-white text-ink-gray-8"
+                class="flex justify-center items-center bg-surface-white w-7 h-8 text-ink-gray-8"
               >
                 <MissedCallIcon
                   v-if="call.status == 'No Answer'"
@@ -101,7 +101,7 @@
       </div>
       <div
         v-else-if="title == 'Attachments'"
-        class="px-3 pb-3 sm:px-10 sm:pb-5"
+        class="px-3 sm:px-10 pb-3 sm:pb-5"
       >
         <AttachmentArea
           :attachments="activities"
@@ -111,7 +111,7 @@
       <div
         v-else
         v-for="(activity, i) in activities"
-        class="activity px-3 sm:px-10"
+        class="px-3 sm:px-10 activity"
         :class="
           ['Activity', 'Emails'].includes(title)
             ? 'grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 sm:gap-4'
@@ -120,15 +120,15 @@
       >
         <div
           v-if="['Activity', 'Emails'].includes(title)"
-          class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+          class="before:top-0 before:left-[50%] z-0 before:-z-[1] before:absolute relative flex justify-center before:border-l before:border-outline-gray-modals"
           :class="[i != activities.length - 1 ? 'before:h-full' : 'before:h-4']"
         >
           <div
-            class="flex h-7 w-7 items-center justify-center bg-surface-white"
+            class="flex justify-center items-center bg-surface-white w-7 h-7"
             :class="{
               'mt-2.5': ['communication'].includes(activity.activity_type),
               'bg-surface-white': ['added', 'removed', 'changed'].includes(
-                activity.activity_type,
+                activity.activity_type
               ),
               'h-8': [
                 'comment',
@@ -146,7 +146,7 @@
             <MissedCallIcon
               v-else-if="
                 ['incoming_call', 'outgoing_call'].includes(
-                  activity.activity_type,
+                  activity.activity_type
                 ) && activity.status == 'No Answer'
               "
               class="text-ink-red-4"
@@ -154,7 +154,7 @@
             <DeclinedCallIcon
               v-else-if="
                 ['incoming_call', 'outgoing_call'].includes(
-                  activity.activity_type,
+                  activity.activity_type
                 ) && activity.status == 'Busy'
               "
             />
@@ -171,7 +171,7 @@
         </div>
         <div
           v-if="activity.activity_type == 'communication'"
-          class="pb-5 mt-px"
+          class="mt-px pb-5"
         >
           <EmailArea :activity="activity" :emailBox="emailBox" />
         </div>
@@ -183,13 +183,13 @@
           <CommentArea :activity="activity" />
         </div>
         <div
-          class="mb-4 flex flex-col gap-2 py-1.5"
+          class="flex flex-col gap-2 mb-4 py-1.5"
           :id="activity.name"
           v-else-if="activity.activity_type == 'attachment_log'"
         >
-          <div class="flex items-center justify-stretch gap-2 text-base">
+          <div class="flex justify-stretch items-center gap-2 text-base">
             <div
-              class="inline-flex items-center flex-wrap gap-1.5 text-ink-gray-8 font-medium"
+              class="inline-flex flex-wrap items-center gap-1.5 font-medium text-ink-gray-8"
             >
               <span class="font-medium">{{ activity.owner_name }}</span>
               <span class="text-ink-gray-5">{{ __(activity.data.type) }}</span>
@@ -209,7 +209,7 @@
             </div>
             <div class="ml-auto whitespace-nowrap">
               <Tooltip :text="formatDate(activity.creation)">
-                <div class="text-sm text-ink-gray-5">
+                <div class="text-ink-gray-5 text-sm">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
@@ -225,11 +225,11 @@
         >
           <CallArea :activity="activity" />
         </div>
-        <div v-else class="mb-4 flex flex-col gap-2 py-1.5">
-          <div class="flex items-center justify-stretch gap-2 text-base">
+        <div v-else class="flex flex-col gap-2 mb-4 py-1.5">
+          <div class="flex justify-stretch items-center gap-2 text-base">
             <div
               v-if="activity.other_versions"
-              class="inline-flex flex-wrap gap-1.5 text-ink-gray-8 font-medium"
+              class="inline-flex flex-wrap gap-1.5 font-medium text-ink-gray-8"
             >
               <span>{{ activity.show_others ? __('Hide') : __('Show') }}</span>
               <span> +{{ activity.other_versions.length + 1 }} </span>
@@ -244,7 +244,7 @@
             </div>
             <div
               v-else
-              class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5"
+              class="inline-flex flex-wrap items-center gap-1 text-ink-gray-5"
             >
               <span class="font-medium text-ink-gray-8">
                 {{ activity.owner_name }}
@@ -252,7 +252,7 @@
               <span v-if="activity.type">{{ __(activity.type) }}</span>
               <span
                 v-if="activity.data?.field_label"
-                class="max-w-xs truncate font-medium text-ink-gray-8"
+                class="max-w-xs font-medium text-ink-gray-8 truncate"
               >
                 {{ __(activity.data.field_label) }}
               </span>
@@ -292,7 +292,7 @@
 
             <div class="ml-auto whitespace-nowrap">
               <Tooltip :text="formatDate(activity.creation)">
-                <div class="text-sm text-ink-gray-5">
+                <div class="text-ink-gray-5 text-sm">
                   {{ __(timeAgo(activity.creation)) }}
                 </div>
               </Tooltip>
@@ -304,18 +304,18 @@
           >
             <div
               v-for="activity in [activity, ...activity.other_versions]"
-              class="flex items-start justify-stretch gap-2 py-1.5 text-base"
+              class="flex justify-stretch items-start gap-2 py-1.5 text-base"
             >
               <div class="inline-flex flex-wrap gap-1 text-ink-gray-5">
                 <span
                   v-if="activity.data?.field_label"
-                  class="max-w-xs truncate text-ink-gray-5"
+                  class="max-w-xs text-ink-gray-5 truncate"
                 >
                   {{ __(activity.data.field_label) }}
                 </span>
                 <FeatherIcon
                   name="arrow-right"
-                  class="mx-1 h-4 w-4 text-ink-gray-5"
+                  class="mx-1 w-4 h-4 text-ink-gray-5"
                 />
                 <span v-if="activity.type">
                   {{ startCase(__(activity.type)) }}
@@ -355,7 +355,7 @@
 
               <div class="ml-auto whitespace-nowrap">
                 <Tooltip :text="formatDate(activity.creation)">
-                  <div class="text-sm text-ink-gray-5">
+                  <div class="text-ink-gray-5 text-sm">
                     {{ __(timeAgo(activity.creation)) }}
                   </div>
                 </Tooltip>
@@ -365,7 +365,7 @@
         </div>
       </div>
     </div>
-    <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
+    <div v-else-if="title == 'Data'" class="flex flex-col px-3 sm:px-10 h-full">
       <DataFields
         :doctype="doctype"
         :docname="docname"
@@ -375,9 +375,9 @@
     </div>
     <div
       v-else
-      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
+      class="flex flex-col flex-1 justify-center items-center gap-3 font-medium text-ink-gray-4 text-xl"
     >
-      <component :is="emptyTextIcon" class="h-10 w-10" />
+      <component :is="emptyTextIcon" class="w-10 h-10" />
       <span>{{ __(emptyText) }}</span>
       <MultiActionButton v-if="title == 'Calls'" :options="callActions" />
       <Button
@@ -627,12 +627,12 @@ const activities = computed(() => {
   } else if (title.value == 'Emails') {
     if (!all_activities.data?.versions) return []
     _activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'communication',
+      (activity) => activity.activity_type === 'communication'
     )
   } else if (title.value == 'Comments') {
     if (!all_activities.data?.versions) return []
     _activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'comment',
+      (activity) => activity.activity_type === 'comment'
     )
   } else if (title.value == 'Calls') {
     if (!all_activities.data?.calls) return []
@@ -701,21 +701,21 @@ function update_activities_details(activity) {
 const emptyText = computed(() => {
   let text = 'No Activities'
   if (title.value == 'Emails') {
-    text = 'No Email Communications'
+    text = 'Nao encontrado nenhum email'
   } else if (title.value == 'Comments') {
-    text = 'No Comments'
+    text = 'Nao encontrado nenhum comentario'
   } else if (title.value == 'Data') {
-    text = 'No Data'
+    text = 'Nao encontrado nenhum dado'
   } else if (title.value == 'Calls') {
-    text = 'No Call Logs'
+    text = 'Nao encontrado nenhum registro de chamada'
   } else if (title.value == 'Notes') {
-    text = 'No Notes'
+    text = 'Nao encontrado nenhuma nota'
   } else if (title.value == 'Tasks') {
-    text = 'No Tasks'
+    text = 'Nao encontrado nenhuma tarefa'
   } else if (title.value == 'Attachments') {
-    text = 'No Attachments'
+    text = 'Nao encontrado nenhum anexo'
   } else if (title.value == 'WhatsApp') {
-    text = 'No WhatsApp Messages'
+    text = 'Nao encontrado nenhuma mensagem do WhatsApp'
   }
   return text
 })
@@ -813,7 +813,7 @@ const callActions = computed(() => {
   ]
 
   return actions.filter((action) =>
-    action.condition ? action.condition() : true,
+    action.condition ? action.condition() : true
   )
 })
 

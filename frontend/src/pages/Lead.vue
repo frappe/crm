@@ -34,11 +34,6 @@
           </Button>
         </template>
       </Dropdown>
-      <Button
-        :label="__('Convert to Deal')"
-        variant="solid"
-        @click="showConvertToDealModal = true"
-      />
     </template>
   </LayoutHeader>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
@@ -58,7 +53,7 @@
     </Tabs>
     <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
-        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
+        class="flex items-center px-5 py-2.5 border-b h-10.5 font-medium text-ink-gray-9 text-lg cursor-copy"
         @click="copyToClipboard(leadId)"
       >
         {{ __(leadId) }}
@@ -68,7 +63,7 @@
         :validateFile="validateIsImageFile"
       >
         <template #default="{ openFileSelector, error }">
-          <div class="flex items-center justify-start gap-5 border-b p-5">
+          <div class="flex justify-start items-center gap-5 p-5 border-b">
             <div class="group relative size-12">
               <Avatar
                 size="3xl"
@@ -98,57 +93,38 @@
                       }
                     : { onClick: openFileSelector }
                 "
-                class="!absolute bottom-0 left-0 right-0"
+                class="right-0 bottom-0 left-0 !absolute"
               >
                 <div
-                  class="z-1 absolute bottom-0.5 left-0 right-0.5 flex h-9 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                  class="right-0.5 bottom-0.5 left-0 z-1 absolute flex justify-center items-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 pt-3 rounded-b-full h-9 duration-300 ease-in-out cursor-pointer"
                   style="
                     -webkit-clip-path: inset(12px 0 0 0);
                     clip-path: inset(12px 0 0 0);
                   "
                 >
-                  <CameraIcon class="size-4 cursor-pointer text-white" />
+                  <CameraIcon class="size-4 text-white cursor-pointer" />
                 </div>
               </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="doc.lead_name || __('Set first name')">
-                <div class="truncate text-2xl font-medium text-ink-gray-9">
+                <div class="font-medium text-ink-gray-9 text-2xl truncate">
                   {{ title }}
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
                 <Button
-                  v-if="callEnabled"
-                  :tooltip="__('Make a call')"
-                  :icon="PhoneIcon"
+                  :tooltip="'Mande uma mensagem no WhatsApp'"
+                  :icon="WhatsAppIcon"
                   @click="
-                    () =>
-                      doc.mobile_no
-                        ? makeCall(doc.mobile_no)
-                        : toast.error(__('No phone number set'))
+                    doc.mobile_no
+                      ? openWhatsapp()
+                      : toast.error('Número não definido!')
                   "
                 />
 
                 <Button
-                  :tooltip="__('Send an email')"
-                  :icon="Email2Icon"
-                  @click="
-                    doc.email ? openEmailBox() : toast.error(__('No email set'))
-                  "
-                />
-                <Button
-                  :tooltip="__('Go to website')"
-                  :icon="LinkIcon"
-                  @click="
-                    doc.website
-                      ? openWebsite(doc.website)
-                      : toast.error(__('No website set'))
-                  "
-                />
-
-                <Button
-                  :tooltip="__('Attach a file')"
+                  :tooltip="'Anexar um arquivo'"
                   :icon="AttachmentIcon"
                   @click="showFilesUploader = true"
                 />
@@ -173,7 +149,7 @@
       />
       <div
         v-if="sections.data"
-        class="flex flex-1 flex-col justify-between overflow-hidden"
+        class="flex flex-col flex-1 justify-between overflow-hidden"
       >
         <SidePanelLayout
           :sections="sections.data"
@@ -294,7 +270,7 @@ const showFilesUploader = ref(false)
 
 const { triggerOnChange, assignees, document, scripts, error } = useDocument(
   'CRM Lead',
-  props.leadId,
+  props.leadId
 )
 
 const doc = computed(() => document.doc || {})
@@ -304,7 +280,7 @@ watch(error, (err) => {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
         ? 'Document not found'
-        : 'Error occurred',
+        : 'Error occurred'
     )
     errorMessage.value = __(err.messages?.[0] || 'An error occurred')
   } else {
@@ -332,7 +308,7 @@ watch(
       document._statuses = s.statuses || []
     }
   },
-  { once: true },
+  { once: true }
 )
 
 const breadcrumbs = computed(() => {
@@ -379,39 +355,20 @@ usePageMeta(() => {
 const tabs = computed(() => {
   let tabOptions = [
     {
-      name: 'Activity',
-      label: __('Activity'),
-      icon: ActivityIcon,
-    },
-    {
-      name: 'Emails',
-      label: __('Emails'),
-      icon: EmailIcon,
-    },
-    {
-      name: 'Comments',
-      label: __('Comments'),
-      icon: CommentIcon,
-    },
-    {
       name: 'Data',
       label: __('Data'),
       icon: DetailsIcon,
     },
     {
-      name: 'Calls',
-      label: __('Calls'),
-      icon: PhoneIcon,
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => whatsappEnabled.value,
     },
     {
-      name: 'Tasks',
-      label: __('Tasks'),
-      icon: TaskIcon,
-    },
-    {
-      name: 'Notes',
-      label: __('Notes'),
-      icon: NoteIcon,
+      name: 'Activity',
+      label: __('Activity'),
+      icon: ActivityIcon,
     },
     {
       name: 'Attachments',
@@ -419,10 +376,14 @@ const tabs = computed(() => {
       icon: AttachmentIcon,
     },
     {
-      name: 'WhatsApp',
-      label: __('WhatsApp'),
-      icon: WhatsAppIcon,
-      condition: () => whatsappEnabled.value,
+      name: 'Comments',
+      label: __('Comments'),
+      icon: CommentIcon,
+    },
+    {
+      name: 'Emails',
+      label: __('Emails'),
+      icon: EmailIcon,
     },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
@@ -469,12 +430,11 @@ function deleteLead() {
   showDeleteLinkedDocModal.value = true
 }
 
-function openEmailBox() {
+function openWhatsapp() {
   let currentTab = tabs.value[tabIndex.value]
-  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
-    activities.value.changeTabTo('emails')
+  if (currentTab.name != 'whatsapp' && whatsappEnabled.value) {
+    activities.value.changeTabTo('whatsapp')
   }
-  nextTick(() => (activities.value.emailBox.show = true))
 }
 
 function saveChanges(data) {

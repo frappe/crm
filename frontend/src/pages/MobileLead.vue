@@ -1,14 +1,14 @@
 <template>
   <LayoutHeader>
     <header
-      class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2"
+      class="relative flex justify-between items-center gap-2 py-2.5 pl-2 h-10.5"
     >
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">
           <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
         </template>
       </Breadcrumbs>
-      <div class="absolute right-0">
+      <div class="right-0 absolute">
         <Dropdown
           v-if="doc"
           :options="
@@ -17,7 +17,7 @@
               document.statuses?.length
                 ? document.statuses
                 : document._statuses,
-              triggerStatusChange,
+              triggerStatusChange
             )
           "
         >
@@ -38,7 +38,7 @@
   </LayoutHeader>
   <div
     v-if="doc.name"
-    class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
+    class="flex justify-between items-center gap-2 px-3 py-2.5 border-b h-12"
   >
     <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
     <div class="flex items-center gap-2">
@@ -49,11 +49,6 @@
       <CustomActions
         v-if="document.actions?.length"
         :actions="document.actions"
-      />
-      <Button
-        :label="__('Convert')"
-        variant="solid"
-        @click="showConvertToDealModal = true"
       />
     </div>
   </div>
@@ -69,7 +64,7 @@
           />
           <div
             v-if="sections.data"
-            class="flex flex-1 flex-col justify-between overflow-hidden"
+            class="flex flex-col flex-1 justify-between overflow-hidden"
           >
             <SidePanelLayout
               :sections="sections.data"
@@ -113,18 +108,18 @@
     }"
   >
     <template #body-content>
-      <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
-        <OrganizationsIcon class="h-4 w-4" />
+      <div class="flex items-center gap-2 mb-4 text-ink-gray-5">
+        <OrganizationsIcon class="w-4 h-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
       </div>
       <div class="ml-6">
-        <div class="flex items-center justify-between text-base">
+        <div class="flex justify-between items-center text-base">
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
         </div>
         <Link
           v-if="existingOrganizationChecked"
-          class="form-control mt-2.5"
+          class="mt-2.5 form-control"
           variant="outline"
           size="md"
           :value="existingOrganization"
@@ -134,24 +129,24 @@
         <div v-else class="mt-2.5 text-base">
           {{
             __(
-              'New organization will be created based on the data in details section',
+              'New organization will be created based on the data in details section'
             )
           }}
         </div>
       </div>
 
-      <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
-        <ContactsIcon class="h-4 w-4" />
+      <div class="flex items-center gap-2 mt-6 mb-4 text-ink-gray-5">
+        <ContactsIcon class="w-4 h-4" />
         <label class="block text-base">{{ __('Contact') }}</label>
       </div>
       <div class="ml-6">
-        <div class="flex items-center justify-between text-base">
+        <div class="flex justify-between items-center text-base">
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingContactChecked" />
         </div>
         <Link
           v-if="existingContactChecked"
-          class="form-control mt-2.5"
+          class="mt-2.5 form-control"
           variant="outline"
           size="md"
           :value="existingContact"
@@ -244,7 +239,7 @@ const showDeleteLinkedDocModal = ref(false)
 
 const { triggerOnChange, assignees, document, scripts, error } = useDocument(
   'CRM Lead',
-  props.leadId,
+  props.leadId
 )
 
 const doc = computed(() => document.doc || {})
@@ -254,7 +249,7 @@ watch(error, (err) => {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
         ? 'Document not found'
-        : 'Error occurred',
+        : 'Error occurred'
     )
     errorMessage.value = __(err.messages?.[0] || 'An error occurred')
   } else {
@@ -282,7 +277,7 @@ watch(
       document._statuses = s.statuses || []
     }
   },
-  { once: true },
+  { once: true }
 )
 
 const reload = ref(false)
@@ -333,6 +328,17 @@ const tabs = computed(() => {
       condition: () => isMobileView.value,
     },
     {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
+    },
+    {
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => whatsappEnabled.value,
+    },
+    {
       name: 'Activity',
       label: __('Activity'),
       icon: ActivityIcon,
@@ -348,36 +354,9 @@ const tabs = computed(() => {
       icon: CommentIcon,
     },
     {
-      name: 'Data',
-      label: __('Data'),
-      icon: DetailsIcon,
-    },
-    {
-      name: 'Calls',
-      label: __('Calls'),
-      icon: PhoneIcon,
-      condition: () => callEnabled.value,
-    },
-    {
-      name: 'Tasks',
-      label: __('Tasks'),
-      icon: TaskIcon,
-    },
-    {
-      name: 'Notes',
-      label: __('Notes'),
-      icon: NoteIcon,
-    },
-    {
       name: 'Attachments',
       label: __('Attachments'),
       icon: AttachmentIcon,
-    },
-    {
-      name: 'WhatsApp',
-      label: __('WhatsApp'),
-      icon: WhatsAppIcon,
-      condition: () => whatsappEnabled.value,
     },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
