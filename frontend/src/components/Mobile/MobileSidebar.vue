@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot :show="sidebarOpened">
-    <Dialog as="div" @close="sidebarOpened = false" class="fixed inset-0 z-40">
+    <Dialog as="div" @close="sidebarOpened = false" class="z-40 fixed inset-0">
       <TransitionChild
         as="template"
         enter="transition ease-in-out duration-200 transform"
@@ -11,13 +11,13 @@
         leave-to="-translate-x-full"
       >
         <div
-          class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-surface-menu-bar transition-all duration-300 ease-in-out"
+          class="z-10 relative flex flex-col justify-between bg-surface-menu-bar border-r w-[260px] h-full transition-all duration-300 ease-in-out"
         >
           <div>
             <UserDropdown class="p-2" :isCollapsed="!sidebarOpened" />
           </div>
           <div class="flex-1 overflow-y-auto">
-            <div class="mb-3 flex flex-col">
+            <div class="flex flex-col mb-3">
               <SidebarLink
                 id="notifications-btn"
                 :label="__('Notifications')"
@@ -43,7 +43,7 @@
                 <template #header="{ opened, hide, toggle }">
                   <div
                     v-if="!hide"
-                    class="ml-2 mt-4 flex h-7 w-auto cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 opacity-100 transition-all duration-300 ease-in-out"
+                    class="flex gap-1.5 opacity-100 mt-4 ml-2 px-1 w-auto h-7 font-medium text-ink-gray-5 text-base transition-all duration-300 ease-in-out cursor-pointer"
                     @click="toggle()"
                   >
                     <FeatherIcon
@@ -113,44 +113,19 @@ const { getPinnedViews, getPublicViews } = viewsStore()
 
 const links = [
   {
+    label: 'Dashboard',
+    icon: LucideLayoutDashboard,
+    to: 'Dashboard',
+  },
+  {
     label: 'Leads',
     icon: LeadsIcon,
     to: 'Leads',
   },
   {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
     label: 'Notes',
     icon: NoteIcon,
     to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
-  },
-  {
-    label: 'Email Templates',
-    icon: Email2Icon,
-    to: 'Email Templates',
   },
 ]
 
