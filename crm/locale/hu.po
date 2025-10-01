@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-28 07:50\n"
+"POT-Creation-Date: 2025-09-28 09:35+0000\n"
+"PO-Revision-Date: 2025-10-01 08:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -443,7 +443,7 @@ msgstr ""
 msgid "An error occurred"
 msgstr ""
 
-#: frontend/src/data/document.js:63
+#: frontend/src/data/document.js:66
 msgid "An error occurred while updating the document"
 msgstr ""
 
@@ -1967,7 +1967,7 @@ msgstr "DocType"
 msgid "Document Type"
 msgstr ""
 
-#: frontend/src/data/document.js:28
+#: frontend/src/data/document.js:30
 msgid "Document does not exist"
 msgstr ""
 
@@ -1975,7 +1975,7 @@ msgstr ""
 msgid "Document not found"
 msgstr ""
 
-#: frontend/src/data/document.js:42
+#: frontend/src/data/document.js:45
 msgid "Document updated successfully"
 msgstr ""
 
@@ -3202,7 +3202,7 @@ msgstr ""
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 #: frontend/src/components/Kanban/KanbanSettings.vue:8
 msgid "Kanban Settings"
-msgstr ""
+msgstr "Kanban Beállítások"
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -3352,7 +3352,7 @@ msgstr "Elhagyja"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
 msgid "Library"
-msgstr ""
+msgstr "Könyvtár"
 
 #: frontend/src/components/Filter.vue:269
 #: frontend/src/components/Filter.vue:280
@@ -3365,7 +3365,7 @@ msgstr "Tetszik"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:252
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
 msgid "Link"
-msgstr ""
+msgstr "Hivatkozás"
 
 #. Label of the links (Table) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3538,8 +3538,12 @@ msgstr ""
 msgid "Manager"
 msgstr ""
 
-#: frontend/src/data/document.js:54
+#: frontend/src/data/document.js:57
 msgid "Mandatory field error: {0}"
+msgstr ""
+
+#: frontend/src/data/document.js:186 frontend/src/data/document.js:189
+msgid "Mandatory fields required: {0}"
 msgstr ""
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
@@ -3882,7 +3886,7 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:77
 #: frontend/src/pages/MobileNotification.vue:61
 msgid "No new notifications"
-msgstr ""
+msgstr "Nincs új értesítés"
 
 #: frontend/src/pages/Lead.vue:129
 msgid "No phone number set"
@@ -3928,7 +3932,7 @@ msgstr ""
 #: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:152
 #: frontend/src/pages/Organizations.vue:58 frontend/src/pages/Tasks.vue:184
 msgid "No {0} Found"
-msgstr ""
+msgstr "Nem Található {0}"
 
 #. Label of the no_of_employees (Select) field in DocType 'CRM Deal'
 #. Label of the no_of_employees (Select) field in DocType 'CRM Lead'
@@ -4084,7 +4088,7 @@ msgstr ""
 msgid "Ongoing deals"
 msgstr ""
 
-#: frontend/src/utils/index.js:444
+#: frontend/src/utils/index.js:474
 msgid "Only image files are allowed"
 msgstr ""
 
@@ -4376,7 +4380,7 @@ msgstr ""
 #. Label of the email (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Email"
-msgstr ""
+msgstr "Elsődleges E-mail"
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4386,7 +4390,7 @@ msgstr ""
 #. Label of the phone (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Phone"
-msgstr ""
+msgstr "Elsődleges Telefon Szám"
 
 #: frontend/src/pages/Deal.vue:669 frontend/src/pages/MobileDeal.vue:566
 msgid "Primary contact set"
@@ -4590,7 +4594,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:432
 msgid "Remove column"
-msgstr ""
+msgstr "Oszlop eltávolítása"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:200
 msgid "Remove group"
@@ -4606,11 +4610,11 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:359
 msgid "Remove section"
-msgstr ""
+msgstr "Szakasz eltávolítása"
 
 #: frontend/src/components/FieldLayoutEditor.vue:318
 msgid "Remove tab"
-msgstr ""
+msgstr "Fül eltávolítása"
 
 #: frontend/src/components/Activities/EmailArea.vue:34
 #: frontend/src/components/CommunicationArea.vue:10
@@ -4640,7 +4644,7 @@ msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:78
 msgid "Reset Changes"
-msgstr ""
+msgstr "Változások Visszaállítása"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
@@ -4652,7 +4656,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:28
 msgid "Reset to default"
-msgstr ""
+msgstr "Alapérték visszaállítása"
 
 #. Label of the response_by (Datetime) field in DocType 'CRM Deal'
 #. Label of the response_by (Datetime) field in DocType 'CRM Lead'
@@ -4697,7 +4701,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:81
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:81
 msgid "Rich Text"
-msgstr ""
+msgstr "Rich Text"
 
 #. Label of the rgt (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -5161,7 +5165,7 @@ msgstr "Forrá név"
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
-msgstr ""
+msgstr "Térköz"
 
 #: crm/api/dashboard.py:731 crm/api/dashboard.py:790
 msgid "Stage"
@@ -5390,7 +5394,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:16
 msgid "Thanks"
-msgstr ""
+msgstr "Köszönjük"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:46
 msgid "The Condition '{0}' is invalid: {1}"
@@ -5754,7 +5758,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:140
 msgid "Upload Image"
-msgstr ""
+msgstr "Kép Feltöltése"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:148
 msgid "Upload Video"
@@ -5941,7 +5945,7 @@ msgstr "Nincs hozzáférésed ehhez az erőforráshoz."
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "A következő linket másolhatod és beillesztheted a böngésződbe is"
 
 #: frontend/src/components/Telephony/CallUI.vue:39
 msgid "You can change the default calling medium from the settings"
@@ -5963,7 +5967,7 @@ msgstr ""
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr ""
 
-#: frontend/src/data/document.js:32
+#: frontend/src/data/document.js:34
 msgid "You do not have permission to access this document"
 msgstr ""
 
@@ -6173,7 +6177,7 @@ msgstr "pont most"
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "kanban"
-msgstr ""
+msgstr "kanban"
 
 #: crm/api/doc.py:40 crm/api/doc.py:158 crm/api/doc.py:503
 msgid "label"
@@ -6295,7 +6299,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:130
 msgid "{0} M"
-msgstr ""
+msgstr "{0} H"
 
 #: crm/api/todo.py:41
 msgid "{0} assigned a {1} {2} to you"
@@ -6303,7 +6307,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:126
 msgid "{0} d"
-msgstr ""
+msgstr "{0} n"
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
@@ -6311,7 +6315,7 @@ msgstr "{0} napja"
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
-msgstr ""
+msgstr "{0} ó"
 
 #: frontend/src/components/Settings/Users.vue:286
 msgid "{0} has been granted {1} access"
@@ -6340,7 +6344,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:119
 msgid "{0} m"
-msgstr ""
+msgstr "{0} p"
 
 #: frontend/src/composables/event.js:157
 msgid "{0} mins"
@@ -6364,7 +6368,7 @@ msgstr "{0} héttel ezelőtt"
 
 #: frontend/src/utils/index.js:132
 msgid "{0} y"
-msgstr ""
+msgstr "{0} é"
 
 #: frontend/src/utils/index.js:193
 msgid "{0} years ago"
