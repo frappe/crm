@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-22 20:42\n"
+"POT-Creation-Date: 2025-09-28 09:35+0000\n"
+"PO-Revision-Date: 2025-10-01 08:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -443,7 +443,7 @@ msgstr "Jumlah setelah diskon"
 msgid "An error occurred"
 msgstr "Terjadi kesalahan"
 
-#: frontend/src/data/document.js:63
+#: frontend/src/data/document.js:66
 msgid "An error occurred while updating the document"
 msgstr "Terjadi kesalahan saat memperbarui dokumen"
 
@@ -1967,7 +1967,7 @@ msgstr "DocType"
 msgid "Document Type"
 msgstr "Tipe Dokumen"
 
-#: frontend/src/data/document.js:28
+#: frontend/src/data/document.js:30
 msgid "Document does not exist"
 msgstr "Dokumen tidak ada"
 
@@ -1975,7 +1975,7 @@ msgstr "Dokumen tidak ada"
 msgid "Document not found"
 msgstr "Dokumen tidak ditemukan"
 
-#: frontend/src/data/document.js:42
+#: frontend/src/data/document.js:45
 msgid "Document updated successfully"
 msgstr "Dokumen berhasil diperbarui"
 
@@ -3538,9 +3538,13 @@ msgstr "Kelola akun email Anda untuk mengirim dan menerima email langsung dari C
 msgid "Manager"
 msgstr "Manajer"
 
-#: frontend/src/data/document.js:54
+#: frontend/src/data/document.js:57
 msgid "Mandatory field error: {0}"
 msgstr "Kesalahan bidang wajib: {0}"
+
+#: frontend/src/data/document.js:186 frontend/src/data/document.js:189
+msgid "Mandatory fields required: {0}"
+msgstr ""
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -4084,7 +4088,7 @@ msgstr "Sedang Berjalan"
 msgid "Ongoing deals"
 msgstr "Kesepakatan yang sedang berjalan"
 
-#: frontend/src/utils/index.js:444
+#: frontend/src/utils/index.js:474
 msgid "Only image files are allowed"
 msgstr "Hanya file gambar yang diizinkan"
 
@@ -5963,7 +5967,7 @@ msgstr "Anda belum mengatur Nomor Exotel di Agen Telepon Anda"
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Anda belum mengatur nomor ponsel di Agen Telepon Anda"
 
-#: frontend/src/data/document.js:32
+#: frontend/src/data/document.js:34
 msgid "You do not have permission to access this document"
 msgstr "Anda tidak memiliki izin untuk mengakses dokumen ini"
 
