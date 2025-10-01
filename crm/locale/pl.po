@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-22 20:42\n"
+"POT-Creation-Date: 2025-09-28 09:35+0000\n"
+"PO-Revision-Date: 2025-10-01 08:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -252,7 +252,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:9
 msgid "Add Assignee"
-msgstr ""
+msgstr "Dodaj osobę przypisaną"
 
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/Kanban/KanbanView.vue:157
@@ -304,7 +304,7 @@ msgstr "Dodaj cotygodniowe święta"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a condition"
-msgstr ""
+msgstr "Dodaj warunek"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
@@ -328,7 +328,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:28
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:64
 msgid "Add condition"
-msgstr ""
+msgstr "Dodaj warunek"
 
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:91
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:70
@@ -443,7 +443,7 @@ msgstr ""
 msgid "An error occurred"
 msgstr ""
 
-#: frontend/src/data/document.js:63
+#: frontend/src/data/document.js:66
 msgid "An error occurred while updating the document"
 msgstr ""
 
@@ -588,11 +588,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:5
 msgid "Assignee Rules"
-msgstr ""
+msgstr "Reguły przypisania"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:81
 msgid "Assignees"
-msgstr ""
+msgstr "Osoby przypisane"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -606,7 +606,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
-msgstr ""
+msgstr "Harmonogram Przypisania"
 
 #: frontend/src/components/ListBulkActions.vue:154
 msgid "Assignment cleared successfully"
@@ -614,7 +614,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:145
 msgid "Assignment condition"
-msgstr ""
+msgstr "Warunek przypisania"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:471
 msgid "Assignment days are required"
@@ -648,7 +648,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
 #: frontend/src/components/Settings/Settings.vue:163
 msgid "Assignment rules"
-msgstr ""
+msgstr "Zasady przydzielania"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
 msgid "Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions"
@@ -1165,7 +1165,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:306
 msgid "Choose the days of the week when this rule should be active."
-msgstr ""
+msgstr "Wybierz dni tygodnia, w które ta reguła ma być aktywna."
 
 #: frontend/src/components/Settings/EmailAdd.vue:9
 msgid "Choose the email service provider you want to configure."
@@ -1967,7 +1967,7 @@ msgstr "Typ dokumentu"
 msgid "Document Type"
 msgstr ""
 
-#: frontend/src/data/document.js:28
+#: frontend/src/data/document.js:30
 msgid "Document does not exist"
 msgstr ""
 
@@ -1975,7 +1975,7 @@ msgstr ""
 msgid "Document not found"
 msgstr ""
 
-#: frontend/src/data/document.js:42
+#: frontend/src/data/document.js:45
 msgid "Document updated successfully"
 msgstr ""
 
@@ -2028,7 +2028,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:38
 msgid "Duplicate Assignment Rule"
-msgstr ""
+msgstr "Duplikat reguły przypisania"
 
 #: frontend/src/components/Modals/ViewModal.vue:8
 msgid "Duplicate View"
@@ -2341,7 +2341,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayout/Field.vue:339
 msgid "Enter {0}"
-msgstr ""
+msgstr "Wprowadź {0}"
 
 #: frontend/src/components/Filter.vue:66 frontend/src/components/Filter.vue:99
 #: frontend/src/components/Filter.vue:267
@@ -3165,7 +3165,7 @@ msgstr ""
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #. Label of the job_title (Data) field in DocType 'CRM Deal'
 #. Label of the job_title (Data) field in DocType 'CRM Lead'
@@ -3538,8 +3538,12 @@ msgstr ""
 msgid "Manager"
 msgstr "Menager"
 
-#: frontend/src/data/document.js:54
+#: frontend/src/data/document.js:57
 msgid "Mandatory field error: {0}"
+msgstr ""
+
+#: frontend/src/data/document.js:186 frontend/src/data/document.js:189
+msgid "Mandatory fields required: {0}"
 msgstr ""
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
@@ -4084,7 +4088,7 @@ msgstr ""
 msgid "Ongoing deals"
 msgstr ""
 
-#: frontend/src/utils/index.js:444
+#: frontend/src/utils/index.js:474
 msgid "Only image files are allowed"
 msgstr ""
 
@@ -5963,7 +5967,7 @@ msgstr ""
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr ""
 
-#: frontend/src/data/document.js:32
+#: frontend/src/data/document.js:34
 msgid "You do not have permission to access this document"
 msgstr ""
 
