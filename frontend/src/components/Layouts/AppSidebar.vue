@@ -88,10 +88,6 @@
           :isSidebarCollapsed="isSidebarCollapsed"
         />
       </div>
-        <template #icon>
-          <HelpIcon class="w-4 h-4" />
-        </template>
-      </SidebarLink>
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
@@ -146,6 +142,7 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
@@ -198,9 +195,39 @@ const links = [
     to: 'Leads',
   },
   {
+    label: 'Deals',
+    icon: DealsIcon,
+    to: 'Deals',
+  },
+  {
+    label: 'Contacts',
+    icon: ContactsIcon,
+    to: 'Contacts',
+  },
+  {
+    label: 'Organizations',
+    icon: OrganizationsIcon,
+    to: 'Organizations',
+  },
+  {
     label: 'Notes',
     icon: NoteIcon,
     to: 'Notes',
+  },
+  {
+    label: 'Tasks',
+    icon: TaskIcon,
+    to: 'Tasks',
+  },
+  {
+    label: 'Calendar',
+    icon: CalendarIcon,
+    to: 'Calendar',
+  },
+  {
+    label: 'Call Logs',
+    icon: PhoneIcon,
+    to: 'Call Logs',
   },
 ]
 
@@ -240,7 +267,7 @@ function parseView(views) {
   return views.map((view) => {
     return {
       label: view.label,
-      icon: getIcon(c.route_name, view.icon),
+      icon: getIcon(view.route_name, view.icon),
       to: {
         name: view.route_name,
         params: { viewType: view.type || 'list' },
