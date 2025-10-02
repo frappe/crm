@@ -10,3 +10,7 @@ export const supportedSourceTypes = [
     custom: false,
   }
 ]
+
+export const sourceIcon = {
+  'Facebook': LogoFacebook
+}

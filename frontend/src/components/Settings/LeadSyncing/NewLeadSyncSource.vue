@@ -33,7 +33,7 @@
             <div v-if="selectedSourceType.name === 'Facebook'" class="flex flex-col gap-4">
                 <div class="grid grid-cols-1 gap-4">
                     <div v-for="field in fbSourceFields" :key="field.name" class="flex flex-col gap-1">
-                        <FormControl v-model="state[field.name]" :label="field.label" :name="field.name"
+                        <FormControl v-model="syncSource[field.name]" :label="field.label" :name="field.name"
                             :type="field.type" :placeholder="field.placeholder" />
                     </div>
                 </div>
@@ -52,13 +52,13 @@
 
 
 <script setup>
-import { reactive, ref, inject } from "vue";
-import { createResource, FormControl, toast } from "frappe-ui";
+import { ref, inject, onMounted } from "vue";
+import { FormControl, toast } from "frappe-ui";
 import CircleAlert from "~icons/lucide/circle-alert";
 import { supportedSourceTypes } from "./leadSyncSourceConfig";
 import EmailProviderIcon from "../EmailProviderIcon.vue";
 
-const state = reactive({
+const syncSource = ref({
     name: "",
     type: "",
     access_token: "",
@@ -66,8 +66,15 @@ const state = reactive({
 
 const emit = defineEmits()
 
+const props = defineProps({
+  sourceData: {
+    type: Object,
+    default: () => ({}),
+  },
+})
+
 const selectedSourceType = ref(supportedSourceTypes[0]);
-state.type = selectedSourceType.value.name;
+syncSource.value.type = selectedSourceType.value.name;
 
 const sources = inject("sources");
 const fbSourceFields = [
@@ -87,20 +94,29 @@ const fbSourceFields = [
 
 function handleSelect(sourceType) {
     selectedSourceType.value = sourceType;
-    state.type = sourceType.name;
+    syncSource.value.type = sourceType.name;
 }
 
 function createLeadSyncSource() {
     sources.insert.submit({
-        ...state
+        ...syncSource.value
     }, {
         onSuccess: () => {
             toast.success(__('New Lead Syncing Source created successfully'))
-            emit('updateStep', 'source-list')
+            emit('updateStep', 'edit-source', { ...syncSource.value })
         },
         onError: (error) => {
             toast.error(error.messages[0] || __('Failed to create source'))
         },
     })
 }
+
+
+onMounted(() => {
+  if (props.sourceData?.name) {
+    Object.assign(syncSource.value, props.sourceData)
+    syncSource.value.name = `${syncSource.value.name} - Copy`
+    syncSource.value.enabled = false // Default to disabled
+  }
+})
 </script>
