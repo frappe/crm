@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-01 08:38\n"
+"PO-Revision-Date: 2025-10-02 08:40\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -3544,7 +3544,7 @@ msgstr "Greška u obaveznom polju: {0}"
 
 #: frontend/src/data/document.js:186 frontend/src/data/document.js:189
 msgid "Mandatory fields required: {0}"
-msgstr ""
+msgstr "Obavezna polja su neophodna: {0}"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
