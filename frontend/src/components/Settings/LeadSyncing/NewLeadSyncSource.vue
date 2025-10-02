@@ -37,6 +37,18 @@
                             :type="field.type" :placeholder="field.placeholder" />
                     </div>
                 </div>
+
+                <div v-if="state.fbAccountPages.length">
+                    <FormControl type="autocomplete" :placeholder="__('Select an account page')"
+                        :options="state.fbAccountPages" :label="__('Facebook Page')"
+                        v-model="syncSource.facebook_page" />
+                </div>
+
+                <div v-if="syncSource.facebook_page">
+                    <FormControl type="autocomplete" :placeholder="__('Select a lead gen form')"
+                        :options="leadFormsForSelectedPage" :label="__('Lead Form')"
+                        v-model="syncSource.facebook_lead_form" />
+                </div>
             </div>
         </div>
 
@@ -44,79 +56,131 @@
         <div v-if="selectedSourceType" class="flex justify-between mt-auto">
             <Button :label="__('Back')" variant="outline" :disabled="sources.insert.loading"
                 @click="emit('updateStep', 'source-list')" />
-            <Button :label="__('Create')" variant="solid" :loading="sources.insert.loading"
+
+            <Button v-if="state.fbPagesFetched" :label="__('Create')" variant="solid" :loading="sources.insert.loading"
                 @click="createLeadSyncSource" />
+
+            <Button v-else="state.fbPagesFetched" :label="__('Fetch Account Pages')" variant="solid"
+                :loading="state.fbPagesFetching" @click="getAccountPages(syncSource.access_token)" />
         </div>
     </div>
 </template>
 
 
 <script setup>
-import { ref, inject, onMounted } from "vue";
-import { FormControl, toast } from "frappe-ui";
+import { ref, inject, onMounted, reactive, watch, computed } from "vue";
+import { FormControl, toast, call } from "frappe-ui";
 import CircleAlert from "~icons/lucide/circle-alert";
 import { supportedSourceTypes } from "./leadSyncSourceConfig";
 import EmailProviderIcon from "../EmailProviderIcon.vue";
 
 const syncSource = ref({
-    name: "",
-    type: "",
-    access_token: "",
+	name: "",
+	type: "",
+	access_token: "",
+	facebook_page: "",
+	facebook_lead_form: "",
 });
 
-const emit = defineEmits()
+const state = reactive({
+	fbPagesFetched: false,
+	fbPagesFetching: false,
+	fbAccountPages: [],
+});
+
+const emit = defineEmits();
 
 const props = defineProps({
-  sourceData: {
-    type: Object,
-    default: () => ({}),
-  },
-})
+	sourceData: {
+		type: Object,
+		default: () => ({}),
+	},
+});
 
 const selectedSourceType = ref(supportedSourceTypes[0]);
 syncSource.value.type = selectedSourceType.value.name;
 
 const sources = inject("sources");
 const fbSourceFields = [
-    {
-        name: "name",
-        label: __("Name"),
-        type: "text",
-        placeholder: __("Add a name for your source"),
-    },
-    {
-        name: "access_token",
-        label: __("Access Token"),
-        type: "password",
-        placeholder: __("Enter your Facebook Access Token"),
-    },
+	{
+		name: "name",
+		label: __("Name"),
+		type: "text",
+		placeholder: __("Add a name for your source"),
+	},
+	{
+		name: "access_token",
+		label: __("Access Token"),
+		type: "password",
+		placeholder: __("Enter your Facebook Access Token"),
+	},
 ];
 
 function handleSelect(sourceType) {
-    selectedSourceType.value = sourceType;
-    syncSource.value.type = sourceType.name;
+	selectedSourceType.value = sourceType;
+	syncSource.value.type = sourceType.name;
 }
 
 function createLeadSyncSource() {
-    sources.insert.submit({
-        ...syncSource.value
-    }, {
-        onSuccess: () => {
-            toast.success(__('New Lead Syncing Source created successfully'))
-            emit('updateStep', 'edit-source', { ...syncSource.value })
-        },
-        onError: (error) => {
-            toast.error(error.messages[0] || __('Failed to create source'))
-        },
-    })
+	sources.insert.submit(
+		{
+			...syncSource.value,
+			facebook_page: syncSource.value.facebook_page.id,
+			facebook_lead_form: syncSource.value.facebook_lead_form.id,
+		},
+		{
+			onSuccess: () => {
+				toast.success(__("New Lead Syncing Source created successfully"));
+				emit("updateStep", "edit-source", { ...syncSource.value });
+			},
+			onError: (error) => {
+				toast.error(error.messages[0] || __("Failed to create source"));
+			},
+		},
+	);
 }
 
+const getAccountPages = (access_token) => {
+	state.fbPagesFetching = true;
+	call(
+		"crm.lead_syncing.doctype.lead_sync_source.facebook.fetch_and_store_pages_from_facebook",
+		{ access_token },
+	)
+		.then((data) => {
+			state.fbPagesFetched = true;
+			state.fbAccountPages = data.map((page) => ({
+				label: page.name,
+				value: page.id,
+				...page,
+			}));
+		})
+		.catch((error) => {
+			toast.error(error.messages[0] || __("Failed to fetch pages"));
+		})
+		.finally(() => {
+			state.fbPagesFetching = false;
+		});
+};
+
+const leadFormsForSelectedPage = computed(() => {
+	if (!state.fbAccountPages || !syncSource.value.facebook_page) {
+		return [];
+	}
+	const selectedPage = state.fbAccountPages.find(
+		(page) => page.id === syncSource.value.facebook_page.id,
+	);
+	return selectedPage.forms.map((form) => ({
+		label: form.name,
+		value: form.id,
+		...form,
+	}));
+});
 
 onMounted(() => {
-  if (props.sourceData?.name) {
-    Object.assign(syncSource.value, props.sourceData)
-    syncSource.value.name = `${syncSource.value.name} - Copy`
-    syncSource.value.enabled = true // Default to enabled
-  }
-})
+	if (props.sourceData?.name) {
+		Object.assign(syncSource.value, props.sourceData);
+		syncSource.value.name = `${syncSource.value.name} - Copy`;
+		syncSource.value.enabled = true; // Default to enabled
+	}
+});
 </script>
