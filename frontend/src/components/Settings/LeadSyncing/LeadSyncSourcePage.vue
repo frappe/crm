@@ -2,7 +2,7 @@
   <div class="flex-1 p-6">
     <NewLeadSyncSource
       v-if="step === 'new-source'"
-      :templateData="source"
+      :sourceData="source"
       @updateStep="updateStep"
     />
     <LeadSyncSources
@@ -11,7 +11,7 @@
     />
     <EditLeadSyncSource
       v-else-if="step === 'edit-source'"
-      :templateData="source"
+      :sourceData="source"
       @updateStep="updateStep"
     />
   </div>
