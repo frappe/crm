@@ -23,7 +23,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Facebook"
+   "options": "Facebook",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_lwcw",
@@ -74,7 +75,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-02 12:17:35.222102",
+ "modified": "2025-10-02 12:33:45.810895",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
