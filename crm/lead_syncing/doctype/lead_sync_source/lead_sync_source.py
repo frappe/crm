@@ -30,7 +30,6 @@ class LeadSyncSource(Document):
 		facebook_lead_form: DF.Link | None
 		facebook_page: DF.Link | None
 		last_synced_at: DF.Datetime | None
-		name: DF.Int | None
 		type: DF.Literal["Facebook"]
 	# end: auto-generated types
 

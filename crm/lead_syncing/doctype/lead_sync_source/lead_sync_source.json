@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "autoincrement",
+ "autoname": "prompt",
  "creation": "2025-09-26 18:51:41.145560",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -21,6 +21,7 @@
    "default": "Facebook",
    "fieldname": "type",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Type",
    "options": "Facebook"
   },
@@ -73,11 +74,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-30 19:31:57.730618",
+ "modified": "2025-10-02 12:17:35.222102",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
- "naming_rule": "Autoincrement",
+ "naming_rule": "Set by user",
  "owner": "hussain@frappe.io",
  "permissions": [
   {
@@ -97,6 +98,5 @@
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
- "title_field": "type",
  "track_changes": 1
 }

@@ -1,6 +1,4 @@
 <template>
-    <!-- <pre>{{ JSON.stringify(sources, null, 2) }}</pre> -->
-
       <div class="flex h-full flex-col gap-6 text-ink-gray-8">
         <!-- Header -->
         <div class="flex justify-between px-2 pt-2">
@@ -82,8 +80,9 @@
             />
         </div>
         <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
-            <div class="w-4/6">{{ __('Source') }}</div>
-            <div class="w-2/6">{{ __('Enabled') }}</div>
+            <div class="w-4/6">{{ __('Name') }}</div>
+            <div class="w-1/6">{{ __('Source') }}</div>
+            <div class="w-1/6">{{ __('Enabled') }}</div>
         </div>
         <div class="h-px border-t mx-4 border-outline-gray-modals" />
         <ul class="overflow-y-auto px-2">
@@ -94,10 +93,17 @@
             >
                 <div class="flex flex-col w-4/6 pr-5">
                     <div class="text-p-base font-medium text-ink-gray-7 truncate">
+                        {{ source.name }}
+                    </div>
+                </div>
+
+                <div class="flex flex-col w-1/6 pr-5">
+                    <div class="text-p-base font-medium text-ink-gray-7 truncate">
                         {{ source.type }}
                     </div>
                 </div>
-                <div class="flex items-center justify-between w-2/6">
+
+                <div class="flex items-center justify-between w-1/6">
                     <Switch
                         size="sm"
                         v-model="source.enabled"
