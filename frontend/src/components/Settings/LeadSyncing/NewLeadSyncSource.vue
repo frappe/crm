@@ -116,7 +116,7 @@ onMounted(() => {
   if (props.sourceData?.name) {
     Object.assign(syncSource.value, props.sourceData)
     syncSource.value.name = `${syncSource.value.name} - Copy`
-    syncSource.value.enabled = false // Default to disabled
+    syncSource.value.enabled = true // Default to enabled
   }
 })
 </script>
