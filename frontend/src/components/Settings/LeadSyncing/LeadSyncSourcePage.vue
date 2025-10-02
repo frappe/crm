@@ -46,7 +46,6 @@ const sources = createListResource({
 provide('sources', sources)
 
 function updateStep(newStep, data) {
-  console.log("update step called with new step: ", newStep);
   step.value = newStep
   source.value = data
 }
