@@ -62,8 +62,7 @@
    "fieldname": "facebook_lead_form",
    "fieldtype": "Link",
    "label": "Facebook Lead Form",
-   "options": "Facebook Lead Form",
-   "unique": 1
+   "options": "Facebook Lead Form"
   },
   {
    "default": "1",
@@ -75,7 +74,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-02 12:33:45.810895",
+ "modified": "2025-10-03 21:13:25.660629",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
