@@ -12,26 +12,66 @@
                 </div>
             </div>
             <div class="flex item-center space-x-4 w-3/12 justify-end">
-                <div class="flex items-center space-x-2">
-                    <Switch size="sm" v-model="source.enabled" />
+                <div v-if="leadSyncSourceDoc.doc" class="flex items-center space-x-2">
+                    <Switch size="sm" v-model="leadSyncSourceDoc.doc.enabled" />
                     <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
                 </div>
                 <Button :label="__('Update')" icon-left="edit" variant="solid" :loading="sources.setValue.loading"
                     @click="updateSource" />
             </div>
         </div>
+
+        <!-- Form -->
+        <div v-if="leadSyncSourceDoc.doc">
+            <div class="grid grid-cols-1 gap-4">
+                <div v-for="field in fbSourceFields" :key="field.name" class="flex flex-col gap-1">
+                    <FormControl v-model="leadSyncSourceDoc.doc[field.name]" :label="field.label" :name="field.name"
+                        :type="field.type" :placeholder="field.placeholder" />
+                </div>
+            </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+            <Link
+                label="Facebook Page"
+                doctype="Facebook Page"
+                v-model="leadSyncSourceDoc.doc.facebook_page" 
+            />
+
+             <Link
+                label="Facebook Lead Form"
+                doctype="Facebook Lead Form"
+                v-model="leadSyncSourceDoc.doc.facebook_lead_form" 
+                :filters="{
+                    page: leadSyncSourceDoc.doc.facebook_page
+                }"
+            />
+        </div>
+
+        <!-- Mapping Table -->
+         <div v-if="formDoc.doc">
+             <Grid
+                 v-model="formDoc.doc.questions"
+                 v-model:parent="formDoc.doc"
+                 doctype="Facebook Lead Form Question"
+                 parentDoctype="Facebook Lead Form"
+                 parentFieldname="questions"
+              />
+         </div>
     </div>
 </template>
 
 <script setup>
-import { Switch } from "frappe-ui";
-import { inject, onMounted, ref } from "vue";
-
+import { Switch, toast } from "frappe-ui"
+import { useDocument } from '@/data/document'
+import { inject, onMounted, ref } from "vue"
+import Grid from '@/components/Controls/Grid.vue'
+import { fbSourceFields } from "./leadSyncSourceConfig"
 import { sourceIcon } from "./leadSyncSourceConfig";
-import EmailProviderIcon from "../EmailProviderIcon.vue";
+import EmailProviderIcon from "../EmailProviderIcon.vue"
+import Link from '@/components/Controls/Link.vue'
 
 const emit = defineEmits();
-
 const props = defineProps({
 	sourceData: {
 		type: Object,
@@ -46,5 +86,12 @@ onMounted(() => {
 	source.value = { ...props.sourceData };
 });
 
-function updateSource() {}
+const {document: leadSyncSourceDoc} = useDocument("Lead Sync Source", props.sourceData.name)
+const {document: formDoc} = useDocument("Facebook Lead Form", props.sourceData.facebook_lead_form)
+
+function updateSource() {
+    leadSyncSourceDoc.save.submit()
+    formDoc.save.submit()
+}
+
 </script>
