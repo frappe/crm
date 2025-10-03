@@ -34,7 +34,8 @@
             </div>
 
             <div
-              class="flex gap-1 h-fit items-center text-sm text-ink-gray-8 bg-surface-gray-3 rounded-full px-2 py-1"
+              class="flex gap-1 h-fit items-center text-sm text-ink-gray-8 bg-surface-gray-3 rounded-full px-2 py-1 cursor-pointer"
+              @click="openEvent(alert)"
             >
               <div>
                 <LucideZap class="size-3 text-ink-amber-3 fill-amber-500" />
@@ -43,7 +44,7 @@
             </div>
           </div>
           <Button
-            class="absolute -top-2 -left-2 shadow-sm shadow-gray-500 ring-inset group-hover:bg-surface-gray-6 text-ink-white !p-0 !size-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+            class="absolute -top-2 -left-2 shadow-sm shadow-gray-500 ring-inset bg-surface-gray-6 group-hover:bg-surface-gray-6 text-ink-white !p-0 !size-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             @click="completeAlert(alert.id)"
           >
             <FeatherIcon name="x" class="size-3" />
