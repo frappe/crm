@@ -14,3 +14,18 @@ export const supportedSourceTypes = [
 export const sourceIcon = {
   'Facebook': LogoFacebook
 }
+
+export const fbSourceFields = [
+	{
+		name: "name",
+		label: __("Name"),
+		type: "text",
+		placeholder: __("Add a name for your source"),
+	},
+	{
+		name: "access_token",
+		label: __("Access Token"),
+		type: "password",
+		placeholder: __("Enter your Facebook Access Token"),
+	}
+];

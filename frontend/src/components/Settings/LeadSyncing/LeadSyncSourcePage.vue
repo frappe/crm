@@ -36,7 +36,8 @@ const sources = createListResource({
     'name',
     'enabled',
     'type',
-    'last_synced_at'
+    'last_synced_at',
+    'facebook_lead_form'
   ],
   auto: true,
   orderBy: 'modified desc',

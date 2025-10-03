@@ -38,17 +38,19 @@
                     </div>
                 </div>
 
-                <div v-if="state.fbAccountPages.length">
-                    <FormControl type="autocomplete" :placeholder="__('Select an account page')"
-                        :options="state.fbAccountPages" :label="__('Facebook Page')"
-                        v-model="syncSource.facebook_page" />
-                </div>
-
-                <div v-if="syncSource.facebook_page">
-                    <FormControl type="autocomplete" :placeholder="__('Select a lead gen form')"
-                        :options="leadFormsForSelectedPage" :label="__('Lead Form')"
-                        v-model="syncSource.facebook_lead_form" />
-                </div>
+				<div class="grid sm:grid-cols-2 gap-4">
+					<div v-if="state.fbAccountPages.length">
+						<FormControl type="autocomplete" :placeholder="__('Select an account page')"
+							:options="state.fbAccountPages" :label="__('Facebook Page')"
+							v-model="syncSource.facebook_page" />
+					</div>
+	
+					<div v-if="syncSource.facebook_page">
+						<FormControl type="autocomplete" :placeholder="__('Select a lead gen form')"
+							:options="leadFormsForSelectedPage" :label="__('Lead Form')"
+							v-model="syncSource.facebook_lead_form" />
+					</div>
+				</div>
             </div>
         </div>
 
@@ -71,7 +73,7 @@
 import { ref, inject, onMounted, reactive, watch, computed } from "vue";
 import { FormControl, toast, call } from "frappe-ui";
 import CircleAlert from "~icons/lucide/circle-alert";
-import { supportedSourceTypes } from "./leadSyncSourceConfig";
+import { supportedSourceTypes, fbSourceFields } from "./leadSyncSourceConfig";
 import EmailProviderIcon from "../EmailProviderIcon.vue";
 
 const syncSource = ref({
@@ -101,20 +103,6 @@ const selectedSourceType = ref(supportedSourceTypes[0]);
 syncSource.value.type = selectedSourceType.value.name;
 
 const sources = inject("sources");
-const fbSourceFields = [
-	{
-		name: "name",
-		label: __("Name"),
-		type: "text",
-		placeholder: __("Add a name for your source"),
-	},
-	{
-		name: "access_token",
-		label: __("Access Token"),
-		type: "password",
-		placeholder: __("Enter your Facebook Access Token"),
-	},
-];
 
 function handleSelect(sourceType) {
 	selectedSourceType.value = sourceType;
@@ -178,6 +166,10 @@ const leadFormsForSelectedPage = computed(() => {
 		value: form.id,
 		...form,
 	}));
+});
+
+watch(syncSource.value.facebook_page, () => {
+	syncSource.value.facebook_lead_form = null;
 });
 
 onMounted(() => {
