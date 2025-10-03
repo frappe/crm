@@ -24,6 +24,21 @@ class LeadSyncSource(Document):
 		type: DF.Literal["Facebook"]
 	# end: auto-generated types
 
+	def validate(self):
+		self.validate_same_fb_form_active()
+
+	def validate_same_fb_form_active(self):
+		if not self.enabled:
+			return
+
+		if not self.facebook_lead_form:
+			return
+
+		already_active = frappe.db.exists("Lead Sync Source", {"enabled": 1, "facebook_lead_form": self.facebook_lead_form})
+
+		if already_active:
+			frappe.throw(frappe._("A lead sync source is already enabled for this Facebook Lead Form!"))
+
 	def before_save(self):
 		if self.type == "Facebook" and self.access_token:
 			# fetch_and_store_pages_from_facebook(self.access_token)
