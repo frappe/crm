@@ -1,3 +1,15 @@
+"""
+Event notification handling for CRM.
+
+This module handles event notifications for the CRM system, supporting both:
+1. Custom event notifications set on individual events
+2. Global default notifications from CRM Settings for events without custom notifications
+
+Global notifications are configured in CRM Settings under the Calendar tab and are applied
+to events that don't have custom notifications set. This ensures all events can receive
+reminders even if users don't configure them individually.
+"""
+
 from datetime import datetime, timedelta
 
 import frappe
@@ -55,40 +67,46 @@ def _process_event_notifications_by_interval(interval):
 	# Get current datetime
 	current_time = now_datetime()
 
-	# Query all Event Notifications with the specified interval
-	# Only get events that haven't started yet (starts_on >= current_time)
-	notifications = frappe.db.sql(
+	# Fetch all events starting from now that have notifications for the given interval
+	all_events_data = frappe.db.sql(
 		"""
 		SELECT
-			en.parent as event_name,
-			en.type as notification_type,
-			en.before as before_value,
-			en.time as time_of_day,
+			e.name as event_name,
 			e.subject,
 			e.starts_on,
 			e.ends_on,
 			e.owner,
 			e.description,
-			e.all_day as all_day_event
-		FROM `tabEvent Notifications` en
-		JOIN `tabEvent` e ON en.parent = e.name
-		WHERE en.interval = %s
-		AND e.starts_on >= %s
+			e.all_day as all_day_event,
+			en.type as notification_type,
+			en.before as before_value,
+			en.time as time_of_day,
+			en.interval as notification_interval,
+			CASE WHEN en.parent IS NULL THEN 0 ELSE 1 END as has_custom_notifications
+		FROM `tabEvent` e
+		LEFT JOIN `tabEvent Notifications` en ON e.name = en.parent AND en.interval = %s
+		WHERE e.starts_on >= %s
 		AND e.status != 'Cancelled'
-		ORDER BY e.starts_on
+		ORDER BY e.starts_on, e.name
 	""",
 		(interval, current_time),
 		as_dict=True,
 	)
 
+	notifications = _process_unified_event_data(all_events_data, interval)
+
 	for notification in notifications:
 		try:
-			event_start = notification.starts_on
-			before_value = notification.before_value or 1
+			event_start = notification.get("starts_on")
+			before_value = notification.get("before_value", 1)
 
 			# Calculate the notification trigger time based on interval
 			trigger_datetime = _calculate_trigger_datetime(
-				event_start, before_value, interval, notification.all_day_event, notification.time_of_day
+				event_start,
+				before_value,
+				interval,
+				notification.get("all_day_event"),
+				notification.get("time_of_day"),
 			)
 
 			# Calculate trigger window based on interval
@@ -100,9 +118,9 @@ def _process_event_notifications_by_interval(interval):
 				continue
 
 			# Process the notification based on type
-			if notification.notification_type == "Email":
+			if notification.get("notification_type") == "Email":
 				_send_email_notification(notification, event_start, before_value, interval)
-			elif notification.notification_type == "Notification":
+			elif notification.get("notification_type") == "Notification":
 				_send_system_notification(notification)
 
 		except Exception as e:
@@ -110,6 +128,99 @@ def _process_event_notifications_by_interval(interval):
 				f"Error processing {interval} notification for event {notification.get('event_name', 'Unknown')}: {e!s}"
 			)
 			continue
+
+
+def _process_unified_event_data(all_events_data, interval):
+	"""
+	Process unified event data that includes both events with and without custom notifications.
+
+	Args:
+		all_events_data (list): List of event data from the unified query
+		interval (str): The interval type ('minutes', 'hours', 'days', 'weeks')
+
+	Returns:
+		list: List of processed notifications ready for sending
+	"""
+	notifications = []
+	events_without_notifications = []
+
+	# Separate events with custom notifications from those without
+	for event_data in all_events_data:
+		if event_data.get("has_custom_notifications") == 1:
+			# Event has custom notifications - add directly
+			notifications.append(event_data)
+		else:
+			# Track events without custom notifications for global processing
+			# Only add unique events (avoid duplicates from LEFT JOIN)
+			event_key = event_data.get("event_name")
+			if not any(e.get("event_name") == event_key for e in events_without_notifications):
+				events_without_notifications.append(event_data)
+
+	# Process events without custom notifications using global settings
+	if events_without_notifications:
+		global_notifications = _apply_global_notifications_to_events(events_without_notifications, interval)
+		notifications.extend(global_notifications)
+
+	return notifications
+
+
+def _apply_global_notifications_to_events(events_without_notifications, interval):
+	"""
+	Apply global CRM Settings notifications to events that don't have custom notifications.
+
+	Args:
+		events_without_notifications (list): List of events without custom notifications
+		interval (str): The interval type ('minutes', 'hours', 'days', 'weeks')
+
+	Returns:
+		list: List of notification dictionaries using global settings
+	"""
+
+	fcrm_settings = frappe.get_single("FCRM Settings")
+	global_notifications = []
+
+	# Get appropriate global notifications based on interval
+	if hasattr(fcrm_settings, "event_notifications"):
+		for notification in fcrm_settings.event_notifications:
+			if notification.interval == interval:
+				notification._table_type = "regular"
+				global_notifications.append(notification)
+
+	if hasattr(fcrm_settings, "all_day_event_notifications"):
+		for notification in fcrm_settings.all_day_event_notifications:
+			if notification.interval == interval:
+				notification._table_type = "all_day"
+				global_notifications.append(notification)
+
+	# If no global notifications are set for this interval, return empty list
+	if not global_notifications:
+		return []
+
+	# Create notification records for each event using global settings
+	notifications = []
+	for event in events_without_notifications:
+		for global_notification in global_notifications:
+			# Only apply all-day notifications to all-day events, and regular notifications to non-all-day events
+			if (global_notification._table_type == "all_day" and not event.all_day_event) or (
+				global_notification._table_type == "regular" and event.all_day_event
+			):
+				continue
+
+			notification = {
+				"event_name": event.event_name,
+				"notification_type": global_notification.type,
+				"before_value": global_notification.before,
+				"time_of_day": global_notification.time,
+				"subject": event.subject,
+				"starts_on": event.starts_on,
+				"ends_on": event.ends_on,
+				"owner": event.owner,
+				"description": event.description,
+				"all_day_event": event.all_day_event,
+			}
+			notifications.append(notification)
+
+	return notifications
 
 
 def _calculate_trigger_datetime(event_start, before_value, interval, all_day_event, time_of_day):
@@ -216,8 +327,8 @@ def _send_email_notification(notification, event_start, before_value, interval):
 			<p>This is a reminder for your upcoming event:</p>
 			<div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #007bff; margin: 20px 0;">
 				<h3 style="margin: 0; color: #007bff;">{notification.subject}</h3>
-				{f'<p style="margin: 10px 0; color: #666;">{notification.description}</p>' if notification.description else ''}
-				<p style="margin: 5px 0;"><strong>Start Time:</strong> {event_start.strftime('%Y-%m-%d %H:%M:%S')}</p>
+				{f'<p style="margin: 10px 0; color: #666;">{notification.description}</p>' if notification.description else ""}
+				<p style="margin: 5px 0;"><strong>Start Time:</strong> {event_start.strftime("%Y-%m-%d %H:%M:%S")}</p>
 				<p style="margin: 5px 0;"><strong>Time Remaining:</strong> {time_remaining_text}</p>
 			</div>
 			<p style="color: #666; font-size: 12px;">This is an automated reminder from your calendar system.</p>
