@@ -131,7 +131,11 @@ function createLeadSyncSource() {
 		{
 			onSuccess: () => {
 				toast.success(__("New Lead Syncing Source created successfully"));
-				emit("updateStep", "edit-source", { ...syncSource.value });
+				emit("updateStep", "edit-source", {
+					...syncSource.value,
+					facebook_page: syncSource.value.facebook_page.id,
+					facebook_lead_form: syncSource.value.facebook_lead_form.id,
+				});
 			},
 			onError: (error) => {
 				toast.error(error.messages[0] || __("Failed to create source"));
