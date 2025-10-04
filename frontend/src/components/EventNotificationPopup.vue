@@ -1,9 +1,6 @@
 <template>
   <Teleport to="body">
-    <div
-      v-if="visibleAlerts.length > 0"
-      class="fixed top-4 right-4 bottom-4 z-50 w-96"
-    >
+    <div v-if="visibleAlerts.length > 0" class="fixed top-4 right-4 z-50 w-96">
       <TransitionGroup name="popup" tag="div" class="space-y-2">
         <div
           v-for="alert in visibleAlerts"
@@ -103,9 +100,37 @@ function formatEventTime(notification) {
 
 function getTimeUntilEvent(notification) {
   if (notification.starts_on) {
-    const eventTime = dayjs(notification.starts_on)
+    const eventStartTime = dayjs(notification.starts_on)
+    const eventEndTime = notification.ends_on
+      ? dayjs(notification.ends_on)
+      : null
     const now = dayjs()
-    const diffMinutes = eventTime.diff(now, 'minute')
+
+    // Check if event is currently ongoing
+    if (
+      eventEndTime &&
+      now.isAfter(eventStartTime) &&
+      now.isBefore(eventEndTime)
+    ) {
+      const minutesUntilEnd = eventEndTime.diff(now, 'minute')
+
+      if (minutesUntilEnd <= 0) {
+        return __('Ending now')
+      } else if (minutesUntilEnd < 60) {
+        return __('Ends in {0} min', [minutesUntilEnd])
+      } else {
+        const hoursUntilEnd = Math.floor(minutesUntilEnd / 60)
+        const remainingMinutes = minutesUntilEnd % 60
+        if (remainingMinutes === 0) {
+          return __('Ends in {0}h', [hoursUntilEnd])
+        } else {
+          return __('Ends in {0}h {1}m', [hoursUntilEnd, remainingMinutes])
+        }
+      }
+    }
+
+    // Event hasn't started yet
+    const diffMinutes = eventStartTime.diff(now, 'minute')
 
     if (diffMinutes <= 0) {
       return __('Starting now')
