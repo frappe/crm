@@ -98,6 +98,7 @@ def _process_event_notifications_by_interval(interval):
 	for notification in notifications:
 		try:
 			event_start = notification.get("starts_on")
+			event_end = notification.get("ends_on")
 			before_value = notification.get("before_value", 1)
 
 			# Calculate the notification trigger time based on interval
@@ -109,10 +110,18 @@ def _process_event_notifications_by_interval(interval):
 				notification.get("time_of_day"),
 			)
 
-			# Calculate trigger window based on interval
-			trigger_window_duration = _get_trigger_window_duration(interval)
-			trigger_window_start = trigger_datetime
-			trigger_window_end = add_to_date(trigger_datetime, **trigger_window_duration)
+			# Calculate trigger window based on interval and event duration
+			# Before window: fixed based on interval, After window: based on event duration
+			trigger_window_before, trigger_window_after = _get_trigger_window_durations(
+				interval, event_start, event_end
+			)
+
+			# Create window before the trigger time (negative duration)
+			trigger_window_start = add_to_date(
+				trigger_datetime, **{k: -v for k, v in trigger_window_before.items()}
+			)
+			# Create window after the trigger time (positive duration)
+			trigger_window_end = add_to_date(trigger_datetime, **trigger_window_after)
 
 			if not (trigger_window_start <= current_time <= trigger_window_end):
 				continue
@@ -275,24 +284,94 @@ def _get_interval_kwargs(interval, before_value):
 	return interval_mapping.get(interval, {"hours": -before_value})
 
 
-def _get_trigger_window_duration(interval):
+def _get_trigger_window_durations(interval, event_start=None, event_end=None):
 	"""
-	Get the trigger window duration based on interval type.
+	Get the trigger window durations (before and after) based on interval type.
+
+	This creates a window both before and after the calculated trigger time
+	to handle system delays, downtime, or processing issues.
+
+	The before window is fixed based on interval type.
+	The after window is calculated as a percentage of the event duration,
+	with fallback to fixed durations if event duration cannot be determined.
 
 	Args:
 		interval (str): The interval type ('minutes', 'hours', 'days', 'weeks')
+		event_start (datetime, optional): Event start time
+		event_end (datetime, optional): Event end time
 
 	Returns:
-		dict: Duration for the trigger window
+		tuple: (before_window_duration, after_window_duration) as dictionaries
 	"""
-	window_mapping = {
-		"minutes": {"minutes": 5},  # 5-minute window for minute-based notifications
-		"hours": {"hours": 1},  # 1-hour window for hourly notifications
-		"days": {"hours": 8},  # 8-hour window for daily notifications
-		"weeks": {"days": 4},  # 4-day window for weekly notifications
+	# Fixed before windows based on interval type
+	before_window_mapping = {
+		"minutes": {"minutes": 5},
+		"hours": {"hours": 1},
+		"days": {"hours": 8},
+		"weeks": {"days": 4},
 	}
 
-	return window_mapping.get(interval, {"hours": 1})
+	before_window = before_window_mapping.get(interval, {"hours": 1})
+
+	# Calculate after window based on event duration
+	after_window = _calculate_after_window_from_event_duration(event_start, event_end, interval)
+
+	return before_window, after_window
+
+
+def _calculate_after_window_from_event_duration(event_start, event_end, interval):
+	"""
+	Calculate the after window duration based on event duration.
+
+	The after window is calculated as a percentage of the event duration:
+	- 50% of event duration for all intervals (more responsive)
+
+	Args:
+		event_start (datetime): Event start time
+		event_end (datetime): Event end time
+		interval (str): The interval type ('minutes', 'hours', 'days', 'weeks')
+
+	Returns:
+		dict: Duration for the after window
+	"""
+	# If we don't have both start and end times, use fallback
+	if not event_start or not event_end:
+		return {"minutes": 30}
+
+	# Calculate event duration in minutes
+	try:
+		event_duration_seconds = (event_end - event_start).total_seconds()
+		event_duration_minutes = event_duration_seconds / 60
+
+		# For very short events (less than 5 minutes), use minimum after window
+		if event_duration_minutes < 5:
+			return {"minutes": 2}
+
+		after_window_minutes = int(event_duration_minutes * 0.5)
+
+		# Cap the maximum after window based on interval
+		max_after_windows = {
+			"minutes": 15,  # Max 15 minutes for minute-based
+			"hours": 30,  # Max 30 minutes for hourly
+			"days": 60,  # Max 1 hour for daily
+			"weeks": 60,  # Max 1 hour for weekly
+		}
+
+		max_after = max_after_windows.get(interval, 30)
+		after_window_minutes = min(after_window_minutes, max_after)
+
+		# Ensure minimum after window of 1 minute
+		after_window_minutes = max(after_window_minutes, 1)
+
+		# Convert to appropriate time unit
+		if after_window_minutes >= 60:  # 1 hour or more
+			return {"hours": int(after_window_minutes / 60)}
+		else:
+			return {"minutes": after_window_minutes}
+
+	except Exception:
+		# If any error occurs, fall back to default durations
+		return {"minutes": 30}
 
 
 def _send_email_notification(notification, event_start, before_value, interval):
