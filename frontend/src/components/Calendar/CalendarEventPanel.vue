@@ -42,7 +42,7 @@
     </div>
 
     <!-- Event Details -->
-    <div v-if="mode == 'details'" class="flex flex-col overflow-y-auto">
+    <div v-if="mode == 'details'" class="flex flex-col flex-1 overflow-y-auto">
       <div
         class="flex items-start gap-2 px-4.5 py-3 pb-0"
         @dblclick="editDetails"
@@ -187,7 +187,7 @@
     </div>
 
     <!-- Event new, duplicate & edit -->
-    <div v-else class="flex flex-col overflow-y-auto">
+    <div v-else class="flex flex-col flex-1 overflow-y-auto">
       <div class="flex gap-2 items-center px-4.5 py-3">
         <Dropdown class="ml-1" :options="colors">
           <div
@@ -394,6 +394,29 @@
         </Button>
       </div>
     </div>
+    <div v-else-if="isAttending" class="flex flex-col gap-2 px-4.5 py-3">
+      <div class="text-sm text-ink-gray-6">
+        {{ __('Going?') }}
+      </div>
+      <TabButtons
+        class="w-full [&_button]:w-full [&_div]:w-full"
+        v-model="attending"
+        :buttons="[
+          {
+            label: __('Yes'),
+            value: 'Yes',
+          },
+          {
+            label: __('No'),
+            value: 'No',
+          },
+          {
+            label: __('Maybe'),
+            value: 'Maybe',
+          },
+        ]"
+      />
+    </div>
   </div>
 </template>
 
@@ -411,6 +434,7 @@ import Attendee from '@/components/Calendar/Attendee.vue'
 import EventNotifications from '@/components/Calendar/EventNotifications.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { globalStore } from '@/stores/global'
+import { sessionStore } from '@/stores/session'
 import { validateEmail, deepClone } from '@/utils'
 import {
   normalizeParticipants,
@@ -432,6 +456,7 @@ import {
   CalendarColorMap as colorMap,
   CalendarActiveEvent as activeEvent,
   createDocumentResource,
+  TabButtons,
 } from 'frappe-ui'
 import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
@@ -455,6 +480,7 @@ const emit = defineEmits([
 
 const router = useRouter()
 const { $dialog } = globalStore()
+const { user } = sessionStore()
 
 const show = defineModel()
 const event = defineModel('event')
@@ -488,6 +514,21 @@ const title = computed(() => {
   if (props.mode === 'edit') return __('Editing event')
   if (props.mode === 'new') return __('New event')
   return __('Duplicate event')
+})
+
+const isAttending = computed(() => {
+  return _event.value?.event_participants?.find((p) => p.email === user)
+})
+
+const attending = computed({
+  get() {
+    const _attending = isAttending.value?.attending
+    return ['Yes', 'No', 'Maybe'].includes(_attending) ? _attending : null
+  },
+  set(value) {
+    isAttending.value.attending = value
+    saveEvent()
+  },
 })
 
 const eventTitle = ref(null)
