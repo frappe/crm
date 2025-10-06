@@ -2,6 +2,8 @@ import { sessionStore } from '@/stores/session'
 import { createListResource, dayjs } from 'frappe-ui'
 import isBetween from 'dayjs/plugin/isBetween'
 import { useStorage } from '@vueuse/core'
+import { getUserSettings, useUserSettings } from '@/data/userSettings'
+import { ref, computed } from 'vue'
 
 dayjs.extend(isBetween)
 
@@ -77,18 +79,75 @@ export const useEventNotifications = () => {
 const eventNotificationAlerts = useStorage('eventNotificationAlerts', [])
 
 export const useEventNotificationAlert = () => {
+  const { save: saveUserSettings } = useUserSettings()
+  const completedEvents = ref([])
+
+  // Load user settings on initialization
+  const loadNotificationSettings = async () => {
+    try {
+      const settings = await getUserSettings('Event', 'notifications')
+      if (settings) {
+        completedEvents.value = settings.completedEvents || []
+      }
+    } catch (error) {
+      console.error('Error loading notification settings:', error)
+    }
+  }
+
+  // Save completed events to user settings
+  const saveNotificationSettings = async () => {
+    try {
+      await saveUserSettings('Event', 'notifications', {
+        completedEvents: completedEvents.value,
+        lastUpdated: dayjs().toISOString(),
+      })
+    } catch (error) {
+      console.error('Error saving notification settings:', error)
+    }
+  }
+
+  // Check if event has already been completed/acknowledged
+  const isEventCompleted = (eventId) => completedEvents.value.includes(eventId)
+
+  // Get active (non-completed) notification alerts
+  const activeAlerts = computed(() => {
+    return eventNotificationAlerts.value.filter(
+      (alert) => !alert.completed && !isEventCompleted(alert.id),
+    )
+  })
+
+  function handleEventNotification(event) {
+    if (isEventCompleted(event.event_name)) return
+
+    addEventNotificationAlert(event)
+  }
+
   function addEventNotificationAlert(data) {
+    // Don't add if already exists and not completed
+    const existingAlert = eventNotificationAlerts.value.find(
+      (alert) => alert.id === data.event_name && !alert.completed,
+    )
+
+    if (existingAlert) return
+
     eventNotificationAlerts.value.push({
       id: data.event_name,
       completed: false,
       notification: data,
+      createdAt: dayjs().toISOString(),
     })
   }
 
-  function completeEventNotificationAlert(id) {
+  async function completeEventNotificationAlert(id) {
     let alert = eventNotificationAlerts.value.find((a) => a.id === id)
     if (alert) {
       alert.completed = true
+    }
+
+    // Add to completed events in user settings
+    if (!completedEvents.value.includes(id)) {
+      completedEvents.value.push(id)
+      await saveNotificationSettings()
     }
   }
 
@@ -102,11 +161,25 @@ export const useEventNotificationAlert = () => {
     eventNotificationAlerts.value = []
   }
 
+  async function clearCompletedEvents() {
+    completedEvents.value = []
+    await saveNotificationSettings()
+  }
+
+  loadNotificationSettings()
+
   return {
     eventNotificationAlerts,
+    activeAlerts,
+    completedEvents,
+    isEventCompleted,
+    handleEventNotification,
     addEventNotificationAlert,
     completeEventNotificationAlert,
     removeCompletedEventNotificationAlerts,
     clearAllEventNotificationAlerts,
+    clearCompletedEvents,
+    loadNotificationSettings,
+    saveNotificationSettings,
   }
 }
