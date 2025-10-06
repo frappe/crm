@@ -696,6 +696,8 @@ function showDiscardChangesModal(action) {
 }
 
 const formattedDateTime = computed(() => {
+  if (!_event.value.fromDate) return ''
+
   const date = dayjs(_event.value.fromDate)
 
   if (_event.value.isFullDay) {
