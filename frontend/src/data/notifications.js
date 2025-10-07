@@ -13,7 +13,11 @@ export const useEventNotifications = () => {
   const events = createListResource({
     doctype: 'Event',
     fields: ['*'],
-    filters: { status: 'Open', owner: user },
+    filters: {
+      status: 'Open',
+      owner: user,
+      ends_on: ['>=', dayjs().toISOString()],
+    },
     auto: true,
     limit: 9999,
     orderBy: 'modified desc',
@@ -34,11 +38,12 @@ export const useEventNotifications = () => {
         else if (dayjs(event.starts_on).isAfter(dayjs().add(5, 'minute'))) {
           type = 'upcoming'
         }
-        // Overdue: Event is less than now - 5 min
+        // Ongoing: Event is currently happening (now is between starts_on + 5 min and ends_on)
         else if (
-          dayjs(event.starts_on).isBefore(dayjs().subtract(5, 'minute'))
+          dayjs(event.starts_on).isBefore(dayjs().add(5, 'minute')) &&
+          dayjs(event.ends_on).isAfter(dayjs())
         ) {
-          type = 'overdue'
+          type = 'ongoing'
         }
 
         const eventDate = dayjs(event.starts_on)
@@ -49,11 +54,11 @@ export const useEventNotifications = () => {
           dateLabel = 'Today'
           if (type === 'startingNow') {
             dateLabel = 'Now'
+          } else if (type === 'ongoing') {
+            dateLabel = 'Ongoing'
           }
         } else if (eventDate.isSame(now.add(1, 'day'), 'day')) {
           dateLabel = 'Tomorrow'
-        } else if (eventDate.isSame(now.subtract(1, 'day'), 'day')) {
-          dateLabel = 'Yesterday'
         } else {
           dateLabel = eventDate.format('MMM D')
         }

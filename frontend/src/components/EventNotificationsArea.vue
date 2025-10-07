@@ -20,8 +20,8 @@
                 <Badge
                   :label="event.count"
                   :theme="
-                    event.type === 'Overdue'
-                      ? 'red'
+                    event.type === 'Ongoing'
+                      ? 'green'
                       : event.type === 'Starting Now'
                         ? 'orange'
                         : 'blue'
@@ -57,8 +57,8 @@
                 <span
                   class="text-sm min-w-[50px] text-right"
                   :class="
-                    event.type === 'Overdue'
-                      ? 'text-ink-red-3'
+                    event.type === 'Ongoing'
+                      ? 'text-ink-green-3'
                       : event.type === 'Starting Now'
                         ? 'text-ink-amber-3'
                         : 'text-ink-gray-5'
@@ -115,7 +115,7 @@ function handleEventClick(e) {
 const computedEvents = computed(() => {
   if (!events.data?.length) return []
 
-  const overdueEvents = events.data.filter((event) => event.type === 'overdue')
+  const ongoingEvents = events.data.filter((event) => event.type === 'ongoing')
 
   const startingNowEvents = events.data.filter(
     (event) => event.type === 'startingNow',
@@ -133,10 +133,10 @@ const computedEvents = computed(() => {
       items: startingNowEvents,
     },
     {
-      type: 'Overdue',
+      type: 'Ongoing',
       collapsed: false,
-      count: overdueEvents.length,
-      items: overdueEvents,
+      count: ongoingEvents.length,
+      items: ongoingEvents,
     },
     {
       type: 'Upcoming',
