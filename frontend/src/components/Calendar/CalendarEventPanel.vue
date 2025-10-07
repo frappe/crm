@@ -117,9 +117,14 @@
         class="mx-4.5 my-2.5 border-t border-outline-gray-1"
       />
       <div v-if="peoples.length" class="px-4.5 py-2">
-        <div class="flex gap-3 text-ink-gray-7 mb-3">
+        <div class="flex gap-3 text-ink-gray-6 mb-3">
           <PeopleIcon class="size-4" />
-          <div>{{ __('{0} Attendees', [peoples.length + 1]) }}</div>
+          <div class="flex flex-col">
+            <div class="text-ink-gray-7">
+              {{ __('{0} Attendees', [peoples.length + 1]) }}
+            </div>
+            <div class="text-p-base">{{ attendees }}</div>
+          </div>
         </div>
         <div class="flex flex-col gap-2 -ml-1">
           <Button
@@ -136,7 +141,36 @@
               </div>
             </template>
             <template #prefix>
-              <UserAvatar :user="_event.owner?.value" class="-ml-1 !size-5" />
+              <div class="relative">
+                <UserAvatar :user="_event.owner?.value" class="-ml-1 !size-5" />
+                <div
+                  v-if="_event.attending"
+                  class="flex items-center justify-center absolute -bottom-[2px] -right-[2px] ring-1 ring-outline-white size-2.5 rounded-full"
+                  :class="{
+                    'bg-green-600': _event.attending === 'Yes',
+                    'bg-gray-500': _event.attending === 'Maybe',
+                    'bg-red-500': _event.attending === 'No',
+                  }"
+                >
+                  <div
+                    v-if="_event.attending == 'Maybe'"
+                    class="text-ink-white font-extrabold text-[8px] pt-px"
+                  >
+                    ?
+                  </div>
+                  <FeatherIcon
+                    v-else
+                    :name="
+                      _event.attending === 'Yes'
+                        ? 'check'
+                        : _event.attending === 'No'
+                          ? 'x'
+                          : ''
+                    "
+                    class="size-[7px] stroke-[4px] text-ink-white"
+                  />
+                </div>
+              </div>
             </template>
           </Button>
           <Button
@@ -149,7 +183,36 @@
             :tooltip="getTooltip(att)"
           >
             <template #prefix>
-              <UserAvatar :user="att.email" class="-ml-1 !size-5" />
+              <div class="relative">
+                <UserAvatar :user="att.email" class="-ml-1 !size-5" />
+                <div
+                  v-if="att.attending"
+                  class="flex items-center justify-center absolute -bottom-[2px] -right-[2px] ring-1 ring-outline-white size-2.5 rounded-full"
+                  :class="{
+                    'bg-green-600': att.attending === 'Yes',
+                    'bg-gray-500': att.attending === 'Maybe',
+                    'bg-red-500': att.attending === 'No',
+                  }"
+                >
+                  <div
+                    v-if="att.attending == 'Maybe'"
+                    class="text-ink-white font-extrabold text-[8px] pt-px"
+                  >
+                    ?
+                  </div>
+                  <FeatherIcon
+                    v-else
+                    :name="
+                      att.attending === 'Yes'
+                        ? 'check'
+                        : att.attending === 'No'
+                          ? 'x'
+                          : ''
+                    "
+                    class="size-[7px] stroke-[4px] text-ink-white"
+                  />
+                </div>
+              </div>
             </template>
           </Button>
           <Button
@@ -394,7 +457,10 @@
         </Button>
       </div>
     </div>
-    <div v-else-if="isAttending" class="flex flex-col gap-2 px-4.5 py-3">
+    <div
+      v-else-if="_event.event_participants?.length"
+      class="flex flex-col gap-2 px-4.5 py-3"
+    >
       <div class="text-sm text-ink-gray-6">
         {{ __('Going?') }}
       </div>
@@ -499,6 +565,32 @@ const peoples = computed({
   },
 })
 
+const attendees = computed(() => {
+  const counts = { Yes: 1, No: 0, Maybe: 0, Awaiting: 0 }
+
+  peoples.value.forEach((p) => {
+    if (p.attending === 'Yes') counts.Yes += 1
+    else if (p.attending === 'No') counts.No += 1
+    else if (p.attending === 'Maybe') counts.Maybe += 1
+    else counts.Awaiting += 1
+  })
+
+  let attendeesCountText = __('{0} yes', [counts.Yes])
+  if (counts.No > 0) {
+    attendeesCountText += `, ${__('{0} no', [counts.No])}`
+  }
+
+  if (counts.Maybe > 0) {
+    attendeesCountText += `, ${__('{0} maybe', [counts.Maybe])}`
+  }
+
+  if (counts.Awaiting > 0) {
+    attendeesCountText += `, ${__('{0} awaiting', [counts.Awaiting])}`
+  }
+
+  return attendeesCountText
+})
+
 const notifications = computed({
   get() {
     return _event.value.notifications
@@ -516,17 +608,24 @@ const title = computed(() => {
   return __('Duplicate event')
 })
 
-const isAttending = computed(() => {
+const currentAttendee = computed(() => {
   return _event.value?.event_participants?.find((p) => p.email === user)
 })
 
 const attending = computed({
   get() {
-    const _attending = isAttending.value?.attending
+    if (_event.value.owner?.value === user) {
+      return _event.value.attending || null
+    }
+    const _attending = currentAttendee.value?.attending
     return ['Yes', 'No', 'Maybe'].includes(_attending) ? _attending : null
   },
   set(value) {
-    isAttending.value.attending = value
+    if (_event.value.owner?.value === user) {
+      _event.value.attending = value
+    } else {
+      currentAttendee.value.attending = value
+    }
     saveEvent()
   },
 })
