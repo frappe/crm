@@ -217,7 +217,7 @@ const allViews = computed(() => {
   ]
   if (getPublicViews().length) {
     _views.push({
-      name: 'Public views',
+      name: 'Lead',
       opened: true,
       views: parseView(getPublicViews()),
     })
