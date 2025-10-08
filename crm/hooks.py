@@ -169,23 +169,28 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# "all": [
-# "crm.tasks.all"
-# ],
-# "daily": [
-# "crm.tasks.daily"
-# ],
-# "hourly": [
-# "crm.tasks.hourly"
-# ],
-# "weekly": [
-# "crm.tasks.weekly"
-# ],
-# "monthly": [
-# "crm.tasks.monthly"
-# ],
-# }
+scheduler_events = {
+	"daily": [
+		"crm.tasks.sync_leads_from_sources_daily"
+	],
+	"hourly": [
+		"crm.tasks.sync_leads_from_sources_hourly"
+	],
+	"monthly": [
+		"crm.tasks.sync_leads_from_sources_monthly"
+	],
+    "cron": {
+        "*/5 * * * *": [
+            "crm.tasks.sync_leads_from_sources_5_minutes"
+		],
+        "*/10 * * * *": [
+			"crm.tasks.sync_leads_from_sources_10_minutes"
+		],
+        "*/15 * * * *": [
+			"crm.tasks.sync_leads_from_sources_15_minutes"
+		],
+	}
+}
 
 # Testing
 # -------

@@ -11,6 +11,7 @@
   "column_break_lwcw",
   "last_synced_at",
   "enabled",
+  "background_sync_frequency",
   "facebook_section",
   "facebook_page",
   "column_break_zukm",
@@ -69,12 +70,19 @@
   {
    "fieldname": "column_break_zukm",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "Hourly",
+   "fieldname": "background_sync_frequency",
+   "fieldtype": "Select",
+   "label": "Background Sync Frequency",
+   "options": "Every 5 Minutes\nEvery 10 Minutes\nEvery 15 Minutes\nHourly\nDaily\nMonthly"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-08 12:09:28.101399",
+ "modified": "2025-10-08 12:23:22.097933",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
