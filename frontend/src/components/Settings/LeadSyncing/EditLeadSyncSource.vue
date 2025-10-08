@@ -56,20 +56,24 @@
                  doctype="Facebook Lead Form Question"
                  parentDoctype="Facebook Lead Form"
                  parentFieldname="questions"
+                 :overrides="{
+                    fields: [
+                        {'fieldname': 'mapped_to_crm_field', 'options': getCRMLeadFields, 'placeholder': __('Not Synced')}
+                    ]
+                 }"
               />
          </div>
     </div>
 </template>
-
 <script setup>
-import { Switch, toast } from "frappe-ui"
-import { useDocument } from '@/data/document'
-import { inject, onMounted, ref } from "vue"
-import Grid from '@/components/Controls/Grid.vue'
-import { fbSourceFields } from "./leadSyncSourceConfig"
+import { Switch, createResource } from "frappe-ui";
+import { useDocument } from "@/data/document";
+import { computed, inject, onMounted, ref } from "vue";
+import Grid from "@/components/Controls/Grid.vue";
+import { fbSourceFields } from "./leadSyncSourceConfig";
 import { sourceIcon } from "./leadSyncSourceConfig";
-import EmailProviderIcon from "../EmailProviderIcon.vue"
-import Link from '@/components/Controls/Link.vue'
+import EmailProviderIcon from "../EmailProviderIcon.vue";
+import Link from "@/components/Controls/Link.vue";
 
 const emit = defineEmits();
 const props = defineProps({
@@ -86,12 +90,53 @@ onMounted(() => {
 	source.value = { ...props.sourceData };
 });
 
-const {document: leadSyncSourceDoc} = useDocument("Lead Sync Source", props.sourceData.name)
-const {document: formDoc} = useDocument("Facebook Lead Form", props.sourceData.facebook_lead_form)
+const { document: leadSyncSourceDoc } = useDocument(
+	"Lead Sync Source",
+	props.sourceData.name,
+);
+const { document: formDoc } = useDocument(
+	"Facebook Lead Form",
+	props.sourceData.facebook_lead_form,
+);
 
 function updateSource() {
-    leadSyncSourceDoc.save.submit()
-    formDoc.save.submit()
+	leadSyncSourceDoc.save.submit();
+	formDoc.save.submit();
 }
 
+const fields = createResource({
+	url: "crm.api.doc.get_fields_meta",
+	params: {
+		doctype: "CRM Lead",
+		as_array: true,
+	},
+	cache: ["fieldsMeta", "CRM Lead"],
+	auto: true,
+	transform: (data) => {
+		let restrictedFields = [
+			"name",
+			"owner",
+			"creation",
+			"modified",
+			"modified_by",
+			"docstatus",
+			"_comments",
+			"_user_tags",
+			"_assign",
+			"_liked_by",
+		];
+		console.log("data", data);
+		return data.filter((field) => !restrictedFields.includes(field.fieldname));
+	},
+});
+
+const getCRMLeadFields = computed(() => {
+	if (fields.data) {
+		return fields.data.map((field) => ({
+			label: field.label,
+			value: field.fieldname,
+		}));
+	}
+	return [];
+});
 </script>
