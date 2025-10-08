@@ -11,9 +11,9 @@
   "column_break_lwcw",
   "last_synced_at",
   "enabled",
-  "facebook_tab",
+  "facebook_section",
   "facebook_page",
-  "column_break_uxlr",
+  "column_break_zukm",
   "facebook_lead_form"
  ],
  "fields": [
@@ -43,20 +43,10 @@
    "length": 500
   },
   {
-   "depends_on": "eval:doc.type===\"Facebook\"",
-   "fieldname": "facebook_tab",
-   "fieldtype": "Tab Break",
-   "label": "Facebook"
-  },
-  {
    "fieldname": "facebook_page",
    "fieldtype": "Link",
    "label": "Facebook Page",
    "options": "Facebook Page"
-  },
-  {
-   "fieldname": "column_break_uxlr",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "facebook_lead_form",
@@ -69,12 +59,22 @@
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled?"
+  },
+  {
+   "depends_on": "eval:doc.type===\"Facebook\"",
+   "fieldname": "facebook_section",
+   "fieldtype": "Section Break",
+   "label": "Facebook"
+  },
+  {
+   "fieldname": "column_break_zukm",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-03 21:13:25.660629",
+ "modified": "2025-10-08 12:09:28.101399",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
