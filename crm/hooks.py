@@ -170,13 +170,13 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
-	"daily": [
+	"daily_long": [
 		"crm.tasks.sync_leads_from_sources_daily"
 	],
-	"hourly": [
+	"hourly_long": [
 		"crm.tasks.sync_leads_from_sources_hourly"
 	],
-	"monthly": [
+	"monthly_long": [
 		"crm.tasks.sync_leads_from_sources_monthly"
 	],
     "cron": {

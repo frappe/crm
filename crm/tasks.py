@@ -29,4 +29,4 @@ def sync_leads_from_sources_daily() -> None:
 	sync_leads_from_all_enabled_sources("Daily")
 
 def sync_leads_from_sources_monthly() -> None:
-	sync_leads_from_all_enabled_sources("Monthly")	
+	sync_leads_from_all_enabled_sources("Monthly")
