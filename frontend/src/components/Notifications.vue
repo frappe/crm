@@ -105,7 +105,7 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { useEventNotificationAlert } from '@/data/notifications'
-import { useUserSettings, getUserSettings } from '@/data/userSettings'
+import { useUserSettings } from '@/data/userSettings'
 import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
