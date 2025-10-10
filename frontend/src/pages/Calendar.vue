@@ -32,6 +32,7 @@
       @create="(event) => createEvent(event)"
       @update="(event) => updateEvent(event, true)"
       @delete="(eventID) => deleteEvent(eventID)"
+      @rangeChange="handleRangeChange"
       :onClick="showDetails"
       :onDblClick="editDetails"
       :onCellClick="newEvent"
@@ -158,10 +159,23 @@ const defaultMode = computed(() => {
 })
 
 const calendar = ref(null)
+const activeRangeKey = ref('')
+
+function buildEventFilters(range) {
+  const filters = [['status', '=', 'Open']]
+  if (range?.startDate && range?.endDate) {
+    const start = dayjs(range.startDate)
+      .startOf('day')
+      .format('YYYY-MM-DD HH:mm:ss')
+    const end = dayjs(range.endDate).endOf('day').format('YYYY-MM-DD HH:mm:ss')
+    filters.push(['starts_on', '<=', end])
+    filters.push(['ends_on', '>=', start])
+  }
+  return filters
+}
 
 const events = createListResource({
   doctype: 'Event',
-  cache: ['calendar', user],
   fields: [
     'name',
     'status',
@@ -177,9 +191,8 @@ const events = createListResource({
     'reference_doctype',
     'reference_docname',
   ],
-  filters: { status: 'Open', owner: user },
+  filters: buildEventFilters(),
   pageLength: 9999,
-  auto: true,
   transform: (data) =>
     data.map((ev) => ({
       id: ev.name,
@@ -340,8 +353,21 @@ function deleteEvent(eventID) {
 }
 
 function syncEvent(eventID, _event) {
-  if (!eventID) return
-  Object.assign(events.data.filter((event) => event.id === eventID)[0], _event)
+  if (!eventID || !Array.isArray(events.data)) return
+  const target = events.data.find((event) => event.id === eventID)
+  if (!target) return
+  Object.assign(target, _event)
+}
+
+async function handleRangeChange(range) {
+  if (!range?.startDate || !range?.endDate) return
+  const key = `${range.view}-${range.startDate}-${range.endDate}`
+  if (key === activeRangeKey.value) {
+    if (events.list?.loading || events.list?.fetched) return
+  }
+  activeRangeKey.value = key
+  events.update({ filters: buildEventFilters(range) })
+  await events.reload()
 }
 
 onMounted(async () => {
@@ -433,6 +459,9 @@ function newEvent(e = {}, duplicate = false) {
   }
 
   event.value = buildTempEvent(base, duplicate)
+  if (!Array.isArray(events.data)) {
+    events.data = []
+  }
   events.data.push(event.value)
   showEventPanel.value = true
   activeEvent.value = event.value.id
