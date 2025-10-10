@@ -3,7 +3,7 @@ import { createListResource, dayjs } from 'frappe-ui'
 import isBetween from 'dayjs/plugin/isBetween'
 import { useStorage } from '@vueuse/core'
 import { getUserSettings, useUserSettings } from '@/data/userSettings'
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted, onMounted } from 'vue'
 
 dayjs.extend(isBetween)
 
@@ -104,7 +104,7 @@ export const useEventNotificationAlert = () => {
     try {
       await saveUserSettings('Event', 'notifications', {
         completedEvents: completedEvents.value,
-        lastUpdated: dayjs().toISOString(),
+        lastUpdated: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       })
     } catch (error) {
       console.error('Error saving notification settings:', error)
@@ -116,9 +116,23 @@ export const useEventNotificationAlert = () => {
 
   // Get active (non-completed) notification alerts
   const activeAlerts = computed(() => {
-    return eventNotificationAlerts.value.filter(
-      (alert) => !alert.completed && !isEventCompleted(alert.id),
-    )
+    const now = dayjs()
+
+    return eventNotificationAlerts.value.filter((alert) => {
+      if (alert.completed || isEventCompleted(alert.id)) {
+        return false
+      }
+
+      const notification = alert.notification
+      if (notification && notification.ends_on) {
+        const eventEndTime = dayjs(notification.ends_on)
+        if (eventEndTime.isBefore(now)) {
+          return false
+        }
+      }
+
+      return true
+    })
   })
 
   function handleEventNotification(event) {
@@ -171,7 +185,35 @@ export const useEventNotificationAlert = () => {
     await saveNotificationSettings()
   }
 
-  loadNotificationSettings()
+  async function cleanupExpiredEventAlerts() {
+    const now = dayjs()
+    const alertsToComplete = eventNotificationAlerts.value.filter((alert) => {
+      if (alert.completed || isEventCompleted(alert.id)) {
+        return false
+      }
+
+      const notification = alert.notification
+      if (notification && notification.ends_on) {
+        const eventEndTime = dayjs(notification.ends_on)
+        return eventEndTime.isBefore(now)
+      }
+
+      return false
+    })
+
+    for (const alert of alertsToComplete) {
+      await completeEventNotificationAlert(alert.id)
+    }
+  }
+
+  const cleanupInterval = setInterval(cleanupExpiredEventAlerts, 5 * 60 * 1000)
+
+  onMounted(() => {
+    loadNotificationSettings()
+    cleanupExpiredEventAlerts()
+  })
+
+  onUnmounted(() => clearInterval(cleanupInterval))
 
   return {
     eventNotificationAlerts,
@@ -184,6 +226,7 @@ export const useEventNotificationAlert = () => {
     removeCompletedEventNotificationAlerts,
     clearAllEventNotificationAlerts,
     clearCompletedEvents,
+    cleanupExpiredEventAlerts,
     loadNotificationSettings,
     saveNotificationSettings,
   }
