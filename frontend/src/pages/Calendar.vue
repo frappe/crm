@@ -431,7 +431,7 @@ function buildTempEvent(e = {}, duplicate = false) {
     toTime: e.toTime,
     location: e.location || '',
     isFullDay: e.isFullDay || false,
-    eventType: e.eventType || 'Public',
+    eventType: e.eventType || 'Private',
     color: e.color || 'green',
     attending: e.attending || 'Yes',
     referenceDoctype: e.referenceDoctype,
