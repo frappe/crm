@@ -139,6 +139,7 @@ import {
   DatePicker,
   CalendarActiveEvent as activeEvent,
   call,
+  toast,
 } from 'frappe-ui'
 import { onMounted, ref, computed, provide, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
@@ -318,6 +319,10 @@ async function updateEvent(_event, afterDrag = false) {
         onSuccess: async (e) => {
           await events.reload()
           showEventPanel.value && showDetails({ id: e.name }, true)
+        },
+        onError: (err) => {
+          toast.error(err.messages[0])
+          console.error('Failed updating event', err)
         },
       },
     )
