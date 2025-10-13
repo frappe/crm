@@ -552,6 +552,8 @@ import {
   CalendarActiveEvent as activeEvent,
   createDocumentResource,
   TabButtons,
+  toast,
+  call,
 } from 'frappe-ui'
 import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
@@ -657,10 +659,11 @@ const attending = computed({
   set(value) {
     if (_event.value.owner?.value === user) {
       _event.value.attending = value
+      updateAttendingStatus(user, value)
     } else {
       currentAttendee.value.attending = value
+      updateAttendingStatus(currentAttendee.value.email, value)
     }
-    saveEvent()
   },
 })
 
@@ -812,6 +815,22 @@ function duplicateEvent() {
 
 function deleteEvent() {
   emit('delete', _event.value.id)
+}
+
+function updateAttendingStatus(attendee, status) {
+  call('frappe.desk.doctype.event.event.update_attending_status', {
+    event_name: _event.value.id,
+    attendee,
+    status,
+  })
+    .then(() => {
+      toast.success(__('Attending status updated'))
+      sync()
+    })
+    .catch((err) => {
+      error.value = err.messages[0] || __('Failed to update attending status')
+      toast.error(error.value)
+    })
 }
 
 function details() {
