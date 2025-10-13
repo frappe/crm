@@ -595,7 +595,12 @@ const peoples = computed({
 })
 
 const attendees = computed(() => {
-  const counts = { Yes: 1, No: 0, Maybe: 0, Awaiting: 0 }
+  const counts = { Yes: 0, No: 0, Maybe: 0, Awaiting: 0 }
+
+  if (_event.value.attending === 'Yes') counts.Yes += 1
+  else if (_event.value.attending === 'No') counts.No += 1
+  else if (_event.value.attending === 'Maybe') counts.Maybe += 1
+  else counts.Awaiting += 1
 
   peoples.value.forEach((p) => {
     if (p.attending === 'Yes') counts.Yes += 1
