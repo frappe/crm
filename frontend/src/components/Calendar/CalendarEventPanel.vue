@@ -45,7 +45,7 @@
     <div v-if="mode == 'details'" class="flex flex-col flex-1 overflow-y-auto">
       <div
         class="flex items-start gap-2 px-4.5 py-3 pb-0"
-        @dblclick="!readonly && editDetails"
+        @dblclick="editDetails"
       >
         <div
           class="mx-0.5 my-[5px] size-2.5 rounded-full cursor-pointer"
@@ -786,6 +786,7 @@ function updateTime(t, fromTime = false) {
 }
 
 function saveEvent() {
+  if (readonly.value) return
   if (!dirty.value) return
 
   error.value = null
@@ -812,6 +813,7 @@ function saveEvent() {
 }
 
 function editDetails() {
+  if (readonly.value) return
   emit('edit', _event.value)
 }
 
@@ -824,6 +826,7 @@ function duplicateEvent() {
 }
 
 function deleteEvent() {
+  if (readonly.value) return
   emit('delete', _event.value.id)
 }
 
@@ -982,12 +985,12 @@ useKeyboardShortcuts({
       keys: 'Enter',
       guard: () =>
         ['details', 'edit'].includes(props.mode) && props.mode === 'details',
-      action: () => !readonly.value && editDetails(),
+      action: () => editDetails(),
     },
     {
       keys: ['Delete', 'Backspace'],
       guard: () => ['details', 'edit'].includes(props.mode),
-      action: () => !readonly.value && deleteEvent(),
+      action: () => deleteEvent(),
     },
     {
       match: (e) =>
