@@ -14,14 +14,14 @@
       </div>
       <div class="flex items-center gap-x-1">
         <ShortcutTooltip
-          v-if="mode == 'details'"
+          v-if="mode == 'details' && !readonly"
           :label="__('Edit event')"
           combo="Enter"
         >
           <Button :icon="EditIcon" variant="ghost" @click="editDetails" />
         </ShortcutTooltip>
         <ShortcutTooltip
-          v-if="mode === 'edit' || mode === 'details'"
+          v-if="(mode === 'edit' || mode === 'details') && !readonly"
           :label="__('Delete event')"
           combo="Delete"
           :alt-combos="['Backspace']"
@@ -45,7 +45,7 @@
     <div v-if="mode == 'details'" class="flex flex-col flex-1 overflow-y-auto">
       <div
         class="flex items-start gap-2 px-4.5 py-3 pb-0"
-        @dblclick="editDetails"
+        @dblclick="!readonly && editDetails"
       >
         <div
           class="mx-0.5 my-[5px] size-2.5 rounded-full cursor-pointer"
@@ -465,7 +465,7 @@
 
     <div v-if="mode != 'details'" class="px-4.5 py-3">
       <ErrorMessage class="my-2" :message="error" />
-      <div class="w-full">
+      <div v-if="!readonly" class="w-full">
         <Button
           variant="solid"
           class="w-full"
@@ -585,6 +585,8 @@ const event = defineModel('event')
 const events = inject('events')
 
 const _event = ref({})
+
+const readonly = computed(() => _event.value?.owner?.value !== user)
 
 const peoples = computed({
   get() {
@@ -706,6 +708,7 @@ function fetchEvent(oldMode) {
       onSuccess: (data) => {
         _event.value = parseEventDoc(data)
         oldEvent.value = deepClone(_event.value)
+        handleReadonlyEvent()
       },
     })
     if (eventResource.value.doc && !event.value.reloadEvent) {
@@ -728,7 +731,14 @@ function fetchEvent(oldMode) {
       _event.value.title = _event.value.title + ' (Copy)'
     }
   }
+  handleReadonlyEvent()
   showAllParticipants.value = false
+}
+
+function handleReadonlyEvent() {
+  if (props.mode === 'edit' && readonly.value) {
+    emit('details', _event.value)
+  }
 }
 
 function focusOnTitle() {
@@ -972,12 +982,12 @@ useKeyboardShortcuts({
       keys: 'Enter',
       guard: () =>
         ['details', 'edit'].includes(props.mode) && props.mode === 'details',
-      action: () => editDetails(),
+      action: () => !readonly.value && editDetails(),
     },
     {
       keys: ['Delete', 'Backspace'],
       guard: () => ['details', 'edit'].includes(props.mode),
-      action: () => deleteEvent(),
+      action: () => !readonly.value && deleteEvent(),
     },
     {
       match: (e) =>
