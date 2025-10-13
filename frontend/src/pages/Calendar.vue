@@ -90,6 +90,32 @@
               :modelValue="activeView"
               @update:modelValue="updateActiveView($event)"
             />
+
+            <Link
+              class="form-control"
+              :value="getUser(currentUser).full_name"
+              doctype="User"
+              @change="(option) => updateUser(option)"
+              :placeholder="__('John Doe')"
+              :filters="{
+                name: ['in', users.data.crmUsers?.map((user) => user.name)],
+              }"
+              :hideMe="true"
+            >
+              <template #prefix>
+                <UserAvatar class="mr-2 !h-4 !w-4" :user="currentUser" />
+              </template>
+              <template #item-prefix="{ option }">
+                <UserAvatar class="mr-2" :user="option.value" size="sm" />
+              </template>
+              <template #item-label="{ option }">
+                <Tooltip :text="option.value">
+                  <div class="cursor-pointer text-ink-gray-9">
+                    {{ getUser(option.value).full_name }}
+                  </div>
+                </Tooltip>
+              </template>
+            </Link>
           </div>
         </div>
       </template>
@@ -127,7 +153,9 @@ import CalendarEventPanel from '@/components/Calendar/CalendarEventPanel.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
+import Link from '@/components/Controls/Link.vue'
 import { sessionStore } from '@/stores/session'
+import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { getSettings } from '@/stores/settings'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
@@ -137,6 +165,7 @@ import {
   TabButtons,
   dayjs,
   DatePicker,
+  Tooltip,
   CalendarActiveEvent as activeEvent,
   call,
   toast,
@@ -147,6 +176,7 @@ import { useRoute } from 'vue-router'
 const { user } = sessionStore()
 const { $dialog } = globalStore()
 const { settings } = getSettings()
+const { users, getUser } = usersStore()
 const route = useRoute()
 
 const modeMap = {
@@ -161,6 +191,15 @@ const defaultMode = computed(() => {
 
 const calendar = ref(null)
 const activeRangeKey = ref('')
+const currentUser = ref(user)
+
+async function updateUser(u) {
+  currentUser.value = u
+  events.update({
+    orFilters: buildEventOrFilters(),
+  })
+  await events.reload()
+}
 
 function buildEventFilters(range) {
   const filters = [['status', '=', 'Open']]
@@ -173,6 +212,13 @@ function buildEventFilters(range) {
     filters.push(['ends_on', '>=', start])
   }
   return filters
+}
+
+function buildEventOrFilters() {
+  return [
+    ['owner', '=', currentUser.value],
+    ['Event Participants', 'email', '=', currentUser.value],
+  ]
 }
 
 const events = createListResource({
@@ -193,6 +239,7 @@ const events = createListResource({
     'reference_docname',
   ],
   filters: buildEventFilters(),
+  orFilters: buildEventOrFilters(),
   pageLength: 9999,
   transform: (data) =>
     data.map((ev) => ({
@@ -270,7 +317,7 @@ function createEvent(_event) {
   if (!_event?.title) return
   events.insert.submit(buildEventPayload(_event), {
     onSuccess: async (e) => {
-      await events.reload()
+      await updateUser(user)
       toast.success(__('Event created successfully'))
       showDetails({ id: e.name })
     },
@@ -383,7 +430,10 @@ async function handleRangeChange(range) {
     if (events.list?.loading || events.list?.fetched) return
   }
   activeRangeKey.value = key
-  events.update({ filters: buildEventFilters(range) })
+  events.update({
+    filters: buildEventFilters(range),
+    orFilters: buildEventOrFilters(),
+  })
   await events.reload()
 }
 
