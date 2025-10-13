@@ -40,7 +40,6 @@
       <template
         #header="{
           currentMonthYear,
-          enabledModes,
           activeView,
           selectedMonthDate,
           decrement,
@@ -83,12 +82,18 @@
             />
             <Button @click="increment" variant="ghost" icon="chevron-right" />
 
-            <!--  View change button, default is months or can be set via props!  -->
-            <TabButtons
-              :buttons="enabledModes"
-              class="ml-2"
+            <!-- View Buttons -->
+            <FormControl
+              type="select"
+              class="mr-1 w-24"
               :modelValue="activeView"
               @update:modelValue="updateActiveView($event)"
+              :options="[
+                { label: __('Day'), value: 'Day' },
+                { label: __('Week'), value: 'Week' },
+                { label: __('Month'), value: 'Month' },
+              ]"
+              :placeholder="__('Operator')"
             />
 
             <Link
