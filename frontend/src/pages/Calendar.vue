@@ -271,7 +271,12 @@ function createEvent(_event) {
   events.insert.submit(buildEventPayload(_event), {
     onSuccess: async (e) => {
       await events.reload()
+      toast.success(__('Event created successfully'))
       showDetails({ id: e.name })
+    },
+    onError: (err) => {
+      toast.error(err.messages[0])
+      console.error('Failed creating event', err)
     },
   })
 }
@@ -344,7 +349,14 @@ function deleteEvent(eventID) {
         theme: 'red',
         onClick: (close) => {
           events.delete.submit(eventID, {
-            onSuccess: () => events.reload(),
+            onSuccess: () => {
+              toast.success(__('Event deleted successfully'))
+              events.reload()
+            },
+            onError: (err) => {
+              toast.error(err.messages[0])
+              console.error('Failed deleting event', err)
+            },
           })
           showEventPanel.value = false
           event.value = {}
