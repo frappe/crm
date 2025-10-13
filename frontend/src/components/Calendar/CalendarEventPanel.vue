@@ -60,14 +60,17 @@
           <div class="text-ink-gray-6 text-p-base">{{ formattedDateTime }}</div>
         </div>
       </div>
-      <div
-        v-if="_event.location || notifications?.length"
-        class="mx-4.5 my-2.5 border-t border-outline-gray-1"
-      />
+      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <div v-if="_event.location" class="px-4.5 py-2">
         <div class="flex gap-3 text-ink-gray-7">
           <LocationIcon class="size-4" />
           <div>{{ __(_event.location) }}</div>
+        </div>
+      </div>
+      <div v-if="_event.eventType" class="px-4.5 py-2">
+        <div class="flex gap-3 text-ink-gray-7">
+          <ShieldIcon class="size-4" />
+          <div>{{ __(_event.eventType) }}</div>
         </div>
       </div>
       <div v-if="notifications?.length" class="px-4.5 py-2">
@@ -341,6 +344,31 @@
       <div
         class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
       >
+        <div class="">{{ __('Visibility') }}</div>
+        <div class="flex items-center gap-x-1.5">
+          <FormControl
+            class="w-[216px]"
+            type="select"
+            :options="[
+              {
+                label: __('Private'),
+                value: 'Private',
+              },
+              {
+                label: __('Public'),
+                value: 'Public',
+              },
+            ]"
+            v-model="_event.eventType"
+            variant="outline"
+            :placeholder="__('Private or Public')"
+            @change="() => sync()"
+          />
+        </div>
+      </div>
+      <div
+        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
+      >
         <div class="">{{ __('Link') }}</div>
         <div class="flex items-center gap-x-1.5">
           <FormControl
@@ -489,6 +517,7 @@
 <script setup>
 import BellIcon from '@/components/Icons/BellIcon.vue'
 import LocationIcon from '@/components/Icons/LocationIcon.vue'
+import ShieldIcon from '@/components/Icons/ShieldIcon.vue'
 import PeopleIcon from '@/components/Icons/PeopleIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
