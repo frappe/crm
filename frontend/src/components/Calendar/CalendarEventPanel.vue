@@ -465,7 +465,7 @@
 
     <div v-if="mode != 'details'" class="px-4.5 py-3">
       <ErrorMessage class="my-2" :message="error" />
-      <div v-if="!readonly" class="w-full">
+      <div class="w-full">
         <Button
           variant="solid"
           class="w-full"
@@ -786,7 +786,6 @@ function updateTime(t, fromTime = false) {
 }
 
 function saveEvent() {
-  if (readonly.value) return
   if (!dirty.value) return
 
   error.value = null
