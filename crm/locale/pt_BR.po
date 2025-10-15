@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-01 08:38\n"
+"PO-Revision-Date: 2025-10-07 11:23\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -252,7 +252,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:9
 msgid "Add Assignee"
-msgstr ""
+msgstr "Adicionar responsável"
 
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/Kanban/KanbanView.vue:157
@@ -328,7 +328,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:28
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:64
 msgid "Add condition"
-msgstr ""
+msgstr "Adicionar condição"
 
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:91
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:70
@@ -588,11 +588,11 @@ msgstr "Atribuído A"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:5
 msgid "Assignee Rules"
-msgstr ""
+msgstr "Regras de Atribuição"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:81
 msgid "Assignees"
-msgstr ""
+msgstr "Responsáveis"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -606,7 +606,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
-msgstr ""
+msgstr "Cronograma de atribuições"
 
 #: frontend/src/components/ListBulkActions.vue:154
 msgid "Assignment cleared successfully"
@@ -614,7 +614,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:145
 msgid "Assignment condition"
-msgstr ""
+msgstr "Condição de atribuição"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:471
 msgid "Assignment days are required"
@@ -648,7 +648,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
 #: frontend/src/components/Settings/Settings.vue:163
 msgid "Assignment rules"
-msgstr ""
+msgstr "Regra de atribuição"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
 msgid "Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions"
@@ -1165,7 +1165,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:306
 msgid "Choose the days of the week when this rule should be active."
-msgstr ""
+msgstr "Escolha os dias da semana em que esta regra deve estar ativa."
 
 #: frontend/src/components/Settings/EmailAdd.vue:9
 msgid "Choose the email service provider you want to configure."
@@ -2028,7 +2028,7 @@ msgstr "Duplicar"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:38
 msgid "Duplicate Assignment Rule"
-msgstr ""
+msgstr "Duplicar Regra de Atribuição"
 
 #: frontend/src/components/Modals/ViewModal.vue:8
 msgid "Duplicate View"
@@ -3085,7 +3085,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:78
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:149
 msgid "Invite agent"
-msgstr ""
+msgstr "Convidar agente"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:51
 msgid "Invite as"
@@ -3219,7 +3219,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:108
 msgid "Last"
-msgstr ""
+msgstr "Último"
 
 #: frontend/src/components/Filter.vue:615
 msgid "Last 6 Months"
@@ -3268,7 +3268,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:101
 msgid "Last user assigned by this rule"
-msgstr ""
+msgstr "Último usuário atribuído por esta regra"
 
 #. Label of the layout (Code) field in DocType 'CRM Dashboard'
 #. Label of the layout (Code) field in DocType 'CRM Fields Layout'
@@ -3343,7 +3343,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:158
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:238
 msgid "Learn about conditions"
-msgstr ""
+msgstr "Saiba mais sobre as condições"
 
 #. Label of the lft (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -3724,7 +3724,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:44
 msgid "New Assignment Rule Name"
-msgstr ""
+msgstr "Novo nome da regra de atribuição"
 
 #: frontend/src/components/Modals/CallLogModal.vue:97
 msgid "New Call Log"
@@ -3873,7 +3873,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:14
 msgid "No items in the list"
-msgstr ""
+msgstr "Nenhum item na lista"
 
 #: frontend/src/components/FieldLayoutEditor.vue:92
 msgid "No label"
@@ -4066,7 +4066,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
 msgid "Old Condition"
-msgstr ""
+msgstr "Condição antiga"
 
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -5652,7 +5652,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:224
 msgid "Unassignment condition"
-msgstr ""
+msgstr "Condição de desatribuição"
 
 #: crm/integrations/exotel/handler.py:170
 msgid "Unauthorized request"
