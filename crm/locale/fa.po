@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-01 08:38\n"
+"PO-Revision-Date: 2025-10-10 11:59\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -1331,7 +1331,7 @@ msgstr ""
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
-msgstr "تایید"
+msgstr "تأیید"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:139
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:239
@@ -1340,7 +1340,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:18
 msgid "Confirm Password"
-msgstr "گذرواژه را تایید کنید"
+msgstr "گذرواژه را تأیید کنید"
 
 #: frontend/src/components/Settings/Users.vue:228
 msgid "Confirm Remove"
@@ -2962,7 +2962,7 @@ msgstr "یکی از"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "In Progress"
-msgstr "در حال پیش رفت"
+msgstr "در حال انجام"
 
 #: frontend/src/components/SLASection.vue:68
 msgid "In less than a minute"
@@ -4457,7 +4457,7 @@ msgstr "نمایه"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:147
 msgid "Profile updated successfully"
-msgstr ""
+msgstr "نمایه با موفقیت به‌روزرسانی شد"
 
 #: crm/api/dashboard.py:667
 msgid "Projected vs actual revenue based on deal probability"
