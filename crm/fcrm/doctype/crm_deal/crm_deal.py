@@ -35,6 +35,15 @@ class CRMDeal(Document):
 
 	def before_save(self):
 		self.apply_sla()
+		self.sync_lead_color()
+
+	def sync_lead_color(self):
+		"""Fetch card_color from linked Lead (if any)"""
+		if self.lead:
+			lead_color = frappe.db.get_value("CRM Lead", self.lead, "card_color")
+			if lead_color and self.card_color != lead_color:
+				self.card_color = lead_color
+
 
 	def set_primary_contact(self, contact=None):
 		if not self.contacts:
@@ -238,6 +247,12 @@ class CRMDeal(Document):
 				"key": "modified",
 				"width": "8rem",
 			},
+           {
+				"label": "Card Color",
+				"type": "Color",
+				"key": "card_color",
+				"width": "6rem",
+			},
 		]
 		rows = [
 			"name",
@@ -253,6 +268,7 @@ class CRMDeal(Document):
 			"first_response_time",
 			"first_responded_on",
 			"modified",
+			"card_color",
 			"_assign",
 		]
 		return {"columns": columns, "rows": rows}

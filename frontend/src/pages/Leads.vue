@@ -121,6 +121,80 @@
         <div class="text-ink-gray-4" v-else>{{ __('No Title') }}</div>
       </div>
     </template>
+    <!-- <template #fields="{ fieldName, itemName }">
+      <div
+        v-if="getRow(itemName, fieldName).label"
+        class="truncate flex items-center gap-2"
+      >
+        <div v-if="fieldName === 'status'">
+          <IndicatorIcon :class="getRow(itemName, fieldName).color" />
+        </div>
+        <div
+          v-else-if="
+            fieldName === 'organization' && getRow(itemName, fieldName).label
+          "
+        >
+          <Avatar
+            class="flex items-center"
+            :image="getRow(itemName, fieldName).logo"
+            :label="getRow(itemName, fieldName).label"
+            size="xs"
+          />
+        </div>
+        <div v-else-if="fieldName === 'lead_name'">
+          <Avatar
+            v-if="getRow(itemName, fieldName).label"
+            class="flex items-center"
+            :image="getRow(itemName, fieldName).image"
+            :label="getRow(itemName, fieldName).image_label"
+            size="xs"
+          />
+        </div>
+        <div v-else-if="fieldName === 'lead_owner'">
+          <Avatar
+            v-if="getRow(itemName, fieldName).full_name"
+            class="flex items-center"
+            :image="getRow(itemName, fieldName).user_image"
+            :label="getRow(itemName, fieldName).full_name"
+            size="xs"
+          />
+        </div>
+        <div
+          v-if="
+            [
+              'modified',
+              'creation',
+              'first_response_time',
+              'first_responded_on',
+              'response_by',
+            ].includes(fieldName)
+          "
+          class="truncate text-base"
+        >
+          <Tooltip :text="getRow(itemName, fieldName).label">
+            <div>{{ getRow(itemName, fieldName).timeAgo }}</div>
+          </Tooltip>
+        </div>
+        <div v-else-if="fieldName === 'sla_status'" class="truncate text-base">
+          <Badge
+            v-if="getRow(itemName, fieldName).value"
+            :variant="'subtle'"
+            :theme="getRow(itemName, fieldName).color"
+            size="md"
+            :label="getRow(itemName, fieldName).value"
+          />
+        </div>
+        <div v-else-if="fieldName === '_assign'" class="flex items-center">
+          <MultipleAvatar
+            :avatars="getRow(itemName, fieldName).label"
+            size="xs"
+          />
+        </div>
+        <div v-else class="truncate text-base">
+          {{ getRow(itemName, fieldName).label }}
+        </div>
+      </div>
+    </template> -->
     <template #fields="{ fieldName, itemName }">
       <div
         v-if="getRow(itemName, fieldName).label"
@@ -313,6 +387,7 @@ import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
+import { watch, nextTick } from 'vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Lead')
@@ -435,9 +510,7 @@ function parseRows(rows, columns = []) {
 
       if (fieldType && fieldType == 'Percent') {
         _rows[row] = getFormattedPercent(row, lead)
-      }
-
-      if (row == 'lead_name') {
+      } else if (row == 'lead_name') {
         _rows[row] = {
           label: lead.lead_name,
           image: lead.image,
@@ -452,10 +525,12 @@ function parseRows(rows, columns = []) {
           label: lead.status,
           color: getLeadStatus(lead.status)?.color,
         }
+      } else if (row === 'card_color') {
+        _rows[row] = lead.card_color; 
       } else if (row == 'sla_status') {
         let value = lead.sla_status
         let tooltipText = value
-        let color =
+        let color =  
           lead.sla_status == 'Failed'
             ? 'red'
             : lead.sla_status == 'Fulfilled'
@@ -575,4 +650,36 @@ function showTask(name) {
   docname.value = name
   showTaskModal.value = true
 }
+function getTextColor(bgColor) {
+  if (!bgColor) return '#000000'
+  const c = bgColor.substring(1) 
+  const rgb = parseInt(c, 16)
+  const r = (rgb >> 16) & 0xff
+  const g = (rgb >> 8) & 0xff
+  const b = (rgb >> 0) & 0xff
+  const luma = 0.299 * r + 0.587 * g + 0.114 * b
+  return luma > 180 ? '#000000' : '#ffffff'
+}
+watch(
+  () => leads.value.data,
+  async () => {
+    if (route.params.viewType !== 'kanban' || !leads.value.data?.data) return;
+
+    await nextTick();
+
+    // Flatten all leads from Kanban columns
+    const allLeads = leads.value.data.data.flatMap((col) => col.data || []);
+
+    allLeads.forEach((lead) => {
+      const cards = document.querySelectorAll(`[data-name="${lead.name}"]`);
+      cards.forEach((card) => {
+        if (card && lead.card_color) {
+          card.style.backgroundColor = lead.card_color;
+          card.style.color = getTextColor(lead.card_color);
+        }
+      });
+    });
+  },
+  { deep: true }
+);
 </script>

@@ -23,6 +23,7 @@
   "column_break_kpxa",
   "expected_closure_date",
   "closed_date",
+  "card_color",
   "contacts_tab",
   "contacts",
   "contact",
@@ -427,12 +428,17 @@
    "fieldname": "closed_date",
    "fieldtype": "Date",
    "label": "Closed Date"
+  },
+  {
+   "fieldname": "card_color",
+   "fieldtype": "Color",
+   "label": "Card Color"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-26 12:12:56.324245",
+ "modified": "2025-10-16 02:31:48.075612",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

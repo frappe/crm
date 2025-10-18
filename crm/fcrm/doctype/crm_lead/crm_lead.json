@@ -18,6 +18,7 @@
   "job_title",
   "source",
   "lead_owner",
+  "card_color",
   "person_tab",
   "salutation",
   "first_name",
@@ -325,13 +326,18 @@
    "label": "Net Total",
    "options": "currency",
    "read_only": 1
+  },
+  {
+   "fieldname": "card_color",
+   "fieldtype": "Color",
+   "label": "Card Color"
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-14 19:51:06.184569",
+ "modified": "2025-10-16 02:30:35.253655",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

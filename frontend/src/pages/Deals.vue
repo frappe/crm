@@ -288,6 +288,8 @@ import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
+import { watch, nextTick } from 'vue'
+
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Deal')
@@ -425,7 +427,10 @@ function parseRows(rows, columns = []) {
           label: deal.status,
           color: getDealStatus(deal.status)?.color,
         }
-      } else if (row == 'sla_status') {
+      } else if (row === 'card_color') {
+        _rows[row] = deal.card_color;
+      }
+      else if (row == 'sla_status') {
         let value = deal.sla_status
         let tooltipText = value
         let color =
@@ -548,4 +553,36 @@ function showTask(name) {
   docname.value = name
   showTaskModal.value = true
 }
+function getTextColor(bgColor) {
+  if (!bgColor) return '#ffffff'
+  const c = bgColor.substring(1) 
+  const rgb = parseInt(c, 16)
+  const r = (rgb >> 16) & 0xff
+  const g = (rgb >> 8) & 0xff
+  const b = (rgb >> 0) & 0xff
+  const luma = 0.299 * r + 0.587 * g + 0.114 * b
+  return luma > 180 ? '#000000' : '#ffffff'
+}
+watch(
+  () => deals.value.data,
+  async () => {
+    if (route.params.viewType !== 'kanban' || !deals.value.data?.data) return;
+
+    await nextTick();
+
+    const allDeals = deals.value.data.data.flatMap((col) => col.data || []);
+
+    allDeals.forEach((deal) => {
+      const cards = document.querySelectorAll(`[data-name="${deal.name}"]`);
+      cards.forEach((card) => {
+        if (card && deal.card_color) {
+          card.style.backgroundColor = deal.card_color;
+          card.style.color = getTextColor(deal.card_color);
+        }
+      });
+    });
+  },
+  { deep: true }
+);
+
 </script>

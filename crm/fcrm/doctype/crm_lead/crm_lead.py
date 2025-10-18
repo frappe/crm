@@ -371,6 +371,12 @@ class CRMLead(Document):
 				"key": "modified",
 				"width": "8rem",
 			},
+			{
+				"label": "Card Color",
+				"type": "Color",
+				"key": "card_color",
+				"width": "6rem",
+			},
 		]
 		rows = [
 			"name",
@@ -387,6 +393,7 @@ class CRMLead(Document):
 			"first_responded_on",
 			"modified",
 			"_assign",
+			"card_color",
 			"image",
 		]
 		return {"columns": columns, "rows": rows}

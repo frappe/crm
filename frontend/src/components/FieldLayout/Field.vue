@@ -207,6 +207,13 @@
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
+    <input
+      v-else-if="field.fieldtype === 'Color'"
+      type="color"
+      v-model="cardColor"
+      class="h-9 w-16 cursor-pointer rounded border border-outline-gray-2 p-0"
+      :disabled="Boolean(field.read_only)"
+    />
     <FormControl
       v-else
       type="text"
@@ -268,6 +275,15 @@ if (!isGridRow) {
   triggerOnChange = inject('triggerOnChange', () => {})
   parentDoc = inject('parentDoc')
 }
+
+const cardColor = computed({
+  get() {
+    return data.value[field.value.fieldname] || '#ffffff'
+  },
+  set(value) {
+    fieldChange(value, field.value)
+  }
+})
 
 const field = computed(() => {
   let field = props.field
