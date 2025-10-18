@@ -4,7 +4,7 @@
         <div class="flex justify-between px-2 pt-2">
             <div class="flex flex-col gap-1 w-9/12">
                 <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-                {{ __('Lead Sources') }}
+                {{ __('Lead sources') }}
                 </h2>
                 <p class="text-p-base text-ink-gray-6">
                 {{
@@ -45,7 +45,7 @@
             <div
                 class="text-ink-gray-4 border border-dashed rounded w-full flex items-center justify-center"
             >
-                {{ __('No email sources found') }}
+                {{ __('No lead sources found') }}
             </div>
         </div>
 
@@ -165,7 +165,6 @@ const emit = defineEmits(["updateStep"]);
 const sources = inject("sources");
 
 const search = ref("");
-// const currentDoctype = ref('All')
 const confirmDelete = ref(false);
 
 const sourcesList = computed(() => {
@@ -177,11 +176,6 @@ const sourcesList = computed(() => {
 				source.subject.toLowerCase().includes(search.value.toLowerCase()),
 		);
 	}
-	//   if (currentDoctype.value !== 'All') {
-	//     list = list.filter(
-	//       (template) => source.reference_doctype === currentDoctype.value,
-	//     )
-	//   }
 	return list;
 });
 
