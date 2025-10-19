@@ -15,6 +15,7 @@ class FailedLeadSyncLog(Document):
 		from frappe.types import DF
 
 		lead_data: DF.Code | None
+		source: DF.Link | None
 		type: DF.Literal["Duplicate", "Failure"]
 	# end: auto-generated types
 

@@ -5,8 +5,8 @@ import frappe
 from frappe.model.document import Document
 
 from crm.lead_syncing.doctype.lead_sync_source.facebook import (
+	FacebookSyncSource,
 	fetch_and_store_pages_from_facebook,
-	sync_leads_from_facebook,
 )
 
 
@@ -60,4 +60,8 @@ class LeadSyncSource(Document):
 		if self.type == "Facebook" and self.access_token:
 			if not self.facebook_lead_form:
 				frappe.throw(frappe._("Please select a lead gen form before syncing!"))
-			sync_leads_from_facebook(self.get_password("access_token"), self.facebook_lead_form)
+
+			FacebookSyncSource(
+				self.get_password("access_token"),
+				self.facebook_lead_form
+			).sync()
