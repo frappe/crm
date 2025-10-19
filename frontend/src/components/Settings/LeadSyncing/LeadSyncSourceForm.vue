@@ -55,6 +55,16 @@
             </template>
         </FormControl>
 
+
+        <FormControl
+            v-if="fieldsMap.background_sync_frequency"
+            type="select"
+            required="true"
+            :options="fieldsMap.background_sync_frequency.options"
+            v-model="syncSource.background_sync_frequency"
+            :label="__('Background Sync Frequency')"
+        />
+
         <FormControl 
             type="password"
             required="true"
@@ -78,15 +88,6 @@
             :filters="{
                 'page': syncSource.facebook_page
             }"
-        />
-
-        <FormControl
-            v-if="fieldsMap.background_sync_frequency"
-            type="select"
-            required="true"
-            :options="fieldsMap.background_sync_frequency.options"
-            v-model="syncSource.background_sync_frequency"
-            :label="__('Background Sync Frequency')"
         />
      </div>
 
@@ -176,13 +177,6 @@ const syncSource = ref({
 const isLocal = ref(true);
 
 function updateSource(data) {
-	let showSuccessToast = true;
-    if (mappingFormDocResource.value ?? mappingFormDocResource.value.document.isDirty)
-    {
-        mappingFormDocResource.value.document.save.submit();
-		showSuccessToast = false;
-    }
-
 	sources.setValue.submit(
 		{
 			name: syncSource.value.name,
@@ -194,9 +188,7 @@ function updateSource(data) {
 					docResource.value.document.reload();
 				}
 				
-				if (showSuccessToast) {
-					toast.success(__("Lead Sync Source updated successfully"));
-				}
+				mappingFormDocResource.value.document.save.submit();
 			},
 			onError(e) {
 				toast.error(e.messages[0] || __("Error updating Lead Sync Source"));
