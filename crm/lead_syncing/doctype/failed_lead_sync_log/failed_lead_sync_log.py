@@ -16,6 +16,7 @@ class FailedLeadSyncLog(Document):
 
 		lead_data: DF.Code | None
 		source: DF.Link | None
+		traceback: DF.Code | None
 		type: DF.Literal["Duplicate", "Failure"]
 	# end: auto-generated types
 
