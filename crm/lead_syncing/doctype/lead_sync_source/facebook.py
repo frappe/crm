@@ -12,63 +12,105 @@ def get_fb_graph_api_url(endpoint: str) -> str:
 	return f"{FB_GRAPH_API_BASE}/{FB_GRAPH_API_VERSION}/{endpoint}"
 
 
-def sync_leads_from_facebook(access_token: str, lead_form_id: str) -> None:
-	url = get_fb_graph_api_url(f"/{lead_form_id}/leads")
-	last_synced_at = frappe.db.get_value(
-		"Lead Sync Source", {"facebook_lead_form": lead_form_id}, "last_synced_at"
-	)
-	if last_synced_at:
-		timestamp = frappe.utils.data.get_timestamp(last_synced_at)
-		filtering = f"filtering=[{{'field':'time_created','operator':'GREATER_THAN','value':{timestamp}}}]"
-		url = f"{url}?{filtering}"
+class FacebookSyncSource:
+	def __init__(
+		self,
+		access_token: str,
+		form_id: str,
+		source_name: str | None = None,
+	):
+		self.access_token = access_token
+		self.form_id = form_id
+		self.source_name = source_name
 
-	leads = make_get_request(
-		url,
-		params={
-			"access_token": access_token,
-			"fields": "id,created_time,field_data",
-			"limit": 15000,
-		},
-	).get("data", [])
+	def get_api_url(self, endpoint: str) -> str:
+		return get_fb_graph_api_url(endpoint)
 
-	form_questions = frappe.db.get_all(
-		"Facebook Lead Form Question", filters={"parent": lead_form_id}, fields=["key", "mapped_to_crm_field"]
-	)
+	def sync(self):
+		leads = self.fetch_leads()
+		question_to_field_map = self.get_form_questions_mapping()
 
-	# Map form questions to CRM Lead fields
-	question_to_field_map = {
-		q["key"]: q["mapped_to_crm_field"] for q in form_questions if q["mapped_to_crm_field"]
-	}
+		for lead in leads:
+			lead_data = {item["name"]: item["values"][0] for item in lead["field_data"]}
+			crm_lead_data = {
+				question_to_field_map.get(k): v for k, v in lead_data.items() if k in question_to_field_map
+			}
+			crm_lead_data["source"] = "Facebook"
+			crm_lead_data["facebook_lead_id"] = lead["id"]
 
-	for lead in leads:
-		lead_data = {item["name"]: item["values"][0] for item in lead["field_data"]}
-		crm_lead_data = {
-			question_to_field_map.get(k): v for k, v in lead_data.items() if k in question_to_field_map
-		}
-		crm_lead_data["source"] = "Facebook"
-		crm_lead_data["facebook_lead_id"] = lead["id"]
+			try:
+				frappe.get_doc(
+					{
+						"doctype": "CRM Lead",
+						**crm_lead_data,
+					}
+				).insert(ignore_permissions=True)
+			except frappe.UniqueValidationError:
+				# Skip duplicate leads based on facebook_lead_id
+				# TODO: de-duplication based on field values
+				self.create_failure_log(lead, "Duplicate")
+			except Exception:
+				self.create_failure_log(lead)
 
-		try:
-			frappe.get_doc(
-				{
-					"doctype": "CRM Lead",
-					**crm_lead_data,
-				}
-			).insert(ignore_permissions=True)
-		except frappe.UniqueValidationError:
-			# Skip duplicate leads based on facebook_lead_id
-			# TODO: de-duplication based on field values
-			frappe.get_doc(
-				{"doctype": "Failed Lead Sync Log", "type": "Duplicate", "lead_data": frappe.as_json(lead)}
-			).insert(ignore_permissions=True)
-		except Exception:
-			frappe.get_doc(
-				{"doctype": "Failed Lead Sync Log", "type": "Failure", "lead_data": frappe.as_json(lead)}
-			).insert(ignore_permissions=True)
+		self.update_last_synced_at()
 
-	frappe.db.set_value(
-		"Lead Sync Source", {"facebook_lead_form": lead_form_id}, "last_synced_at", frappe.utils.now()
-	)
+	def fetch_leads(self):
+		url = self.get_api_url(f"/{self.form_id}/leads")
+
+		if self.last_synced_at:
+			timestamp = frappe.utils.data.get_timestamp(self.last_synced_at)
+			filtering = (
+				f"filtering=[{{'field':'time_created','operator':'GREATER_THAN','value':{timestamp}}}]"
+			)
+			url = f"{url}?{filtering}"
+
+		return make_get_request(
+			url,
+			params={
+				"access_token": self.access_token,
+				"fields": "id,created_time,field_data",
+				"limit": 100000,  # TODO: pagination
+			},
+		).get("data", [])
+
+	def get_form_questions_mapping(self):
+		form_questions = frappe.db.get_all(
+			"Facebook Lead Form Question",
+			filters={"parent": self.form_id},
+			fields=["key", "mapped_to_crm_field"],
+		)
+
+		return {q["key"]: q["mapped_to_crm_field"] for q in form_questions if q["mapped_to_crm_field"]}
+
+	@property
+	def last_synced_at(self):
+		return frappe.db.get_value(
+			"Lead Sync Source", self.source_name or {"facebook_lead_form": self.form_id}, "last_synced_at"
+		)
+
+	def create_failure_log(self, lead_data: dict | None = None, type: str = "Failure"):
+		return frappe.get_doc(
+			{
+				"doctype": "Failed Lead Sync Log",
+				"type": type,
+				"lead_data": frappe.as_json(lead_data),
+				"source": self.get_source_name()
+			}
+		).insert(ignore_permissions=True)
+
+	def update_last_synced_at(self):
+		frappe.db.set_value(
+			"Lead Sync Source",
+			self.source_name or {"facebook_lead_form": self.form_id},
+			"last_synced_at",
+			frappe.utils.now(),
+		)
+
+	def get_source_name(self):
+		if self.source_name:
+			return self.source_name
+
+		return frappe.db.get_value("Lead Sync Source", {"facebook_lead_form": self.form_id}, "name")
 
 
 @frappe.whitelist()
@@ -156,3 +198,8 @@ def get_pages_with_forms() -> list[dict]:
 		forms = frappe.db.get_all("Facebook Lead Form", filters={"page": page["id"]}, fields=["id", "name"])
 		page["forms"] = forms
 	return pages
+
+
+def validate_duplicate(lead: dict, field_mapping: dict):
+	# if a lead exists with
+	pass

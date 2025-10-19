@@ -6,6 +6,9 @@
  "engine": "InnoDB",
  "field_order": [
   "type",
+  "column_break_dhay",
+  "source",
+  "section_break_fhot",
   "lead_data"
  ],
  "fields": [
@@ -25,13 +28,28 @@
    "label": "Lead Data",
    "options": "JSON",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_dhay",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "label": "Source",
+   "options": "Lead Sync Source",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_fhot",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-19 17:41:28.640446",
+ "modified": "2025-10-19 18:30:15.381205",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Failed Lead Sync Log",
