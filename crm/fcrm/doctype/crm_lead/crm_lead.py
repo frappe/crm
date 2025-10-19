@@ -28,6 +28,7 @@ class CRMLead(Document):
 		communication_status: DF.Link | None
 		converted: DF.Check
 		email: DF.Data | None
+		facebook_form_id: DF.Data | None
 		facebook_lead_id: DF.Data | None
 		first_name: DF.Data
 		first_responded_on: DF.Datetime | None

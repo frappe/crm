@@ -37,6 +37,7 @@ class FacebookSyncSource:
 			}
 			crm_lead_data["source"] = "Facebook"
 			crm_lead_data["facebook_lead_id"] = lead["id"]
+			crm_lead_data["facebook_form_id"] = self.form_id
 
 			try:
 				frappe.get_doc(
@@ -198,8 +199,3 @@ def get_pages_with_forms() -> list[dict]:
 		forms = frappe.db.get_all("Facebook Lead Form", filters={"page": page["id"]}, fields=["id", "name"])
 		page["forms"] = forms
 	return pages
-
-
-def validate_duplicate(lead: dict, field_mapping: dict):
-	# if a lead exists with
-	pass
