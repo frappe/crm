@@ -91,10 +91,10 @@
      </div>
 
      <!-- Mapping Grid -->
-    <div v-if="syncSource.facebook_lead_form && formDocResource && formDocResource.document?.doc">
+    <div v-if="syncSource.facebook_lead_form && mappingFormDocResource && mappingFormDocResource.document?.doc">
         <Grid
-            v-model="formDocResource.document.doc.questions"
-            v-model:parent="formDocResource.document.doc"
+            v-model="mappingFormDocResource.document.doc.questions"
+            v-model:parent="mappingFormDocResource.document.doc"
             doctype="Facebook Lead Form Question"
             parentDoctype="Facebook Lead Form"
             parentFieldname="questions"
@@ -134,7 +134,7 @@ const props = defineProps({
 const emit = defineEmits(["updateStep"]);
 
 const docResource = ref(null);
-const formDocResource = ref(null);
+const mappingFormDocResource = ref(null);
 
 const sourceDoc = computed(() => {
 	if (!docResource.value) return;
@@ -177,9 +177,9 @@ const isLocal = ref(true);
 
 function updateSource(data) {
 	let showSuccessToast = true;
-    if (formDocResource.value ?? formDocResource.value.document.isDirty)
+    if (mappingFormDocResource.value ?? mappingFormDocResource.value.document.isDirty)
     {
-        formDocResource.value.document.save.submit();
+        mappingFormDocResource.value.document.save.submit();
 		showSuccessToast = false;
     }
 
@@ -243,7 +243,7 @@ onMounted(() => {
 	}
 
 	if (syncSource.value.facebook_lead_form) {
-		formDocResource.value = useDocument(
+		mappingFormDocResource.value = useDocument(
 			"Facebook Lead Form",
 			syncSource.value.facebook_lead_form,
 		);
@@ -261,7 +261,7 @@ watch(
 					newDoc.type,
 			});
 
-			formDocResource.value = useDocument(
+			mappingFormDocResource.value = useDocument(
 				"Facebook Lead Form",
 				syncSource.value.facebook_lead_form,
 			);
@@ -281,12 +281,12 @@ watch(
     () => syncSource.value.facebook_lead_form,
     (newVal) => {
         if (newVal) {
-            formDocResource.value = useDocument(
+            mappingFormDocResource.value = useDocument(
                 "Facebook Lead Form",
                 newVal,
             );
         } else {
-            formDocResource.value = null;
+            mappingFormDocResource.value = null;
         }
     },
 );
