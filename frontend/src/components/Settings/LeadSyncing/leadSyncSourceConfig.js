@@ -1,4 +1,4 @@
-import LogoFacebook from '@/images/facebook.png'
+import LogoFacebook from '@/components/Icons/FacebookIcon.vue';
 
 
 export const supportedSourceTypes = [
