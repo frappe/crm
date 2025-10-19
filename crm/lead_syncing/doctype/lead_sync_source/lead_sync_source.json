@@ -84,8 +84,13 @@
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-10-19 18:23:24.725350",
+ "links": [
+  {
+   "link_doctype": "Failed Lead Sync Log",
+   "link_fieldname": "source"
+  }
+ ],
+ "modified": "2025-10-19 18:57:54.288252",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
