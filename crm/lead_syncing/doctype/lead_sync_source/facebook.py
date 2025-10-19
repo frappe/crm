@@ -138,6 +138,14 @@ def create_facebook_lead_form_in_db(form: dict, page_id: str) -> None:
 			"questions": form["questions"],
 		}
 	)
-
-	frappe.errprint(form_doc.as_dict())
 	form_doc.insert(ignore_permissions=True)
+
+@frappe.whitelist()
+def get_pages_with_forms() -> list[dict]:
+	pages = frappe.db.get_all("Facebook Page", fields=["id", "name"])
+	for page in pages:
+		forms = frappe.db.get_all(
+			"Facebook Lead Form", filters={"page": page["id"]}, fields=["id", "name"]
+		)
+		page["forms"] = forms
+	return pages

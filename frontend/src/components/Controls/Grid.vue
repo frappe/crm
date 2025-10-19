@@ -274,7 +274,8 @@
                   <Autocomplete
                     v-else-if="field.fieldtype === 'Autocomplete'"
                     class="text-sm text-ink-gray-8"
-                    v-model="row[field.fieldname]"
+                    :modelValue="row[field.fieldname]"
+                    @update:modelValue="(v) => row[field.fieldname] = typeof v == 'object' ? v.value : v"
                     @change="(v) => fieldChange(typeof v == 'object' ? v.value : v, field, row)"
                     :options="field.options"
                     :placeholder="field.placeholder"

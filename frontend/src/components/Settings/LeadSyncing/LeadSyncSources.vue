@@ -54,31 +54,6 @@
         class="flex flex-col overflow-hidden"
         v-if="!sources.loading && sources.data?.length"
         >
-        <div
-            v-if="sources.data?.length > 10"
-            class="flex items-center justify-between mb-4 px-2 pt-0.5"
-        >
-            <TextInput
-            ref="searchRef"
-            v-model="search"
-            :placeholder="__('Search template')"
-            class="w-1/3"
-            :debounce="300"
-            >
-            <template #prefix>
-                <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
-            </template>
-            </TextInput>
-            <FormControl
-            type="select"
-            v-model="currentDoctype"
-            :options="[
-                { label: __('All'), value: 'All' },
-                { label: __('Lead'), value: 'CRM Lead' },
-                { label: __('Deal'), value: 'CRM Deal' },
-            ]"
-            />
-        </div>
         <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
             <div class="w-4/6">{{ __('Name') }}</div>
             <div class="w-1/6">{{ __('Source') }}</div>
