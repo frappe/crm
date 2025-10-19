@@ -275,7 +275,7 @@
                     v-else-if="field.fieldtype === 'Autocomplete'"
                     class="text-sm text-ink-gray-8"
                     v-model="row[field.fieldname]"
-                    @change="(s) => fieldChange(s.value, field, row)"
+                    @change="(v) => fieldChange(typeof v == 'object' ? v.value : v, field, row)"
                     :options="field.options"
                     :placeholder="field.placeholder"
                     :disabled="Boolean(field.read_only)"
