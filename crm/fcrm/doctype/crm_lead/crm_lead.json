@@ -57,7 +57,9 @@
   "log_tab",
   "status_change_log",
   "syncing_tab",
-  "facebook_lead_id"
+  "facebook_lead_id",
+  "column_break_ixmu",
+  "facebook_form_id"
  ],
  "fields": [
   {
@@ -338,13 +340,22 @@
    "fieldtype": "Data",
    "label": "Facebook Lead ID",
    "unique": 1
+  },
+  {
+   "fieldname": "column_break_ixmu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "facebook_form_id",
+   "fieldtype": "Data",
+   "label": "Facebook Form ID"
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-29 19:21:49.483883",
+ "modified": "2025-10-19 18:36:24.683076",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
