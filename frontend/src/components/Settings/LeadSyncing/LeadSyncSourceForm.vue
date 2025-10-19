@@ -176,9 +176,11 @@ const syncSource = ref({
 const isLocal = ref(true);
 
 function updateSource(data) {
+	let showSuccessToast = true;
     if (formDocResource.value ?? formDocResource.value.document.isDirty)
     {
         formDocResource.value.document.save.submit();
+		showSuccessToast = false;
     }
 
 	sources.setValue.submit(
@@ -191,8 +193,10 @@ function updateSource(data) {
 				if (docResource.value) {
 					docResource.value.document.reload();
 				}
-
-				toast.success(__("Lead Sync Source updated successfully"));
+				
+				if (showSuccessToast) {
+					toast.success(__("Lead Sync Source updated successfully"));
+				}
 			},
 			onError(e) {
 				toast.error(e.messages[0] || __("Error updating Lead Sync Source"));
