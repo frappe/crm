@@ -41,7 +41,8 @@
    "fieldname": "access_token",
    "fieldtype": "Password",
    "label": "Access Token",
-   "length": 500
+   "length": 500,
+   "reqd": 1
   },
   {
    "fieldname": "facebook_page",
@@ -76,13 +77,14 @@
    "fieldname": "background_sync_frequency",
    "fieldtype": "Select",
    "label": "Background Sync Frequency",
-   "options": "Every 5 Minutes\nEvery 10 Minutes\nEvery 15 Minutes\nHourly\nDaily\nMonthly"
+   "options": "Every 5 Minutes\nEvery 10 Minutes\nEvery 15 Minutes\nHourly\nDaily\nMonthly",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-08 12:23:22.097933",
+ "modified": "2025-10-19 15:07:26.256720",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",

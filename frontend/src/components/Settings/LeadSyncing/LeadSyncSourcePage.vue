@@ -1,6 +1,6 @@
 <template>
   <div class="flex-1 p-6">
-    <NewLeadSyncSource
+    <LeadSyncSourceForm
       v-if="step === 'new-source'"
       :sourceData="source"
       @updateStep="updateStep"
@@ -9,7 +9,7 @@
       v-else-if="step === 'source-list'"
       @updateStep="updateStep"
     />
-    <EditLeadSyncSource
+    <LeadSyncSourceForm
       v-else-if="step === 'edit-source'"
       :sourceData="source"
       @updateStep="updateStep"
@@ -18,9 +18,8 @@
 </template>
 
 <script setup>
-import EditLeadSyncSource from "./EditLeadSyncSource.vue"
 import LeadSyncSources from "./LeadSyncSources.vue"
-import NewLeadSyncSource from "./NewLeadSyncSource.vue";
+import LeadSyncSourceForm from "./LeadSyncSourceForm.vue";
 
 import { createListResource } from 'frappe-ui'
 import { provide, ref } from 'vue'

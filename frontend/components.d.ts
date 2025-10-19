@@ -160,6 +160,7 @@ declare module 'vue' {
     LeadsIcon: typeof import('./src/components/Icons/LeadsIcon.vue')['default']
     LeadsListView: typeof import('./src/components/ListViews/LeadsListView.vue')['default']
     LeadSyncSettings: typeof import('./src/components/Settings/LeadSyncing/LeadSyncSettings.vue')['default']
+    LeadSyncSourceForm: typeof import('./src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue')['default']
     LeadSyncSourcePage: typeof import('./src/components/Settings/LeadSyncing/LeadSyncSourcePage.vue')['default']
     LeadSyncSources: typeof import('./src/components/Settings/LeadSyncing/LeadSyncSources.vue')['default']
     LightningIcon: typeof import('./src/components/Icons/LightningIcon.vue')['default']

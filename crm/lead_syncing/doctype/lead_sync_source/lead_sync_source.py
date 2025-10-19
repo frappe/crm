@@ -4,7 +4,10 @@
 import frappe
 from frappe.model.document import Document
 
-from crm.lead_syncing.doctype.lead_sync_source.facebook import sync_leads_from_facebook
+from crm.lead_syncing.doctype.lead_sync_source.facebook import (
+	fetch_and_store_pages_from_facebook,
+	sync_leads_from_facebook,
+)
 
 
 class LeadSyncSource(Document):
@@ -16,10 +19,8 @@ class LeadSyncSource(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		access_token: DF.Password | None
-		background_sync_frequency: DF.Literal[
-			"Every 5 Minutes", "Every 10 Minutes", "Every 15 Minutes", "Hourly", "Daily", "Monthly"
-		]
+		access_token: DF.Password
+		background_sync_frequency: DF.Literal["Every 5 Minutes", "Every 10 Minutes", "Every 15 Minutes", "Hourly", "Daily", "Monthly"]
 		enabled: DF.Check
 		facebook_lead_form: DF.Link | None
 		facebook_page: DF.Link | None
@@ -45,10 +46,10 @@ class LeadSyncSource(Document):
 		if already_active:
 			frappe.throw(frappe._("A lead sync source is already enabled for this Facebook Lead Form!"))
 
-	def before_save(self):
+	def before_insert(self):
 		if self.type == "Facebook" and self.access_token:
-			# fetch_and_store_pages_from_facebook(self.access_token)
-			pass
+			fetch_and_store_pages_from_facebook(self.access_token)
+		# rest of the source types can be added here
 
 	@frappe.whitelist()
 	def sync_leads(self):
