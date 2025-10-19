@@ -6,7 +6,7 @@ def sync_leads_from_all_enabled_sources(frequency: str | None = None) -> None:
 		"Lead Sync Source", filters={"enabled": 1, "background_sync_frequency": frequency}, pluck="name"
 	)
 	for source in enabled_sources:
-		lead_sync_source = frappe.get_doc("Lead Sync Source", source)
+		lead_sync_source = frappe.get_cached_doc("Lead Sync Source", source)
 		try:
 			lead_sync_source._sync_leads()
 		except Exception as _:
