@@ -437,7 +437,8 @@ function parseRows(rows, columns = []) {
 
       if (fieldType && fieldType == 'Percent') {
         _rows[row] = getFormattedPercent(row, lead)
-      } else if (row == 'lead_name') {
+      } 
+      if (row == 'lead_name') {
         _rows[row] = {
           label: lead.lead_name,
           image: lead.image,
