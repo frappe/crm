@@ -38,6 +38,8 @@
   {
    "fieldname": "source",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Source",
    "options": "Lead Sync Source",
    "read_only": 1
@@ -61,7 +63,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-19 18:53:32.192551",
+ "modified": "2025-10-19 18:59:17.152547",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Failed Lead Sync Log",
