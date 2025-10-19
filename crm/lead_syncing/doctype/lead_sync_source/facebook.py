@@ -1,8 +1,13 @@
 import frappe
+from frappe.exceptions import ValidationError
 from frappe.integrations.utils import make_get_request
 
 FB_GRAPH_API_BASE = "https://graph.facebook.com"
 FB_GRAPH_API_VERSION = "v23.0"
+
+
+class DuplicateLeadError(ValidationError):
+	pass
 
 
 def get_fb_graph_api_url(endpoint: str) -> str:
@@ -40,18 +45,17 @@ class FacebookSyncSource:
 			crm_lead_data["facebook_form_id"] = self.form_id
 
 			try:
+				self.validate_duplicate_lead(crm_lead_data, question_to_field_map)
 				frappe.get_doc(
 					{
 						"doctype": "CRM Lead",
 						**crm_lead_data,
 					}
 				).insert(ignore_permissions=True)
-			except frappe.UniqueValidationError:
-				# Skip duplicate leads based on facebook_lead_id
-				# TODO: de-duplication based on field values
+			except (frappe.UniqueValidationError, DuplicateLeadError):
 				self.create_failure_log(lead, "Duplicate")
 			except Exception:
-				self.create_failure_log(lead)
+				self.create_failure_log(lead, traceback=frappe.get_traceback(with_context=True))
 
 		self.update_last_synced_at()
 
@@ -89,13 +93,16 @@ class FacebookSyncSource:
 			"Lead Sync Source", self.source_name or {"facebook_lead_form": self.form_id}, "last_synced_at"
 		)
 
-	def create_failure_log(self, lead_data: dict | None = None, type: str = "Failure"):
+	def create_failure_log(
+		self, lead_data: dict | None = None, type: str = "Failure", traceback: str | None = None
+	):
 		return frappe.get_doc(
 			{
 				"doctype": "Failed Lead Sync Log",
 				"type": type,
 				"lead_data": frappe.as_json(lead_data),
-				"source": self.get_source_name()
+				"source": self.get_source_name(),
+				"traceback": traceback,
 			}
 		).insert(ignore_permissions=True)
 
@@ -112,6 +119,12 @@ class FacebookSyncSource:
 			return self.source_name
 
 		return frappe.db.get_value("Lead Sync Source", {"facebook_lead_form": self.form_id}, "name")
+
+	def validate_duplicate_lead(self, lead_data: dict, field_mapping: dict):
+		validation_filters = {crm_field: lead_data[crm_field] for crm_field in field_mapping.values()}
+		validation_filters["facebook_form_id"] = lead_data["facebook_form_id"]  # only for this campaign
+		if frappe.db.exists("CRM Lead", validation_filters):
+			raise DuplicateLeadError
 
 
 @frappe.whitelist()

@@ -9,7 +9,9 @@
   "column_break_dhay",
   "source",
   "section_break_fhot",
-  "lead_data"
+  "lead_data",
+  "section_break_knec",
+  "traceback"
  ],
  "fields": [
   {
@@ -43,13 +45,23 @@
   {
    "fieldname": "section_break_fhot",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_knec",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "traceback",
+   "fieldtype": "Code",
+   "label": "Traceback",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-19 18:30:15.381205",
+ "modified": "2025-10-19 18:53:32.192551",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Failed Lead Sync Log",
