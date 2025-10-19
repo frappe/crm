@@ -131,6 +131,7 @@ declare module 'vue' {
     ExotelCallUI: typeof import('./src/components/Telephony/ExotelCallUI.vue')['default']
     ExportIcon: typeof import('./src/components/Icons/ExportIcon.vue')['default']
     ExternalLinkIcon: typeof import('./src/components/Icons/ExternalLinkIcon.vue')['default']
+    FacebookIcon: typeof import('./src/components/Icons/FacebookIcon.vue')['default']
     FadedScrollableDiv: typeof import('./src/components/FadedScrollableDiv.vue')['default']
     Field: typeof import('./src/components/FieldLayout/Field.vue')['default']
     FieldLayout: typeof import('./src/components/FieldLayout/FieldLayout.vue')['default']

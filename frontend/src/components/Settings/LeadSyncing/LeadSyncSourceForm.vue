@@ -29,15 +29,6 @@
 
     <!-- Form -->
      <div class="grid grid-cols-2 gap-4">
-        <FormControl 
-            type="text"
-            v-if="isLocal"
-            required="true"
-            v-model="syncSource.name"
-            :label="__('Source Name')"
-            :placeholder="__('Enter Source Name')"
-        />
-
         <FormControl
             type="autocomplete"
             required="true"
@@ -47,13 +38,28 @@
             :placeholder="__('Select Source Type')"
          >
             <template v-if="syncSource.type" #prefix>
-                <Avatar
-                    size="xs"
-                    class="mr-2"
-                    :image="syncSource.type.icon"
+                <component
+                    class="mr-2 size-4"
+                    :is="syncSource.type.icon"
                 />
             </template>
+
+			<template #item-prefix="{ option }">
+				<component
+                    class="size-4"
+                    :is="option.icon"
+                />
+    		</template>
         </FormControl>
+
+        <FormControl 
+            type="text"
+            v-if="isLocal"
+            required="true"
+            v-model="syncSource.name"
+            :label="__('Source Name')"
+            :placeholder="__('Enter Source Name')"
+        />
 
 
         <FormControl
