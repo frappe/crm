@@ -17,9 +17,9 @@ def sync_leads_from_facebook(access_token: str, lead_form_id: str) -> None:
 	last_synced_at = frappe.db.get_value(
 		"Lead Sync Source", {"facebook_lead_form": lead_form_id}, "last_synced_at"
 	)
-	timestamp = frappe.utils.data.get_timestamp(last_synced_at)
-	filtering = f"filtering=[{{'field':'time_created','operator':'GREATER_THAN','value':{timestamp}}}]"
 	if last_synced_at:
+		timestamp = frappe.utils.data.get_timestamp(last_synced_at)
+		filtering = f"filtering=[{{'field':'time_created','operator':'GREATER_THAN','value':{timestamp}}}]"
 		url = f"{url}?{filtering}"
 
 	leads = make_get_request(
@@ -57,12 +57,19 @@ def sync_leads_from_facebook(access_token: str, lead_form_id: str) -> None:
 			).insert(ignore_permissions=True)
 		except frappe.UniqueValidationError:
 			# Skip duplicate leads based on facebook_lead_id
-			frappe.log_error("Duplicate lead skipped")
-			continue
+			# TODO: de-duplication based on field values
+			frappe.get_doc(
+				{"doctype": "Failed Lead Sync Log", "type": "Duplicate", "lead_data": frappe.as_json(lead)}
+			).insert(ignore_permissions=True)
+		except Exception:
+			frappe.get_doc(
+				{"doctype": "Failed Lead Sync Log", "type": "Failure", "lead_data": frappe.as_json(lead)}
+			).insert(ignore_permissions=True)
 
 	frappe.db.set_value(
 		"Lead Sync Source", {"facebook_lead_form": lead_form_id}, "last_synced_at", frappe.utils.now()
 	)
+
 
 @frappe.whitelist()
 def fetch_and_store_pages_from_facebook(access_token: str) -> list[dict]:
@@ -84,6 +91,7 @@ def fetch_and_store_pages_from_facebook(access_token: str) -> list[dict]:
 		page["forms"] = forms
 
 	return pages
+
 
 def get_fb_account_details(access_token: str) -> dict:
 	url = get_fb_graph_api_url("me")
@@ -140,12 +148,11 @@ def create_facebook_lead_form_in_db(form: dict, page_id: str) -> None:
 	)
 	form_doc.insert(ignore_permissions=True)
 
+
 @frappe.whitelist()
 def get_pages_with_forms() -> list[dict]:
 	pages = frappe.db.get_all("Facebook Page", fields=["id", "name"])
 	for page in pages:
-		forms = frappe.db.get_all(
-			"Facebook Lead Form", filters={"page": page["id"]}, fields=["id", "name"]
-		)
+		forms = frappe.db.get_all("Facebook Lead Form", filters={"page": page["id"]}, fields=["id", "name"])
 		page["forms"] = forms
 	return pages
