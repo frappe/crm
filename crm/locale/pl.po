@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-13 13:44\n"
+"PO-Revision-Date: 2025-10-22 15:46\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -602,7 +602,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Assignment Rule"
-msgstr ""
+msgstr "Reguła przydziału"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
@@ -661,7 +661,7 @@ msgstr ""
 #: frontend/src/components/FilesUploader/FilesUploader.vue:5
 #: frontend/src/components/FilesUploader/FilesUploader.vue:73
 msgid "Attach"
-msgstr ""
+msgstr "Załącz"
 
 #: frontend/src/components/CommentBox.vue:65
 #: frontend/src/components/EmailEditor.vue:146 frontend/src/pages/Deal.vue:105
@@ -781,7 +781,7 @@ msgstr ""
 #: frontend/src/components/EmailEditor.vue:45
 #: frontend/src/components/EmailEditor.vue:71
 msgid "BCC"
-msgstr ""
+msgstr "BCC"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:31
 #: frontend/src/components/Settings/EmailAdd.vue:79
