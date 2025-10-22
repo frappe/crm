@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-19 14:32\n"
+"PO-Revision-Date: 2025-10-22 15:46\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -5852,7 +5852,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: frontend/src/components/Modals/AboutModal.vue:52
 msgid "Website"
-msgstr "سایت اینترنتی"
+msgstr "وب‌سایت"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
