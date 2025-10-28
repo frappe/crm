@@ -461,9 +461,17 @@ function parsedSection(section, editButtonAdded) {
 
 function isFieldVisible(field) {
   if (props.preview) return true
+
+  const hideEmptyReadOnly = Number(window.sysdefaults?.hide_empty_read_only_fields ?? 1)
+
+  const shouldShowReadOnly = field.read_only && (
+    doc.value?.[field.fieldname] ||
+    !hideEmptyReadOnly
+  )
+
   return (
     (field.fieldtype == 'Check' ||
-      (field.read_only && doc.value?.[field.fieldname]) ||
+      shouldShowReadOnly ||
       !field.read_only) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden
