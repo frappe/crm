@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-10 11:59\n"
+"PO-Revision-Date: 2025-10-22 15:46\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -459,7 +459,7 @@ msgstr "تصویری با نسبت 1:1 و 2:1 ترجیح داده می‌شود"
 
 #: frontend/src/components/Filter.vue:43 frontend/src/components/Filter.vue:81
 msgid "And"
-msgstr ""
+msgstr "و"
 
 #. Label of the annual_revenue (Currency) field in DocType 'CRM Deal'
 #. Label of the annual_revenue (Currency) field in DocType 'CRM Lead'
@@ -504,7 +504,7 @@ msgstr ""
 
 #: frontend/src/components/Apps.vue:19
 msgid "Apps"
-msgstr "برنامه ها"
+msgstr "برنامه‌ها"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
@@ -672,7 +672,7 @@ msgstr "پیوست فایل"
 #: frontend/src/pages/Deal.vue:567 frontend/src/pages/Lead.vue:424
 #: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:373
 msgid "Attachments"
-msgstr "پیوست ها"
+msgstr "پیوست‌ها"
 
 #: frontend/src/components/Modals/EventModal.vue:120
 msgid "Attendees"
@@ -5852,7 +5852,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: frontend/src/components/Modals/AboutModal.vue:52
 msgid "Website"
-msgstr "سایت اینترنتی"
+msgstr "وب‌سایت"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
