@@ -8,7 +8,7 @@
         : 'border-t border-outline-gray-modals mt-5 pt-5',
     ]"
   >
-    <Section
+    <CollapsibleSection
       class="flex sm:flex-row flex-col gap-4 text-lg font-medium"
       :class="{ 'px-3 sm:px-5': hasTabs }"
       :labelClass="['text-lg font-medium', { 'px-3 sm:px-5': hasTabs }]"
@@ -25,11 +25,11 @@
           :data-name="column.name"
         />
       </template>
-    </Section>
+    </CollapsibleSection>
   </div>
 </template>
 <script setup>
-import Section from '@/components/Section.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Column from '@/components/FieldLayout/Column.vue'
 import { inject } from 'vue'
 

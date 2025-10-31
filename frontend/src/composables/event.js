@@ -22,6 +22,7 @@ export function useEvent(doctype, docname) {
       'ends_on',
       'all_day',
       'event_type',
+      'location',
       'color',
       'owner',
       'reference_doctype',
@@ -33,6 +34,7 @@ export function useEvent(doctype, docname) {
       reference_docname: docname,
     },
     auto: true,
+    limit: 50,
     orderBy: 'creation desc',
     onSuccess: (d) => {
       console.log(d)
@@ -45,9 +47,17 @@ export function useEvent(doctype, docname) {
     parent: 'Event',
   })
 
+  const eventNotificationsResource = createListResource({
+    doctype: 'Event Notifications',
+    fields: ['*'],
+    parent: 'Event',
+  })
+
   const events = computed(() => {
     if (!eventsResource.data) return []
     const eventNames = eventsResource.data.map((e) => e.name)
+
+    // participants
     if (
       !eventParticipantsResource.data?.length ||
       eventsParticipantIsUpdated(eventNames)
@@ -90,6 +100,26 @@ export function useEvent(doctype, docname) {
       })
     }
 
+    // notifications
+    if (!eventNotificationsResource.data?.length) {
+      eventNotificationsResource.update({
+        filters: {
+          parenttype: 'Event',
+          parentfield: 'notifications',
+          parent: ['in', eventNames],
+        },
+      })
+      !eventNotificationsResource.list.loading &&
+        eventNotificationsResource.reload()
+    } else {
+      eventsResource.data.forEach((event) => {
+        event.notifications = [
+          ...eventNotificationsResource.data.filter(
+            (notification) => notification.parent === event.name,
+          ),
+        ]
+      })
+    }
     return eventsResource.data
   })
 
@@ -211,6 +241,7 @@ export function validateTimeRange({ fromDate, fromTime, toTime, isFullDay }) {
 export function parseEventDoc(doc) {
   if (!doc) return {}
   const { getUser } = usersStore()
+
   return {
     id: doc.name,
     title: doc.subject,
@@ -222,10 +253,12 @@ export function parseEventDoc(doc) {
     toTime: dayjs(doc.ends_on).format('HH:mm'),
     isFullDay: doc.all_day,
     eventType: doc.event_type,
+    location: doc.location || '',
     color: doc.color,
     referenceDoctype: doc.reference_doctype,
     referenceDocname: doc.reference_docname,
     event_participants: doc.event_participants || [],
+    notifications: doc.notifications || [],
     owner: doc.owner
       ? {
           label: getUser(doc.owner).full_name,

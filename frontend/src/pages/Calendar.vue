@@ -21,7 +21,7 @@
       class="flex-1 overflow-hidden"
       ref="calendar"
       :config="{
-        defaultMode: 'Week',
+        defaultMode: defaultMode,
         isEditMode: true,
         eventIcons: {},
         allowCustomClickEvents: true,
@@ -128,6 +128,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { sessionStore } from '@/stores/session'
 import { globalStore } from '@/stores/global'
+import { getSettings } from '@/stores/settings'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   Calendar,
@@ -138,10 +139,23 @@ import {
   CalendarActiveEvent as activeEvent,
   call,
 } from 'frappe-ui'
-import { onMounted, ref, computed, provide } from 'vue'
+import { onMounted, ref, computed, provide, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
+const { settings } = getSettings()
+const route = useRoute()
+
+const modeMap = {
+  Daily: 'Day',
+  Weekly: 'Week',
+  Monthly: 'Month',
+}
+
+const defaultMode = computed(() => {
+  return modeMap[settings.value?.default_calendar_view] || 'Week'
+})
 
 const calendar = ref(null)
 
@@ -153,6 +167,7 @@ const events = createListResource({
     'status',
     'subject',
     'description',
+    'location',
     'starts_on',
     'ends_on',
     'all_day',
@@ -176,6 +191,7 @@ const events = createListResource({
       toTime: dayjs(ev.ends_on).format('HH:mm'),
       isFullDay: ev.all_day,
       eventType: ev.event_type,
+      location: ev.location,
       color: ev.color,
       referenceDoctype: ev.reference_doctype,
       referenceDocname: ev.reference_docname,
@@ -224,10 +240,12 @@ function buildEventPayload(_event) {
     ends_on: `${_event.toDate} ${_event.toTime}`,
     all_day: _event.isFullDay || false,
     event_type: _event.eventType,
+    location: _event.location,
     color: _event.color,
     reference_doctype: _event.referenceDoctype,
     reference_docname: _event.referenceDocname,
     event_participants: _event.event_participants,
+    notifications: _event.notifications,
   }
 }
 
@@ -323,10 +341,23 @@ function syncEvent(eventID, _event) {
   Object.assign(events.data.filter((event) => event.id === eventID)[0], _event)
 }
 
-onMounted(() => {
+onMounted(async () => {
   activeEvent.value = ''
   mode.value = ''
   showEventPanel.value = false
+
+  const { eventId, date } = route.query
+  if (eventId && date) {
+    await events.promise
+    await nextTick()
+
+    // Set calendar date to the event's date
+    if (calendar.value.onMonthYearChange) {
+      calendar.value.onMonthYearChange(dayjs(date).toDate())
+    }
+
+    showDetails({ id: eventId })
+  }
 })
 
 // Global shortcut: Cmd/Ctrl + E -> new event (when not already creating/editing)
@@ -357,8 +388,9 @@ function editDetails(e) {
   openEvent(e, 'edit')
 }
 
-function buildTempEvent(e, duplicate) {
+function buildTempEvent(e = {}, duplicate = false) {
   const id = duplicate ? 'duplicate-event' : 'new-event'
+
   return {
     id,
     title: e.title,
@@ -368,12 +400,14 @@ function buildTempEvent(e, duplicate) {
     toDate: e.toDate,
     fromTime: e.fromTime,
     toTime: e.toTime,
+    location: e.location || '',
     isFullDay: e.isFullDay || false,
     eventType: e.eventType || 'Public',
     color: e.color || 'green',
     referenceDoctype: e.referenceDoctype,
     referenceDocname: e.referenceDocname,
     event_participants: e.event_participants || [],
+    notifications: e.notifications || [],
   }
 }
 
