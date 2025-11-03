@@ -79,6 +79,14 @@
             :placeholder="__('Enter Access Token')"
         />
 
+		<FormControl
+			v-if="!isLocal && sourceDoc"
+			v-model="sourceDoc.last_synced_at"
+			disabled
+			type="datetime"
+			:label="__('Last Synced At')"
+		/>
+
         <Link
             v-if="!isLocal"
             label="Facebook Page"
@@ -123,9 +131,9 @@ import {
 	Button,
 	FormControl,
 	Switch,
-	Avatar,
 	toast,
 	createResource,
+	dayjsLocal
 } from "frappe-ui";
 
 import { getMeta } from "@/stores/meta";
