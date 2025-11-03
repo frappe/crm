@@ -544,7 +544,10 @@ function reload() {
 }
 
 const showExportDialog = ref(false)
-const export_type = ref('Excel')
+const export_type = ref({
+    label: 'Excel',
+    value: 'Excel',
+})
 const export_all = ref(false)
 const selectedRows = ref([])
 
@@ -566,7 +569,7 @@ async function exportRows() {
     page_length = list.value.data.total_count
   }
 
-  let url = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${encodeURIComponent(filters)}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
+  let url = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${encodeURIComponent(filters)}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
 
   // Add selected items parameter if rows are selected
   if (selectedRows.value?.length && !export_all.value) {
@@ -577,7 +580,10 @@ async function exportRows() {
 
   showExportDialog.value = false
   export_all.value = false
-  export_type.value = 'Excel'
+  export_type.value = {
+    label: 'Excel',
+    value: 'Excel',
+  }
 }
 
 let standardViews = []
