@@ -53,8 +53,11 @@ class LeadSyncSource(Document):
 
 	@frappe.whitelist()
 	def sync_leads(self):
-		self._sync_leads()
-		# frappe.enqueue_doc(self.doctype, self.name, "_sync_leads", queue="long")
+		if frappe.conf.developer_mode:
+			self._sync_leads()
+			return
+
+		frappe.enqueue_doc(self.doctype, self.name, "_sync_leads", queue="long")
 
 	def _sync_leads(self):
 		if self.type == "Facebook" and self.access_token:
