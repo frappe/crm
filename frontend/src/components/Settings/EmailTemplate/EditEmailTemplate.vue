@@ -128,7 +128,6 @@ import {
   FormControl,
   Switch,
   toast,
-  call,
   createResource,
 } from 'frappe-ui'
 import { computed, inject, onMounted, ref } from 'vue'

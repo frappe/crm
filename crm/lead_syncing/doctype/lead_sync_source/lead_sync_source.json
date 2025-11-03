@@ -1,0 +1,118 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2025-09-26 18:51:41.145560",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "type",
+  "access_token",
+  "column_break_lwcw",
+  "last_synced_at",
+  "enabled",
+  "background_sync_frequency",
+  "facebook_section",
+  "facebook_page",
+  "column_break_zukm",
+  "facebook_lead_form"
+ ],
+ "fields": [
+  {
+   "default": "Facebook",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Facebook",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_lwcw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_synced_at",
+   "fieldtype": "Datetime",
+   "label": "Last Synced At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Password",
+   "label": "Access Token",
+   "length": 500,
+   "reqd": 1
+  },
+  {
+   "fieldname": "facebook_page",
+   "fieldtype": "Link",
+   "label": "Facebook Page",
+   "options": "Facebook Page"
+  },
+  {
+   "fieldname": "facebook_lead_form",
+   "fieldtype": "Link",
+   "label": "Facebook Lead Form",
+   "options": "Facebook Lead Form",
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled?"
+  },
+  {
+   "depends_on": "eval:doc.type===\"Facebook\"",
+   "fieldname": "facebook_section",
+   "fieldtype": "Section Break",
+   "label": "Facebook"
+  },
+  {
+   "fieldname": "column_break_zukm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Hourly",
+   "fieldname": "background_sync_frequency",
+   "fieldtype": "Select",
+   "label": "Background Sync Frequency",
+   "options": "Every 5 Minutes\nEvery 10 Minutes\nEvery 15 Minutes\nHourly\nDaily\nMonthly",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Failed Lead Sync Log",
+   "link_fieldname": "source"
+  }
+ ],
+ "modified": "2025-10-19 18:57:54.288252",
+ "modified_by": "Administrator",
+ "module": "Lead Syncing",
+ "name": "Lead Sync Source",
+ "naming_rule": "Set by user",
+ "owner": "hussain@frappe.io",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

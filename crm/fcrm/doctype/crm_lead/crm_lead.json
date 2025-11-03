@@ -55,7 +55,11 @@
   "first_response_time",
   "first_responded_on",
   "log_tab",
-  "status_change_log"
+  "status_change_log",
+  "syncing_tab",
+  "facebook_lead_id",
+  "column_break_ixmu",
+  "facebook_form_id"
  ],
  "fields": [
   {
@@ -325,13 +329,33 @@
    "label": "Net Total",
    "options": "currency",
    "read_only": 1
+  },
+  {
+   "fieldname": "syncing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Syncing"
+  },
+  {
+   "fieldname": "facebook_lead_id",
+   "fieldtype": "Data",
+   "label": "Facebook Lead ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_ixmu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "facebook_form_id",
+   "fieldtype": "Data",
+   "label": "Facebook Form ID"
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-14 19:51:06.184569",
+ "modified": "2025-10-19 18:36:24.683076",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

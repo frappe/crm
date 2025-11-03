@@ -10,7 +10,7 @@ const documentsCache = {}
 const controllersCache = {}
 const assigneesCache = {}
 
-export function useDocument(doctype, docname) {
+export function useDocument(doctype, docname, resourceOverrides = {}) {
   const { setupScript, scripts } = getScript(doctype)
   const meta = getMeta(doctype)
 
@@ -69,6 +69,7 @@ export function useDocument(doctype, docname) {
             console.error(err)
           },
         },
+        ...resourceOverrides
       })
     } else {
       documentsCache[doctype][''] = reactive({
