@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-21 09:35+0000\n"
-"PO-Revision-Date: 2025-09-24 21:29\n"
+"POT-Creation-Date: 2025-09-28 09:35+0000\n"
+"PO-Revision-Date: 2025-10-02 08:40\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -443,7 +443,7 @@ msgstr "Износ након попуста"
 msgid "An error occurred"
 msgstr "Догодила се грешка"
 
-#: frontend/src/data/document.js:63
+#: frontend/src/data/document.js:66
 msgid "An error occurred while updating the document"
 msgstr "Дошло је до грешке приликом ажурирања документа"
 
@@ -1967,7 +1967,7 @@ msgstr "DocType"
 msgid "Document Type"
 msgstr "Врста документа"
 
-#: frontend/src/data/document.js:28
+#: frontend/src/data/document.js:30
 msgid "Document does not exist"
 msgstr "Документ не постоји"
 
@@ -1975,7 +1975,7 @@ msgstr "Документ не постоји"
 msgid "Document not found"
 msgstr "Документ није пронађен"
 
-#: frontend/src/data/document.js:42
+#: frontend/src/data/document.js:45
 msgid "Document updated successfully"
 msgstr "Документ је успешно ажуриран"
 
@@ -3538,9 +3538,13 @@ msgstr "Управљајте својим имејл налозима за сл�
 msgid "Manager"
 msgstr "Менаџер"
 
-#: frontend/src/data/document.js:54
+#: frontend/src/data/document.js:57
 msgid "Mandatory field error: {0}"
 msgstr "Грешка у обавезном пољу: {0}"
+
+#: frontend/src/data/document.js:186 frontend/src/data/document.js:189
+msgid "Mandatory fields required: {0}"
+msgstr "Обавезна поља су неопходна: {0}"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -4084,7 +4088,7 @@ msgstr "Текуће"
 msgid "Ongoing deals"
 msgstr "Текуће пословне прилике"
 
-#: frontend/src/utils/index.js:444
+#: frontend/src/utils/index.js:474
 msgid "Only image files are allowed"
 msgstr "Дозвољени су само фајлови у формату слике"
 
@@ -5963,7 +5967,7 @@ msgstr "Немате подешен Exotel број у свом агенту т�
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Немате подешен број мобилног телефона у свом агенту телефоније"
 
-#: frontend/src/data/document.js:32
+#: frontend/src/data/document.js:34
 msgid "You do not have permission to access this document"
 msgstr "Немате дозволу за приступ овом документу"
 
