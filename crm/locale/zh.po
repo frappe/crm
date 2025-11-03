@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-01 08:38\n"
+"PO-Revision-Date: 2025-11-02 19:21\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr "（新建）"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:58
 msgid "(No title)"
-msgstr ""
+msgstr "(无标题)"
 
 #: frontend/src/components/Modals/TaskModal.vue:87
 #: frontend/src/components/Telephony/TaskPanel.vue:70
@@ -160,7 +160,7 @@ msgstr "API密钥"
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "API Key is required"
-msgstr ""
+msgstr "必须填写API密钥"
 
 #. Label of the api_secret (Password) field in DocType 'CRM Twilio Settings'
 #. Label of the api_secret (Password) field in DocType 'ERPNext CRM Settings'
@@ -186,7 +186,7 @@ msgstr "接受邀请"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:155
 msgid "Accept call"
-msgstr ""
+msgstr "接听来电"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -209,11 +209,11 @@ msgstr "服务商{0}必须提供访问密钥"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:90
 msgid "Access key"
-msgstr ""
+msgstr "访问秘钥"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:94
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
-msgstr ""
+msgstr "Exchangerate Host服务的访问密钥，用于获取汇率数据"
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
@@ -228,7 +228,7 @@ msgstr "账户SID"
 
 #: frontend/src/components/Settings/emailConfig.js:165
 msgid "Account name is required"
-msgstr ""
+msgstr "账户名称为必填项。"
 
 #: frontend/src/components/CustomActions.vue:69
 #: frontend/src/components/ViewControls.vue:683
@@ -248,11 +248,11 @@ msgstr "添加"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
-msgstr ""
+msgstr "添加帐户"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:9
 msgid "Add Assignee"
-msgstr ""
+msgstr "添加负责人"
 
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/Kanban/KanbanView.vue:157
@@ -262,7 +262,7 @@ msgstr "添加列"
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
 #: frontend/src/components/Settings/Users.vue:21
 msgid "Add Existing User"
-msgstr ""
+msgstr "添加现有用户"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:57
 #: frontend/src/components/FieldLayoutEditor.vue:172
@@ -277,7 +277,7 @@ msgstr "添加筛选器"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:273
 msgid "Add Lead or Deal"
-msgstr ""
+msgstr "添加线索或商机"
 
 #: frontend/src/components/Controls/Grid.vue:324
 msgid "Add Row"
@@ -304,20 +304,20 @@ msgstr "添加每周假期"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a condition"
-msgstr ""
+msgstr "添加条件"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
 msgid "Add a note"
-msgstr ""
+msgstr "添加备注"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:191
 msgid "Add a task"
-msgstr ""
+msgstr "添加任务"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add chart"
-msgstr ""
+msgstr "添加图表"
 
 #: frontend/src/components/FieldLayoutEditor.vue:420
 msgid "Add column"
@@ -328,12 +328,12 @@ msgstr "添加列"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:28
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:64
 msgid "Add condition"
-msgstr ""
+msgstr "添加条件"
 
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:91
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:70
 msgid "Add condition group"
-msgstr ""
+msgstr "添加条件组"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:325
 msgid "Add description"
@@ -349,7 +349,7 @@ msgstr "添加描述..."
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
-msgstr ""
+msgstr "将现有系统用户添加至本CRM系统。通过分配角色，用户可使用当前凭证获得相应访问权限。"
 
 #: frontend/src/components/ViewControls.vue:107
 msgid "Add filter"
@@ -361,7 +361,7 @@ msgstr "添加备注"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add sample data"
-msgstr ""
+msgstr "添加示例数据"
 
 #. Description of the 'Icon' (Code) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -379,11 +379,11 @@ msgstr "添加至假期"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:439
 msgid "Add your first comment"
-msgstr ""
+msgstr "添加首条评论"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:11
 msgid "Add, edit, and manage email templates for various CRM communications"
-msgstr ""
+msgstr "为各类CRM沟通场景添加、编辑及管理邮件模板"
 
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
@@ -424,7 +424,7 @@ msgstr "全部"
 #: frontend/src/components/Modals/EventModal.vue:71
 #: frontend/src/composables/event.js:122
 msgid "All day"
-msgstr ""
+msgstr "全天"
 
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -437,15 +437,15 @@ msgstr "金额"
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Amount after discount"
-msgstr ""
+msgstr "折后金额"
 
 #: frontend/src/data/script.js:50 frontend/src/data/script.js:51
 msgid "An error occurred"
-msgstr ""
+msgstr "发生错误"
 
 #: frontend/src/data/document.js:66
 msgid "An error occurred while updating the document"
-msgstr ""
+msgstr "文档更新过程中发生错误"
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -500,7 +500,7 @@ msgstr "应用至"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:125
 msgid "Apply on"
-msgstr ""
+msgstr "应用于"
 
 #: frontend/src/components/Apps.vue:19
 msgid "Apps"
@@ -517,7 +517,7 @@ msgstr "确认删除此联系人？"
 #: frontend/src/components/Modals/EventModal.vue:408
 #: frontend/src/pages/Calendar.vue:300
 msgid "Are you sure you want to delete this event?"
-msgstr ""
+msgstr "是否确认删除本事件？"
 
 #: frontend/src/pages/MobileOrganization.vue:261
 msgid "Are you sure you want to delete this organization?"
@@ -529,15 +529,15 @@ msgstr "确认删除此任务？"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:231
 msgid "Are you sure you want to delete {0} linked item(s)?"
-msgstr ""
+msgstr "是否确认删除{0}个关联项？"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:615
 msgid "Are you sure you want to discard unsaved changes to this event?"
-msgstr ""
+msgstr "是否确认放弃对本事件的未保存修改？"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:576
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
-msgstr ""
+msgstr "是否确认返回？未保存的修改将会丢失。"
 
 #: frontend/src/composables/frappecloud.js:24
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
@@ -549,15 +549,15 @@ msgstr "确认重置'从CRM商机生成报价单'表单脚本？"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:165
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
-msgstr ""
+msgstr "是否确认将货币设为{0}？此设置后续不可更改。"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:244
 msgid "Are you sure you want to unlink {0} linked item(s)?"
-msgstr ""
+msgstr "是否确认取消{0}个关联项的链接？"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:193
 msgid "Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
-msgstr ""
+msgstr "默认汇率服务商不支持{0}至{1}的货币转换，请联络管理员配置汇率服务商。"
 
 #: frontend/src/components/ListBulkActions.vue:186
 #: frontend/src/components/Modals/AssignmentModal.vue:4
@@ -566,11 +566,11 @@ msgstr "分配给"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:435
 msgid "Assign condition is required"
-msgstr ""
+msgstr "必须设置分配条件"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:438
 msgid "Assign conditions are invalid"
-msgstr ""
+msgstr "分配条件无效。"
 
 #: frontend/src/components/AssignTo.vue:11
 #: frontend/src/components/AssignToBody.vue:5
@@ -588,11 +588,11 @@ msgstr "负责人"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:5
 msgid "Assignee Rules"
-msgstr ""
+msgstr "负责人分配规则"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:81
 msgid "Assignees"
-msgstr ""
+msgstr "负责人列表"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -606,7 +606,7 @@ msgstr "分配规则"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
-msgstr ""
+msgstr "分配计划"
 
 #: frontend/src/components/ListBulkActions.vue:154
 msgid "Assignment cleared successfully"
@@ -614,45 +614,45 @@ msgstr "分配已成功清除"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:145
 msgid "Assignment condition"
-msgstr ""
+msgstr "分配条件"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:471
 msgid "Assignment days are required"
-msgstr ""
+msgstr "必须设置分配天数。"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:582
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:19
 msgid "Assignment rule"
-msgstr ""
+msgstr "分配规则"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:667
 msgid "Assignment rule created"
-msgstr ""
+msgstr "分配规则创建成功。"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:111
 msgid "Assignment rule deleted"
-msgstr ""
+msgstr "分配规则删除成功。"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:156
 msgid "Assignment rule duplicated"
-msgstr ""
+msgstr "分配规则复制成功。"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:749
 msgid "Assignment rule updated"
-msgstr ""
+msgstr "分配规则更新成功。"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:188
 msgid "Assignment rule {0} updated"
-msgstr ""
+msgstr "分配规则{0}更新成功。"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
 #: frontend/src/components/Settings/Settings.vue:163
 msgid "Assignment rules"
-msgstr ""
+msgstr "分配规则"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
 msgid "Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions"
-msgstr ""
+msgstr "分配规则根据预设条件自动将线索/商机分配给对应销售人员。"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:173
 msgid "At least one field is required"
@@ -687,95 +687,95 @@ msgstr "认证令牌"
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Auto Update Expected Deal Value"
-msgstr ""
+msgstr "自动更新预期商机价值"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:42
 msgid "Auto update expected deal value"
-msgstr ""
+msgstr "自动更新预期商机价值"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:88
 msgid "Auto update of expected deal value disabled"
-msgstr ""
+msgstr "预期商机价值自动更新功能已禁用。"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:87
 msgid "Auto update of expected deal value enabled"
-msgstr ""
+msgstr "预期商机价值自动更新功能已启用。"
 
 #. Description of the 'Auto Update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/ForecastingSettings.vue:46
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
-msgstr ""
+msgstr "根据商机中关联产品的总价值自动更新“预期商机价值”"
 
 #: frontend/src/components/Settings/Settings.vue:160
 msgid "Automation & Rules"
-msgstr ""
+msgstr "自动化与规则"
 
 #: crm/api/dashboard.py:238
 msgid "Average deal value of non won/lost deals"
-msgstr ""
+msgstr "非赢单/输单商机的平均价值"
 
 #: crm/api/dashboard.py:411
 msgid "Average deal value of ongoing & won deals"
-msgstr ""
+msgstr "进行中及赢单商机的平均价值"
 
 #: crm/api/dashboard.py:354
 msgid "Average deal value of won deals"
-msgstr ""
+msgstr "赢单商机的平均价值"
 
 #: crm/api/dashboard.py:518
 msgid "Average time taken from deal creation to deal closure"
-msgstr ""
+msgstr "商机创建至关闭的平均耗时"
 
 #: crm/api/dashboard.py:464
 msgid "Average time taken from lead creation to deal closure"
-msgstr ""
+msgstr "线索创建至商机关闭的平均耗时"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:81
 msgid "Avg deal value"
-msgstr ""
+msgstr "平均商机价值"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:78
 msgid "Avg ongoing deal value"
-msgstr ""
+msgstr "平均进行中商机价值"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:87
 msgid "Avg time to close a deal"
-msgstr ""
+msgstr "平均成交时间"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:83
 msgid "Avg time to close a lead"
-msgstr ""
+msgstr "平均成交时间"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:80
 msgid "Avg won deal value"
-msgstr ""
+msgstr "平均赢单商机价值"
 
 #: crm/api/dashboard.py:410
 msgid "Avg. deal value"
-msgstr ""
+msgstr "平均商机价值"
 
 #: crm/api/dashboard.py:237
 msgid "Avg. ongoing deal value"
-msgstr ""
+msgstr "平均进行中商机价值"
 
 #: crm/api/dashboard.py:517
 msgid "Avg. time to close a deal"
-msgstr ""
+msgstr "平均商机关闭耗时"
 
 #: crm/api/dashboard.py:463
 msgid "Avg. time to close a lead"
-msgstr ""
+msgstr "平均线索关闭耗时"
 
 #: crm/api/dashboard.py:353
 msgid "Avg. won deal value"
-msgstr ""
+msgstr "平均赢单商机价值"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:26
 #: frontend/src/components/Dashboard/AddChartModal.vue:70
 msgid "Axis chart"
-msgstr ""
+msgstr "轴线图"
 
 #: frontend/src/components/Activities/EmailArea.vue:62
 #: frontend/src/components/EmailEditor.vue:45
@@ -804,19 +804,19 @@ msgstr "介于"
 
 #: frontend/src/components/Settings/Settings.vue:118
 msgid "Brand Settings"
-msgstr ""
+msgstr "品牌设置"
 
 #: frontend/src/components/Settings/BrandSettings.vue:52
 msgid "Brand logo"
-msgstr ""
+msgstr "品牌标识"
 
 #: frontend/src/components/Settings/BrandSettings.vue:32
 msgid "Brand name"
-msgstr ""
+msgstr "品牌名称"
 
 #: frontend/src/components/Settings/BrandSettings.vue:7
 msgid "Brand settings"
-msgstr ""
+msgstr "品牌设置"
 
 #. Label of the branding_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -857,7 +857,7 @@ msgstr "CRM联系人"
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
 #: frontend/src/pages/Dashboard.vue:304
 msgid "CRM Dashboard"
-msgstr ""
+msgstr "客户关系管理仪表板"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -932,7 +932,7 @@ msgstr "CRM线索状态"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json
 msgid "CRM Lost Reason"
-msgstr ""
+msgstr "CRM 丢失原因"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -952,12 +952,12 @@ msgstr "CRM门户页面"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "CRM Product"
-msgstr ""
+msgstr "CRM 产品"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "CRM Products"
-msgstr ""
+msgstr "CRM 产品"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
@@ -1011,7 +1011,7 @@ msgstr "CRM视图设置"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:35
 msgid "CRM currency for all monetary values. Once set, cannot be edited."
-msgstr ""
+msgstr "CRM系统统一货币单位，设置后不可修改。"
 
 #: frontend/src/components/ViewControls.vue:272
 msgid "CSV"
@@ -1033,7 +1033,7 @@ msgstr "通话时长（秒）"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:556
 msgid "Call log"
-msgstr ""
+msgstr "通话记录"
 
 #: frontend/src/components/Telephony/CallUI.vue:10
 msgid "Call using {0}"
@@ -1092,7 +1092,7 @@ msgstr "已取消"
 
 #: frontend/src/components/Settings/Users.vue:124
 msgid "Cannot change role of user with Admin access"
-msgstr ""
+msgstr "不可修改具备管理员权限用户的角色。"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:34
 msgid "Cannot delete standard items {0}"
@@ -1100,7 +1100,7 @@ msgstr "无法删除标准项{0}"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:171
 msgid "Cannot enable rule without adding users in it"
-msgstr ""
+msgstr "未添加用户时无法启用规则。"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:91
 msgid "Capture"
@@ -1108,7 +1108,7 @@ msgstr "捕获"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:561
 msgid "Capturing leads"
-msgstr ""
+msgstr "线索获取"
 
 #: frontend/src/components/Controls/ImageUploader.vue:19
 #: frontend/src/components/Layouts/AppSidebar.vue:490
@@ -1123,7 +1123,7 @@ msgstr "修改密码"
 #: frontend/src/components/Layouts/AppSidebar.vue:481
 #: frontend/src/components/Layouts/AppSidebar.vue:489
 msgid "Change deal status"
-msgstr ""
+msgstr "变更商机状态"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
 #: frontend/src/pages/Contact.vue:41 frontend/src/pages/Lead.vue:88
@@ -1135,7 +1135,7 @@ msgstr "更换图片"
 
 #: frontend/src/components/Activities/TaskArea.vue:45
 msgid "Change status"
-msgstr ""
+msgstr "变更状态"
 
 #: frontend/src/pages/Dashboard.vue:22
 msgid "Chart"
@@ -1161,19 +1161,19 @@ msgstr "选择现有组织"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:9
 msgid "Choose how {0} are assigned among salespeople."
-msgstr ""
+msgstr "请选择{0}在销售人员间的分配方式。"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:306
 msgid "Choose the days of the week when this rule should be active."
-msgstr ""
+msgstr "请选择本周内规则生效的具体日期。"
 
 #: frontend/src/components/Settings/EmailAdd.vue:9
 msgid "Choose the email service provider you want to configure."
-msgstr ""
+msgstr "请选择需要配置的邮件服务提供商。"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:229
 msgid "Choose which {0} are affected by this un-assignment rule."
-msgstr ""
+msgstr "请选择受本取消分配规则影响的{0}范围。"
 
 #: frontend/src/components/Controls/Link.vue:59
 msgid "Clear"
@@ -1209,12 +1209,12 @@ msgstr "关闭"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:38
 msgid "Close panel"
-msgstr ""
+msgstr "关闭面板"
 
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
-msgstr ""
+msgstr "截止日期"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:107
 msgid "Collapse"
@@ -1262,7 +1262,7 @@ msgstr "评论"
 
 #: crm/api/dashboard.py:884
 msgid "Common reasons for losing deals"
-msgstr ""
+msgstr "交易失败的常见原因"
 
 #. Label of the communication_status (Link) field in DocType 'CRM Deal'
 #. Label of the communication_status (Link) field in DocType 'CRM Lead'
@@ -1303,31 +1303,31 @@ msgstr "条件"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:188
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:272
 msgid "Conditions for this rule were created from"
-msgstr ""
+msgstr "本规则的条件创建自"
 
 #: frontend/src/components/Settings/HomeActions.vue:10
 msgid "Configure actions that appear on the home dropdown"
-msgstr ""
+msgstr "配置首页下拉菜单中显示的操作项"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:9
 msgid "Configure forecasting feature to help predict sales performance and growth"
-msgstr ""
+msgstr "配置预测功能以辅助预估销售业绩与增长趋势"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:17
 msgid "Configure telephony settings for your CRM"
-msgstr ""
+msgstr "为 CRM 配置电话设置"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:11
 msgid "Configure the currency and exchange rate provider for your CRM"
-msgstr ""
+msgstr "为CRM系统配置货币与汇率服务商"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:63
 msgid "Configure the exchange rate provider for your CRM"
-msgstr ""
+msgstr "为您的 CRM 配置汇率提供商"
 
 #: frontend/src/components/Settings/BrandSettings.vue:10
 msgid "Configure your brand name, logo, and favicon"
-msgstr ""
+msgstr "配置品牌名称、标识及网站图标"
 
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
@@ -1336,7 +1336,7 @@ msgstr "确认"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:139
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:239
 msgid "Confirm Delete"
-msgstr ""
+msgstr "确认删除"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:18
 msgid "Confirm Password"
@@ -1344,15 +1344,15 @@ msgstr "确认密码"
 
 #: frontend/src/components/Settings/Users.vue:228
 msgid "Confirm Remove"
-msgstr ""
+msgstr "确认删除"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:609
 msgid "Confirm overwrite"
-msgstr ""
+msgstr "确认覆盖"
 
 #: frontend/src/pages/Welcome.vue:35
 msgid "Connect your email"
-msgstr ""
+msgstr "连接您的电子邮件"
 
 #. Label of the contact (Link) field in DocType 'CRM Contacts'
 #. Label of the contact (Link) field in DocType 'CRM Deal'
@@ -1370,7 +1370,7 @@ msgstr "联系人已存在"
 
 #: frontend/src/components/Modals/AboutModal.vue:77
 msgid "Contact Support"
-msgstr ""
+msgstr "联系技术支持"
 
 #: frontend/src/components/Modals/EditValueModal.vue:20
 msgid "Contact Us"
@@ -1390,7 +1390,7 @@ msgstr "联系人{0}已存在"
 
 #: frontend/src/pages/Contact.vue:279 frontend/src/pages/MobileContact.vue:252
 msgid "Contact image updated"
-msgstr ""
+msgstr "联系人图片已更新"
 
 #: frontend/src/pages/Deal.vue:658 frontend/src/pages/MobileDeal.vue:555
 msgid "Contact removed"
@@ -1403,7 +1403,7 @@ msgstr "联系人已移除"
 #: frontend/src/pages/MobileContact.vue:458
 #: frontend/src/pages/MobileContact.vue:468
 msgid "Contact updated"
-msgstr ""
+msgstr "联系方式已更新"
 
 #. Label of the contacts_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the contacts (Table) field in DocType 'CRM Deal'
@@ -1435,7 +1435,7 @@ msgstr "内容类型"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:162
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:166
 msgid "Content is required"
-msgstr ""
+msgstr "内容为必填项"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:380
 #: frontend/src/components/ListBulkActions.vue:88
@@ -1447,7 +1447,7 @@ msgstr "转换"
 #: frontend/src/components/Layouts/AppSidebar.vue:371
 #: frontend/src/components/Layouts/AppSidebar.vue:379
 msgid "Convert lead to deal"
-msgstr ""
+msgstr "将线索转换为商机"
 
 #: frontend/src/components/ListBulkActions.vue:80
 #: frontend/src/components/ListBulkActions.vue:197
@@ -1467,7 +1467,7 @@ msgstr "转换成功"
 
 #: frontend/src/utils/index.js:338
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "已复制到剪贴板"
 
 #: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
 #: crm/api/dashboard.py:891
@@ -1531,7 +1531,7 @@ msgstr "创建视图"
 
 #: frontend/src/components/Modals/EventModal.vue:12
 msgid "Create an event"
-msgstr ""
+msgstr "创建事件"
 
 #. Label of the create_customer_on_status_change (Check) field in DocType
 #. 'ERPNext CRM Settings'
@@ -1542,7 +1542,7 @@ msgstr "状态变更时创建客户"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:348
 #: frontend/src/pages/Calendar.vue:7
 msgid "Create event"
-msgstr ""
+msgstr "创建事件"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:151
 msgid "Create lead"
@@ -1550,15 +1550,15 @@ msgstr "创建线索"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:349
 msgid "Create your first lead"
-msgstr ""
+msgstr "创建首条线索"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:419
 msgid "Create your first note"
-msgstr ""
+msgstr "创建首条备注"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:399
 msgid "Create your first task"
-msgstr ""
+msgstr "创建首项任务"
 
 #. Label of the currency (Link) field in DocType 'CRM Deal'
 #. Label of the currency (Link) field in DocType 'CRM Organization'
@@ -1573,39 +1573,39 @@ msgstr "货币"
 
 #: frontend/src/components/Settings/Settings.vue:113
 msgid "Currency & Exchange Rate"
-msgstr ""
+msgstr "货币与汇率"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:7
 msgid "Currency & Exchange rate provider"
-msgstr ""
+msgstr "货币与汇率服务商"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:179
 msgid "Currency set as {0} successfully"
-msgstr ""
+msgstr "货币已成功设置为{0}。"
 
 #: crm/api/dashboard.py:839
 msgid "Current pipeline distribution"
-msgstr ""
+msgstr "当前销售管道分布"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:591
 msgid "Custom actions"
-msgstr ""
+msgstr "自定义操作"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:541
 msgid "Custom branding"
-msgstr ""
+msgstr "自定义品牌设置"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:590
 msgid "Custom fields"
-msgstr ""
+msgstr "自定义字段"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:593
 msgid "Custom list actions"
-msgstr ""
+msgstr "列表自定义操作"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:592
 msgid "Custom statuses"
-msgstr ""
+msgstr "自定义状态"
 
 #: frontend/src/pages/Deal.vue:466
 msgid "Customer created successfully"
@@ -1622,7 +1622,7 @@ msgstr "自定义快速筛选"
 
 #: crm/api/dashboard.py:599
 msgid "Daily performance of leads, deals, and wins"
-msgstr ""
+msgstr "线索、商机及赢单的每日表现"
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:580
@@ -1644,7 +1644,7 @@ msgstr "日期"
 
 #: frontend/src/components/Modals/EventModal.vue:78
 msgid "Date & Time"
-msgstr ""
+msgstr "日期与时间"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:267
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:288
@@ -1678,11 +1678,11 @@ msgstr "商机状态列表"
 #. Label of the deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Deal Value"
-msgstr ""
+msgstr "商机价值"
 
 #: crm/api/dashboard.py:977
 msgid "Deal generation channel analysis"
-msgstr ""
+msgstr "商机生成渠道分析"
 
 #: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:528
 #: frontend/src/pages/MobileOrganization.vue:472
@@ -1692,7 +1692,7 @@ msgstr "商机负责人"
 
 #: crm/api/dashboard.py:1030 crm/api/dashboard.py:1087
 msgid "Deal value"
-msgstr ""
+msgstr "商机价值"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -1705,27 +1705,27 @@ msgstr "商机"
 #: crm/api/dashboard.py:788
 #: frontend/src/components/Dashboard/AddChartModal.vue:97
 msgid "Deals by ongoing & won stage"
-msgstr ""
+msgstr "按进行中及赢单阶段统计的商机"
 
 #: crm/api/dashboard.py:1076
 #: frontend/src/components/Dashboard/AddChartModal.vue:100
 msgid "Deals by salesperson"
-msgstr ""
+msgstr "按销售人员统计的商机"
 
 #: crm/api/dashboard.py:976
 #: frontend/src/components/Dashboard/AddChartModal.vue:107
 msgid "Deals by source"
-msgstr ""
+msgstr "按来源统计的商机"
 
 #: crm/api/dashboard.py:838
 #: frontend/src/components/Dashboard/AddChartModal.vue:105
 msgid "Deals by stage"
-msgstr ""
+msgstr "按阶段统计的商机"
 
 #: crm/api/dashboard.py:1019
 #: frontend/src/components/Dashboard/AddChartModal.vue:99
 msgid "Deals by territory"
-msgstr ""
+msgstr "按区域统计的商机"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:112
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:112
@@ -1778,7 +1778,7 @@ msgstr "当前用户的默认呼叫媒介"
 
 #: frontend/src/components/Telephony/CallUI.vue:112
 msgid "Default calling medium set successfully to {0}"
-msgstr ""
+msgstr "默认呼叫媒介已成功设置为{0}。"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:280
 msgid "Default calling medium updated successfully"
@@ -1840,7 +1840,7 @@ msgstr "删除视图"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:66
 msgid "Delete all"
-msgstr ""
+msgstr "全部删除"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:58
 #: frontend/src/components/Activities/AttachmentArea.vue:127
@@ -1853,23 +1853,23 @@ msgstr "删除联系人"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:25
 msgid "Delete event"
-msgstr ""
+msgstr "删除事件"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:79
 msgid "Delete invitation"
-msgstr ""
+msgstr "删除邀请"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:230
 msgid "Delete linked item"
-msgstr ""
+msgstr "删除关联项"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:11
 msgid "Delete or unlink linked documents"
-msgstr ""
+msgstr "删除或取消关联文档"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:23
 msgid "Delete or unlink these linked documents before deleting this document"
-msgstr ""
+msgstr "删除本文档前，请先删除或取消关联以下文档。"
 
 #: frontend/src/pages/MobileOrganization.vue:260
 msgid "Delete organization"
@@ -1877,11 +1877,11 @@ msgstr "删除组织"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:67
 msgid "Delete {0} item(s)"
-msgstr ""
+msgstr "删除{0}个项目"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:28
 msgid "Delete {0} items"
-msgstr ""
+msgstr "删除{0}个项目"
 
 #. Label of the description (Text Editor) field in DocType 'CRM Holiday'
 #. Label of the description (Text Editor) field in DocType 'CRM Lost Reason'
@@ -1901,7 +1901,7 @@ msgstr "描述"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:426
 msgid "Description is required"
-msgstr ""
+msgstr "必须填写描述信息。"
 
 #: frontend/src/components/Apps.vue:63
 msgid "Desk"
@@ -1941,7 +1941,7 @@ msgstr "放弃"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:614
 msgid "Discard unsaved changes?"
-msgstr ""
+msgstr "是否放弃未保存的修改？"
 
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -1969,7 +1969,7 @@ msgstr "文档类型"
 
 #: frontend/src/data/document.js:30
 msgid "Document does not exist"
-msgstr ""
+msgstr "文档不存在。"
 
 #: crm/api/activities.py:19
 msgid "Document not found"
@@ -1977,7 +1977,7 @@ msgstr "未找到文档"
 
 #: frontend/src/data/document.js:45
 msgid "Document updated successfully"
-msgstr ""
+msgstr "文档更新成功。"
 
 #: frontend/src/components/Modals/AboutModal.vue:62
 msgid "Documentation"
@@ -1991,7 +1991,7 @@ msgstr "完成"
 #: frontend/src/components/Dashboard/AddChartModal.vue:33
 #: frontend/src/components/Dashboard/AddChartModal.vue:71
 msgid "Donut chart"
-msgstr ""
+msgstr "环形图"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:166
 #: frontend/src/components/ViewControls.vue:254
@@ -2028,7 +2028,7 @@ msgstr "复制"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:38
 msgid "Duplicate Assignment Rule"
-msgstr ""
+msgstr "复制分配规则"
 
 #: frontend/src/components/Modals/ViewModal.vue:8
 msgid "Duplicate View"
@@ -2036,17 +2036,17 @@ msgstr "复制视图"
 
 #: frontend/src/components/Modals/EventModal.vue:11
 msgid "Duplicate an event"
-msgstr ""
+msgstr "复制事件"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:33
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:347
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:432
 msgid "Duplicate event"
-msgstr ""
+msgstr "复制事件"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 msgid "Duplicate template"
-msgstr ""
+msgstr "复制模板"
 
 #. Label of the duration (Duration) field in DocType 'CRM Call Log'
 #. Label of the duration (Duration) field in DocType 'CRM Status Change Log'
@@ -2087,11 +2087,11 @@ msgstr "ERPNext未与CRM集成"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "ERPNext settings"
-msgstr ""
+msgstr "ERPNext系统设置"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext settings updated"
-msgstr ""
+msgstr "ERPNext系统设置更新成功。"
 
 #: frontend/src/components/FieldLayout/Field.vue:91
 #: frontend/src/components/FieldLayoutEditor.vue:313
@@ -2113,7 +2113,7 @@ msgstr "编辑数据字段布局"
 
 #: frontend/src/components/Settings/EmailEdit.vue:6
 msgid "Edit Email"
-msgstr ""
+msgstr "编辑邮件"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:7
 msgid "Edit Field Layout"
@@ -2145,15 +2145,15 @@ msgstr "编辑视图"
 
 #: frontend/src/components/Modals/EventModal.vue:9
 msgid "Edit an event"
-msgstr ""
+msgstr "编辑事件"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:39
 msgid "Edit call log"
-msgstr ""
+msgstr "编辑通话记录"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:18
 msgid "Edit event"
-msgstr ""
+msgstr "编辑事件"
 
 #: frontend/src/components/Activities/DataFields.vue:17
 #: frontend/src/components/Controls/GridRowModal.vue:14
@@ -2165,11 +2165,11 @@ msgstr ""
 #: frontend/src/components/Modals/LeadModal.vue:16
 #: frontend/src/components/Modals/OrganizationModal.vue:16
 msgid "Edit fields layout"
-msgstr ""
+msgstr "编辑字段布局"
 
 #: frontend/src/components/Controls/Grid.vue:57
 msgid "Edit grid fields"
-msgstr ""
+msgstr "编辑网格字段"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:19
 msgid "Edit note"
@@ -2177,7 +2177,7 @@ msgstr "编辑备注"
 
 #: frontend/src/components/Controls/Grid.vue:287
 msgid "Edit row"
-msgstr ""
+msgstr "编辑行"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:24
 msgid "Edit task"
@@ -2189,7 +2189,7 @@ msgstr "正在编辑第{0}行"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:430
 msgid "Editing event"
-msgstr ""
+msgstr "正在编辑事件"
 
 #. Label of the email (Data) field in DocType 'CRM Contacts'
 #. Label of the email (Data) field in DocType 'CRM Invitation'
@@ -2207,11 +2207,11 @@ msgstr "电子邮件"
 
 #: frontend/src/components/Settings/Settings.vue:147
 msgid "Email Accounts"
-msgstr ""
+msgstr "邮件账户"
 
 #: frontend/src/components/Settings/emailConfig.js:168
 msgid "Email ID is required"
-msgstr ""
+msgstr "必须填写邮件地址。"
 
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2229,19 +2229,19 @@ msgstr "邮件模板"
 
 #: frontend/src/components/Settings/EmailAdd.vue:141
 msgid "Email account created successfully"
-msgstr ""
+msgstr "邮件账户创建成功。"
 
 #: frontend/src/components/Settings/EmailEdit.vue:208
 msgid "Email account updated successfully"
-msgstr ""
+msgstr "邮件账户更新成功。"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:7
 msgid "Email accounts"
-msgstr ""
+msgstr "邮件账户"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:578
 msgid "Email communication"
-msgstr ""
+msgstr "邮件沟通"
 
 #: frontend/src/components/EmailEditor.vue:209
 msgid "Email from Lead"
@@ -2249,11 +2249,11 @@ msgstr "来自线索的邮件"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:557
 msgid "Email template"
-msgstr ""
+msgstr "邮件模板"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:7
 msgid "Email templates"
-msgstr ""
+msgstr "邮件模板"
 
 #: frontend/src/pages/Deal.vue:532 frontend/src/pages/Lead.vue:389
 #: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:342
@@ -2279,7 +2279,7 @@ msgstr "启用"
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Enable Forecasting"
-msgstr ""
+msgstr "启用预测功能"
 
 #: frontend/src/components/Settings/emailConfig.js:28
 msgid "Enable Incoming"
@@ -2291,7 +2291,7 @@ msgstr "启用该邮箱帐号发送邮件"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:20
 msgid "Enable forecasting"
-msgstr ""
+msgstr "启用预测功能"
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -2329,15 +2329,15 @@ msgstr "结束时间"
 
 #: frontend/src/composables/event.js:206
 msgid "End time should be after start time"
-msgstr ""
+msgstr "结束时间必须晚于开始时间。"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:115
 msgid "Enter access key"
-msgstr ""
+msgstr "请输入访问密钥"
 
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Enter brand name"
-msgstr ""
+msgstr "请输入品牌名称"
 
 #: frontend/src/components/FieldLayout/Field.vue:339
 msgid "Enter {0}"
@@ -2355,12 +2355,12 @@ msgstr "等于"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:176
 msgid "Error converting to deal: {0}"
-msgstr ""
+msgstr "转换为商机时出错：{0}"
 
 #: frontend/src/pages/Deal.vue:731 frontend/src/pages/Lead.vue:469
 #: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:413
 msgid "Error updating field"
-msgstr ""
+msgstr "字段更新失败"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:279
 msgid "Error while creating customer in ERPNext, check error log for more details"
@@ -2376,15 +2376,15 @@ msgstr "ERPNext获取客户失败，请查看错误日志"
 
 #: frontend/src/components/Modals/EventModal.vue:368
 msgid "Event ID is required"
-msgstr ""
+msgstr "必须填写事件ID。"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:429
 msgid "Event details"
-msgstr ""
+msgstr "事件详情"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:182
 msgid "Event title"
-msgstr ""
+msgstr "事件标题"
 
 #: frontend/src/pages/Deal.vue:547 frontend/src/pages/Lead.vue:404
 msgid "Events"
@@ -2406,11 +2406,11 @@ msgstr "汇率"
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Exchange Rate Provider"
-msgstr ""
+msgstr "汇率服务商"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:60
 msgid "Exchange rate provider"
-msgstr ""
+msgstr "汇率服务商"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
@@ -2456,20 +2456,20 @@ msgstr "展开"
 #. Label of the expected_closure_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Closure Date"
-msgstr ""
+msgstr "预期关闭日期"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:173
 msgid "Expected Closure Date is required."
-msgstr ""
+msgstr "必须填写预期关闭日期。"
 
 #. Label of the expected_deal_value (Currency) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Expected Deal Value"
-msgstr ""
+msgstr "预期商机价值"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:171
 msgid "Expected Deal Value is required."
-msgstr ""
+msgstr "必须填写预期商机价值。"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -2510,7 +2510,7 @@ msgstr "失败"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:111
 msgid "Failed to add users"
-msgstr ""
+msgstr "用户添加失败"
 
 #: crm/integrations/twilio/api.py:130
 msgid "Failed to capture Twilio recording"
@@ -2518,27 +2518,27 @@ msgstr "获取Twilio录音失败"
 
 #: frontend/src/components/Settings/EmailAdd.vue:145
 msgid "Failed to create email account, Invalid credentials"
-msgstr ""
+msgstr "邮件账户创建失败，凭证无效"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:179
 msgid "Failed to create template"
-msgstr ""
+msgstr "模板创建失败"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:216
 msgid "Failed to delete template"
-msgstr ""
+msgstr "模板删除失败"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:205
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
-msgstr ""
+msgstr "获取{2}当日{0}至{1}的汇率失败。请检查网络连接或稍后重试。"
 
 #: frontend/src/data/script.js:106
 msgid "Failed to load form controller: {0}"
-msgstr ""
+msgstr "表单控制器加载失败：{0}"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:243
 msgid "Failed to rename template"
-msgstr ""
+msgstr "模板重命名失败"
 
 #: crm/integrations/twilio/api.py:152
 msgid "Failed to update Twilio call status"
@@ -2546,20 +2546,20 @@ msgstr "更新Twilio通话状态失败"
 
 #: frontend/src/components/Settings/EmailEdit.vue:213
 msgid "Failed to update email account, Invalid credentials"
-msgstr ""
+msgstr "邮件账户更新失败，凭证无效"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:95
 msgid "Failed to update password"
-msgstr ""
+msgstr "密码更新失败"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:151
 msgid "Failed to update profile"
-msgstr ""
+msgstr "个人资料更新失败"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:209
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:201
 msgid "Failed to update template"
-msgstr ""
+msgstr "模板更新失败"
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2655,7 +2655,7 @@ msgstr "目标"
 #: crm/api/dashboard.py:666
 #: frontend/src/components/Dashboard/AddChartModal.vue:95
 msgid "Forecasted revenue"
-msgstr ""
+msgstr "预测收入"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:5
 #: frontend/src/components/Settings/Settings.vue:108
@@ -2664,11 +2664,11 @@ msgstr "预测"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:76
 msgid "Forecasting disabled successfully"
-msgstr ""
+msgstr "预测功能已成功禁用"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:75
 msgid "Forecasting enabled successfully"
-msgstr ""
+msgstr "预测功能已成功启用"
 
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -2686,7 +2686,7 @@ msgstr "Frappe CRM"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:608
 msgid "Frappe CRM mobile"
-msgstr ""
+msgstr "Frappe CRM移动端"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -2712,7 +2712,7 @@ msgstr "起始日期"
 #. Label of the from_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "From Type"
-msgstr ""
+msgstr "来源类型"
 
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -2736,11 +2736,11 @@ msgstr "全名"
 #: crm/api/dashboard.py:728
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Funnel conversion"
-msgstr ""
+msgstr "销售漏斗转化率"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:196
 msgid "GMT+5:30"
-msgstr ""
+msgstr "GMT+5:30"
 
 #. Label of the gender (Link) field in DocType 'CRM Contacts'
 #. Label of the gender (Link) field in DocType 'CRM Deal'
@@ -2753,11 +2753,11 @@ msgstr "性别"
 
 #: crm/api/dashboard.py:1020
 msgid "Geographic distribution of deals and revenue"
-msgstr ""
+msgstr "商机与收入的地理分布"
 
 #: frontend/src/components/Modals/AboutModal.vue:57
 msgid "GitHub Repository"
-msgstr ""
+msgstr "GitHub代码仓库"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:582
 msgid "Go back"
@@ -2765,7 +2765,7 @@ msgstr "返回"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:156
 msgid "Go to invite page"
-msgstr ""
+msgstr "前往邀请页面"
 
 #: frontend/src/pages/Deal.vue:95 frontend/src/pages/Lead.vue:141
 msgid "Go to website"
@@ -2794,7 +2794,7 @@ msgstr "分组依据："
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:63
 msgid "Hang up"
-msgstr ""
+msgstr "挂断通话"
 
 #: crm/templates/emails/helpdesk_invitation.html:2
 msgid "Hello"
@@ -2806,40 +2806,40 @@ msgstr "帮助"
 
 #: frontend/src/components/Settings/Settings.vue:202
 msgid "Helpdesk"
-msgstr ""
+msgstr "服务台"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Helpdesk CRM Settings"
-msgstr ""
+msgstr "服务台CRM设置"
 
 #. Label of the helpdesk_site_apis_section (Section Break) field in DocType
 #. 'Helpdesk CRM Settings'
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Helpdesk Site API's"
-msgstr ""
+msgstr "服务台站点API"
 
 #. Label of the helpdesk_site_url (Data) field in DocType 'Helpdesk CRM
 #. Settings'
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Helpdesk Site URL"
-msgstr ""
+msgstr "服务台站点URL"
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:18
 msgid "Helpdesk is not installed in the current site"
-msgstr ""
+msgstr "当前站点未安装服务台"
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:40
 msgid "Helpdesk is not integrated with the CRM"
-msgstr ""
+msgstr "服务台未与CRM系统集成"
 
 #: frontend/src/components/Settings/HelpdeskSettings.vue:4
 msgid "Helpdesk settings"
-msgstr ""
+msgstr "服务台设置"
 
 #: frontend/src/components/Settings/HelpdeskSettings.vue:5
 msgid "Helpdesk settings updated"
-msgstr ""
+msgstr "服务台设置更新成功"
 
 #: frontend/src/components/CommunicationArea.vue:56
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
@@ -2856,7 +2856,7 @@ msgstr "隐藏"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Hide Password"
-msgstr ""
+msgstr "隐藏密码"
 
 #: frontend/src/components/Activities/CallArea.vue:75
 msgid "Hide Recording"
@@ -2902,7 +2902,7 @@ msgstr "假期"
 
 #: frontend/src/components/Settings/Settings.vue:173
 msgid "Home Actions"
-msgstr ""
+msgstr "首页操作"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:542
 #: frontend/src/components/Settings/HomeActions.vue:7
@@ -2912,7 +2912,7 @@ msgstr "主页操作"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
 msgid "I understand, add conditions"
-msgstr ""
+msgstr "我已知悉，继续添加条件"
 
 #. Label of the id (Data) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -2928,19 +2928,19 @@ msgstr "图标"
 
 #: frontend/src/components/Settings/emailConfig.js:55
 msgid "If enabled, all outgoing emails will be sent from this account. Note: Only one account can be default outgoing."
-msgstr ""
+msgstr "若启用，所有外发邮件将通过本账户发送。注：仅可设置一个默认发件账户。"
 
 #: frontend/src/components/Settings/emailConfig.js:47
 msgid "If enabled, all replies to your company (eg: replies@yourcomany.com) will come to this account. Note: Only one account can be default incoming."
-msgstr ""
+msgstr "若启用，发送至贵司的邮件回复（如：replies@yourcompany.com）将统一归集至本账户。注：仅可设置一个默认收件账户。"
 
 #: frontend/src/components/Settings/emailConfig.js:39
 msgid "If enabled, outgoing emails can be sent from this account."
-msgstr ""
+msgstr "若启用，可通过本账户发送外发邮件。"
 
 #: frontend/src/components/Settings/emailConfig.js:31
 msgid "If enabled, records can be created from the incoming emails on this account."
-msgstr ""
+msgstr "若启用，可根据本账户的收件自动创建记录。"
 
 #. Label of the image (Attach Image) field in DocType 'CRM Lead'
 #. Label of the image (Attach Image) field in DocType 'CRM Product'
@@ -3012,16 +3012,16 @@ msgstr "正在发起呼叫..."
 
 #: frontend/src/components/EmailEditor.vue:154
 msgid "Insert Email Template"
-msgstr ""
+msgstr "插入邮件模板"
 
 #: frontend/src/components/CommentBox.vue:49
 #: frontend/src/components/EmailEditor.vue:130
 msgid "Insert Emoji"
-msgstr ""
+msgstr "插入表情符号"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:598
 msgid "Integration"
-msgstr ""
+msgstr "系统集成"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Integration Not Enabled"
@@ -3052,7 +3052,7 @@ msgstr "无效的Exotel号码"
 
 #: crm/api/dashboard.py:73
 msgid "Invalid chart name"
-msgstr ""
+msgstr "图表名称无效"
 
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.py:25
 msgid "Invalid credentials"
@@ -3060,32 +3060,32 @@ msgstr "无效的凭据"
 
 #: frontend/src/components/Settings/emailConfig.js:172
 msgid "Invalid email ID"
-msgstr ""
+msgstr "邮件地址格式无效"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:601
 msgid "Invalid fields, check if all are filled in and values are correct."
-msgstr ""
+msgstr "字段数据无效，请检查是否已填写所有必填项且数值正确。"
 
 #: frontend/src/pages/InvalidPage.vue:6
 msgid "Invalid page or not permitted to access"
-msgstr ""
+msgstr "页面无效或无权访问"
 
 #: frontend/src/composables/event.js:203
 msgid "Invalid start or end time"
-msgstr ""
+msgstr "开始时间或结束时间无效"
 
 #: frontend/src/components/Settings/Users.vue:25
 msgid "Invite New User"
-msgstr ""
+msgstr "邀请新用户"
 
 #: frontend/src/components/Settings/Settings.vue:135
 msgid "Invite User"
-msgstr ""
+msgstr "邀请用户"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:78
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:149
 msgid "Invite agent"
-msgstr ""
+msgstr "邀请客服人员"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:51
 msgid "Invite as"
@@ -3093,15 +3093,15 @@ msgstr "邀请身份"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:543
 msgid "Invite users"
-msgstr ""
+msgstr "邀请用户"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
-msgstr ""
+msgstr "邀请用户访问CRM系统。通过指定角色控制其访问权限。"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:359
 msgid "Invite your team"
-msgstr ""
+msgstr "邀请团队成员"
 
 #. Label of the invited_by (Link) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -3138,7 +3138,7 @@ msgstr "是否分组"
 #. 'Helpdesk CRM Settings'
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "Is Helpdesk installed on a different site?"
-msgstr ""
+msgstr "服务台是否安装在其他站点？"
 
 #. Label of the is_primary (Check) field in DocType 'CRM Contacts'
 #. Label of the is_primary (Check) field in DocType 'CRM Telephony Phone'
@@ -3160,7 +3160,7 @@ msgstr "是否标准"
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
-msgstr ""
+msgstr "系统将强制要求填写商机的“预期关闭日期”和“预期商机价值”，以获取准确的预测分析"
 
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -3219,7 +3219,7 @@ msgstr "标签"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:108
 msgid "Last"
-msgstr ""
+msgstr "最近"
 
 #: frontend/src/components/Filter.vue:615
 msgid "Last 6 Months"
@@ -3264,11 +3264,11 @@ msgstr "最后修改"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "Last name"
-msgstr ""
+msgstr "姓氏"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:101
 msgid "Last user assigned by this rule"
-msgstr ""
+msgstr "本规则最后分配的用户"
 
 #. Label of the layout (Code) field in DocType 'CRM Dashboard'
 #. Label of the layout (Code) field in DocType 'CRM Fields Layout'
@@ -3322,11 +3322,11 @@ msgstr "线索状态"
 
 #: crm/api/dashboard.py:935
 msgid "Lead generation channel analysis"
-msgstr ""
+msgstr "线索生成渠道分析"
 
 #: crm/api/dashboard.py:729
 msgid "Lead to deal conversion pipeline"
-msgstr ""
+msgstr "线索至商机转化管道"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -3338,12 +3338,12 @@ msgstr "线索"
 #: crm/api/dashboard.py:934
 #: frontend/src/components/Dashboard/AddChartModal.vue:106
 msgid "Leads by source"
-msgstr ""
+msgstr "按来源统计的线索"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:158
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:238
 msgid "Learn about conditions"
-msgstr ""
+msgstr "了解条件设置"
 
 #. Label of the lft (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -3414,7 +3414,7 @@ msgstr "日志"
 #: frontend/src/components/Activities/ActivityHeader.vue:133
 #: frontend/src/components/Activities/ActivityHeader.vue:176
 msgid "Log a Call"
-msgstr ""
+msgstr "记录通话"
 
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
@@ -3433,7 +3433,7 @@ msgstr "未成交"
 #. Label of the lost_notes (Text) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Lost Notes"
-msgstr ""
+msgstr "输单备注"
 
 #. Label of the lost_reason (Link) field in DocType 'CRM Deal'
 #. Label of the lost_reason (Data) field in DocType 'CRM Lost Reason'
@@ -3445,24 +3445,24 @@ msgstr "未成交原因"
 #: crm/api/dashboard.py:883
 #: frontend/src/components/Dashboard/AddChartModal.vue:98
 msgid "Lost deal reasons"
-msgstr ""
+msgstr "输单原因分析"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:27
 msgid "Lost notes"
-msgstr ""
+msgstr "输单备注"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:83
 msgid "Lost notes are required when lost reason is \"Other\""
-msgstr ""
+msgstr "当输单原因为“其他”时，必须填写输单备注"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:4
 #: frontend/src/components/Modals/LostReasonModal.vue:14
 msgid "Lost reason"
-msgstr ""
+msgstr "输单原因"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:79
 msgid "Lost reason is required"
-msgstr ""
+msgstr "必须填写输单原因"
 
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -3518,15 +3518,15 @@ msgstr "将{0}设为默认呼叫媒介"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:24
 msgid "Makes \"Expected Closure Date\" and \"Expected Deal Value\" mandatory for deal value forecasting"
-msgstr ""
+msgstr "为进行商机价值预测，强制要求填写“预期关闭日期”和“预期商机价值”"
 
 #: frontend/src/components/Settings/Users.vue:11
 msgid "Manage CRM users by adding or inviting them, and assign roles to control their access and permissions"
-msgstr ""
+msgstr "通过添加或邀请用户管理CRM系统用户，并通过分配角色控制其访问权限。"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:11
 msgid "Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails."
-msgstr ""
+msgstr "管理邮件账户以直接从CRM系统收发邮件。您可添加多个账户，并分别设置默认收件和发件账户。"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:93
 #: frontend/src/components/Settings/InviteUserPage.vue:157
@@ -3540,11 +3540,11 @@ msgstr "经理"
 
 #: frontend/src/data/document.js:57
 msgid "Mandatory field error: {0}"
-msgstr ""
+msgstr "必填字段错误：{0}"
 
 #: frontend/src/data/document.js:186 frontend/src/data/document.js:189
 msgid "Mandatory fields required: {0}"
-msgstr ""
+msgstr "必须填写以下字段：{0}"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3564,7 +3564,7 @@ msgstr "主数据"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:209
 #: frontend/src/components/Modals/EventModal.vue:86
 msgid "May 1, 2025"
-msgstr ""
+msgstr "2025年5月1日"
 
 #. Label of the medium (Data) field in DocType 'CRM Call Log'
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
@@ -3590,7 +3590,7 @@ msgstr "中间名"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:127
 msgid "Minimize"
-msgstr ""
+msgstr "最小化"
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Contacts'
 #. Label of the mobile_no (Data) field in DocType 'CRM Lead'
@@ -3619,7 +3619,7 @@ msgstr "手机号码缺失"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:611
 msgid "Mobile app installation"
-msgstr ""
+msgstr "移动端应用安装"
 
 #: frontend/src/pages/Contact.vue:515 frontend/src/pages/MobileContact.vue:523
 #: frontend/src/pages/MobileOrganization.vue:467
@@ -3640,7 +3640,7 @@ msgstr "月"
 
 #: frontend/src/components/ViewControls.vue:221
 msgid "More Options"
-msgstr ""
+msgstr "更多选项"
 
 #: frontend/src/components/FieldLayoutEditor.vue:448
 msgid "Move to next section"
@@ -3682,7 +3682,7 @@ msgstr "名称"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:152
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:154
 msgid "Name is required"
-msgstr ""
+msgstr "必须填写名称"
 
 #. Label of the naming_series (Select) field in DocType 'CRM Deal'
 #. Label of the naming_series (Select) field in DocType 'CRM Product'
@@ -3693,7 +3693,7 @@ msgstr "命名规则"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:99
 msgid "Nested conditions"
-msgstr ""
+msgstr "嵌套条件"
 
 #. Label of the net_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -3720,11 +3720,11 @@ msgstr "新建地址"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:12
 msgid "New Assignment Rule"
-msgstr ""
+msgstr "新建分配规则"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:44
 msgid "New Assignment Rule Name"
-msgstr ""
+msgstr "新分配规则名称"
 
 #: frontend/src/components/Modals/CallLogModal.vue:97
 msgid "New Call Log"
@@ -3791,7 +3791,7 @@ msgstr "将根据个人信息新建联系人"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:431
 msgid "New event"
-msgstr ""
+msgstr "新建事件"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:42
 #: frontend/src/pages/MobileLead.vue:136
@@ -3800,7 +3800,7 @@ msgstr "将根据详情数据新建组织"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 msgid "New template"
-msgstr ""
+msgstr "新建模板"
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 msgid "New {0}"
@@ -3846,7 +3846,7 @@ msgstr "无数据"
 
 #: frontend/src/components/Activities/EventArea.vue:78
 msgid "No Events Scheduled"
-msgstr ""
+msgstr "未安排任何事件"
 
 #: frontend/src/components/Kanban/KanbanView.vue:103
 #: frontend/src/pages/Deals.vue:105 frontend/src/pages/Leads.vue:121
@@ -3869,11 +3869,11 @@ msgstr "未设置邮箱"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:48
 msgid "No email templates found"
-msgstr ""
+msgstr "未找到邮件模板"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:14
 msgid "No items in the list"
-msgstr ""
+msgstr "列表中无项目"
 
 #: frontend/src/components/FieldLayoutEditor.vue:92
 msgid "No label"
@@ -3900,7 +3900,7 @@ msgstr "未设置主要联系人"
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:70
 msgid "No results found"
-msgstr ""
+msgstr "未找到匹配结果"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:66
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:42
@@ -3910,12 +3910,12 @@ msgstr "未找到模板"
 #: frontend/src/components/Modals/AddExistingUserModal.vue:39
 #: frontend/src/components/Settings/Users.vue:57
 msgid "No users found"
-msgstr ""
+msgstr "未找到用户"
 
 #: frontend/src/pages/MobileOrganization.vue:281
 #: frontend/src/pages/Organization.vue:309
 msgid "No website found"
-msgstr ""
+msgstr "未找到网站"
 
 #: frontend/src/pages/Deal.vue:100 frontend/src/pages/Lead.vue:146
 msgid "No website set"
@@ -4053,20 +4053,20 @@ msgstr "编号"
 #: frontend/src/components/Dashboard/AddChartModal.vue:19
 #: frontend/src/components/Dashboard/AddChartModal.vue:69
 msgid "Number chart"
-msgstr ""
+msgstr "数字图表"
 
 #: crm/api/dashboard.py:1027 crm/api/dashboard.py:1084
 msgid "Number of deals"
-msgstr ""
+msgstr "商机数量"
 
 #: crm/api/dashboard.py:1077
 msgid "Number of deals and total value per salesperson"
-msgstr ""
+msgstr "各销售人员的商机数量与总价值"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
 msgid "Old Condition"
-msgstr ""
+msgstr "原有条件"
 
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -4081,16 +4081,16 @@ msgstr "临时冻结"
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Ongoing"
-msgstr ""
+msgstr "进行中"
 
 #: crm/api/dashboard.py:181
 #: frontend/src/components/Dashboard/AddChartModal.vue:77
 msgid "Ongoing deals"
-msgstr ""
+msgstr "进行中商机"
 
 #: frontend/src/utils/index.js:474
 msgid "Only image files are allowed"
-msgstr ""
+msgstr "仅允许上传图像文件"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:60
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:23
@@ -4124,7 +4124,7 @@ msgstr "新窗口打开"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:88
 msgid "Open nested conditions"
-msgstr ""
+msgstr "展开嵌套条件"
 
 #: frontend/src/pages/Organization.vue:90
 msgid "Open website"
@@ -4138,7 +4138,7 @@ msgstr "选项"
 
 #: frontend/src/pages/Welcome.vue:40
 msgid "Or create leads manually"
-msgstr ""
+msgstr "或手动创建线索"
 
 #. Label of the order_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #. Label of the order_by (Code) field in DocType 'CRM View Settings'
@@ -4194,11 +4194,11 @@ msgstr "组织"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:107
 msgid "Organizer"
-msgstr ""
+msgstr "组织者"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:575
 msgid "Other features"
-msgstr ""
+msgstr "其他功能"
 
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -4221,7 +4221,7 @@ msgstr "负责人"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:102
 msgid "Owner: {0}"
-msgstr ""
+msgstr "负责人：{0}"
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -4238,11 +4238,11 @@ msgstr "演示用户{}无法重置密码"
 
 #: frontend/src/components/Settings/emailConfig.js:175
 msgid "Password is required"
-msgstr ""
+msgstr "必须填写密码"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:88
 msgid "Password updated successfully"
-msgstr ""
+msgstr "密码更新成功"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:13
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:38
@@ -4277,7 +4277,7 @@ msgstr "个人"
 
 #: frontend/src/components/Settings/Settings.vue:89
 msgid "Personal Settings"
-msgstr ""
+msgstr "个人设置"
 
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
@@ -4310,7 +4310,7 @@ msgstr "固定视图"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:571
 msgid "Pinned view"
-msgstr ""
+msgstr "置顶视图"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:176
 msgid "Playback speed"
@@ -4318,7 +4318,7 @@ msgstr "播放速度"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:49
 msgid "Please add an email account to continue."
-msgstr ""
+msgstr "请添加邮件账户以继续操作"
 
 #: crm/integrations/twilio/twilio_handler.py:119
 msgid "Please enable twilio settings before making a call."
@@ -4330,15 +4330,15 @@ msgstr "请输入有效URL"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:150
 msgid "Please enter the Exchangerate Host access key."
-msgstr ""
+msgstr "请输入汇率服务商访问密钥"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:9
 msgid "Please provide a reason for marking this deal as lost"
-msgstr ""
+msgstr "请提供标记本商机为输单的原因"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:143
 msgid "Please select a currency before saving."
-msgstr ""
+msgstr "保存前请选择货币"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:136
 #: frontend/src/pages/MobileLead.vue:432
@@ -4360,11 +4360,11 @@ msgstr "请配置Exotel集成"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:181
 msgid "Please specify a reason for losing the deal."
-msgstr ""
+msgstr "请具体说明输单原因"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:183
 msgid "Please specify the reason for losing the deal."
-msgstr ""
+msgstr "请具体说明输单原因"
 
 #. Label of the position (Int) field in DocType 'CRM Deal Status'
 #. Label of the position (Int) field in DocType 'CRM Lead Status'
@@ -4385,7 +4385,7 @@ msgstr "主要邮箱"
 #. Label of the mobile_no (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Mobile No"
-msgstr ""
+msgstr "主要手机号码"
 
 #. Label of the phone (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4432,14 +4432,14 @@ msgstr "产品"
 #. Label of the product_code (Data) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Product Code"
-msgstr ""
+msgstr "产品编码"
 
 #. Label of the product_name (Data) field in DocType 'CRM Product'
 #. Label of the product_name (Data) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Product Name"
-msgstr ""
+msgstr "产品名称"
 
 #. Label of the products_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the products (Table) field in DocType 'CRM Deal'
@@ -4461,7 +4461,7 @@ msgstr "个人资料更新成功"
 
 #: crm/api/dashboard.py:667
 msgid "Projected vs actual revenue based on deal probability"
-msgstr ""
+msgstr "基于商机概率的预测收入与实际收入对比"
 
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -4474,7 +4474,7 @@ msgstr "公开视图"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:570
 msgid "Public view"
-msgstr ""
+msgstr "公开视图"
 
 #. Label of the qty (Float) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -4502,7 +4502,7 @@ msgstr "快速筛选更新成功"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:594
 msgid "Quick entry layout"
-msgstr ""
+msgstr "快速录入布局"
 
 #. Label of the rate (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -4575,7 +4575,7 @@ msgstr "拒绝"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:163
 msgid "Reject call"
-msgstr ""
+msgstr "拒接来电"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:192
 #: frontend/src/components/Controls/ImageUploader.vue:25
@@ -4598,7 +4598,7 @@ msgstr "移除列"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:200
 msgid "Remove group"
-msgstr ""
+msgstr "移除分组"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:32
 #: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:94
@@ -4839,15 +4839,15 @@ msgstr "销售人员"
 #: crm/api/dashboard.py:598
 #: frontend/src/components/Dashboard/AddChartModal.vue:94
 msgid "Sales trend"
-msgstr ""
+msgstr "销售趋势"
 
 #: frontend/src/pages/Dashboard.vue:93
 msgid "Sales user"
-msgstr ""
+msgstr "销售人员"
 
 #: crm/api/dashboard.py:1079
 msgid "Salesperson"
-msgstr ""
+msgstr "销售人员"
 
 #. Label of the salutation (Link) field in DocType 'CRM Deal'
 #. Label of the salutation (Link) field in DocType 'CRM Lead'
@@ -4893,7 +4893,7 @@ msgstr "已保存视图"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:569
 msgid "Saved view"
-msgstr ""
+msgstr "已保存视图"
 
 #: frontend/src/components/Telephony/TaskPanel.vue:8
 msgid "Schedule a task..."
@@ -4901,12 +4901,12 @@ msgstr "安排任务..."
 
 #: frontend/src/components/Activities/EventArea.vue:79
 msgid "Schedule an Event"
-msgstr ""
+msgstr "安排事件"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:36
 #: frontend/src/components/Activities/ActivityHeader.vue:128
 msgid "Schedule an event"
-msgstr ""
+msgstr "安排事件"
 
 #. Label of the script (Code) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -4919,11 +4919,11 @@ msgstr "搜索"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:64
 msgid "Search template"
-msgstr ""
+msgstr "搜索模板"
 
 #: frontend/src/components/Settings/Users.vue:73
 msgid "Search user"
-msgstr ""
+msgstr "搜索用户"
 
 #: frontend/src/components/FieldLayoutEditor.vue:336
 msgid "Section"
@@ -4931,23 +4931,23 @@ msgstr "区块"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:130
 msgid "See all participants"
-msgstr ""
+msgstr "查看所有参与者"
 
 #: frontend/src/pages/Dashboard.vue:50
 msgid "Select Range"
-msgstr ""
+msgstr "选择范围"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:51
 msgid "Select currency"
-msgstr ""
+msgstr "选择货币"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:75
 msgid "Select provider"
-msgstr ""
+msgstr "选择服务商"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:84
 msgid "Select the assignees for {0}."
-msgstr ""
+msgstr "请选择{0}的负责人。"
 
 #: frontend/src/components/FieldLayout/Field.vue:337
 msgid "Select {0}"
@@ -4971,11 +4971,11 @@ msgstr "发送邮件"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:460
 msgid "Send email"
-msgstr ""
+msgstr "发送邮件"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:6
 msgid "Send invites to"
-msgstr ""
+msgstr "发送邀请至"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -4994,11 +4994,11 @@ msgstr "服务商"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:581
 msgid "Service level agreement"
-msgstr ""
+msgstr "服务等级协议"
 
 #: frontend/src/components/PrimaryDropdownItem.vue:27
 msgid "Set As Primary"
-msgstr ""
+msgstr "设为主要"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:66
 msgid "Set all as private"
@@ -5022,7 +5022,7 @@ msgstr "设为默认"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:164
 msgid "Set currency"
-msgstr ""
+msgstr "设置货币"
 
 #: frontend/src/pages/Lead.vue:115
 msgid "Set first name"
@@ -5034,37 +5034,37 @@ msgstr "系统配置中"
 
 #: frontend/src/components/Settings/emailConfig.js:145
 msgid "Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more "
-msgstr ""
+msgstr "配置Frappe Mail需提供邮件账户的API密钥与API密钥。了解更多"
 
 #: frontend/src/components/Settings/emailConfig.js:97
 msgid "Setting up GMail requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more"
-msgstr ""
+msgstr "配置GMail需启用双重认证及应用专用密码。了解更多"
 
 #: frontend/src/components/Settings/emailConfig.js:105
 msgid "Setting up Outlook requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more"
-msgstr ""
+msgstr "配置Outlook需启用双重认证及应用专用密码。了解更多"
 
 #: frontend/src/components/Settings/emailConfig.js:113
 msgid "Setting up Sendgrid requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
-msgstr ""
+msgstr "配置Sendgrid需启用双重认证及应用专用密码。了解更多 "
 
 #: frontend/src/components/Settings/emailConfig.js:121
 msgid "Setting up SparkPost requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
-msgstr ""
+msgstr "配置SparkPost需启用双重认证及应用专用密码。了解更多 "
 
 #: frontend/src/components/Settings/emailConfig.js:129
 msgid "Setting up Yahoo requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
-msgstr ""
+msgstr "配置Yahoo需启用双重认证及应用专用密码。了解更多 "
 
 #: frontend/src/components/Settings/emailConfig.js:137
 msgid "Setting up Yandex requires you to enable two factor authentication\n"
 "\t\t  and app specific passwords. Read more "
-msgstr ""
+msgstr "配置Yandex需启用双重认证及应用专用密码。了解更多 "
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -5075,15 +5075,15 @@ msgstr "设置"
 
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
-msgstr ""
+msgstr "设置邮件"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:199
 msgid "Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
-msgstr ""
+msgstr "请在设置中将汇率服务商配置为'Exchangerate Host'，因默认服务商不支持{0}至{1}的货币转换。"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:339
 msgid "Setup your password"
-msgstr ""
+msgstr "设置密码"
 
 #: frontend/src/components/Activities/Activities.vue:237
 msgid "Show"
@@ -5091,7 +5091,7 @@ msgstr "显示"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Show Password"
-msgstr ""
+msgstr "显示密码"
 
 #: frontend/src/components/FieldLayoutEditor.vue:354
 msgid "Show border"
@@ -5103,7 +5103,7 @@ msgstr "显示标签"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:138
 msgid "Show less"
-msgstr ""
+msgstr "显示更少"
 
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:20
 #: frontend/src/components/Modals/DataFieldsModal.vue:20
@@ -5130,19 +5130,19 @@ msgstr "简单Python表达式，示例：doc.status == '开放' and doc.lead_sou
 
 #: frontend/src/components/AssignTo.vue:83
 msgid "Since you removed {0} from the assignee, the {0} has also been removed."
-msgstr ""
+msgstr "由于您已将{0}从负责人中移除，对应的{0}也已同步移除。"
 
 #: frontend/src/components/AssignTo.vue:76
 msgid "Since you removed {0} from the assignee, the {0} has been changed to the next available assignee {1}."
-msgstr ""
+msgstr "由于您已将{0}从负责人中移除，系统已将{0}自动分配给下一可用负责人{1}。"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:735
 msgid "Some error occurred while renaming assignment rule"
-msgstr ""
+msgstr "重命名分配规则时发生错误"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:720
 msgid "Some error occurred while updating assignment rule"
-msgstr ""
+msgstr "更新分配规则时发生错误"
 
 #: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:24
 #: frontend/src/components/SortBy.vue:232
@@ -5203,11 +5203,11 @@ msgstr "开始时间"
 
 #: frontend/src/composables/event.js:198
 msgid "Start and end time are required"
-msgstr ""
+msgstr "必须填写开始时间和结束时间"
 
 #: frontend/src/pages/Welcome.vue:21
 msgid "Start with sample 10 leads"
-msgstr ""
+msgstr "从10条示例线索开始"
 
 #. Label of the status (Select) field in DocType 'CRM Call Log'
 #. Label of the status (Data) field in DocType 'CRM Communication Status'
@@ -5271,7 +5271,7 @@ msgstr "周日"
 
 #: frontend/src/components/Settings/emailConfig.js:16
 msgid "Support / Sales"
-msgstr ""
+msgstr "支持/销售"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:46
 msgid "Switch camera"
@@ -5279,11 +5279,11 @@ msgstr "切换摄像头"
 
 #: frontend/src/pages/Welcome.vue:32
 msgid "Sync your contacts,email and calenders"
-msgstr ""
+msgstr "同步联系人、邮件和日历"
 
 #: frontend/src/components/Settings/Settings.vue:105
 msgid "System Configuration"
-msgstr ""
+msgstr "系统配置"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -5325,7 +5325,7 @@ msgstr "任务"
 
 #: frontend/src/components/Modals/AboutModal.vue:67
 msgid "Telegram Channel"
-msgstr ""
+msgstr "Telegram频道"
 
 #: frontend/src/components/Settings/Settings.vue:184
 msgid "Telephony"
@@ -5338,35 +5338,35 @@ msgstr "电话媒介"
 
 #: frontend/src/components/Settings/TelephonySettings.vue:8
 msgid "Telephony settings"
-msgstr ""
+msgstr "电话设置"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:175
 msgid "Template created successfully"
-msgstr ""
+msgstr "模板创建成功"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:213
 msgid "Template deleted successfully"
-msgstr ""
+msgstr "模板删除成功"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:197
 msgid "Template disabled successfully"
-msgstr ""
+msgstr "模板已成功禁用"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:196
 msgid "Template enabled successfully"
-msgstr ""
+msgstr "模板已成功启用"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
 msgid "Template name"
-msgstr ""
+msgstr "模板名称"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:240
 msgid "Template renamed successfully"
-msgstr ""
+msgstr "模板重命名成功"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:205
 msgid "Template updated successfully"
-msgstr ""
+msgstr "模板更新成功"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -5403,13 +5403,13 @@ msgstr "条件'{0}'无效：{1}"
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "The rate used to convert the deal’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
-msgstr ""
+msgstr "本汇率用于将商机货币转换为CRM基准货币（在CRM设置中配置）。该汇率在首次添加货币时设定，不会自动更新。"
 
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM
 #. Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "The rate used to convert the organization’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
-msgstr ""
+msgstr "本汇率用于将组织货币转换为CRM基准货币（在CRM设置中配置）。该汇率在首次添加货币时设定，不会自动更新。"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:14
 msgid "There can only be one default priority in Priorities table"
@@ -5418,7 +5418,7 @@ msgstr "优先级表中只能有一个默认优先级"
 #: frontend/src/components/Modals/AddressModal.vue:128
 #: frontend/src/components/Modals/CallLogModal.vue:131
 msgid "These fields are required: {0}"
-msgstr ""
+msgstr "以下字段为必填项：{0}"
 
 #: frontend/src/components/Filter.vue:639
 msgid "This Month"
@@ -5442,11 +5442,11 @@ msgstr "此区块不可编辑"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:59
 msgid "This will delete selected items and items linked to it, are you sure?"
-msgstr ""
+msgstr "此操作将删除所选项目及其关联项目，是否确认继续？"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:62
 msgid "This will delete selected items and unlink linked items to it, are you sure?"
-msgstr ""
+msgstr "此操作将删除所选项目并取消其关联项目的链接，是否确认继续？"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:9
 msgid "This will restore (if not exist) all the default statuses, custom fields and layouts. Delete & Restore will delete default layouts and then restore them."
@@ -5506,7 +5506,7 @@ msgstr "截止日期"
 #. Label of the to_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "To Type"
-msgstr ""
+msgstr "目标类型"
 
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5515,7 +5515,7 @@ msgstr "目标用户"
 
 #: frontend/src/components/Settings/EmailEdit.vue:118
 msgid "To know more about setting up email accounts, click"
-msgstr ""
+msgstr "了解更多邮件账户设置信息，请点击"
 
 #: frontend/src/components/Filter.vue:627 frontend/src/pages/Calendar.vue:79
 msgid "Today"
@@ -5556,24 +5556,24 @@ msgstr "总假期天数"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Total after discount"
-msgstr ""
+msgstr "折后总计"
 
 #: crm/api/dashboard.py:123
 #: frontend/src/components/Dashboard/AddChartModal.vue:76
 msgid "Total leads"
-msgstr ""
+msgstr "线索总数"
 
 #: crm/api/dashboard.py:124
 msgid "Total number of leads"
-msgstr ""
+msgstr "线索总数量"
 
 #: crm/api/dashboard.py:182
 msgid "Total number of non won/lost deals"
-msgstr ""
+msgstr "非赢单/输单商机总数"
 
 #: crm/api/dashboard.py:297
 msgid "Total number of won deals based on its closure date"
-msgstr ""
+msgstr "基于关闭日期的赢单商机总数"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -5584,7 +5584,7 @@ msgstr "周二"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:173
 msgid "Turn into a group"
-msgstr ""
+msgstr "转换为分组"
 
 #. Label of the twiml_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -5640,7 +5640,7 @@ msgstr "类型"
 
 #: frontend/src/components/Calendar/Attendee.vue:233
 msgid "Type an email address to add attendee"
-msgstr ""
+msgstr "输入邮件地址以添加参与者"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:85
 msgid "Type your message here..."
@@ -5648,11 +5648,11 @@ msgstr "在此输入消息..."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:454
 msgid "Unassign conditions are invalid"
-msgstr ""
+msgstr "取消分配条件无效"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:224
 msgid "Unassignment condition"
-msgstr ""
+msgstr "取消分配条件"
 
 #: crm/integrations/exotel/handler.py:170
 msgid "Unauthorized request"
@@ -5664,7 +5664,7 @@ msgstr "不可折叠"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:183
 msgid "Ungroup conditions"
-msgstr ""
+msgstr "取消条件分组"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:24
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
@@ -5673,27 +5673,27 @@ msgstr "未知"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:132
 msgid "Unlink"
-msgstr ""
+msgstr "取消链接"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:78
 msgid "Unlink all"
-msgstr ""
+msgstr "取消所有链接"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:73
 msgid "Unlink and delete"
-msgstr ""
+msgstr "取消链接并删除"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:35
 msgid "Unlink and delete {0} items"
-msgstr ""
+msgstr "取消链接并删除{0}个项目"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:243
 msgid "Unlink linked item"
-msgstr ""
+msgstr "取消关联项链接"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:79
 msgid "Unlink {0} item(s)"
-msgstr ""
+msgstr "取消{0}个项目的链接"
 
 #: frontend/src/components/ViewControls.vue:1093
 msgid "Unpin View"
@@ -5701,11 +5701,11 @@ msgstr "取消固定视图"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:22
 msgid "Unsaved"
-msgstr ""
+msgstr "未保存"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:575
 msgid "Unsaved changes"
-msgstr ""
+msgstr "未保存的修改"
 
 #: frontend/src/components/FieldLayoutEditor.vue:26
 #: frontend/src/components/Modals/AddressModal.vue:8
@@ -5735,7 +5735,7 @@ msgstr "更新"
 
 #: frontend/src/components/Settings/EmailEdit.vue:74
 msgid "Update Account"
-msgstr ""
+msgstr "更新账户"
 
 #: frontend/src/components/Modals/EditValueModal.vue:30
 msgid "Update {0} Records"
@@ -5787,7 +5787,7 @@ msgstr "用户"
 
 #: frontend/src/components/Settings/Settings.vue:126
 msgid "User Management"
-msgstr ""
+msgstr "用户管理"
 
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -5796,7 +5796,7 @@ msgstr "用户名"
 
 #: frontend/src/components/Settings/Users.vue:296
 msgid "User {0} has been removed"
-msgstr ""
+msgstr "用户{0}已被移除"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/Settings.vue:129
@@ -5806,11 +5806,11 @@ msgstr "用户"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:105
 msgid "Users added successfully"
-msgstr ""
+msgstr "用户添加成功"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:465
 msgid "Users are required"
-msgstr ""
+msgstr "必须指定用户"
 
 #. Label of the section_break_nevd (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
@@ -5828,7 +5828,7 @@ msgstr "视图名称"
 
 #: frontend/src/pages/Deal.vue:219
 msgid "View contact"
-msgstr ""
+msgstr "查看联系人"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:566
 msgid "Views"
@@ -5836,7 +5836,7 @@ msgstr "视图"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:563
 msgid "Web form"
-msgstr ""
+msgstr "网页表单"
 
 #. Label of the webhook_verify_token (Data) field in DocType 'CRM Exotel
 #. Settings'
@@ -5874,11 +5874,11 @@ msgstr "欢迎消息"
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:155
 msgid "Welcome to Helpdesk"
-msgstr ""
+msgstr "欢迎使用服务台"
 
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
-msgstr ""
+msgstr "欢迎{0}，现在开始添加您的首条线索"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5909,12 +5909,12 @@ msgstr "宽度可为数字、像素或rem（如3、30px、10rem）"
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Won"
-msgstr ""
+msgstr "赢单"
 
 #: crm/api/dashboard.py:296
 #: frontend/src/components/Dashboard/AddChartModal.vue:79
 msgid "Won deals"
-msgstr ""
+msgstr "赢单商机"
 
 #. Label of the workday (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
@@ -5953,11 +5953,11 @@ msgstr "可在设置中修改默认呼叫媒介"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:100
 msgid "You can get your access key from "
-msgstr ""
+msgstr "您可从以下位置获取访问密钥"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:36
 msgid "You can invite multiple users by comma separating their email addresses"
-msgstr ""
+msgstr "您可通过逗号分隔邮件地址的方式邀请多个用户"
 
 #: crm/integrations/exotel/handler.py:85
 msgid "You do not have Exotel Number set in your Telephony Agent"
@@ -5969,7 +5969,7 @@ msgstr "您的电话客服未设置手机号码"
 
 #: frontend/src/data/document.js:34
 msgid "You do not have permission to access this document"
-msgstr ""
+msgstr "您无权访问本文档"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:24
 msgid "You need to be in developer mode to edit a Standard Form Script"
@@ -5977,7 +5977,7 @@ msgstr "需进入开发者模式才能编辑标准表单脚本"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:150
 msgid "You will be redirected to invite user page, unsaved changes will be lost."
-msgstr ""
+msgstr "系统将跳转至邀请用户页面，未保存的修改将会丢失"
 
 #: crm/api/todo.py:100
 msgid "Your assignment on task {0} has been removed by {1}"
@@ -5993,7 +5993,7 @@ msgstr "您的登录ID是"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:610
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
-msgstr ""
+msgstr "原有条件将被覆盖。是否确认保存？"
 
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
@@ -6061,7 +6061,7 @@ msgstr "工作台"
 #: frontend/src/components/Calendar/Attendee.vue:295
 #: frontend/src/components/Controls/EmailMultiSelect.vue:254
 msgid "email already exists"
-msgstr ""
+msgstr "邮件地址已存在"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -6104,71 +6104,71 @@ msgstr "已联系"
 #: frontend/src/components/Settings/EmailAdd.vue:36
 #: frontend/src/components/Settings/EmailEdit.vue:25
 msgid "here"
-msgstr ""
+msgstr "此处"
 
 #: frontend/src/utils/index.js:146
 msgid "in 1 hour"
-msgstr ""
+msgstr "1小时后"
 
 #: frontend/src/utils/index.js:142
 msgid "in 1 minute"
-msgstr ""
+msgstr "1分钟后"
 
 #: frontend/src/utils/index.js:160
 msgid "in 1 year"
-msgstr ""
+msgstr "1年后"
 
 #: frontend/src/utils/index.js:111
 msgid "in {0} M"
-msgstr ""
+msgstr "{0}个月后"
 
 #: frontend/src/utils/index.js:107
 msgid "in {0} d"
-msgstr ""
+msgstr "{0}天后"
 
 #: frontend/src/utils/index.js:154
 msgid "in {0} days"
-msgstr ""
+msgstr "{0}天后"
 
 #: frontend/src/utils/index.js:101
 msgid "in {0} h"
-msgstr ""
+msgstr "{0}小时后"
 
 #: frontend/src/utils/index.js:148
 msgid "in {0} hours"
-msgstr ""
+msgstr "{0}小时后"
 
 #: frontend/src/utils/index.js:99
 msgid "in {0} m"
-msgstr ""
+msgstr "{0}分钟后"
 
 #: frontend/src/utils/index.js:144
 msgid "in {0} minutes"
-msgstr ""
+msgstr "{0}分钟后"
 
 #: frontend/src/utils/index.js:158
 msgid "in {0} months"
-msgstr ""
+msgstr "{0}个月后"
 
 #: frontend/src/utils/index.js:109
 msgid "in {0} w"
-msgstr ""
+msgstr "{0}周后"
 
 #: frontend/src/utils/index.js:156
 msgid "in {0} weeks"
-msgstr ""
+msgstr "{0}周后"
 
 #: frontend/src/utils/index.js:113
 msgid "in {0} y"
-msgstr ""
+msgstr "{0}年后"
 
 #: frontend/src/utils/index.js:162
 msgid "in {0} years"
-msgstr ""
+msgstr "{0}年后"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:28
 msgid "john@doe.com"
-msgstr ""
+msgstr "john@doe.com"
 
 #: frontend/src/utils/index.js:140 frontend/src/utils/index.js:166
 msgid "just now"
@@ -6280,7 +6280,7 @@ msgstr "紫罗兰色"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:193
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:277
 msgid "which are not compatible with this UI, you will need to recreate the conditions here if you want to manage and add new conditions from this UI."
-msgstr ""
+msgstr "由于与当前用户界面不兼容，如需通过本界面管理和添加新条件，您需要在此重新创建条件"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -6295,7 +6295,7 @@ msgstr "昨天"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:94
 msgid "{0} Attendees"
-msgstr ""
+msgstr "{0}位参与者"
 
 #: frontend/src/utils/index.js:130
 msgid "{0} M"
@@ -6319,7 +6319,7 @@ msgstr "{0}小时"
 
 #: frontend/src/components/Settings/Users.vue:286
 msgid "{0} has been granted {1} access"
-msgstr ""
+msgstr "已授予{0}{1}访问权限"
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
@@ -6327,7 +6327,7 @@ msgstr "{0}小时前"
 
 #: frontend/src/composables/event.js:163
 msgid "{0} hrs"
-msgstr ""
+msgstr "{0}小时"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:309
 #: frontend/src/components/EmailEditor.vue:30
@@ -6348,7 +6348,7 @@ msgstr "{0} 分"
 
 #: frontend/src/composables/event.js:157
 msgid "{0} mins"
-msgstr ""
+msgstr "{0}分钟"
 
 #: frontend/src/utils/index.js:170
 msgid "{0} minutes ago"
@@ -6376,21 +6376,21 @@ msgstr "{0}年前"
 
 #: frontend/src/data/script.js:326
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
-msgstr ""
+msgstr "⚠️ 请避免使用“trigger”作为字段名——该名称与内置trigger()方法冲突。"
 
 #: frontend/src/data/script.js:338
 msgid "⚠️ Method \"{0}\" not found in class."
-msgstr ""
+msgstr "⚠️ 在类中未找到方法“{0}”。"
 
 #: frontend/src/data/script.js:83
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
-msgstr ""
+msgstr "⚠️ 未找到文档类型{0}对应的类，父文档类型必须包含类定义（可为空类，但必须存在）"
 
 #: frontend/src/data/script.js:180
 msgid "⚠️ No data found for parent field: {0}"
-msgstr ""
+msgstr "⚠️ 父字段{0}中未找到数据"
 
 #: frontend/src/data/script.js:188
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
-msgstr ""
+msgstr "⚠️ 在父字段{1}中未找到索引{0}对应的行"
 
