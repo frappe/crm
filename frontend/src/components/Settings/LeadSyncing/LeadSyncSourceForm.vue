@@ -17,12 +17,21 @@
           <Switch size="sm" v-model="syncSource.enabled" />
           <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
         </div>
+
+		<Button
+			v-if="!isLocal && docResource?.document?.syncLeads"
+			:label="__('Sync Now')"
+			variant="outline"
+			:loading="docResource?.document?.syncLeads.loading"
+			@click="docResource?.document?.syncLeads.submit()"
+        />
+
         <Button
-          :label="isLocal ? __('Create') : __('Update')"
-          icon-left="plus"
-          variant="solid"
-          :loading="sources.setValue.loading || sources.insert.loading || docResource?.loading"
-          @click="createOrUpdateSource"
+			:label="isLocal ? __('Create') : __('Update')"
+			icon-left="plus"
+			variant="solid"
+			:loading="sources.setValue.loading || sources.insert.loading || docResource?.loading"
+			@click="createOrUpdateSource"
         />
       </div>
     </div>
@@ -120,6 +129,8 @@
             }"
         />
     </div>
+
+	<ErrorMessage :message="docResource?.document?.syncLeads.error" />
 </div>
 </template>
 
@@ -133,7 +144,7 @@ import {
 	Switch,
 	toast,
 	createResource,
-	dayjsLocal
+	ErrorMessage
 } from "frappe-ui";
 
 import { getMeta } from "@/stores/meta";
@@ -221,7 +232,7 @@ function createSource() {
 			onSuccess: (newDoc) => {
 				toast.success(__("Lead Sync Source created successfully"));
 				isLocal.value = false;
-				docResource.value = useDocument("Lead Sync Source", newDoc.name);
+				docResource.value = getSourceDocResource(newDoc.name);
 			},
 			onError(error) {
 				toast.error(error.messages[0] || __("Error creating Lead Sync Source"));
@@ -245,7 +256,7 @@ onMounted(() => {
 	if (props.sourceData?.name) {
 		Object.assign(syncSource.value, props.sourceData);
 		isLocal.value = false; // edit form
-		docResource.value = useDocument("Lead Sync Source", props.sourceData.name);
+		docResource.value = getSourceDocResource(props.sourceData.name);
 	}
 
 	if (syncSource.value.facebook_lead_form) {
@@ -318,7 +329,6 @@ const leadFields = createResource({
 			"_assign",
 			"_liked_by",
 		];
-		console.log("data", data);
 		return data.filter((field) => !restrictedFields.includes(field.fieldname));
 	},
 });
@@ -332,4 +342,20 @@ const getCRMLeadFields = computed(() => {
 	}
 	return [];
 });
+
+function getSourceDocResource(name) {
+	return useDocument("Lead Sync Source", name, {
+		whitelistedMethods: {
+			syncLeads: {
+				method: 'sync_leads',
+				onSuccess() {
+					toast.success(__("Syncing started in background"))
+				},
+				onError(e) {
+					toast.error(e.messages[0] || __("Error syncing leads"))
+				}
+			}
+		}
+	})
+}
 </script>
