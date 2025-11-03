@@ -167,23 +167,12 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# "all": [
-# "crm.tasks.all"
-# ],
-# "daily": [
-# "crm.tasks.daily"
-# ],
-# "hourly": [
-# "crm.tasks.hourly"
-# ],
-# "weekly": [
-# "crm.tasks.weekly"
-# ],
-# "monthly": [
-# "crm.tasks.monthly"
-# ],
-# }
+scheduler_events = {
+	"all": ["crm.api.event.trigger_offset_event_notifications"],
+	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
+	"daily": ["crm.api.event.trigger_daily_event_notifications"],
+	"weekly": ["crm.api.event.trigger_weekly_event_notifications"],
+}
 
 # Testing
 # -------

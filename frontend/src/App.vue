@@ -1,13 +1,15 @@
 <template>
   <FrappeUIProvider>
     <Layout class="isolate" v-if="session().isLoggedIn">
-      <router-view :key="$route.fullPath"/>
+      <router-view :key="$route.fullPath" />
     </Layout>
     <Dialogs />
+    <EventNotificationPopup />
   </FrappeUIProvider>
 </template>
 
 <script setup>
+import EventNotificationPopup from '@/components/EventNotificationPopup.vue'
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore as session } from '@/stores/session'
 import { FrappeUIProvider, setConfig } from 'frappe-ui'

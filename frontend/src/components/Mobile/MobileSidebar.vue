@@ -35,7 +35,7 @@
               </SidebarLink>
             </div>
             <div v-for="view in allViews" :key="view.label">
-              <Section
+              <CollapsibleSection
                 :label="view.name"
                 :hideLabel="view.hideLabel"
                 :opened="view.opened"
@@ -63,7 +63,7 @@
                     class="mx-2 my-0.5"
                   />
                 </nav>
-              </Section>
+              </CollapsibleSection>
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@ import {
   Dialog,
   DialogOverlay,
 } from '@headlessui/vue'
-import Section from '@/components/Section.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'

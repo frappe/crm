@@ -20,6 +20,12 @@
           <span>
             {{ __(label) || __('Untitled') }}
           </span>
+          <Badge
+            v-if="count"
+            :label="count"
+            :variant="countVariant"
+            :theme="countTheme"
+          />
           <FeatherIcon
             v-if="collapsible && collapseIconPosition === 'right'"
             name="chevron-right"
@@ -45,12 +51,25 @@
   </div>
 </template>
 <script setup>
+import { Badge } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
   label: {
     type: String,
     default: '',
+  },
+  count: {
+    type: [String, Number],
+    default: '',
+  },
+  countVariant: {
+    type: String,
+    default: 'subtle',
+  },
+  countTheme: {
+    type: String,
+    default: 'gray',
   },
   hideLabel: {
     type: Boolean,

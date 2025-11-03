@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="flex flex-col w-[352px] text-base">
+  <div v-if="show" class="flex flex-col w-[352px] text-base h-full">
     <!-- Event Header -->
     <div
       class="flex items-center justify-between p-4.5 text-ink-gray-7 text-lg font-medium"
@@ -58,6 +58,34 @@
             {{ _event.title || __('(No title)') }}
           </div>
           <div class="text-ink-gray-6 text-p-base">{{ formattedDateTime }}</div>
+        </div>
+      </div>
+      <div
+        v-if="_event.location || notifications?.length"
+        class="mx-4.5 my-2.5 border-t border-outline-gray-1"
+      />
+      <div v-if="_event.location" class="px-4.5 py-2">
+        <div class="flex gap-3 text-ink-gray-7">
+          <LocationIcon class="size-4" />
+          <div>{{ __(_event.location) }}</div>
+        </div>
+      </div>
+      <div v-if="notifications?.length" class="px-4.5 py-2">
+        <div class="flex gap-3 text-ink-gray-7">
+          <BellIcon class="size-4" />
+          <div class="flex flex-col gap-1.5">
+            <div v-for="notification in notifications" :key="notification.name">
+              {{
+                __(`{0} {1} before{2}`, [
+                  notification.before,
+                  notification.before == 1
+                    ? notification.interval.slice(0, -1)
+                    : notification.interval,
+                  notification.type == 'Email' ? ', as email' : '',
+                ])
+              }}
+            </div>
+          </div>
         </div>
       </div>
       <div
@@ -163,7 +191,7 @@
       <div class="flex gap-2 items-center px-4.5 py-3">
         <Dropdown class="ml-1" :options="colors">
           <div
-            class="flex items-center justify-center size-7 shrink-0 border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
+            class="flex items-center justify-center size-8 shrink-0 border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
           >
             <div
               class="size-2.5 rounded-full cursor-pointer"
@@ -177,6 +205,7 @@
           ref="eventTitle"
           class="w-full"
           variant="outline"
+          size="md"
           v-model="_event.title"
           :debounce="500"
           :placeholder="__('Event title')"
@@ -301,14 +330,29 @@
         </div>
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
+      <EventNotifications
+        class="px-4.5 py-[7px]"
+        v-model="notifications"
+        :isAllDay="_event.isFullDay"
+      />
+      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <Attendee
         class="px-4.5 py-[7px]"
+        size="md"
         v-model="peoples"
         :validate="validateEmail"
         :error-message="
           (value) => __('{0} is an invalid email address', [value])
         "
       />
+      <div class="mx-4.5 my-2.5 space-y-2">
+        <TextInput
+          v-model="_event.location"
+          :placeholder="__('Add location')"
+          variant="outline"
+          size="md"
+        />
+      </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <div class="px-4.5 py-3">
         <div class="flex items-center gap-x-2 border rounded py-1">
@@ -354,6 +398,8 @@
 </template>
 
 <script setup>
+import BellIcon from '@/components/Icons/BellIcon.vue'
+import LocationIcon from '@/components/Icons/LocationIcon.vue'
 import PeopleIcon from '@/components/Icons/PeopleIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -361,8 +407,11 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
+import Attendee from '@/components/Calendar/Attendee.vue'
+import EventNotifications from '@/components/Calendar/EventNotifications.vue'
+import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { globalStore } from '@/stores/global'
-import { validateEmail } from '@/utils'
+import { validateEmail, deepClone } from '@/utils'
 import {
   normalizeParticipants,
   buildEndTimeOptions,
@@ -384,7 +433,6 @@ import {
   CalendarActiveEvent as activeEvent,
   createDocumentResource,
 } from 'frappe-ui'
-import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -421,6 +469,16 @@ const peoples = computed({
   },
   set(list) {
     _event.value.event_participants = normalizeParticipants(list)
+    sync()
+  },
+})
+
+const notifications = computed({
+  get() {
+    return _event.value.notifications
+  },
+  set(list) {
+    _event.value.notifications = list
     sync()
   },
 })
@@ -470,12 +528,12 @@ function fetchEvent(oldMode) {
       fields: ['*'],
       onSuccess: (data) => {
         _event.value = parseEventDoc(data)
-        oldEvent.value = { ..._event.value }
+        oldEvent.value = deepClone(_event.value)
       },
     })
     if (eventResource.value.doc && !event.value.reloadEvent) {
       _event.value = parseEventDoc(eventResource.value.doc)
-      oldEvent.value = { ..._event.value }
+      oldEvent.value = deepClone(_event.value)
     } else {
       eventResource.value.reload()
     }
@@ -483,7 +541,10 @@ function fetchEvent(oldMode) {
     _event.value = event.value
 
     if (oldMode !== props.mode) {
-      oldEvent.value = { ...event.value }
+      oldEvent.value = deepClone(event.value)
+    } else if (!oldEvent.value) {
+      // Ensure oldEvent is set if it hasn't been initialized
+      oldEvent.value = deepClone(event.value)
     }
 
     if (event.value.id === 'duplicate-event' && oldMode !== 'duplicate') {
@@ -558,7 +619,7 @@ function saveEvent() {
     return
   }
 
-  oldEvent.value = { ..._event.value }
+  oldEvent.value = deepClone(_event.value)
   sync()
   emit('save', _event.value)
 }
@@ -605,7 +666,7 @@ function close() {
 }
 
 function reset() {
-  Object.assign(_event.value, oldEvent.value)
+  _event.value = deepClone(oldEvent.value)
   sync()
 }
 
@@ -641,10 +702,28 @@ const formattedDateTime = computed(() => {
     return `${__('All day')} - ${date.format('ddd, D MMM YYYY')}`
   }
 
-  const start = dayjs(_event.value.fromDate + ' ' + _event.value.fromTime)
-  const end = dayjs(_event.value.toDate + ' ' + _event.value.toTime)
+  let start = dayjs(_event.value.fromDate + ' ' + _event.value.fromTime)
+  let end = dayjs(_event.value.toDate + ' ' + _event.value.toTime)
 
-  return `${start.format('h:mm a')} - ${end.format('h:mm a')} ${date.format('ddd, D MMM YYYY')}`
+  start = start.format('h:mm a')
+  end = end.format('h:mm a')
+
+  if (start.includes(':00')) {
+    start = start.replace(':00', '')
+  }
+
+  if (end.includes(':00')) {
+    end = end.replace(':00', '')
+  }
+
+  if (
+    (start.includes(' am') && end.includes(' am')) ||
+    (start.includes(' pm') && end.includes(' pm'))
+  ) {
+    start = start.replace(' am', '').replace(' pm', '')
+  }
+
+  return `${start} - ${end} ${date.format('ddd, D MMM YYYY')}`
 })
 
 const colors = Object.keys(colorMap).map((color) => ({
