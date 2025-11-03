@@ -86,7 +86,13 @@
             v-model="syncSource.access_token"
             :label="__('Access Token')"
             :placeholder="__('Enter Access Token')"
-        />
+        >
+		<template #suffix>
+			<a target="_blank" href="https://developers.facebook.com/docs/facebook-login/guides/access-tokens/">
+				<LucideCircleQuestionMark class="w-4" />
+			</a>
+		</template>
+		</FormControl>
 
 		<FormControl
 			v-if="!isLocal && sourceDoc"
@@ -150,6 +156,7 @@ import {
 import { getMeta } from "@/stores/meta";
 import Link from "@/components/Controls/Link.vue";
 import Grid from "@/components/Controls/Grid.vue";
+import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 
 const props = defineProps({
 	sourceData: {
