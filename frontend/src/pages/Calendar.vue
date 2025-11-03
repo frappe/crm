@@ -167,7 +167,6 @@ import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   Calendar,
   createListResource,
-  TabButtons,
   dayjs,
   DatePicker,
   Tooltip,

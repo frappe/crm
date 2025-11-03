@@ -159,6 +159,7 @@ const intervalOptions = (n) => {
 }
 
 function addNotification() {
+  notifications.value ??= []
   if (props.isAllDay) {
     notifications.value.push({
       type: 'Notification',
