@@ -54,7 +54,14 @@
           }"
         />
         <div class="flex flex-col gap-[3px]">
-          <div class="text-ink-gray-8 font-semibold text-xl">
+          <div
+            class="text-xl font-semibold"
+            :class="
+              attending == 'No'
+                ? 'line-through text-ink-gray-7'
+                : 'text-ink-gray-8 '
+            "
+          >
             {{ _event.title || __('(No title)') }}
           </div>
           <div class="text-ink-gray-6 text-p-base">{{ formattedDateTime }}</div>
@@ -837,6 +844,7 @@ function updateAttendingStatus(attendee, status) {
   })
     .then(() => {
       toast.success(__('Attending status updated'))
+      oldEvent.value = deepClone(_event.value)
       sync()
     })
     .catch((err) => {
