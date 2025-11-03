@@ -171,23 +171,23 @@ doc_events = {
 
 scheduler_events = {
 	"daily_long": [
-		"crm.tasks.sync_leads_from_sources_daily"
+		"crm.lead_syncing.background_sync.sync_leads_from_sources_daily"
 	],
 	"hourly_long": [
-		"crm.tasks.sync_leads_from_sources_hourly"
+		"crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"
 	],
 	"monthly_long": [
-		"crm.tasks.sync_leads_from_sources_monthly"
+		"crm.lead_syncing.background_sync.sync_leads_from_sources_monthly"
 	],
     "cron": {
         "*/5 * * * *": [
-            "crm.tasks.sync_leads_from_sources_5_minutes"
+            "crm.lead_syncing.background_sync.sync_leads_from_sources_5_minutes"
 		],
         "*/10 * * * *": [
-			"crm.tasks.sync_leads_from_sources_10_minutes"
+			"crm.lead_syncing.background_sync.sync_leads_from_sources_10_minutes"
 		],
         "*/15 * * * *": [
-			"crm.tasks.sync_leads_from_sources_15_minutes"
+			"crm.lead_syncing.background_sync.sync_leads_from_sources_15_minutes"
 		],
 	}
 }
