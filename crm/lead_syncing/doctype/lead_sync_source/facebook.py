@@ -61,21 +61,21 @@ class FacebookSyncSource:
 
 	def fetch_leads(self):
 		url = self.get_api_url(f"/{self.form_id}/leads")
+		params = {
+			"access_token": self.access_token,
+			"fields": "id,created_time,field_data",
+			"limit": 100000,  # TODO: pagination
+		}
 
+		filtering = []
 		if self.last_synced_at:
 			timestamp = frappe.utils.data.get_timestamp(self.last_synced_at)
-			filtering = (
-				f"filtering=[{{'field':'time_created','operator':'GREATER_THAN','value':{timestamp}}}]"
-			)
-			url = f"{url}?{filtering}"
+			filtering.append({'field':'time_created','operator':'GREATER_THAN','value':timestamp})
+			params['filtering'] = frappe.as_json(filtering)
 
 		return make_get_request(
 			url,
-			params={
-				"access_token": self.access_token,
-				"fields": "id,created_time,field_data",
-				"limit": 100000,  # TODO: pagination
-			},
+			params=params,
 		).get("data", [])
 
 	def get_form_questions_mapping(self):
