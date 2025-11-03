@@ -3,8 +3,9 @@
         <!-- Header -->
         <div class="flex justify-between px-2 pt-2">
             <div class="flex flex-col gap-1 w-9/12">
-                <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-                {{ __('Lead sources') }}
+                <h2 class="flex gap-2 text-xl font-semibold leading-none h-5 items-center">
+                    {{ __('Lead sources') }}
+                    <Badge theme="orange" size="sm">Beta</Badge>
                 </h2>
                 <p class="text-p-base text-ink-gray-6">
                 {{
@@ -126,12 +127,10 @@
 </template>
 <script setup>
 import {
-	TextInput,
-	FormControl,
 	Switch,
 	Dropdown,
-	FeatherIcon,
 	toast,
+    Badge,
 } from "frappe-ui";
 import { ref, computed, inject } from "vue";
 
