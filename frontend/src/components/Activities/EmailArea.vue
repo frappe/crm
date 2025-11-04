@@ -168,8 +168,8 @@ function forward(email) {
   editor.editor
     .chain()
     .clearContent()
-    .insertContent('<p></p>')
     .insertContent(`<blockquote>${email.content}</blockquote>`)
+    .insertContentAt(0, { type: 'paragraph' })
     .focus('start')
     .run()
 }
