@@ -45,6 +45,7 @@
           newEmailEditor.cc = false
           newEmailEditor.bcc = false
           newEmail = ''
+          attachments.value = []
         },
       }"
       :editable="showEmailBox"
@@ -70,6 +71,7 @@
         onClick: () => {
           showCommentBox = false
           newComment = ''
+          attachments.value = []
         },
       }"
       :editable="showCommentBox"
@@ -222,6 +224,7 @@ async function submitEmail() {
   showEmailBox.value = false
   await sendMail()
   newEmail.value = ''
+  attachments.value = []
   reload.value = true
   emit('scroll')
   capture('email_sent', { doctype: props.doctype })
@@ -233,6 +236,7 @@ async function submitComment() {
   showCommentBox.value = false
   await sendComment()
   newComment.value = ''
+  attachments.value = []
   reload.value = true
   emit('scroll')
   capture('comment_sent', { doctype: props.doctype })
