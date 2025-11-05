@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-02 09:34+0000\n"
-"PO-Revision-Date: 2025-11-03 19:23\n"
+"PO-Revision-Date: 2025-11-05 09:44\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr " (Baru)"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:58
 msgid "(No title)"
-msgstr ""
+msgstr "(Tidak ada judul)"
 
 #: frontend/src/components/Modals/TaskModal.vue:87
 #: frontend/src/components/Telephony/TaskPanel.vue:70
@@ -186,7 +186,7 @@ msgstr "Terima Undangan"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:155
 msgid "Accept call"
-msgstr ""
+msgstr "Terima Panggilan"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -304,16 +304,16 @@ msgstr "Tambah Hari Libur Mingguan"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a condition"
-msgstr ""
+msgstr "Tambahkan ketentuan"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
 msgid "Add a note"
-msgstr ""
+msgstr "Tambah catatan"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:191
 msgid "Add a task"
-msgstr ""
+msgstr "Tambah Tugas"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add chart"
@@ -328,12 +328,12 @@ msgstr "Tambah kolom"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:28
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:64
 msgid "Add condition"
-msgstr ""
+msgstr "Tambahkan ketentuan"
 
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:91
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:70
 msgid "Add condition group"
-msgstr ""
+msgstr "Tambahkan grup ketentuan"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:325
 msgid "Add description"
@@ -424,7 +424,7 @@ msgstr "Semua"
 #: frontend/src/components/Modals/EventModal.vue:71
 #: frontend/src/composables/event.js:122
 msgid "All day"
-msgstr ""
+msgstr "Sepanjang hari"
 
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -517,7 +517,7 @@ msgstr "Apakah Anda yakin ingin menghapus kontak ini?"
 #: frontend/src/components/Modals/EventModal.vue:408
 #: frontend/src/pages/Calendar.vue:300
 msgid "Are you sure you want to delete this event?"
-msgstr ""
+msgstr "Anda yakin ingin menghapus event ini?"
 
 #: frontend/src/pages/MobileOrganization.vue:261
 msgid "Are you sure you want to delete this organization?"
@@ -676,7 +676,7 @@ msgstr "Lampiran"
 
 #: frontend/src/components/Modals/EventModal.vue:120
 msgid "Attendees"
-msgstr ""
+msgstr "Peserta"
 
 #. Label of the auth_token (Password) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
