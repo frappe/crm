@@ -245,6 +245,7 @@ const events = createListResource({
   filters: buildEventFilters(),
   orFilters: buildEventOrFilters(),
   pageLength: 9999,
+  auto: true,
   transform: (data) =>
     data.map((ev) => ({
       id: ev.name,
