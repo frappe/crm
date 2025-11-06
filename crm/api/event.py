@@ -23,6 +23,7 @@ from frappe.utils import add_to_date, now_datetime
 def trigger_offset_event_notifications():
 	"""Trigger event notifications for offset-based intervals (minutes)."""
 	_process_event_notifications_by_interval("minutes")
+	_process_event_notifications_by_interval("hours")
 
 
 def trigger_hourly_event_notifications():
@@ -52,6 +53,7 @@ def _process_event_notifications_by_interval(interval):
 		return
 
 	current_time = now_datetime()
+	current_user = frappe.session.user
 	all_events_data = frappe.db.sql(
 		"""
 		SELECT
@@ -66,14 +68,17 @@ def _process_event_notifications_by_interval(interval):
 			en.before as before_value,
 			en.time as time_of_day,
 			en.interval as notification_interval,
+			ep.email as participant_email,
 			CASE WHEN en.parent IS NULL THEN 0 ELSE 1 END as has_custom_notifications
 		FROM `tabEvent` e
 		LEFT JOIN `tabEvent Notifications` en ON e.name = en.parent AND en.interval = %s
+		LEFT JOIN `tabEvent Participants` ep ON e.name = ep.parent AND ep.email = %s
 		WHERE (e.starts_on >= %s OR (%s >= e.starts_on AND %s < e.ends_on))
+		AND (e.owner = %s OR ep.email = %s)
 		AND e.status != 'Cancelled'
 		ORDER BY e.starts_on, e.name
 	""",
-		(interval, current_time, current_time, current_time),
+		(interval, current_user, current_time, current_time, current_time, current_user, current_user),
 		as_dict=True,
 	)
 
@@ -108,6 +113,7 @@ def _process_event_notifications_by_interval(interval):
 
 			if not (trigger_window_start <= current_time <= trigger_window_end):
 				continue
+
 			if notification.get("notification_type") == "Email":
 				_send_email_notification(notification, event_start, before_value, interval)
 			elif notification.get("notification_type") == "Notification":
