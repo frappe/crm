@@ -37,4 +37,5 @@ class FailedLeadSyncLog(Document):
 		)
 
 		self.type = "Synced"
+		self.save()
 		return crm_lead
