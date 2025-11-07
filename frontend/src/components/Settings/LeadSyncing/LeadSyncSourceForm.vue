@@ -59,8 +59,8 @@
 							</template>
 						</FormControl>
 
-						<FormControl v-if="!isLocal && sourceDoc && sourceDoc.last_synced_at" v-model="sourceDoc.last_synced_at" disabled
-							type="datetime" :label="__('Last Synced At')" />
+						<FormControl v-if="!isLocal && sourceDoc && sourceDoc.last_synced_at"
+							:modelValue="formatDate(sourceDoc.last_synced_at)" disabled type="datetime" :label="__('Last Synced At')" />
 
 						<Link v-if="!isLocal" label="Facebook Page" v-model="syncSource.facebook_page"
 							doctype="Facebook Page" />
@@ -115,6 +115,7 @@ import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark';
 import FailureLogs from "./FailureLogs.vue";
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
+import {formatDate} from "@/utils";
 
 const props = defineProps({
 	sourceData: {
