@@ -59,7 +59,7 @@
 							</template>
 						</FormControl>
 
-						<FormControl v-if="!isLocal && sourceDoc" v-model="sourceDoc.last_synced_at" disabled
+						<FormControl v-if="!isLocal && sourceDoc && sourceDoc.last_synced_at" v-model="sourceDoc.last_synced_at" disabled
 							type="datetime" :label="__('Last Synced At')" />
 
 						<Link v-if="!isLocal" label="Facebook Page" v-model="syncSource.facebook_page"
@@ -84,7 +84,7 @@
 					</div>
 				</div>
 
-				<div v-if="tab.label == 'Logs'">
+				<div class="mt-4" v-if="tab.label == 'Logs'">
 					<FailureLogs :source="syncSource.name" />
 				</div>
 			</template>
@@ -114,6 +114,7 @@ import Grid from "@/components/Controls/Grid.vue";
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark';
 import FailureLogs from "./FailureLogs.vue";
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 
 const props = defineProps({
 	sourceData: {
@@ -123,15 +124,23 @@ const props = defineProps({
 });
 const emit = defineEmits(["updateStep"]);
 
-const tabs = [
-	{
-		label: __('Details'),
-		icon: DetailsIcon
-	},
-	{
-		label: __('Logs'),
+const tabs = computed(() => {
+	const tabList = [
+		{
+			label: __('Details'),
+			icon: DetailsIcon
+		}
+	]
+
+	if (!isLocal.value) {
+		tabList.push({
+			label: __('Logs'),
+			icon: RefreshIcon
+		})
 	}
-]
+
+	return tabList;
+})
 
 const tabIndex = ref(0);
 
