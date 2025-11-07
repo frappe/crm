@@ -338,7 +338,7 @@ function getSourceDocResource(name) {
 					toast.success(__("Syncing started in background"))
 				},
 				onError(e) {
-					toast.error(e.messages[0] || __("Error syncing leads"))
+					toast.error((e.messages ?? e.messages[0]) || __("Error syncing leads"))
 				}
 			}
 		}
