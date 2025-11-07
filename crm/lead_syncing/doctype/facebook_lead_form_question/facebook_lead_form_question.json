@@ -57,7 +57,7 @@
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Facebook Lead Form Question",
- "owner": "hussain@frappe.io",
+ "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
  "sort_field": "creation",

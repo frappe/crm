@@ -95,7 +95,7 @@
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
  "naming_rule": "Set by user",
- "owner": "hussain@frappe.io",
+ "owner": "Administrator",
  "permissions": [
   {
    "create": 1,
