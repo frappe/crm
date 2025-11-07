@@ -96,7 +96,7 @@
 
 <script setup>
 import { useDocument } from "@/data/document";
-import { onMounted, inject, ref, computed, watch, reactive } from "vue";
+import { onMounted, inject, ref, computed, watch } from "vue";
 import { supportedSourceTypes } from "./leadSyncSourceConfig";
 import {
 	Button,
