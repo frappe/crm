@@ -35,8 +35,8 @@
             showTooltip: true,
             resizeColumn: false,
             emptyState: {
-                title: 'No failure logs found',
-                description: 'Create a new record to get started',
+                title: __('No failure logs found'),
+                description: __('Any failed lead syncs will show up here'),
             },
             onRowClick: (row) => {
                 selectedLog = row
