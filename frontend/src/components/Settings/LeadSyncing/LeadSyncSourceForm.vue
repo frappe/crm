@@ -84,7 +84,7 @@
 					</div>
 				</div>
 
-				<div class="mt-4" v-if="tab.label == 'Logs'">
+				<div class="mt-4" v-if="tab.label == 'Failure Logs'">
 					<FailureLogs :source="syncSource.name" />
 				</div>
 			</template>
@@ -134,7 +134,7 @@ const tabs = computed(() => {
 
 	if (!isLocal.value) {
 		tabList.push({
-			label: __('Logs'),
+			label: __('Failure Logs'),
 			icon: RefreshIcon
 		})
 	}
