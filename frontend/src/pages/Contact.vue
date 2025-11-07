@@ -103,6 +103,7 @@
                   @click="callEnabled && makeCall(contact.doc.mobile_no)"
                 />
                 <Button
+                  v-if="canDelete"
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
@@ -214,6 +215,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useDocumentPermissions } from '@/composables/permissions'
 
 const { brand } = getSettings()
 const { makeCall, $dialog, $socket } = globalStore()
@@ -230,6 +232,7 @@ const props = defineProps({
   },
 })
 
+const canDelete = useDocumentPermissions('Contact', props.contactId)
 const route = useRoute()
 const router = useRouter()
 
