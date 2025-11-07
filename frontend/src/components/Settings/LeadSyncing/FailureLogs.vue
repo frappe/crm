@@ -97,7 +97,7 @@ watch(selectedLog, () => {
                     toast.success(__("Sync successful!"))
                 },
                 onError(e) {
-                    toast.error(e.message || e.messages?[0] || e.exc_type || __("Error syncing lead"))
+                    toast.error(e.message || (e.messages ?? e.messages[0]) || e.exc_type || __("Error syncing lead"))
                 }
             }
         }
