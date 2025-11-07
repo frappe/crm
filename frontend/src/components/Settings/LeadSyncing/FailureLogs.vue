@@ -4,7 +4,8 @@
             <Button variant="ghost" icon-left="chevron-left" @click="selectedLog = null">
                 {{ __("Back to all logs") }}
             </Button>
-            <Button>
+            <Button v-if="logDoc?.document?.retrySync" :loading="logDoc?.document?.retrySync.loading"
+                @click="logDoc?.document?.retrySync.submit()">
                 {{ __("Retry Sync") }}
             </Button>
         </div>
@@ -49,8 +50,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { Badge, createListResource, Textarea, ListView, FormControl } from "frappe-ui";
+import { ref, watch } from "vue";
+import { useDocument } from "@/data/document";
+import { Badge, createListResource, Textarea, ListView, FormControl, toast } from "frappe-ui";
 
 const props = defineProps({
     source: {
@@ -82,4 +84,23 @@ const columns = [
 ]
 
 const logDoc = ref(null);
+watch(selectedLog, () => {
+    if (!selectedLog.value?.name) {
+        return
+    }
+
+    logDoc.value = useDocument("Failed Lead Sync Log", selectedLog.value.name, {
+        whitelistedMethods: {
+            retrySync: {
+                method: 'retry_sync',
+                onSuccess() {
+                    toast.success(__("Sync successful!"))
+                },
+                onError(e) {
+                    toast.error(e.exc_type || __("Error syncing lead"))
+                }
+            }
+        }
+    });
+})
 </script>
