@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-11-02 09:34+0000\n"
-"PO-Revision-Date: 2025-11-03 19:22\n"
+"POT-Creation-Date: 2025-11-09 09:35+0000\n"
+"PO-Revision-Date: 2025-11-10 10:46\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -139,9 +139,13 @@ msgstr "<span class=\"h5\"><b>ПОРТАЛ</b></span>"
 msgid "@John, can you please check this?"
 msgstr "@Џон, можеш ли молим те проверити ово?"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:56
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:103
 msgid "A Lead requires either a person's name or an organization's name"
 msgstr "Потенцијални клијент захтева или име особе или назив организације"
+
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:47
+msgid "A lead sync source is already enabled for this Facebook Lead Form!"
+msgstr "Извор за синхронизацију потенцијалних клијената је већ омогућен за овај Facebook образац!"
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
@@ -207,6 +211,15 @@ msgstr "Кључ за приступ"
 msgid "Access Key is required for Service Provider: {0}"
 msgstr "Кључ за приступ је обавезан за пружаоца услуга: {0}"
 
+#. Label of the access_token (Small Text) field in DocType 'Facebook Page'
+#. Label of the access_token (Password) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:87
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:28
+msgid "Access Token"
+msgstr "Приступни токен"
+
 #: frontend/src/components/Settings/CurrencySettings.vue:90
 msgid "Access key"
 msgstr "Кључ за приступ"
@@ -214,6 +227,15 @@ msgstr "Кључ за приступ"
 #: frontend/src/components/Settings/CurrencySettings.vue:94
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
 msgstr "Кључ за приступ Exchangerate Host. Неопходан за преузимање девизних курсева."
+
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:133
+msgid "Access token is required"
+msgstr "Приступни токен је неопходан"
+
+#. Label of the account_id (Data) field in DocType 'Facebook Page'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+msgid "Account ID"
+msgstr "ИД налога"
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
@@ -236,7 +258,7 @@ msgstr "Назив налога је обавезан"
 msgid "Actions"
 msgstr "Радње"
 
-#: frontend/src/pages/Deal.vue:527 frontend/src/pages/Lead.vue:384
+#: frontend/src/pages/Deal.vue:537 frontend/src/pages/Lead.vue:384
 #: frontend/src/pages/MobileDeal.vue:430 frontend/src/pages/MobileLead.vue:337
 msgid "Activity"
 msgstr "Активност"
@@ -279,7 +301,7 @@ msgstr "Додај филтер"
 msgid "Add Lead or Deal"
 msgstr "Додај потенцијалног клијента или пословну прилику"
 
-#: frontend/src/components/Controls/Grid.vue:324
+#: frontend/src/components/Controls/Grid.vue:334
 msgid "Add Row"
 msgstr "Додај ред"
 
@@ -305,6 +327,10 @@ msgstr "Додај недељне празнике"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a condition"
 msgstr "Додај услов"
+
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:24
+msgid "Add a name for your source"
+msgstr "Додајте назив за свој извор"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
@@ -384,6 +410,10 @@ msgstr "Додајте свој први коментар"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:11
 msgid "Add, edit, and manage email templates for various CRM communications"
 msgstr "Додајте, уредите и управљајте имејл шаблонима из различите CRM комуникације"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:12
+msgid "Add, edit, and manage sources for automatic lead syncing to your CRM"
+msgstr "Додајте, уредите и управљајте изворима за аутоматску синхронизацију потенцијалних клијената са CRM-ом"
 
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
@@ -646,7 +676,7 @@ msgid "Assignment rule {0} updated"
 msgstr "Правило додељивања {0} је ажурирано"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:163
+#: frontend/src/components/Settings/Settings.vue:164
 msgid "Assignment rules"
 msgstr "Правила додељивања"
 
@@ -669,7 +699,7 @@ msgstr "Приложи"
 msgid "Attach a file"
 msgstr "Приложи фајл"
 
-#: frontend/src/pages/Deal.vue:567 frontend/src/pages/Lead.vue:424
+#: frontend/src/pages/Deal.vue:577 frontend/src/pages/Lead.vue:424
 #: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:372
 msgid "Attachments"
 msgstr "Прилози"
@@ -708,7 +738,7 @@ msgstr "Аутоматско ажурирање очекиване вредно�
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr "Аутоматски ажурирај \"Очекивана вредност пословне прилике\" на основу укупне вредности повезаних производа у пословној прилици"
 
-#: frontend/src/components/Settings/Settings.vue:160
+#: frontend/src/components/Settings/Settings.vue:161
 msgid "Automation & Rules"
 msgstr "Аутоматизација и правила"
 
@@ -793,6 +823,13 @@ msgstr "Назад"
 msgid "Back to file upload"
 msgstr "Назад на отпремање фајлова"
 
+#. Label of the background_sync_frequency (Select) field in DocType 'Lead Sync
+#. Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:80
+msgid "Background Sync Frequency"
+msgstr "Учесталост позадинске синхронизације"
+
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Backlog"
@@ -802,7 +839,7 @@ msgstr "Закашњење"
 msgid "Between"
 msgstr "Између"
 
-#: frontend/src/components/Settings/Settings.vue:118
+#: frontend/src/components/Settings/Settings.vue:119
 msgid "Brand Settings"
 msgstr "Подешавања бренда"
 
@@ -1059,7 +1096,7 @@ msgstr "Средство за позивање"
 msgid "Calling..."
 msgstr "Позивање..."
 
-#: frontend/src/pages/Deal.vue:552 frontend/src/pages/Lead.vue:409
+#: frontend/src/pages/Deal.vue:562 frontend/src/pages/Lead.vue:409
 #: frontend/src/pages/MobileDeal.vue:450 frontend/src/pages/MobileLead.vue:357
 msgid "Calls"
 msgstr "Позиви"
@@ -1109,6 +1146,11 @@ msgstr "Забележи"
 #: frontend/src/components/Layouts/AppSidebar.vue:561
 msgid "Capturing leads"
 msgstr "Бележење потенцијалних клијената"
+
+#. Label of the category (Data) field in DocType 'Facebook Page'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+msgid "Category"
+msgstr "Категорија"
 
 #: frontend/src/components/Controls/ImageUploader.vue:19
 #: frontend/src/components/Layouts/AppSidebar.vue:490
@@ -1255,7 +1297,7 @@ msgstr "Колоне"
 msgid "Comment"
 msgstr "Коментар"
 
-#: frontend/src/pages/Deal.vue:537 frontend/src/pages/Lead.vue:394
+#: frontend/src/pages/Deal.vue:547 frontend/src/pages/Lead.vue:394
 #: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:347
 msgid "Comments"
 msgstr "Коментари"
@@ -1335,6 +1377,7 @@ msgstr "Потврди"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:139
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:239
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:209
 msgid "Confirm Delete"
 msgstr "Потврди брисање"
 
@@ -1364,7 +1407,7 @@ msgstr "Повежите Ваш имејл"
 msgid "Contact"
 msgstr "Контакт"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:212
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:259
 msgid "Contact Already Exists"
 msgstr "Контакт већ постоји"
 
@@ -1376,15 +1419,15 @@ msgstr "Контактирајте подршку"
 msgid "Contact Us"
 msgstr "Контактирајте нас"
 
-#: frontend/src/pages/Deal.vue:647 frontend/src/pages/MobileDeal.vue:544
+#: frontend/src/pages/Deal.vue:657 frontend/src/pages/MobileDeal.vue:544
 msgid "Contact added"
 msgstr "Контакт је додат"
 
-#: frontend/src/pages/Deal.vue:637 frontend/src/pages/MobileDeal.vue:534
+#: frontend/src/pages/Deal.vue:647 frontend/src/pages/MobileDeal.vue:534
 msgid "Contact already added"
 msgstr "Контакт је већ додат"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:211
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:258
 msgid "Contact already exists with {0}"
 msgstr "Контакт већ постоји са {0}"
 
@@ -1392,7 +1435,7 @@ msgstr "Контакт већ постоји са {0}"
 msgid "Contact image updated"
 msgstr "Слика контакта је ажурирана"
 
-#: frontend/src/pages/Deal.vue:658 frontend/src/pages/MobileDeal.vue:555
+#: frontend/src/pages/Deal.vue:668 frontend/src/pages/MobileDeal.vue:555
 msgid "Contact removed"
 msgstr "Контакт је уклоњен"
 
@@ -1430,8 +1473,8 @@ msgstr "Садржај"
 msgid "Content Type"
 msgstr "Врста садржаја"
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:160
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:164
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:159
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:163
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:162
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:166
 msgid "Content is required"
@@ -1488,6 +1531,7 @@ msgstr "Бројчано"
 #: frontend/src/components/Modals/ViewModal.vue:43
 #: frontend/src/components/Settings/EmailAdd.vue:85
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
 #: frontend/src/pages/Calendar.vue:10 frontend/src/pages/CallLogs.vue:13
 #: frontend/src/pages/Contacts.vue:13 frontend/src/pages/Contacts.vue:60
 #: frontend/src/pages/Deals.vue:13 frontend/src/pages/Deals.vue:236
@@ -1571,7 +1615,7 @@ msgstr "Креирај свој први задатак"
 msgid "Currency"
 msgstr "Валута"
 
-#: frontend/src/components/Settings/Settings.vue:113
+#: frontend/src/components/Settings/Settings.vue:114
 msgid "Currency & Exchange Rate"
 msgstr "Валута и девизни курс"
 
@@ -1607,12 +1651,12 @@ msgstr "Прилагођене радње на листи"
 msgid "Custom statuses"
 msgstr "Прилагођени статуси"
 
-#: frontend/src/pages/Deal.vue:466
+#: frontend/src/pages/Deal.vue:476
 msgid "Customer created successfully"
 msgstr "Клијент је успешно креиран"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
-#: frontend/src/components/Settings/Settings.vue:170
+#: frontend/src/components/Settings/Settings.vue:171
 msgid "Customization"
 msgstr "Прилагођавање"
 
@@ -1620,13 +1664,19 @@ msgstr "Прилагођавање"
 msgid "Customize quick filters"
 msgstr "Прилагоди брзе филтере"
 
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Daily"
+msgstr "Дневно"
+
 #: crm/api/dashboard.py:618
 msgid "Daily performance of leads, deals, and wins"
 msgstr "Дневне перформансе по потенцијалним клијентима, пословним приликама и добијеним пословима"
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:580
-#: frontend/src/pages/Deal.vue:542 frontend/src/pages/Lead.vue:399
+#: frontend/src/pages/Deal.vue:552 frontend/src/pages/Lead.vue:399
 #: frontend/src/pages/MobileDeal.vue:445 frontend/src/pages/MobileLead.vue:352
 msgid "Data"
 msgstr "Подаци"
@@ -1696,7 +1746,7 @@ msgstr "Вредност пословне прилике"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:480 frontend/src/pages/MobileContact.vue:288
+#: frontend/src/pages/Deal.vue:490 frontend/src/pages/MobileContact.vue:288
 #: frontend/src/pages/MobileDeal.vue:384
 #: frontend/src/pages/MobileOrganization.vue:325
 msgid "Deals"
@@ -1801,7 +1851,7 @@ msgstr "Подразумевани статуси, прилагођена пољ
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:48
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:73
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:121
-#: frontend/src/components/Controls/Grid.vue:319
+#: frontend/src/components/Controls/Grid.vue:329
 #: frontend/src/components/DeleteLinkedDocModal.vue:10
 #: frontend/src/components/DeleteLinkedDocModal.vue:90
 #: frontend/src/components/Kanban/KanbanView.vue:222
@@ -1811,6 +1861,7 @@ msgstr "Подразумевани статуси, прилагођена пољ
 #: frontend/src/components/PrimaryDropdownItem.vue:42
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:129
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:229
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:199
 #: frontend/src/components/ViewControls.vue:1116
 #: frontend/src/components/ViewControls.vue:1127
 #: frontend/src/pages/Calendar.vue:299 frontend/src/pages/Calendar.vue:303
@@ -2016,12 +2067,15 @@ msgstr "Ставке падајућег менија"
 msgid "Due Date"
 msgstr "Датум доспећа"
 
+#. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Modals/EventModal.vue:158
 #: frontend/src/components/Modals/ViewModal.vue:42
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:57
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:119
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:224
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:194
 #: frontend/src/components/ViewControls.vue:1068
 msgid "Duplicate"
 msgstr "Дупликат"
@@ -2056,7 +2110,7 @@ msgid "Duration"
 msgstr "Трајање"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:604
-#: frontend/src/components/Settings/Settings.vue:196
+#: frontend/src/components/Settings/Settings.vue:197
 msgid "ERPNext"
 msgstr "ERPNext"
 
@@ -2175,7 +2229,7 @@ msgstr "Уреди поља табеле"
 msgid "Edit note"
 msgstr "Уреди белешку"
 
-#: frontend/src/components/Controls/Grid.vue:287
+#: frontend/src/components/Controls/Grid.vue:297
 msgid "Edit row"
 msgstr "Уреди ред"
 
@@ -2205,7 +2259,7 @@ msgstr "Уређивање догађаја"
 msgid "Email"
 msgstr "Имејл"
 
-#: frontend/src/components/Settings/Settings.vue:147
+#: frontend/src/components/Settings/Settings.vue:148
 msgid "Email Accounts"
 msgstr "Имејл налози"
 
@@ -2218,12 +2272,12 @@ msgstr "Имејл ИД је обавезан"
 msgid "Email Sent At"
 msgstr "Имејл послат у"
 
-#: frontend/src/components/Settings/Settings.vue:144
+#: frontend/src/components/Settings/Settings.vue:145
 msgid "Email Settings"
 msgstr "Имејл подешавања"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:4
-#: frontend/src/components/Settings/Settings.vue:153
+#: frontend/src/components/Settings/Settings.vue:154
 msgid "Email Templates"
 msgstr "Имејл шаблони"
 
@@ -2255,7 +2309,7 @@ msgstr "Имејл шаблон"
 msgid "Email templates"
 msgstr "Имејл шаблони"
 
-#: frontend/src/pages/Deal.vue:532 frontend/src/pages/Lead.vue:389
+#: frontend/src/pages/Deal.vue:542 frontend/src/pages/Lead.vue:389
 #: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:342
 msgid "Emails"
 msgstr "Имејлови"
@@ -2310,8 +2364,15 @@ msgstr "Омогући прогнозирање"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:18
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:85
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:20
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:18
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:61
 msgid "Enabled"
 msgstr "Омогућено"
+
+#. Label of the enabled (Check) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Enabled?"
+msgstr "Омогућено?"
 
 #. Label of the end_date (Date) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -2331,6 +2392,14 @@ msgstr "Време завршетка"
 msgid "End time should be after start time"
 msgstr "Време завршетка треба да буде након времена почетка"
 
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:88
+msgid "Enter Access Token"
+msgstr "Унесите приступни токен"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:70
+msgid "Enter Source Name"
+msgstr "Унесите назив извора"
+
 #: frontend/src/components/Settings/CurrencySettings.vue:115
 msgid "Enter access key"
 msgstr "Унесите кључ за приступ"
@@ -2338,6 +2407,10 @@ msgstr "Унесите кључ за приступ"
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Enter brand name"
 msgstr "Унесите назив бренда"
+
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:30
+msgid "Enter your Facebook Access Token"
+msgstr "Унесите свој Facebook приступни токен"
 
 #: frontend/src/components/FieldLayout/Field.vue:347
 msgid "Enter {0}"
@@ -2357,7 +2430,19 @@ msgstr "Једнако"
 msgid "Error converting to deal: {0}"
 msgstr "Грешка приликом пребацивања у пословну прилику: {0}"
 
-#: frontend/src/pages/Deal.vue:731 frontend/src/pages/Lead.vue:469
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:245
+msgid "Error creating Lead Sync Source"
+msgstr "Грешка приликом креирања извора синхронизације потенцијалних клијената"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:362
+msgid "Error syncing leads"
+msgstr "Грешка приликом синхронизације потенцијалних клијената"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:226
+msgid "Error updating Lead Sync Source"
+msgstr "Грешка приликом ажурирања извора синхронизације потенцијалних клијената"
+
+#: frontend/src/pages/Deal.vue:741 frontend/src/pages/Lead.vue:469
 #: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:412
 msgid "Error updating field"
 msgstr "Грешка приликом ажурирања поља"
@@ -2386,9 +2471,27 @@ msgstr "Детаљи догађаја"
 msgid "Event title"
 msgstr "Наслов догађаја"
 
-#: frontend/src/pages/Deal.vue:547 frontend/src/pages/Lead.vue:404
+#: frontend/src/pages/Deal.vue:557 frontend/src/pages/Lead.vue:404
 msgid "Events"
 msgstr "Догађаји"
+
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Every 10 Minutes"
+msgstr "Сваких 10 минута"
+
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Every 15 Minutes"
+msgstr "Сваких 15 минута"
+
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Every 5 Minutes"
+msgstr "Сваких 5 минута"
 
 #: frontend/src/components/ViewControls.vue:268
 #: frontend/src/components/ViewControls.vue:277
@@ -2499,6 +2602,42 @@ msgstr "FCRM белешка"
 msgid "FCRM Settings"
 msgstr "FCRM подешавања"
 
+#. Option for the 'Type' (Select) field in DocType 'Lead Sync Source'
+#. Label of the facebook_section (Section Break) field in DocType 'Lead Sync
+#. Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Facebook"
+msgstr "Facebook"
+
+#. Label of the facebook_form_id (Data) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Facebook Form ID"
+msgstr "ИД Facebook обрасца"
+
+#. Name of a DocType
+#. Label of the facebook_lead_form (Link) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Facebook Lead Form"
+msgstr "Facebook образац за потенцијалне клијенте"
+
+#. Name of a DocType
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
+msgid "Facebook Lead Form Question"
+msgstr "Питање из Facebook обрасца за потенцијалне клијенте"
+
+#. Label of the facebook_lead_id (Data) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Facebook Lead ID"
+msgstr "ИД потенцијалног клијента на Facebook-у"
+
+#. Name of a DocType
+#. Label of the facebook_page (Link) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Facebook Page"
+msgstr "Facebook страница"
+
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -2507,6 +2646,11 @@ msgstr "FCRM подешавања"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Failed"
 msgstr "Неуспешно"
+
+#. Name of a DocType
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+msgid "Failed Lead Sync Log"
+msgstr "Евиденција неуспешне синхронизације потенцијалних клијената"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:111
 msgid "Failed to add users"
@@ -2524,6 +2668,10 @@ msgstr "Неуспешно креирање имејл налога, неваж�
 msgid "Failed to create template"
 msgstr "Неуспешно креирање шаблона"
 
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
+msgid "Failed to delete Lead Sync Source"
+msgstr "Брисање извора синхронизације потенцијалних клијената није успело"
+
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:216
 msgid "Failed to delete template"
 msgstr "Неуспешно брисање шаблона"
@@ -2536,7 +2684,7 @@ msgstr "Неуспешно преузимање девизног курса из
 msgid "Failed to load form controller: {0}"
 msgstr "Неуспешно учитавање form controller-а: {0}"
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:243
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:242
 msgid "Failed to rename template"
 msgstr "Неуспешно преименовање шаблона"
 
@@ -2556,10 +2704,19 @@ msgstr "Неуспешно ажурирање лозинке"
 msgid "Failed to update profile"
 msgstr "Неуспешно ажурирање профила"
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:209
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:171
+msgid "Failed to update source"
+msgstr "Ажурирање извора није успело"
+
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:208
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:201
 msgid "Failed to update template"
 msgstr "Неуспешно ажурирање шаблона"
+
+#. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+msgid "Failure"
+msgstr "Неуспех"
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2658,7 +2815,7 @@ msgid "Forecasted revenue"
 msgstr "Прогноза прихода"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:5
-#: frontend/src/components/Settings/Settings.vue:108
+#: frontend/src/components/Settings/Settings.vue:109
 msgid "Forecasting"
 msgstr "Прогноза"
 
@@ -2674,6 +2831,11 @@ msgstr "Прогнозирање је успешно омогућено"
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Form"
 msgstr "Образац"
+
+#. Label of the form_name (Data) field in DocType 'Facebook Lead Form'
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+msgid "Form Name"
+msgstr "Назив обрасца"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:19
 msgid "Form Script updated successfully"
@@ -2804,7 +2966,7 @@ msgstr "Здраво"
 msgid "Help"
 msgstr "Помоћ"
 
-#: frontend/src/components/Settings/Settings.vue:202
+#: frontend/src/components/Settings/Settings.vue:203
 msgid "Helpdesk"
 msgstr "Helpdesk"
 
@@ -2900,7 +3062,7 @@ msgstr "Назив листе празника"
 msgid "Holidays"
 msgstr "Празници"
 
-#: frontend/src/components/Settings/Settings.vue:173
+#: frontend/src/components/Settings/Settings.vue:174
 msgid "Home Actions"
 msgstr "Радње на почетној страници"
 
@@ -2909,13 +3071,25 @@ msgstr "Радње на почетној страници"
 msgid "Home actions"
 msgstr "Радње на почетној страници"
 
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Hourly"
+msgstr "По часу"
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
 msgid "I understand, add conditions"
 msgstr "Разумем, додај услове"
 
 #. Label of the id (Data) field in DocType 'CRM Call Log'
+#. Label of the id (Data) field in DocType 'Facebook Lead Form'
+#. Label of the id (Data) field in DocType 'Facebook Lead Form Question'
+#. Label of the id (Data) field in DocType 'Facebook Page'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "ID"
 msgstr "ИД"
 
@@ -3027,7 +3201,7 @@ msgstr "Интеграција"
 msgid "Integration Not Enabled"
 msgstr "Интеграција није омогућена"
 
-#: frontend/src/components/Settings/Settings.vue:181
+#: frontend/src/components/Settings/Settings.vue:182
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr "Интеграције"
@@ -3049,6 +3223,10 @@ msgstr "Неважећи имејл"
 #: crm/integrations/exotel/handler.py:89
 msgid "Invalid Exotel Number"
 msgstr "Неважећи Exotel број"
+
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:137
+msgid "Invalid access token provided for Facebook."
+msgstr "Унет је неважећи приступни токен за Facebook."
 
 #: crm/api/dashboard.py:77
 msgid "Invalid chart name"
@@ -3078,7 +3256,7 @@ msgstr "Неважеће време почетка или завршетка"
 msgid "Invite New User"
 msgstr "Позовите новог корисника"
 
-#: frontend/src/components/Settings/Settings.vue:135
+#: frontend/src/components/Settings/Settings.vue:136
 msgid "Invite User"
 msgstr "Позовите корисника"
 
@@ -3205,14 +3383,18 @@ msgid "Kanban Settings"
 msgstr "Канбан подешавање"
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
+#. Label of the key (Data) field in DocType 'Facebook Lead Form Question'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Key"
 msgstr "Кључ"
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
+#. Label of the label (Data) field in DocType 'Facebook Lead Form Question'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 #: frontend/src/components/ColumnSettings.vue:100
 msgid "Label"
 msgstr "Ознака"
@@ -3245,6 +3427,12 @@ msgstr "Прошли квартал"
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "Last Status Change Log"
 msgstr "Евиденција последње промене статуса"
+
+#. Label of the last_synced_at (Datetime) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:102
+msgid "Last Synced At"
+msgstr "Последња синхронизација у"
 
 #: frontend/src/components/Filter.vue:603
 msgid "Last Week"
@@ -3291,6 +3479,11 @@ msgstr "Распоред"
 msgid "Lead"
 msgstr "Потенцијални клијент"
 
+#. Label of the lead_data (Code) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+msgid "Lead Data"
+msgstr "Подаци о потенцијалним клијентима"
+
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Lead Details"
@@ -3306,7 +3499,7 @@ msgstr "Назив потенцијалног клијента"
 msgid "Lead Owner"
 msgstr "Власник потенцијалног клијента"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:73
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:120
 msgid "Lead Owner cannot be same as the Lead Email Address"
 msgstr "Власник потенцијалног клијента не може бити исти као имејл адреса потенцијалног клијента"
 
@@ -3320,9 +3513,34 @@ msgstr "Извори потенцијалног клијента"
 msgid "Lead Statuses"
 msgstr "Статуси потенцијалног клијента"
 
+#. Name of a DocType
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Lead Sync Source"
+msgstr "Извор синхронизације потенцијалних клијената"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:240
+msgid "Lead Sync Source created successfully"
+msgstr "Извор синхронизације потенцијалних клијената је успешно креиран"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:183
+msgid "Lead Sync Source deleted successfully"
+msgstr "Извор синхронизације потенцијалних клијената је успешно обрисан"
+
+#: frontend/src/components/Settings/Settings.vue:209
+msgid "Lead Syncing"
+msgstr "Синхронизација потенцијалних клијената"
+
 #: crm/api/dashboard.py:974
 msgid "Lead generation channel analysis"
 msgstr "Анализа канала за генерисање потенцијалних клијената"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:7
+msgid "Lead sources"
+msgstr "Извори потенцијалних клијената"
+
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
+msgid "Lead sync initiated."
+msgstr "Синхронизација покренутих клијената је покренута."
 
 #: crm/api/dashboard.py:756
 msgid "Lead to deal conversion pipeline"
@@ -3393,6 +3611,7 @@ msgstr "Учитај подразумеване колоне"
 
 #: frontend/src/components/Kanban/KanbanView.vue:140
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:142
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:120
 #: frontend/src/components/Settings/Users.vue:155
 msgid "Load More"
 msgstr "Учитај више"
@@ -3542,7 +3761,7 @@ msgstr "Менаџер"
 msgid "Mandatory field error: {0}"
 msgstr "Грешка у обавезном пољу: {0}"
 
-#: frontend/src/data/document.js:186 frontend/src/data/document.js:189
+#: frontend/src/data/document.js:187 frontend/src/data/document.js:190
 msgid "Mandatory fields required: {0}"
 msgstr "Обавезна поља су неопходна: {0}"
 
@@ -3550,6 +3769,12 @@ msgstr "Обавезна поља су неопходна: {0}"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Manual"
 msgstr "Ручно"
+
+#. Label of the mapped_to_crm_field (Autocomplete) field in DocType 'Facebook
+#. Lead Form Question'
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
+msgid "Mapped to CRM Field"
+msgstr "Мапирано у CRM поље"
 
 #: frontend/src/components/Notifications.vue:20
 #: frontend/src/pages/MobileNotification.vue:12
@@ -3638,6 +3863,12 @@ msgstr "Понедељак"
 msgid "Month"
 msgstr "Месец"
 
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Monthly"
+msgstr "Месечно"
+
 #: frontend/src/components/ViewControls.vue:221
 msgid "More Options"
 msgstr "Више опција"
@@ -3672,6 +3903,8 @@ msgstr "Моје отворене пословне прилике"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:52
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:39
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:39
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:59
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:22
 #: frontend/src/components/ViewControls.vue:779
 #: frontend/src/pages/MobileOrganization.vue:485
 #: frontend/src/pages/Organization.vue:515
@@ -3679,7 +3912,7 @@ msgid "Name"
 msgstr "Назив"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:417
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:152
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:151
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:154
 msgid "Name is required"
 msgstr "Назив је обавезан"
@@ -3710,6 +3943,7 @@ msgstr "Нето укупно"
 #: frontend/src/components/Activities/ActivityHeader.vue:76
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:19
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:20
 #: frontend/src/components/Settings/Users.vue:30
 msgid "New"
 msgstr "Нови"
@@ -3745,6 +3979,10 @@ msgstr "Нови контакт"
 #: frontend/src/components/Activities/ActivityHeader.vue:118
 msgid "New Email"
 msgstr "Нови имејл"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:9
+msgid "New Lead Sync Source"
+msgstr "Нови извор синхронизације потенцијалних клијената"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:66
 msgid "New Message"
@@ -3840,7 +4078,7 @@ msgstr "Не"
 msgid "No Answer"
 msgstr "Без одговора"
 
-#: frontend/src/components/Controls/Grid.vue:312
+#: frontend/src/components/Controls/Grid.vue:322
 msgid "No Data"
 msgstr "Без података"
 
@@ -3859,9 +4097,13 @@ msgid "No changes made"
 msgstr "Није извршена ниједна промена"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
-#: frontend/src/pages/Deal.vue:261 frontend/src/pages/MobileDeal.vue:205
+#: frontend/src/pages/Deal.vue:271 frontend/src/pages/MobileDeal.vue:205
 msgid "No contacts added"
 msgstr "Нема додатних контаката"
+
+#: frontend/src/pages/Deal.vue:257
+msgid "No details added"
+msgstr "Нису додати детаљи"
 
 #: frontend/src/pages/Deal.vue:90 frontend/src/pages/Lead.vue:137
 msgid "No email set"
@@ -3879,7 +4121,11 @@ msgstr "Нема ставки у листи"
 msgid "No label"
 msgstr "Без ознаке"
 
-#: frontend/src/pages/Deal.vue:697
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:49
+msgid "No lead sources found"
+msgstr "Нису пронађени извори потенцијалних клијената"
+
+#: frontend/src/pages/Deal.vue:707
 msgid "No mobile number set"
 msgstr "Није постављен број мобилног телефона"
 
@@ -3892,7 +4138,7 @@ msgstr "Нема нових обавештења"
 msgid "No phone number set"
 msgstr "Није постављен број телефона"
 
-#: frontend/src/pages/Deal.vue:692
+#: frontend/src/pages/Deal.vue:702
 msgid "No primary contact set"
 msgstr "Није постављен примарни контакт"
 
@@ -3985,11 +4231,15 @@ msgstr "Није слично"
 msgid "Not Saved"
 msgstr "Није сачувано"
 
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:133
+msgid "Not Synced"
+msgstr "Није синхронизовано"
+
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:272
 msgid "Not allowed to add contact to Deal"
 msgstr "Није дозвољено додати контакт у пословну прилику"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:408
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:455
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Није дозвољено пребацити потенцијалног клијента у пословну прилику"
 
@@ -4007,7 +4257,7 @@ msgstr "Није дозвољено поставити примарни конт
 msgid "Note"
 msgstr "Белешка"
 
-#: frontend/src/pages/Deal.vue:562 frontend/src/pages/Lead.vue:419
+#: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:419
 #: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:367
 msgid "Notes"
 msgstr "Белешке"
@@ -4223,6 +4473,16 @@ msgstr "Власник"
 msgid "Owner: {0}"
 msgstr "Власник: {0}"
 
+#. Label of the page (Link) field in DocType 'Facebook Lead Form'
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+msgid "Page"
+msgstr "Страница"
+
+#. Label of the page_name (Data) field in DocType 'Facebook Page'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+msgid "Page Name"
+msgstr "Назив странице"
+
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Parent CRM Territory"
@@ -4275,7 +4535,7 @@ msgstr "Период"
 msgid "Person"
 msgstr "Особа"
 
-#: frontend/src/components/Settings/Settings.vue:89
+#: frontend/src/components/Settings/Settings.vue:90
 msgid "Personal Settings"
 msgstr "Лична подешавања"
 
@@ -4320,6 +4580,10 @@ msgstr "Брзина репродукције"
 msgid "Please add an email account to continue."
 msgstr "Молимо Вас да додате имејл налог како бисте наставили."
 
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:157
+msgid "Please check your access token"
+msgstr "Молимо Вас да проверите свој приступни токен"
+
 #: crm/integrations/twilio/twilio_handler.py:119
 msgid "Please enable twilio settings before making a call."
 msgstr "Молимо Вас да омогућите Twilio подешавања пре него што позовете."
@@ -4339,6 +4603,10 @@ msgstr "Молимо Вас да наведете разлог означава�
 #: frontend/src/components/Settings/CurrencySettings.vue:143
 msgid "Please select a currency before saving."
 msgstr "Молимо Вас да изаберете валуту пре чувања."
+
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:65
+msgid "Please select a lead gen form before syncing!"
+msgstr "Молимо Вас да изаберете образаца за генерисање потенцијалних клијената пре синхронизације!"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:136
 #: frontend/src/pages/MobileLead.vue:431
@@ -4392,7 +4660,7 @@ msgstr "Примарни број мобилног телефона"
 msgid "Primary Phone"
 msgstr "Примарни телефон"
 
-#: frontend/src/pages/Deal.vue:669 frontend/src/pages/MobileDeal.vue:566
+#: frontend/src/pages/Deal.vue:679 frontend/src/pages/MobileDeal.vue:566
 msgid "Primary contact set"
 msgstr "Примарни контакт је постављен"
 
@@ -4451,7 +4719,7 @@ msgid "Products"
 msgstr "Производи"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:540
-#: frontend/src/components/Settings/Settings.vue:93
+#: frontend/src/components/Settings/Settings.vue:94
 msgid "Profile"
 msgstr "Профил"
 
@@ -4480,6 +4748,11 @@ msgstr "Јавни приказ"
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Quantity"
 msgstr "Количина"
+
+#. Label of the questions (Table) field in DocType 'Facebook Lead Form'
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+msgid "Questions"
+msgstr "Питања"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -4580,7 +4853,7 @@ msgstr "Одбиј позив"
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:192
 #: frontend/src/components/Controls/ImageUploader.vue:25
 #: frontend/src/components/Settings/Users.vue:218
-#: frontend/src/pages/Deal.vue:618
+#: frontend/src/pages/Deal.vue:628
 msgid "Remove"
 msgstr "Уклони"
 
@@ -4937,6 +5210,10 @@ msgstr "Погледај све учеснике"
 msgid "Select Range"
 msgstr "Изабери опсег"
 
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:47
+msgid "Select Source Type"
+msgstr "Изаберите врсту извора"
+
 #: frontend/src/components/Settings/CurrencySettings.vue:51
 msgid "Select currency"
 msgstr "Изабери валуту"
@@ -5012,7 +5289,7 @@ msgstr "Постави све као јавно"
 msgid "Set an organization"
 msgstr "Постави организацију"
 
-#: frontend/src/pages/Deal.vue:626 frontend/src/pages/MobileDeal.vue:523
+#: frontend/src/pages/Deal.vue:636 frontend/src/pages/MobileDeal.vue:523
 msgid "Set as Primary Contact"
 msgstr "Постави као примарни контакт"
 
@@ -5151,16 +5428,32 @@ msgstr "Сортирај"
 
 #. Label of the source (Link) field in DocType 'CRM Deal'
 #. Label of the source (Link) field in DocType 'CRM Lead'
+#. Label of the source (Link) field in DocType 'Failed Lead Sync Log'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Modals/EditValueModal.vue:10
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:60
 msgid "Source"
 msgstr "Извор"
 
 #. Label of the source_name (Data) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:69
 msgid "Source Name"
 msgstr "Назив извора"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:46
+msgid "Source Type"
+msgstr "Врста извора"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:167
+msgid "Source disabled successfully"
+msgstr "Извор је успешно онемогућен"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:166
+msgid "Source enabled successfully"
+msgstr "Извор је успешно омогућен"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
@@ -5253,7 +5546,7 @@ msgstr "Поддомен"
 msgid "Subject"
 msgstr "Наслов"
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:156
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:155
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:158
 msgid "Subject is required"
 msgstr "Наслов је неопходан"
@@ -5277,11 +5570,25 @@ msgstr "Подршка / Продаја"
 msgid "Switch camera"
 msgstr "Промени камеру"
 
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
+msgid "Sync Now"
+msgstr "Синхронизуј сада"
+
 #: frontend/src/pages/Welcome.vue:32
 msgid "Sync your contacts,email and calenders"
 msgstr "Синхронизуј своје контакте, имејлове и календаре"
 
-#: frontend/src/components/Settings/Settings.vue:105
+#. Label of the syncing_tab (Tab Break) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Syncing"
+msgstr "Синхронизовање"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:359
+msgid "Syncing started in background"
+msgstr "Синхронизација је започета у позадини"
+
+#: frontend/src/components/Settings/Settings.vue:106
 msgid "System Configuration"
 msgstr "Системска подешавања"
 
@@ -5301,6 +5608,10 @@ msgstr "Системска подешавања"
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "System Manager"
 msgstr "Систем менаџер"
 
@@ -5318,7 +5629,7 @@ msgstr "Запиши белешку..."
 msgid "Task"
 msgstr "Задатак"
 
-#: frontend/src/pages/Deal.vue:557 frontend/src/pages/Lead.vue:414
+#: frontend/src/pages/Deal.vue:567 frontend/src/pages/Lead.vue:414
 #: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:362
 msgid "Tasks"
 msgstr "Задаци"
@@ -5327,7 +5638,7 @@ msgstr "Задаци"
 msgid "Telegram Channel"
 msgstr "Telegram канал"
 
-#: frontend/src/components/Settings/Settings.vue:184
+#: frontend/src/components/Settings/Settings.vue:185
 msgid "Telephony"
 msgstr "Телефонија"
 
@@ -5360,11 +5671,11 @@ msgstr "Шаблон је успешно омогућен"
 msgid "Template name"
 msgstr "Назив шаблона"
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:240
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:239
 msgid "Template renamed successfully"
 msgstr "Шаблон је успешно преименован"
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:205
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:204
 msgid "Template updated successfully"
 msgstr "Шаблон је успешно ажуриран"
 
@@ -5575,6 +5886,11 @@ msgstr "Укупан број пословних прилика које нис�
 msgid "Total number of won deals based on its closure date"
 msgstr "Укупан број добијених пословних прилика према датуму затварања"
 
+#. Label of the traceback (Code) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+msgid "Traceback"
+msgstr "След грешке"
+
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -5628,6 +5944,9 @@ msgstr "Twilio подешавања су успешно ажурирана"
 #. Label of the type (Select) field in DocType 'CRM Global Settings'
 #. Label of the type (Select) field in DocType 'CRM Notification'
 #. Label of the type (Select) field in DocType 'CRM View Settings'
+#. Label of the type (Data) field in DocType 'Facebook Lead Form Question'
+#. Label of the type (Select) field in DocType 'Failed Lead Sync Log'
+#. Label of the type (Select) field in DocType 'Lead Sync Source'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -5635,6 +5954,9 @@ msgstr "Twilio подешавања су успешно ажурирана"
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Type"
 msgstr "Врста"
 
@@ -5726,6 +6048,7 @@ msgstr "Без наслова"
 #: frontend/src/components/Settings/CurrencySettings.vue:17
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:21
 #: frontend/src/components/Settings/HomeActions.vue:15
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
 #: frontend/src/components/Settings/ProfileSettings.vue:95
 #: frontend/src/components/Settings/SettingsPage.vue:20
 #: frontend/src/components/Settings/TelephonySettings.vue:23
@@ -5785,7 +6108,7 @@ msgstr "Отпремање {0}%"
 msgid "User"
 msgstr "Корисник"
 
-#: frontend/src/components/Settings/Settings.vue:126
+#: frontend/src/components/Settings/Settings.vue:127
 msgid "User Management"
 msgstr "Управљање корисницима"
 
@@ -5799,7 +6122,7 @@ msgid "User {0} has been removed"
 msgstr "Корисник {0} је уклоњен"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
-#: frontend/src/components/Settings/Settings.vue:129
+#: frontend/src/components/Settings/Settings.vue:130
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr "Корисници"
@@ -5883,8 +6206,8 @@ msgstr "Добро дошли {0}, хајде да додамо твог прв�
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Layouts/AppSidebar.vue:603
-#: frontend/src/components/Settings/Settings.vue:190
-#: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:429
+#: frontend/src/components/Settings/Settings.vue:191
+#: frontend/src/pages/Deal.vue:582 frontend/src/pages/Lead.vue:429
 #: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:377
 msgid "WhatsApp"
 msgstr "WhatsApp"
@@ -5978,6 +6301,10 @@ msgstr "Морате бити у развојном режиму да бисте
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:150
 msgid "You will be redirected to invite user page, unsaved changes will be lost."
 msgstr "Бићете преусмерени на страницу за позивање корисника, несачуване измене ће бити изгубљене."
+
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:9
+msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more "
+msgstr "Неопходан Вам је Meta програмерски налог и приступни токен за синхронизацију потенцијалних клијената са Facebook-а. Прочитајте више "
 
 #: crm/api/todo.py:100
 msgid "Your assignment on task {0} has been removed by {1}"
