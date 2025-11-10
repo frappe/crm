@@ -1,9 +1,10 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+from datetime import timedelta
+
 import frappe
 from frappe import _
-from datetime import timedelta
 from frappe.model.document import Document
 from frappe.utils import (
 	add_to_date,
@@ -13,10 +14,37 @@ from frappe.utils import (
 	now_datetime,
 	time_diff_in_seconds,
 )
+
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_context
 
 
 class CRMServiceLevelAgreement(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		from crm.fcrm.doctype.crm_service_day.crm_service_day import CRMServiceDay
+		from crm.fcrm.doctype.crm_service_level_priority.crm_service_level_priority import (
+			CRMServiceLevelPriority,
+		)
+
+		apply_on: DF.Link
+		condition: DF.Code | None
+		default: DF.Check
+		enabled: DF.Check
+		end_date: DF.Date | None
+		holiday_list: DF.Link | None
+		priorities: DF.Table[CRMServiceLevelPriority]
+		rolling_responses: DF.Check
+		sla_name: DF.Data
+		start_date: DF.Date | None
+		working_hours: DF.Table[CRMServiceDay]
+	# end: auto-generated types
+
 	def validate(self):
 		self.validate_default()
 		self.validate_condition()

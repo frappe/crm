@@ -2,6 +2,21 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("CRM Service Level Agreement", {
+	refresh(frm) {
+		if (frm.doc.rolling_responses) {
+			frm.fields_dict.priorities.grid.update_docfield_property(
+				"first_response_time",
+				"label",
+				"Rolling Response Time"
+			);
+		} else {
+			frm.fields_dict.priorities.grid.update_docfield_property(
+				"first_response_time",
+				"label",
+				"First Response Time"
+			);
+		}
+	},
 	validate(frm) {
 		let default_priority_count = 0;
 		frm.doc.priorities.forEach(function (row) {
