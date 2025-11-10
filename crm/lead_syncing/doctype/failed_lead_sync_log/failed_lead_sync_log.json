@@ -21,7 +21,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Type",
-   "options": "Duplicate\nFailure",
+   "options": "Duplicate\nFailure\nSynced",
    "read_only": 1
   },
   {
@@ -63,7 +63,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-19 18:59:17.152547",
+ "modified": "2025-11-07 10:58:10.896524",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Failed Lead Sync Log",

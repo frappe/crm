@@ -5,18 +5,19 @@ from frappe import _
 
 from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
+from crm.integrations.api import get_contact_lead_or_deal_from_number
 
 
 def validate(doc, method):
 	if doc.type == "Incoming" and doc.get("from"):
-		name, doctype = get_lead_or_deal_from_number(doc.get("from"))
-		if name != None:
-			doc.reference_doctype = doctype 
+		name, doctype = get_contact_lead_or_deal_from_number(doc.get("from"))
+		if name is not None:
+			doc.reference_doctype = doctype
 			doc.reference_name = name
 
 	if doc.type == "Outgoing" and doc.get("to"):
-		name, doctype = get_lead_or_deal_from_number(doc.get("to"))
-		if name != None:
+		name, doctype = get_contact_lead_or_deal_from_number(doc.get("to"))
+		if name is not None:
 			doc.reference_doctype = doctype
 			doc.reference_name = name
 
@@ -40,9 +41,9 @@ def notify_agent(doc):
 			doctype = doctype[4:].lower()
 		notification_text = f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
-                <span class="font-medium text-ink-gray-9">{ _('You') }</span>
-                <span>{ _('received a whatsapp message in {0}').format(doctype) }</span>
-                <span class="font-medium text-ink-gray-9">{ doc.reference_name }</span>
+                <span class="font-medium text-ink-gray-9">{_("You")}</span>
+                <span>{_("received a whatsapp message in {0}").format(doctype)}</span>
+                <span class="font-medium text-ink-gray-9">{doc.reference_name}</span>
             </div>
         """
 		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)
@@ -60,41 +61,6 @@ def notify_agent(doc):
 					"redirect_to_docname": doc.reference_name,
 				}
 			)
-
-
-def get_lead_or_deal_from_number(number):
-	"""Get lead/deal from the given number."""
-
-	def find_record(doctype, mobile_no, where=""):
-		mobile_no = parse_mobile_no(mobile_no)
-
-		query = f"""
-            SELECT name, mobile_no
-            FROM `tab{doctype}`
-            WHERE CONCAT('+', REGEXP_REPLACE(mobile_no, '[^0-9]', '')) = {mobile_no}
-        """
-
-		data = frappe.db.sql(query + where, as_dict=True)
-		return data[0].name if data else None
-
-	doctype = "CRM Deal"
-
-	doc = find_record(doctype, number) or None
-	if not doc:
-		doctype = "CRM Lead"
-		doc = find_record(doctype, number, "AND converted is not True")
-		if not doc:
-			doc = find_record(doctype, number)
-
-	return doc, doctype
-
-
-def parse_mobile_no(mobile_no: str):
-	"""Parse mobile number to remove spaces, brackets, etc.
-	>>> parse_mobile_no("+91 (766) 667 6666")
-	... "+917666676666"
-	"""
-	return "".join([c for c in mobile_no if c.isdigit() or c == "+"])
 
 
 @frappe.whitelist()
@@ -306,7 +272,7 @@ def send_whatsapp_template(reference_doctype, reference_name, template, to):
 @frappe.whitelist()
 def react_on_whatsapp_message(emoji, reply_to_name):
 	reply_to_doc = frappe.get_doc("WhatsApp Message", reply_to_name)
-	to = reply_to_doc.type == "Incoming" and reply_to_doc.get("from") or reply_to_doc.to
+	to = (reply_to_doc.type == "Incoming" and reply_to_doc.get("from")) or reply_to_doc.to
 	doc = frappe.new_doc("WhatsApp Message")
 	doc.update(
 		{
