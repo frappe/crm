@@ -69,6 +69,7 @@
                   <FeatherIcon name="link" class="h-4 w-4" />
                 </Button>
                 <Button
+                  v-if="canDelete"
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
@@ -196,10 +197,12 @@ const { doctypeMeta } = getMeta('CRM Organization')
 const route = useRoute()
 const router = useRouter()
 
-const { document: organization } = useDocument(
+const { document: organization, permissions } = useDocument(
   'CRM Organization',
   props.organizationId,
 )
+
+const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
