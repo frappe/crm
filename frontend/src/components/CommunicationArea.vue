@@ -110,8 +110,14 @@ const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const showEmailBox = ref(false)
 const showCommentBox = ref(false)
-const newEmail = computed(() => useStorage(`emailBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`, ''))
-const newComment = computed(() => useStorage(`commentBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`, ''))
+const newEmail = useStorage(
+  `emailBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
+  '',
+)
+const newComment = useStorage(
+  `commentBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
+  '',
+)
 const newEmailEditor = ref(null)
 const newCommentEditor = ref(null)
 const sendEmailRef = ref(null)
