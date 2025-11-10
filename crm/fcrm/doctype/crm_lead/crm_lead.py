@@ -21,6 +21,7 @@ class CRMLead(Document):
 
 	if TYPE_CHECKING:
 		from crm.fcrm.doctype.crm_products.crm_products import CRMProducts
+		from crm.fcrm.doctype.crm_rolling_response_time.crm_rolling_response_time import CRMRollingResponseTime
 		from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import CRMStatusChangeLog
 		from frappe.types import DF
 
@@ -49,6 +50,7 @@ class CRMLead(Document):
 		phone: DF.Data | None
 		products: DF.Table[CRMProducts]
 		response_by: DF.Datetime | None
+		rolling_responses: DF.Table[CRMRollingResponseTime]
 		salutation: DF.Link | None
 		sla: DF.Link | None
 		sla_creation: DF.Datetime | None

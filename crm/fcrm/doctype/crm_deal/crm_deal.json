@@ -68,6 +68,8 @@
   "column_break_hpvj",
   "first_response_time",
   "first_responded_on",
+  "section_break_mwvg",
+  "rolling_responses",
   "log_tab",
   "status_change_log"
  ],
@@ -427,12 +429,22 @@
    "fieldname": "closed_date",
    "fieldtype": "Date",
    "label": "Closed Date"
+  },
+  {
+   "fieldname": "section_break_mwvg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rolling_responses",
+   "fieldtype": "Table",
+   "label": "Rolling Responses",
+   "options": "CRM Rolling Response Time"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-26 12:12:56.324245",
+ "modified": "2025-11-10 20:02:25.948418",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",

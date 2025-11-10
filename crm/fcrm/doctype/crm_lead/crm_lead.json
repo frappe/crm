@@ -54,6 +54,8 @@
   "column_break_pweh",
   "first_response_time",
   "first_responded_on",
+  "section_break_kikl",
+  "rolling_responses",
   "log_tab",
   "status_change_log",
   "syncing_tab",
@@ -349,13 +351,23 @@
    "fieldname": "facebook_form_id",
    "fieldtype": "Data",
    "label": "Facebook Form ID"
+  },
+  {
+   "fieldname": "section_break_kikl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rolling_responses",
+   "fieldtype": "Table",
+   "label": "Rolling Responses",
+   "options": "CRM Rolling Response Time"
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-19 18:36:24.683076",
+ "modified": "2025-11-10 19:59:38.158921",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
