@@ -154,6 +154,7 @@
                 />
 
                 <Button
+                  v-if="canDelete"
                   :tooltip="__('Delete')"
                   variant="subtle"
                   theme="red"
@@ -292,10 +293,12 @@ const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
 const showFilesUploader = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
+const { triggerOnChange, assignees, permissions, document, scripts, error } = useDocument(
   'CRM Lead',
   props.leadId,
 )
+
+const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
 

@@ -103,6 +103,7 @@
                   @click="callEnabled && makeCall(contact.doc.mobile_no)"
                 />
                 <Button
+                  v-if="canDelete"
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
@@ -236,7 +237,9 @@ const router = useRouter()
 const errorTitle = ref('')
 const errorMessage = ref('')
 
-const { document: contact, scripts } = useDocument('Contact', props.contactId)
+const { document: contact, permissions, scripts } = useDocument('Contact', props.contactId)
+
+const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Contacts'), route: { name: 'Contacts' } }]
