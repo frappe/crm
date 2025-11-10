@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-02 08:40\n"
+"POT-Creation-Date: 2025-11-02 09:34+0000\n"
+"PO-Revision-Date: 2025-11-03 19:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -428,9 +428,9 @@ msgstr "Цео дан"
 
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
-#: frontend/src/pages/Contact.vue:499 frontend/src/pages/MobileContact.vue:507
+#: frontend/src/pages/Contact.vue:507 frontend/src/pages/MobileContact.vue:507
 #: frontend/src/pages/MobileOrganization.vue:451
-#: frontend/src/pages/Organization.vue:472
+#: frontend/src/pages/Organization.vue:481
 msgid "Amount"
 msgstr "Износ"
 
@@ -670,7 +670,7 @@ msgid "Attach a file"
 msgstr "Приложи фајл"
 
 #: frontend/src/pages/Deal.vue:567 frontend/src/pages/Lead.vue:424
-#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:373
+#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:372
 msgid "Attachments"
 msgstr "Прилози"
 
@@ -712,23 +712,23 @@ msgstr "Аутоматски ажурирај \"Очекивана вредно�
 msgid "Automation & Rules"
 msgstr "Аутоматизација и правила"
 
-#: crm/api/dashboard.py:238
+#: crm/api/dashboard.py:250
 msgid "Average deal value of non won/lost deals"
 msgstr "Просечна вредност пословне прилике која није ни добијена ни изгубљена"
 
-#: crm/api/dashboard.py:411
+#: crm/api/dashboard.py:429
 msgid "Average deal value of ongoing & won deals"
 msgstr "Просечна вредност текућих и добијених пословних прилика"
 
-#: crm/api/dashboard.py:354
+#: crm/api/dashboard.py:370
 msgid "Average deal value of won deals"
 msgstr "Просечна вредност добијених пословних прилика"
 
-#: crm/api/dashboard.py:518
+#: crm/api/dashboard.py:534
 msgid "Average time taken from deal creation to deal closure"
 msgstr "Просечно време од креирања до затварања пословне прилике"
 
-#: crm/api/dashboard.py:464
+#: crm/api/dashboard.py:481
 msgid "Average time taken from lead creation to deal closure"
 msgstr "Просечно време од креирања потенцијалног клијента до затварања пословне прилике"
 
@@ -752,23 +752,23 @@ msgstr "Просечно време за затварање потенцијал
 msgid "Avg won deal value"
 msgstr "Просечна вредност добијене пословне прилике"
 
-#: crm/api/dashboard.py:410
+#: crm/api/dashboard.py:428
 msgid "Avg. deal value"
 msgstr "Просечна вредност пословне прилике"
 
-#: crm/api/dashboard.py:237
+#: crm/api/dashboard.py:249
 msgid "Avg. ongoing deal value"
 msgstr "Просечна вредност текуће пословне прилике"
 
-#: crm/api/dashboard.py:517
+#: crm/api/dashboard.py:533
 msgid "Avg. time to close a deal"
 msgstr "Просечно време за затварање пословне прилике"
 
-#: crm/api/dashboard.py:463
+#: crm/api/dashboard.py:480
 msgid "Avg. time to close a lead"
 msgstr "Просечно време за затварање потенцијалног клијента"
 
-#: crm/api/dashboard.py:353
+#: crm/api/dashboard.py:369
 msgid "Avg. won deal value"
 msgstr "Просечна вредност добијене пословне прилике"
 
@@ -1126,10 +1126,10 @@ msgid "Change deal status"
 msgstr "Промени статус пословне прилике"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
-#: frontend/src/pages/Contact.vue:41 frontend/src/pages/Lead.vue:88
+#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:88
 #: frontend/src/pages/MobileContact.vue:37
 #: frontend/src/pages/MobileOrganization.vue:37
-#: frontend/src/pages/Organization.vue:41
+#: frontend/src/pages/Organization.vue:47
 msgid "Change image"
 msgstr "Промени слику"
 
@@ -1260,7 +1260,7 @@ msgstr "Коментар"
 msgid "Comments"
 msgstr "Коментари"
 
-#: crm/api/dashboard.py:884
+#: crm/api/dashboard.py:920
 msgid "Common reasons for losing deals"
 msgstr "Уобичајени разлози за губитак пословних прилика"
 
@@ -1388,7 +1388,7 @@ msgstr "Контакт је већ додат"
 msgid "Contact already exists with {0}"
 msgstr "Контакт већ постоји са {0}"
 
-#: frontend/src/pages/Contact.vue:279 frontend/src/pages/MobileContact.vue:252
+#: frontend/src/pages/Contact.vue:287 frontend/src/pages/MobileContact.vue:252
 msgid "Contact image updated"
 msgstr "Слика контакта је ажурирана"
 
@@ -1396,8 +1396,8 @@ msgstr "Слика контакта је ажурирана"
 msgid "Contact removed"
 msgstr "Контакт је уклоњен"
 
-#: frontend/src/pages/Contact.vue:424 frontend/src/pages/Contact.vue:437
-#: frontend/src/pages/Contact.vue:450 frontend/src/pages/Contact.vue:460
+#: frontend/src/pages/Contact.vue:432 frontend/src/pages/Contact.vue:445
+#: frontend/src/pages/Contact.vue:458 frontend/src/pages/Contact.vue:468
 #: frontend/src/pages/MobileContact.vue:432
 #: frontend/src/pages/MobileContact.vue:445
 #: frontend/src/pages/MobileContact.vue:458
@@ -1410,7 +1410,7 @@ msgstr "Контакт је ажуриран"
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Contact.vue:234 frontend/src/pages/MobileContact.vue:212
+#: frontend/src/pages/Contact.vue:242 frontend/src/pages/MobileContact.vue:212
 #: frontend/src/pages/MobileOrganization.vue:331
 msgid "Contacts"
 msgstr "Контакти"
@@ -1469,8 +1469,8 @@ msgstr "Успешно пребачено"
 msgid "Copied to clipboard"
 msgstr "Копирано у међуспремник"
 
-#: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
-#: crm/api/dashboard.py:891
+#: crm/api/dashboard.py:626 crm/api/dashboard.py:763 crm/api/dashboard.py:824
+#: crm/api/dashboard.py:927
 msgid "Count"
 msgstr "Бројчано"
 
@@ -1583,7 +1583,7 @@ msgstr "Валута и провајдер девизних курсева"
 msgid "Currency set as {0} successfully"
 msgstr "Валута је успешно постављена као {0}"
 
-#: crm/api/dashboard.py:839
+#: crm/api/dashboard.py:872
 msgid "Current pipeline distribution"
 msgstr "Тренутна расподела продајног тока"
 
@@ -1620,7 +1620,7 @@ msgstr "Прилагођавање"
 msgid "Customize quick filters"
 msgstr "Прилагоди брзе филтере"
 
-#: crm/api/dashboard.py:599
+#: crm/api/dashboard.py:618
 msgid "Daily performance of leads, deals, and wins"
 msgstr "Дневне перформансе по потенцијалним клијентима, пословним приликама и добијеним пословима"
 
@@ -1637,7 +1637,7 @@ msgid "Data Fields"
 msgstr "Поља за податак"
 
 #. Label of the date (Date) field in DocType 'CRM Holiday'
-#: crm/api/dashboard.py:601 crm/fcrm/doctype/crm_holiday/crm_holiday.json
+#: crm/api/dashboard.py:620 crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:202
 msgid "Date"
 msgstr "Датум"
@@ -1680,17 +1680,17 @@ msgstr "Статуси пословне прилике"
 msgid "Deal Value"
 msgstr "Вредност пословне прилике"
 
-#: crm/api/dashboard.py:977
+#: crm/api/dashboard.py:1019
 msgid "Deal generation channel analysis"
 msgstr "Анализа канала за генерисање пословних прилика"
 
-#: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:528
+#: frontend/src/pages/Contact.vue:528 frontend/src/pages/MobileContact.vue:528
 #: frontend/src/pages/MobileOrganization.vue:472
-#: frontend/src/pages/Organization.vue:493
+#: frontend/src/pages/Organization.vue:502
 msgid "Deal owner"
 msgstr "Власник пословне прилике"
 
-#: crm/api/dashboard.py:1030 crm/api/dashboard.py:1087
+#: crm/api/dashboard.py:1075 crm/api/dashboard.py:1135
 msgid "Deal value"
 msgstr "Вредност пословне прилике"
 
@@ -1702,27 +1702,27 @@ msgstr "Вредност пословне прилике"
 msgid "Deals"
 msgstr "Пословне прилике"
 
-#: crm/api/dashboard.py:788
+#: crm/api/dashboard.py:818
 #: frontend/src/components/Dashboard/AddChartModal.vue:97
 msgid "Deals by ongoing & won stage"
 msgstr "Пословне прилике по текућој и добијеној фази"
 
-#: crm/api/dashboard.py:1076
+#: crm/api/dashboard.py:1124
 #: frontend/src/components/Dashboard/AddChartModal.vue:100
 msgid "Deals by salesperson"
 msgstr "Пословне прилике по продавцу"
 
-#: crm/api/dashboard.py:976
+#: crm/api/dashboard.py:1018
 #: frontend/src/components/Dashboard/AddChartModal.vue:107
 msgid "Deals by source"
 msgstr "Пословне прилике по извору"
 
-#: crm/api/dashboard.py:838
+#: crm/api/dashboard.py:871
 #: frontend/src/components/Dashboard/AddChartModal.vue:105
 msgid "Deals by stage"
 msgstr "Пословне прилике по фази"
 
-#: crm/api/dashboard.py:1019
+#: crm/api/dashboard.py:1064
 #: frontend/src/components/Dashboard/AddChartModal.vue:99
 msgid "Deals by territory"
 msgstr "Пословне прилике по територији"
@@ -1814,13 +1814,13 @@ msgstr "Подразумевани статуси, прилагођена пољ
 #: frontend/src/components/ViewControls.vue:1116
 #: frontend/src/components/ViewControls.vue:1127
 #: frontend/src/pages/Calendar.vue:299 frontend/src/pages/Calendar.vue:303
-#: frontend/src/pages/Contact.vue:100 frontend/src/pages/Deal.vue:111
+#: frontend/src/pages/Contact.vue:106 frontend/src/pages/Deal.vue:111
 #: frontend/src/pages/Lead.vue:157 frontend/src/pages/MobileContact.vue:79
 #: frontend/src/pages/MobileContact.vue:263
 #: frontend/src/pages/MobileDeal.vue:515
 #: frontend/src/pages/MobileOrganization.vue:72
 #: frontend/src/pages/MobileOrganization.vue:264
-#: frontend/src/pages/Notes.vue:43 frontend/src/pages/Organization.vue:83
+#: frontend/src/pages/Notes.vue:43 frontend/src/pages/Organization.vue:89
 #: frontend/src/pages/Tasks.vue:371
 msgid "Delete"
 msgstr "Обриши"
@@ -2196,12 +2196,12 @@ msgstr "Уређивање догађаја"
 #. Label of the email (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
-#: crm/fcrm/doctype/crm_lead/crm_lead.json frontend/src/pages/Contact.vue:510
+#: crm/fcrm/doctype/crm_lead/crm_lead.json frontend/src/pages/Contact.vue:518
 #: frontend/src/pages/MobileContact.vue:518
 #: frontend/src/pages/MobileOrganization.vue:462
 #: frontend/src/pages/MobileOrganization.vue:490
-#: frontend/src/pages/Organization.vue:483
-#: frontend/src/pages/Organization.vue:511
+#: frontend/src/pages/Organization.vue:492
+#: frontend/src/pages/Organization.vue:520
 msgid "Email"
 msgstr "Имејл"
 
@@ -2339,7 +2339,7 @@ msgstr "Унесите кључ за приступ"
 msgid "Enter brand name"
 msgstr "Унесите назив бренда"
 
-#: frontend/src/components/FieldLayout/Field.vue:339
+#: frontend/src/components/FieldLayout/Field.vue:347
 msgid "Enter {0}"
 msgstr "Унесите {0}"
 
@@ -2358,7 +2358,7 @@ msgid "Error converting to deal: {0}"
 msgstr "Грешка приликом пребацивања у пословну прилику: {0}"
 
 #: frontend/src/pages/Deal.vue:731 frontend/src/pages/Lead.vue:469
-#: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:413
+#: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:412
 msgid "Error updating field"
 msgstr "Грешка приликом ажурирања поља"
 
@@ -2652,7 +2652,7 @@ msgstr "Име"
 msgid "For"
 msgstr "За"
 
-#: crm/api/dashboard.py:666
+#: crm/api/dashboard.py:688
 #: frontend/src/components/Dashboard/AddChartModal.vue:95
 msgid "Forecasted revenue"
 msgstr "Прогноза прихода"
@@ -2733,7 +2733,7 @@ msgstr "Испуњено"
 msgid "Full Name"
 msgstr "Име и презиме"
 
-#: crm/api/dashboard.py:728
+#: crm/api/dashboard.py:755
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Funnel conversion"
 msgstr "Конверзија у продајном левку"
@@ -2751,7 +2751,7 @@ msgstr "GMT+5:30"
 msgid "Gender"
 msgstr "Род"
 
-#: crm/api/dashboard.py:1020
+#: crm/api/dashboard.py:1065
 msgid "Geographic distribution of deals and revenue"
 msgstr "Географска расподела пословних прилика и прихода"
 
@@ -3050,7 +3050,7 @@ msgstr "Неважећи имејл"
 msgid "Invalid Exotel Number"
 msgstr "Неважећи Exotel број"
 
-#: crm/api/dashboard.py:73
+#: crm/api/dashboard.py:77
 msgid "Invalid chart name"
 msgstr "Неважећи назив дијаграма"
 
@@ -3254,11 +3254,11 @@ msgstr "Прошла недеља"
 msgid "Last Year"
 msgstr "Прошла година"
 
-#: frontend/src/pages/Contact.vue:525 frontend/src/pages/MobileContact.vue:533
+#: frontend/src/pages/Contact.vue:533 frontend/src/pages/MobileContact.vue:533
 #: frontend/src/pages/MobileOrganization.vue:477
 #: frontend/src/pages/MobileOrganization.vue:505
-#: frontend/src/pages/Organization.vue:498
-#: frontend/src/pages/Organization.vue:526
+#: frontend/src/pages/Organization.vue:507
+#: frontend/src/pages/Organization.vue:535
 msgid "Last modified"
 msgstr "Последњи пут измењено"
 
@@ -3320,11 +3320,11 @@ msgstr "Извори потенцијалног клијента"
 msgid "Lead Statuses"
 msgstr "Статуси потенцијалног клијента"
 
-#: crm/api/dashboard.py:935
+#: crm/api/dashboard.py:974
 msgid "Lead generation channel analysis"
 msgstr "Анализа канала за генерисање потенцијалних клијената"
 
-#: crm/api/dashboard.py:729
+#: crm/api/dashboard.py:756
 msgid "Lead to deal conversion pipeline"
 msgstr "Ток пребацивања потенцијалних клијената у пословне прилике"
 
@@ -3335,7 +3335,7 @@ msgstr "Ток пребацивања потенцијалних клијена�
 msgid "Leads"
 msgstr "Потенцијални клијенти"
 
-#: crm/api/dashboard.py:934
+#: crm/api/dashboard.py:973
 #: frontend/src/components/Dashboard/AddChartModal.vue:106
 msgid "Leads by source"
 msgstr "Потенцијални клијенти по извору"
@@ -3442,7 +3442,7 @@ msgstr "Белешке о губицима"
 msgid "Lost Reason"
 msgstr "Разлог губитка"
 
-#: crm/api/dashboard.py:883
+#: crm/api/dashboard.py:919
 #: frontend/src/components/Dashboard/AddChartModal.vue:98
 msgid "Lost deal reasons"
 msgstr "Разлози губитака пословних прилика"
@@ -3469,7 +3469,7 @@ msgstr "Разлог губитка је обавезан"
 msgid "Low"
 msgstr "Низак"
 
-#: frontend/src/pages/Contact.vue:94 frontend/src/pages/MobileContact.vue:73
+#: frontend/src/pages/Contact.vue:100 frontend/src/pages/MobileContact.vue:73
 msgid "Make Call"
 msgstr "Позови"
 
@@ -3621,9 +3621,9 @@ msgstr "Број мобилног телефона недостаје"
 msgid "Mobile app installation"
 msgstr "Инсталација мобилне апликације"
 
-#: frontend/src/pages/Contact.vue:515 frontend/src/pages/MobileContact.vue:523
+#: frontend/src/pages/Contact.vue:523 frontend/src/pages/MobileContact.vue:523
 #: frontend/src/pages/MobileOrganization.vue:467
-#: frontend/src/pages/Organization.vue:488
+#: frontend/src/pages/Organization.vue:497
 msgid "Mobile no"
 msgstr "Број мобилног телефона"
 
@@ -3634,7 +3634,7 @@ msgstr "Број мобилног телефона"
 msgid "Monday"
 msgstr "Понедељак"
 
-#: crm/api/dashboard.py:669
+#: crm/api/dashboard.py:691
 msgid "Month"
 msgstr "Месец"
 
@@ -3674,7 +3674,7 @@ msgstr "Моје отворене пословне прилике"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:39
 #: frontend/src/components/ViewControls.vue:779
 #: frontend/src/pages/MobileOrganization.vue:485
-#: frontend/src/pages/Organization.vue:506
+#: frontend/src/pages/Organization.vue:515
 msgid "Name"
 msgstr "Назив"
 
@@ -3913,7 +3913,7 @@ msgid "No users found"
 msgstr "Нису пронађени корисници"
 
 #: frontend/src/pages/MobileOrganization.vue:281
-#: frontend/src/pages/Organization.vue:309
+#: frontend/src/pages/Organization.vue:318
 msgid "No website found"
 msgstr "Није пронађен веб-сајт"
 
@@ -3925,11 +3925,11 @@ msgstr "Није постављен веб-сајт"
 msgid "No {0} Available"
 msgstr "Нема доступних {0}"
 
-#: frontend/src/pages/CallLogs.vue:59 frontend/src/pages/Contact.vue:156
+#: frontend/src/pages/CallLogs.vue:59 frontend/src/pages/Contact.vue:162
 #: frontend/src/pages/Contacts.vue:58 frontend/src/pages/Deals.vue:234
 #: frontend/src/pages/Leads.vue:260 frontend/src/pages/MobileContact.vue:147
 #: frontend/src/pages/MobileOrganization.vue:139
-#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:152
+#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:158
 #: frontend/src/pages/Organizations.vue:58 frontend/src/pages/Tasks.vue:184
 msgid "No {0} Found"
 msgstr "Није пронађен ниједан {0}"
@@ -4008,7 +4008,7 @@ msgid "Note"
 msgstr "Белешка"
 
 #: frontend/src/pages/Deal.vue:562 frontend/src/pages/Lead.vue:419
-#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:368
+#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:367
 msgid "Notes"
 msgstr "Белешке"
 
@@ -4055,11 +4055,11 @@ msgstr "Број"
 msgid "Number chart"
 msgstr "Бројчани дијаграм"
 
-#: crm/api/dashboard.py:1027 crm/api/dashboard.py:1084
+#: crm/api/dashboard.py:1072 crm/api/dashboard.py:1132
 msgid "Number of deals"
 msgstr "Број пословних прилика"
 
-#: crm/api/dashboard.py:1077
+#: crm/api/dashboard.py:1125
 msgid "Number of deals and total value per salesperson"
 msgstr "Број пословних прилика и укупна вредност по продавцу"
 
@@ -4083,7 +4083,7 @@ msgstr "На чекању"
 msgid "Ongoing"
 msgstr "Текуће"
 
-#: crm/api/dashboard.py:181
+#: crm/api/dashboard.py:190
 #: frontend/src/components/Dashboard/AddChartModal.vue:77
 msgid "Ongoing deals"
 msgstr "Текуће пословне прилике"
@@ -4126,7 +4126,7 @@ msgstr "Отвори у новом прозору"
 msgid "Open nested conditions"
 msgstr "Отвори угњеждене услове"
 
-#: frontend/src/pages/Organization.vue:90
+#: frontend/src/pages/Organization.vue:96
 msgid "Open website"
 msgstr "Отвори веб-сајт"
 
@@ -4153,12 +4153,12 @@ msgstr "Наруџбина од"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/Layouts/AppSidebar.vue:553
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
-#: frontend/src/pages/Contact.vue:494 frontend/src/pages/MobileContact.vue:502
+#: frontend/src/pages/Contact.vue:502 frontend/src/pages/MobileContact.vue:502
 #: frontend/src/pages/MobileLead.vue:118
 #: frontend/src/pages/MobileOrganization.vue:446
 #: frontend/src/pages/MobileOrganization.vue:500
-#: frontend/src/pages/Organization.vue:467
-#: frontend/src/pages/Organization.vue:521
+#: frontend/src/pages/Organization.vue:476
+#: frontend/src/pages/Organization.vue:530
 msgid "Organization"
 msgstr "Организација"
 
@@ -4188,7 +4188,7 @@ msgstr "Лого организације"
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/MobileOrganization.vue:205
-#: frontend/src/pages/Organization.vue:234
+#: frontend/src/pages/Organization.vue:243
 msgid "Organizations"
 msgstr "Организације"
 
@@ -4286,7 +4286,7 @@ msgstr "Лична подешавања"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/pages/MobileOrganization.vue:495
-#: frontend/src/pages/Organization.vue:516
+#: frontend/src/pages/Organization.vue:525
 msgid "Phone"
 msgstr "Телефон"
 
@@ -4341,12 +4341,12 @@ msgid "Please select a currency before saving."
 msgstr "Молимо Вас да изаберете валуту пре чувања."
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:136
-#: frontend/src/pages/MobileLead.vue:432
+#: frontend/src/pages/MobileLead.vue:431
 msgid "Please select an existing contact"
 msgstr "Молимо Вас да изаберете постојећи контакт"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:141
-#: frontend/src/pages/MobileLead.vue:437
+#: frontend/src/pages/MobileLead.vue:436
 msgid "Please select an existing organization"
 msgstr "Молимо Вас да изаберете постојећу организацију"
 
@@ -4459,7 +4459,7 @@ msgstr "Профил"
 msgid "Profile updated successfully"
 msgstr "Профил је успешно ажуриран"
 
-#: crm/api/dashboard.py:667
+#: crm/api/dashboard.py:689
 msgid "Projected vs actual revenue based on deal probability"
 msgstr "Очекивани наспрам стварних прихода на основу вероватноће пословне прилике"
 
@@ -4514,7 +4514,7 @@ msgstr "Јединична цена"
 msgid "Read"
 msgstr "Прочитано"
 
-#: crm/api/dashboard.py:886
+#: crm/api/dashboard.py:922
 msgid "Reason"
 msgstr "Разлог"
 
@@ -4601,10 +4601,10 @@ msgid "Remove group"
 msgstr "Уклони групу"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:32
-#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:94
+#: frontend/src/pages/Contact.vue:53 frontend/src/pages/Lead.vue:94
 #: frontend/src/pages/MobileContact.vue:43
 #: frontend/src/pages/MobileOrganization.vue:43
-#: frontend/src/pages/Organization.vue:47
+#: frontend/src/pages/Organization.vue:53
 msgid "Remove image"
 msgstr "Уклони слику"
 
@@ -4694,7 +4694,7 @@ msgstr "Врати подразумевано"
 msgid "Retake"
 msgstr "Понови"
 
-#: crm/api/dashboard.py:675
+#: crm/api/dashboard.py:697
 msgid "Revenue"
 msgstr "Приход"
 
@@ -4836,7 +4836,7 @@ msgstr "Менаџер продаје"
 msgid "Sales User"
 msgstr "Корисник продаје"
 
-#: crm/api/dashboard.py:598
+#: crm/api/dashboard.py:617
 #: frontend/src/components/Dashboard/AddChartModal.vue:94
 msgid "Sales trend"
 msgstr "Тренд продаје"
@@ -4845,7 +4845,7 @@ msgstr "Тренд продаје"
 msgid "Sales user"
 msgstr "Корисник продаје"
 
-#: crm/api/dashboard.py:1079
+#: crm/api/dashboard.py:1127
 msgid "Salesperson"
 msgstr "Продавац"
 
@@ -4949,7 +4949,7 @@ msgstr "Изаберите провајдера"
 msgid "Select the assignees for {0}."
 msgstr "Изаберите извршиоце за {0}."
 
-#: frontend/src/components/FieldLayout/Field.vue:337
+#: frontend/src/components/FieldLayout/Field.vue:345
 msgid "Select {0}"
 msgstr "Изаберите {0}"
 
@@ -5167,7 +5167,7 @@ msgstr "Назив извора"
 msgid "Spacer"
 msgstr "Размак"
 
-#: crm/api/dashboard.py:731 crm/api/dashboard.py:790
+#: crm/api/dashboard.py:758 crm/api/dashboard.py:820
 msgid "Stage"
 msgstr "Фаза"
 
@@ -5224,10 +5224,10 @@ msgstr "Започни са 10 пробних потенцијалних кли�
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:505
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:513
 #: frontend/src/pages/MobileContact.vue:513
 #: frontend/src/pages/MobileOrganization.vue:457
-#: frontend/src/pages/Organization.vue:478
+#: frontend/src/pages/Organization.vue:487
 msgid "Status"
 msgstr "Статус"
 
@@ -5319,7 +5319,7 @@ msgid "Task"
 msgstr "Задатак"
 
 #: frontend/src/pages/Deal.vue:557 frontend/src/pages/Lead.vue:414
-#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:363
+#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:362
 msgid "Tasks"
 msgstr "Задаци"
 
@@ -5376,7 +5376,7 @@ msgstr "Територије"
 #. Label of the territory (Link) field in DocType 'CRM Deal'
 #. Label of the territory (Link) field in DocType 'CRM Lead'
 #. Label of the territory (Link) field in DocType 'CRM Organization'
-#: crm/api/dashboard.py:1022 crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/api/dashboard.py:1067 crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Territory"
@@ -5558,20 +5558,20 @@ msgstr "Укупно празника"
 msgid "Total after discount"
 msgstr "Укупно након попуста"
 
-#: crm/api/dashboard.py:123
+#: crm/api/dashboard.py:129
 #: frontend/src/components/Dashboard/AddChartModal.vue:76
 msgid "Total leads"
 msgstr "Укупно потенцијалних клијената"
 
-#: crm/api/dashboard.py:124
+#: crm/api/dashboard.py:130
 msgid "Total number of leads"
 msgstr "Укупан број потенцијалних клијената"
 
-#: crm/api/dashboard.py:182
+#: crm/api/dashboard.py:191
 msgid "Total number of non won/lost deals"
 msgstr "Укупан број пословних прилика које нису добијене нити изгубљене"
 
-#: crm/api/dashboard.py:297
+#: crm/api/dashboard.py:311
 msgid "Total number of won deals based on its closure date"
 msgstr "Укупан број добијених пословних прилика према датуму затварања"
 
@@ -5765,10 +5765,10 @@ msgid "Upload Video"
 msgstr "Отпреми видео"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:27
-#: frontend/src/pages/Contact.vue:42 frontend/src/pages/Lead.vue:89
+#: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:89
 #: frontend/src/pages/MobileContact.vue:38
 #: frontend/src/pages/MobileOrganization.vue:38
-#: frontend/src/pages/Organization.vue:42
+#: frontend/src/pages/Organization.vue:48
 msgid "Upload image"
 msgstr "Отпреми слику"
 
@@ -5885,7 +5885,7 @@ msgstr "Добро дошли {0}, хајде да додамо твог прв�
 #: frontend/src/components/Layouts/AppSidebar.vue:603
 #: frontend/src/components/Settings/Settings.vue:190
 #: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:429
-#: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:378
+#: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:377
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
@@ -5911,7 +5911,7 @@ msgstr "Ширина може бити број, пиксел или rem (eg. 3,
 msgid "Won"
 msgstr "Добијено"
 
-#: crm/api/dashboard.py:296
+#: crm/api/dashboard.py:310
 #: frontend/src/components/Dashboard/AddChartModal.vue:79
 msgid "Won deals"
 msgstr "Добијене пословне прилике"
