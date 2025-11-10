@@ -54,8 +54,13 @@
   "column_break_pweh",
   "first_response_time",
   "first_responded_on",
-  "section_break_kikl",
+  "section_break_xnpz",
   "rolling_responses",
+  "section_break_kikl",
+  "column_break_ygds",
+  "last_response_time",
+  "column_break_tcqb",
+  "last_responded_on",
   "log_tab",
   "status_change_log"
  ],
@@ -239,7 +244,7 @@
    "fieldname": "sla_status",
    "fieldtype": "Select",
    "label": "SLA Status",
-   "options": "\nFirst Response Due\nFailed\nFulfilled",
+   "options": "\nFirst Response Due\nRolling Response Due\nFailed\nFulfilled",
    "read_only": 1
   },
   {
@@ -359,7 +364,35 @@
    "fieldtype": "Table",
    "label": "Rolling Responses",
    "options": "CRM Rolling Response Time"
+<<<<<<< HEAD
 >>>>>>> 5f12d1c0 (fix: created rolling response time child table to capture multiple response cycle and added in lead & deal)
+=======
+  },
+  {
+   "fieldname": "section_break_xnpz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "last_response_time",
+   "fieldtype": "Duration",
+   "label": "Last Response Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_tcqb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_responded_on",
+   "fieldtype": "Datetime",
+   "label": "Last Responded On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ygds",
+   "fieldtype": "Column Break",
+   "read_only": 1
+>>>>>>> 106a73dc (fix: add last response time & last responded on fields and update SLA status options in CRM Deal and CRM Lead to include Rolling Response Due)
   }
  ],
  "grid_page_length": 50,
@@ -367,10 +400,14 @@
  "index_web_pages_for_search": 1,
  "links": [],
 <<<<<<< HEAD
+<<<<<<< HEAD
  "modified": "2025-05-14 19:51:06.184569",
 =======
  "modified": "2025-11-10 19:59:38.158921",
 >>>>>>> 5f12d1c0 (fix: created rolling response time child table to capture multiple response cycle and added in lead & deal)
+=======
+ "modified": "2025-11-10 21:21:50.089284",
+>>>>>>> 106a73dc (fix: add last response time & last responded on fields and update SLA status options in CRM Deal and CRM Lead to include Rolling Response Due)
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

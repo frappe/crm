@@ -41,6 +41,8 @@ class CRMLead(Document):
 		industry: DF.Link | None
 		job_title: DF.Data | None
 		last_name: DF.Data | None
+		last_responded_on: DF.Datetime | None
+		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None
 		lead_owner: DF.Link | None
 		middle_name: DF.Data | None
@@ -56,7 +58,7 @@ class CRMLead(Document):
 		salutation: DF.Link | None
 		sla: DF.Link | None
 		sla_creation: DF.Datetime | None
-		sla_status: DF.Literal["", "First Response Due", "Failed", "Fulfilled"]
+		sla_status: DF.Literal["", "First Response Due", "Rolling Response Due", "Failed", "Fulfilled"]
 		source: DF.Link | None
 		status: DF.Link
 		status_change_log: DF.Table[CRMStatusChangeLog]
