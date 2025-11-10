@@ -9,6 +9,7 @@ import { ref, reactive } from 'vue'
 const documentsCache = {}
 const controllersCache = {}
 const assigneesCache = {}
+const permissionsCache = {}
 
 export function useDocument(doctype, docname) {
   const { setupScript, scripts } = getScript(doctype)
@@ -90,6 +91,21 @@ export function useDocument(doctype, docname) {
         name: docname,
       },
       transform: (data) => parseAssignees(data),
+    })
+  }
+
+  permissionsCache[doctype] = permissionsCache[doctype] || {}
+
+  if (!permissionsCache[doctype][docname || '']) {
+    permissionsCache[doctype][docname || ''] = createResource({
+      url: 'frappe.client.get_doc_permissions',
+      cache: `permissions:${doctype}:${docname}`,
+      auto: docname ? true : false,
+      params: {
+        doctype: doctype,
+        docname: docname,
+      },
+      initialData: { permissions: {} },
     })
   }
 
@@ -317,6 +333,7 @@ export function useDocument(doctype, docname) {
   return {
     document: documentsCache[doctype][docname || ''],
     assignees: assigneesCache[doctype][docname || ''],
+    permissions: permissionsCache[doctype][docname || ''],
     scripts,
     error,
     validate,
