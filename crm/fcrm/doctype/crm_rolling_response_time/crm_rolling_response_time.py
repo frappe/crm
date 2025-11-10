@@ -14,10 +14,10 @@ class CRMRollingResponseTime(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		cycle: DF.Int
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		responded_on: DF.Datetime | None
 		response_time: DF.Duration | None
 	# end: auto-generated types
 
