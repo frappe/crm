@@ -58,9 +58,7 @@ class CRMServiceLevelAgreement(Document):
 			)
 			if other_slas:
 				frappe.throw(
-					_(
-						"Default Service Level Agreement already exists for {0}"
-					).format(self.apply_on)
+					_("Default Service Level Agreement already exists for {0}").format(self.apply_on)
 				)
 
 	def validate_condition(self):
@@ -70,15 +68,14 @@ class CRMServiceLevelAgreement(Document):
 			temp_doc = frappe.new_doc(self.apply_on)
 			frappe.safe_eval(self.condition, None, get_context(temp_doc))
 		except Exception as e:
-			frappe.throw(
-				_("The Condition '{0}' is invalid: {1}").format(self.condition, str(e))
-			)
+			frappe.throw(_("The Condition '{0}' is invalid: {1}").format(self.condition, str(e)))
 
 	def apply(self, doc: Document):
 		self.handle_creation(doc)
 		self.handle_communication_status(doc)
 		self.handle_targets(doc)
 		self.handle_sla_status(doc)
+		self.handle_rolling_sla_status(doc)
 
 	def handle_creation(self, doc: Document):
 		doc.sla_creation = doc.sla_creation or now_datetime()
@@ -88,12 +85,13 @@ class CRMServiceLevelAgreement(Document):
 			return
 		self.set_first_responded_on(doc)
 		self.set_first_response_time(doc)
+		if self.rolling_responses:
+			self.set_rolling_responses(doc)
 
 	def set_first_responded_on(self, doc: Document):
 		if doc.communication_status != self.get_default_priority():
-			doc.first_responded_on = (
-				doc.first_responded_on or now_datetime()
-			)
+			doc.first_responded_on = doc.first_responded_on or now_datetime()
+			doc.last_responded_on = doc.last_responded_on or doc.first_responded_on
 
 	def set_first_response_time(self, doc: Document):
 		start_at = doc.sla_creation
@@ -101,9 +99,35 @@ class CRMServiceLevelAgreement(Document):
 		if not start_at or not end_at:
 			return
 		doc.first_response_time = self.calc_elapsed_time(start_at, end_at)
+		if not doc.last_response_time:
+			doc.last_response_time = doc.first_response_time
+
+	def set_rolling_responses(self, doc: Document):
+		if not doc.last_response_time or not doc.last_responded_on:
+			return
+		if len(doc.rolling_responses) == 0:
+			doc.append(
+				"rolling_responses",
+				{
+					"response_time": doc.last_response_time,
+					"responded_on": doc.last_responded_on,
+				},
+			)
+		elif doc.communication_status != self.get_default_priority():
+			doc.last_response_time = self.calc_elapsed_time(doc.last_responded_on, now_datetime())
+			doc.last_responded_on = now_datetime()
+			doc.append(
+				"rolling_responses",
+				{
+					"response_time": doc.last_response_time,
+					"responded_on": doc.last_responded_on,
+				},
+			)
 
 	def handle_targets(self, doc: Document):
 		self.set_response_by(doc)
+		if self.rolling_responses and len(doc.rolling_responses) > 0:
+			self.set_rolling_response_by(doc)
 
 	def set_response_by(self, doc: Document):
 		start_time = doc.sla_creation
@@ -116,6 +140,21 @@ class CRMServiceLevelAgreement(Document):
 
 		first_response_time = priority.get("first_response_time", 0)
 		end_time = self.calc_time(start_time, first_response_time)
+		if end_time:
+			doc.response_by = end_time
+
+	def set_rolling_response_by(self, doc: Document):
+		if not doc.response_by or not doc.last_responded_on:
+			return
+
+		communication_status = doc.communication_status
+		priorities = self.get_priorities()
+		priority = priorities.get(communication_status)
+		if not priority:
+			return
+
+		rolling_response_time = priority.get("first_response_time", 0)
+		end_time = self.calc_time(doc.last_responded_on, rolling_response_time)
 		if end_time:
 			doc.response_by = end_time
 
@@ -134,6 +173,25 @@ class CRMServiceLevelAgreement(Document):
 		if not doc.first_responded_on:
 			return get_datetime(doc.response_by) < now_datetime()
 		return get_datetime(doc.response_by) < get_datetime(doc.first_responded_on)
+
+	def handle_rolling_sla_status(self, doc: Document):
+		if not self.rolling_responses or len(doc.rolling_responses) == 0:
+			return
+
+		is_failed = self.is_rolling_response_failed(doc)
+		options = {
+			"Fulfilled": True,
+			"Rolling Response Due": doc.communication_status == self.get_default_priority(),
+			"Failed": is_failed,
+		}
+		for status in options:
+			if options[status]:
+				doc.sla_status = status
+
+	def is_rolling_response_failed(self, doc: Document):
+		if not doc.last_responded_on:
+			return get_datetime(doc.response_by) < now_datetime()
+		return get_datetime(doc.response_by) < get_datetime(doc.last_responded_on)
 
 	def calc_time(
 		self,
@@ -189,7 +247,11 @@ class CRMServiceLevelAgreement(Document):
 		while current_time < end_time:
 			in_holiday_list = current_time.date() in holiday_list
 			not_in_working_day_list = get_weekdays()[current_time.weekday()] not in working_day_list
-			if in_holiday_list or not_in_working_day_list or not self.is_working_time(current_time, working_hours):
+			if (
+				in_holiday_list
+				or not_in_working_day_list
+				or not self.is_working_time(current_time, working_hours)
+			):
 				current_time += timedelta(seconds=1)
 				continue
 			total_seconds += 1
