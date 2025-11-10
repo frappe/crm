@@ -74,10 +74,21 @@ let slaSection = computed(() => {
     tooltipText = formatDate(data.value.last_responded_on)
   }
 
+  let responseType = 'First Response'
+
+  if (
+    Boolean(data.value.first_responded_on) &&
+    Boolean(data.value.last_responded_on) &&
+    (data.value.sla_status != 'Fulfilled' ||
+      data.value.first_responded_on != data.value.last_responded_on)
+  ) {
+    responseType = 'Rolling Response'
+  }
+
   sections.push(
     ...[
       {
-        label: 'First Response',
+        label: responseType,
         type: 'Badge',
         value: __(status),
         tooltipText: tooltipText,
