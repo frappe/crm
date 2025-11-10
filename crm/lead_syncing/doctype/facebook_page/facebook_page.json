@@ -54,11 +54,11 @@
   }
  ],
  "modified": "2025-09-26 19:36:59.413214",
- "modified_by": "hussain@frappe.io",
+ "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Facebook Page",
  "naming_rule": "By fieldname",
- "owner": "hussain@frappe.io",
+ "owner": "Administrator",
  "permissions": [
   {
    "create": 1,
