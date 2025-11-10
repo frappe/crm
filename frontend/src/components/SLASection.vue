@@ -70,8 +70,8 @@ let slaSection = computed(() => {
       }
     }
   } else if (['Fulfilled', 'Failed'].includes(status)) {
-    status = __(status) + ' in ' + formatTime(data.value.first_response_time)
-    tooltipText = formatDate(data.value.first_responded_on)
+    status = __(status) + ' in ' + formatTime(data.value.last_response_time)
+    tooltipText = formatDate(data.value.last_responded_on)
   }
 
   sections.push(
