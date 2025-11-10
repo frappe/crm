@@ -68,6 +68,12 @@
   "column_break_hpvj",
   "first_response_time",
   "first_responded_on",
+  "section_break_mwvg",
+  "rolling_responses",
+  "section_break_jgdr",
+  "last_response_time",
+  "column_break_evzj",
+  "last_responded_on",
   "log_tab",
   "status_change_log"
  ],
@@ -184,7 +190,7 @@
    "fieldname": "sla_status",
    "fieldtype": "Select",
    "label": "SLA Status",
-   "options": "\nFirst Response Due\nFailed\nFulfilled",
+   "options": "\nFirst Response Due\nRolling Response Due\nFailed\nFulfilled",
    "read_only": 1
   },
   {
@@ -427,12 +433,42 @@
    "fieldname": "closed_date",
    "fieldtype": "Date",
    "label": "Closed Date"
+  },
+  {
+   "fieldname": "section_break_mwvg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rolling_responses",
+   "fieldtype": "Table",
+   "label": "Rolling Responses",
+   "options": "CRM Rolling Response Time"
+  },
+  {
+   "fieldname": "section_break_jgdr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "last_response_time",
+   "fieldtype": "Duration",
+   "label": "Last Response Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_evzj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_responded_on",
+   "fieldtype": "Datetime",
+   "label": "Last Responded On",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-26 12:12:56.324245",
+ "modified": "2025-11-10 21:26:42.554091",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
