@@ -57,7 +57,7 @@ let slaSection = computed(() => {
         ? 'green'
         : 'orange'
 
-  if (status == 'First Response Due') {
+  if (status == 'First Response Due' || status == 'Rolling Response Due') {
     status = timeAgo(data.value.response_by)
     if (status == 'just now') {
       status = 'In less than a minute'
