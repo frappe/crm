@@ -215,7 +215,6 @@ import {
 } from 'frappe-ui'
 import { ref, computed, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDocumentPermissions } from '@/composables/permissions'
 
 const { brand } = getSettings()
 const { makeCall, $dialog, $socket } = globalStore()
@@ -232,14 +231,15 @@ const props = defineProps({
   },
 })
 
-const canDelete = useDocumentPermissions('Contact', props.contactId)
 const route = useRoute()
 const router = useRouter()
 
 const errorTitle = ref('')
 const errorMessage = ref('')
 
-const { document: contact, scripts } = useDocument('Contact', props.contactId)
+const { document: contact, permissions, scripts } = useDocument('Contact', props.contactId)
+
+const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Contacts'), route: { name: 'Contacts' } }]

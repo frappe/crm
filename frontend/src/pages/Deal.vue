@@ -388,7 +388,6 @@ import {
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
-import { useDocumentPermissions } from '@/composables/permissions'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -408,15 +407,16 @@ const props = defineProps({
   },
 })
 
-const canDelete = useDocumentPermissions('CRM Deal', props.dealId)
 const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
+const { triggerOnChange, assignees, permissions, document, scripts, error } = useDocument(
   'CRM Deal',
   props.dealId,
 )
+
+const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
 
