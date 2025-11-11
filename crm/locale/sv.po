@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-10 10:46\n"
+"PO-Revision-Date: 2025-11-11 11:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -2037,7 +2037,7 @@ msgstr "Dokumentation"
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Done"
-msgstr "Klar"
+msgstr "Klart"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:33
 #: frontend/src/components/Dashboard/AddChartModal.vue:71
@@ -2943,7 +2943,7 @@ msgstr "Rutnätsrad"
 #: frontend/src/components/ViewControls.vue:379
 #: frontend/src/components/ViewControls.vue:611 frontend/src/utils/view.js:16
 msgid "Group By"
-msgstr "Gruppera efter"
+msgstr "Gruppera Efter"
 
 #. Label of the group_by_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -4255,7 +4255,7 @@ msgstr "Inte tillåtet att ange primär kontakt för Affär"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/components/Layouts/AppSidebar.vue:554
 msgid "Note"
-msgstr "Anteckning"
+msgstr "Notera"
 
 #: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:419
 #: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:367
@@ -5441,7 +5441,7 @@ msgstr "Sortera"
 #: frontend/src/components/Modals/EditValueModal.vue:10
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:60
 msgid "Source"
-msgstr "Från"
+msgstr "Källa"
 
 #. Label of the source_name (Data) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
@@ -6673,7 +6673,7 @@ msgstr "{0} är ogiltig e-post adress"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:172
 msgid "{0} is required"
-msgstr "{0} är erfodrad"
+msgstr "{0} erfordras"
 
 #: frontend/src/utils/index.js:119
 msgid "{0} m"
