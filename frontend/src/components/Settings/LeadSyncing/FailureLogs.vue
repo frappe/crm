@@ -4,7 +4,7 @@
             <Button variant="ghost" icon-left="chevron-left" @click="selectedLog = null">
                 {{ __("Back to all logs") }}
             </Button>
-            <Button v-if="logDoc?.document?.retrySync" :loading="logDoc?.document?.retrySync.loading"
+            <Button v-if="logDoc?.document?.retrySync && selectedLog.type != 'Synced'" :loading="logDoc?.document?.retrySync.loading"
                 @click="logDoc?.document?.retrySync.submit()">
                 {{ __("Retry Sync") }}
             </Button>
