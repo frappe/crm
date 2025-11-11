@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-10 10:46\n"
+"PO-Revision-Date: 2025-11-11 11:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -627,7 +627,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Assignment"
-msgstr "Zuordnung"
+msgstr "Zuweisung"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -3310,7 +3310,7 @@ msgstr "Ist ERPNext auf einer anderen Instanz installiert?"
 #. Label of the is_group (Check) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Is Group"
-msgstr "Ist Gruppe"
+msgstr ""
 
 #. Label of the is_helpdesk_in_different_site (Check) field in DocType
 #. 'Helpdesk CRM Settings'
@@ -5786,7 +5786,7 @@ msgstr "Zeitspanne"
 #: frontend/src/components/Modals/NoteModal.vue:26
 #: frontend/src/components/Modals/TaskModal.vue:25
 msgid "Title"
-msgstr "Bezeichnung"
+msgstr "Titel"
 
 #. Label of the title_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6106,7 +6106,7 @@ msgstr "Hochladen {0}%"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "User"
-msgstr "Nutzer"
+msgstr "Benutzer"
 
 #: frontend/src/components/Settings/Settings.vue:127
 msgid "User Management"
@@ -6155,7 +6155,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:566
 msgid "Views"
-msgstr "Aufrufe"
+msgstr "Ansichten"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:563
 msgid "Web form"
@@ -6667,7 +6667,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:172
 msgid "{0} is required"
-msgstr "{0}  erforderlich"
+msgstr "{0} ist erforderlich"
 
 #: frontend/src/utils/index.js:119
 msgid "{0} m"
