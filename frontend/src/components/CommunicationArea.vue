@@ -123,7 +123,17 @@ const newComment = useStorage(
 const newEmailEditor = ref(null)
 const newCommentEditor = ref(null)
 const sendEmailRef = ref(null)
-const attachments = ref([])
+const attachments = useStorage(
+  `attachments-${getUser().email}-${props.doctype}-${doc.value.name}`,
+  [],
+  localStorage,
+  {
+    serializer: {
+      read: (v) => v ? JSON.parse(v) : [],
+      write: (v) => JSON.stringify(v)
+    }
+  }
+)
 
 const subject = computed(() => {
   let prefix = ''
