@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-10 10:46\n"
+"PO-Revision-Date: 2025-11-11 11:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -447,7 +447,7 @@ msgstr "Agent nije dostupan da odgovori na poziv, nazovite nakon nekog vremena."
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
 #: frontend/src/components/Settings/Users.vue:85
 msgid "All"
-msgstr "Sve"
+msgstr "Svi"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:191
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:641
@@ -2377,7 +2377,7 @@ msgstr "Omogućeno?"
 #. Label of the end_date (Date) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "End Date"
-msgstr "Datum završetka"
+msgstr "Datum Završetka"
 
 #. Label of the end_time (Datetime) field in DocType 'CRM Call Log'
 #. Label of the end_time (Time) field in DocType 'CRM Service Day'
@@ -2943,7 +2943,7 @@ msgstr "Red Mreže"
 #: frontend/src/components/ViewControls.vue:379
 #: frontend/src/components/ViewControls.vue:611 frontend/src/utils/view.js:16
 msgid "Group By"
-msgstr "Grupiši po"
+msgstr "Grupiši Po"
 
 #. Label of the group_by_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -3153,7 +3153,7 @@ msgstr "Pristigla Pošta"
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Incoming"
-msgstr "Dolazeći"
+msgstr "Dolazna"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:41
 msgid "Incoming call..."
@@ -4080,7 +4080,7 @@ msgstr "Bez Odgovora"
 
 #: frontend/src/components/Controls/Grid.vue:322
 msgid "No Data"
-msgstr "Nema podataka"
+msgstr "Nema Podataka"
 
 #: frontend/src/components/Activities/EventArea.vue:78
 msgid "No Events Scheduled"
@@ -4195,7 +4195,7 @@ msgstr "Normalan"
 
 #: crm/utils/__init__.py:263
 msgid "Not Allowed"
-msgstr "Nije dozvoljeno"
+msgstr "Nije Dozvoljeno"
 
 #: frontend/src/components/Filter.vue:268
 #: frontend/src/components/Filter.vue:289
@@ -4269,7 +4269,7 @@ msgstr "Prikaz Napomena"
 #: frontend/src/components/Activities/EmailArea.vue:15
 #: frontend/src/components/Layouts/AppSidebar.vue:583
 msgid "Notification"
-msgstr "Obavijest"
+msgstr "Obavještenje"
 
 #. Label of the notification_text (Text) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4326,7 +4326,7 @@ msgstr "Stari Nadređeni"
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "On Hold"
-msgstr "Na čekanju"
+msgstr "Na Čekanju"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
@@ -4462,7 +4462,7 @@ msgstr "Odlazni Poziv"
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Outgoing"
-msgstr "Odlazno"
+msgstr "Odlazeća"
 
 #. Label of the log_owner (Link) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
@@ -4518,7 +4518,7 @@ msgstr "Podsjetnik za plaćanje od Frappéa - (#{{ name }})"
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Pending"
-msgstr "Na čekanju"
+msgstr "Na Čekanju"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:61
 msgid "Pending Invites"
@@ -4828,7 +4828,7 @@ msgstr "Referentni Doctype"
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 msgid "Reference Document Type"
-msgstr "Referentna vrsta dokumenta"
+msgstr "Referentni Tip Dokumenta"
 
 #. Label of the reference_docname (Dynamic Link) field in DocType 'CRM Call
 #. Log'
@@ -5489,7 +5489,7 @@ msgstr "Standard Prikazi"
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Start Date"
-msgstr "Start Datum"
+msgstr "Datum Početka"
 
 #. Label of the start_time (Datetime) field in DocType 'CRM Call Log'
 #. Label of the start_time (Time) field in DocType 'CRM Service Day'
@@ -5619,7 +5619,7 @@ msgstr "Konfiguracija Sustava"
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "System Manager"
-msgstr "Upravitelj Sustava"
+msgstr "Upravitelj Sistema"
 
 #: frontend/src/components/EmailEditor.vue:22
 msgid "TO"
@@ -5811,7 +5811,7 @@ msgstr "Naziv je obavezan"
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 #: frontend/src/components/Activities/EmailArea.vue:53
 msgid "To"
-msgstr "Do"
+msgstr "Za"
 
 #. Label of the to_date (Date) field in DocType 'CRM Holiday List'
 #. Label of the to_date (Datetime) field in DocType 'CRM Status Change Log'
@@ -5997,7 +5997,7 @@ msgstr "Uvjeti razgrupiranja"
 #: frontend/src/components/Telephony/TwilioCallUI.vue:24
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
-msgstr "Nepoznat"
+msgstr "Nepoznato"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:132
 msgid "Unlink"
@@ -6161,7 +6161,7 @@ msgstr "Prikaži kontakt"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:566
 msgid "Views"
-msgstr "Pogledi"
+msgstr "Prikazi"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:563
 msgid "Web form"
