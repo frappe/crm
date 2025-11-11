@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-10 10:46\n"
+"PO-Revision-Date: 2025-11-11 11:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -1247,7 +1247,7 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:26
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:54
 msgid "Close"
-msgstr ""
+msgstr "Vicino"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:38
 msgid "Close panel"
@@ -1541,7 +1541,7 @@ msgstr "Q.tà"
 #: frontend/src/pages/Organizations.vue:60 frontend/src/pages/Tasks.vue:13
 #: frontend/src/pages/Tasks.vue:186
 msgid "Create"
-msgstr ""
+msgstr "Creare"
 
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
@@ -2047,7 +2047,7 @@ msgstr ""
 #: frontend/src/components/Activities/AudioPlayer.vue:166
 #: frontend/src/components/ViewControls.vue:254
 msgid "Download"
-msgstr ""
+msgstr "Scaricamento"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:24
 msgid "Drag and drop files here or upload from"
@@ -2065,7 +2065,7 @@ msgstr ""
 #. Label of the due_date (Datetime) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Due Date"
-msgstr ""
+msgstr "Data di Scadenza"
 
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -2645,7 +2645,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Failed"
-msgstr ""
+msgstr "Fallito"
 
 #. Name of a DocType
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -3091,7 +3091,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. Label of the icon (Code) field in DocType 'CRM Dropdown Item'
 #. Label of the icon (Data) field in DocType 'CRM View Settings'
@@ -3946,7 +3946,7 @@ msgstr ""
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:20
 #: frontend/src/components/Settings/Users.vue:30
 msgid "New"
-msgstr ""
+msgstr "Nuovo"
 
 #: frontend/src/components/Modals/AddressModal.vue:93
 msgid "New Address"
@@ -4518,7 +4518,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Pending"
-msgstr ""
+msgstr "In Attesa"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:61
 msgid "Pending Invites"
@@ -5232,7 +5232,7 @@ msgstr "Seleziona {0}"
 
 #: frontend/src/components/EmailEditor.vue:165
 msgid "Send"
-msgstr "Invia"
+msgstr ""
 
 #: frontend/src/components/Settings/InviteUserPage.vue:18
 msgid "Send Invites"
