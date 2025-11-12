@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-11 11:49\n"
+"PO-Revision-Date: 2025-11-12 12:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -145,7 +145,7 @@ msgstr "Potentiell Kund kräver antingen person namn eller organisation namn"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:47
 msgid "A lead sync source is already enabled for this Facebook Lead Form!"
-msgstr ""
+msgstr "Källa för Potentiell Kund Synkronisering är redan aktiverad för detta Facebook Potentiell Kund Formulär!"
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
@@ -230,7 +230,7 @@ msgstr "Åtkomst Nyckel för Valuta Växling Tjänst. Erfordras för att hämta 
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:133
 msgid "Access token is required"
-msgstr ""
+msgstr "Åtkomst token erfordras"
 
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -330,7 +330,7 @@ msgstr "Lägg till villkor"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:24
 msgid "Add a name for your source"
-msgstr ""
+msgstr "Lägg till namn för källa"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
@@ -413,7 +413,7 @@ msgstr "Lägg till, redigera och hantera e-post mallar för olika Säljstöd kom
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:12
 msgid "Add, edit, and manage sources for automatic lead syncing to your CRM"
-msgstr ""
+msgstr "Lägg till, redigera och hantera källor för automatisk synkronisering av Potentiell Kund till Säljstöd"
 
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
@@ -828,7 +828,7 @@ msgstr "Tillbaka till filuppladdning"
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:80
 msgid "Background Sync Frequency"
-msgstr ""
+msgstr "Bakgrund Synkronisering Intervall"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -2394,11 +2394,11 @@ msgstr "Sluttiden ska vara efter starttiden"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:88
 msgid "Enter Access Token"
-msgstr ""
+msgstr "Ange Åtkomst Token"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:70
 msgid "Enter Source Name"
-msgstr ""
+msgstr "Ange Källans Namn"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:115
 msgid "Enter access key"
@@ -2410,7 +2410,7 @@ msgstr "Ange varumärke namn"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:30
 msgid "Enter your Facebook Access Token"
-msgstr ""
+msgstr "Ange Facebook Åtkomst Token"
 
 #: frontend/src/components/FieldLayout/Field.vue:347
 msgid "Enter {0}"
@@ -2432,15 +2432,15 @@ msgstr "Fel vid konvertering till affär: {0}"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:245
 msgid "Error creating Lead Sync Source"
-msgstr ""
+msgstr "Fel vid skapande av Potentiell Kund Synkronisering Källa"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:362
 msgid "Error syncing leads"
-msgstr ""
+msgstr "Fel vid synkronisering av Potentiella Kunder"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:226
 msgid "Error updating Lead Sync Source"
-msgstr ""
+msgstr "Fel vid uppdatering av Potentiell Kund Källa"
 
 #: frontend/src/pages/Deal.vue:741 frontend/src/pages/Lead.vue:469
 #: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:412
@@ -2479,19 +2479,19 @@ msgstr "Händelser"
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 10 Minutes"
-msgstr ""
+msgstr "Var 10: e Minut"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 15 Minutes"
-msgstr ""
+msgstr "Var 15: e Minut"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 5 Minutes"
-msgstr ""
+msgstr "Var 5: e Minut"
 
 #: frontend/src/components/ViewControls.vue:268
 #: frontend/src/components/ViewControls.vue:277
@@ -2612,31 +2612,31 @@ msgstr "Facebook"
 #. Label of the facebook_form_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Facebook Form ID"
-msgstr ""
+msgstr "Facebook Formulär ID"
 
 #. Name of a DocType
 #. Label of the facebook_lead_form (Link) field in DocType 'Lead Sync Source'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Facebook Lead Form"
-msgstr ""
+msgstr "Facebook Potentiell Kund Formulär"
 
 #. Name of a DocType
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Facebook Lead Form Question"
-msgstr ""
+msgstr "Facebook Potentiell Kund Formulär Fråga"
 
 #. Label of the facebook_lead_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Facebook Lead ID"
-msgstr ""
+msgstr "Facebook Potentiell Kund ID"
 
 #. Name of a DocType
 #. Label of the facebook_page (Link) field in DocType 'Lead Sync Source'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Facebook Page"
-msgstr ""
+msgstr "Facebook Sida"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
@@ -2650,7 +2650,7 @@ msgstr "Misslyckad"
 #. Name of a DocType
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 msgid "Failed Lead Sync Log"
-msgstr ""
+msgstr "Misslyckad Potentiell Kund Synkronisering Logg"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:111
 msgid "Failed to add users"
@@ -2670,7 +2670,7 @@ msgstr "Misslyckades med att skapa mall"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
 msgid "Failed to delete Lead Sync Source"
-msgstr ""
+msgstr "Misslyckades med att ta bort Potentiell Kund Synkronisering Källa"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:216
 msgid "Failed to delete template"
@@ -2706,7 +2706,7 @@ msgstr "Misslyckades med att uppdatera profil"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:171
 msgid "Failed to update source"
-msgstr ""
+msgstr "Misslyckades med att uppdatera källa"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:208
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:201
@@ -2835,7 +2835,7 @@ msgstr "Formulär"
 #. Label of the form_name (Data) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
 msgid "Form Name"
-msgstr ""
+msgstr "Formulär Namn"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:19
 msgid "Form Script updated successfully"
@@ -3226,7 +3226,7 @@ msgstr "Ogiltigt Exotel Nummer"
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:137
 msgid "Invalid access token provided for Facebook."
-msgstr ""
+msgstr "Ogiltig åtkomst token angiven för Facebook."
 
 #: crm/api/dashboard.py:77
 msgid "Invalid chart name"
@@ -3482,7 +3482,7 @@ msgstr "Potentiell Kund"
 #. Label of the lead_data (Code) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 msgid "Lead Data"
-msgstr ""
+msgstr "Potentiell Kund Data"
 
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -3516,19 +3516,19 @@ msgstr "Potentiell Kund Status"
 #. Name of a DocType
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Lead Sync Source"
-msgstr ""
+msgstr "Potentiell Kund Synkronisering Källa"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:240
 msgid "Lead Sync Source created successfully"
-msgstr ""
+msgstr "Potentiell Kund Synkronisering Källa skapad"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:183
 msgid "Lead Sync Source deleted successfully"
-msgstr ""
+msgstr "Potentiell Kund Synkronisering Källa har tagits bort"
 
 #: frontend/src/components/Settings/Settings.vue:209
 msgid "Lead Syncing"
-msgstr ""
+msgstr "Potentiell Kund Synkronisering"
 
 #: crm/api/dashboard.py:974
 msgid "Lead generation channel analysis"
@@ -3536,11 +3536,11 @@ msgstr "Potentiell Kund Generering Kanal Analys"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:7
 msgid "Lead sources"
-msgstr ""
+msgstr "Potentiell Kund Källor"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
-msgstr ""
+msgstr "Potentiell Kund synkronisering initierad."
 
 #: crm/api/dashboard.py:756
 msgid "Lead to deal conversion pipeline"
@@ -3774,7 +3774,7 @@ msgstr "Manuell"
 #. Lead Form Question'
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Mapped to CRM Field"
-msgstr ""
+msgstr "Mappad till Säljstöd Fält"
 
 #: frontend/src/components/Notifications.vue:20
 #: frontend/src/pages/MobileNotification.vue:12
@@ -3982,7 +3982,7 @@ msgstr "Ny E-post"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:9
 msgid "New Lead Sync Source"
-msgstr ""
+msgstr "Ny Potentiell Kund Synkronisering Källa"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:66
 msgid "New Message"
@@ -4103,7 +4103,7 @@ msgstr "Inga kontakter tillagda"
 
 #: frontend/src/pages/Deal.vue:257
 msgid "No details added"
-msgstr ""
+msgstr "Inga detaljer tillagda"
 
 #: frontend/src/pages/Deal.vue:90 frontend/src/pages/Lead.vue:137
 msgid "No email set"
@@ -4123,7 +4123,7 @@ msgstr "Ingen etikett"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:49
 msgid "No lead sources found"
-msgstr ""
+msgstr "Inga Potentiella Kunder källor hittades"
 
 #: frontend/src/pages/Deal.vue:707
 msgid "No mobile number set"
@@ -4233,7 +4233,7 @@ msgstr "Ej Sparad"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:133
 msgid "Not Synced"
-msgstr ""
+msgstr "Inte Synkroniserad"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:272
 msgid "Not allowed to add contact to Deal"
@@ -4582,7 +4582,7 @@ msgstr "Lägg till e-post konto för att fortsätta."
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:157
 msgid "Please check your access token"
-msgstr ""
+msgstr "Kontrollera åtkomst token"
 
 #: crm/integrations/twilio/twilio_handler.py:119
 msgid "Please enable twilio settings before making a call."
@@ -4606,7 +4606,7 @@ msgstr "Välj valuta innan du sparar."
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:65
 msgid "Please select a lead gen form before syncing!"
-msgstr ""
+msgstr "Välj Potentiell Kund formulär innan synkronisering!"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:136
 #: frontend/src/pages/MobileLead.vue:431
@@ -5212,7 +5212,7 @@ msgstr "Välj Intervall"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:47
 msgid "Select Source Type"
-msgstr ""
+msgstr "Välj Källtyp"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:51
 msgid "Select currency"
@@ -5455,11 +5455,11 @@ msgstr "Käll Typ"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:167
 msgid "Source disabled successfully"
-msgstr ""
+msgstr "Källa inaktiverad"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:166
 msgid "Source enabled successfully"
-msgstr ""
+msgstr "Källa aktiverad"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
@@ -5592,7 +5592,7 @@ msgstr "Synkroniserar"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:359
 msgid "Syncing started in background"
-msgstr ""
+msgstr "Synkronisering startad i bakgrunden"
 
 #: frontend/src/components/Settings/Settings.vue:106
 msgid "System Configuration"
@@ -6310,7 +6310,7 @@ msgstr "Du kommer att omdirigeras till inbjudning sida för användare, osparade
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:9
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more "
-msgstr ""
+msgstr "Meta utvecklarkonto och åtkomst token erfordras för att synkronisera Potentiella Kunder från Facebook. Läs mer om hur du gör "
 
 #: crm/api/todo.py:100
 msgid "Your assignment on task {0} has been removed by {1}"
