@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-11 11:49\n"
+"PO-Revision-Date: 2025-11-12 12:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -230,7 +230,7 @@ msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:133
 msgid "Access token is required"
-msgstr ""
+msgstr "توکن دسترسی الزامی است"
 
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -330,7 +330,7 @@ msgstr "افزودن شرط"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:24
 msgid "Add a name for your source"
-msgstr ""
+msgstr "یک نام برای منبع خود اضافه کنید"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
@@ -2394,11 +2394,11 @@ msgstr "زمان پایان باید بعد از زمان شروع باشد"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:88
 msgid "Enter Access Token"
-msgstr ""
+msgstr "توکن دسترسی را وارد کنید"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:70
 msgid "Enter Source Name"
-msgstr ""
+msgstr "نام منبع را وارد کنید"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:115
 msgid "Enter access key"
@@ -2410,7 +2410,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:30
 msgid "Enter your Facebook Access Token"
-msgstr ""
+msgstr "توکن دسترسی فیسبوک خود را وارد کنید"
 
 #: frontend/src/components/FieldLayout/Field.vue:347
 msgid "Enter {0}"
@@ -2436,7 +2436,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:362
 msgid "Error syncing leads"
-msgstr ""
+msgstr "خطا در همگام‌سازی سرنخ‌ها"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:226
 msgid "Error updating Lead Sync Source"
@@ -2479,19 +2479,19 @@ msgstr "مناسبت ها"
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 10 Minutes"
-msgstr ""
+msgstr "هر ۱۰ دقیقه"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 15 Minutes"
-msgstr ""
+msgstr "هر ۱۵ دقیقه"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 5 Minutes"
-msgstr ""
+msgstr "هر ۵ دقیقه"
 
 #: frontend/src/components/ViewControls.vue:268
 #: frontend/src/components/ViewControls.vue:277
@@ -3250,7 +3250,7 @@ msgstr ""
 
 #: frontend/src/composables/event.js:203
 msgid "Invalid start or end time"
-msgstr ""
+msgstr "زمان شروع یا پایان نامعتبر است"
 
 #: frontend/src/components/Settings/Users.vue:25
 msgid "Invite New User"
@@ -3926,7 +3926,7 @@ msgstr "سری نام‌گذاری"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:99
 msgid "Nested conditions"
-msgstr ""
+msgstr "شرایط تو در تو"
 
 #. Label of the net_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -4233,7 +4233,7 @@ msgstr "ذخیره نشد"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:133
 msgid "Not Synced"
-msgstr ""
+msgstr "همگام‌سازی نشده"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:272
 msgid "Not allowed to add contact to Deal"
@@ -4582,7 +4582,7 @@ msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:157
 msgid "Please check your access token"
-msgstr ""
+msgstr "لطفا توکن دسترسی خود را بررسی کنید"
 
 #: crm/integrations/twilio/twilio_handler.py:119
 msgid "Please enable twilio settings before making a call."
@@ -5586,7 +5586,7 @@ msgstr "در حال همگام سازی"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:359
 msgid "Syncing started in background"
-msgstr ""
+msgstr "همگام‌سازی در پس‌زمینه آغاز شد"
 
 #: frontend/src/components/Settings/Settings.vue:106
 msgid "System Configuration"
@@ -6110,7 +6110,7 @@ msgstr "کاربر"
 
 #: frontend/src/components/Settings/Settings.vue:127
 msgid "User Management"
-msgstr ""
+msgstr "مدیریت کاربر"
 
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
