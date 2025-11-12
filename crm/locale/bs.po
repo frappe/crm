@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-11 11:49\n"
+"PO-Revision-Date: 2025-11-12 12:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -145,7 +145,7 @@ msgstr "Potencijalni Klijent zahtijeva ili ime osobe ili ime organizacije"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:47
 msgid "A lead sync source is already enabled for this Facebook Lead Form!"
-msgstr ""
+msgstr "Izvor sinhronizacije potencijalnih klijenata je već omogućen za ovaj Facebook obrazac za potencijalne klijente!"
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
@@ -230,7 +230,7 @@ msgstr "Pristupni ključ za Pružatelja Usluge Kursa. Potreban za preuzimnje kur
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:133
 msgid "Access token is required"
-msgstr ""
+msgstr "Potreban je token za pristup"
 
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -330,7 +330,7 @@ msgstr "Dodaj uslov"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:24
 msgid "Add a name for your source"
-msgstr ""
+msgstr "Dodaj naziv za izvor"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
@@ -413,7 +413,7 @@ msgstr "Dodaj, uredi i upravljaj šablonima e-pošte za različite CRM komunikac
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:12
 msgid "Add, edit, and manage sources for automatic lead syncing to your CRM"
-msgstr ""
+msgstr "Dodaj, uredi i upravljaj izvorima za automatsku sinkronizaciju potencijalnih klijenata s vašiom Prodajnom Podrškom"
 
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
@@ -828,7 +828,7 @@ msgstr "Nazad na otpremanje datoteke"
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:80
 msgid "Background Sync Frequency"
-msgstr ""
+msgstr "Učestalost pozadinske sinkronizacije"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -2394,11 +2394,11 @@ msgstr "Vrijeme završetka treba biti nakon vremena početka"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:88
 msgid "Enter Access Token"
-msgstr ""
+msgstr "Unesi Pristupni Token"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:70
 msgid "Enter Source Name"
-msgstr ""
+msgstr "Unesi Naziv Izvora"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:115
 msgid "Enter access key"
@@ -2410,7 +2410,7 @@ msgstr "Unesite naziv marke"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:30
 msgid "Enter your Facebook Access Token"
-msgstr ""
+msgstr "Unesi Facebook Pristupni Token"
 
 #: frontend/src/components/FieldLayout/Field.vue:347
 msgid "Enter {0}"
@@ -2432,15 +2432,15 @@ msgstr "Greška pri pretvaranju u posao: {0}"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:245
 msgid "Error creating Lead Sync Source"
-msgstr ""
+msgstr "Greška prilikom kreiranja izvora sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:362
 msgid "Error syncing leads"
-msgstr ""
+msgstr "Greška prilikom sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:226
 msgid "Error updating Lead Sync Source"
-msgstr ""
+msgstr "Greška pri ažuriranju izvora sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/pages/Deal.vue:741 frontend/src/pages/Lead.vue:469
 #: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:412
@@ -2479,19 +2479,19 @@ msgstr "Događaji"
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 10 Minutes"
-msgstr ""
+msgstr "Svakih 10 minuta"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 15 Minutes"
-msgstr ""
+msgstr "Svakih 15 minuta"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 5 Minutes"
-msgstr ""
+msgstr "Svakih 5 minuta"
 
 #: frontend/src/components/ViewControls.vue:268
 #: frontend/src/components/ViewControls.vue:277
@@ -2612,31 +2612,31 @@ msgstr "Facebook"
 #. Label of the facebook_form_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Facebook Form ID"
-msgstr ""
+msgstr "ID Facebook Obrasca"
 
 #. Name of a DocType
 #. Label of the facebook_lead_form (Link) field in DocType 'Lead Sync Source'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Facebook Lead Form"
-msgstr ""
+msgstr "Facebook obrazac za potencijalne klijente"
 
 #. Name of a DocType
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Facebook Lead Form Question"
-msgstr ""
+msgstr "Pitanje iz Facebook obrasca za potencijalne klijente"
 
 #. Label of the facebook_lead_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Facebook Lead ID"
-msgstr ""
+msgstr "ID potencijalnog klijenta na Facebook-u"
 
 #. Name of a DocType
 #. Label of the facebook_page (Link) field in DocType 'Lead Sync Source'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Facebook Page"
-msgstr ""
+msgstr "Facebook Stranica"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
@@ -2650,7 +2650,7 @@ msgstr "Neuspješno"
 #. Name of a DocType
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 msgid "Failed Lead Sync Log"
-msgstr ""
+msgstr "Zapisnik neuspješne sinkronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:111
 msgid "Failed to add users"
@@ -2670,7 +2670,7 @@ msgstr "Nije uspjelo kreiranje šablona"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
 msgid "Failed to delete Lead Sync Source"
-msgstr ""
+msgstr "Brisanje izvora sinkronizacije potencijalnih klijenata nije uspjelo"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:216
 msgid "Failed to delete template"
@@ -2706,7 +2706,7 @@ msgstr "Ažuriranje profila nije uspjelo"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:171
 msgid "Failed to update source"
-msgstr ""
+msgstr "Nije uspjelo ažuriranje izvora"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:208
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:201
@@ -2835,7 +2835,7 @@ msgstr "Forma"
 #. Label of the form_name (Data) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
 msgid "Form Name"
-msgstr ""
+msgstr "Naziv Obrasca"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:19
 msgid "Form Script updated successfully"
@@ -3226,7 +3226,7 @@ msgstr "Nevažeći Exotel Broj"
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:137
 msgid "Invalid access token provided for Facebook."
-msgstr ""
+msgstr "Unešen je nevažeći pristupni token za Facebook."
 
 #: crm/api/dashboard.py:77
 msgid "Invalid chart name"
@@ -3482,7 +3482,7 @@ msgstr "Potencijalni Klijent"
 #. Label of the lead_data (Code) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 msgid "Lead Data"
-msgstr ""
+msgstr "Podaci o Potencijalnim Klijentima"
 
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -3516,19 +3516,19 @@ msgstr "Status Potencijalnog Klijenta"
 #. Name of a DocType
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Lead Sync Source"
-msgstr ""
+msgstr "Izvor sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:240
 msgid "Lead Sync Source created successfully"
-msgstr ""
+msgstr "Izvor sinhronizacije potencijalnih klijenata uspješno je kreiran"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:183
 msgid "Lead Sync Source deleted successfully"
-msgstr ""
+msgstr "Izvor sinhronizacije potencijalnih klijenata uspješno izbrisan"
 
 #: frontend/src/components/Settings/Settings.vue:209
 msgid "Lead Syncing"
-msgstr ""
+msgstr "Sinkronizacija Potencijalnih Klijenata"
 
 #: crm/api/dashboard.py:974
 msgid "Lead generation channel analysis"
@@ -3536,11 +3536,11 @@ msgstr "Analiza kanala generisanja potencijalnih klijenata"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:7
 msgid "Lead sources"
-msgstr ""
+msgstr "Izvori potencijalnih klijenata"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
-msgstr ""
+msgstr "Sinkronizacija potencijalnog klijenta pokrenuta."
 
 #: crm/api/dashboard.py:756
 msgid "Lead to deal conversion pipeline"
@@ -3774,7 +3774,7 @@ msgstr "Ručno"
 #. Lead Form Question'
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Mapped to CRM Field"
-msgstr ""
+msgstr "Mapirano u polje Prodajne Podrške"
 
 #: frontend/src/components/Notifications.vue:20
 #: frontend/src/pages/MobileNotification.vue:12
@@ -3982,7 +3982,7 @@ msgstr "Nova e-pošta"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:9
 msgid "New Lead Sync Source"
-msgstr ""
+msgstr "Novi izvor sinkronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:66
 msgid "New Message"
@@ -4103,7 +4103,7 @@ msgstr "Nema dodanih kontakata"
 
 #: frontend/src/pages/Deal.vue:257
 msgid "No details added"
-msgstr ""
+msgstr "Nema dodanih kontakata"
 
 #: frontend/src/pages/Deal.vue:90 frontend/src/pages/Lead.vue:137
 msgid "No email set"
@@ -4123,7 +4123,7 @@ msgstr "Nema Oznake"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:49
 msgid "No lead sources found"
-msgstr ""
+msgstr "Nisu pronađeni izvori potencijalnih klijenata"
 
 #: frontend/src/pages/Deal.vue:707
 msgid "No mobile number set"
@@ -4233,7 +4233,7 @@ msgstr "Nespremljeno"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:133
 msgid "Not Synced"
-msgstr ""
+msgstr "Nije sinhronizovano"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:272
 msgid "Not allowed to add contact to Deal"
@@ -4582,7 +4582,7 @@ msgstr "Dodaj račun e-pošte da biste nastavili."
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:157
 msgid "Please check your access token"
-msgstr ""
+msgstr "Provjeri pristupni token"
 
 #: crm/integrations/twilio/twilio_handler.py:119
 msgid "Please enable twilio settings before making a call."
@@ -4606,7 +4606,7 @@ msgstr "Odaberi valutu prije spremanja."
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:65
 msgid "Please select a lead gen form before syncing!"
-msgstr ""
+msgstr "Odaberi obrazac za generiranje potencijalnih klijenata prije sinkronizacije!"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:136
 #: frontend/src/pages/MobileLead.vue:431
@@ -5212,7 +5212,7 @@ msgstr "Odaberi raspon"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:47
 msgid "Select Source Type"
-msgstr ""
+msgstr "Odaberite tip izvora"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:51
 msgid "Select currency"
@@ -5455,11 +5455,11 @@ msgstr "Tip Izvora"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:167
 msgid "Source disabled successfully"
-msgstr ""
+msgstr "Izvor je uspješno onemogućen"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:166
 msgid "Source enabled successfully"
-msgstr ""
+msgstr "Izvor je uspješno omogućen"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
@@ -5592,7 +5592,7 @@ msgstr "Sinhronizacija u toku"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:359
 msgid "Syncing started in background"
-msgstr ""
+msgstr "Sinkronizacija je započela u pozadini"
 
 #: frontend/src/components/Settings/Settings.vue:106
 msgid "System Configuration"
@@ -6310,7 +6310,7 @@ msgstr "Bit ćete preusmjereni na stranicu za pozivanje korisnika, nesačuvane p
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:9
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more "
-msgstr ""
+msgstr "Trebat će vam Meta developerski račun i pristupni token za sinhronizaciju potencijalnih klijenata s Facebooka. Pročitajte više "
 
 #: crm/api/todo.py:100
 msgid "Your assignment on task {0} has been removed by {1}"
