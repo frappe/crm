@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-11 11:49\n"
+"PO-Revision-Date: 2025-11-13 12:09\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -592,7 +592,7 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:186
 #: frontend/src/components/Modals/AssignmentModal.vue:4
 msgid "Assign To"
-msgstr "Zuweisen an"
+msgstr "Zuweisen zu"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:435
 msgid "Assign condition is required"
@@ -1185,7 +1185,7 @@ msgstr "Diagramm"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:12
 msgid "Chart Type"
-msgstr "Diagramm Typ"
+msgstr "Diagrammtyp"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:29
 #: frontend/src/components/Modals/ConvertToDealModal.vue:55
@@ -1325,7 +1325,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:10
 msgid "Complete Registration"
-msgstr "Anmeldung abschliessen"
+msgstr "Registrierung abschliessen"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3578,7 +3578,7 @@ msgstr "Bibliothek"
 #: frontend/src/components/Filter.vue:318
 #: frontend/src/components/Filter.vue:332
 msgid "Like"
-msgstr "Wie"
+msgstr "Enthält"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:252
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
@@ -4345,7 +4345,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:60
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:23
 msgid "Only one {0} can be set as primary."
-msgstr "Es kann nur eine {0} als primäre festgelegt werden."
+msgstr "Es kann nur eine {0} als primär festgelegt werden."
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
@@ -4620,7 +4620,7 @@ msgstr "Bitte wählen Sie eine bestehende Organisation aus"
 
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.py:126
 msgid "Please set Email Address"
-msgstr "Bitte setzen Sie E-Mail-Adresse"
+msgstr "Bitte geben Sie eine E-Mail-Adresse an"
 
 #: crm/integrations/exotel/handler.py:73
 msgid "Please setup Exotel intergration"
@@ -4658,7 +4658,7 @@ msgstr ""
 #. Label of the phone (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Phone"
-msgstr "Primäre Telefonnummer"
+msgstr "Primäres Telefon"
 
 #: frontend/src/pages/Deal.vue:679 frontend/src/pages/MobileDeal.vue:566
 msgid "Primary contact set"
@@ -4785,7 +4785,7 @@ msgstr "Einzelpreis"
 #. Label of the read (Check) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Read"
-msgstr "Lesen"
+msgstr "Lese-Zugriff"
 
 #: crm/api/dashboard.py:922
 msgid "Reason"
@@ -4819,7 +4819,7 @@ msgstr "Referenzdokument"
 #. Label of the reference_doctype (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Reference Doctype"
-msgstr "Referenztyp"
+msgstr "Referenz-DocType"
 
 #. Label of the reference_doctype (Link) field in DocType 'CRM Call Log'
 #. Label of the reference_doctype (Link) field in DocType 'CRM Task'
