@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { userResource } from '@/stores/user'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
 
@@ -107,8 +106,6 @@ let router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const { isLoggedIn } = sessionStore()
-
-  isLoggedIn && (await userResource.promise)
 
   if (to.name === 'Home' && isLoggedIn) {
     const { views, getDefaultView } = viewsStore()
