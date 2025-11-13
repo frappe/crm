@@ -31,6 +31,7 @@
           :data="_contact.doc"
           doctype="Contact"
         />
+        <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
@@ -84,10 +85,14 @@ const router = useRouter()
 const show = defineModel()
 
 const loading = ref(false)
+const error = ref(null)
 
 const { document: _contact, triggerOnBeforeCreate } = useDocument('Contact')
 
 async function createContact() {
+  loading.value = true
+  error.value = null
+
   if (_contact.doc.email_id) {
     _contact.doc.email_ids = [
       { email_id: _contact.doc.email_id, is_primary: 1 },
@@ -104,12 +109,21 @@ async function createContact() {
 
   await triggerOnBeforeCreate?.()
 
-  const doc = await call('frappe.client.insert', {
-    doc: {
-      doctype: 'Contact',
-      ..._contact.doc,
+  const doc = await call(
+    'frappe.client.insert',
+    {
+      doc: {
+        doctype: 'Contact',
+        ..._contact.doc,
+      },
     },
-  })
+    {
+      onError: (err) => {
+        error.value = err.error?.messages?.[0]
+        loading.value = false
+      },
+    },
+  )
   if (doc.name) {
     capture('contact_created')
     handleContactUpdate(doc)
