@@ -27,37 +27,43 @@ class FacebookSyncSource:
 		self.access_token = access_token
 		self.form_id = form_id
 		self.source_name = source_name
+		self.form_questions_mapping = None
 
 	def get_api_url(self, endpoint: str) -> str:
 		return get_fb_graph_api_url(endpoint)
 
 	def sync(self):
 		leads = self.fetch_leads()
-		question_to_field_map = self.get_form_questions_mapping()
-
 		for lead in leads:
-			lead_data = {item["name"]: item["values"][0] for item in lead["field_data"]}
-			crm_lead_data = {
-				question_to_field_map.get(k): v for k, v in lead_data.items() if k in question_to_field_map
-			}
-			crm_lead_data["source"] = "Facebook"
-			crm_lead_data["facebook_lead_id"] = lead["id"]
-			crm_lead_data["facebook_form_id"] = self.form_id
-
-			try:
-				self.validate_duplicate_lead(crm_lead_data, question_to_field_map)
-				frappe.get_doc(
-					{
-						"doctype": "CRM Lead",
-						**crm_lead_data,
-					}
-				).insert(ignore_permissions=True)
-			except (frappe.UniqueValidationError, DuplicateLeadError):
-				self.create_failure_log(lead, "Duplicate")
-			except Exception:
-				self.create_failure_log(lead, traceback=frappe.get_traceback(with_context=True))
-
+			self.sync_single_lead(lead)
 		self.update_last_synced_at()
+
+	def sync_single_lead(self, lead, raise_exception=False):
+		question_to_field_map = self.get_form_questions_mapping()
+		lead_data = {item["name"]: item["values"][0] for item in lead["field_data"]}
+		crm_lead_data = {
+			question_to_field_map.get(k): v for k, v in lead_data.items() if k in question_to_field_map
+		}
+		crm_lead_data["source"] = "Facebook"
+		crm_lead_data["facebook_lead_id"] = lead["id"]
+		crm_lead_data["facebook_form_id"] = self.form_id
+
+		try:
+			self.validate_duplicate_lead(crm_lead_data, question_to_field_map)
+			return frappe.get_doc(
+				{
+					"doctype": "CRM Lead",
+					**crm_lead_data,
+				}
+			).insert(ignore_permissions=True)
+		except (frappe.UniqueValidationError, DuplicateLeadError):
+			self.create_failure_log(lead, "Duplicate")
+			if raise_exception:
+				raise
+		except Exception:
+			self.create_failure_log(lead, traceback=frappe.get_traceback(with_context=True))
+			if raise_exception:
+				raise
 
 	def fetch_leads(self):
 		url = self.get_api_url(f"/{self.form_id}/leads")
@@ -79,13 +85,17 @@ class FacebookSyncSource:
 		).get("data", [])
 
 	def get_form_questions_mapping(self):
+		if self.form_questions_mapping:
+			return self.form_questions_mapping
+
 		form_questions = frappe.db.get_all(
 			"Facebook Lead Form Question",
 			filters={"parent": self.form_id},
 			fields=["key", "mapped_to_crm_field"],
 		)
+		self.form_questions_mapping = {q["key"]: q["mapped_to_crm_field"] for q in form_questions if q["mapped_to_crm_field"]}
 
-		return {q["key"]: q["mapped_to_crm_field"] for q in form_questions if q["mapped_to_crm_field"]}
+		return self.form_questions_mapping
 
 	@property
 	def last_synced_at(self):

@@ -57,7 +57,7 @@
  "module": "Lead Syncing",
  "name": "Facebook Lead Form",
  "naming_rule": "By fieldname",
- "owner": "hussain@frappe.io",
+ "owner": "Administrator",
  "permissions": [
   {
    "create": 1,
