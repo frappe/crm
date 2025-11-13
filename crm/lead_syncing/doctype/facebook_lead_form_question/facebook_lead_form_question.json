@@ -1,0 +1,67 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-26 19:45:47.696180",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "label",
+  "id",
+  "column_break_hgde",
+  "key",
+  "type",
+  "mapped_to_crm_field"
+ ],
+ "fields": [
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label"
+  },
+  {
+   "fieldname": "column_break_hgde",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "key",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Key",
+   "reqd": 1
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Type"
+  },
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "ID"
+  },
+  {
+   "default": "Not Synced",
+   "fieldname": "mapped_to_crm_field",
+   "fieldtype": "Autocomplete",
+   "in_list_view": 1,
+   "label": "Mapped to CRM Field"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-29 18:45:21.800960",
+ "modified_by": "hussain@frappe.io",
+ "module": "Lead Syncing",
+ "name": "Facebook Lead Form Question",
+ "owner": "hussain@frappe.io",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
