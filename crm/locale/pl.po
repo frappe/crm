@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-10 10:46\n"
+"PO-Revision-Date: 2025-11-11 11:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -614,7 +614,7 @@ msgstr "Przypisanie do mnie"
 #. Label of the assigned_to (Link) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Assigned To"
-msgstr ""
+msgstr "Przypisano do"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:5
 msgid "Assignee Rules"
@@ -1690,7 +1690,7 @@ msgstr ""
 #: crm/api/dashboard.py:620 crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:202
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 #: frontend/src/components/Modals/EventModal.vue:78
 msgid "Date & Time"
@@ -4255,7 +4255,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/components/Layouts/AppSidebar.vue:554
 msgid "Note"
-msgstr ""
+msgstr "Notatka"
 
 #: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:419
 #: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:367
@@ -4269,7 +4269,7 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:15
 #: frontend/src/components/Layouts/AppSidebar.vue:583
 msgid "Notification"
-msgstr ""
+msgstr "Powiadomienie"
 
 #. Label of the notification_text (Text) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json

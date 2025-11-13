@@ -58,6 +58,7 @@ import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
+import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
@@ -194,6 +195,12 @@ const tabs = computed(() => {
           label: __('ERPNext'),
           icon: ERPNextIcon,
           component: markRaw(ERPNextSettings),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Lead Syncing'),
+          icon: 'refresh-cw',
+          component: markRaw(LeadSyncSourcePage),
           condition: () => isManager(),
         },
       ],

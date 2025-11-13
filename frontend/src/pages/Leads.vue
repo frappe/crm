@@ -461,7 +461,7 @@ function parseRows(rows, columns = []) {
             : lead.sla_status == 'Fulfilled'
               ? 'green'
               : 'orange'
-        if (value == 'First Response Due') {
+        if (value == 'First Response Due' || value == 'Rolling Response Due') {
           value = __(timeAgo(lead.response_by))
           tooltipText = formatDate(lead.response_by)
           if (new Date(lead.response_by) < new Date()) {
