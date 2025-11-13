@@ -5,8 +5,8 @@
   >
     <img :src="logo" class="w-4 h-4" />
   </div>
-  <p v-if="serviceName" class="text-xs text-center text-ink-gray-6 mt-2">
-    {{ serviceName }}
+  <p v-if="label" class="text-xs text-center text-ink-gray-6 mt-2">
+    {{ label }}
   </p>
 </template>
 
@@ -16,7 +16,7 @@ defineProps({
     type: String,
     required: true,
   },
-  serviceName: {
+  label: {
     type: String,
     default: '',
   },

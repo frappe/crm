@@ -62,7 +62,11 @@
   "column_break_tcqb",
   "last_responded_on",
   "log_tab",
-  "status_change_log"
+  "status_change_log",
+  "syncing_tab",
+  "facebook_lead_id",
+  "column_break_ixmu",
+  "facebook_form_id"
  ],
  "fields": [
   {
@@ -332,8 +336,6 @@
    "label": "Net Total",
    "options": "currency",
    "read_only": 1
-<<<<<<< HEAD
-=======
   },
   {
    "fieldname": "syncing_tab",
@@ -364,9 +366,6 @@
    "fieldtype": "Table",
    "label": "Rolling Responses",
    "options": "CRM Rolling Response Time"
-<<<<<<< HEAD
->>>>>>> 5f12d1c0 (fix: created rolling response time child table to capture multiple response cycle and added in lead & deal)
-=======
   },
   {
    "fieldname": "section_break_xnpz",
@@ -392,22 +391,13 @@
    "fieldname": "column_break_ygds",
    "fieldtype": "Column Break",
    "read_only": 1
->>>>>>> 106a73dc (fix: add last response time & last responded on fields and update SLA status options in CRM Deal and CRM Lead to include Rolling Response Due)
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
-<<<<<<< HEAD
-<<<<<<< HEAD
- "modified": "2025-05-14 19:51:06.184569",
-=======
- "modified": "2025-11-10 19:59:38.158921",
->>>>>>> 5f12d1c0 (fix: created rolling response time child table to capture multiple response cycle and added in lead & deal)
-=======
  "modified": "2025-11-10 21:21:50.089284",
->>>>>>> 106a73dc (fix: add last response time & last responded on fields and update SLA status options in CRM Deal and CRM Lead to include Rolling Response Due)
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

@@ -17,3 +17,4 @@ crm.patches.v1_0.update_deal_status_probabilities
 crm.patches.v1_0.update_deal_status_type
 crm.patches.v1_0.create_default_lost_reasons
 crm.patches.v1_0.add_fields_in_assignment_rule
+crm.patches.v1_0.add_fb_lead_source

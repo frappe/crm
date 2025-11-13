@@ -14,8 +14,6 @@ from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 
 
 class CRMLead(Document):
-<<<<<<< HEAD
-=======
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -67,7 +65,6 @@ class CRMLead(Document):
 		website: DF.Data | None
 	# end: auto-generated types
 
->>>>>>> 5f12d1c0 (fix: created rolling response time child table to capture multiple response cycle and added in lead & deal)
 	def before_validate(self):
 		self.set_sla()
 

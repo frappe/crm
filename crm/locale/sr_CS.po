@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-10 10:46\n"
+"PO-Revision-Date: 2025-11-11 11:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -6155,7 +6155,7 @@ msgstr "Prikaz kontakta"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:566
 msgid "Views"
-msgstr "Prikazi"
+msgstr "Pregledi"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:563
 msgid "Web form"
@@ -6667,7 +6667,7 @@ msgstr "{0} je nevažeća imejl adresa"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:172
 msgid "{0} is required"
-msgstr "{0} je obavezan"
+msgstr "{0} je neophodno"
 
 #: frontend/src/utils/index.js:119
 msgid "{0} m"
