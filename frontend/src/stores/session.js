@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { createResource } from 'frappe-ui'
-import { userResource } from './user'
 import router from '@/router'
 import { ref, computed } from 'vue'
 
@@ -23,7 +22,6 @@ export const sessionStore = defineStore('crm-session', () => {
       throw new Error('Invalid email or password')
     },
     onSuccess() {
-      userResource.reload()
       user.value = sessionUser()
       login.reset()
       router.replace({ path: '/' })
@@ -33,7 +31,6 @@ export const sessionStore = defineStore('crm-session', () => {
   const logout = createResource({
     url: 'logout',
     onSuccess() {
-      userResource.reset()
       user.value = null
       window.location.href = '/login?redirect-to=/crm'
     },
