@@ -163,7 +163,12 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
-import { formatDate, timeAgo, validateIsImageFile } from '@/utils'
+import {
+  formatDate,
+  timeAgo,
+  validateIsImageFile,
+  openWebsite as openExternalWebsite,
+} from '@/utils'
 import {
   Breadcrumbs,
   Avatar,
@@ -281,8 +286,12 @@ async function deleteOrganization() {
 }
 
 function openWebsite() {
-  if (!organization.doc.website) toast.error(__('No website found'))
-  else window.open(organization.doc.website, '_blank')
+  if (!organization.doc.website) {
+    toast.error(__('No website found'))
+    return
+  }
+
+  openExternalWebsite(organization.doc.website)
 }
 
 const sections = createResource({
