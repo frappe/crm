@@ -18,7 +18,7 @@
       <Button
         class="mt-5 w-full"
         variant="solid"
-        :label="__('Logout and Login with different account')"
+        :label="__('Login with different account')"
         @click="logout.submit()"
       />
     </div>
