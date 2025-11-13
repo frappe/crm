@@ -235,11 +235,46 @@ export function taskPriorityOptions(action, data) {
   })
 }
 
-export function openWebsite(url) {
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = 'https://' + url
+export function getSafeWebsiteUrl(rawUrl) {
+  const allowedProtocols = new Set(['http:', 'https:'])
+
+  if (!rawUrl) {
+    return null
   }
-  window.open(url, '_blank')
+
+  const trimmedUrl = rawUrl.trim()
+
+  if (!trimmedUrl) {
+    return null
+  }
+
+  const urlToParse = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmedUrl)
+    ? trimmedUrl
+    : `https://${trimmedUrl}`
+
+  try {
+    const parsedUrl = new URL(urlToParse)
+
+    if (!allowedProtocols.has(parsedUrl.protocol)) {
+      return null
+    }
+
+    return parsedUrl.href
+  } catch (_error) {
+    return null
+  }
+}
+
+export function openWebsite(url) {
+  const safeUrl = getSafeWebsiteUrl(url)
+
+  if (!safeUrl) {
+    toast.error(__('Invalid website URL'))
+    return false
+  }
+
+  window.open(safeUrl, '_blank', 'noopener')
+  return true
 }
 
 export function website(url) {
