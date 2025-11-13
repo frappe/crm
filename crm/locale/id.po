@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-10 10:46\n"
+"PO-Revision-Date: 2025-11-11 11:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -266,7 +266,7 @@ msgstr "Aktivitas"
 #: frontend/src/components/Dashboard/AddChartModal.vue:41
 #: frontend/src/components/Modals/AddExistingUserModal.vue:55
 msgid "Add"
-msgstr "Tambah"
+msgstr "Tambahkan"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
@@ -1613,7 +1613,7 @@ msgstr "Buat tugas pertama Anda"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/CurrencySettings.vue:31
 msgid "Currency"
-msgstr "Mata Uang"
+msgstr "Mata uang"
 
 #: frontend/src/components/Settings/Settings.vue:114
 msgid "Currency & Exchange Rate"
@@ -1668,7 +1668,7 @@ msgstr "Sesuaikan filter cepat"
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Daily"
-msgstr "Harian"
+msgstr "Sehari-hari"
 
 #: crm/api/dashboard.py:618
 msgid "Daily performance of leads, deals, and wins"
@@ -2016,7 +2016,7 @@ msgstr "DocType"
 #. Label of the dt (Link) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Document Type"
-msgstr "Tipe Dokumen"
+msgstr "Jenis Dokumen"
 
 #: frontend/src/data/document.js:30
 msgid "Document does not exist"
@@ -2065,7 +2065,7 @@ msgstr "Item Dropdown"
 #. Label of the due_date (Datetime) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Due Date"
-msgstr "Tanggal Jatuh Tempo"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -2377,7 +2377,7 @@ msgstr "Diaktifkan?"
 #. Label of the end_date (Date) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "End Date"
-msgstr "Tanggal Akhir"
+msgstr "Tanggal Berakhir"
 
 #. Label of the end_time (Datetime) field in DocType 'CRM Call Log'
 #. Label of the end_time (Time) field in DocType 'CRM Service Day'
@@ -2645,7 +2645,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Failed"
-msgstr "Gagal"
+msgstr ""
 
 #. Name of a DocType
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -2716,7 +2716,7 @@ msgstr "Gagal memperbarui templat"
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 msgid "Failure"
-msgstr ""
+msgstr "Kegagalan"
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -4548,7 +4548,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:495
 #: frontend/src/pages/Organization.vue:525
 msgid "Phone"
-msgstr "Telepon"
+msgstr ""
 
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -4762,7 +4762,7 @@ msgstr "Dalam Antrian"
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Quick Entry"
-msgstr "Entri Cepat"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -4828,7 +4828,7 @@ msgstr "Doctype Referensi"
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 msgid "Reference Document Type"
-msgstr "Tipe Dokumen Referensi"
+msgstr ""
 
 #. Label of the reference_docname (Dynamic Link) field in DocType 'CRM Call
 #. Log'
@@ -6155,7 +6155,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:566
 msgid "Views"
-msgstr "Tampilan"
+msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:563
 msgid "Web form"
