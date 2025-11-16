@@ -90,7 +90,7 @@
    "label": "Probability"
   },
   {
-   "fetch_from": ".annual_revenue",
+   "fetch_from": "organization.annual_revenue",
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
    "label": "Annual Revenue",
@@ -468,7 +468,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 21:26:42.554091",
+ "modified": "2025-11-16 15:47:45.725033",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
