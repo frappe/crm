@@ -1,6 +1,6 @@
 app_name = "crm"
-app_title = "Frappe CRM"
-app_publisher = "Frappe Technologies Pvt. Ltd."
+app_title = "Redtra CRM"
+app_publisher = "Redtra Technologies FZE LLC"
 app_description = "Kick-ass Open Source CRM"
 app_email = "shariq@frappe.io"
 app_license = "AGPLv3"
