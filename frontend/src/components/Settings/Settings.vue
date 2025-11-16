@@ -62,6 +62,7 @@ import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSource
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
+import DealDefaultsSettings from '@/components/Settings/DealDefaultsSettings.vue'
 import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
@@ -107,6 +108,11 @@ const tabs = computed(() => {
           label: __('Forecasting'),
           component: markRaw(ForecastingSettings),
           icon: TrendingUpDownIcon,
+        },
+        {
+          label: __('Deal Defaults'),
+          component: markRaw(DealDefaultsSettings),
+          icon: 'file-text',
         },
         {
           label: __('Currency & Exchange Rate'),

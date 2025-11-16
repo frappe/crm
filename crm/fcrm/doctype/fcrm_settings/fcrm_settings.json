@@ -9,6 +9,9 @@
   "restore_defaults",
   "enable_forecasting",
   "auto_update_expected_deal_value",
+  "deal_settings_section",
+  "default_choose_existing_organization",
+  "default_choose_existing_contact",
   "currency_tab",
   "currency",
   "exchange_rate_provider_section",
@@ -113,12 +116,31 @@
    "fieldname": "auto_update_expected_deal_value",
    "fieldtype": "Check",
    "label": "Auto Update Expected Deal Value"
+  },
+  {
+   "fieldname": "deal_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Deal Defaults"
+  },
+  {
+   "default": "0",
+   "description": "When creating a new deal, the \"Choose Existing Organization\" switch will be checked by default",
+   "fieldname": "default_choose_existing_organization",
+   "fieldtype": "Check",
+   "label": "Default Choose Existing Organization"
+  },
+  {
+   "default": "0",
+   "description": "When creating a new deal, the \"Choose Existing Contact\" switch will be checked by default",
+   "fieldname": "default_choose_existing_contact",
+   "fieldtype": "Check",
+   "label": "Default Choose Existing Contact"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-16 17:33:26.406549",
+ "modified": "2025-11-15 13:43:22.406654",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

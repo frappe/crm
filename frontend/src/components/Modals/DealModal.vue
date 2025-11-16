@@ -78,6 +78,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
+import { getSettings } from '@/stores/settings'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
@@ -92,6 +93,7 @@ const props = defineProps({
 
 const { getUser, isManager } = usersStore()
 const { getDealStatus, statusOptions } = statusesStore()
+const { _settings, settings } = getSettings()
 
 const show = defineModel()
 const router = useRouter()
@@ -110,6 +112,8 @@ const fieldLayoutRef = ref(null)
 watch(
   [chooseExistingOrganization, chooseExistingContact],
   ([organization, contact]) => {
+    if (!tabs.data) return
+
     tabs.data.forEach((tab) => {
       tab.sections.forEach((section) => {
         if (section.name === 'organization_section') {
@@ -241,6 +245,35 @@ function openQuickEntryModal() {
   nextTick(() => (show.value = false))
 }
 
+// Watch for modal show/hide to reset form values
+watch(show, async (isShown) => {
+  if (isShown) {
+    // Ensure settings are loaded
+    if (!settings.value) {
+      await _settings.reload()
+    }
+
+    // Reset document
+    deal.doc = { no_of_employees: '1-10' }
+    Object.assign(deal.doc, props.defaults)
+
+    if (!deal.doc.deal_owner) {
+      deal.doc.deal_owner = getUser().name
+    }
+    if (!deal.doc.status && dealStatuses.value[0].value) {
+      deal.doc.status = dealStatuses.value[0].value
+    }
+
+    // Reset switches to default values from settings
+    chooseExistingOrganization.value = Boolean(
+      settings.value?.default_choose_existing_organization,
+    )
+    chooseExistingContact.value = Boolean(
+      settings.value?.default_choose_existing_contact,
+    )
+  }
+})
+
 onMounted(() => {
   deal.doc = { no_of_employees: '1-10' }
   Object.assign(deal.doc, props.defaults)
@@ -251,5 +284,13 @@ onMounted(() => {
   if (!deal.doc.status && dealStatuses.value[0].value) {
     deal.doc.status = dealStatuses.value[0].value
   }
+
+  // Set default values for switches from settings
+  chooseExistingOrganization.value = Boolean(
+    settings.value?.default_choose_existing_organization,
+  )
+  chooseExistingContact.value = Boolean(
+    settings.value?.default_choose_existing_contact,
+  )
 })
 </script>
