@@ -7,12 +7,29 @@ import { allTimeSlots } from '@/components/Calendar/utils'
 export const showEventModal = ref(false)
 export const activeEvent = ref(null)
 
-export function useEvent(doctype, docname) {
+export function useEvent({
+  doctype,
+  docname,
+  filters = null,
+  participants = true,
+  notifications = true,
+}) {
   const { getUser } = usersStore()
+
+  if (!filters) {
+    if (doctype && docname) {
+      filters = {
+        reference_doctype: doctype,
+        reference_docname: docname,
+      }
+    } else {
+      filters = {}
+    }
+  }
 
   const eventsResource = createListResource({
     doctype: 'Event',
-    cache: ['calendar', docname],
+    cache: ['calendar-events', docname],
     fields: [
       'name',
       'status',
@@ -30,16 +47,10 @@ export function useEvent(doctype, docname) {
       'reference_docname',
       'creation',
     ],
-    filters: {
-      reference_doctype: doctype,
-      reference_docname: docname,
-    },
+    filters: filters,
     auto: true,
     limit: 50,
     orderBy: 'creation desc',
-    onSuccess: (d) => {
-      console.log(d)
-    },
   })
 
   const eventParticipantsResource = createListResource({
@@ -59,68 +70,74 @@ export function useEvent(doctype, docname) {
     const eventNames = eventsResource.data.map((e) => e.name)
 
     // participants
-    if (
-      !eventParticipantsResource.data?.length ||
-      eventsParticipantIsUpdated(eventNames)
-    ) {
-      eventParticipantsResource.update({
-        filters: {
-          parenttype: 'Event',
-          parentfield: 'event_participants',
-          parent: ['in', eventNames],
-        },
-      })
-      !eventParticipantsResource.list.loading &&
-        eventParticipantsResource.reload()
-    } else {
-      eventsResource.data.forEach((event) => {
-        if (typeof event.owner !== 'object') {
-          event.owner = {
-            label: getUser(event.owner).full_name,
-            image: getUser(event.owner).user_image,
-            name: event.owner,
+    if (participants) {
+      if (
+        !eventParticipantsResource.data?.length ||
+        eventsParticipantIsUpdated(eventNames)
+      ) {
+        eventParticipantsResource.update({
+          filters: {
+            parenttype: 'Event',
+            parentfield: 'event_participants',
+            parent: ['in', eventNames],
+          },
+        })
+        !eventParticipantsResource.list.loading &&
+          eventParticipantsResource.reload()
+      } else {
+        eventsResource.data.forEach((event) => {
+          if (typeof event.owner !== 'object') {
+            event.owner = {
+              label: getUser(event.owner).full_name,
+              image: getUser(event.owner).user_image,
+              name: event.owner,
+            }
           }
-        }
 
-        event.event_participants = [
-          ...eventParticipantsResource.data.filter(
-            (participant) => participant.parent === event.name,
-          ),
-        ]
+          event.event_participants = [
+            ...eventParticipantsResource.data.filter(
+              (participant) => participant.parent === event.name,
+            ),
+          ]
 
-        event.participants = [
-          event.owner,
-          ...eventParticipantsResource.data
-            .filter((participant) => participant.parent === event.name)
-            .map((participant) => ({
-              label: getUser(participant.email).full_name || participant.email,
-              image: getUser(participant.email).user_image || '',
-              name: participant.email,
-            })),
-        ]
-      })
+          event.participants = [
+            event.owner,
+            ...eventParticipantsResource.data
+              .filter((participant) => participant.parent === event.name)
+              .map((participant) => ({
+                label:
+                  getUser(participant.email).full_name || participant.email,
+                image: getUser(participant.email).user_image || '',
+                name: participant.email,
+              })),
+          ]
+        })
+      }
     }
 
     // notifications
-    if (!eventNotificationsResource.data?.length) {
-      eventNotificationsResource.update({
-        filters: {
-          parenttype: 'Event',
-          parentfield: 'notifications',
-          parent: ['in', eventNames],
-        },
-      })
-      !eventNotificationsResource.list.loading &&
-        eventNotificationsResource.reload()
-    } else {
-      eventsResource.data.forEach((event) => {
-        event.notifications = [
-          ...eventNotificationsResource.data.filter(
-            (notification) => notification.parent === event.name,
-          ),
-        ]
-      })
+    if (notifications) {
+      if (!eventNotificationsResource.data?.length) {
+        eventNotificationsResource.update({
+          filters: {
+            parenttype: 'Event',
+            parentfield: 'notifications',
+            parent: ['in', eventNames],
+          },
+        })
+        !eventNotificationsResource.list.loading &&
+          eventNotificationsResource.reload()
+      } else {
+        eventsResource.data.forEach((event) => {
+          event.notifications = [
+            ...eventNotificationsResource.data.filter(
+              (notification) => notification.parent === event.name,
+            ),
+          ]
+        })
+      }
     }
+
     return eventsResource.data
   })
 
