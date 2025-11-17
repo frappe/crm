@@ -69,10 +69,16 @@ def _process_event_notifications_by_interval(interval):
 			en.time as time_of_day,
 			en.interval as notification_interval,
 			ep.email as participant_email,
+			ep_all.participant_emails_csv,
 			CASE WHEN en.parent IS NULL THEN 0 ELSE 1 END as has_custom_notifications
 		FROM `tabEvent` e
 		LEFT JOIN `tabEvent Notifications` en ON e.name = en.parent AND en.interval = %s
 		LEFT JOIN `tabEvent Participants` ep ON e.name = ep.parent AND ep.email = %s
+		LEFT JOIN (
+			SELECT parent, GROUP_CONCAT(email) AS participant_emails_csv
+			FROM `tabEvent Participants`
+			GROUP BY parent
+		) AS ep_all ON ep_all.parent = e.name
 		WHERE (e.starts_on >= %s OR (%s >= e.starts_on AND %s < e.ends_on))
 		AND (e.owner = %s OR ep.email = %s)
 		AND e.status != 'Cancelled'
@@ -81,6 +87,10 @@ def _process_event_notifications_by_interval(interval):
 		(interval, current_user, current_time, current_time, current_time, current_user, current_user),
 		as_dict=True,
 	)
+
+	for event_data in all_events_data:
+		participant_emails_csv = event_data.pop("participant_emails_csv", None)
+		event_data["event_participants"] = _split_participant_emails(participant_emails_csv)
 
 	notifications = _process_unified_event_data(all_events_data, interval)
 
@@ -201,6 +211,7 @@ def _apply_global_notifications_to_events(events_without_notifications, interval
 				"owner": event.owner,
 				"description": event.description,
 				"all_day_event": event.all_day_event,
+				"event_participants": event.get("event_participants", []),
 			}
 			notifications.append(notification)
 
@@ -277,22 +288,36 @@ def _get_trigger_window_duration(interval):
 	return window_mapping.get(interval, {"hours": 1})
 
 
+def _split_participant_emails(participant_emails_csv):
+	"""Return a clean list of participant emails from a comma-separated string."""
+
+	if not participant_emails_csv:
+		return []
+
+	return [email.strip() for email in participant_emails_csv.split(",") if email and email.strip()]
+
+
 def _send_email_notification(notification, event_start, before_value, interval):
 	"""Send email notification for an event"""
 
 	try:
-		recipients = []
+		recipients = set()
 		subject = f"Event Reminder: {notification.subject}"
 
 		if notification.owner and notification.owner != "Administrator":
-			recipients.append(notification.owner)
+			recipients.add(notification.owner)
 
-		event_doc = frappe.get_doc("Event", notification.event_name)
-		for participant in event_doc.get("event_participants", []):
-			if hasattr(participant, "email") and participant.email:
-				recipients.append(participant.email)
+		participant_emails = notification.get("event_participants") or []
+		if participant_emails:
+			recipients.update(participant_emails)
+		else:
+			event_doc = frappe.get_doc("Event", notification.event_name)
+			for participant in event_doc.get("event_participants", []):
+				email = getattr(participant, "email", None)
+				if email:
+					recipients.add(email)
 
-		recipients = list(set(recipients))
+		recipients = [email for email in recipients if email]
 
 		if not recipients:
 			return
