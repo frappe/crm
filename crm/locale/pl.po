@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-11 11:49\n"
+"PO-Revision-Date: 2025-11-16 12:41\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -516,7 +516,7 @@ msgstr ""
 #: frontend/src/components/Kanban/KanbanSettings.vue:101
 #: frontend/src/components/Kanban/KanbanView.vue:46
 msgid "Apply"
-msgstr ""
+msgstr "Zastosuj"
 
 #. Label of the apply_on (Link) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json

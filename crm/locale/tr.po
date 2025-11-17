@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-11 11:49\n"
+"PO-Revision-Date: 2025-11-16 12:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -2754,7 +2754,7 @@ msgstr "Filtre"
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Filters"
-msgstr "Filtreler"
+msgstr ""
 
 #. Label of the first_name (Data) field in DocType 'CRM Deal'
 #. Label of the first_name (Data) field in DocType 'CRM Lead'
@@ -2855,7 +2855,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Friday"
-msgstr "Cuma"
+msgstr ""
 
 #. Label of the from (Data) field in DocType 'CRM Call Log'
 #. Label of the from (Data) field in DocType 'CRM Status Change Log'
@@ -2879,7 +2879,7 @@ msgstr ""
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "From User"
-msgstr "Kullanıcıdan"
+msgstr ""
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -3209,7 +3209,7 @@ msgstr "Entegrasyonlar"
 #: frontend/src/components/Layouts/AppSidebar.vue:529
 #: frontend/src/components/Layouts/AppSidebar.vue:532
 msgid "Introduction"
-msgstr "Tanıtım/Giriş"
+msgstr ""
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:33
 msgid "Invalid Account SID or Auth Token."
@@ -3350,7 +3350,7 @@ msgstr "JSON"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Job Title"
-msgstr "İş İlanı Başlığı"
+msgstr "İş Ünvanı"
 
 #: frontend/src/components/AssignToBody.vue:11
 #: frontend/src/components/Filter.vue:74 frontend/src/components/Filter.vue:107
@@ -3857,7 +3857,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Monday"
-msgstr "Pazartesi"
+msgstr ""
 
 #: crm/api/dashboard.py:691
 msgid "Month"
@@ -3922,7 +3922,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Naming Series"
-msgstr "Adlandırma Serisi"
+msgstr ""
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:99
 msgid "Nested conditions"
@@ -5001,7 +5001,7 @@ msgstr "Rol"
 #. Label of the route (Data) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Route"
-msgstr "Rota"
+msgstr ""
 
 #. Label of the route_name (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -5134,7 +5134,7 @@ msgstr "Hitap"
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Saturday"
-msgstr "Cumartesi"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:345
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:84
@@ -5441,7 +5441,7 @@ msgstr "Kaynak"
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:69
 msgid "Source Name"
-msgstr "Kaynak Adı"
+msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:46
 msgid "Source Type"
@@ -5492,7 +5492,7 @@ msgstr "Başlangıç Tarihi"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:234
 #: frontend/src/components/Modals/EventModal.vue:103
 msgid "Start Time"
-msgstr "Başlangıç Zamanı"
+msgstr ""
 
 #: frontend/src/composables/event.js:198
 msgid "Start and end time are required"
@@ -5560,7 +5560,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Sunday"
-msgstr "Pazar"
+msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:16
 msgid "Support / Sales"
@@ -5768,7 +5768,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Thursday"
-msgstr "Perşembe"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:227
 msgid "Time"
@@ -5896,7 +5896,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Tuesday"
-msgstr "Salı"
+msgstr ""
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:173
 msgid "Turn into a group"
@@ -6182,7 +6182,7 @@ msgstr "Website"
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Wednesday"
-msgstr "Çarşamba"
+msgstr ""
 
 #. Label of the weekly_off (Check) field in DocType 'CRM Holiday'
 #. Label of the weekly_off (Select) field in DocType 'CRM Holiday List'
