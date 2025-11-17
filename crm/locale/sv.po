@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-12 12:05\n"
+"PO-Revision-Date: 2025-11-16 12:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -2386,7 +2386,7 @@ msgstr "Slut Datum"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:242
 #: frontend/src/components/Modals/EventModal.vue:112
 msgid "End Time"
-msgstr "Slut Tid"
+msgstr "Slut Tid "
 
 #: frontend/src/composables/event.js:206
 msgid "End time should be after start time"
@@ -2577,7 +2577,7 @@ msgstr "Förväntad Affärsvärde erfordras."
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Expired"
-msgstr "Utgången"
+msgstr "Utgått"
 
 #: frontend/src/components/ViewControls.vue:203
 #: frontend/src/components/ViewControls.vue:251
@@ -3060,7 +3060,7 @@ msgstr "Helg Lista Namn"
 #. Label of the holidays (Table) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Holidays"
-msgstr "Helg Dagar"
+msgstr "Helger"
 
 #: frontend/src/components/Settings/Settings.vue:174
 msgid "Home Actions"
@@ -5866,7 +5866,7 @@ msgstr "Totalt"
 #. Label of the total_holidays (Int) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Total Holidays"
-msgstr "Totalt Helg Dagar"
+msgstr "Totalt Antal Helger"
 
 #. Description of the 'Net Total' (Currency) field in DocType 'CRM Deal'
 #. Description of the 'Net Total' (Currency) field in DocType 'CRM Lead'
@@ -5964,7 +5964,7 @@ msgstr "Twilio Inställningarna uppdaterade"
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Type"
-msgstr "Typ"
+msgstr "Typ "
 
 #: frontend/src/components/Calendar/Attendee.vue:233
 msgid "Type an email address to add attendee"

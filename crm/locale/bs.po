@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-09 09:35+0000\n"
-"PO-Revision-Date: 2025-11-12 12:05\n"
+"PO-Revision-Date: 2025-11-16 12:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -2879,7 +2879,7 @@ msgstr "Od Tipa"
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "From User"
-msgstr "Od korisnika"
+msgstr "Od Korisnika"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -3209,7 +3209,7 @@ msgstr "Integracije"
 #: frontend/src/components/Layouts/AppSidebar.vue:529
 #: frontend/src/components/Layouts/AppSidebar.vue:532
 msgid "Introduction"
-msgstr "Uvod"
+msgstr "Introdukcija"
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:33
 msgid "Invalid Account SID or Auth Token."
@@ -3922,7 +3922,7 @@ msgstr "Ime je obavezno"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Naming Series"
-msgstr "Imenovanje serije"
+msgstr "Imenovanje Serije"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:99
 msgid "Nested conditions"
@@ -5498,7 +5498,7 @@ msgstr "Datum Početka"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:234
 #: frontend/src/components/Modals/EventModal.vue:103
 msgid "Start Time"
-msgstr "Vrijeme Početka"
+msgstr "Počni Vrijeme"
 
 #: frontend/src/composables/event.js:198
 msgid "Start and end time are required"
