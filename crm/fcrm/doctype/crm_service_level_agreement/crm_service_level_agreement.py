@@ -111,6 +111,7 @@ class CRMServiceLevelAgreement(Document):
 				{
 					"response_time": doc.last_response_time,
 					"responded_on": doc.last_responded_on,
+					"status": "Failed" if self.is_first_response_failed(doc) else "Fulfilled",
 				},
 			)
 		elif doc.communication_status != self.get_default_priority():
@@ -121,6 +122,7 @@ class CRMServiceLevelAgreement(Document):
 				{
 					"response_time": doc.last_response_time,
 					"responded_on": doc.last_responded_on,
+					"status": "Failed" if self.is_rolling_response_failed(doc) else "Fulfilled",
 				},
 			)
 
