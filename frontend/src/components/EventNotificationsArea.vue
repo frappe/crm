@@ -6,7 +6,7 @@
           <template #header="{ opened, toggle }">
             <div class="flex items-center justify-between">
               <div
-                class="flex text-ink-gray-9 max-w-fit cursor-pointer items-center gap-2 text-base"
+                class="flex text-ink-gray-6 max-w-fit cursor-pointer items-center gap-2 text-base"
                 @click="toggle()"
               >
                 <FeatherIcon
@@ -17,16 +17,7 @@
                 <span>
                   {{ __(event.type) }}
                 </span>
-                <Badge
-                  :label="event.count"
-                  :theme="
-                    event.type === 'Ongoing'
-                      ? 'green'
-                      : event.type === 'Starting Now'
-                        ? 'orange'
-                        : 'blue'
-                  "
-                />
+                <Badge :label="event.count" variant="ghost" size="sm" />
               </div>
             </div>
           </template>
@@ -40,32 +31,39 @@
             >
               <div class="flex items-stretch gap-1.5 flex-1 min-w-0">
                 <div
-                  class="w-[2px] rounded shrink-0"
-                  :style="{ backgroundColor: e.color || '#30A66D' }"
-                />
-                <div
-                  class="flex flex-col gap-0.5 text-ink-gray-8 text-base truncate"
+                  class="flex flex-col justify-center items-center shadow bg-surface-white size-8 rounded-[8px]"
                 >
-                  <div>{{ e.title }}</div>
-                  <div class="text-xs text-ink-gray-5">
+                  <div
+                    class="uppercase text-[8px] font-semibold text-ink-red-4"
+                  >
+                    {{ eventDate(e).month }}
+                  </div>
+                  <div class="text-base font-semibold -mt-0.5">
+                    {{ eventDate(e).day }}
+                  </div>
+                </div>
+                <div class="flex flex-col gap-0.5 text-base truncate">
+                  <div class="flex items-center gap-1">
+                    <div class="flex justify-center items-center size-4">
+                      <div
+                        class="size-[6px] rounded shrink-0"
+                        :style="{ backgroundColor: e.color || '#30A66D' }"
+                      />
+                    </div>
+                    <div class="font-medium text-ink-gray-7">{{ e.title }}</div>
+                  </div>
+                  <div class="text-ink-gray-6 ml-1">
                     {{ formattedDateTime(e) }}
                   </div>
                 </div>
               </div>
 
               <div class="flex items-center gap-2 flex-shrink-0">
-                <span
-                  class="text-sm min-w-[50px] text-right"
-                  :class="
-                    event.type === 'Ongoing'
-                      ? 'text-ink-green-3'
-                      : event.type === 'Starting Now'
-                        ? 'text-ink-amber-3'
-                        : 'text-ink-gray-5'
-                  "
-                >
-                  {{ e.date }}
-                </span>
+                <MultipleAvatar
+                  v-if="e.participants?.length > 1"
+                  :avatars="e.participants"
+                  size="sm"
+                />
               </div>
             </div>
           </div>
@@ -89,9 +87,11 @@
   </div>
 </template>
 <script setup>
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import EventIcon from '@/components/Icons/EventIcon.vue'
 import { useEventNotifications } from '@/data/notifications'
 import { notificationsStore } from '@/stores/notifications'
+import { dayjs } from 'frappe-ui'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -165,19 +165,19 @@ const computedEvents = computed(() => {
 
   return [
     {
-      type: 'Starting Now',
+      type: 'Starting now',
       collapsed: false,
       count: startingNowEvents.length,
       items: startingNowEvents,
     },
     {
-      type: 'Ongoing',
+      type: 'Ongoing events',
       collapsed: false,
       count: ongoingEvents.length,
       items: ongoingEvents,
     },
     {
-      type: 'Upcoming',
+      type: 'Upcoming events',
       collapsed: false,
       count: upcomingEvents.length,
       items: upcomingEvents,
@@ -204,5 +204,15 @@ const formattedDateTime = (e) => {
   }
 
   return `${e.fromTime} - ${e.toTime}`
+}
+
+function eventDate(e) {
+  // return date and Month abbreviation return { month: 'Jun', day: '5' }
+
+  const dateObj = dayjs(e.fromDate)
+  return {
+    day: dateObj.format('DD'),
+    month: dateObj.format('MMM'),
+  }
 }
 </script>
