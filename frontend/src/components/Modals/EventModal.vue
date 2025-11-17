@@ -271,7 +271,10 @@ const { $dialog } = globalStore()
 
 const show = defineModel()
 
-const { eventsResource } = useEvent(props.doctype, props.docname)
+const { eventsResource } = useEvent({
+  doctype: props.doctype,
+  docname: props.docname,
+})
 
 const title = ref(null)
 const error = ref(null)
