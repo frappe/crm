@@ -70,7 +70,7 @@
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <div v-if="_event.location" class="px-4.5 py-2">
         <div class="flex gap-3 text-ink-gray-7">
-          <LocationIcon class="size-4" />
+          <MapIcon class="size-4" />
           <div>{{ __(_event.location) }}</div>
         </div>
       </div>
@@ -298,13 +298,14 @@
           {{ __('GMT+5:30') }}
         </div> -->
       </div>
+      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
       <div
-        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
+        class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
       >
-        <div class="">{{ __('Date') }}</div>
-        <div class="flex items-center gap-x-1.5">
+        <CalendarIcon class="size-4" />
+        <div class="flex w-full items-center gap-x-1.5">
           <DatePicker
-            :class="['[&_input]:w-[216px]']"
+            class="w-full"
             variant="outline"
             :value="_event.fromDate"
             :format="'MMM D, YYYY'"
@@ -324,20 +325,20 @@
       </div>
       <div
         v-if="!_event.isFullDay"
-        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
+        class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
       >
-        <div class="w-20">{{ __('Time') }}</div>
-        <div class="flex items-center gap-x-1.5">
+        <FeatherIcon name="clock" class="size-4" />
+        <div class="flex w-full items-center gap-x-1.5">
           <TimePicker
             v-if="!_event.isFullDay"
-            class="max-w-[105px]"
+            class="w-full"
             variant="outline"
             :modelValue="_event.fromTime"
             :placeholder="__('Start Time')"
             @update:modelValue="(time) => updateTime(time, true)"
           />
           <TimePicker
-            class="max-w-[105px]"
+            class="w-full"
             variant="outline"
             :modelValue="_event.toTime"
             :options="toOptions"
@@ -347,115 +348,41 @@
           />
         </div>
       </div>
-      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <div
-        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
-      >
-        <div class="">{{ __('Visibility') }}</div>
-        <div class="flex items-center gap-x-1.5">
-          <FormControl
-            class="w-[216px]"
-            type="select"
-            :options="[
-              {
-                label: __('Private'),
-                value: 'Private',
-              },
-              {
-                label: __('Public'),
-                value: 'Public',
-              },
-            ]"
-            v-model="_event.eventType"
-            variant="outline"
-            :placeholder="__('Private or Public')"
-            @change="() => sync()"
-          />
-        </div>
+      <div class="flex justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7">
+        <BellIcon class="size-4 mt-1.5" />
+        <EventNotifications
+          class="w-full"
+          v-model="notifications"
+          :isAllDay="_event.isFullDay"
+        />
       </div>
-      <div
-        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
-      >
-        <div class="">{{ __('Link') }}</div>
-        <div class="flex items-center gap-x-1.5">
-          <FormControl
-            class="w-[216px]"
-            type="select"
-            :options="[
-              {
-                label: '',
-                value: '',
-              },
-              {
-                label: __('Lead'),
-                value: 'CRM Lead',
-              },
-              {
-                label: __('Deal'),
-                value: 'CRM Deal',
-              },
-            ]"
-            v-model="_event.referenceDoctype"
-            variant="outline"
-            :placeholder="__('Add Lead or Deal')"
-            @change="
-              () => {
-                _event.referenceDocname = ''
-                sync()
-              }
-            "
-          />
-        </div>
+      <div class="flex justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7">
+        <LeadsIcon class="h-4 mt-1.5" />
+        <Attendee
+          class="w-full"
+          size="sm"
+          v-model="peoples"
+          :validate="validateEmail"
+          :error-message="
+            (value) => __('{0} is an invalid email address', [value])
+          "
+        />
       </div>
-      <div
-        v-if="_event.referenceDoctype"
-        class="flex items-center justify-between px-4.5 py-[7px] text-ink-gray-7"
-      >
-        <div class="">
-          {{ _event.referenceDoctype == 'CRM Lead' ? __('Lead') : __('Deal') }}
-        </div>
-        <div class="flex items-center gap-x-1.5">
-          <Link
-            class="w-[220px]"
-            v-model="_event.referenceDocname"
-            :doctype="_event.referenceDoctype"
-            :filters="
-              _event.referenceDoctype === 'CRM Lead' ? { converted: 0 } : {}
-            "
-            variant="outline"
-            @update:model-value="sync"
-          />
-        </div>
-      </div>
-      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <EventNotifications
-        class="px-4.5 py-[7px]"
-        v-model="notifications"
-        :isAllDay="_event.isFullDay"
-      />
-      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <Attendee
-        class="px-4.5 py-[7px]"
-        size="md"
-        v-model="peoples"
-        :validate="validateEmail"
-        :error-message="
-          (value) => __('{0} is an invalid email address', [value])
-        "
-      />
-      <div class="mx-4.5 my-2.5 space-y-2">
+      <div class="flex gap-3 justify-between items-center mx-4.5 my-2.5">
+        <MapIcon class="size-4 text-ink-gray-7" />
         <TextInput
+          class="w-full"
           v-model="_event.location"
           :placeholder="__('Add location')"
           variant="outline"
-          size="md"
+          size="sm"
         />
       </div>
-      <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <div class="px-4.5 py-3">
-        <div class="flex items-center gap-x-2 border rounded py-1">
+      <div class="flex justify-between gap-3 mx-4.5 my-2.5 text-ink-gray-7">
+        <DescriptionIcon class="size-4 mt-1.5" />
+        <div class="flex w-full items-center gap-x-2 border rounded py-1">
           <TextEditor
-            editor-class="!prose-sm overflow-auto min-h-[22px] max-h-32 px-2.5 rounded placeholder-ink-gray-4 focus:bg-surface-white focus:ring-0 text-ink-gray-8 transition-colors"
+            editor-class="!prose-sm !leading-[1.13rem] overflow-auto px-2.5 rounded placeholder-ink-gray-4 focus:bg-surface-white focus:ring-0 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_event.description"
             @change="
@@ -468,6 +395,102 @@
           />
         </div>
       </div>
+
+      <div class="my-2.5 border-t border-outline-gray-1" />
+      <CollapsibleSection
+        headerClass="mx-4.5 my-2.5"
+        :opened="false"
+        :label="__('Linked with')"
+      >
+        <div
+          class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
+        >
+          <FeatherIcon name="plus-circle" class="size-4" />
+          <div class="flex items-center gap-x-1.5 w-full">
+            <FormControl
+              class="w-full"
+              type="select"
+              :options="[
+                {
+                  label: '',
+                  value: '',
+                },
+                {
+                  label: __('Lead'),
+                  value: 'CRM Lead',
+                },
+                {
+                  label: __('Deal'),
+                  value: 'CRM Deal',
+                },
+              ]"
+              v-model="_event.referenceDoctype"
+              variant="outline"
+              :placeholder="__('Add Lead or Deal')"
+              @change="
+                () => {
+                  _event.referenceDocname = ''
+                  sync()
+                }
+              "
+            />
+          </div>
+        </div>
+        <div
+          v-if="_event.referenceDoctype"
+          class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
+        >
+          <component
+            :is="_event.referenceDoctype == 'CRM Lead' ? LeadsIcon : DealsIcon"
+            class="size-4"
+          />
+          <div class="flex items-center gap-x-1.5 w-full">
+            <Link
+              class="w-full"
+              v-model="_event.referenceDocname"
+              :doctype="_event.referenceDoctype"
+              :filters="
+                _event.referenceDoctype === 'CRM Lead' ? { converted: 0 } : {}
+              "
+              variant="outline"
+              @update:model-value="sync"
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+      <div class="my-2.5 border-t border-outline-gray-1" />
+      <CollapsibleSection
+        headerClass="mx-4.5 my-2.5"
+        :opened="false"
+        :label="__('More options')"
+      >
+        <div
+          class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
+        >
+          <ShieldIcon class="size-4" />
+          <div class="flex items-center gap-x-1.5 w-full">
+            <FormControl
+              class="w-full"
+              type="select"
+              :options="[
+                {
+                  label: __('Private'),
+                  value: 'Private',
+                },
+                {
+                  label: __('Public'),
+                  value: 'Public',
+                },
+              ]"
+              v-model="_event.eventType"
+              variant="outline"
+              :placeholder="__('Private or Public')"
+              @change="() => sync()"
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+      <div class="my-2.5 border-t border-outline-gray-1" />
     </div>
 
     <div v-if="mode != 'details'" class="px-4.5 py-3">
@@ -522,8 +545,9 @@
 </template>
 
 <script setup>
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import BellIcon from '@/components/Icons/BellIcon.vue'
-import LocationIcon from '@/components/Icons/LocationIcon.vue'
+import MapIcon from '@/components/Icons/MapIcon.vue'
 import ShieldIcon from '@/components/Icons/ShieldIcon.vue'
 import PeopleIcon from '@/components/Icons/PeopleIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
@@ -564,6 +588,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
+import FeatherIcon from 'frappe-ui/src/components/FeatherIcon.vue'
 
 const props = defineProps({
   mode: {

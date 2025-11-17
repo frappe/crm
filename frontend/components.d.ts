@@ -200,6 +200,7 @@ declare module 'vue' {
     LucideTrash2: typeof import('~icons/lucide/trash2')['default']
     LucideX: typeof import('~icons/lucide/x')['default']
     LucideZap: typeof import('~icons/lucide/zap')['default']
+    MapIcon: typeof import('./src/components/Icons/MapIcon.vue')['default']
     MarkAsDoneIcon: typeof import('./src/components/Icons/MarkAsDoneIcon.vue')['default']
     MaximizeIcon: typeof import('./src/components/Icons/MaximizeIcon.vue')['default']
     MenuIcon: typeof import('./src/components/Icons/MenuIcon.vue')['default']
