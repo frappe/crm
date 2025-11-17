@@ -1,50 +1,45 @@
 <template>
   <Teleport to="body">
-    <div v-if="visibleAlerts.length > 0" class="fixed top-4 right-4 z-50 w-96">
+    <div
+      v-if="visibleAlerts.length > 0"
+      class="fixed bottom-4 right-4 z-50 w-96"
+    >
       <TransitionGroup name="popup" tag="div" class="space-y-2">
         <div
           v-for="alert in visibleAlerts"
           :key="alert.id"
-          class="group flex flex-col relative bg-surface-gray-6 rounded-lg shadow-2xl"
+          class="group flex flex-col relative bg-surface-cards rounded-lg drop-shadow-2xl shadow-sm"
         >
           <div class="flex justify-between items-center gap-1 p-3">
             <div class="flex items-stretch space-x-2">
-              <div
-                class="w-[2px] rounded shrink-0"
-                :style="{
-                  backgroundColor:
-                    CalendarColorMap[alert.notification.color]?.color ||
-                    '#30A66D',
-                }"
-              />
-              <div class="flex flex-col">
+              <div>
+                <CalendarIcon class="size-4 text-cyan-500" />
+              </div>
+              <div class="flex flex-col text-base">
                 <div
-                  class="text-base font-semibold text-ink-white mb-1 hover:text-ink-gray-2 cursor-pointer"
+                  class="font-medium text-ink-gray-8 mb-1 cursor-pointer"
                   @click="openEvent(alert)"
                 >
                   {{ alert.notification.subject || 'Event Notification' }}
                 </div>
-                <div class="text-ink-gray-4 text-sm">
+                <div class="text-ink-gray-6">
                   {{ formatEventTime(alert.notification) }}
                 </div>
               </div>
             </div>
 
-            <div
-              class="flex gap-1 h-fit items-center text-sm text-ink-gray-8 bg-surface-gray-3 rounded-full px-2 py-1 cursor-pointer"
+            <MultipleAvatar
+              v-if="getParticipants(alert.notification)?.length > 0"
+              :avatars="getParticipants(alert.notification)"
+              size="md"
               @click="openEvent(alert)"
-            >
-              <div>
-                <LucideZap class="size-3 text-ink-amber-3 fill-amber-500" />
-              </div>
-              <div>{{ getTimeUntilEvent(alert.notification) }}</div>
-            </div>
+            />
           </div>
           <Button
-            class="absolute -top-2 -left-2 shadow-sm shadow-gray-500 ring-inset bg-surface-gray-6 group-hover:bg-surface-gray-6 text-ink-white !p-0 !size-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+            class="absolute -top-2 -left-2 shadow ring-inset !bg-surface-cards hover:!bg-surface-gray-1 text-ink-gray-3 !p-0 !size-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             @click="completeAlert(alert.id)"
           >
-            <FeatherIcon name="x" class="size-3" />
+            <FeatherIcon name="x" class="size-4 text-ink-gray-3 stroke-2" />
           </Button>
         </div>
       </TransitionGroup>
@@ -54,11 +49,14 @@
 
 <script setup>
 import { useEventNotificationAlert } from '@/data/notifications'
-import { Button, dayjs, CalendarColorMap } from 'frappe-ui'
+import { usersStore } from '@/stores/users'
+import { Button, dayjs } from 'frappe-ui'
 import { computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+const { getUser } = usersStore()
 
 const {
   eventNotificationAlerts,
@@ -98,55 +96,24 @@ function formatEventTime(notification) {
   return ''
 }
 
-function getTimeUntilEvent(notification) {
-  if (notification.starts_on) {
-    const eventStartTime = dayjs(notification.starts_on)
-    const eventEndTime = notification.ends_on
-      ? dayjs(notification.ends_on)
-      : null
-    const now = dayjs()
+function getParticipants(notification) {
+  const participants = notification.event_participants?.map((p) => p) || []
 
-    // Check if event is currently ongoing
-    if (
-      eventEndTime &&
-      now.isAfter(eventStartTime) &&
-      now.isBefore(eventEndTime)
-    ) {
-      const minutesUntilEnd = eventEndTime.diff(now, 'minute')
+  if (!participants.length) return []
 
-      if (minutesUntilEnd <= 0) {
-        return __('Ending now')
-      } else if (minutesUntilEnd < 60) {
-        return __('Ends in {0} min', [minutesUntilEnd])
-      } else {
-        const hoursUntilEnd = Math.floor(minutesUntilEnd / 60)
-        const remainingMinutes = minutesUntilEnd % 60
-        if (remainingMinutes === 0) {
-          return __('Ends in {0}h', [hoursUntilEnd])
-        } else {
-          return __('Ends in {0}h {1}m', [hoursUntilEnd, remainingMinutes])
-        }
-      }
-    }
-
-    // Event hasn't started yet
-    const diffMinutes = eventStartTime.diff(now, 'minute')
-
-    if (diffMinutes <= 0) {
-      return __('Starting now')
-    } else if (diffMinutes < 60) {
-      return __('In {0} minutes', [diffMinutes])
-    } else {
-      const diffHours = Math.floor(diffMinutes / 60)
-      const remainingMinutes = diffMinutes % 60
-      if (remainingMinutes === 0) {
-        return __('In {0} hour{1}', [diffHours, diffHours > 1 ? 's' : ''])
-      } else {
-        return __('In {0}h {1}m', [diffHours, remainingMinutes])
-      }
-    }
+  if (notification.owner && !participants.includes(notification.owner)) {
+    participants.push(notification.owner)
   }
-  return __('Soon')
+
+  return (
+    participants.map((p) => {
+      return {
+        label: getUser(p).full_name || p,
+        image: getUser(p).user_image || '',
+        name: p,
+      }
+    }) || []
+  )
 }
 
 let checkInterval
