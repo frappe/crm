@@ -1,5 +1,5 @@
 <template>
-  <div v-if="events.data?.length" class="flex flex-col w-full overflow-y-auto">
+  <div v-if="events?.length" class="flex flex-col w-full overflow-y-auto">
     <template v-for="(event, i) in computedEvents" :key="event.type">
       <div v-if="event.count" class="p-3">
         <CollapsibleSection :opened="!event.collapsed">
@@ -113,15 +113,53 @@ function handleEventClick(e) {
 }
 
 const computedEvents = computed(() => {
-  if (!events.data?.length) return []
+  if (!events.value?.length) return []
 
-  const ongoingEvents = events.data.filter((event) => event.type === 'ongoing')
+  let mappedEvents = events.value.map((event) => {
+    let type = 'upcoming'
 
-  const startingNowEvents = events.data.filter(
+    // Starting Now: Event is within [now - 5 min, now + 5 min]
+    if (
+      dayjs(event.starts_on).isBetween(
+        dayjs().subtract(5, 'minute'),
+        dayjs().add(5, 'minute'),
+      )
+    ) {
+      type = 'startingNow'
+    }
+    // Upcoming: Event is greater than now + 5 min
+    else if (dayjs(event.starts_on).isAfter(dayjs().add(5, 'minute'))) {
+      type = 'upcoming'
+    }
+    // Ongoing: Event is currently happening (now is between starts_on + 5 min and ends_on)
+    else if (
+      dayjs(event.starts_on).isBefore(dayjs().add(5, 'minute')) &&
+      dayjs(event.ends_on).isAfter(dayjs())
+    ) {
+      type = 'ongoing'
+    }
+
+    return {
+      id: event.name,
+      title: event.subject,
+      fromDate: dayjs(event.starts_on).format('YYYY-MM-DD'),
+      fromTime: dayjs(event.starts_on).format('h:mm a'),
+      toTime: dayjs(event.ends_on).format('h:mm a'),
+      color: event.color,
+      allDay: event.all_day,
+      owner: event.owner,
+      participants: event.participants,
+      type,
+    }
+  })
+
+  const ongoingEvents = mappedEvents.filter((event) => event.type === 'ongoing')
+
+  const startingNowEvents = mappedEvents.filter(
     (event) => event.type === 'startingNow',
   )
 
-  const upcomingEvents = events.data.filter(
+  const upcomingEvents = mappedEvents.filter(
     (event) => event.type === 'upcoming',
   )
 
