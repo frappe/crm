@@ -13,6 +13,15 @@ no_cache = 1
 
 
 def get_context():
+	# Check CRM app permission
+	from crm.api import check_app_permission
+
+	if not check_app_permission():
+		frappe.throw(
+			"You do not have permission to access CRM",
+			frappe.PermissionError
+		)
+
 	frappe.db.commit()
 	context = frappe._dict()
 	context.boot = get_boot()
