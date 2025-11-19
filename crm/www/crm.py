@@ -18,7 +18,7 @@ def get_context():
 
 	if not check_app_permission():
 		frappe.throw(
-			"You do not have permission to access CRM",
+			_("You do not have permission to access Frappe CRM"),
 			frappe.PermissionError
 		)
 
