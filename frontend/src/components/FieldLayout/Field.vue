@@ -181,6 +181,15 @@
       @change="fieldChange($event.target.value, field)"
     />
     <FormattedInput
+      v-else-if="field.fieldtype === 'Duration'"
+      type="number"
+      :placeholder="getPlaceholder(field)"
+      :value="data[field.fieldname] || 0"
+      :disabled="Boolean(field.read_only)"
+      :description="field.description"
+      @change="fieldChange($event.target.value, field)"
+    />
+    <FormattedInput
       v-else-if="field.fieldtype === 'Percent'"
       type="text"
       :value="getFormattedPercent(field.fieldname, data)"
