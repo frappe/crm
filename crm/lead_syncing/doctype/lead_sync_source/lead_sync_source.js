@@ -9,7 +9,7 @@ frappe.ui.form.on("Lead Sync Source", {
             });
         });
 	},
-	// added a filter to show form only liked to pages
+	// added a filter to show form only linked to pages
 	facebook_page(frm) {
         frm.set_query("facebook_lead_form", function () {
             return {
