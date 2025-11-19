@@ -19,6 +19,7 @@ class CRMRollingResponseTime(Document):
 		parenttype: DF.Data
 		responded_on: DF.Datetime | None
 		response_time: DF.Duration | None
+		status: DF.Literal["Fulfilled", "Failed"]
 	# end: auto-generated types
 
 	pass
