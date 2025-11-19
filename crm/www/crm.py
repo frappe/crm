@@ -13,7 +13,6 @@ no_cache = 1
 
 
 def get_context():
-	# Check CRM app permission
 	from crm.api import check_app_permission
 
 	if not check_app_permission():
