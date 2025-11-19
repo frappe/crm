@@ -11,9 +11,8 @@ from crm.integrations.api import get_contact_lead_or_deal_from_number
 def validate(doc, method):
 	phone_number = doc.get("from") if doc.type == "Incoming" else doc.get("to")
 	if phone_number:
-		contact_info = get_contact_lead_or_deal_from_number(phone_number)
-		if contact_info:
-			name, doctype = contact_info
+		name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+		if doctype and name is not None:
 			doc.reference_doctype = doctype
 			doc.reference_name = name
 
