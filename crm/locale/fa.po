@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-19 13:57\n"
+"PO-Revision-Date: 2025-11-20 14:09\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -128,7 +128,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:95
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:95
 msgid "<p>Dear {{ lead_name }},</p>\\n\\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\\n\\n<p>Thanks,</p>\\n<p>Frappé</p>"
-msgstr ""
+msgstr "<p>عزیز {{ lead_name }}،</p>\\n\\n<p>این یک یادآوری برای پرداخت {{ grand_total }} است.</p>\\n\\n<p>متشکرم،</p>\\n<p>Frappé</p>"
 
 #. Header text in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -4401,7 +4401,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Ongoing"
-msgstr ""
+msgstr "در حال انجام"
 
 #: crm/api/dashboard.py:190
 #: frontend/src/components/Dashboard/AddChartModal.vue:77
