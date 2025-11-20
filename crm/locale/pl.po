@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-18 13:57\n"
+"PO-Revision-Date: 2025-11-20 14:09\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -6380,7 +6380,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:623
 msgid "Yesterday"
-msgstr ""
+msgstr "Wczoraj"
 
 #: crm/api/whatsapp.py:44 crm/api/whatsapp.py:189 crm/api/whatsapp.py:203
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
