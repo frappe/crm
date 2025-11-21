@@ -136,6 +136,12 @@
               </template>
             </Draggable>
             <div
+              v-if="column.data && column.data.length === 0"
+              class="flex-1 flex items-center justify-center py-12 text-ink-gray-4 text-sm"
+            >
+              {{ __('No items') }}
+            </div>
+            <div
               v-if="column.column.count < column.column.all_count"
               class="flex items-center justify-center"
             >
