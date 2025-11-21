@@ -50,7 +50,10 @@
                   </div>
                 </template>
               </Popover>
-              <div class="text-ink-gray-9">{{ column.column.name }}</div>
+              <div class="text-ink-gray-9">
+                {{ column.column.name }}
+                <span class="text-sm text-ink-gray-5">({{ column.column.all_count }})</span>
+              </div>
             </div>
             <div class="flex">
               <Dropdown :options="actions(column)">
