@@ -34,7 +34,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Mention\nTask\nAssignment\nWhatsApp",
+   "options": "Mention\nTask\nAssignment\nWhatsApp\nEmail",
    "reqd": 1
   },
   {
@@ -116,7 +116,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-23 19:34:08.635305",
+ "modified": "2025-10-28 16:48:35.523319",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",
@@ -159,6 +159,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
