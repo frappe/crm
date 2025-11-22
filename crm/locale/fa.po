@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-20 14:09\n"
+"PO-Revision-Date: 2025-11-22 14:44\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -1700,7 +1700,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:555 frontend/src/pages/Lead.vue:402
 #: frontend/src/pages/MobileDeal.vue:445 frontend/src/pages/MobileLead.vue:352
 msgid "Data"
-msgstr "داده ها"
+msgstr "داده‌ها"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -2757,7 +2757,7 @@ msgstr ""
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:38
 #: frontend/src/components/Modals/EditValueModal.vue:5
 msgid "Field"
-msgstr "رشته"
+msgstr "فیلد"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
 #: frontend/src/components/Kanban/KanbanSettings.vue:48
