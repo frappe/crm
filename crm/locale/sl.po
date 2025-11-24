@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-23 14:46\n"
+"PO-Revision-Date: 2025-11-24 15:07\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -1523,7 +1523,7 @@ msgstr ""
 #. Label of the converted (Check) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Converted"
-msgstr ""
+msgstr "Pretvorjeno"
 
 #: frontend/src/components/ListBulkActions.vue:96
 msgid "Converted successfully"
@@ -2024,7 +2024,7 @@ msgstr ""
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount Amount"
-msgstr ""
+msgstr "Znesek Popusta"
 
 #. Label of the dt (Link) field in DocType 'CRM Form Script'
 #. Label of the dt (Link) field in DocType 'CRM Global Settings'
@@ -3993,14 +3993,14 @@ msgstr ""
 #. Label of the net_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Net Amount"
-msgstr ""
+msgstr "Neto Znesek"
 
 #. Label of the net_total (Currency) field in DocType 'CRM Deal'
 #. Label of the net_total (Currency) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Net Total"
-msgstr ""
+msgstr "Neto Skupaj"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:76
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
@@ -4817,7 +4817,7 @@ msgstr ""
 #. Label of the qty (Float) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Quantity"
-msgstr ""
+msgstr "Količina"
 
 #. Label of the questions (Table) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
@@ -4850,7 +4850,7 @@ msgstr ""
 #. Label of the rate (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Rate"
-msgstr ""
+msgstr "Cena"
 
 #. Label of the read (Check) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5373,7 +5373,7 @@ msgstr ""
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Series"
-msgstr ""
+msgstr "Serija Poimenovanja"
 
 #. Label of the service_provider (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -5815,7 +5815,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Territory"
-msgstr ""
+msgstr "Ozemlje"
 
 #. Label of the territory_manager (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
