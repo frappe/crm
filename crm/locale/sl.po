@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-24 15:07\n"
+"PO-Revision-Date: 2025-11-25 15:11\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -1255,7 +1255,7 @@ msgstr ""
 #. Label of the clear_table (Button) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Clear Table"
-msgstr ""
+msgstr "Počisti Tabelo"
 
 #: frontend/src/components/Filter.vue:21 frontend/src/components/Filter.vue:146
 msgid "Clear all Filter"
@@ -2998,7 +2998,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:203
 msgid "Helpdesk"
-msgstr ""
+msgstr "Helpdesk"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
@@ -3436,7 +3436,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:108
 msgid "Last"
-msgstr ""
+msgstr "Zadnji"
 
 #: frontend/src/components/Filter.vue:615
 msgid "Last 6 Months"
@@ -4386,7 +4386,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
 msgid "Old Condition"
-msgstr ""
+msgstr "Staro stanje"
 
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
