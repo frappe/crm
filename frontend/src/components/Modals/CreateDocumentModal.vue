@@ -127,7 +127,7 @@ async function create() {
           error.value = err.error.messages?.[0]
         }
       },
-    },
+    }
   )
 
   loading.value = false
@@ -143,7 +143,71 @@ watch(
     nextTick(() => {
       _data.doc = { ...props.data }
     })
+  }
+)
+
+const unwatchers = []
+const allFields = computed(() => {
+  if (!tabs.data) return []
+  const fields = []
+  tabs.data.forEach((tab) => {
+    tab?.sections?.forEach((section) => {
+      section?.columns?.forEach((column) => {
+        if (column?.fields) {
+          fields.push(...column.fields)
+        }
+      })
+    })
+  })
+  return fields
+})
+watch(
+  () => tabs.data,
+  (layout) => {
+    // cleanup old watchers
+    unwatchers.forEach((unwatch) => unwatch())
+    unwatchers.length = 0
+    if (!layout) return
+    const fieldsWithFetchFrom = allFields.value.filter((f) => f.fetch_from)
+    fieldsWithFetchFrom.forEach((targetField) => {
+      const [linkFieldName, sourceFieldName] = targetField.fetch_from.split('.')
+      if (!linkFieldName || !sourceFieldName) return
+      // Find the link field to get the DocType (options)
+      const linkField = allFields.value.find(
+        (f) => f.fieldname === linkFieldName
+      )
+      if (!linkField || !linkField.options) {
+        console.warn(
+          `Could not find link field ${linkFieldName} for fetch_from in ${targetField.fieldname}`
+        )
+        return
+      }
+      const linkDocType = linkField.options
+      const unwatch = watch(
+        () => _data.doc[linkFieldName],
+        async (newValue) => {
+          if (!newValue) {
+            _data.doc[targetField.fieldname] = null
+            return
+          }
+          try {
+            const r = await call('frappe.client.get_value', {
+              doctype: linkDocType,
+              filters: { name: newValue },
+              fieldname: sourceFieldName,
+            })
+            if (r && r[sourceFieldName] !== undefined) {
+              _data.doc[targetField.fieldname] = r[sourceFieldName]
+            }
+          } catch (e) {
+            console.error('Error fetching value', e)
+          }
+        }
+      )
+      unwatchers.push(unwatch)
+    })
   },
+  { immediate: true }
 )
 
 function openQuickEntryModal() {
