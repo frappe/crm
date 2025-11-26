@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-25 15:11\n"
+"PO-Revision-Date: 2025-11-26 15:43\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -4915,7 +4915,7 @@ msgstr ""
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:97
 msgid "Reject"
-msgstr ""
+msgstr "Zavrni"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:163
 msgid "Reject call"
