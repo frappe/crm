@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-26 15:43\n"
+"PO-Revision-Date: 2025-11-27 15:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -405,7 +405,7 @@ msgstr "Dodaj nalogo"
 #. Label of the add_to_holidays (Button) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Add to Holidays"
-msgstr ""
+msgstr "Dodaj v Praznike"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:439
 msgid "Add your first comment"
@@ -3846,7 +3846,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:547
 msgid "Masters"
-msgstr ""
+msgstr "Nastavitve"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:209
 #: frontend/src/components/Modals/EventModal.vue:86
@@ -5633,7 +5633,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:469
 #: frontend/src/pages/Organization.vue:501
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. Label of the status_change_log (Table) field in DocType 'CRM Deal'
 #. Label of the status_change_log (Table) field in DocType 'CRM Lead'
@@ -5737,7 +5737,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "System Manager"
-msgstr ""
+msgstr "Voditelj Sistema"
 
 #: frontend/src/components/EmailEditor.vue:22
 msgid "TO"
