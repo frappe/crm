@@ -117,6 +117,7 @@ def get_contact_lead_or_deal_from_number(number):
 			doctype = "CRM Deal"
 			docname = contact.get("deal")
 		return docname, doctype
+	return None, None
 
 @frappe.whitelist()
 def get_contact_by_phone_number(phone_number):
