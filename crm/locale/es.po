@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-18 13:57\n"
+"PO-Revision-Date: 2025-11-27 15:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -186,7 +186,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.js:7
 msgid "Accept Invitation"
-msgstr ""
+msgstr "Aceptar invitación"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:155
 msgid "Accept call"
@@ -200,7 +200,7 @@ msgstr "Aceptado"
 #. Label of the accepted_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Accepted At"
-msgstr ""
+msgstr "Aceptado a las"
 
 #: frontend/src/pages/NotPermitted.vue:7
 msgid "Access Denied"
@@ -5921,7 +5921,7 @@ msgstr "Campo de título"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:545
 #: frontend/src/components/Modals/EventModal.vue:320
 msgid "Title is required"
-msgstr ""
+msgstr "El título es obligatorio"
 
 #. Label of the to (Data) field in DocType 'CRM Call Log'
 #. Label of the to (Data) field in DocType 'CRM Status Change Log'
