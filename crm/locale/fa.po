@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-11-28 15:49\n"
+"PO-Revision-Date: 2025-11-29 15:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -204,7 +204,7 @@ msgstr "پذیرفته شده در"
 
 #: frontend/src/pages/NotPermitted.vue:7
 msgid "Access Denied"
-msgstr ""
+msgstr "دسترسی رد شد"
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -339,7 +339,7 @@ msgstr "یک نام برای منبع خود اضافه کنید"
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
 msgid "Add a note"
-msgstr ""
+msgstr "افزودن یک یادداشت"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:191
 msgid "Add a task"
@@ -853,11 +853,11 @@ msgstr "بین"
 
 #: frontend/src/components/Settings/Settings.vue:119
 msgid "Brand Settings"
-msgstr ""
+msgstr "تنظیمات برند"
 
 #: frontend/src/components/Settings/BrandSettings.vue:52
 msgid "Brand logo"
-msgstr ""
+msgstr "لوگوی برند"
 
 #: frontend/src/components/Settings/BrandSettings.vue:32
 msgid "Brand name"
@@ -1198,7 +1198,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/TaskArea.vue:45
 msgid "Change status"
-msgstr ""
+msgstr "تغییر وضعیت"
 
 #: frontend/src/pages/Dashboard.vue:22
 msgid "Chart"
@@ -2428,7 +2428,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Enter brand name"
-msgstr ""
+msgstr "نام برند را وارد کنید"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:30
 msgid "Enter your Facebook Access Token"
@@ -4613,7 +4613,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:90
 msgid "Personal Settings"
-msgstr ""
+msgstr "تنظیمات شخصی"
 
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
@@ -5329,7 +5329,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:34
 msgid "Select Source Type"
-msgstr ""
+msgstr "انتخاب نوع منبع"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:51
 msgid "Select currency"
@@ -5566,11 +5566,11 @@ msgstr "نوع منبع"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:167
 msgid "Source disabled successfully"
-msgstr ""
+msgstr "منبع با موفقیت غیرفعال شد"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:166
 msgid "Source enabled successfully"
-msgstr ""
+msgstr "منبع با موفقیت فعال شد"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
@@ -6450,7 +6450,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:9
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more "
-msgstr ""
+msgstr "برای همگام‌سازی سرنخ‌ها از فیس‌بوک، به یک حساب توسعه‌دهنده متا و یک توکن دسترسی نیاز دارید. ادامه مطلب "
 
 #: crm/api/todo.py:100
 msgid "Your assignment on task {0} has been removed by {1}"
