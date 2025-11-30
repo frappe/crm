@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-11-29 15:49\n"
+"PO-Revision-Date: 2025-11-30 16:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -1308,7 +1308,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ColumnSettings.vue:4
 msgid "Columns"
-msgstr "ستون ها"
+msgstr "ستون‌ها"
 
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -1438,7 +1438,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:20
 msgid "Contact Us"
-msgstr "با ما تماس بگیرید"
+msgstr "تماس با ما"
 
 #: frontend/src/pages/Deal.vue:660 frontend/src/pages/MobileDeal.vue:544
 msgid "Contact added"
@@ -1679,7 +1679,7 @@ msgstr "مشتری با موفقیت ایجاد شد"
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 #: frontend/src/components/Settings/Settings.vue:171
 msgid "Customization"
-msgstr "سفارشی سازی"
+msgstr "سفارشی‌سازی"
 
 #: frontend/src/components/ViewControls.vue:211
 msgid "Customize quick filters"
@@ -2499,7 +2499,7 @@ msgstr "عنوان رویداد"
 
 #: frontend/src/pages/Deal.vue:560 frontend/src/pages/Lead.vue:407
 msgid "Events"
-msgstr "مناسبت ها"
+msgstr "رویدادها"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -3046,7 +3046,7 @@ msgstr ""
 #. Label of the hidden (Check) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Hidden"
-msgstr "پنهان شده است"
+msgstr "پنهان"
 
 #: frontend/src/components/Activities/Activities.vue:237
 msgid "Hide"
@@ -5305,7 +5305,7 @@ msgstr "اسکریپت"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:22
 msgid "Search"
-msgstr "جستجو کردن"
+msgstr "جستجو"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:64
 msgid "Search template"
@@ -5333,7 +5333,7 @@ msgstr "انتخاب نوع منبع"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:51
 msgid "Select currency"
-msgstr ""
+msgstr "انتخاب واحد پول"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:75
 msgid "Select provider"
@@ -6519,7 +6519,7 @@ msgstr "شرط"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "cyan"
-msgstr "فیروزه ای"
+msgstr "فیروزه‌ای"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:131
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:380
