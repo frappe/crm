@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-11-28 15:50\n"
+"PO-Revision-Date: 2025-11-30 16:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -6434,7 +6434,7 @@ msgstr "Nemate podešen broj mobilnog telefona u svom agentu telefonije"
 
 #: crm/www/crm.py:20
 msgid "You do not have permission to access Frappe CRM"
-msgstr ""
+msgstr "Nemate dozvolu za pristup Frappe CRM"
 
 #: frontend/src/data/document.js:35
 msgid "You do not have permission to access this document"
