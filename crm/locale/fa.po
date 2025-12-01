@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-11-30 16:06\n"
+"PO-Revision-Date: 2025-12-01 16:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -5881,7 +5881,7 @@ msgstr "امسال"
 
 #: crm/www/crm.py:35
 msgid "This method is only meant for developer mode"
-msgstr ""
+msgstr "این روش فقط برای حالت توسعه‌دهنده در نظر گرفته شده است"
 
 #: frontend/src/components/SidePanelLayoutEditor.vue:116
 msgid "This section is not editable"
@@ -6434,7 +6434,7 @@ msgstr ""
 
 #: crm/www/crm.py:20
 msgid "You do not have permission to access Frappe CRM"
-msgstr ""
+msgstr "شما اجازه دسترسی به Frappe CRM را ندارید"
 
 #: frontend/src/data/document.js:35
 msgid "You do not have permission to access this document"
