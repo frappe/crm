@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-11-29 15:49\n"
+"PO-Revision-Date: 2025-12-03 16:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -1342,7 +1342,7 @@ msgstr "Status Konverzacije"
 #. Label of the erpnext_company (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Company in ERPNext Site"
-msgstr "Kompanija U Sistemu"
+msgstr "Poduzeće U Sistemu"
 
 #: crm/templates/emails/helpdesk_invitation.html:10
 msgid "Complete Registration"
@@ -3143,7 +3143,7 @@ msgstr "Ako je omogućeno, sve odlazne e-poruke će biti poslane s ovog računa.
 
 #: frontend/src/components/Settings/emailConfig.js:47
 msgid "If enabled, all replies to your company (eg: replies@yourcomany.com) will come to this account. Note: Only one account can be default incoming."
-msgstr "Ako je omogućeno, svi odgovori vašoj kompaniji (npr.: odgovori@vašakompanija.com) će stizati na ovaj račun. Napomena: Samo jedan račun može biti standard dolazni."
+msgstr "Ako je omogućeno, svi odgovori vašem poduzeću (npr.: odgovori@poduzece.com) će stizati na ovaj račun. Napomena: Samo jedan račun može biti standard dolazni."
 
 #: frontend/src/components/Settings/emailConfig.js:39
 msgid "If enabled, outgoing emails can be sent from this account."
@@ -3406,7 +3406,7 @@ msgstr "John Doe"
 #: frontend/src/components/ViewControls.vue:384
 #: frontend/src/components/ViewControls.vue:600 frontend/src/utils/view.js:20
 msgid "Kanban"
-msgstr "Kanban"
+msgstr "Oglasna Tabla"
 
 #. Label of the kanban_columns (Code) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6656,7 +6656,7 @@ msgstr "upravo sada"
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "kanban"
-msgstr "oglasna Tabla"
+msgstr "oglasna tabla"
 
 #: crm/api/doc.py:40 crm/api/doc.py:158 crm/api/doc.py:503
 msgid "label"
