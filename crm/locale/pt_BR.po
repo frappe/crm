@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-11-28 15:49\n"
+"PO-Revision-Date: 2025-12-03 16:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -686,7 +686,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
 #: frontend/src/components/Settings/Settings.vue:164
 msgid "Assignment rules"
-msgstr "Regra de atribuição"
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
 msgid "Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions"
@@ -4187,7 +4187,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:14
 msgid "No items in the list"
-msgstr "Nenhum item na lista"
+msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:92
 msgid "No label"
