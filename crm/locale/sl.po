@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-12-03 16:42\n"
+"PO-Revision-Date: 2025-12-05 16:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -330,7 +330,7 @@ msgstr "Dodaj Tedenske Praznike"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a condition"
-msgstr ""
+msgstr "Dodaj Pogoj"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:24
 msgid "Add a name for your source"
